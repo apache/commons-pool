@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackObjectPool.java,v 1.6 2002/10/30 22:54:42 rwaldhoff Exp $
- * $Revision: 1.6 $
- * $Date: 2002/10/30 22:54:42 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackObjectPool.java,v 1.7 2002/11/30 09:14:01 rwaldhoff Exp $
+ * $Revision: 1.7 $
+ * $Date: 2002/11/30 09:14:01 $
  *
  * ====================================================================
  *
@@ -79,7 +79,7 @@ import java.util.Enumeration;
  * artificial limits.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.6 $ $Date: 2002/10/30 22:54:42 $
+ * @version $Revision: 1.7 $ $Date: 2002/11/30 09:14:01 $
  */
 public class StackObjectPool extends BaseObjectPool implements ObjectPool {
     /**
@@ -174,16 +174,18 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
 
     public void returnObject(Object obj) throws Exception {
         boolean success = true;
-        if(!(_factory.validateObject(obj))) {
-            success = false;
-        } else {
-            try {
-                _factory.passivateObject(obj);
-            } catch(Exception e) {
+        if(null != _factory) {
+            if(!(_factory.validateObject(obj))) {
                 success = false;
+            } else {
+                try {
+                    _factory.passivateObject(obj);
+                } catch(Exception e) {
+                    success = false;
+                }
             }
         }
-
+        
         boolean shouldDestroy = !success;
 
         synchronized(this) {
@@ -196,7 +198,7 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
             notifyAll(); // _numActive has changed
         }
 
-        if(shouldDestroy) {
+        if(shouldDestroy) { // by constructor, shouldDestroy is false when _factory is null
             try {
                 _factory.destroyObject(obj);
             } catch(Exception e) {
@@ -207,7 +209,9 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
 
     public synchronized void invalidateObject(Object obj) throws Exception {
         _numActive--;
-        _factory.destroyObject(obj);
+        if(null != _factory ) {
+            _factory.destroyObject(obj);
+        }
         notifyAll(); // _numActive has changed
     }
 

@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackKeyedObjectPool.java,v 1.6 2002/10/30 22:54:42 rwaldhoff Exp $
- * $Revision: 1.6 $
- * $Date: 2002/10/30 22:54:42 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackKeyedObjectPool.java,v 1.7 2002/11/30 09:14:00 rwaldhoff Exp $
+ * $Revision: 1.7 $
+ * $Date: 2002/11/30 09:14:00 $
  *
  * ====================================================================
  *
@@ -81,7 +81,7 @@ import java.util.Iterator;
  * artificial limits.
  *
  * @author Rodney Waldhoff
- * @version $Id: StackKeyedObjectPool.java,v 1.6 2002/10/30 22:54:42 rwaldhoff Exp $
+ * @version $Id: StackKeyedObjectPool.java,v 1.7 2002/11/30 09:14:00 rwaldhoff Exp $
  */
 public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
     /**
@@ -223,7 +223,9 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
         _totActive--;
         Integer old = (Integer)(_activeCount.get(key));
         _activeCount.put(key,new Integer(old.intValue() - 1));
-        _factory.destroyObject(key,obj);
+        if(null != _factory) {
+            _factory.destroyObject(key,obj);
+        }
         notifyAll(); // _totalActive has changed
     }
 
@@ -274,12 +276,14 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
         if(null == stack) {
             return;
         } else {
-            Enumeration enum = stack.elements();
-            while(enum.hasMoreElements()) {
-                try {
-                    _factory.destroyObject(key,enum.nextElement());
-                } catch(Exception e) {
-                    // ignore error, keep destroying the rest
+            if(null != _factory) {
+                Enumeration enum = stack.elements();
+                while(enum.hasMoreElements()) {
+                    try {
+                        _factory.destroyObject(key,enum.nextElement());
+                    } catch(Exception e) {
+                        // ignore error, keep destroying the rest
+                    }
                 }
             }
             _totIdle -= stack.size();
