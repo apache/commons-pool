@@ -4,7 +4,7 @@
       <title>Home</title>
       <author email="commons-dev@jakarta.apache.org">Commons Documentation Team</author>
       <author email="rwaldhoff@apache.org">Rodney Waldhoff</author>
-      <revision>$Id: index.xml,v 1.5 2002/04/29 16:45:38 rwaldhoff Exp $</revision>
+      <revision>$Id: index.xml,v 1.6 2002/05/09 13:53:30 rwaldhoff Exp $</revision>
    </properties>
 
    <body>
@@ -24,10 +24,6 @@
            </li>
           </ol>
          </p>
-         <p>
-          See the <a href="http://nagoya.apache.org/gump/javadoc/jakarta-commons/pool/dist/docs/api/index.html">javadoc</a>
-          for details.
-         </p>           
          <p>
           See the <a href="downloads.html">downloads</a> page for information on obtaining releases.
          </p>           
