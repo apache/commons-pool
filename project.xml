@@ -56,5 +56,16 @@
       <version>3.7</version>
     </dependency>
   </dependencies>
-  
+
+  <build>
+    
+    <unitTest>
+      <includes>
+        <include>**/TestAll.java</include>
+      </includes>
+    </unitTest>
+
+  </build>
+
+
 </project>
