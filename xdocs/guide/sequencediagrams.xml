@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<document>
+
+ <properties>
+  <title>Sequence Diagrams</title>
+  <author email="commons-dev@jakarta.apache.org">Commons Documentation Team</author>
+ </properties>
+
+ <body>
+
+<section name="borrowObject">
+<center><img src="../images/uml/borrowObject.gif"/></center>
+</section>
+
+<section name="returnObject">
+<center><img src="../images/uml/returnObject.gif"/></center>
+</section>
+
+<section name="invalidateObject">
+<center><img src="../images/uml/invalidateObject.gif"/></center>
+</section>
+
+</body>
+</document>
