@@ -1,7 +1,7 @@
 /*
- * $Id: GenericObjectPool.java,v 1.17 2003/03/14 00:56:57 rwaldhoff Exp $
- * $Revision: 1.17 $
- * $Date: 2003/03/14 00:56:57 $
+ * $Id: GenericObjectPool.java,v 1.18 2003/03/14 01:04:50 rwaldhoff Exp $
+ * $Revision: 1.18 $
+ * $Date: 2003/03/14 01:04:50 $
  *
  * ====================================================================
  *
@@ -86,7 +86,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  *  </li>
  *  <li>
  *    {@link #setMaxIdle <i>maxIdle</i>} controls the maximum number of objects that can
- *    sit idle in the pool at any time.  When non-positive, there
+ *    sit idle in the pool at any time.  When negative, there
  *    is no limit to the number of objects that may be idle at one time.
  *  </li>
  *  <li>
@@ -163,7 +163,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  *
  * @see GenericKeyedObjectPool
  * @author Rodney Waldhoff
- * @version $Revision: 1.17 $ $Date: 2003/03/14 00:56:57 $
+ * @version $Revision: 1.18 $ $Date: 2003/03/14 01:04:50 $
  */
 public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
@@ -810,7 +810,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
         synchronized(this) {
             _numActive--;
-            if((_maxIdle > 0) && (_pool.size() >= _maxIdle)) {
+            if((_maxIdle >= 0) && (_pool.size() >= _maxIdle)) {
                 shouldDestroy = true;
             } else if(success) {
                 _pool.addFirst(new ObjectTimestampPair(obj));
