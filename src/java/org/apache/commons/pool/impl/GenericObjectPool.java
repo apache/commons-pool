@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericObjectPool.java,v 1.7 2002/09/05 18:10:06 rwaldhoff Exp $
- * $Revision: 1.7 $
- * $Date: 2002/09/05 18:10:06 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericObjectPool.java,v 1.8 2002/10/30 00:55:06 rwaldhoff Exp $
+ * $Revision: 1.8 $
+ * $Date: 2002/10/30 00:55:06 $
  *
  * ====================================================================
  *
@@ -159,7 +159,7 @@ import java.util.ListIterator;
  * </ul>
  * @see GenericKeyedObjectPool
  * @author Rodney Waldhoff
- * @version $Revision: 1.7 $ $Date: 2002/09/05 18:10:06 $
+ * @version $Revision: 1.8 $ $Date: 2002/10/30 00:55:06 $
  */
 public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
@@ -899,7 +899,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                     sleeptime = _timeBetweenEvictionRunsMillis;
                 }
                 try {
-                    Thread.currentThread().sleep(_timeBetweenEvictionRunsMillis);
+                    Thread.currentThread().sleep(sleeptime);
                 } catch(Exception e) {
                     ; // ignored
                 }
