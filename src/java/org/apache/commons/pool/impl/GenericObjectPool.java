@@ -1,7 +1,7 @@
 /*
- * $Id: GenericObjectPool.java,v 1.23 2003/08/13 19:05:23 dirkv Exp $
- * $Revision: 1.23 $
- * $Date: 2003/08/13 19:05:23 $
+ * $Id: GenericObjectPool.java,v 1.24 2003/08/15 13:34:05 dirkv Exp $
+ * $Revision: 1.24 $
+ * $Date: 2003/08/15 13:34:05 $
  *
  * ====================================================================
  *
@@ -164,7 +164,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * @see GenericKeyedObjectPool
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
- * @version $Revision: 1.23 $ $Date: 2003/08/13 19:05:23 $
+ * @version $Revision: 1.24 $ $Date: 2003/08/15 13:34:05 $
  */
 public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
@@ -707,82 +707,36 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
     //-- ObjectPool methods ------------------------------------------
 
     public Object borrowObject() throws Exception {
-        // Warning: because the method synchonization is gone
-        // _numActive should be incremented as soon as possible
-        // otherwise the pool can go over the limit
-        // decrement on error (do not forget to notifyAll)
-        
-        assertOpen();
         long starttime = System.currentTimeMillis();
         boolean newlyCreated = false;
         for(;;) {
             ObjectTimestampPair pair = null;
-            // if there are any sleeping, just grab one of those
-            if (!_pool.isEmpty()) { // no need to synchronize when pool is empty
-                synchronized(this) {
-                    try {
-                        _numActive++;
-                        pair = (ObjectTimestampPair)(_pool.removeFirst());
-                    } catch(NoSuchElementException e) {
-                        ; /* ignored */
-                    }
-                    if(null == pair) { // someone took the last one before us
-                        _numActive--;
-                        notifyAll();
-                    }
+
+            synchronized(this) {
+                assertOpen();
+
+                // if there are any sleeping, just grab one of those
+                try {
+                    pair = (ObjectTimestampPair)(_pool.removeFirst());
+                } catch(NoSuchElementException e) {
+                    ; /* ignored */
                 }
-            }
-            // otherwise
-            if(null == pair) {
-                // check if we can create one
-                // (note we know that the num sleeping is 0, else we wouldn't be here)
-                if(_maxActive <= 0 || _numActive < _maxActive) {
-                    try {
-                        synchronized(this) {
-                            _numActive++;
-                        }
-                        Object obj = _factory.makeObject();
-                        pair = new ObjectTimestampPair(obj);
-                        newlyCreated = true;
-                    }
-                    finally { 
-                        if(null == pair) {
-                            synchronized(this) {
-                                _numActive--;
-                                notifyAll();
-                            }
-                        }
-                    }
-                } else {
-                    // the pool is exhausted
-                    switch(_whenExhaustedAction) {
-                        case WHEN_EXHAUSTED_GROW:
-                            try {
-                                synchronized(this) {
-                                    _numActive++;
-                                }
-                                Object obj = _factory.makeObject();
-                                pair = new ObjectTimestampPair(obj);
-                                newlyCreated = true;
-                            }
-                            finally {
-                                if(null == pair) {
-                                    synchronized(this) {
-                                        _numActive--;
-                                        notifyAll();
-                                    }
-                                }
-                            }
-                            break;
-                        case WHEN_EXHAUSTED_FAIL:
-                            throw new NoSuchElementException();
-                        case WHEN_EXHAUSTED_BLOCK:
-                            synchronized(this) {
-                                // only sleep when the pool is really empty
-                                // between the isEmpty check at the beginning
-                                // and here, an object could have been added 
-                                // to the pool
-                                if (_pool.isEmpty()) {
+
+                // otherwise
+                if(null == pair) {
+                    // check if we can create one
+                    // (note we know that the num sleeping is 0, else we wouldn't be here)
+                    if(_maxActive <= 0 || _numActive < _maxActive) {
+                        // allow new object to be created
+                    } else {
+                        // the pool is exhausted
+                        switch(_whenExhaustedAction) {
+                            case WHEN_EXHAUSTED_GROW:
+                                // allow new object to be created
+                                break;
+                            case WHEN_EXHAUSTED_FAIL:
+                                throw new NoSuchElementException();
+                            case WHEN_EXHAUSTED_BLOCK:
                                     try {
                                         if(_maxWait <= 0) {
                                             wait();
@@ -792,18 +746,37 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                                     } catch(InterruptedException e) {
                                         // ignored
                                     }
-                                }
-                                if(_maxWait > 0 && ((System.currentTimeMillis() - starttime) >= _maxWait)) {
-                                    throw new NoSuchElementException("Timeout waiting for idle object");
-                                } else {
-                                    continue; // keep looping
-                                }
-                            }
-                        default:
-                            throw new IllegalArgumentException("whenExhaustedAction " + _whenExhaustedAction + " not recognized.");
+                                    if(_maxWait > 0 && ((System.currentTimeMillis() - starttime) >= _maxWait)) {
+                                        throw new NoSuchElementException("Timeout waiting for idle object");
+                                    } else {
+                                        continue; // keep looping
+                                    }
+                            default:
+                                throw new IllegalArgumentException("whenExhaustedAction " + _whenExhaustedAction + " not recognized.");
+                        }
                     }
                 }
+                _numActive++;
+            } // end synchronized
+            
+            // create new object when needed
+            if(null == pair) {
+                try {
+                    Object obj = _factory.makeObject();
+                    pair = new ObjectTimestampPair(obj);
+                    newlyCreated = true;
+                }
+                catch (Exception e) {
+                    // object cannot be created
+                    synchronized(this) {
+                        _numActive--;
+                        notifyAll();
+                    }
+                    throw e;
+                }
             }
+
+            // activate & validate the object
             try {
                 _factory.activateObject(pair.value);
                 if(_testOnBorrow && !_factory.validateObject(pair.value)) {
