@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericKeyedObjectPool.java,v 1.4 2002/05/01 06:33:01 rwaldhoff Exp $
- * $Revision: 1.4 $
- * $Date: 2002/05/01 06:33:01 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericKeyedObjectPool.java,v 1.5 2002/05/01 14:43:15 rwaldhoff Exp $
+ * $Revision: 1.5 $
+ * $Date: 2002/05/01 14:43:15 $
  *
  * ====================================================================
  *
@@ -161,7 +161,7 @@ import java.util.Set;
  * </ul>
  * @see GenericObjectPool
  * @author Rodney Waldhoff
- * @version $Id: GenericKeyedObjectPool.java,v 1.4 2002/05/01 06:33:01 rwaldhoff Exp $
+ * @version $Id: GenericKeyedObjectPool.java,v 1.5 2002/05/01 14:43:15 rwaldhoff Exp $
  */
 public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
 
@@ -862,42 +862,68 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         }
     }
 
-    public synchronized void returnObject(Object key, Object obj) throws Exception {
-        _totalActive--;
+    public void returnObject(Object key, Object obj) throws Exception {
 
-        CursorableLinkedList pool = (CursorableLinkedList)(_poolMap.get(key));
-        if(null == pool) {
-            pool = new CursorableLinkedList();
-            _poolMap.put(key,pool);
-            _poolList.add(key);
-        }
-
-        Integer active = (Integer)(_activeMap.get(key));
-        if(null == active) {
-            // do nothing, either null or zero is OK
-        } else if(active.intValue() <= 1) {
-            _activeMap.remove(key);
-        } else {
-            _activeMap.put(key,new Integer(active.intValue() - 1));
-        }
-
-        if(_maxIdle > 0 && (pool.size() >= _maxIdle || (_testOnReturn && !_factory.validateObject(key,obj)))) {
-            try {
-                _factory.passivateObject(key,obj);
-            } catch(Exception e) {
-                ; // ignored, we're throwing it out anyway
+        // grab the pool (list) of objects associated with the given key
+        CursorableLinkedList pool = null;
+        synchronized(this) {
+            pool = (CursorableLinkedList)(_poolMap.get(key));
+            // if it doesn't exist, create it
+            if(null == pool) {
+                pool = new CursorableLinkedList();
+                _poolMap.put(key, pool);
+                _poolList.add(key);
             }
-            _factory.destroyObject(key,obj);
+        }
+
+        // if we need to validate this object, do so
+        boolean success = true; // whether or not this object passed validation
+        if((_testOnReturn && !_factory.validateObject(key, obj))) {
+            success = false;
+            try {
+                _factory.destroyObject(key, obj);
+            } catch(Exception e) {
+                // ignored
+            }
         } else {
             try {
-                _factory.passivateObject(key,obj);
+                _factory.passivateObject(key, obj);
+            } catch(Exception e) {
+                success = false;
+            }
+        }
+
+        boolean shouldDestroy = false;
+        synchronized(this) {
+            // subtract one from the total and keyed active counts
+            _totalActive--;
+            Integer active = (Integer)(_activeMap.get(key));
+            if(null == active) {
+                // do nothing, either null or zero is OK
+            } else if(active.intValue() <= 1) {
+                _activeMap.remove(key);
+            } else {
+                _activeMap.put(key, new Integer(active.intValue() - 1));
+            }
+            // if there's no space in the pool, flag the object
+            // for destruction
+            // else if we passivated succesfully, return it to the pool
+            if(_maxIdle > 0 && (pool.size() >= _maxIdle)) {
+                shouldDestroy = true;
+            } else if(success) {
                 pool.addFirst(new ObjectTimestampPair(obj));
                 _totalIdle++;
+            }
+            notifyAll();
+        }
+
+        if(shouldDestroy) {
+            try {
+                _factory.destroyObject(key, obj);
             } catch(Exception e) {
-                _factory.destroyObject(key,obj);
+                // ignored?
             }
         }
-        notifyAll();
     }
 
     synchronized public void close() throws Exception {
@@ -924,8 +950,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
     synchronized String debugInfo() {
         StringBuffer buf = new StringBuffer();
-        buf.append("Active: ").append(numActive()).append("\n");
-        buf.append("Idle: ").append(numIdle()).append("\n");
+        buf.append("Active: ").append(getNumActive()).append("\n");
+        buf.append("Idle: ").append(getNumIdle()).append("\n");
         Iterator it = _poolList.iterator();
         while(it.hasNext()) {
             buf.append("\t").append(_poolMap.get(it.next())).append("\n");
