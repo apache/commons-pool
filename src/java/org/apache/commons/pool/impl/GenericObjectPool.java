@@ -1,7 +1,7 @@
 /*
- * $Id: GenericObjectPool.java,v 1.20 2003/04/22 22:22:02 rwaldhoff Exp $
- * $Revision: 1.20 $
- * $Date: 2003/04/22 22:22:02 $
+ * $Id: GenericObjectPool.java,v 1.21 2003/08/12 22:46:09 dirkv Exp $
+ * $Revision: 1.21 $
+ * $Date: 2003/08/12 22:46:09 $
  *
  * ====================================================================
  *
@@ -163,7 +163,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  *
  * @see GenericKeyedObjectPool
  * @author Rodney Waldhoff
- * @version $Revision: 1.20 $ $Date: 2003/04/22 22:22:02 $
+ * @version $Revision: 1.21 $ $Date: 2003/08/12 22:46:09 $
  */
 public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
@@ -754,15 +754,28 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                     }
                 }
             }
-            _factory.activateObject(pair.value);
-            if(_testOnBorrow && !_factory.validateObject(pair.value)) {
-                _factory.destroyObject(pair.value);
-                if(newlyCreated) {
-                    throw new NoSuchElementException("Could not create a validated object");
-                } // else keep looping
-            } else {
+
+            try {
+                _factory.activateObject(pair.value);
+                if(_testOnBorrow && !_factory.validateObject(pair.value)) {
+                    throw new Exception("validateObject failed");
+                }                
                 _numActive++;
                 return pair.value;
+            } 
+            catch (Exception e) {
+                try {
+                    _factory.destroyObject(pair.value);
+                } 
+                catch (Exception e2) {
+                    // cannot destroy broken object 
+                }
+                if(newlyCreated) {
+                    throw new NoSuchElementException("Could not create a validated object");
+                } 
+                else {
+                    continue; // keep looping
+                }
             }
         }
     }
