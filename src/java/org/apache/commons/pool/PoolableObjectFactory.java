@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/PoolableObjectFactory.java,v 1.2 2002/01/15 00:07:03 rwaldhoff Exp $
- * $Revision: 1.2 $
- * $Date: 2002/01/15 00:07:03 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/PoolableObjectFactory.java,v 1.3 2002/03/17 14:55:21 rwaldhoff Exp $
+ * $Revision: 1.3 $
+ * $Date: 2002/03/17 14:55:21 $
  *
  * ====================================================================
  *
@@ -100,7 +100,7 @@ package org.apache.commons.pool;
  * </ol>
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.2 $ $Date: 2002/01/15 00:07:03 $ 
+ * @version $Revision: 1.3 $ $Date: 2002/03/17 14:55:21 $ 
  *
  * @see ObjectPool
  */
@@ -109,13 +109,13 @@ public interface PoolableObjectFactory {
    * Creates an instance that can be returned by the pool.
    * @return an instance that can be returned by the pool.
    */
-  public abstract Object makeObject();
+  public abstract Object makeObject() throws Exception;
 
   /**
    * Destroys an instance no longer needed by the pool.
    * @param obj the instance to be destroyed
    */
-  public abstract void destroyObject(Object obj);
+  public abstract void destroyObject(Object obj) throws Exception;
 
   /**
    * Ensures that the instance is safe to be returned by the pool.
@@ -130,11 +130,11 @@ public interface PoolableObjectFactory {
    * Reinitialize an instance to be returned by the pool.
    * @param obj the instance to be activated
    */
-  public abstract void activateObject(Object obj);
+  public abstract void activateObject(Object obj) throws Exception;
 
   /**
    * Uninitialize an instance to be returned to the pool.
    * @param obj the instance to be passivated
    */
-  public abstract void passivateObject(Object obj);
+  public abstract void passivateObject(Object obj) throws Exception;
 }

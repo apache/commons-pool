@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/KeyedObjectPool.java,v 1.2 2002/01/15 00:07:03 rwaldhoff Exp $
- * $Revision: 1.2 $
- * $Date: 2002/01/15 00:07:03 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/KeyedObjectPool.java,v 1.3 2002/03/17 14:55:21 rwaldhoff Exp $
+ * $Revision: 1.3 $
+ * $Date: 2002/03/17 14:55:21 $
  *
  * ====================================================================
  *
@@ -92,7 +92,7 @@ package org.apache.commons.pool;
  * </p>
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.2 $ $Date: 2002/01/15 00:07:03 $ 
+ * @version $Revision: 1.3 $ $Date: 2002/03/17 14:55:21 $ 
  *
  * @see KeyedPoolableObjectFactory
  * @see KeyedObjectPoolFactory
@@ -113,7 +113,7 @@ public interface KeyedObjectPool {
      * @param key the key used to obtain the object
      * @return an instance from my pool.
      */
-    public abstract Object borrowObject(Object key);
+    public abstract Object borrowObject(Object key) throws Exception;
 
     /**
      * Return an instance to my pool.
@@ -127,7 +127,7 @@ public interface KeyedObjectPool {
      * @param key the key used to obtain the object
      * @param obj a {@link #borrowObject(java.lang.Object) borrowed} instance to be returned.
      */
-    public abstract void returnObject(Object key, Object obj);
+    public abstract void returnObject(Object key, Object obj) throws Exception;
 
     /**
      * Returns the number of instances
@@ -185,7 +185,7 @@ public interface KeyedObjectPool {
      * if the pool cannot be cleared.
      * @throws UnsupportedOperationException when this implementation doesn't support the operation
      */
-    public abstract void clear() throws UnsupportedOperationException;
+    public abstract void clear() throws Exception, UnsupportedOperationException;
 
     /**
      * Clears the specified pool, removing all pooled instances
@@ -195,12 +195,12 @@ public interface KeyedObjectPool {
      * @param key the key to clear
      * @throws UnsupportedOperationException when this implementation doesn't support the operation
      */
-    public abstract void clear(Object key) throws UnsupportedOperationException;
+    public abstract void clear(Object key) throws Exception, UnsupportedOperationException;
 
     /**
      * Close this pool, and free any resources associated with it.
      */
-    public abstract void close();
+    public abstract void close() throws Exception;
 
     /**
      * Sets the {@link KeyedPoolableObjectFactory factory} I use

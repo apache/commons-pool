@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericKeyedObjectPool.java,v 1.1 2001/04/14 16:41:21 rwaldhoff Exp $
- * $Revision: 1.1 $
- * $Date: 2001/04/14 16:41:21 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericKeyedObjectPool.java,v 1.2 2002/03/17 14:55:21 rwaldhoff Exp $
+ * $Revision: 1.2 $
+ * $Date: 2002/03/17 14:55:21 $
  *
  * ====================================================================
  *
@@ -161,7 +161,7 @@ import java.util.Set;
  * </ul>
  * @see GenericObjectPool
  * @author Rodney Waldhoff
- * @version $Id: GenericKeyedObjectPool.java,v 1.1 2001/04/14 16:41:21 rwaldhoff Exp $
+ * @version $Id: GenericKeyedObjectPool.java,v 1.2 2002/03/17 14:55:21 rwaldhoff Exp $
  */
 public class GenericKeyedObjectPool implements KeyedObjectPool {
 
@@ -717,7 +717,7 @@ public class GenericKeyedObjectPool implements KeyedObjectPool {
 
     //-- ObjectPool methods ------------------------------------------
 
-    public synchronized Object borrowObject(Object key) {
+    public synchronized Object borrowObject(Object key) throws Exception {
         long starttime = System.currentTimeMillis();
         for(;;) {
             CursorableLinkedList pool = (CursorableLinkedList)(_poolMap.get(key));
@@ -797,14 +797,18 @@ public class GenericKeyedObjectPool implements KeyedObjectPool {
         }
     }
 
-    public synchronized void clear() throws UnsupportedOperationException {
+    public synchronized void clear() {
         Iterator keyiter = _poolList.iterator();
         while(keyiter.hasNext()) {
             Object key = keyiter.next();
             CursorableLinkedList list = (CursorableLinkedList)(_poolMap.get(key));
             Iterator it = list.iterator();
             while(it.hasNext()) {
-                _factory.destroyObject(key,((ObjectTimestampPair)(it.next())).value);
+                try {
+                    _factory.destroyObject(key,((ObjectTimestampPair)(it.next())).value);
+                } catch(Exception e) {
+                    // ignore error, keep destroying the rest
+                }
                 it.remove();
             }
         }
@@ -814,7 +818,7 @@ public class GenericKeyedObjectPool implements KeyedObjectPool {
         notifyAll();
     }
 
-    public synchronized void clear(Object key) throws UnsupportedOperationException {
+    public synchronized void clear(Object key) {
         CursorableLinkedList pool = (CursorableLinkedList)(_poolMap.remove(key));
         if(null == pool) {
             return;
@@ -822,7 +826,11 @@ public class GenericKeyedObjectPool implements KeyedObjectPool {
             _poolList.remove(key);
             Iterator it = pool.iterator();
             while(it.hasNext()) {
-                _factory.destroyObject(key,((ObjectTimestampPair)(it.next())).value);
+                try {
+                    _factory.destroyObject(key,((ObjectTimestampPair)(it.next())).value);
+                } catch(Exception e) {
+                    // ignore error, keep destroying the rest
+                }
                 it.remove();
                 _totalIdle--;
             }
@@ -854,7 +862,7 @@ public class GenericKeyedObjectPool implements KeyedObjectPool {
         }
     }
 
-    public synchronized void returnObject(Object key, Object obj) {
+    public synchronized void returnObject(Object key, Object obj) throws Exception {
         _totalActive--;
 
         CursorableLinkedList pool = (CursorableLinkedList)(_poolMap.get(key));
@@ -892,7 +900,7 @@ public class GenericKeyedObjectPool implements KeyedObjectPool {
         notifyAll();
     }
 
-    synchronized public void close() {
+    synchronized public void close() throws Exception {
         clear();
         _poolList = null;
         _poolMap = null;
@@ -903,7 +911,7 @@ public class GenericKeyedObjectPool implements KeyedObjectPool {
         }
     }
 
-    synchronized public void setFactory(KeyedPoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
+    synchronized public void setFactory(KeyedPoolableObjectFactory factory) throws IllegalStateException {
         if(0 < numActive()) {
             throw new IllegalStateException("Objects are already active");
         } else {

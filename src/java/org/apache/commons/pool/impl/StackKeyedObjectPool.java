@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackKeyedObjectPool.java,v 1.1 2001/04/14 16:41:50 rwaldhoff Exp $
- * $Revision: 1.1 $
- * $Date: 2001/04/14 16:41:50 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackKeyedObjectPool.java,v 1.2 2002/03/17 14:55:21 rwaldhoff Exp $
+ * $Revision: 1.2 $
+ * $Date: 2002/03/17 14:55:21 $
  *
  * ====================================================================
  *
@@ -81,7 +81,7 @@ import java.util.Iterator;
  * artificial limits.
  *
  * @author Rodney Waldhoff
- * @version $Id: StackKeyedObjectPool.java,v 1.1 2001/04/14 16:41:50 rwaldhoff Exp $
+ * @version $Id: StackKeyedObjectPool.java,v 1.2 2002/03/17 14:55:21 rwaldhoff Exp $
  */
 public class StackKeyedObjectPool implements KeyedObjectPool {
     /**
@@ -156,7 +156,7 @@ public class StackKeyedObjectPool implements KeyedObjectPool {
         _activeCount = new HashMap();
     }
 
-    public synchronized Object borrowObject(Object key) {
+    public synchronized Object borrowObject(Object key) throws Exception {
         Object obj = null;
         Stack stack = (Stack)(_pools.get(key));
         if(null == stack) {
@@ -184,7 +184,7 @@ public class StackKeyedObjectPool implements KeyedObjectPool {
         return obj;
     }
 
-    public synchronized void returnObject(Object key, Object obj) {
+    public synchronized void returnObject(Object key, Object obj) throws Exception {
         _totActive--;
         if(null == _factory || _factory.validateObject(key,obj)) {
             Stack stack = (Stack)(_pools.get(key));
@@ -245,7 +245,7 @@ public class StackKeyedObjectPool implements KeyedObjectPool {
         }
     }
 
-    public synchronized void clear() throws UnsupportedOperationException {
+    public synchronized void clear() {
         Iterator it = _pools.keySet().iterator();
         while(it.hasNext()) {
             clear(it.next());
@@ -255,14 +255,18 @@ public class StackKeyedObjectPool implements KeyedObjectPool {
         _activeCount.clear();
     }
 
-    public synchronized void clear(Object key) throws UnsupportedOperationException {
+    public synchronized void clear(Object key) {
         Stack stack = (Stack)(_pools.remove(key));
         if(null == stack) {
             return;
         } else {
             Enumeration enum = stack.elements();
             while(enum.hasMoreElements()) {
-                _factory.destroyObject(key,enum.nextElement());
+                try {
+                    _factory.destroyObject(key,enum.nextElement());
+                } catch(Exception e) {
+                    // ignore error, keep destroying the rest
+                }
             }
             _totIdle -= stack.size();
             _activeCount.put(key,new Integer(0));
@@ -284,14 +288,14 @@ public class StackKeyedObjectPool implements KeyedObjectPool {
         return buf.toString();
     }
 
-    synchronized public void close() {
+    synchronized public void close() throws Exception {
         clear();
         _pools = null;
         _factory = null;
         _activeCount = null;
     }
 
-    synchronized public void setFactory(KeyedPoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
+    synchronized public void setFactory(KeyedPoolableObjectFactory factory) throws IllegalStateException {
         if(0 < numActive()) {
             throw new IllegalStateException("Objects are already active");
         } else {

@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackObjectPool.java,v 1.1 2001/04/14 16:41:56 rwaldhoff Exp $
- * $Revision: 1.1 $
- * $Date: 2001/04/14 16:41:56 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackObjectPool.java,v 1.2 2002/03/17 14:55:21 rwaldhoff Exp $
+ * $Revision: 1.2 $
+ * $Date: 2002/03/17 14:55:21 $
  *
  * ====================================================================
  *
@@ -79,7 +79,7 @@ import java.util.Enumeration;
  * artificial limits.
  *
  * @author Rodney Waldhoff
- * @version $Id: StackObjectPool.java,v 1.1 2001/04/14 16:41:56 rwaldhoff Exp $
+ * @version $Id: StackObjectPool.java,v 1.2 2002/03/17 14:55:21 rwaldhoff Exp $
  */
 public class StackObjectPool implements ObjectPool {
     /**
@@ -154,7 +154,7 @@ public class StackObjectPool implements ObjectPool {
         _pool.ensureCapacity( initcapacity > _maxSleeping ? _maxSleeping : initcapacity);
     }
 
-    public synchronized Object borrowObject() {
+    public synchronized Object borrowObject() throws Exception {
         Object obj = null;
         try {
             obj = _pool.pop();
@@ -172,7 +172,7 @@ public class StackObjectPool implements ObjectPool {
         return obj;
     }
 
-    public synchronized void returnObject(Object obj) {
+    public synchronized void returnObject(Object obj) throws Exception {
         _numActive--;
         if(null == _factory || _factory.validateObject(obj)) {
             if(null != _factory) {
@@ -205,23 +205,27 @@ public class StackObjectPool implements ObjectPool {
         return _numActive;
     }
 
-    public synchronized void clear() throws UnsupportedOperationException {
+    public synchronized void clear() {
         if(null != _factory) {
             Enumeration enum = _pool.elements();
             while(enum.hasMoreElements()) {
-                _factory.destroyObject(enum.nextElement());
+                try {
+                    _factory.destroyObject(enum.nextElement());
+                } catch(Exception e) {
+                    // ignore error, keep destroying the rest
+                }
             }
         }
         _pool.clear();
     }
 
-    synchronized public void close() {
+    synchronized public void close() throws Exception {
         clear();
         _pool = null;
         _factory = null;
     }
 
-    synchronized public void setFactory(PoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
+    synchronized public void setFactory(PoolableObjectFactory factory) throws IllegalStateException {
         if(0 < numActive()) {
             throw new IllegalStateException("Objects are already active");
         } else {
