@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackObjectPool.java,v 1.9 2003/03/07 15:18:20 rwaldhoff Exp $
- * $Revision: 1.9 $
- * $Date: 2003/03/07 15:18:20 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackObjectPool.java,v 1.10 2003/03/07 20:28:36 rwaldhoff Exp $
+ * $Revision: 1.10 $
+ * $Date: 2003/03/07 20:28:36 $
  *
  * ====================================================================
  *
@@ -83,7 +83,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * artificial limits.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.9 $ $Date: 2003/03/07 15:18:20 $
+ * @version $Revision: 1.10 $ $Date: 2003/03/07 20:28:36 $
  */
 public class StackObjectPool extends BaseObjectPool implements ObjectPool {
     /**
@@ -102,8 +102,8 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
      * using {@link #returnObject(java.lang.Object)}
      * before they can be {@link #borrowObject borrowed}.
      */
-    public StackObjectPool(int max) {
-        this((PoolableObjectFactory)null,max,DEFAULT_INIT_SLEEPING_CAPACITY);
+    public StackObjectPool(int maxIdle) {
+        this((PoolableObjectFactory)null,maxIdle,DEFAULT_INIT_SLEEPING_CAPACITY);
     }
 
     /**
@@ -112,8 +112,8 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
      * using {@link #returnObject(java.lang.Object)}
      * before they can be {@link #borrowObject borrowed}.
      */
-    public StackObjectPool(int max, int init) {
-        this((PoolableObjectFactory)null,max,init);
+    public StackObjectPool(int maxIdle, int initIdleCapacity) {
+        this((PoolableObjectFactory)null,maxIdle,initIdleCapacity);
     }
 
     /**
@@ -134,8 +134,8 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
      * @param factory the {@link PoolableObjectFactory} used to populate the pool
      * @param max cap on the number of "sleeping" instances in the pool
      */
-    public StackObjectPool(PoolableObjectFactory factory, int max) {
-        this(factory,max,DEFAULT_INIT_SLEEPING_CAPACITY);
+    public StackObjectPool(PoolableObjectFactory factory, int maxIdle) {
+        this(factory,maxIdle,DEFAULT_INIT_SLEEPING_CAPACITY);
     }
 
     /**
@@ -146,14 +146,14 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
      * at least <i>init</i> instances.
      *
      * @param factory the {@link PoolableObjectFactory} used to populate the pool
-     * @param max cap on the number of "sleeping" instances in the pool
+     * @param maxIdle cap on the number of "sleeping" instances in the pool
      * @param init initial size of the pool (this specifies the size of the container,
      *             it does not cause the pool to be pre-populated.)
      */
-    public StackObjectPool(PoolableObjectFactory factory, int max, int init) {
+    public StackObjectPool(PoolableObjectFactory factory, int maxIdle, int initIdleCapacity) {
         _factory = factory;
-        _maxSleeping = (max < 0 ? DEFAULT_MAX_SLEEPING : max);
-        int initcapacity = (init < 1 ? DEFAULT_INIT_SLEEPING_CAPACITY : init);
+        _maxSleeping = (maxIdle < 0 ? DEFAULT_MAX_SLEEPING : maxIdle);
+        int initcapacity = (initIdleCapacity < 1 ? DEFAULT_INIT_SLEEPING_CAPACITY : initIdleCapacity);
         _pool = new Stack();
         _pool.ensureCapacity( initcapacity > _maxSleeping ? _maxSleeping : initcapacity);
     }

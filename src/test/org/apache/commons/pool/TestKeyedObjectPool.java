@@ -1,7 +1,7 @@
 /*
- * $Id: TestKeyedObjectPool.java,v 1.2 2003/03/05 19:17:08 rwaldhoff Exp $
- * $Revision: 1.2 $
- * $Date: 2003/03/05 19:17:08 $
+ * $Id: TestKeyedObjectPool.java,v 1.3 2003/03/07 20:28:36 rwaldhoff Exp $
+ * $Revision: 1.3 $
+ * $Date: 2003/03/07 20:28:36 $
  * ====================================================================
  *
  * The Apache Software License, Version 1.1
@@ -65,7 +65,7 @@ import junit.framework.TestCase;
 /**
  * Abstract {@link TestCase} for {@link ObjectPool} implementations.
  * @author Rodney Waldhoff
- * @version $Revision: 1.2 $ $Date: 2003/03/05 19:17:08 $
+ * @version $Revision: 1.3 $ $Date: 2003/03/07 20:28:36 $
  */
 public abstract class TestKeyedObjectPool extends TestCase {
     public TestKeyedObjectPool(String testName) {
@@ -161,6 +161,9 @@ public abstract class TestKeyedObjectPool extends TestCase {
         _pool.returnObject(keya,obj0);
         assertEquals(0,_pool.getNumActive(keya));
         assertEquals(2,_pool.getNumIdle(keya));
+        
+        assertEquals(0,_pool.getNumActive("xyzzy12345"));
+        assertEquals(0,_pool.getNumIdle("xyzzy12345"));
     }
 
     public void testNumActiveNumIdle2() throws Exception {

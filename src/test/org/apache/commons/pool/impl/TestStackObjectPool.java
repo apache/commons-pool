@@ -1,7 +1,7 @@
 /*
- * $Id: TestStackObjectPool.java,v 1.7 2003/03/07 15:18:21 rwaldhoff Exp $
- * $Revision: 1.7 $
- * $Date: 2003/03/07 15:18:21 $
+ * $Id: TestStackObjectPool.java,v 1.8 2003/03/07 20:28:36 rwaldhoff Exp $
+ * $Revision: 1.8 $
+ * $Date: 2003/03/07 20:28:36 $
  *
  * ====================================================================
  *
@@ -73,7 +73,7 @@ import org.apache.commons.pool.TestObjectPool;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision: 1.7 $ $Date: 2003/03/07 15:18:21 $
+ * @version $Revision: 1.8 $ $Date: 2003/03/07 20:28:36 $
  */
 public class TestStackObjectPool extends TestObjectPool {
     public TestStackObjectPool(String testName) {
@@ -193,13 +193,21 @@ public class TestStackObjectPool extends TestObjectPool {
                 public void destroyObject(Object obj) { }
                 public boolean validateObject(Object obj) {
                     if(obj instanceof Integer) {
-                        return ((((Integer)obj).intValue() % 2) == 0);
+                        return ((((Integer)obj).intValue() % 2) == 1);
                     } else {
                         return false;
                     }
                 }
                 public void activateObject(Object obj) { }
-                public void passivateObject(Object obj) { }
+                public void passivateObject(Object obj) { 
+                    if(obj instanceof Integer) {
+                        if((((Integer)obj).intValue() % 3) == 0) {
+                            throw new RuntimeException("Couldn't passivate");
+                        }
+                    } else {
+                        throw new RuntimeException("Couldn't passivate");
+                    }
+                }
             }
         );
 
@@ -210,9 +218,31 @@ public class TestStackObjectPool extends TestObjectPool {
         for(int i=0;i<10;i++) {
             pool.returnObject(obj[i]);
         }
-        assertEquals(5,pool.getNumIdle());
+        assertEquals(3,pool.getNumIdle());
     }
     
+    public void testVariousConstructors() throws Exception {
+        {
+            StackObjectPool pool = new StackObjectPool();
+        }
+        {
+            StackObjectPool pool = new StackObjectPool(10);
+        }
+        {
+            StackObjectPool pool = new StackObjectPool(10,5);
+        }
+        {
+            StackObjectPool pool = new StackObjectPool(null);
+        }
+        {
+            StackObjectPool pool = new StackObjectPool(null,10);
+        }
+        {
+            StackObjectPool pool = new StackObjectPool(null,10,5);
+        }
+    }
+
+        
     static class SimpleFactory implements PoolableObjectFactory {
         int counter = 0;
         public Object makeObject() { return String.valueOf(counter++); }

@@ -1,7 +1,7 @@
 /*
- * $Id: TestGenericObjectPool.java,v 1.9 2003/03/05 19:22:52 rwaldhoff Exp $
- * $Revision: 1.9 $
- * $Date: 2003/03/05 19:22:52 $
+ * $Id: TestGenericObjectPool.java,v 1.10 2003/03/07 20:28:36 rwaldhoff Exp $
+ * $Revision: 1.10 $
+ * $Date: 2003/03/07 20:28:36 $
  *
  * ====================================================================
  *
@@ -61,6 +61,8 @@
 
 package org.apache.commons.pool.impl;
 
+import java.util.NoSuchElementException;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -70,7 +72,7 @@ import org.apache.commons.pool.TestObjectPool;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision: 1.9 $ $Date: 2003/03/05 19:22:52 $
+ * @version $Revision: 1.10 $ $Date: 2003/03/07 20:28:36 $
  */
 public class TestGenericObjectPool extends TestObjectPool {
     public TestGenericObjectPool(String testName) {
@@ -82,15 +84,7 @@ public class TestGenericObjectPool extends TestObjectPool {
     }
 
     protected ObjectPool makeEmptyPool(int mincap) {
-       GenericObjectPool pool = new GenericObjectPool(
-            new PoolableObjectFactory()  {
-                int counter = 0;
-                public Object makeObject() { return String.valueOf(counter++); }
-                public void destroyObject(Object obj) { }
-                public boolean validateObject(Object obj) { return true; }
-                public void activateObject(Object obj) { }
-                public void passivateObject(Object obj) { }
-            });
+       GenericObjectPool pool = new GenericObjectPool(new SimpleFactory());
         pool.setMaxActive(mincap);
         pool.setMaxIdle(mincap);
         return pool;
@@ -102,15 +96,7 @@ public class TestGenericObjectPool extends TestObjectPool {
 
     public void setUp() throws Exception {
         super.setUp();
-        pool = new GenericObjectPool(
-            new PoolableObjectFactory()  {
-                int counter = 0;
-                public Object makeObject() { return String.valueOf(counter++); }
-                public void destroyObject(Object obj) { }
-                public boolean validateObject(Object obj) { return true; }
-                public void activateObject(Object obj) { }
-                public void passivateObject(Object obj) { }
-            });
+        pool = new GenericObjectPool(new SimpleFactory());
     }
 
     public void tearDown() throws Exception {
@@ -159,9 +145,94 @@ public class TestGenericObjectPool extends TestObjectPool {
         pool.borrowObject();
         try {
             pool.borrowObject();
-            fail("Shouldn't get here.");
-        } catch(java.util.NoSuchElementException e) {
+            fail("Expected NoSuchElementException");
+        } catch(NoSuchElementException e) {
             // expected
+        }
+    }
+
+    public void testInvalidWhenExhaustedAction() throws Exception {
+        try {
+            pool.setWhenExhaustedAction(Byte.MAX_VALUE);
+            fail("Expected IllegalArgumentException");
+        } catch(IllegalArgumentException e) {
+            // expected
+        }
+
+        try {
+            ObjectPool pool = new GenericObjectPool(
+                new SimpleFactory(),
+                GenericObjectPool.DEFAULT_MAX_ACTIVE, 
+                Byte.MAX_VALUE,
+                GenericObjectPool.DEFAULT_MAX_WAIT, 
+                GenericObjectPool.DEFAULT_MAX_IDLE,
+                false,
+                false,
+                GenericObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
+                GenericObjectPool.DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
+                GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
+                false
+            );
+            fail("Expected IllegalArgumentException");
+        } catch(IllegalArgumentException e) {
+            // expected
+        }
+    }
+
+    public void testSettersAndGetters() throws Exception {
+        GenericObjectPool pool = new GenericObjectPool();
+        {
+            pool.setFactory(new SimpleFactory());
+        }
+        {
+            pool.setMaxActive(123);
+            assertEquals(123,pool.getMaxActive());
+        }
+        {
+            pool.setMaxIdle(12);
+            assertEquals(12,pool.getMaxIdle());
+        }
+        {
+            pool.setMaxWait(1234L);
+            assertEquals(1234L,pool.getMaxWait());
+        }
+        {
+            pool.setMinEvictableIdleTimeMillis(12345L);
+            assertEquals(12345L,pool.getMinEvictableIdleTimeMillis());
+        }
+        {
+            pool.setNumTestsPerEvictionRun(11);
+            assertEquals(11,pool.getNumTestsPerEvictionRun());
+        }
+        {
+            pool.setTestOnBorrow(true);
+            assertTrue(pool.getTestOnBorrow());
+            pool.setTestOnBorrow(false);
+            assertTrue(!pool.getTestOnBorrow());
+        }
+        {
+            pool.setTestOnReturn(true);
+            assertTrue(pool.getTestOnReturn());
+            pool.setTestOnReturn(false);
+            assertTrue(!pool.getTestOnReturn());
+        }
+        {
+            pool.setTestWhileIdle(true);
+            assertTrue(pool.getTestWhileIdle());
+            pool.setTestWhileIdle(false);
+            assertTrue(!pool.getTestWhileIdle());
+        }
+        {
+            pool.setTimeBetweenEvictionRunsMillis(11235L);
+            assertEquals(11235L,pool.getTimeBetweenEvictionRunsMillis());
+        }
+        {
+            pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_BLOCK);
+            assertEquals(GenericObjectPool.WHEN_EXHAUSTED_BLOCK,pool.getWhenExhaustedAction());
+            pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_FAIL);
+            assertEquals(GenericObjectPool.WHEN_EXHAUSTED_FAIL,pool.getWhenExhaustedAction());
+            pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_GROW);
+            assertEquals(GenericObjectPool.WHEN_EXHAUSTED_GROW,pool.getWhenExhaustedAction());
         }
     }
 
@@ -213,7 +284,6 @@ public class TestGenericObjectPool extends TestObjectPool {
         try { Thread.sleep(600L); } catch(Exception e) { }
         assertEquals("Should be zero idle, found " + pool.getNumIdle(),0,pool.getNumIdle());
     }
-
 
     public void testThreaded1() throws Exception {
         pool.setMaxActive(15);
@@ -304,6 +374,15 @@ public class TestGenericObjectPool extends TestObjectPool {
     }
     
     private GenericObjectPool pool = null;
+
+    static class SimpleFactory implements PoolableObjectFactory {
+        int counter = 0;
+        public Object makeObject() { return String.valueOf(counter++); }
+        public void destroyObject(Object obj) { }
+        public boolean validateObject(Object obj) { return true; }
+        public void activateObject(Object obj) { }
+        public void passivateObject(Object obj) { }
+    }
 }
 
 
