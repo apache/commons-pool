@@ -47,7 +47,7 @@ Timeline:
 
 
 * Review Period
-  1 October 2003 - 24 October 2003
+  1 October 2003 - 15 October 2003
 
   During the Review Period specific design, functional and
   contract changes to Pool will be considered on the
@@ -72,8 +72,12 @@ Timeline:
   given lazy majority approval, in case issues still need
   to be resolved.
 
+  To facilitate the review process Release Candidates 
+  (RC1, RC2, ...) will be provided at the start of the 
+  review period and when mayor issues are resolved.
+
 * Implementation Period
-  25 October 2003 - 31 October 2003
+  16 October 2003 - 19 October 2003
   (assuming the Review Period is not extended)
 
   During this period, any remaining implementation, testing
@@ -87,9 +91,10 @@ Timeline:
   release vote will be called, subject to lazy
   approval.
 
-  A formal release vote may be called before 31 October 2003,
+  A formal release vote may be called before 19 October 2003,
   but after the end of the Review Period, if appropriate.
-  (When all remaining issues are resolved)
+  (As soon as all remaining issues are resolved)
 
 * Release Pool 1.1
+  20 October 2003
 
