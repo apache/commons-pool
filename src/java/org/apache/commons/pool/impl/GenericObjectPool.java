@@ -1,7 +1,7 @@
 /*
  * $Source: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericObjectPool.java,v $
- * $Revision: 1.29 $
- * $Date: 2003/10/09 21:45:56 $
+ * $Revision: 1.30 $
+ * $Date: 2003/11/10 14:25:29 $
  *
  * ====================================================================
  *
@@ -164,7 +164,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * @see GenericKeyedObjectPool
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
- * @version $Revision: 1.29 $ $Date: 2003/10/09 21:45:56 $
+ * @version $Revision: 1.30 $ $Date: 2003/11/10 14:25:29 $
  */
 public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
@@ -848,7 +848,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                     // cannot destroy broken object 
                 }
                 if(newlyCreated) {
-                    throw new NoSuchElementException("Could not create a validated object");
+                    throw new NoSuchElementException("Could not create a validated object, cause: " + e.getMessage());
                 } 
                 else {
                     continue; // keep looping
