@@ -1,7 +1,7 @@
 /*
- * $Id: GenericObjectPool.java,v 1.18 2003/03/14 01:04:50 rwaldhoff Exp $
- * $Revision: 1.18 $
- * $Date: 2003/03/14 01:04:50 $
+ * $Id: GenericObjectPool.java,v 1.19 2003/04/18 20:58:39 rwaldhoff Exp $
+ * $Revision: 1.19 $
+ * $Date: 2003/04/18 20:58:39 $
  *
  * ====================================================================
  *
@@ -163,7 +163,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  *
  * @see GenericKeyedObjectPool
  * @author Rodney Waldhoff
- * @version $Revision: 1.18 $ $Date: 2003/03/14 01:04:50 $
+ * @version $Revision: 1.19 $ $Date: 2003/04/18 20:58:39 $
  */
 public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
@@ -708,6 +708,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
     public synchronized Object borrowObject() throws Exception {
         assertOpen();
         long starttime = System.currentTimeMillis();
+        boolean newlyCreated = false;
         for(;;) {
             ObjectTimestampPair pair = null;
             // if there are any sleeping, just grab one of those
@@ -723,6 +724,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                 if(_maxActive <= 0 || _numActive < _maxActive) {
                     Object obj = _factory.makeObject();
                     pair = new ObjectTimestampPair(obj);
+                    newlyCreated = true;
                 } else {
                     // the pool is exhausted
                     switch(_whenExhaustedAction) {
@@ -755,6 +757,9 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
             _factory.activateObject(pair.value);
             if(_testOnBorrow && !_factory.validateObject(pair.value)) {
                 _factory.destroyObject(pair.value);
+                if(newlyCreated) {
+                    throw new NoSuchElementException("Could not create a validated object");
+                } // else keep looping
             } else {
                 _numActive++;
                 return pair.value;
