@@ -1,4 +1,4 @@
-<!-- $Id: build.xml,v 1.13 2002/05/04 13:48:10 rwaldhoff Exp $ -->
+<!-- $Id: build.xml,v 1.14 2002/07/25 18:09:12 costin Exp $ -->
 <project name="commons-pool" default="test" basedir=".">
 
    <!-- patternset describing files to be copied from the doc directory -->
@@ -149,7 +149,7 @@
 
    <target name="doc-top" depends="init">
       <mkdir  dir="${dest}"/>
-      <copy todir="${dest}" file="${basedir}/LICENSE"/>
+      <copy todir="${dest}" file="${basedir}/LICENSE.txt"/>
       <copy todir="${dest}" file="${basedir}/README.txt"/>
    </target>
 
@@ -258,7 +258,7 @@
       </copy>
       
       <mkdir dir="${workdir}/META-INF"/>
-      <copy todir="${workdir}/META-INF" file="./LICENSE"/>
+      <copy todir="${workdir}/META-INF" file="./LICENSE.txt"/>
       
       <jar jarfile="${dest.jardir.jar}" manifest="${source.src}/conf/MANIFEST.MF">
          <fileset dir="${workdir}"/>
@@ -325,7 +325,7 @@
         <fileset dir="${workdir}/jakarta-commons/pool"/>
       </move>
       <delete dir="${workdir}/jakarta-commons"/> 
-      <copy file="${basedir}/LICENSE" toDir="${workdir}/${src.name}"/>
+      <copy file="${basedir}/LICENSE.txt" toDir="${workdir}/${src.name}"/>
       
       <!-- create tar.gz -->
       <tar longfile="gnu" tarfile="${dest.src.tar}">
