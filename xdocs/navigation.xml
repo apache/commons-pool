@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!DOCTYPE org.apache.commons.menus SYSTEM '../../xdocs/stylesheets/menus/org-apache-commons-menus.dtd'>
+<!DOCTYPE org.apache.commons.menus SYSTEM '../../../jakarta-commons/commons-build/menus/menus.dtd'>
 <project name="Commons Pool">
     <title>Commons Pool</title>
     <body>
