@@ -1,9 +1,9 @@
-Release Plan for Pool 2.0
+Release Plan for Pool 1.1
 --------------------------
 
 Administrivia:
 
-This document describes a plan for a 2.0 release of the
+This document describes a plan for a 1.1 release of the
 Jakarta-Commons Pool component (for the remainder
 of this document, simply "Pool").  Per the
 Jakarta/ASF guidelines
@@ -20,7 +20,7 @@ are significant for decision making purposes.
 
 Objective:
 
-The objective of the 2.0 release of Pool is to
+The objective of the 1.1 release of Pool is to
 provide a stable and robust release with the intention of 
 providing a stable foundation for the further evolution of 
 the Pool component. 
@@ -91,5 +91,5 @@ Timeline:
   but after the end of the Review Period, if appropriate.
   (When all remaining issues are resolved)
 
-* Release Pool 2.0
+* Release Pool 1.1
 
