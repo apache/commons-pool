@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/impl/TestAll.java,v 1.2 2002/03/19 17:27:54 rwaldhoff Exp $
- * $Revision: 1.2 $
- * $Date: 2002/03/19 17:27:54 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/impl/TestAll.java,v 1.3 2003/03/05 19:17:08 rwaldhoff Exp $
+ * $Revision: 1.3 $
+ * $Date: 2003/03/05 19:17:08 $
  *
  * ====================================================================
  *
@@ -61,14 +61,16 @@
 
 package org.apache.commons.pool.impl;
 
-import junit.framework.*;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 /**
  * JUnit test suite for the {@link org.apache.commons.pool.impl}
  * package.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.2 $ $Date: 2002/03/19 17:27:54 $
+ * @version $Revision: 1.3 $ $Date: 2003/03/05 19:17:08 $
  */
 public class TestAll extends TestCase {
     public TestAll(String testName) {

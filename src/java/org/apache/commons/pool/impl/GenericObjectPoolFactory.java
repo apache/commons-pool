@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericObjectPoolFactory.java,v 1.1 2001/04/14 16:41:46 rwaldhoff Exp $
- * $Revision: 1.1 $
- * $Date: 2001/04/14 16:41:46 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericObjectPoolFactory.java,v 1.2 2003/03/05 19:17:08 rwaldhoff Exp $
+ * $Revision: 1.2 $
+ * $Date: 2003/03/05 19:17:08 $
  *
  * ====================================================================
  *
@@ -61,7 +61,9 @@
 
 package org.apache.commons.pool.impl;
 
-import org.apache.commons.pool.*;
+import org.apache.commons.pool.ObjectPool;
+import org.apache.commons.pool.ObjectPoolFactory;
+import org.apache.commons.pool.PoolableObjectFactory;
 
 /**
  * A factory for creating {@link GenericObjectPool} instances.
@@ -70,7 +72,7 @@ import org.apache.commons.pool.*;
  * @see ObjectPoolFactory
  *
  * @author Rodney Waldhoff
- * @version $Id: GenericObjectPoolFactory.java,v 1.1 2001/04/14 16:41:46 rwaldhoff Exp $
+ * @version $Id: GenericObjectPoolFactory.java,v 1.2 2003/03/05 19:17:08 rwaldhoff Exp $
  */
 public class GenericObjectPoolFactory implements ObjectPoolFactory {
     public GenericObjectPoolFactory(PoolableObjectFactory factory) {

@@ -1,7 +1,7 @@
 /*
- * $Id: TestKeyedObjectPool.java,v 1.1 2002/10/31 15:04:24 rwaldhoff Exp $
- * $Revision: 1.1 $
- * $Date: 2002/10/31 15:04:24 $
+ * $Id: TestKeyedObjectPool.java,v 1.2 2003/03/05 19:17:08 rwaldhoff Exp $
+ * $Revision: 1.2 $
+ * $Date: 2003/03/05 19:17:08 $
  * ====================================================================
  *
  * The Apache Software License, Version 1.1
@@ -60,12 +60,12 @@
 
 package org.apache.commons.pool;
 
-import junit.framework.*;
+import junit.framework.TestCase;
 
 /**
  * Abstract {@link TestCase} for {@link ObjectPool} implementations.
  * @author Rodney Waldhoff
- * @version $Revision: 1.1 $ $Date: 2002/10/31 15:04:24 $
+ * @version $Revision: 1.2 $ $Date: 2003/03/05 19:17:08 $
  */
 public abstract class TestKeyedObjectPool extends TestCase {
     public TestKeyedObjectPool(String testName) {

@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackObjectPool.java,v 1.7 2002/11/30 09:14:01 rwaldhoff Exp $
- * $Revision: 1.7 $
- * $Date: 2002/11/30 09:14:01 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackObjectPool.java,v 1.8 2003/03/05 19:17:08 rwaldhoff Exp $
+ * $Revision: 1.8 $
+ * $Date: 2003/03/05 19:17:08 $
  *
  * ====================================================================
  *
@@ -61,10 +61,13 @@
 
 package org.apache.commons.pool.impl;
 
-import org.apache.commons.pool.*;
-import java.util.Stack;
-import java.util.NoSuchElementException;
 import java.util.Enumeration;
+import java.util.NoSuchElementException;
+import java.util.Stack;
+
+import org.apache.commons.pool.BaseObjectPool;
+import org.apache.commons.pool.ObjectPool;
+import org.apache.commons.pool.PoolableObjectFactory;
 
 /**
  * A simple, {@link java.util.Stack Stack}-based {@link ObjectPool} implementation.
@@ -79,7 +82,7 @@ import java.util.Enumeration;
  * artificial limits.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.7 $ $Date: 2002/11/30 09:14:01 $
+ * @version $Revision: 1.8 $ $Date: 2003/03/05 19:17:08 $
  */
 public class StackObjectPool extends BaseObjectPool implements ObjectPool {
     /**

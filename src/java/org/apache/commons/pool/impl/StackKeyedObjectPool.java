@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackKeyedObjectPool.java,v 1.7 2002/11/30 09:14:00 rwaldhoff Exp $
- * $Revision: 1.7 $
- * $Date: 2002/11/30 09:14:00 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackKeyedObjectPool.java,v 1.8 2003/03/05 19:17:08 rwaldhoff Exp $
+ * $Revision: 1.8 $
+ * $Date: 2003/03/05 19:17:08 $
  *
  * ====================================================================
  *
@@ -61,12 +61,15 @@
 
 package org.apache.commons.pool.impl;
 
-import org.apache.commons.pool.*;
-import java.util.HashMap;
-import java.util.Stack;
-import java.util.NoSuchElementException;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Stack;
+
+import org.apache.commons.pool.BaseKeyedObjectPool;
+import org.apache.commons.pool.KeyedObjectPool;
+import org.apache.commons.pool.KeyedPoolableObjectFactory;
 
 /**
  * A simple, {@link java.util.Stack Stack}-based {@link KeyedObjectPool} implementation.
@@ -81,7 +84,7 @@ import java.util.Iterator;
  * artificial limits.
  *
  * @author Rodney Waldhoff
- * @version $Id: StackKeyedObjectPool.java,v 1.7 2002/11/30 09:14:00 rwaldhoff Exp $
+ * @version $Id: StackKeyedObjectPool.java,v 1.8 2003/03/05 19:17:08 rwaldhoff Exp $
  */
 public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
     /**
