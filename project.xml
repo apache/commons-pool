@@ -124,6 +124,12 @@
       <organization></organization>
     </developer>
   </developers>
+  <contributors>
+    <contributor>
+      <name>Todd Carmichael</name>
+      <email>toddc@concur.com</email>
+    </contributor>
+  </contributors>
   
   <dependencies>
     <dependency>
