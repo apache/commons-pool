@@ -1,4 +1,4 @@
-<!-- $Id: build.xml,v 1.1 2001/04/14 16:40:37 rwaldhoff Exp $ -->
+<!-- $Id: build.xml,v 1.2 2001/04/22 17:05:07 rwaldhoff Exp $ -->
 <project name="commons-pool" default="test" basedir=".">
 
    <!-- patternset describing files to be copied from the doc directory -->
@@ -26,18 +26,23 @@
    <target name="init">
       <tstamp/>
 
+      <!-- read properties from the build.properties, if any -->
+      <property name="component-propfile" value="${basedir}/build.properties"/>
+      <property file="${component-propfile}"/>
+
+      <!-- read properties from the commons build.properties, if any -->
+      <property name="commons-propfile" value="${basedir}/../build.properties"/>
+      <property file="${commons-propfile}"/>
+
       <!-- read properties from the ${user.home}/propfile, if any -->
       <property name="user-propfile" value="${user.home}/build.properties"/>
       <property file="${user-propfile}"/>
-      <property name="user-classpath" value=""/>
-      <!-- read properties from the build.properties, if any -->
-      <property file="${basedir}/build.properties"/>
 
       <!-- command line classpath, if any -->
       <property name="cp" value=""/>
 
       <!-- now combine the classpaths -->
-      <property name="classpath" value="${cp}:${user-classpath}:${commons-collections.jar}:${junit.jar}"/>
+      <property name="classpath" value="${cp}:${commons-collections.jar}:${junit.jar}"/>
 
       <property name="name" value="commons-pool"/>
       <property name="Name" value="Commons-Pool"/>
@@ -140,7 +145,7 @@
                bottom="&lt;small&gt;Copyright &amp;copy; 2001 Apache Software Foundation. Documenation generated ${TODAY}&lt;/small&gt;."
                public="true"
                version="true"
-               author="false"
+               author="true"
                splitindex="false"
                nodeprecated="true"
                nodeprecatedlist="true"
