@@ -21,6 +21,7 @@ import java.util.NoSuchElementException;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.apache.commons.pool.BasePoolableObjectFactory;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.TestObjectPool;
@@ -28,7 +29,7 @@ import org.apache.commons.pool.TestObjectPool;
 /**
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
- * @version $Revision: 1.23 $ $Date: 2004/07/04 17:21:47 $
+ * @version $Revision: 1.24 $ $Date: 2004/08/10 19:39:13 $
  */
 public class TestGenericObjectPool extends TestObjectPool {
     public TestGenericObjectPool(String testName) {
@@ -593,6 +594,55 @@ public class TestGenericObjectPool extends TestObjectPool {
         assertTrue("Should be less than 100 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 100);
         try { Thread.sleep(600L); } catch(Exception e) { }
         assertEquals("Should be zero idle, found " + pool.getNumIdle(),0,pool.getNumIdle());
+    }
+
+    public void testEvictionSoftMinIdle() throws Exception {
+        GenericObjectPool pool = null;
+        
+        class TimeTest extends BasePoolableObjectFactory {
+            private final long createTime;
+            public TimeTest() {
+                createTime = System.currentTimeMillis();
+            }
+            public Object makeObject() throws Exception {
+                return new TimeTest();
+            }
+            public long getCreateTime() {
+                return createTime;
+            }
+        }
+        
+        pool = new GenericObjectPool(new TimeTest());
+        
+        pool.setMaxIdle(5);
+        pool.setMaxActive(5);
+        pool.setNumTestsPerEvictionRun(5);
+        pool.setMinEvictableIdleTimeMillis(3000L);
+        pool.setTimeBetweenEvictionRunsMillis(250L);
+        pool.setTestWhileIdle(true);
+        pool.setSoftMinEvictableIdleTimeMillis(1000L);
+        pool.setMinIdle(2);
+        
+        Object[] active = new Object[5];
+        Long[] creationTime = new Long[5] ;
+        for(int i=0;i<5;i++) {
+            active[i] = pool.borrowObject();
+            creationTime[i] = new Long(((TimeTest)active[i]).getCreateTime());
+        }
+        
+        for(int i=0;i<5;i++) {
+            pool.returnObject(active[i]);
+        }
+        
+        try { Thread.sleep(1500L); } catch(Exception e) { }
+        assertTrue("Should be 2 OLD idle, found " + pool.getNumIdle(),pool.getNumIdle() == 2 &&
+                ((TimeTest)pool.borrowObject()).getCreateTime() == creationTime[3].longValue() &&
+                ((TimeTest)pool.borrowObject()).getCreateTime() == creationTime[4].longValue());
+        
+        try { Thread.sleep(2000L); } catch(Exception e) { }
+        assertTrue("Should be 2 NEW idle , found " + pool.getNumIdle(),pool.getNumIdle() == 2 &&
+                ((TimeTest)pool.borrowObject()).getCreateTime() != creationTime[0].longValue() &&
+                ((TimeTest)pool.borrowObject()).getCreateTime() != creationTime[1].longValue());
     }
 
     public void testMinIdle() throws Exception {
