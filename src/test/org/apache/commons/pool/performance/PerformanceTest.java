@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/performance/PerformanceTest.java,v 1.1 2003/08/13 12:44:37 dirkv Exp $
- * $Revision: 1.1 $
- * $Date: 2003/08/13 12:44:37 $
+ * $Source: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/performance/PerformanceTest.java,v $
+ * $Revision: 1.2 $
+ * $Date: 2003/08/22 14:33:30 $
  *
  * ====================================================================
  *
@@ -23,9 +23,9 @@
  *    distribution.
  *
  * 3. The end-user documentation included with the redistribution, if
- *    any, must include the following acknowlegement:
+ *    any, must include the following acknowledgement:
  *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
+ *        Apache Software Foundation - http://www.apache.org/"
  *    Alternately, this acknowlegement may appear in the software itself,
  *    if and wherever such third-party acknowlegements normally appear.
  *
@@ -55,10 +55,10 @@
  * This software consists of voluntary contributions made by many
  * individuals on behalf of the Apache Software Foundation.  For more
  * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
+ * http://www.apache.org/
  *
  */
- 
+
 package org.apache.commons.pool.performance;
 
 import org.apache.commons.pool.impl.GenericObjectPool;
