@@ -28,7 +28,7 @@ import org.apache.commons.pool.TestObjectPool;
 /**
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
- * @version $Revision: 1.21 $ $Date: 2004/02/28 12:21:41 $
+ * @version $Revision: 1.22 $ $Date: 2004/06/29 20:04:43 $
  */
 public class TestGenericObjectPool extends TestObjectPool {
     public TestGenericObjectPool(String testName) {
@@ -251,6 +251,18 @@ public class TestGenericObjectPool extends TestObjectPool {
         pool.borrowObject();
         pool.borrowObject();
         pool.borrowObject();
+        try {
+            pool.borrowObject();
+            fail("Expected NoSuchElementException");
+        } catch(NoSuchElementException e) {
+            // expected
+        }
+    }
+
+    public void testMaxActiveZero() throws Exception {
+        pool.setMaxActive(0);
+        pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_FAIL);
+
         try {
             pool.borrowObject();
             fail("Expected NoSuchElementException");
