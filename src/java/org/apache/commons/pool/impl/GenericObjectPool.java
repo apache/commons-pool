@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericObjectPool.java,v 1.8 2002/10/30 00:55:06 rwaldhoff Exp $
- * $Revision: 1.8 $
- * $Date: 2002/10/30 00:55:06 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericObjectPool.java,v 1.9 2002/10/30 22:54:41 rwaldhoff Exp $
+ * $Revision: 1.9 $
+ * $Date: 2002/10/30 22:54:41 $
  *
  * ====================================================================
  *
@@ -159,7 +159,7 @@ import java.util.ListIterator;
  * </ul>
  * @see GenericKeyedObjectPool
  * @author Rodney Waldhoff
- * @version $Revision: 1.8 $ $Date: 2002/10/30 00:55:06 $
+ * @version $Revision: 1.9 $ $Date: 2002/10/30 22:54:41 $
  */
 public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
@@ -768,6 +768,12 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                 return pair.value;
             }
         }
+    }
+
+    public synchronized void invalidateObject(Object obj) throws Exception {
+        _numActive--;
+        _factory.destroyObject(obj);
+        notifyAll(); // _numActive has changed
     }
 
     public synchronized void clear() {

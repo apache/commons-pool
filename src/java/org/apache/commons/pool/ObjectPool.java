@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/ObjectPool.java,v 1.6 2002/05/01 06:02:34 rwaldhoff Exp $
- * $Revision: 1.6 $
- * $Date: 2002/05/01 06:02:34 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/ObjectPool.java,v 1.7 2002/10/30 22:54:41 rwaldhoff Exp $
+ * $Revision: 1.7 $
+ * $Date: 2002/10/30 22:54:41 $
  *
  * ====================================================================
  *
@@ -85,7 +85,7 @@ package org.apache.commons.pool;
  * See {@link org.apache.commons.pool.BaseObjectPool BaseObjectPool} for a simple base implementation.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.6 $ $Date: 2002/05/01 06:02:34 $ 
+ * @version $Revision: 1.7 $ $Date: 2002/10/30 22:54:41 $ 
  *
  */
 public interface ObjectPool {
@@ -111,9 +111,26 @@ public interface ObjectPool {
      * or a related method as defined in an implementation
      * or sub-interface.
      *
-     * @param obj a {@link #borrowObject() borrowed} instance to be returned.
+     * @param obj a {@link #borrowObject borrowed} instance to be returned.
      */
     void returnObject(Object obj) throws Exception;
+
+    /**
+     * Invalidates an object from the pool
+     * By contract, <i>obj</i> MUST have been obtained
+     * using {@link #borrowObject() borrowObject}
+     * or a related method as defined in an implementation
+     * or sub-interface.
+     * <p>
+     * This method should be used when an object that has been borrowed
+     * is determined (due to an exception or other problem) to be invalid.
+     * If the connection should be validated before or after borrowing,
+     * then the {@link PoolableObjectFactory#validateObject} method should be
+     * used instead.
+     *
+     * @param obj a {@link #borrowObject borrowed} instance to be returned.
+     */
+    void invalidateObject(Object obj) throws Exception;
 
     /**
      * Return the number of instances

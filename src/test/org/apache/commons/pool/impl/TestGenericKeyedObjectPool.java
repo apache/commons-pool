@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/impl/TestGenericKeyedObjectPool.java,v 1.6 2002/09/05 18:10:06 rwaldhoff Exp $
- * $Revision: 1.6 $
- * $Date: 2002/09/05 18:10:06 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/impl/TestGenericKeyedObjectPool.java,v 1.7 2002/10/30 22:54:42 rwaldhoff Exp $
+ * $Revision: 1.7 $
+ * $Date: 2002/10/30 22:54:42 $
  *
  * ====================================================================
  *
@@ -66,7 +66,7 @@ import org.apache.commons.pool.*;
 
 /**
  * @author Rodney Waldhoff
- * @version $Id: TestGenericKeyedObjectPool.java,v 1.6 2002/09/05 18:10:06 rwaldhoff Exp $
+ * @version $Id: TestGenericKeyedObjectPool.java,v 1.7 2002/10/30 22:54:42 rwaldhoff Exp $
  */
 public class TestGenericKeyedObjectPool extends TestCase {
     public TestGenericKeyedObjectPool(String testName) {
@@ -225,6 +225,21 @@ public class TestGenericKeyedObjectPool extends TestCase {
         assertEquals(0,pool.getNumIdle(""));
         Object obj2 = pool.borrowObject("");
         assertEquals("2",obj2);
+    }
+
+    public void testInvalidateObject() throws Exception {
+        assertEquals(0,pool.getNumActive(""));
+        assertEquals(0,pool.getNumIdle(""));
+        Object obj0 = pool.borrowObject("");
+        Object obj1 = pool.borrowObject("");
+        assertEquals(2,pool.getNumActive(""));
+        assertEquals(0,pool.getNumIdle(""));
+        pool.invalidateObject("",obj0);
+        assertEquals(1,pool.getNumActive(""));
+        assertEquals(0,pool.getNumIdle(""));
+        pool.invalidateObject("",obj1);
+        assertEquals(0,pool.getNumActive(""));
+        assertEquals(0,pool.getNumIdle(""));
     }
 
     public void testMaxIdle() throws Exception {

@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericKeyedObjectPool.java,v 1.7 2002/09/05 18:10:06 rwaldhoff Exp $
- * $Revision: 1.7 $
- * $Date: 2002/09/05 18:10:06 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericKeyedObjectPool.java,v 1.8 2002/10/30 22:54:41 rwaldhoff Exp $
+ * $Revision: 1.8 $
+ * $Date: 2002/10/30 22:54:41 $
  *
  * ====================================================================
  *
@@ -161,7 +161,7 @@ import java.util.Set;
  * </ul>
  * @see GenericObjectPool
  * @author Rodney Waldhoff
- * @version $Id: GenericKeyedObjectPool.java,v 1.7 2002/09/05 18:10:06 rwaldhoff Exp $
+ * @version $Id: GenericKeyedObjectPool.java,v 1.8 2002/10/30 22:54:41 rwaldhoff Exp $
  */
 public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
 
@@ -924,6 +924,20 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 // ignored?
             }
         }
+    }
+
+    public synchronized void invalidateObject(Object key, Object obj) throws Exception {
+        _totalActive--;
+        Integer active = (Integer)(_activeMap.get(key));
+        if(null == active) {
+            // do nothing, either null or zero is OK
+        } else if(active.intValue() <= 1) {
+            _activeMap.remove(key);
+        } else {
+            _activeMap.put(key, new Integer(active.intValue() - 1));
+        }
+        _factory.destroyObject(key,obj);
+        notifyAll(); // _totalActive has changed
     }
 
     synchronized public void close() throws Exception {
