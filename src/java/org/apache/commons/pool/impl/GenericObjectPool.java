@@ -1,13 +1,13 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericObjectPool.java,v 1.9 2002/10/30 22:54:41 rwaldhoff Exp $
- * $Revision: 1.9 $
- * $Date: 2002/10/30 22:54:41 $
+ * $Id: GenericObjectPool.java,v 1.10 2002/10/31 18:56:11 rwaldhoff Exp $
+ * $Revision: 1.10 $
+ * $Date: 2002/10/31 18:56:11 $
  *
  * ====================================================================
  *
  * The Apache Software License, Version 1.1
  *
- * Copyright (c) 1999-2002 The Apache Software Foundation.  All rights
+ * Copyright (c) 2001-2002 The Apache Software Foundation.  All rights
  * reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -61,14 +61,13 @@
 
 package org.apache.commons.pool.impl;
 
-import org.apache.commons.pool.*;
-import org.apache.commons.collections.CursorableLinkedList;
-import org.apache.commons.collections.CursorableLinkedList.Cursor;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Enumeration;
-import java.util.EmptyStackException;
-import java.util.ListIterator;
+
+import org.apache.commons.collections.CursorableLinkedList;
+import org.apache.commons.pool.BaseObjectPool;
+import org.apache.commons.pool.ObjectPool;
+import org.apache.commons.pool.PoolableObjectFactory;
 
 /**
  * A configurable {@link ObjectPool} implementation.
@@ -159,7 +158,7 @@ import java.util.ListIterator;
  * </ul>
  * @see GenericKeyedObjectPool
  * @author Rodney Waldhoff
- * @version $Revision: 1.9 $ $Date: 2002/10/30 22:54:41 $
+ * @version $Revision: 1.10 $ $Date: 2002/10/31 18:56:11 $
  */
 public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
@@ -835,6 +834,10 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         clear();
         _pool = null;
         _factory = null;
+        if(null != _evictionCursor) {
+            _evictionCursor.close();
+            _evictionCursor = null;
+        }
         if(null != _evictor) {
             _evictor.cancel();
             _evictor = null;
@@ -850,6 +853,66 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         }
     }
 
+    public synchronized void evict() throws Exception {
+        if(!_pool.isEmpty()) {
+            if(null == _evictionCursor) {
+                _evictionCursor = (CursorableLinkedList.Cursor)(_pool.cursor(_pool.size()));
+            } else if(!_evictionCursor.hasPrevious()) {
+                _evictionCursor.close();
+                _evictionCursor = (CursorableLinkedList.Cursor)(_pool.cursor(_pool.size()));
+            }
+            for(int i=0,m=getNumTests();i<m;i++) {
+                if(!_evictionCursor.hasPrevious()) {
+                    _evictionCursor.close();
+                    _evictionCursor = (CursorableLinkedList.Cursor)(_pool.cursor(_pool.size()));
+                } else {
+                    ObjectTimestampPair pair = (ObjectTimestampPair)(_evictionCursor.previous());
+                    if(_minEvictableIdleTimeMillis > 0 &&
+                       System.currentTimeMillis() - pair.tstamp > _minEvictableIdleTimeMillis) {
+                       try {
+                           _evictionCursor.remove();
+                           _factory.destroyObject(pair.value);
+                       } catch(Exception e) {
+                           ; // ignored
+                       }
+                    } else if(_testWhileIdle) {
+                        boolean active = false;
+                        try {
+                            _factory.activateObject(pair.value);
+                            active = true;
+                        } catch(Exception e) {
+                            _evictionCursor.remove();
+                            try {
+                                _factory.passivateObject(pair.value);
+                            } catch(Exception ex) {
+                                ; // ignored
+                            }
+                            _factory.destroyObject(pair.value);
+                        }
+                        if(active) {
+                            if(!_factory.validateObject(pair.value)) {
+                                _evictionCursor.remove();
+                                try {
+                                    _factory.passivateObject(pair.value);
+                                } catch(Exception ex) {
+                                    ; // ignored
+                                }
+                                _factory.destroyObject(pair.value);
+                            } else {
+                                try {
+                                    _factory.passivateObject(pair.value);
+                                } catch(Exception e) {
+                                    _evictionCursor.remove();
+                                    _factory.destroyObject(pair.value);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     //--- package methods --------------------------------------------
 
     synchronized String debugInfo() {
@@ -864,6 +927,14 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
             buf.append("\t").append(pair.value).append("\t").append(time - pair.tstamp).append("\n");
         }
         return buf.toString();
+    }
+
+    private int getNumTests() {
+        if(_numTestsPerEvictionRun >= 0) {
+            return _numTestsPerEvictionRun;
+        } else {
+            return(int)(Math.ceil((double)_pool.size()/Math.abs((double)_numTestsPerEvictionRun)));
+        }
     }
 
     //--- inner classes ----------------------------------------------
@@ -898,7 +969,6 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         }
 
         public void run() {
-            CursorableLinkedList.Cursor cursor = null;
             while(!_cancelled) {
                 long sleeptime = 0L;
                 synchronized(GenericObjectPool.this) {
@@ -910,81 +980,19 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                     ; // ignored
                 }
                 try {
-                    synchronized(GenericObjectPool.this) {
-                        if(!_pool.isEmpty()) {
-                            if(null == cursor) {
-                                cursor = (CursorableLinkedList.Cursor)(_pool.cursor(_pool.size()));
-                            } else if(!cursor.hasPrevious()) {
-                                cursor.close();
-                                cursor = (CursorableLinkedList.Cursor)(_pool.cursor(_pool.size()));
-                            }
-                            for(int i=0,m=getNumTests();i<m;i++) {
-                                if(!cursor.hasPrevious()) {
-                                    cursor.close();
-                                    cursor = (CursorableLinkedList.Cursor)(_pool.cursor(_pool.size()));
-                                } else {
-                                    ObjectTimestampPair pair = (ObjectTimestampPair)(cursor.previous());
-                                    if(_minEvictableIdleTimeMillis > 0 &&
-                                       System.currentTimeMillis() - pair.tstamp > _minEvictableIdleTimeMillis) {
-                                       try {
-                                           cursor.remove();
-                                           _factory.destroyObject(pair.value);
-                                       } catch(Exception e) {
-                                           ; // ignored
-                                       }
-                                    } else if(_testWhileIdle) {
-                                        boolean active = false;
-                                        try {
-                                            _factory.activateObject(pair.value);
-                                            active = true;
-                                        } catch(Exception e) {
-                                            cursor.remove();
-                                            try {
-                                                _factory.passivateObject(pair.value);
-                                            } catch(Exception ex) {
-                                                ; // ignored
-                                            }
-                                            _factory.destroyObject(pair.value);
-                                        }
-                                        if(active) {
-                                            if(!_factory.validateObject(pair.value)) {
-                                                cursor.remove();
-                                                try {
-                                                    _factory.passivateObject(pair.value);
-                                                } catch(Exception ex) {
-                                                    ; // ignored
-                                                }
-                                                _factory.destroyObject(pair.value);
-                                            } else {
-                                                try {
-                                                    _factory.passivateObject(pair.value);
-                                                } catch(Exception e) {
-                                                    cursor.remove();
-                                                    _factory.destroyObject(pair.value);
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    evict();
                 } catch(Exception e) {
                     // ignored
                 }
             }
-            if(null != cursor) {
-                cursor.close();
+            synchronized(GenericObjectPool.this) {
+                if(null != _evictionCursor) {
+                    _evictionCursor.close();
+                    _evictionCursor = null;
+                }
             }
         }
 
-        private int getNumTests() {
-            if(_numTestsPerEvictionRun >= 0) {
-                return _numTestsPerEvictionRun;
-            } else {
-                return(int)(Math.ceil((double)_pool.size()/Math.abs((double)_numTestsPerEvictionRun)));
-            }
-        }
     }
 
     /**
@@ -1006,21 +1014,21 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         public long minEvictableIdleTimeMillis = GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
     }
 
-    //--- protected attributes ---------------------------------------
+    //--- private attributes ---------------------------------------
 
     /**
      * The cap on the number of idle instances in the pool.
      * @see #setMaxIdle
      * @see #getMaxIdle
      */
-    protected int _maxIdle = DEFAULT_MAX_IDLE;
+    private int _maxIdle = DEFAULT_MAX_IDLE;
 
     /**
      * The cap on the total number of active instances from the pool.
      * @see #setMaxActive
      * @see #getMaxActive
      */
-    protected int _maxActive = DEFAULT_MAX_ACTIVE;
+    private int _maxActive = DEFAULT_MAX_ACTIVE;
 
     /**
      * The maximum amount of time (in millis) the
@@ -1038,7 +1046,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @see #setWhenExhaustedAction
      * @see #getWhenExhaustedAction
      */
-    protected long _maxWait = DEFAULT_MAX_WAIT;
+    private long _maxWait = DEFAULT_MAX_WAIT;
 
     /**
      * The action to take when the {@link #borrowObject} method
@@ -1052,7 +1060,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @see #setWhenExhaustedAction
      * @see #getWhenExhaustedAction
      */
-    protected byte _whenExhaustedAction = DEFAULT_WHEN_EXHAUSTED_ACTION;
+    private byte _whenExhaustedAction = DEFAULT_WHEN_EXHAUSTED_ACTION;
 
     /**
      * When <tt>true</tt>, objects will be
@@ -1065,7 +1073,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @see #setTestOnBorrow
      * @see #getTestOnBorrow
      */
-    protected boolean _testOnBorrow = DEFAULT_TEST_ON_BORROW;
+    private boolean _testOnBorrow = DEFAULT_TEST_ON_BORROW;
 
     /**
      * When <tt>true</tt>, objects will be
@@ -1076,7 +1084,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @see #getTestOnReturn
      * @see #setTestOnReturn
      */
-    protected boolean _testOnReturn = DEFAULT_TEST_ON_RETURN;
+    private boolean _testOnReturn = DEFAULT_TEST_ON_RETURN;
 
     /**
      * When <tt>true</tt>, objects will be
@@ -1089,7 +1097,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @see #getTimeBetweenEvictionRunsMillis
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    protected boolean _testWhileIdle = DEFAULT_TEST_WHILE_IDLE;
+    private boolean _testWhileIdle = DEFAULT_TEST_WHILE_IDLE;
 
     /**
      * The number of milliseconds to sleep between runs of the
@@ -1100,7 +1108,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @see #setTimeBetweenEvictionRunsMillis
      * @see #getTimeBetweenEvictionRunsMillis
      */
-    protected long _timeBetweenEvictionRunsMillis = DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
+    private long _timeBetweenEvictionRunsMillis = DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
 
     /**
      * The number of objects to examine during each run of the
@@ -1115,7 +1123,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @see #getTimeBetweenEvictionRunsMillis
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    protected int _numTestsPerEvictionRun =  DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
+    private int _numTestsPerEvictionRun =  DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
 
     /**
      * The minimum amount of time an object may sit idle in the pool
@@ -1129,22 +1137,24 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @see #getTimeBetweenEvictionRunsMillis
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    protected long _minEvictableIdleTimeMillis = DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+    private long _minEvictableIdleTimeMillis = DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 
     /** My pool. */
-    protected CursorableLinkedList _pool = null;
+    private CursorableLinkedList _pool = null;
 
     /** My {@link PoolableObjectFactory}. */
-    protected PoolableObjectFactory _factory = null;
+    private PoolableObjectFactory _factory = null;
 
     /**
      * The number of objects {@link #borrowObject} borrowed
      * from the pool, but not yet returned.
      */
-    protected int _numActive = 0;
+    private int _numActive = 0;
 
     /**
      * My idle object eviction thread, if any.
      */
-    protected Evictor _evictor = null;
+    private Evictor _evictor = null;
+    
+    private CursorableLinkedList.Cursor _evictionCursor = null;
 }
