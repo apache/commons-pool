@@ -1,7 +1,7 @@
 /*
- * $Id: GenericKeyedObjectPool.java,v 1.15 2003/04/18 20:58:40 rwaldhoff Exp $
- * $Revision: 1.15 $
- * $Date: 2003/04/18 20:58:40 $
+ * $Id: GenericKeyedObjectPool.java,v 1.16 2003/04/18 21:36:51 rwaldhoff Exp $
+ * $Revision: 1.16 $
+ * $Date: 2003/04/18 21:36:51 $
  *
  * ====================================================================
  *
@@ -164,7 +164,7 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  * </p>
  * @see GenericObjectPool
  * @author Rodney Waldhoff
- * @version $Revision: 1.15 $ $Date: 2003/04/18 20:58:40 $
+ * @version $Revision: 1.16 $ $Date: 2003/04/18 21:36:51 $
  */
 public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
 
@@ -871,18 +871,6 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
     public void returnObject(Object key, Object obj) throws Exception {
 
-        // grab the pool (list) of objects associated with the given key
-        CursorableLinkedList pool = null;
-        synchronized(this) {
-            pool = (CursorableLinkedList)(_poolMap.get(key));
-            // if it doesn't exist, create it
-            if(null == pool) {
-                pool = new CursorableLinkedList();
-                _poolMap.put(key, pool);
-                _poolList.add(key);
-            }
-        }
-
         // if we need to validate this object, do so
         boolean success = true; // whether or not this object passed validation
         if((_testOnReturn && !_factory.validateObject(key, obj))) {
@@ -902,6 +890,14 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
         boolean shouldDestroy = false;
         synchronized(this) {
+            // grab the pool (list) of objects associated with the given key
+            CursorableLinkedList pool = (CursorableLinkedList) (_poolMap.get(key));
+            // if it doesn't exist, create it
+            if(null == pool) {
+                pool = new CursorableLinkedList();
+                _poolMap.put(key, pool);
+                _poolList.add(key);
+            }
             // subtract one from the total and keyed active counts
             _totalActive--;
             Integer active = (Integer)(_activeMap.get(key));
