@@ -1,7 +1,7 @@
 /*
  * $Source: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/impl/TestGenericKeyedObjectPool.java,v $
- * $Revision: 1.15 $
- * $Date: 2003/08/22 14:33:30 $
+ * $Revision: 1.16 $
+ * $Date: 2003/08/26 14:15:02 $
  *
  * ====================================================================
  *
@@ -73,7 +73,7 @@ import org.apache.commons.pool.TestKeyedObjectPool;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision: 1.15 $ $Date: 2003/08/22 14:33:30 $
+ * @version $Revision: 1.16 $ $Date: 2003/08/26 14:15:02 $
  */
 public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     public TestGenericKeyedObjectPool(String testName) {
@@ -235,6 +235,37 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             // expected
         }
     }
+
+    public void testMaxTotal() throws Exception {
+        pool.setMaxActive(2);
+        pool.setMaxTotal(3);
+        pool.setWhenExhaustedAction(GenericKeyedObjectPool.WHEN_EXHAUSTED_FAIL);
+
+        Object o1 = pool.borrowObject("a");
+        assertNotNull(o1);
+        Object o2 = pool.borrowObject("a");
+        assertNotNull(o2);
+        Object o3 = pool.borrowObject("b");
+        assertNotNull(o3);
+        try {
+            pool.borrowObject("c");
+            fail("Expected NoSuchElementException");
+        } catch(NoSuchElementException e) {
+            // expected
+        }
+        
+        assertEquals(0, pool.getNumIdle());
+
+        pool.returnObject("b", o3);
+        assertEquals(1, pool.getNumIdle());
+        assertEquals(1, pool.getNumIdle("b"));
+
+        Object o4 = pool.borrowObject("b");
+        assertNotNull(o4);
+        assertEquals(0, pool.getNumIdle());
+        assertEquals(0, pool.getNumIdle("b"));
+    }
+
 
     public void testSettersAndGetters() throws Exception {
         GenericKeyedObjectPool pool = new GenericKeyedObjectPool();
