@@ -1,13 +1,13 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/KeyedObjectPool.java,v 1.1 2001/04/14 16:40:43 rwaldhoff Exp $
- * $Revision: 1.1 $
- * $Date: 2001/04/14 16:40:43 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/KeyedObjectPool.java,v 1.2 2002/01/15 00:07:03 rwaldhoff Exp $
+ * $Revision: 1.2 $
+ * $Date: 2002/01/15 00:07:03 $
  *
  * ====================================================================
  *
  * The Apache Software License, Version 1.1
  *
- * Copyright (c) 1999-2001 The Apache Software Foundation.  All rights
+ * Copyright (c) 2001-2002 The Apache Software Foundation.  All rights
  * reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -62,34 +62,37 @@
 package org.apache.commons.pool;
 
 /**
- * A simple "keyed" {@link Object} pooling interface.
+ * A  "keyed" pooling interface.
  * <p>
- * A keyed pool caches mutiple named instances of {@link Object}s.
+ * A keyed pool pools instances of multiple types. Each 
+ * type may be accessed using an arbitrary key.
  * <p>
  * Example of use:
  * <table border="1" cellspacing="0" cellpadding="3" align="center" bgcolor="#FFFFFF"><tr><td><pre>
  * Object obj = <font color="#0000CC">null</font>;
  * Object key = <font color="#CC0000">"Key"</font>;
+ * 
  * <font color="#0000CC">try</font> {
- *    obj = keyedPool.borrowObject(key);
+ *    obj = pool.borrowObject(key);
  *    <font color="#00CC00">//...use the object...</font>
  * } <font color="#0000CC">catch</font>(Exception e) {
  *    <font color="#00CC00">//...handle any exceptions...</font>
  * } <font color="#0000CC">finally</font> {
  *    <font color="#00CC00">// make sure the object is returned to the pool</font>
  *    <font color="#0000CC">if</font>(<font color="#0000CC">null</font> != obj) {
- *       keyedPool.returnObject(key,obj);
+ *       pool.returnObject(key,obj);
  *    }
  * }</pre></td></tr></table>
  *
  * <p>
  * {@link KeyedObjectPool} implementations <i>may</i> choose to store at most
  * one instance per key value, or may choose to maintain a pool of instances
- * for each key (essentially creating a Map of Pools).
+ * for each key (essentially creating a {@link java.util.Map Map} of 
+ * {@link ObjectPool pools}).
  * </p>
  *
  * @author Rodney Waldhoff
- * @version $Id: KeyedObjectPool.java,v 1.1 2001/04/14 16:40:43 rwaldhoff Exp $
+ * @version $Revision: 1.2 $ $Date: 2002/01/15 00:07:03 $ 
  *
  * @see KeyedPoolableObjectFactory
  * @see KeyedObjectPoolFactory
@@ -97,23 +100,23 @@ package org.apache.commons.pool;
  */
 public interface KeyedObjectPool {
     /**
-     * Obtain an <tt>Object</tt> from my pool
-     * using the specified <i>key</i>.
+     * Obtain an instance from my pool
+     * for the specified <i>key</i>.
      * By contract, clients MUST return
      * the borrowed object using
      * {@link #returnObject(java.lang.Object,java.lang.Object) <tt>returnObject</tt>},
      * or a related method as defined in an implementation
      * or sub-interface,
      * using a <i>key</i> that is equivalent to the one used to
-     * borrow the <tt>Object</tt> in the first place.
+     * borrow the instance in the first place.
      *
      * @param key the key used to obtain the object
-     * @return an <tt>Object</tt> from my pool.
+     * @return an instance from my pool.
      */
     public abstract Object borrowObject(Object key);
 
     /**
-     * Return an <tt>Object</tt> to my pool.
+     * Return an instance to my pool.
      * By contract, <i>obj</i> MUST have been obtained
      * using {@link #borrowObject(java.lang.Object) <tt>borrowObject</tt>}
      * or a related method as defined in an implementation
@@ -122,68 +125,75 @@ public interface KeyedObjectPool {
      * borrow the <tt>Object</tt> in the first place.
      *
      * @param key the key used to obtain the object
-     * @param obj a {@link #borrowObject(java.lang.Object) borrowed} <tt>Object</tt> to be returned.
+     * @param obj a {@link #borrowObject(java.lang.Object) borrowed} instance to be returned.
      */
     public abstract void returnObject(Object key, Object obj);
 
     /**
-     * Return the number of <tt>Object</tt>s
+     * Returns the number of instances
      * corresponding to the given <i>key</i>
-     * currently idle in my pool, or
-     * throws {@link UnsupportedOperationException}
+     * currently idle in my pool.
+     * Throws {@link UnsupportedOperationException}
      * if this information is not available.
      *
      * @param key the key
-     * @return the number of <tt>Object</tt>s corresponding to the given <i>key</i> currently idle in my pool
-     * @throws UnsupportedOperationException
+     * @return the number of instances corresponding to the given <i>key</i> currently idle in my pool
+     * @throws UnsupportedOperationException when this implementation doesn't support the operation
      */
     public abstract int numIdle(Object key) throws UnsupportedOperationException;
 
     /**
-     * Return the number of <tt>Object</tt>s
-     * currently borrowed from my pool corresponding to the
-     * given <i>key</i>, or
-     * throws {@link UnsupportedOperationException}
+     * Returns the number of instances
+     * currently borrowed from but not yet returned 
+     * to my pool corresponding to the
+     * given <i>key</i>.
+     * Throws {@link UnsupportedOperationException}
      * if this information is not available.
      *
      * @param key the key
-     * @return the number of <tt>Object</tt>s corresponding to the given <i>key</i> currently borrowed in my pool
-     * @throws UnsupportedOperationException
+     * @return the number of instances corresponding to the given <i>key</i> currently borrowed in my pool
+     * @throws UnsupportedOperationException when this implementation doesn't support the operation
      */
     public abstract int numActive(Object key) throws UnsupportedOperationException;
 
     /**
-     * Return the total number of <tt>Object</tt>s
-     * currently idle in my pool, or
-     * throws {@link UnsupportedOperationException}
+     * Returns the total number of instances
+     * currently idle in my pool.
+     * Throws {@link UnsupportedOperationException}
      * if this information is not available.
      *
-     * @return the total number of <tt>Object</tt>s currently idle in my pool
-     * @throws UnsupportedOperationException
+     * @return the total number of instances currently idle in my pool
+     * @throws UnsupportedOperationException when this implementation doesn't support the operation
      */
     public abstract int numIdle() throws UnsupportedOperationException;
 
     /**
-     * Return the total number of <tt>Object</tt>s
-     * current borrowed from my pool, or
-     * throws {@link UnsupportedOperationException}
+     * Returns the total number of instances
+     * current borrowed from my pool but not
+     * yet returned.
+     * Throws {@link UnsupportedOperationException}
      * if this information is not available.
      *
-     * @return the total number of <tt>Object</tt>s currently borrowed in my pool
-     * @throws UnsupportedOperationException
+     * @return the total number of instances currently borrowed from my pool
+     * @throws UnsupportedOperationException when this implementation doesn't support the operation
      */
     public abstract int numActive() throws UnsupportedOperationException;
 
     /**
-     * Clears my pool, or throws {@link UnsupportedOperationException}
+     * Clears my pool, removing all pooled instances.
+     * Throws {@link UnsupportedOperationException}
      * if the pool cannot be cleared.
+     * @throws UnsupportedOperationException when this implementation doesn't support the operation
      */
     public abstract void clear() throws UnsupportedOperationException;
 
     /**
-     * Clears the specified pool, or throws {@link UnsupportedOperationException}
+     * Clears the specified pool, removing all pooled instances
+     * corresponding to the given <i>key</i>.
+     * Throws {@link UnsupportedOperationException}
      * if the pool cannot be cleared.
      * @param key the key to clear
+     * @throws UnsupportedOperationException when this implementation doesn't support the operation
      */
     public abstract void clear(Object key) throws UnsupportedOperationException;
 
@@ -196,6 +206,8 @@ public interface KeyedObjectPool {
      * Sets the {@link KeyedPoolableObjectFactory factory} I use
      * to create new instances.
      * @param factory the {@link KeyedPoolableObjectFactory} I use to create new instances.
+     * @throws IllegalStateException when the factory cannot be set at this time
+     * @throws UnsupportedOperationException when this implementation doesn't support the operation
      */
     public abstract void setFactory(KeyedPoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException;
 }

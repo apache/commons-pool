@@ -1,13 +1,13 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/PoolableObjectFactory.java,v 1.1 2001/04/14 16:40:53 rwaldhoff Exp $
- * $Revision: 1.1 $
- * $Date: 2001/04/14 16:40:53 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/PoolableObjectFactory.java,v 1.2 2002/01/15 00:07:03 rwaldhoff Exp $
+ * $Revision: 1.2 $
+ * $Date: 2002/01/15 00:07:03 $
  *
  * ====================================================================
  *
  * The Apache Software License, Version 1.1
  *
- * Copyright (c) 1999-2001 The Apache Software Foundation.  All rights
+ * Copyright (c) 2001-2002 The Apache Software Foundation.  All rights
  * reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -62,80 +62,79 @@
 package org.apache.commons.pool;
 
 /**
- * A simple interface defining life-cycle methods for
- * <tt>Object</tt>s to be used in an
- * {@link ObjectPool <tt>ObjectPool</tt>}.
+ * An interface defining life-cycle methods for
+ * instances to be used in an
+ * {@link ObjectPool ObjectPool}.
  * <p>
- * By contract, when an {@link ObjectPool <tt>ObjectPool</tt>}
+ * By contract, when an {@link ObjectPool ObjectPool}
  * delegates to a <tt>PoolableObjectFactory</tt>,
  * <ol>
  *  <li>
- *   {@link #makeObject <tt>makeObject</tt>} is called whenever a new <tt>Object</tt>
- *   is needed.
+ *   {@link #makeObject makeObject} 
+ *   is called  whenever a new instance is needed.
  *  </li>
  *  <li>
- *   {@link #activateObject(java.lang.Object) <tt>activateObject</tt>} is invoked
- *   on every <tt>Object</tt> before it is returned from the
- *   {@link ObjectPool}, and before it is {@link #validateObject validated}.
+ *   {@link #activateObject activateObject} 
+ *   is invoked on every instance before it is returned from the
+ *   pool.
  *  </li>
  *  <li>
- *   {@link #passivateObject(java.lang.Object) <tt>passivateObject</tt>} is invoked
- *   on every <tt>Object</tt> when it is returned to the
- *   {@link ObjectPool <tt>ObjectPool</tt>}.
+ *   {@link #passivateObject passivateObject} 
+ *   is invoked on every instance when it is returned to the
+ *   pool.
  *  </li>
  *  <li>
- *   {@link #destroyObject(java.lang.Object) <tt>destroyObject</tt>} is invoked
- *   on every <tt>Object</tt> when it is being "dropped" from the
- *   {@link ObjectPool <tt>ObjectPool</tt>} (whether due to the response from
- *   {@link #validateObject(java.lang.Object) <tt>validateObject</tt>}, or
- *   for reasons specific to the {@link ObjectPool <tt>ObjectPool</tt>} implementation.)
+ *   {@link #destroyObject destroyObject} 
+ *   is invoked on every instance when it is being "dropped" from the
+ *   pool (whether due to the response from
+ *   {@link #validateObject validateObject}, or
+ *   for reasons specific to the pool implementation.)
  *  </li>
  *  <li>
- *   {@link #validateObject(java.lang.Object) <tt>validateObject</tt>} is invoked
- *   in an implementation-specific fashion to determine if an <tt>Object</tt>
- *   is still valid to be returned by the {@link ObjectPool <tt>ObjectPool</tt>}.
- *   It will only be invoked on an {@link #activateObject(java.lang.Object) "activated"}
- *   <tt>Object</tt>.
+ *   {@link #validateObject validateObject} 
+ *   is invoked in an implementation-specific fashion to determine if an instance
+ *   is still valid to be returned by the pool.
+ *   It will only be invoked on an {@link #activateObject "activated"}
+ *   instance.
  *  </li>
  * </ol>
  *
- *
  * @author Rodney Waldhoff
- * @version $Id: PoolableObjectFactory.java,v 1.1 2001/04/14 16:40:53 rwaldhoff Exp $
+ * @version $Revision: 1.2 $ $Date: 2002/01/15 00:07:03 $ 
  *
  * @see ObjectPool
  */
 public interface PoolableObjectFactory {
   /**
-   * Creates an Object that can be returned by the pool.
-   * @return an Object that can be returned by the pool.
+   * Creates an instance that can be returned by the pool.
+   * @return an instance that can be returned by the pool.
    */
   public abstract Object makeObject();
 
   /**
-   * Destroys an Object no longer needed by the pool.
-   * @param obj the <tt>Object</tt> to be destroyed
+   * Destroys an instance no longer needed by the pool.
+   * @param obj the instance to be destroyed
    */
   public abstract void destroyObject(Object obj);
 
   /**
-   * Ensures that the Object is safe to be returned by the pool.
+   * Ensures that the instance is safe to be returned by the pool.
    * Returns <tt>false</tt> if this object should be destroyed.
-   * @param obj the <tt>Object</tt> to be validated
+   * @param obj the instance to be validated
    * @return <tt>false</tt> if this <i>obj</i> is not valid and should
    *         be dropped from the pool, <tt>true</tt> otherwise.
    */
   public abstract boolean validateObject(Object obj);
 
   /**
-   * Reinitialize an Object to be returned by the pool.
-   * @param obj the <tt>Object</tt> to be activated
+   * Reinitialize an instance to be returned by the pool.
+   * @param obj the instance to be activated
    */
   public abstract void activateObject(Object obj);
 
   /**
-   * Uninitialize an Object to be returned to the pool.
-   * @param obj the <tt>Object</tt> to be passivated
+   * Uninitialize an instance to be returned to the pool.
+   * @param obj the instance to be passivated
    */
   public abstract void passivateObject(Object obj);
 }

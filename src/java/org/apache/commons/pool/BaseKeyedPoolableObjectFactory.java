@@ -1,7 +1,7 @@
 /*
  * The Apache Software License, Version 1.1
  *
- * Copyright (c) 2001 The Apache Software Foundation.  All rights
+ * Copyright (c) 2001-2002 The Apache Software Foundation.  All rights
  * reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -56,22 +56,19 @@
 package org.apache.commons.pool;
 
 /**
- * A base implemenation of {@link KeyedPoolableObjectFactory <tt>KeyedPoolableObjectFactory</tt>}.
+ * A base implemenation of {@link KeyedPoolableObjectFactory KeyedPoolableObjectFactory}.
  * <p>
  * All operations defined here are essentially no-op's.
  *
  * @author Rodney Waldhoff
- * @version $Id: BaseKeyedPoolableObjectFactory.java,v 1.1 2001/04/14 16:40:38 rwaldhoff Exp $
+ * @version $Revision: 1.2 $ $Date: 2002/01/15 00:07:03 $ 
  *
  * @see KeyedPoolableObjectFactory
- * @see BasePoolableObjectFactory
  */
 public abstract class BaseKeyedPoolableObjectFactory implements KeyedPoolableObjectFactory {
     public abstract Object makeObject(Object key);
 
-    /**
-     * No-op.
-     */
+    /** No-op. */
     public void destroyObject(Object key, Object obj) {
     }
 
@@ -83,15 +80,11 @@ public abstract class BaseKeyedPoolableObjectFactory implements KeyedPoolableObj
         return true;
     }
 
-    /**
-     * No-op.
-     */
+    /** No-op. */
     public void activateObject(Object key, Object obj) {
     }
 
-    /**
-     * No-op.
-     */
+    /** No-op. */
     public void passivateObject(Object key, Object obj) {
     }
 }

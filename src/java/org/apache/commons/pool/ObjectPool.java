@@ -1,13 +1,13 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/ObjectPool.java,v 1.1 2001/04/14 16:40:49 rwaldhoff Exp $
- * $Revision: 1.1 $
- * $Date: 2001/04/14 16:40:49 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/ObjectPool.java,v 1.2 2002/01/15 00:07:03 rwaldhoff Exp $
+ * $Revision: 1.2 $
+ * $Date: 2002/01/15 00:07:03 $
  *
  * ====================================================================
  *
  * The Apache Software License, Version 1.1
  *
- * Copyright (c) 1999-2001 The Apache Software Foundation.  All rights
+ * Copyright (c) 2001-2002 The Apache Software Foundation.  All rights
  * reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -62,11 +62,12 @@
 package org.apache.commons.pool;
 
 /**
- * A simple {@link Object} pooling interface.
+ * A pooling interface.
  * <p>
  * Example of use:
  * <table border="1" cellspacing="0" cellpadding="3" align="center" bgcolor="#FFFFFF"><tr><td><pre>
  * Object obj = <font color="#0000CC">null</font>;
+ * 
  * <font color="#0000CC">try</font> {
  *    obj = pool.borrowObject();
  *    <font color="#00CC00">//...use the object...</font>
@@ -80,7 +81,7 @@ package org.apache.commons.pool;
  * }</pre></td></tr></table>
  *
  * @author Rodney Waldhoff
- * @version $Id: ObjectPool.java,v 1.1 2001/04/14 16:40:49 rwaldhoff Exp $
+ * @version $Revision: 1.2 $ $Date: 2002/01/15 00:07:03 $ 
  *
  * @see KeyedObjectPool
  * @see ObjectPoolFactory
@@ -88,50 +89,50 @@ package org.apache.commons.pool;
  */
 public interface ObjectPool {
     /**
-     * Obtain an <tt>Object</tt> from my pool.
+     * Obtain an instance from my pool.
      * By contract, clients MUST return
-     * the borrowed object using
-     * {@link #returnObject(java.lang.Object) <tt>returnObject</tt>}
+     * the borrowed instance using
+     * {@link #returnObject(java.lang.Object) returnObject}
      * or a related method as defined in an implementation
      * or sub-interface.
      * <p>
      * The behaviour of this method when the pool has been exhausted
      * is not specified (although it may be specified by implementations).
      *
-     * @return an <tt>Object</tt> from my pool.
+     * @return an instance from my pool.
      */
     public abstract Object borrowObject();
 
     /**
-     * Return an <tt>Object</tt> to my pool.
+     * Return an instance to my pool.
      * By contract, <i>obj</i> MUST have been obtained
-     * using {@link #borrowObject() <tt>borrowObject</tt>}
+     * using {@link #borrowObject() borrowObject}
      * or a related method as defined in an implementation
      * or sub-interface.
      *
-     * @param obj a {@link #borrowObject() borrowed} <tt>Object</tt> to be returned.
+     * @param obj a {@link #borrowObject() borrowed} instance to be returned.
      */
     public abstract void returnObject(Object obj);
 
     /**
-     * Return the number of <tt>Object</tt>s
-     * currently idle in my pool, or
-     * throws {@link UnsupportedOperationException}
+     * Return the number of instances
+     * currently idle in my pool.
+     * Throws {@link UnsupportedOperationException}
      * if this information is not available.
      *
-     * @return the number of <tt>Object</tt>s currently idle in my pool
-     * @throws UnsupportedOperationException
+     * @return the number of instances currently idle in my pool
+     * @throws UnsupportedOperationException if this implementation does not support the operation
      */
     public abstract int numIdle() throws UnsupportedOperationException;
 
     /**
-     * Return the number of <tt>Object</tt>s
+     * Return the number of instances
      * currently borrowed from my pool, or
      * throws {@link UnsupportedOperationException}
      * if this information is not available.
      *
-     * @return the number of <tt>Object</tt>s currently borrowed in my pool
-     * @throws UnsupportedOperationException
+     * @return the number of instances currently borrowed in my pool
+     * @throws UnsupportedOperationException if this implementation does not support the operation
      */
     public abstract int numActive() throws UnsupportedOperationException;
 
@@ -140,7 +141,7 @@ public interface ObjectPool {
      * associated resources, or throws {@link UnsupportedOperationException}
      * if the pool cannot be cleared.
      *
-     * @throws UnsupportedOperationException
+     * @throws UnsupportedOperationException if this implementation does not support the operation
      */
     public abstract void clear() throws UnsupportedOperationException;
 
@@ -153,6 +154,8 @@ public interface ObjectPool {
      * Sets the {@link PoolableObjectFactory factory} I use
      * to create new instances.
      * @param factory the {@link PoolableObjectFactory} I use to create new instances.
+     * @throws IllegalStateException when the factory cannot be set at this time
+     * @throws UnsupportedOperationException if this implementation does not support the operation
      */
     public abstract void setFactory(PoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException;
 }

@@ -1,13 +1,13 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/KeyedPoolableObjectFactory.java,v 1.1 2001/04/14 16:40:47 rwaldhoff Exp $
- * $Revision: 1.1 $
- * $Date: 2001/04/14 16:40:47 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/KeyedPoolableObjectFactory.java,v 1.2 2002/01/15 00:07:03 rwaldhoff Exp $
+ * $Revision: 1.2 $
+ * $Date: 2002/01/15 00:07:03 $
  *
  * ====================================================================
  *
  * The Apache Software License, Version 1.1
  *
- * Copyright (c) 1999-2001 The Apache Software Foundation.  All rights
+ * Copyright (c) 2001-2002 The Apache Software Foundation.  All rights
  * reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -62,84 +62,84 @@
 package org.apache.commons.pool;
 
 /**
- * A simple interface defining life-cycle methods for
- * <tt>Object</tt>s to be used in a
- * {@link KeyedObjectPool <tt>KeyedObjectPool</tt>}.
+ * An interface defining life-cycle methods for
+ * instances to be served by a
+ * {@link KeyedObjectPool KeyedObjectPool}.
  * <p>
- * By contract, when an {@link KeyedObjectPool <tt>KeyedObjectPool</tt>}
+ * By contract, when an {@link KeyedObjectPool KeyedObjectPool}
  * delegates to a <tt>KeyedPoolableObjectFactory</tt>,
  * <ol>
  *  <li>
- *   {@link #makeObject(java.lang.Object) <tt>makeObject</tt>} is called whenever a new <tt>Object</tt>
- *   is needed.
+ *   {@link #makeObject makeObject} 
+ *   is called  whenever a new instance is needed.
  *  </li>
  *  <li>
- *   {@link #activateObject(java.lang.Object,java.lang.Object) <tt>activateObject</tt>} is invoked
- *   on every <tt>Object</tt> before it is returned from the
- *   {@link KeyedObjectPool <tt>KeyedObjectPool</tt>}.
+ *   {@link #activateObject activateObject} 
+ *   is invoked on every instance before it is returned from the
+ *   pool.
  *  </li>
  *  <li>
- *   {@link #passivateObject(java.lang.Object,java.lang.Object) <tt>passivateObject</tt>} is invoked
- *   on every <tt>Object</tt> when it is returned to the
- *   {@link KeyedObjectPool <tt>KeyedObjectPool</tt>}.
+ *   {@link #passivateObject passivateObject} 
+ *   is invoked on every instance when it is returned to the
+ *   pool.
  *  </li>
  *  <li>
- *   {@link #destroyObject(java.lang.Object,java.lang.Object) <tt>destroyObject</tt>} is invoked
- *   on every <tt>Object</tt> when it is being "dropped" from the
- *   {@link KeyedObjectPool <tt>KeyedObjectPool</tt>} (whether due to the response from
- *   {@link #validateObject(java.lang.Object,java.lang.Object) <tt>validateObject</tt>}, or
- *   for reasons specific to the {@link KeyedObjectPool <tt>KeyedObjectPool</tt>} implementation.)
+ *   {@link #destroyObject destroyObject} 
+ *   is invoked on every instance when it is being "dropped" from the
+ *   pool (whether due to the response from
+ *   {@link #validateObject validateObject}, or
+ *   for reasons specific to the pool implementation.)
  *  </li>
  *  <li>
- *   {@link #validateObject(java.lang.Object,java.lang.Object) <tt>validateObject</tt>} is invoked
- *   in an implementation-specific fashion to determine if an <tt>Object</tt>
- *   is still valid to be returned by the{@link KeyedObjectPool <tt>KeyedObjectPool</tt>}.
- *   It will only be invoked on an {@link #activateObject(java.lang.Object,java.lang.Object) "activated"}
- *   <tt>Object</tt>.
+ *   {@link #validateObject validateObject} 
+ *   is invoked in an implementation-specific fashion to determine if an instance
+ *   is still valid to be returned by the pool.
+ *   It will only be invoked on an {@link #activateObject "activated"}
+ *   instance.
  *  </li>
  * </ol>
  *
  * @author Rodney Waldhoff
- * @version $Id: KeyedPoolableObjectFactory.java,v 1.1 2001/04/14 16:40:47 rwaldhoff Exp $
+ * @version $Revision: 1.2 $ $Date: 2002/01/15 00:07:03 $ 
  *
  * @see KeyedObjectPool
  */
 public interface KeyedPoolableObjectFactory {
     /**
-     * Create an Object that can be returned by the pool.
+     * Create an instance that can be served by the pool.
      * @param key the key used when constructing the object
-     * @return an Object that can be returned by the pool.
+     * @return an instance that can be served by the pool.
      */
     public abstract Object makeObject(Object key);
 
     /**
-     * Destroy an Object no longer needed by the pool.
-     * @param key the key used when selecting the object
-     * @param obj the Object to be destroyed
+     * Destroy an instance no longer needed by the pool.
+     * @param key the key used when selecting the instance
+     * @param obj the instance to be destroyed
      */
     public abstract void destroyObject(Object key, Object obj);
 
     /**
-     * Ensures that the Object is safe to be returned by the pool.
-     * Returns <tt>false</tt> if this object should be destroyed.
+     * Ensures that the instance is safe to be returned by the pool.
+     * Returns <tt>false</tt> if this instance should be destroyed.
      * @param key the key used when selecting the object
-     * @param obj the <tt>Object</tt> to be validated
+     * @param obj the instance to be validated
      * @return <tt>false</tt> if this <i>obj</i> is not valid and should
      *         be dropped from the pool, <tt>true</tt> otherwise.
      */
     public abstract boolean validateObject(Object key, Object obj);
 
     /**
-     * Reinitialize an Object to be returned by the pool.
+     * Reinitialize an instance to be returned by the pool.
      * @param key the key used when selecting the object
-     * @param obj the <tt>Object</tt> to be activated
+     * @param obj the instance to be activated
      */
     public abstract void activateObject(Object key, Object obj);
 
     /**
-     * Uninitialize an Object to be returned to the pool.
+     * Uninitialize an instance to be returned to the pool.
      * @param key the key used when selecting the object
-     * @param obj the <tt>Object</tt> to be passivated
+     * @param obj the instance to be passivated
      */
     public abstract void passivateObject(Object key, Object obj);
 }
