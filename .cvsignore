@@ -4,6 +4,7 @@ target
 eclipse_classes
 .classpath
 .project
+.checkstyle
 maven.log
 velocity.log
 eclipse
