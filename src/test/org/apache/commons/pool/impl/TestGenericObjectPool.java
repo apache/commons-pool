@@ -1,7 +1,7 @@
 /*
- * $Id: TestGenericObjectPool.java,v 1.10 2003/03/07 20:28:36 rwaldhoff Exp $
- * $Revision: 1.10 $
- * $Date: 2003/03/07 20:28:36 $
+ * $Id: TestGenericObjectPool.java,v 1.11 2003/03/14 00:56:58 rwaldhoff Exp $
+ * $Revision: 1.11 $
+ * $Date: 2003/03/14 00:56:58 $
  *
  * ====================================================================
  *
@@ -72,7 +72,7 @@ import org.apache.commons.pool.TestObjectPool;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision: 1.10 $ $Date: 2003/03/07 20:28:36 $
+ * @version $Revision: 1.11 $ $Date: 2003/03/14 00:56:58 $
  */
 public class TestGenericObjectPool extends TestObjectPool {
     public TestGenericObjectPool(String testName) {
@@ -371,6 +371,18 @@ public class TestGenericObjectPool extends TestObjectPool {
             }
             _complete = true;
         }
+    }
+    
+    public void testAddObject() throws Exception {
+    	pool.addObject();
+		assertEquals("should be one idle", 1, pool.getNumIdle());
+		assertEquals("should be zero active", 0, pool.getNumActive());
+		Object obj = pool.borrowObject();
+		assertEquals("should be zero idle", 0, pool.getNumIdle());
+		assertEquals("should be one active", 1, pool.getNumActive());
+		pool.returnObject(obj);
+		assertEquals("should be one idle", 1, pool.getNumIdle());
+		assertEquals("should be zero active", 0, pool.getNumActive());
     }
     
     private GenericObjectPool pool = null;
