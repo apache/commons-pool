@@ -1,7 +1,7 @@
 /*
- * $Id: GenericObjectPool.java,v 1.16 2003/03/13 18:52:44 rwaldhoff Exp $
- * $Revision: 1.16 $
- * $Date: 2003/03/13 18:52:44 $
+ * $Id: GenericObjectPool.java,v 1.17 2003/03/14 00:56:57 rwaldhoff Exp $
+ * $Revision: 1.17 $
+ * $Date: 2003/03/14 00:56:57 $
  *
  * ====================================================================
  *
@@ -163,7 +163,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  *
  * @see GenericKeyedObjectPool
  * @author Rodney Waldhoff
- * @version $Revision: 1.16 $ $Date: 2003/03/13 18:52:44 $
+ * @version $Revision: 1.17 $ $Date: 2003/03/14 00:56:57 $
  */
 public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
@@ -901,6 +901,16 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         }
     }
 
+    /**
+     * Create an object, and place it into the pool.
+     * addObject() is useful for "pre-loading" a pool with idle objects.
+     */
+    public synchronized void addObject() throws Exception {
+        Object obj = _factory.makeObject();
+        _numActive++;   // A little slimy - must do this because returnObject decrements it.
+        this.returnObject(obj);
+    }
+    
     //--- non-public methods ----------------------------------------
 
     /**
