@@ -1,7 +1,7 @@
 /*
- * $Id: GenericKeyedObjectPool.java,v 1.12 2003/03/05 19:22:52 rwaldhoff Exp $
- * $Revision: 1.12 $
- * $Date: 2003/03/05 19:22:52 $
+ * $Id: GenericKeyedObjectPool.java,v 1.13 2003/03/13 18:47:53 rwaldhoff Exp $
+ * $Revision: 1.13 $
+ * $Date: 2003/03/13 18:47:53 $
  *
  * ====================================================================
  *
@@ -121,7 +121,7 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  *    When {@link #setTestOnBorrow <i>testOnBorrow</i>} is set, the pool will
  *    attempt to validate each object before it is returned from the
  *    {@link #borrowObject} method. (Using the provided factory's
- *    {@link PoolableObjectFactory#validateObject} method.)  Objects that fail
+ *    {@link org.apache.commons.pool.PoolableObjectFactory#validateObject} method.)  Objects that fail
  *    to validate will be dropped from the pool, and a different object will
  *    be borrowed.
  *  </li>
@@ -129,7 +129,7 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  *    When {@link #setTestOnReturn <i>testOnReturn</i>} is set, the pool will
  *    attempt to validate each object before it is returned to the pool in the
  *    {@link #returnObject} method. (Using the provided factory's
- *    {@link PoolableObjectFactory#validateObject}
+ *    {@link org.apache.commons.pool.PoolableObjectFactory#validateObject}
  *    method.)  Objects that fail to validate will be dropped from the pool.
  *  </li>
  * </ul>
@@ -153,18 +153,18 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  *  <li>
  *   {@link #setTestWhileIdle <i>testWhileIdle</i>} indicates whether or not idle
  *   objects should be validated using the factory's
- *   {@link PoolableObjectFactory#validateObject} method.  Objects
+ *   {@link org.apache.commons.pool.PoolableObjectFactory#validateObject} method.  Objects
  *   that fail to validate will be dropped from the pool.
  *  </li>
  * </ul>
  * <p>
- * GenericKeyedObjectPool is not usable without a {@link KeyedPoolableObjectFactory}.  A 
+ * GenericKeyedObjectPool is not usable without a {@link KeyedPoolableObjectFactory}.  A
  * non-<code>null</code> factory must be provided either as a constructor argument
  * or via a call to {@link #setFactory} before the pool is used.
  * </p>
  * @see GenericObjectPool
  * @author Rodney Waldhoff
- * @version $Revision: 1.12 $ $Date: 2003/03/05 19:22:52 $
+ * @version $Revision: 1.13 $ $Date: 2003/03/13 18:47:53 $
  */
 public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
 
@@ -544,7 +544,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
     /**
      * When <tt>true</tt>, objects will be
-     * {@link PoolableObjectFactory#validateObject validated}
+     * {@link org.apache.commons.pool.PoolableObjectFactory#validateObject validated}
      * before being returned by the {@link #borrowObject}
      * method.  If the object fails to validate,
      * it will be dropped from the pool, and we will attempt
@@ -558,7 +558,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
     /**
      * When <tt>true</tt>, objects will be
-     * {@link PoolableObjectFactory#validateObject validated}
+     * {@link org.apache.commons.pool.PoolableObjectFactory#validateObject validated}
      * before being returned by the {@link #borrowObject}
      * method.  If the object fails to validate,
      * it will be dropped from the pool, and we will attempt
@@ -572,7 +572,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
     /**
      * When <tt>true</tt>, objects will be
-     * {@link PoolableObjectFactory#validateObject validated}
+     * {@link org.apache.commons.pool.PoolableObjectFactory#validateObject validated}
      * before being returned to the pool within the
      * {@link #returnObject}.
      *
@@ -584,7 +584,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
     /**
      * When <tt>true</tt>, objects will be
-     * {@link PoolableObjectFactory#validateObject validated}
+     * {@link org.apache.commons.pool.PoolableObjectFactory#validateObject validated}
      * before being returned to the pool within the
      * {@link #returnObject}.
      *
@@ -645,7 +645,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * Sets the number of objects to examine during each run of the
      * idle object evictor thread (if any).
      * <p>
-     * When a negative value is supplied, <tt>ceil({@link #numIdle})/abs({@link #getNumTestsPerEvictionRun})</tt>
+     * When a negative value is supplied, <tt>ceil({@link #getNumIdle})/abs({@link #getNumTestsPerEvictionRun})</tt>
      * tests will be run.  I.e., when the value is <i>-n</i>, roughly one <i>n</i>th of the
      * idle objects will be tested per run.
      *
@@ -684,7 +684,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
     /**
      * When <tt>true</tt>, objects will be
-     * {@link PoolableObjectFactory#validateObject validated}
+     * {@link org.apache.commons.pool.PoolableObjectFactory#validateObject validated}
      * by the idle object evictor (if any).  If an object
      * fails to validate, it will be dropped from the pool.
      *
@@ -697,7 +697,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
     /**
      * When <tt>true</tt>, objects will be
-     * {@link PoolableObjectFactory#validateObject validated}
+     * {@link org.apache.commons.pool.PoolableObjectFactory#validateObject validated}
      * by the idle object evictor (if any).  If an object
      * fails to validate, it will be dropped from the pool.
      *
@@ -788,11 +788,6 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             }
             _factory.activateObject(key,pair.value);
             if(_testOnBorrow && !_factory.validateObject(key,pair.value)) {
-                try {
-                    _factory.passivateObject(key,pair.value);
-                } catch(Exception e) {
-                    ; // ignored, we're throwing it out anyway
-                }
                 _factory.destroyObject(key,pair.value);
             } else {
                 Integer active = (Integer)(_activeMap.get(key));
@@ -808,12 +803,10 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     }
 
     public synchronized void clear() {
-        Iterator keyiter = _poolList.iterator();
-        while(keyiter.hasNext()) {
+        for(Iterator keyiter = _poolList.iterator(); keyiter.hasNext(); ) {
             Object key = keyiter.next();
             CursorableLinkedList list = (CursorableLinkedList)(_poolMap.get(key));
-            Iterator it = list.iterator();
-            while(it.hasNext()) {
+            for(Iterator it = list.iterator(); it.hasNext(); ) {
                 try {
                     _factory.destroyObject(key,((ObjectTimestampPair)(it.next())).value);
                 } catch(Exception e) {
@@ -834,8 +827,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             return;
         } else {
             _poolList.remove(key);
-            Iterator it = pool.iterator();
-            while(it.hasNext()) {
+            for(Iterator it = pool.iterator(); it.hasNext(); ) {
                 try {
                     _factory.destroyObject(key,((ObjectTimestampPair)(it.next())).value);
                 } catch(Exception e) {
@@ -1014,8 +1006,31 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 // if the _evictionCursor has a previous object, then test it
                 if(_evictionCursor.hasPrevious()) {
                     ObjectTimestampPair pair = (ObjectTimestampPair)(_evictionCursor.previous());
+                    boolean removeObject=false;
                     if(_minEvictableIdleTimeMillis > 0 &&
                        System.currentTimeMillis() - pair.tstamp > _minEvictableIdleTimeMillis) {
+                       removeObject=true;
+                    } else if(_testWhileIdle) {
+                        boolean active = false;
+                        try {
+                            _factory.activateObject(key,pair.value);
+                            active = true;
+                        } catch(Exception e) {
+                            removeObject=true;
+                        }
+                        if(active) {
+                            if(!_factory.validateObject(key,pair.value)) {
+                                removeObject=true;
+                            } else {
+                                try {
+                                    _factory.passivateObject(key,pair.value);
+                                } catch(Exception e) {
+                                    removeObject=true;
+                                }
+                            }
+                        }
+                    }
+                    if(removeObject) {
                         try {
                             _evictionCursor.remove();
                             _totalIdle--;
@@ -1026,57 +1041,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                                 _poolMap.remove(key);
                                 _poolList.remove(key);
                             }
-
-
                         } catch(Exception e) {
                             ; // ignored
-                        }
-                    } else if(_testWhileIdle) {
-                        boolean active = false;
-                        try {
-                            _factory.activateObject(key,pair.value);
-                            active = true;
-                        } catch(Exception e) {
-                            _evictionCursor.remove();
-                            try {
-                                _factory.passivateObject(key,pair.value);
-                            } catch(Exception ex) {
-                                ; // ignored
-                            }
-                            _factory.destroyObject(key,pair.value);
-                        }
-                        if(active) {
-                            if(!_factory.validateObject(key,pair.value)) {
-                                try {
-                                    _evictionCursor.remove();
-                                    _totalIdle--;
-                                    try {
-                                        _factory.passivateObject(key,pair.value);
-                                    } catch(Exception e) {
-                                        ; // ignored
-                                    }
-                                    _factory.destroyObject(key,pair.value);
-                                    if( ((CursorableLinkedList)(_poolMap.get(key))).isEmpty() ) {
-                                        _poolMap.remove(key);
-                                        _poolList.remove(key);
-                                    }
-
-                                } catch(Exception e) {
-                                    ; // ignored
-                                }
-                            } else {
-                                try {
-                                    _factory.passivateObject(key,pair.value);
-                                } catch(Exception e) {
-                                    _evictionCursor.remove();
-                                    _totalIdle--;
-                                    _factory.destroyObject(key,pair.value);
-                                    if( ((CursorableLinkedList)(_poolMap.get(key))).isEmpty() ) {
-                                        _poolMap.remove(key);
-                                        _poolList.remove(key);
-                                    }
-                                }
-                            }
                         }
                     }
                 } else {
@@ -1089,7 +1055,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             }
         }
     }
-    
+
     //--- package methods --------------------------------------------
 
     synchronized String debugInfo() {
@@ -1245,7 +1211,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
     /**
      * When <tt>true</tt>, objects will be
-     * {@link PoolableObjectFactory#validateObject validated}
+     * {@link org.apache.commons.pool.PoolableObjectFactory#validateObject validated}
      * before being returned by the {@link #borrowObject}
      * method.  If the object fails to validate,
      * it will be dropped from the pool, and we will attempt
@@ -1258,7 +1224,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
     /**
      * When <tt>true</tt>, objects will be
-     * {@link PoolableObjectFactory#validateObject validated}
+     * {@link org.apache.commons.pool.PoolableObjectFactory#validateObject validated}
      * before being returned to the pool within the
      * {@link #returnObject}.
      *
@@ -1269,7 +1235,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
     /**
      * When <tt>true</tt>, objects will be
-     * {@link PoolableObjectFactory#validateObject validated}
+     * {@link org.apache.commons.pool.PoolableObjectFactory#validateObject validated}
      * by the idle object evictor (if any).  If an object
      * fails to validate, it will be dropped from the pool.
      *
@@ -1295,7 +1261,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * The number of objects to examine during each run of the
      * idle object evictor thread (if any).
      * <p>
-     * When a negative value is supplied, <tt>ceil({@link #numIdle})/abs({@link #getNumTestsPerEvictionRun})</tt>
+     * When a negative value is supplied, <tt>ceil({@link #getNumIdle})/abs({@link #getNumTestsPerEvictionRun})</tt>
      * tests will be run.  I.e., when the value is <i>-n</i>, roughly one <i>n</i>th of the
      * idle objects will be tested per run.
      *
@@ -1345,7 +1311,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * My idle object eviction thread, if any.
      */
     private Evictor _evictor = null;
-    
+
     private CursorableLinkedList.Cursor _evictionCursor = null;
     private CursorableLinkedList.Cursor _evictionKeyCursor = null;
 
