@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/KeyedObjectPool.java,v 1.8 2003/04/24 00:59:46 rwaldhoff Exp $
- * $Revision: 1.8 $
- * $Date: 2003/04/24 00:59:46 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/KeyedObjectPool.java,v 1.9 2003/04/24 01:34:45 rwaldhoff Exp $
+ * $Revision: 1.9 $
+ * $Date: 2003/04/24 01:34:45 $
  *
  * ====================================================================
  *
@@ -91,8 +91,10 @@ package org.apache.commons.pool;
  * {@link ObjectPool pools}).
  * </p>
  *
+ * @TODO add optional addObject(Object key) method here and to implementations
+ * 
  * @author Rodney Waldhoff
- * @version $Revision: 1.8 $ $Date: 2003/04/24 00:59:46 $
+ * @version $Revision: 1.9 $ $Date: 2003/04/24 01:34:45 $
  *
  * @see KeyedPoolableObjectFactory
  * @see KeyedObjectPoolFactory
