@@ -1,7 +1,7 @@
 /*
- * $Id: GenericKeyedObjectPool.java,v 1.17 2003/04/24 18:07:09 rwaldhoff Exp $
- * $Revision: 1.17 $
- * $Date: 2003/04/24 18:07:09 $
+ * $Id: GenericKeyedObjectPool.java,v 1.18 2003/08/21 23:35:28 dlr Exp $
+ * $Revision: 1.18 $
+ * $Date: 2003/08/21 23:35:28 $
  *
  * ====================================================================
  *
@@ -164,7 +164,7 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  * </p>
  * @see GenericObjectPool
  * @author Rodney Waldhoff
- * @version $Revision: 1.17 $ $Date: 2003/04/24 18:07:09 $
+ * @version $Revision: 1.18 $ $Date: 2003/08/21 23:35:28 $
  */
 public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
 
@@ -859,7 +859,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
         // if we need to validate this object, do so
         boolean success = true; // whether or not this object passed validation
-        if((_testOnReturn && !_factory.validateObject(key, obj))) {
+        if(_testOnReturn && !_factory.validateObject(key, obj)) {
             success = false;
             try {
                 _factory.destroyObject(key, obj);
