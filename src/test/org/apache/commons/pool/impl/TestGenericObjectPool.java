@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/impl/TestGenericObjectPool.java,v 1.5 2002/05/04 12:15:46 rwaldhoff Exp $
- * $Revision: 1.5 $
- * $Date: 2002/05/04 12:15:46 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/impl/TestGenericObjectPool.java,v 1.6 2002/09/05 18:10:06 rwaldhoff Exp $
+ * $Revision: 1.6 $
+ * $Date: 2002/09/05 18:10:06 $
  *
  * ====================================================================
  *
@@ -66,7 +66,7 @@ import org.apache.commons.pool.*;
 
 /**
  * @author Rodney Waldhoff
- * @version $Id: TestGenericObjectPool.java,v 1.5 2002/05/04 12:15:46 rwaldhoff Exp $
+ * @version $Id: TestGenericObjectPool.java,v 1.6 2002/09/05 18:10:06 rwaldhoff Exp $
  */
 public class TestGenericObjectPool extends TestCase {
     public TestGenericObjectPool(String testName) {
@@ -95,6 +95,22 @@ public class TestGenericObjectPool extends TestCase {
                 public void passivateObject(Object obj) { }
             }
             );
+    }
+
+    public void testZeroMaxActive() throws Exception {
+        pool.setMaxActive(0);
+        pool.setWhenExhaustedAction(pool.WHEN_EXHAUSTED_FAIL);
+        Object obj = pool.borrowObject();
+        assertEquals("0",obj);
+        pool.returnObject(obj);
+    }
+
+    public void testNegativeMaxActive() throws Exception {
+        pool.setMaxActive(-1);
+        pool.setWhenExhaustedAction(pool.WHEN_EXHAUSTED_FAIL);
+        Object obj = pool.borrowObject();
+        assertEquals("0",obj);
+        pool.returnObject(obj);
     }
 
     public void testBorrow() throws Exception {
