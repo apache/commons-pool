@@ -119,7 +119,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * @see GenericKeyedObjectPool
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
- * @version $Revision: 1.32 $ $Date: 2004/04/27 20:15:56 $
+ * @version $Revision: 1.33 $ $Date: 2004/06/29 20:03:02 $
  */
 public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
@@ -732,7 +732,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                 if(null == pair) {
                     // check if we can create one
                     // (note we know that the num sleeping is 0, else we wouldn't be here)
-                    if(_maxActive <= 0 || _numActive < _maxActive) {
+                    if(_maxActive < 0 || _numActive < _maxActive) {
                         // allow new object to be created
                     } else {
                         // the pool is exhausted
