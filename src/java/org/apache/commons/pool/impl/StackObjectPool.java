@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackObjectPool.java,v 1.8 2003/03/05 19:17:08 rwaldhoff Exp $
- * $Revision: 1.8 $
- * $Date: 2003/03/05 19:17:08 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackObjectPool.java,v 1.9 2003/03/07 15:18:20 rwaldhoff Exp $
+ * $Revision: 1.9 $
+ * $Date: 2003/03/07 15:18:20 $
  *
  * ====================================================================
  *
@@ -61,6 +61,7 @@
 
 package org.apache.commons.pool.impl;
 
+import java.util.EmptyStackException;
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
 import java.util.Stack;
@@ -82,7 +83,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * artificial limits.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.8 $ $Date: 2003/03/05 19:17:08 $
+ * @version $Revision: 1.9 $ $Date: 2003/03/07 15:18:20 $
  */
 public class StackObjectPool extends BaseObjectPool implements ObjectPool {
     /**
@@ -158,10 +159,11 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
     }
 
     public synchronized Object borrowObject() throws Exception {
+        assertOpen();
         Object obj = null;
         try {
             obj = _pool.pop();
-        } catch(Exception e) {
+        } catch(EmptyStackException e) {
             if(null == _factory) {
                 throw new NoSuchElementException();
             } else {
@@ -176,6 +178,7 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
     }
 
     public void returnObject(Object obj) throws Exception {
+        assertOpen();
         boolean success = true;
         if(null != _factory) {
             if(!(_factory.validateObject(obj))) {
@@ -211,6 +214,7 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
     }
 
     public synchronized void invalidateObject(Object obj) throws Exception {
+        assertOpen();
         _numActive--;
         if(null != _factory ) {
             _factory.destroyObject(obj);
@@ -219,14 +223,17 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
     }
 
     public int getNumIdle() {
+        assertOpen();
         return _pool.size();
     }
 
     public int getNumActive() {
+        assertOpen();
         return _numActive;
     }
 
     public synchronized void clear() {
+        assertOpen();
         if(null != _factory) {
             Enumeration enum = _pool.elements();
             while(enum.hasMoreElements()) {
@@ -244,9 +251,11 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
         clear();
         _pool = null;
         _factory = null;
+        super.close();
     }
 
     synchronized public void setFactory(PoolableObjectFactory factory) throws IllegalStateException {
+        assertOpen();
         if(0 < getNumActive()) {
             throw new IllegalStateException("Objects are already active");
         } else {

@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/BaseObjectPool.java,v 1.7 2003/02/25 23:38:21 rwaldhoff Exp $
- * $Revision: 1.7 $
- * $Date: 2003/02/25 23:38:21 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/BaseObjectPool.java,v 1.8 2003/03/07 15:18:21 rwaldhoff Exp $
+ * $Revision: 1.8 $
+ * $Date: 2003/03/07 15:18:21 $
  *
  * ====================================================================
  *
@@ -67,7 +67,7 @@ package org.apache.commons.pool;
  * {@link UnsupportedOperationException}.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.7 $ $Date: 2003/02/25 23:38:21 $
+ * @version $Revision: 1.8 $ $Date: 2003/03/07 15:18:21 $
  */
 public abstract class BaseObjectPool implements ObjectPool {
     public abstract Object borrowObject() throws Exception;
@@ -95,10 +95,9 @@ public abstract class BaseObjectPool implements ObjectPool {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Does nothing this base implementation.
-     */
     public void close() throws Exception {
+        assertOpen();
+        closed = true;
     }
 
     /**
@@ -107,4 +106,16 @@ public abstract class BaseObjectPool implements ObjectPool {
     public void setFactory(PoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
+    
+    protected boolean isClosed() {
+        return closed;
+    }
+    
+    protected void assertOpen() throws IllegalStateException {
+        if(closed) {
+            throw new IllegalStateException("Pool not open");
+        }
+    }
+    
+    private boolean closed = false;
 }

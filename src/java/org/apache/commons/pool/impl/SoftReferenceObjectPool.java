@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/SoftReferenceObjectPool.java,v 1.7 2003/03/05 19:17:08 rwaldhoff Exp $
- * $Revision: 1.7 $
- * $Date: 2003/03/05 19:17:08 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/SoftReferenceObjectPool.java,v 1.8 2003/03/07 15:18:20 rwaldhoff Exp $
+ * $Revision: 1.8 $
+ * $Date: 2003/03/07 15:18:20 $
  *
  * ====================================================================
  *
@@ -76,7 +76,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * {@link ObjectPool}.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.7 $ $Date: 2003/03/05 19:17:08 $
+ * @version $Revision: 1.8 $ $Date: 2003/03/07 15:18:20 $
  */
 public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPool {
     public SoftReferenceObjectPool() {
@@ -102,6 +102,7 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
     }
 
     public synchronized Object borrowObject() throws Exception {        
+        assertOpen();
         Object obj = null;
         while(null == obj) {
             if(_pool.isEmpty()) {
@@ -123,6 +124,7 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
     }
 
     public void returnObject(Object obj) throws Exception {
+        assertOpen();
         boolean success = true;
         if(!(_factory.validateObject(obj))) {
             success = false;
@@ -154,6 +156,7 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
     }
 
     public synchronized void invalidateObject(Object obj) throws Exception {
+        assertOpen();
         _numActive--;
         _factory.destroyObject(obj);
         notifyAll(); // _numActive has changed
@@ -169,6 +172,7 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
     }
 
     public synchronized void clear() {
+        assertOpen();
         if(null != _factory) {
             Iterator iter = _pool.iterator();
             while(iter.hasNext()) {
@@ -189,9 +193,11 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
         clear();
         _pool = null;
         _factory = null;
+        super.close();
     }
 
     synchronized public void setFactory(PoolableObjectFactory factory) throws IllegalStateException {
+        assertOpen();
         if(0 < getNumActive()) {
             throw new IllegalStateException("Objects are already active");
         } else {
