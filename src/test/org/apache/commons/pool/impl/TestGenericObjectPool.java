@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/impl/TestGenericObjectPool.java,v 1.4 2002/05/01 06:02:35 rwaldhoff Exp $
- * $Revision: 1.4 $
- * $Date: 2002/05/01 06:02:35 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/impl/TestGenericObjectPool.java,v 1.5 2002/05/04 12:15:46 rwaldhoff Exp $
+ * $Revision: 1.5 $
+ * $Date: 2002/05/04 12:15:46 $
  *
  * ====================================================================
  *
@@ -66,7 +66,7 @@ import org.apache.commons.pool.*;
 
 /**
  * @author Rodney Waldhoff
- * @version $Id: TestGenericObjectPool.java,v 1.4 2002/05/01 06:02:35 rwaldhoff Exp $
+ * @version $Id: TestGenericObjectPool.java,v 1.5 2002/05/04 12:15:46 rwaldhoff Exp $
  */
 public class TestGenericObjectPool extends TestCase {
     public TestGenericObjectPool(String testName) {
@@ -208,7 +208,7 @@ public class TestGenericObjectPool extends TestCase {
             pool.returnObject(active[i]);
         }
 
-        try { Thread.currentThread().sleep(2000L); } catch(Exception e) { }
+        try { Thread.currentThread().sleep(1000L); } catch(Exception e) { }
         assertTrue("Should be less than 500 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 500);
         try { Thread.currentThread().sleep(600L); } catch(Exception e) { }
         assertTrue("Should be less than 400 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 400);
@@ -228,7 +228,7 @@ public class TestGenericObjectPool extends TestCase {
             pool.returnObject(active[i]);
         }
 
-        try { Thread.currentThread().sleep(2000L); } catch(Exception e) { }
+        try { Thread.currentThread().sleep(1000L); } catch(Exception e) { }
         assertTrue("Should be less than 500 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 500);
         try { Thread.currentThread().sleep(600L); } catch(Exception e) { }
         assertTrue("Should be less than 400 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 400);
