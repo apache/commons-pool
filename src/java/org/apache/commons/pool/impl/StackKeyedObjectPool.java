@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackKeyedObjectPool.java,v 1.8 2003/03/05 19:17:08 rwaldhoff Exp $
- * $Revision: 1.8 $
- * $Date: 2003/03/05 19:17:08 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackKeyedObjectPool.java,v 1.9 2003/03/14 00:12:48 rwaldhoff Exp $
+ * $Revision: 1.9 $
+ * $Date: 2003/03/14 00:12:48 $
  *
  * ====================================================================
  *
@@ -84,7 +84,7 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  * artificial limits.
  *
  * @author Rodney Waldhoff
- * @version $Id: StackKeyedObjectPool.java,v 1.8 2003/03/05 19:17:08 rwaldhoff Exp $
+ * @version $Id: StackKeyedObjectPool.java,v 1.9 2003/03/14 00:12:48 rwaldhoff Exp $
  */
 public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
     /**
@@ -102,6 +102,8 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
      * no factory. Clients must first populate the pool
      * using {@link #returnObject(java.lang.Object,java.lang.Object)}
      * before they can be {@link #borrowObject(java.lang.Object) borrowed}.
+     *
+     * @param max cap on the number of "sleeping" instances in the pool
      */
     public StackKeyedObjectPool(int max) {
         this((KeyedPoolableObjectFactory)null,max,DEFAULT_INIT_SLEEPING_CAPACITY);
@@ -112,6 +114,10 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
      * no factory. Clients must first populate the pool
      * using {@link #returnObject(java.lang.Object,java.lang.Object)}
      * before they can be {@link #borrowObject(java.lang.Object) borrowed}.
+     *
+     * @param max cap on the number of "sleeping" instances in the pool
+     * @param init initial size of the pool (this specifies the size of the container,
+     *             it does not cause the pool to be pre-populated.)
      */
     public StackKeyedObjectPool(int max, int init) {
         this((KeyedPoolableObjectFactory)null,max,init);
@@ -348,9 +354,13 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
     /** The initial capacity of each pool. */
     protected int _initSleepingCapacity = DEFAULT_INIT_SLEEPING_CAPACITY;
 
+    /** Total number of object borrowed and not yet retuened for all pools */
     protected int _totActive = 0;
+
+    /** Total number of objects "sleeping" for all pools */
     protected int _totIdle = 0;
 
+    /** Number of active objects borrowed and not yet returned by pool */
     protected HashMap _activeCount = null;
 
 }
