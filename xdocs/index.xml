@@ -4,12 +4,26 @@
       <title>Home</title>
       <author email="commons-dev@jakarta.apache.org">Commons Documentation Team</author>
       <author email="rwaldhoff@apache.org">Rodney Waldhoff</author>
-      <revision>$Id: index.xml,v 1.3 2002/04/29 12:11:30 rwaldhoff Exp $</revision>
+      <revision>$Id: index.xml,v 1.4 2002/04/29 14:26:32 rwaldhoff Exp $</revision>
    </properties>
 
    <body>
       <section name="The Pool Component">
-         <p>Pool provides an Object-pooling API.</p>
+         <p>
+          Pool provides an Object-pooling API, with three major aspects:
+          <ol>
+           <li>
+            A generic object pool interface that clients and implementors can use to provide easily 
+            interchangable pooling implementations.
+           </li>
+           <li>
+            A toolkit for creating modular object pools.
+           </li>
+           <li>
+            Several general purpose pool implementations.
+           </li>
+          </ol>
+         </p>
          <p>
           See the <a href="http://nagoya.apache.org/gump/javadoc/jakarta-commons/pool/dist/docs/api/index.html">javadoc</a>
           for details.
