@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/BaseObjectPool.java,v 1.3 2002/05/01 06:02:34 rwaldhoff Exp $
- * $Revision: 1.3 $
- * $Date: 2002/05/01 06:02:34 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/BaseObjectPool.java,v 1.4 2002/05/01 06:33:01 rwaldhoff Exp $
+ * $Revision: 1.4 $
+ * $Date: 2002/05/01 06:33:01 $
  *
  * ====================================================================
  *
@@ -67,17 +67,16 @@ package org.apache.commons.pool;
  * {@link UnsupportedOperationException}.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.3 $ $Date: 2002/05/01 06:02:34 $
+ * @version $Revision: 1.4 $ $Date: 2002/05/01 06:33:01 $
  */
 public abstract class BaseObjectPool implements ObjectPool {
     public abstract Object borrowObject() throws Exception;
     public abstract void returnObject(Object obj) throws Exception;
 
     /**
-     * Not supported in this base implementation.
-     * @deprecated Use {@link getNumIdle} instead;
+     * @deprecated Use {@link #getNumIdle} instead.
      */
-    public int numIdle() throws UnsupportedOperationException {
+    public final int numIdle() throws UnsupportedOperationException {
         return getNumIdle();
     }
 
@@ -89,10 +88,9 @@ public abstract class BaseObjectPool implements ObjectPool {
     }
 
     /**
-     * Not supported in this base implementation.
-     * @deprecated Use {@link getNumActive} instead;
+     * @deprecated Use {@link #getNumActive} instead.
      */
-    public int numActive() throws UnsupportedOperationException {
+    public final int numActive() throws UnsupportedOperationException {
         return getNumActive();
     }
 

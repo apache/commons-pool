@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackKeyedObjectPool.java,v 1.3 2002/05/01 04:54:18 rwaldhoff Exp $
- * $Revision: 1.3 $
- * $Date: 2002/05/01 04:54:18 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackKeyedObjectPool.java,v 1.4 2002/05/01 06:33:01 rwaldhoff Exp $
+ * $Revision: 1.4 $
+ * $Date: 2002/05/01 06:33:01 $
  *
  * ====================================================================
  *
@@ -81,7 +81,7 @@ import java.util.Iterator;
  * artificial limits.
  *
  * @author Rodney Waldhoff
- * @version $Id: StackKeyedObjectPool.java,v 1.3 2002/05/01 04:54:18 rwaldhoff Exp $
+ * @version $Id: StackKeyedObjectPool.java,v 1.4 2002/05/01 06:33:01 rwaldhoff Exp $
  */
 public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
     /**
@@ -219,15 +219,15 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
         _activeCount.put(key,new Integer(old.intValue() - 1));
     }
 
-    public int numIdle() {
+    public int getNumIdle() {
         return _totIdle;
     }
 
-    public int numActive() {
+    public int getNumActive() {
         return _totActive;
     }
 
-    public int numActive(Object key) {
+    public int getNumActive(Object key) {
         try {
             return ((Integer)_activeCount.get(key)).intValue();
         } catch(NoSuchElementException e) {
@@ -237,7 +237,7 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
         }
     }
 
-    public synchronized int numIdle(Object key) {
+    public synchronized int getNumIdle(Object key) {
         try {
             return((Stack)(_pools.get(key))).size();
         } catch(Exception e) {
@@ -296,7 +296,7 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
     }
 
     synchronized public void setFactory(KeyedPoolableObjectFactory factory) throws IllegalStateException {
-        if(0 < numActive()) {
+        if(0 < getNumActive()) {
             throw new IllegalStateException("Objects are already active");
         } else {
             clear();
