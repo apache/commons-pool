@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <project> 
   <pomVersion>3</pomVersion>
-  <name>commons-pool</name>
+  <name>Commons Pool</name>
   <id>commons-pool</id>
-  <currentVersion>2.0-dev</currentVersion>
+  <currentVersion>1.1-RC1</currentVersion>
 
   <organization>
     <name>Apache Software Foundation</name>
@@ -24,6 +24,26 @@
   <description>
     Commons Object Pooling Library
   </description>
+
+  <versions>
+    <version>
+      <id>1.0</id>
+      <name>1.0</name>
+      <tag>POOL_1_0</tag>
+    </version>
+    <version>
+      <id>1.0.1</id>
+      <name>1.0.1</name>
+      <tag>POOL_1_0_1</tag>
+    </version>
+    <version>
+      <id>1.1-RC1</id>
+      <name>1.1-RC1</name>
+      <tag>POOL_1_1_RC1</tag>
+    </version>
+  </versions>
+  <branches>
+  </branches>
 
   <url>http://jakarta.apache.org/commons/pool/</url>
   <issueTrackingUrl>http://issues.apache.org/bugzilla</issueTrackingUrl>
