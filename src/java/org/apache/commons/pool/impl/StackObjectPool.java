@@ -17,7 +17,7 @@
 package org.apache.commons.pool.impl;
 
 import java.util.EmptyStackException;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Stack;
 
@@ -38,7 +38,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * artificial limits.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.15 $ $Date: 2004/02/28 11:46:33 $
+ * @version $Revision: 1.16 $ $Date: 2004/07/04 17:23:35 $
  */
 public class StackObjectPool extends BaseObjectPool implements ObjectPool {
     /**
@@ -196,10 +196,10 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
     public synchronized void clear() {
         assertOpen();
         if(null != _factory) {
-            Enumeration enum = _pool.elements();
-            while(enum.hasMoreElements()) {
+            Iterator it = _pool.iterator();
+            while(it.hasNext()) {
                 try {
-                    _factory.destroyObject(enum.nextElement());
+                    _factory.destroyObject(it.next());
                 } catch(Exception e) {
                     // ignore error, keep destroying the rest
                 }

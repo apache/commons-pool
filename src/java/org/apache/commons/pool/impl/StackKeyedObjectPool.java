@@ -16,7 +16,6 @@
 
 package org.apache.commons.pool.impl;
 
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -39,7 +38,7 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  * artificial limits.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.14 $ $Date: 2004/02/28 12:16:21 $ 
+ * @version $Revision: 1.15 $ $Date: 2004/07/04 17:23:35 $ 
  */
 public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
     /**
@@ -235,10 +234,10 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
             return;
         } else {
             if(null != _factory) {
-                Enumeration enum = stack.elements();
-                while(enum.hasMoreElements()) {
+                Iterator it = stack.iterator();
+                while(it.hasNext()) {
                     try {
-                        _factory.destroyObject(key,enum.nextElement());
+                        _factory.destroyObject(key,it.next());
                     } catch(Exception e) {
                         // ignore error, keep destroying the rest
                     }
