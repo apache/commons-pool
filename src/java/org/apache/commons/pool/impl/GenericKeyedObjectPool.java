@@ -1,7 +1,7 @@
 /*
  * $Source: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericKeyedObjectPool.java,v $
- * $Revision: 1.21 $
- * $Date: 2003/08/26 15:00:06 $
+ * $Revision: 1.22 $
+ * $Date: 2003/08/26 15:11:42 $
  *
  * ====================================================================
  *
@@ -165,7 +165,7 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  * @see GenericObjectPool
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
- * @version $Revision: 1.21 $ $Date: 2003/08/26 15:00:06 $
+ * @version $Revision: 1.22 $ $Date: 2003/08/26 15:11:42 $
  */
 public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
 
@@ -453,7 +453,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @return the cap on the number of active instances from my pool (per key).
      * @see #setMaxActive
      */
-    public int getMaxActive() {
+    public synchronized int getMaxActive() {
         return _maxActive;
     }
 
@@ -463,11 +463,9 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      *                  Use a negative value for an infinite number of instances.
      * @see #getMaxActive
      */
-    public void setMaxActive(int maxActive) {
+    public synchronized void setMaxActive(int maxActive) {
         _maxActive = maxActive;
-        synchronized(this) {
-            notifyAll();
-        }
+        notifyAll();
     }
 
     /**
@@ -475,7 +473,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @return the cap on the total number of instances from my pool.
      * @see #setMaxTotal
      */
-    public int getMaxTotal() {
+    public synchronized int getMaxTotal() {
         return _maxTotal;
     }
 
@@ -485,11 +483,9 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      *                  Use a negative value for an infinite number of instances.
      * @see #getMaxTotal
      */
-    public void setMaxTotal(int maxTotal) {
+    public synchronized void setMaxTotal(int maxTotal) {
         _maxTotal = maxTotal;
-        synchronized(this) {
-            notifyAll();
-        }
+        notifyAll();
     }
 
     /**
@@ -500,7 +496,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @return one of {@link #WHEN_EXHAUSTED_BLOCK}, {@link #WHEN_EXHAUSTED_FAIL} or {@link #WHEN_EXHAUSTED_GROW}
      * @see #setWhenExhaustedAction
      */
-    public byte getWhenExhaustedAction() {
+    public synchronized byte getWhenExhaustedAction() {
         return _whenExhaustedAction;
     }
 
@@ -569,7 +565,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @return the cap on the number of "idle" instances in the pool.
      * @see #setMaxIdle
      */
-    public int getMaxIdle() {
+    public synchronized int getMaxIdle() {
         return _maxIdle;
     }
 
@@ -580,11 +576,9 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      *                of idle instances.
      * @see #getMaxIdle
      */
-    public void setMaxIdle(int maxIdle) {
+    public synchronized void setMaxIdle(int maxIdle) {
         _maxIdle = maxIdle;
-        synchronized(this) {
-            notifyAll();
-        }
+        notifyAll();
     }
 
     /**
@@ -597,7 +591,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      *
      * @see #setTestOnBorrow
      */
-    public boolean getTestOnBorrow() {
+    public synchronized boolean getTestOnBorrow() {
         return _testOnBorrow;
     }
 
@@ -611,7 +605,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      *
      * @see #getTestOnBorrow
      */
-    public void setTestOnBorrow(boolean testOnBorrow) {
+    public synchronized void setTestOnBorrow(boolean testOnBorrow) {
         _testOnBorrow = testOnBorrow;
     }
 
@@ -623,7 +617,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      *
      * @see #setTestOnReturn
      */
-    public boolean getTestOnReturn() {
+    public synchronized boolean getTestOnReturn() {
         return _testOnReturn;
     }
 
@@ -635,7 +629,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      *
      * @see #getTestOnReturn
      */
-    public void setTestOnReturn(boolean testOnReturn) {
+    public synchronized void setTestOnReturn(boolean testOnReturn) {
         _testOnReturn = testOnReturn;
     }
 
@@ -671,7 +665,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @see #setNumTestsPerEvictionRun
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    public int getNumTestsPerEvictionRun() {
+    public synchronized int getNumTestsPerEvictionRun() {
         return _numTestsPerEvictionRun;
     }
 
@@ -686,7 +680,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @see #getNumTestsPerEvictionRun
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    public void setNumTestsPerEvictionRun(int numTestsPerEvictionRun) {
+    public synchronized void setNumTestsPerEvictionRun(int numTestsPerEvictionRun) {
         _numTestsPerEvictionRun = numTestsPerEvictionRun;
     }
 
@@ -725,7 +719,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @see #setTestWhileIdle
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    public boolean getTestWhileIdle() {
+    public synchronized boolean getTestWhileIdle() {
         return _testWhileIdle;
     }
 
@@ -738,7 +732,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @see #getTestWhileIdle
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    public void setTestWhileIdle(boolean testWhileIdle) {
+    public synchronized void setTestWhileIdle(boolean testWhileIdle) {
         _testWhileIdle = testWhileIdle;
     }
 
@@ -877,11 +871,11 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         notifyAll();
     }
 
-    public int getNumActive() {
+    public synchronized int getNumActive() {
         return _totalActive;
     }
 
-    public int getNumIdle() {
+    public synchronized int getNumIdle() {
         return _totalIdle;
     }
 
@@ -947,10 +941,16 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         }
     }
 
-    public synchronized void invalidateObject(Object key, Object obj) throws Exception {
-        decrementActiveCount(key);
-        _factory.destroyObject(key,obj);
-        notifyAll(); // _totalActive has changed
+    public void invalidateObject(Object key, Object obj) throws Exception {
+        try {
+            _factory.destroyObject(key, obj);
+        }
+        finally {
+            synchronized(this) {
+                decrementActiveCount(key);
+                notifyAll(); // _totalActive has changed
+            }
+        }
     }
 
     public void addObject(Object key) throws Exception {
@@ -980,7 +980,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         }
     }
 
-    synchronized public void setFactory(KeyedPoolableObjectFactory factory) throws IllegalStateException {
+    public synchronized void setFactory(KeyedPoolableObjectFactory factory) throws IllegalStateException {
         if(0 < getNumActive()) {
             throw new IllegalStateException("Objects are already active");
         } else {
@@ -989,7 +989,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         }
     }
 
-    synchronized public void evict() throws Exception {
+    public synchronized void evict() throws Exception {
         Object key = null;
         for(int i=0,m=getNumTests();i<m;i++) {
             if(_poolMap.size() > 0) {
@@ -1106,7 +1106,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         return buf.toString();
     }
 
-    private int getNumTests() {
+    private synchronized int getNumTests() {
         if(_numTestsPerEvictionRun >= 0) {
             return _numTestsPerEvictionRun;
         } else {
@@ -1114,7 +1114,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         }
     }
 
-    private void incrementActiveCount(Object key) {
+    private synchronized void incrementActiveCount(Object key) {
         _totalActive++;
         Integer active = (Integer)(_activeMap.get(key));
         if(null == active) {
@@ -1124,7 +1124,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         }
     }
 
-    private void decrementActiveCount(Object key) {
+    private synchronized void decrementActiveCount(Object key) {
         _totalActive--;
         Integer active = (Integer)(_activeMap.get(key));
         if(null == active) {
@@ -1136,7 +1136,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         }
     }
 
-    private int getActiveCount(Object key) {
+    private synchronized int getActiveCount(Object key) {
         int active = 0;
         Integer act = (Integer)(_activeMap.get(key));
         if(null != act) {
