@@ -61,15 +61,17 @@ package org.apache.commons.pool;
  * All operations defined here are essentially no-op's.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.2 $ $Date: 2002/01/15 00:07:03 $ 
+ * @version $Revision: 1.3 $ $Date: 2002/03/26 12:34:24 $ 
  *
  * @see KeyedPoolableObjectFactory
  */
 public abstract class BaseKeyedPoolableObjectFactory implements KeyedPoolableObjectFactory {
-    public abstract Object makeObject(Object key);
+    public abstract Object makeObject(Object key)
+        throws Exception;
 
     /** No-op. */
-    public void destroyObject(Object key, Object obj) {
+    public void destroyObject(Object key, Object obj)
+        throws Exception {
     }
 
     /**
@@ -81,10 +83,12 @@ public abstract class BaseKeyedPoolableObjectFactory implements KeyedPoolableObj
     }
 
     /** No-op. */
-    public void activateObject(Object key, Object obj) {
+    public void activateObject(Object key, Object obj)
+        throws Exception {
     }
 
     /** No-op. */
-    public void passivateObject(Object key, Object obj) {
+    public void passivateObject(Object key, Object obj) 
+        throws Exception {
     }
 }

@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/BasePoolableObjectFactory.java,v 1.2 2002/01/15 00:07:03 rwaldhoff Exp $
- * $Revision: 1.2 $
- * $Date: 2002/01/15 00:07:03 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/BasePoolableObjectFactory.java,v 1.3 2002/03/26 12:34:24 rwaldhoff Exp $
+ * $Revision: 1.3 $
+ * $Date: 2002/03/26 12:34:24 $
  *
  * ====================================================================
  *
@@ -67,16 +67,18 @@ package org.apache.commons.pool;
  * All operations defined here are essentially no-op's.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.2 $ $Date: 2002/01/15 00:07:03 $ 
+ * @version $Revision: 1.3 $ $Date: 2002/03/26 12:34:24 $ 
  *
  * @see PoolableObjectFactory
  * @see BaseKeyedPoolableObjectFactory
  */
 public abstract class BasePoolableObjectFactory implements PoolableObjectFactory {
-    public abstract Object makeObject();
+    public abstract Object makeObject()
+        throws Exception;
 
     /** No-op. */
-    public void destroyObject(Object obj) {
+    public void destroyObject(Object obj)
+        throws Exception  {
     }
 
     /**
@@ -88,10 +90,12 @@ public abstract class BasePoolableObjectFactory implements PoolableObjectFactory
     }
 
     /** No-op. */
-    public void activateObject(Object obj) {
+    public void activateObject(Object obj)
+        throws Exception {
     }
 
     /** No-op. */
-    public void passivateObject(Object obj) {
+    public void passivateObject(Object obj) 
+        throws Exception {
     }
 }
