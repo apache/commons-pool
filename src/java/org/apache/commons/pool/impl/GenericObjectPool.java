@@ -119,7 +119,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * @see GenericKeyedObjectPool
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
- * @version $Revision: 1.33 $ $Date: 2004/06/29 20:03:02 $
+ * @version $Revision: 1.34 $ $Date: 2004/07/04 17:28:19 $
  */
 public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
@@ -741,7 +741,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                                 // allow new object to be created
                                 break;
                             case WHEN_EXHAUSTED_FAIL:
-                                throw new NoSuchElementException();
+                                throw new NoSuchElementException("Pool exhausted");
                             case WHEN_EXHAUSTED_BLOCK:
                                     try {
                                         if(_maxWait <= 0) {
@@ -758,7 +758,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                                         continue; // keep looping
                                     }
                             default:
-                                throw new IllegalArgumentException("whenExhaustedAction " + _whenExhaustedAction + " not recognized.");
+                                throw new IllegalArgumentException("WhenExhaustedAction property " + _whenExhaustedAction + " not recognized.");
                         }
                     }
                 }
@@ -786,7 +786,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
             try {
                 _factory.activateObject(pair.value);
                 if(_testOnBorrow && !_factory.validateObject(pair.value)) {
-                    throw new Exception("validateObject failed");
+                    throw new Exception("ValidateObject failed");
                 }                
                 return pair.value;
             } 
