@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/KeyedObjectPool.java,v 1.3 2002/03/17 14:55:21 rwaldhoff Exp $
- * $Revision: 1.3 $
- * $Date: 2002/03/17 14:55:21 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/KeyedObjectPool.java,v 1.4 2002/05/01 04:54:52 rwaldhoff Exp $
+ * $Revision: 1.4 $
+ * $Date: 2002/05/01 04:54:52 $
  *
  * ====================================================================
  *
@@ -92,7 +92,7 @@ package org.apache.commons.pool;
  * </p>
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.3 $ $Date: 2002/03/17 14:55:21 $ 
+ * @version $Revision: 1.4 $ $Date: 2002/05/01 04:54:52 $ 
  *
  * @see KeyedPoolableObjectFactory
  * @see KeyedObjectPoolFactory
@@ -113,7 +113,7 @@ public interface KeyedObjectPool {
      * @param key the key used to obtain the object
      * @return an instance from my pool.
      */
-    public abstract Object borrowObject(Object key) throws Exception;
+    Object borrowObject(Object key) throws Exception;
 
     /**
      * Return an instance to my pool.
@@ -127,12 +127,12 @@ public interface KeyedObjectPool {
      * @param key the key used to obtain the object
      * @param obj a {@link #borrowObject(java.lang.Object) borrowed} instance to be returned.
      */
-    public abstract void returnObject(Object key, Object obj) throws Exception;
+    void returnObject(Object key, Object obj) throws Exception;
 
     /**
      * Returns the number of instances
      * corresponding to the given <i>key</i>
-     * currently idle in my pool.
+     * currently idle in my pool (optional operation).
      * Throws {@link UnsupportedOperationException}
      * if this information is not available.
      *
@@ -140,13 +140,13 @@ public interface KeyedObjectPool {
      * @return the number of instances corresponding to the given <i>key</i> currently idle in my pool
      * @throws UnsupportedOperationException when this implementation doesn't support the operation
      */
-    public abstract int numIdle(Object key) throws UnsupportedOperationException;
+    int numIdle(Object key) throws UnsupportedOperationException;
 
     /**
      * Returns the number of instances
      * currently borrowed from but not yet returned 
      * to my pool corresponding to the
-     * given <i>key</i>.
+     * given <i>key</i> (optional operation).
      * Throws {@link UnsupportedOperationException}
      * if this information is not available.
      *
@@ -154,60 +154,62 @@ public interface KeyedObjectPool {
      * @return the number of instances corresponding to the given <i>key</i> currently borrowed in my pool
      * @throws UnsupportedOperationException when this implementation doesn't support the operation
      */
-    public abstract int numActive(Object key) throws UnsupportedOperationException;
+    int numActive(Object key) throws UnsupportedOperationException;
 
     /**
      * Returns the total number of instances
-     * currently idle in my pool.
+     * currently idle in my pool (optional operation).
      * Throws {@link UnsupportedOperationException}
      * if this information is not available.
      *
      * @return the total number of instances currently idle in my pool
      * @throws UnsupportedOperationException when this implementation doesn't support the operation
      */
-    public abstract int numIdle() throws UnsupportedOperationException;
+    int numIdle() throws UnsupportedOperationException;
 
     /**
      * Returns the total number of instances
      * current borrowed from my pool but not
-     * yet returned.
+     * yet returned (optional operation).
      * Throws {@link UnsupportedOperationException}
      * if this information is not available.
      *
      * @return the total number of instances currently borrowed from my pool
      * @throws UnsupportedOperationException when this implementation doesn't support the operation
      */
-    public abstract int numActive() throws UnsupportedOperationException;
+    int numActive() throws UnsupportedOperationException;
 
     /**
-     * Clears my pool, removing all pooled instances.
+     * Clears my pool, removing all pooled instances
+     * (optional operation).
      * Throws {@link UnsupportedOperationException}
      * if the pool cannot be cleared.
      * @throws UnsupportedOperationException when this implementation doesn't support the operation
      */
-    public abstract void clear() throws Exception, UnsupportedOperationException;
+    void clear() throws Exception, UnsupportedOperationException;
 
     /**
-     * Clears the specified pool, removing all pooled instances
-     * corresponding to the given <i>key</i>.
+     * Clears the specified pool, removing all
+     * pooled instances corresponding to
+     * the given <i>key</i>  (optional operation).
      * Throws {@link UnsupportedOperationException}
      * if the pool cannot be cleared.
      * @param key the key to clear
      * @throws UnsupportedOperationException when this implementation doesn't support the operation
      */
-    public abstract void clear(Object key) throws Exception, UnsupportedOperationException;
+    void clear(Object key) throws Exception, UnsupportedOperationException;
 
     /**
      * Close this pool, and free any resources associated with it.
      */
-    public abstract void close() throws Exception;
+    void close() throws Exception;
 
     /**
      * Sets the {@link KeyedPoolableObjectFactory factory} I use
-     * to create new instances.
+     * to create new instances (optional operation).
      * @param factory the {@link KeyedPoolableObjectFactory} I use to create new instances.
      * @throws IllegalStateException when the factory cannot be set at this time
      * @throws UnsupportedOperationException when this implementation doesn't support the operation
      */
-    public abstract void setFactory(KeyedPoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException;
+    void setFactory(KeyedPoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException;
 }

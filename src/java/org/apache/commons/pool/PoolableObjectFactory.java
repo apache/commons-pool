@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/PoolableObjectFactory.java,v 1.3 2002/03/17 14:55:21 rwaldhoff Exp $
- * $Revision: 1.3 $
- * $Date: 2002/03/17 14:55:21 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/PoolableObjectFactory.java,v 1.4 2002/05/01 04:54:52 rwaldhoff Exp $
+ * $Revision: 1.4 $
+ * $Date: 2002/05/01 04:54:52 $
  *
  * ====================================================================
  *
@@ -100,7 +100,7 @@ package org.apache.commons.pool;
  * </ol>
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.3 $ $Date: 2002/03/17 14:55:21 $ 
+ * @version $Revision: 1.4 $ $Date: 2002/05/01 04:54:52 $ 
  *
  * @see ObjectPool
  */
@@ -109,13 +109,13 @@ public interface PoolableObjectFactory {
    * Creates an instance that can be returned by the pool.
    * @return an instance that can be returned by the pool.
    */
-  public abstract Object makeObject() throws Exception;
+  Object makeObject() throws Exception;
 
   /**
    * Destroys an instance no longer needed by the pool.
    * @param obj the instance to be destroyed
    */
-  public abstract void destroyObject(Object obj) throws Exception;
+  void destroyObject(Object obj) throws Exception;
 
   /**
    * Ensures that the instance is safe to be returned by the pool.
@@ -124,17 +124,17 @@ public interface PoolableObjectFactory {
    * @return <tt>false</tt> if this <i>obj</i> is not valid and should
    *         be dropped from the pool, <tt>true</tt> otherwise.
    */
-  public abstract boolean validateObject(Object obj);
+  boolean validateObject(Object obj);
 
   /**
    * Reinitialize an instance to be returned by the pool.
    * @param obj the instance to be activated
    */
-  public abstract void activateObject(Object obj) throws Exception;
+  void activateObject(Object obj) throws Exception;
 
   /**
    * Uninitialize an instance to be returned to the pool.
    * @param obj the instance to be passivated
    */
-  public abstract void passivateObject(Object obj) throws Exception;
+  void passivateObject(Object obj) throws Exception;
 }
