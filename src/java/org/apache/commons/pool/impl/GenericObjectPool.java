@@ -119,7 +119,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * @see GenericKeyedObjectPool
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
- * @version $Revision: 1.31 $ $Date: 2004/02/28 11:46:33 $
+ * @version $Revision: 1.32 $ $Date: 2004/04/27 20:15:56 $
  */
 public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
@@ -851,6 +851,10 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
     public void returnObject(Object obj) throws Exception {
         assertOpen();
+        addObjectToPool(obj, true);
+    }
+        
+    private void addObjectToPool(Object obj, boolean decrementNumActive) throws Exception {
         boolean success = true;
         if(_testOnReturn && !(_factory.validateObject(obj))) {
             success = false;
@@ -865,7 +869,9 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         boolean shouldDestroy = !success;
 
         synchronized(this) {
-            _numActive--;
+            if (decrementNumActive) {
+                _numActive--;
+            }
             if((_maxIdle >= 0) && (_pool.size() >= _maxIdle)) {
                 shouldDestroy = true;
             } else if(success) {
@@ -988,10 +994,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      */
     public void addObject() throws Exception {
         Object obj = _factory.makeObject();
-        synchronized(this) {
-            _numActive++;   // A little slimy - must do this because returnObject decrements it.
-            this.returnObject(obj);
-        }
+        addObjectToPool(obj, false);
     }
     
     //--- non-public methods ----------------------------------------
