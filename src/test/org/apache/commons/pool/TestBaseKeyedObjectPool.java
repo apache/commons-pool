@@ -1,13 +1,12 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/TestAll.java,v 1.3 2003/04/22 23:14:52 rwaldhoff Exp $
- * $Revision: 1.3 $
+ * $Id: TestBaseKeyedObjectPool.java,v 1.1 2003/04/22 23:14:52 rwaldhoff Exp $
+ * $Revision: 1.1 $
  * $Date: 2003/04/22 23:14:52 $
- *
  * ====================================================================
  *
  * The Apache Software License, Version 1.1
  *
- * Copyright (c) 1999-2001 The Apache Software Foundation.  All rights
+ * Copyright (c) 2003 The Apache Software Foundation.  All rights
  * reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -66,26 +65,80 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 /**
+ * @version $Revision: 1.1 $ $Date: 2003/04/22 23:14:52 $
  * @author Rodney Waldhoff
- * @version $Id: TestAll.java,v 1.3 2003/04/22 23:14:52 rwaldhoff Exp $
  */
-public class TestAll extends TestCase {
-    public TestAll(String testName) {
+public class TestBaseKeyedObjectPool extends TestCase {
+    public TestBaseKeyedObjectPool(String testName) {
         super(testName);
     }
 
     public static Test suite() {
-        TestSuite suite = new TestSuite();
-        suite.addTest(org.apache.commons.pool.TestBaseObjectPool.suite());
-        suite.addTest(org.apache.commons.pool.TestBaseKeyedObjectPool.suite());
-        suite.addTest(org.apache.commons.pool.TestBasePoolableObjectFactory.suite());
-        suite.addTest(org.apache.commons.pool.TestBaseKeyedPoolableObjectFactory.suite());
-        suite.addTest(org.apache.commons.pool.impl.TestAll.suite());
-        return suite;
+        return new TestSuite(TestBaseKeyedObjectPool.class);
     }
+    
+    // tests
+    public void testUnsupportedOperations() throws Exception {
+        KeyedObjectPool pool = new BaseKeyedObjectPool() { 
+            public Object borrowObject(Object key) throws Exception {
+                return null;
+            }
+            public void returnObject(Object key, Object obj) throws Exception {                
+            }
+            public void invalidateObject(Object key, Object obj) throws Exception {                
+            }            
+        };   
+        
+        try {
+            pool.getNumIdle();
+            fail("Expected UnsupportedOperationException");
+        } catch(UnsupportedOperationException e) {
+            // expected
+        }
 
-    public static void main(String args[]) {
-        String[] testCaseName = { TestAll.class.getName() };
-        junit.textui.TestRunner.main(testCaseName);
+        try {
+            pool.getNumActive();
+            fail("Expected UnsupportedOperationException");
+        } catch(UnsupportedOperationException e) {
+            // expected
+        }
+
+        try {
+            pool.clear();
+            fail("Expected UnsupportedOperationException");
+        } catch(UnsupportedOperationException e) {
+            // expected
+        }
+
+        try {
+            pool.getNumIdle("key");
+            fail("Expected UnsupportedOperationException");
+        } catch(UnsupportedOperationException e) {
+            // expected
+        }
+
+        try {
+            pool.getNumActive("key");
+            fail("Expected UnsupportedOperationException");
+        } catch(UnsupportedOperationException e) {
+            // expected
+        }
+
+        try {
+            pool.clear("key");
+            fail("Expected UnsupportedOperationException");
+        } catch(UnsupportedOperationException e) {
+            // expected
+        }
+
+        try {
+            pool.setFactory(null);
+            fail("Expected UnsupportedOperationException");
+        } catch(UnsupportedOperationException e) {
+            // expected
+        }
+
+        pool.close(); // a no-op, probably should be remove
+
     }
 }
