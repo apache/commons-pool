@@ -29,7 +29,7 @@ import org.apache.commons.pool.TestObjectPool;
 /**
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
- * @version $Revision: 1.24 $ $Date: 2004/08/10 19:39:13 $
+ * @version $Revision: 1.25 $ $Date: 2004/08/10 19:58:07 $
  */
 public class TestGenericObjectPool extends TestObjectPool {
     public TestGenericObjectPool(String testName) {
@@ -234,6 +234,22 @@ public class TestGenericObjectPool extends TestObjectPool {
             pool.returnObject(active[i]);
             assertEquals(99 - i,pool.getNumActive());
             assertEquals((i < 8 ? i+1 : 8),pool.getNumIdle());
+        }
+    }
+
+    public void testMaxIdleZero() throws Exception {
+        pool.setMaxActive(100);
+        pool.setMaxIdle(0);
+        Object[] active = new Object[100];
+        for(int i=0;i<100;i++) {
+            active[i] = pool.borrowObject();
+        }
+        assertEquals(100,pool.getNumActive());
+        assertEquals(0,pool.getNumIdle());
+        for(int i=0;i<100;i++) {
+            pool.returnObject(active[i]);
+            assertEquals(99 - i,pool.getNumActive());
+            assertEquals(0, pool.getNumIdle());
         }
     }
 
