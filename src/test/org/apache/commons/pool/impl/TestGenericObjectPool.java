@@ -28,7 +28,7 @@ import org.apache.commons.pool.TestObjectPool;
 /**
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
- * @version $Revision: 1.22 $ $Date: 2004/06/29 20:04:43 $
+ * @version $Revision: 1.23 $ $Date: 2004/07/04 17:21:47 $
  */
 public class TestGenericObjectPool extends TestObjectPool {
     public TestGenericObjectPool(String testName) {
@@ -212,14 +212,6 @@ public class TestGenericObjectPool extends TestObjectPool {
         assertEquals(0,pool.getNumIdle());
     }
     
-    public void testZeroMaxActive() throws Exception {
-        pool.setMaxActive(0);
-        pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_FAIL);
-        Object obj = pool.borrowObject();
-        assertEquals(getNthObject(0),obj);
-        pool.returnObject(obj);
-    }
-
     public void testNegativeMaxActive() throws Exception {
         pool.setMaxActive(-1);
         pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_FAIL);
