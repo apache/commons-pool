@@ -1,4 +1,4 @@
-<!-- $Id: build.xml,v 1.10 2002/05/04 13:10:54 rwaldhoff Exp $ -->
+<!-- $Id: build.xml,v 1.11 2002/05/04 13:24:19 rwaldhoff Exp $ -->
 <project name="commons-pool" default="test" basedir=".">
 
    <!-- patternset describing files to be copied from the doc directory -->
@@ -305,6 +305,43 @@
         <zipfileset dir="${workdir}" />
       </zip>
       
+      <delete dir="${workdir}"/>
+   
+   </target>
+
+   <!-- ######################################################### -->
+
+   <target name="dist-src" depends="init">
+   
+      <!-- not executed in default dist, because it is configuration-rich
+        and requires an active network connection -->
+                       
+      <mkdir dir="${workdir}"/>
+      <mkdir dir="${dest.jardir}"/>
+
+      <cvs dest="${workdir}" cvsRoot="${cvs.root}" 
+          package="jakarta-commons" tag="${cvs.tag}"/>
+      <move toDir="${workdir}/${src.name}">
+        <fileset dir="${workdir}/jakarta-commons/collections"/>
+      </move>
+      <delete dir="${workdir}/jakarta-commons"/> 
+      <copy file="./LICENSE" toDir="${workdir}/${src.name}"/>
+      
+      <!-- create tar.gz -->
+      <tar longfile="gnu" tarfile="${dest.src.tar}">
+        <tarfileset dir="${workdir}"/>
+      </tar>
+      
+      <gzip zipfile="${dest.src.tar.gz}"
+      	    src="${dest.src.tar}">
+      </gzip>
+      <delete file="${dest.src.tar}" />
+      
+      <!-- create a zip file -->
+      <zip zipfile="${dest.src.zip}" >
+        <zipfileset dir="${workdir}" />
+      </zip>
+             
       <delete dir="${workdir}"/>
    
    </target>
