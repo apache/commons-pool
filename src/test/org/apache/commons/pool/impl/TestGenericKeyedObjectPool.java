@@ -1,13 +1,13 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/impl/TestGenericKeyedObjectPool.java,v 1.7 2002/10/30 22:54:42 rwaldhoff Exp $
- * $Revision: 1.7 $
- * $Date: 2002/10/30 22:54:42 $
+ * $Id: TestGenericKeyedObjectPool.java,v 1.8 2002/10/31 15:04:24 rwaldhoff Exp $
+ * $Revision: 1.8 $
+ * $Date: 2002/10/31 15:04:24 $
  *
  * ====================================================================
  *
  * The Apache Software License, Version 1.1
  *
- * Copyright (c) 1999-2001 The Apache Software Foundation.  All rights
+ * Copyright (c) 2001-2002 The Apache Software Foundation.  All rights
  * reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -61,14 +61,20 @@
 
 package org.apache.commons.pool.impl;
 
-import junit.framework.*;
-import org.apache.commons.pool.*;
+import java.util.HashMap;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
+import org.apache.commons.pool.KeyedObjectPool;
+import org.apache.commons.pool.KeyedPoolableObjectFactory;
+import org.apache.commons.pool.TestKeyedObjectPool;
 
 /**
  * @author Rodney Waldhoff
- * @version $Id: TestGenericKeyedObjectPool.java,v 1.7 2002/10/30 22:54:42 rwaldhoff Exp $
+ * @version $Revision: 1.8 $ $Date: 2002/10/31 15:04:24 $
  */
-public class TestGenericKeyedObjectPool extends TestCase {
+public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     public TestGenericKeyedObjectPool(String testName) {
         super(testName);
     }
@@ -77,14 +83,42 @@ public class TestGenericKeyedObjectPool extends TestCase {
         return new TestSuite(TestGenericKeyedObjectPool.class);
     }
 
-    public static void main(String args[]) {
-        String[] testCaseName = { TestGenericKeyedObjectPool.class.getName() };
-        junit.textui.TestRunner.main(testCaseName);
+    protected KeyedObjectPool makeEmptyPool(int mincapacity) {
+        GenericKeyedObjectPool pool = new GenericKeyedObjectPool(
+            new KeyedPoolableObjectFactory()  {
+                HashMap map = new HashMap();
+                public Object makeObject(Object key) { 
+                    int counter = 0;
+                    Integer Counter = (Integer)(map.get(key));
+                    if(null != Counter) {
+                        counter = Counter.intValue();
+                    }
+                    map.put(key,new Integer(counter + 1));                       
+                    return String.valueOf(key) + String.valueOf(counter); 
+                }
+                public void destroyObject(Object key, Object obj) { }
+                public boolean validateObject(Object key, Object obj) { return true; }
+                public void activateObject(Object key, Object obj) { }
+                public void passivateObject(Object key, Object obj) { }
+            }
+            );
+        pool.setMaxActive(mincapacity);
+        pool.setMaxIdle(mincapacity);
+        return pool;
+    }
+    
+    protected Object getNthObject(Object key, int n) {
+        return String.valueOf(key) + String.valueOf(n);
+    }
+    
+    protected Object makeKey(int n) {
+        return String.valueOf(n);
     }
 
     private GenericKeyedObjectPool pool = null;
 
-    public void setUp() {
+    public void setUp() throws Exception {
+        super.setUp();
         pool = new GenericKeyedObjectPool(
             new KeyedPoolableObjectFactory()  {
                 int counter = 0;
@@ -95,6 +129,10 @@ public class TestGenericKeyedObjectPool extends TestCase {
                 public void passivateObject(Object key, Object obj) { }
             }
             );
+    }
+    
+    public void tearDown() throws Exception {
+        super.tearDown();
     }
 
     public void testZeroMaxActive() throws Exception {
@@ -111,53 +149,6 @@ public class TestGenericKeyedObjectPool extends TestCase {
         Object obj = pool.borrowObject("");
         assertEquals("0",obj);
         pool.returnObject("",obj);
-    }
-
-    public void testBorrow() throws Exception {
-        Object obj0 = pool.borrowObject("");
-        assertEquals("0",obj0);
-        Object obj1 = pool.borrowObject("");
-        assertEquals("1",obj1);
-        Object obj2 = pool.borrowObject("");
-        assertEquals("2",obj2);
-    }
-
-    public void testBorrowReturn() throws Exception {
-        Object obj0 = pool.borrowObject("");
-        assertEquals("0",obj0);
-        Object obj1 = pool.borrowObject("");
-        assertEquals("1",obj1);
-        Object obj2 = pool.borrowObject("");
-        assertEquals("2",obj2);
-        pool.returnObject("",obj2);
-        obj2 = pool.borrowObject("");
-        assertEquals("2",obj2);
-        pool.returnObject("",obj1);
-        obj1 = pool.borrowObject("");
-        assertEquals("1",obj1);
-        pool.returnObject("",obj0);
-        pool.returnObject("",obj2);
-        obj2 = pool.borrowObject("");
-        assertEquals("2",obj2);
-        obj0 = pool.borrowObject("");
-        assertEquals("0",obj0);
-    }
-
-    public void testNumActiveNumIdle() throws Exception {
-        assertEquals(0,pool.getNumActive(""));
-        assertEquals(0,pool.getNumIdle(""));
-        Object obj0 = pool.borrowObject("");
-        assertEquals(1,pool.getNumActive(""));
-        assertEquals(0,pool.getNumIdle(""));
-        Object obj1 = pool.borrowObject("");
-        assertEquals(2,pool.getNumActive(""));
-        assertEquals(0,pool.getNumIdle(""));
-        pool.returnObject("",obj1);
-        assertEquals(1,pool.getNumActive(""));
-        assertEquals(1,pool.getNumIdle(""));
-        pool.returnObject("",obj0);
-        assertEquals(0,pool.getNumActive(""));
-        assertEquals(2,pool.getNumIdle(""));
     }
 
     public void testNumActiveNumIdle2() throws Exception {
@@ -207,39 +198,6 @@ public class TestGenericKeyedObjectPool extends TestCase {
         assertEquals(2,pool.getNumIdle("A"));
         assertEquals(0,pool.getNumActive("B"));
         assertEquals(2,pool.getNumIdle("B"));
-    }
-
-    public void testClear() throws Exception {
-        assertEquals(0,pool.getNumActive(""));
-        assertEquals(0,pool.getNumIdle(""));
-        Object obj0 = pool.borrowObject("");
-        Object obj1 = pool.borrowObject("");
-        assertEquals(2,pool.getNumActive(""));
-        assertEquals(0,pool.getNumIdle(""));
-        pool.returnObject("",obj1);
-        pool.returnObject("",obj0);
-        assertEquals(0,pool.getNumActive(""));
-        assertEquals(2,pool.getNumIdle(""));
-        pool.clear("");
-        assertEquals(0,pool.getNumActive(""));
-        assertEquals(0,pool.getNumIdle(""));
-        Object obj2 = pool.borrowObject("");
-        assertEquals("2",obj2);
-    }
-
-    public void testInvalidateObject() throws Exception {
-        assertEquals(0,pool.getNumActive(""));
-        assertEquals(0,pool.getNumIdle(""));
-        Object obj0 = pool.borrowObject("");
-        Object obj1 = pool.borrowObject("");
-        assertEquals(2,pool.getNumActive(""));
-        assertEquals(0,pool.getNumIdle(""));
-        pool.invalidateObject("",obj0);
-        assertEquals(1,pool.getNumActive(""));
-        assertEquals(0,pool.getNumIdle(""));
-        pool.invalidateObject("",obj1);
-        assertEquals(0,pool.getNumActive(""));
-        assertEquals(0,pool.getNumIdle(""));
     }
 
     public void testMaxIdle() throws Exception {
