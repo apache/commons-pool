@@ -18,7 +18,7 @@
    <properties>
       <title>Downloads</title>
       <author email="commons-dev@jakarta.apache.org">Commons Documentation Team</author>
-      <revision>$Id: downloads.xml,v 1.11 2004/06/07 17:55:15 dirkv Exp $</revision>
+      <revision>$Id: downloads.xml,v 1.12 2005/01/09 19:17:27 dirkv Exp $</revision>
    </properties>
 
    <body>
@@ -38,6 +38,10 @@
             its source is available from 
             <a href="http://jakarta.apache.org/site/sourceindex.cgi#commons-pool">
             Jakarta Source Downloads page</a>.
+         </p>
+         <p>
+            Commons-pool depends at runtime on 
+            <a href="http://jakarta.apache.org/commons/collections/">commons-collections</a>.
          </p>
          <p>
             Older releases are retained by the Apache Software Foundation but are 
