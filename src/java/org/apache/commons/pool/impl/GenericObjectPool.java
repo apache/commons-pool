@@ -1,7 +1,7 @@
 /*
- * $Id: GenericObjectPool.java,v 1.10 2002/10/31 18:56:11 rwaldhoff Exp $
- * $Revision: 1.10 $
- * $Date: 2002/10/31 18:56:11 $
+ * $Id: GenericObjectPool.java,v 1.11 2002/11/01 23:58:40 rwaldhoff Exp $
+ * $Revision: 1.11 $
+ * $Date: 2002/11/01 23:58:40 $
  *
  * ====================================================================
  *
@@ -158,7 +158,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * </ul>
  * @see GenericKeyedObjectPool
  * @author Rodney Waldhoff
- * @version $Revision: 1.10 $ $Date: 2002/10/31 18:56:11 $
+ * @version $Revision: 1.11 $ $Date: 2002/11/01 23:58:40 $
  */
 public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
@@ -394,12 +394,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         _testWhileIdle = testWhileIdle;
 
         _pool = new CursorableLinkedList();
-        if(_timeBetweenEvictionRunsMillis > 0) {
-            _evictor = new Evictor();
-            Thread t = new Thread(_evictor);
-            t.setDaemon(true);
-            t.start();
-        }
+        startEvictor(_timeBetweenEvictionRunsMillis);
     }
 
     //--- public methods ---------------------------------------------
@@ -596,19 +591,8 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @see #getTimeBetweenEvictionRunsMillis
      */
     public synchronized void setTimeBetweenEvictionRunsMillis(long timeBetweenEvictionRunsMillis) {
-        if(_timeBetweenEvictionRunsMillis > 0 && timeBetweenEvictionRunsMillis <= 0) {
-            _evictor.cancel();
-            _evictor = null;
-            _timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
-        } else if(_timeBetweenEvictionRunsMillis <= 0 && timeBetweenEvictionRunsMillis > 0) {
-            _timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
-            _evictor = new Evictor();
-            Thread t = new Thread(_evictor);
-            t.setDaemon(true);
-            t.start();
-        } else {
-            _timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
-        }
+        _timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
+        startEvictor(_timeBetweenEvictionRunsMillis);
     }
 
     /**
@@ -838,10 +822,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
             _evictionCursor.close();
             _evictionCursor = null;
         }
-        if(null != _evictor) {
-            _evictor.cancel();
-            _evictor = null;
-        }
+        startEvictor(-1L);
     }
 
     synchronized public void setFactory(PoolableObjectFactory factory) throws IllegalStateException {
@@ -913,8 +894,26 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         }
     }
     
-    //--- package methods --------------------------------------------
+    //--- non-public methods ----------------------------------------
 
+    /**
+     * Start the eviction thread or service, or when 
+     * <i>delay</i> is non-positive, stop it
+     * if it is already running.
+     */
+    protected synchronized void startEvictor(long delay) {
+        if(null != _evictor) {
+            _evictor.cancel();
+            _evictor = null;
+        }
+        if(delay > 0) {
+            _evictor = new Evictor(delay);
+            Thread t = new Thread(_evictor);
+            t.setDaemon(true);
+            t.start();
+        }
+    }
+    
     synchronized String debugInfo() {
         StringBuffer buf = new StringBuffer();
         buf.append("Active: ").append(getNumActive()).append("\n");
@@ -962,22 +961,23 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @see #setTimeBetweenEvictionRunsMillis
      */
     class Evictor implements Runnable {
-        protected boolean _cancelled = false;
-
+        private boolean _cancelled = false;
+        private long _delay = 0L;
+        
+        public Evictor(long delay) {
+            _delay = delay;
+        }
+        
         void cancel() {
             _cancelled = true;
         }
 
         public void run() {
             while(!_cancelled) {
-                long sleeptime = 0L;
-                synchronized(GenericObjectPool.this) {
-                    sleeptime = _timeBetweenEvictionRunsMillis;
-                }
                 try {
-                    Thread.currentThread().sleep(sleeptime);
+                    Thread.currentThread().sleep(_delay);
                 } catch(Exception e) {
-                    ; // ignored
+                    // ignored
                 }
                 try {
                     evict();
