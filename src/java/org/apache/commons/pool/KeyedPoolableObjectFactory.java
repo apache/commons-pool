@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/KeyedPoolableObjectFactory.java,v 1.3 2002/03/17 14:55:21 rwaldhoff Exp $
- * $Revision: 1.3 $
- * $Date: 2002/03/17 14:55:21 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/KeyedPoolableObjectFactory.java,v 1.4 2003/02/25 23:38:21 rwaldhoff Exp $
+ * $Revision: 1.4 $
+ * $Date: 2003/02/25 23:38:21 $
  *
  * ====================================================================
  *
@@ -100,7 +100,7 @@ package org.apache.commons.pool;
  * </ol>
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.3 $ $Date: 2002/03/17 14:55:21 $ 
+ * @version $Revision: 1.4 $ $Date: 2003/02/25 23:38:21 $ 
  *
  * @see KeyedObjectPool
  */
@@ -110,14 +110,14 @@ public interface KeyedPoolableObjectFactory {
      * @param key the key used when constructing the object
      * @return an instance that can be served by the pool.
      */
-    public abstract Object makeObject(Object key) throws Exception;
+    Object makeObject(Object key) throws Exception;
 
     /**
      * Destroy an instance no longer needed by the pool.
      * @param key the key used when selecting the instance
      * @param obj the instance to be destroyed
      */
-    public abstract void destroyObject(Object key, Object obj) throws Exception;
+    void destroyObject(Object key, Object obj) throws Exception;
 
     /**
      * Ensures that the instance is safe to be returned by the pool.
@@ -127,19 +127,19 @@ public interface KeyedPoolableObjectFactory {
      * @return <tt>false</tt> if this <i>obj</i> is not valid and should
      *         be dropped from the pool, <tt>true</tt> otherwise.
      */
-    public abstract boolean validateObject(Object key, Object obj);
+    boolean validateObject(Object key, Object obj);
 
     /**
      * Reinitialize an instance to be returned by the pool.
      * @param key the key used when selecting the object
      * @param obj the instance to be activated
      */
-    public abstract void activateObject(Object key, Object obj) throws Exception;
+    void activateObject(Object key, Object obj) throws Exception;
 
     /**
      * Uninitialize an instance to be returned to the pool.
      * @param key the key used when selecting the object
      * @param obj the instance to be passivated
      */
-    public abstract void passivateObject(Object key, Object obj) throws Exception;
+    void passivateObject(Object key, Object obj) throws Exception;
 }
