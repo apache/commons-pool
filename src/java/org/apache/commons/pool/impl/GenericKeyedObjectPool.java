@@ -18,7 +18,10 @@ package org.apache.commons.pool.impl;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.TreeMap;
 
 import org.apache.commons.collections.CursorableLinkedList;
 import org.apache.commons.pool.BaseKeyedObjectPool;
@@ -120,7 +123,7 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  * @see GenericObjectPool
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
- * @version $Revision: 1.26 $ $Date: 2004/02/28 11:46:33 $
+ * @version $Revision: 1.27 $ $Date: 2004/07/04 17:31:11 $
  */
 public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
 
@@ -734,9 +737,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             if(null == pair) {
                 // if there is a totalMaxActive and we are at the limit then
                 // we have to make room
-                // TODO: this could be improved by only removing the oldest object
                 if ((_maxTotal > 0) && (_totalActive + _totalIdle >= _maxTotal)) {
-                    clear();
+                    clearOldest();
                 }
                 
                 // check if we can create one
@@ -808,6 +810,56 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         notifyAll();
     }
 
+    /**
+     * Method clears oldest 15% of objects in pool.  The method sorts the 
+     * objects into a TreeMap and then iterates the first 15% for removal
+     */
+    public synchronized void clearOldest() {
+        // build sorted map of idle objects
+        TreeMap map = new TreeMap();
+        for (Iterator keyiter = _poolList.iterator(); keyiter.hasNext();) {
+            Object key = keyiter.next();
+            CursorableLinkedList list = (CursorableLinkedList) _poolMap.get(key);
+            for (Iterator it = list.iterator(); it.hasNext();) {
+                // each item into the map uses the objectimestamppair object
+                // as the key.  It then gets sorted based on the timstamp field
+                // each value in the map is the parent list it belongs in.
+                ObjectTimestampPair pair = (ObjectTimestampPair) it.next();
+                map.put(pair, key);
+            }
+        }
+        
+        // Now iterate created map and kill the first 15% plus one to account for zero
+        Set setPairKeys = map.entrySet();
+        int itemsToRemove = ((int) (map.size() * 0.15)) + 1;
+        
+        Iterator iter = setPairKeys.iterator();
+        while (iter.hasNext() && itemsToRemove > 0) {
+            Map.Entry entry = (Map.Entry) iter.next();
+            // kind of backwards on naming.  In the map, each key is the objecttimestamppair
+            // because it has the ordering with the timestamp value.  Each value that the
+            // key references is the key of the list it belongs to.
+            Object key = entry.getValue();
+            ObjectTimestampPair pairTimeStamp = (ObjectTimestampPair) entry.getKey();
+            CursorableLinkedList list = (CursorableLinkedList) _poolMap.get(key);
+            list.remove(pairTimeStamp);
+
+            try {
+                _factory.destroyObject(key, pairTimeStamp.value);
+            } catch (Exception e) {
+                // ignore error, keep destroying the rest
+            }
+            // if that was the last object for that key, drop that pool
+            if (list.isEmpty()) {
+                _poolMap.remove(key);
+                _poolList.remove(key);
+            }
+            _totalIdle--;
+            itemsToRemove--;
+        }
+        notifyAll();
+    }
+     
     public synchronized void clear(Object key) {
         CursorableLinkedList pool = (CursorableLinkedList)(_poolMap.remove(key));
         if(null == pool) {
@@ -1105,8 +1157,10 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
     /**
      * A simple "struct" encapsulating an object instance and a timestamp.
+     * 
+     * Implements Comparable, objects are sorted from old to new.
      */
-    class ObjectTimestampPair {
+    class ObjectTimestampPair implements Comparable {
         Object value;
         long tstamp;
 
@@ -1122,6 +1176,14 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
         public String toString() {
             return value + ";" + tstamp;
+        }
+
+        public int compareTo(Object obj) {
+            return compareTo((ObjectTimestampPair) obj);
+        }
+
+        public int compareTo(ObjectTimestampPair other) {
+            return (int) (this.tstamp - other.tstamp);
         }
     }
 

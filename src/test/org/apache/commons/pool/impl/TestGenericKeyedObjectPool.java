@@ -28,7 +28,7 @@ import org.apache.commons.pool.TestKeyedObjectPool;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision: 1.18 $ $Date: 2004/02/28 11:46:11 $
+ * @version $Revision: 1.19 $ $Date: 2004/07/04 17:31:23 $
  */
 public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     public TestGenericKeyedObjectPool(String testName) {
@@ -221,6 +221,54 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         assertEquals(0, pool.getNumIdle("b"));
     }
 
+    public void testMaxTotalLRU() throws Exception {
+        pool.setMaxActive(2);
+        pool.setMaxTotal(3);
+//        pool.setWhenExhaustedAction(GenericKeyedObjectPool.WHEN_EXHAUSTED_GROW);
+
+        Object o1 = pool.borrowObject("a");
+        assertNotNull(o1);
+        pool.returnObject("a", o1);
+        Thread.sleep(10);
+
+        Object o2 = pool.borrowObject("b");
+        assertNotNull(o2);
+        pool.returnObject("b", o2);
+        Thread.sleep(10);
+
+        Object o3 = pool.borrowObject("c");
+        assertNotNull(o3);
+        pool.returnObject("c", o3);
+        Thread.sleep(10);
+
+        Object o4 = pool.borrowObject("a");
+        assertNotNull(o4);
+        pool.returnObject("a", o4);
+        Thread.sleep(10);
+
+        assertSame(o1, o4);
+
+        // this should cause b to be bumped out of the pool
+        Object o5 = pool.borrowObject("d");
+        assertNotNull(o5);
+        pool.returnObject("d", o5);
+        Thread.sleep(10);
+
+        // now re-request b, we should get a different object because it should
+        // have been expelled from pool (was oldest because a was requested after b)
+        Object o6 = pool.borrowObject("b");
+        assertNotNull(o6);
+        pool.returnObject("b", o6);
+
+        assertNotSame(o1, o6);
+
+        // second a is still in there
+        Object o7 = pool.borrowObject("a");
+        assertNotNull(o7);
+        pool.returnObject("a", o7);
+
+        assertSame(o4, o7);
+    }
 
     public void testSettersAndGetters() throws Exception {
         GenericKeyedObjectPool pool = new GenericKeyedObjectPool();
