@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!DOCTYPE org.apache.commons.menus SYSTEM '../../../xdocs/stylesheets/menus/org-apache-commons-menus.dtd'>
-<project name="Commons Pool" href="http://jakarta.apache.org/commons/pool/">
+<!DOCTYPE org.apache.commons.menus SYSTEM '../../xdocs/stylesheets/menus/org-apache-commons-menus.dtd'>
+<project name="Commons Pool">
     <title>Commons Pool</title>
-    <logo href="http://jakarta.apache.org/commons/pool/images/logo.jpg">Jakarta-Commons</logo>
-
     <body>
-        &about-menu;
+        &top-menus;
         <menu name="Commons&#xA0;Pool">
             <item name="Overview"                      href="/index.html" />
             <item name="API&#xA0;Documentation"        href="/apidocs/index.html"/>
@@ -16,8 +14,6 @@
             <item name="Examples"                      href="/examples.html"/>
             <item name="Downloads"                     href="/downloads.html"/>
         </menu>
-        &information-menu;
-        &community-menu;
-        &translations-menu;
+        &bottom-menus;
     </body>
 </project>
