@@ -18,7 +18,7 @@
   <extend>../commons-build/project.xml</extend>
   <name>Commons Pool</name>
   <id>commons-pool</id>
-  <logo>/images/pool-logo-blue.jpg</logo>
+  <logo>/images/pool-logo-white.png</logo>
   <url>http://jakarta.apache.org/commons/pool/</url>
   <inceptionYear>2001</inceptionYear>
   <shortDescription>Commons Object Pooling Library</shortDescription>
