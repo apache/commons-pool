@@ -1,7 +1,7 @@
 /*
  * $Source: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericKeyedObjectPool.java,v $
- * $Revision: 1.19 $
- * $Date: 2003/08/22 14:33:30 $
+ * $Revision: 1.20 $
+ * $Date: 2003/08/26 14:14:15 $
  *
  * ====================================================================
  *
@@ -164,7 +164,8 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  * </p>
  * @see GenericObjectPool
  * @author Rodney Waldhoff
- * @version $Revision: 1.19 $ $Date: 2003/08/22 14:33:30 $
+ * @author Dirk Verbeeck
+ * @version $Revision: 1.20 $ $Date: 2003/08/26 14:14:15 $
  */
 public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
 
@@ -221,6 +222,13 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @see #setMaxActive
      */
     public static final int DEFAULT_MAX_ACTIVE  = 8;
+
+    /**
+     * The default cap on the the maximum number of objects that can exists at one time.
+     * @see #getMaxTotal
+     * @see #setMaxTotal
+     */
+    public static final int DEFAULT_MAX_TOTAL  = -1;
 
     /**
      * The default "when exhausted action" for the pool.
@@ -389,6 +397,25 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @param testWhileIdle whether or not to validate objects in the idle object eviction thread, if any (see {@link #setTestWhileIdle})
      */
     public GenericKeyedObjectPool(KeyedPoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle) {
+        this(factory, maxActive, whenExhaustedAction, maxWait, maxIdle, GenericKeyedObjectPool.DEFAULT_MAX_TOTAL, testOnBorrow, testOnReturn, timeBetweenEvictionRunsMillis, numTestsPerEvictionRun, minEvictableIdleTimeMillis, testWhileIdle);
+    }
+
+    /**
+     * Create a new <tt>GenericKeyedObjectPool</tt> using the specified values.
+     * @param factory the (possibly <tt>null</tt>)PoolableObjectFactory to use to create, validate and destroy objects
+     * @param maxActive the maximum number of objects that can be borrowed from me at one time (per key) (see {@link #setMaxActive})
+     * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #setWhenExhaustedAction})
+     * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted an and <i>whenExhaustedAction</i> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
+     * @param maxIdle the maximum number of idle objects in my pool (see {@link #setMaxIdle})
+     * @param maxTotal the maximum number of objects that can exists at one time (see {@link #setMaxTotal})
+     * @param testOnBorrow whether or not to validate objects before they are returned by the {@link #borrowObject} method (see {@link #setTestOnBorrow})
+     * @param testOnReturn whether or not to validate objects after they are returned to the {@link #returnObject} method (see {@link #setTestOnReturn})
+     * @param timeBetweenEvictionRunsMillis the amount of time (in milliseconds) to sleep between examining idle objects for eviction (see {@link #setTimeBetweenEvictionRunsMillis})
+     * @param numTestsPerEvictionRun the number of idle objects to examine per run within the idle object eviction thread (if any) (see {@link #setNumTestsPerEvictionRun})
+     * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligable for evcition (see {@link #setMinEvictableIdleTimeMillis})
+     * @param testWhileIdle whether or not to validate objects in the idle object eviction thread, if any (see {@link #setTestWhileIdle})
+     */
+    public GenericKeyedObjectPool(KeyedPoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, int maxTotal, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle) {
         _factory = factory;
         _maxActive = maxActive;
         switch(whenExhaustedAction) {
@@ -402,6 +429,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         }
         _maxWait = maxWait;
         _maxIdle = maxIdle;
+        _maxTotal = maxTotal;
         _testOnBorrow = testOnBorrow;
         _testOnReturn = testOnReturn;
         _timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
@@ -426,8 +454,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     //--- configuration methods --------------------------------------
 
     /**
-     * Returns the cap on the total number of active instances from my pool.
-     * @return the cap on the total number of active instances from my pool.
+     * Returns the cap on the number of active instances from my pool (per key).
+     * @return the cap on the number of active instances from my pool (per key).
      * @see #setMaxActive
      */
     public int getMaxActive() {
@@ -435,13 +463,35 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     }
 
     /**
-     * Sets the cap on the total number of active instances from my pool.
-     * @param maxActive The cap on the total number of active instances from my pool.
+     * Sets the cap on the number of active instances from my pool (per key).
+     * @param maxActive The cap on the number of active instances from my pool (per key).
      *                  Use a negative value for an infinite number of instances.
      * @see #getMaxActive
      */
     public void setMaxActive(int maxActive) {
         _maxActive = maxActive;
+        synchronized(this) {
+            notifyAll();
+        }
+    }
+
+    /**
+     * Returns the cap on the total number of instances from my pool.
+     * @return the cap on the total number of instances from my pool.
+     * @see #setMaxTotal
+     */
+    public int getMaxTotal() {
+        return _maxTotal;
+    }
+
+    /**
+     * Sets the cap on the total number of instances from my pool.
+     * @param maxTotal The cap on the total number of instances from my pool.
+     *                  Use a negative value for an infinite number of instances.
+     * @see #getMaxTotal
+     */
+    public void setMaxTotal(int maxTotal) {
+        _maxTotal = maxTotal;
         synchronized(this) {
             notifyAll();
         }
@@ -748,10 +798,18 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             }
             // otherwise
             if(null == pair) {
+                // if there is a totalMaxActive and we are at the limit then
+                // we have to make room
+                // TODO: this could be improved by only removing the oldest object
+                if ((_maxTotal > 0) && (_totalActive + _totalIdle >= _maxTotal)) {
+                    clear();
+                }
+                
                 // check if we can create one
                 // (note we know that the num sleeping is 0, else we wouldn't be here)
                 int active = getActiveCount(key);
-                if(_maxActive <= 0 || active < _maxActive) {
+                if ((_maxActive <= 0 || active < _maxActive) &&
+                    (_maxTotal <= 0 || _totalActive + _totalIdle < _maxTotal)) {
                     Object obj = _factory.makeObject(key);
                     pair = new ObjectTimestampPair(obj);
                     newlyCreated = true;
@@ -1179,12 +1237,19 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     private int _maxIdle = DEFAULT_MAX_IDLE;
 
     /**
-     * The cap on the total number of active instances from the pool (per key).
+     * The cap on the number of active instances from the pool (per key).
      * @see #setMaxActive
      * @see #getMaxActive
      */
     private int _maxActive = DEFAULT_MAX_ACTIVE;
 
+    /**
+     * The cap on the total number of instances from the pool.
+     * @see #setMaxTotal
+     * @see #getMaxTotal
+     */
+    private int _maxTotal = DEFAULT_MAX_TOTAL;
+    
     /**
      * The maximum amount of time (in millis) the
      * {@link #borrowObject} method should block before throwing
