@@ -1,7 +1,7 @@
 /*
- * $Id: TestGenericKeyedObjectPool.java,v 1.13 2003/04/24 20:14:03 rwaldhoff Exp $
- * $Revision: 1.13 $
- * $Date: 2003/04/24 20:14:03 $
+ * $Id: TestGenericKeyedObjectPool.java,v 1.14 2003/08/21 14:36:53 dirkv Exp $
+ * $Revision: 1.14 $
+ * $Date: 2003/08/21 14:36:53 $
  *
  * ====================================================================
  *
@@ -73,7 +73,7 @@ import org.apache.commons.pool.TestKeyedObjectPool;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision: 1.13 $ $Date: 2003/04/24 20:14:03 $
+ * @version $Revision: 1.14 $ $Date: 2003/08/21 14:36:53 $
  */
 public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     public TestGenericKeyedObjectPool(String testName) {
@@ -297,7 +297,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         pool.setMaxIdle(500);
         pool.setMaxActive(500);
         pool.setNumTestsPerEvictionRun(100);
-        pool.setMinEvictableIdleTimeMillis(500L);
+        pool.setMinEvictableIdleTimeMillis(250L);
         pool.setTimeBetweenEvictionRunsMillis(500L);
 
         Object[] active = new Object[500];
