@@ -20,7 +20,7 @@
   <name>Commons Pool</name>
   <id>commons-pool</id>
   <inceptionYear>2001</inceptionYear>
-  <currentVersion>1.2-dev</currentVersion>
+  <currentVersion>1.2-RC1</currentVersion>
   <shortDescription>Commons Object Pooling Library</shortDescription>
   <description>Commons Object Pooling Library</description>
   <logo>/images/pool-logo-white.png</logo>
@@ -83,6 +83,11 @@
       <id>1.1</id>
       <name>1.1</name>
       <tag>POOL_1_1</tag>
+    </version>
+    <version>
+      <id>1.2RC1</id>
+      <name>1.2RC1</name>
+      <tag>POOL_1_2_RC1</tag>
     </version>
   </versions>
 
