@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/BaseKeyedObjectPool.java,v 1.5 2003/02/25 23:38:20 rwaldhoff Exp $
- * $Revision: 1.5 $
- * $Date: 2003/02/25 23:38:20 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/BaseKeyedObjectPool.java,v 1.6 2003/04/24 18:07:10 rwaldhoff Exp $
+ * $Revision: 1.6 $
+ * $Date: 2003/04/24 18:07:10 $
  *
  * ====================================================================
  *
@@ -67,12 +67,19 @@ package org.apache.commons.pool;
  * {@link UnsupportedOperationException}.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.5 $ $Date: 2003/02/25 23:38:20 $
+ * @version $Revision: 1.6 $ $Date: 2003/04/24 18:07:10 $
  */
 public abstract class BaseKeyedObjectPool implements KeyedObjectPool {
     public abstract Object borrowObject(Object key) throws Exception;
     public abstract void returnObject(Object key, Object obj) throws Exception;
     public abstract void invalidateObject(Object key, Object obj) throws Exception;
+
+    /**
+     * Not supported in this base implementation.
+     */
+    public void addObject(Object key) throws Exception, UnsupportedOperationException {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Not supported in this base implementation.

@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackKeyedObjectPool.java,v 1.9 2003/03/14 00:12:48 rwaldhoff Exp $
- * $Revision: 1.9 $
- * $Date: 2003/03/14 00:12:48 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackKeyedObjectPool.java,v 1.10 2003/04/24 18:07:09 rwaldhoff Exp $
+ * $Revision: 1.10 $
+ * $Date: 2003/04/24 18:07:09 $
  *
  * ====================================================================
  *
@@ -84,7 +84,7 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  * artificial limits.
  *
  * @author Rodney Waldhoff
- * @version $Id: StackKeyedObjectPool.java,v 1.9 2003/03/14 00:12:48 rwaldhoff Exp $
+ * @version $Id: StackKeyedObjectPool.java,v 1.10 2003/04/24 18:07:09 rwaldhoff Exp $
  */
 public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
     /**
@@ -172,7 +172,6 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
             stack = new Stack();
             stack.ensureCapacity( _initSleepingCapacity > _maxSleeping ? _maxSleeping : _initSleepingCapacity);
             _pools.put(key,stack);
-            _activeCount.put(key,new Integer(0));
         }
         try {
             obj = stack.pop();
@@ -187,21 +186,18 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
         if(null != obj && null != _factory) {
             _factory.activateObject(key,obj);
         }
-        _totActive++;
-        Integer old = (Integer)(_activeCount.get(key));
-        _activeCount.put(key,new Integer(old.intValue() + 1));
+        incrementActiveCount(key);
         return obj;
     }
 
     public synchronized void returnObject(Object key, Object obj) throws Exception {
-        _totActive--;
+        decrementActiveCount(key);
         if(null == _factory || _factory.validateObject(key,obj)) {
             Stack stack = (Stack)(_pools.get(key));
             if(null == stack) {
                 stack = new Stack();
                 stack.ensureCapacity( _initSleepingCapacity > _maxSleeping ? _maxSleeping : _initSleepingCapacity);
                 _pools.put(key,stack);
-                _activeCount.put(key,new Integer(1));
             }
             if(null != _factory) {
                 try {
@@ -224,18 +220,22 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
                 _factory.destroyObject(key,obj);
             }
         }
-        Integer old = (Integer)(_activeCount.get(key));
-        _activeCount.put(key,new Integer(old.intValue() - 1));
     }
 
     public synchronized void invalidateObject(Object key, Object obj) throws Exception {
-        _totActive--;
-        Integer old = (Integer)(_activeCount.get(key));
-        _activeCount.put(key,new Integer(old.intValue() - 1));
+        decrementActiveCount(key);
         if(null != _factory) {
             _factory.destroyObject(key,obj);
         }
         notifyAll(); // _totalActive has changed
+    }
+
+    public void addObject(Object key) throws Exception {
+        Object obj = _factory.makeObject(key);
+        synchronized(this) {
+            incrementActiveCount(key); // returnObject will decrement this
+            returnObject(key,obj);
+        }
     }
 
     public int getNumIdle() {
@@ -247,13 +247,7 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
     }
 
     public int getNumActive(Object key) {
-        try {
-            return ((Integer)_activeCount.get(key)).intValue();
-        } catch(NoSuchElementException e) {
-            return 0;
-        } catch(NullPointerException e) {
-            return 0;
-        }
+        return getActiveCount(key);
     }
 
     public synchronized int getNumIdle(Object key) {
@@ -281,7 +275,7 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
         destroyStack(key,stack);
     }
 
-    private synchronized void destroyStack(Object key,Stack stack) {
+    private synchronized void destroyStack(Object key, Stack stack) {
         if(null == stack) {
             return;
         } else {
@@ -296,7 +290,7 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
                 }
             }
             _totIdle -= stack.size();
-            _activeCount.put(key,new Integer(0));
+            _activeCount.remove(key);
             stack.clear();
         }
     }
@@ -315,14 +309,14 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
         return buf.toString();
     }
 
-    synchronized public void close() throws Exception {
+    public synchronized void close() throws Exception {
         clear();
         _pools = null;
         _factory = null;
         _activeCount = null;
     }
 
-    synchronized public void setFactory(KeyedPoolableObjectFactory factory) throws IllegalStateException {
+    public synchronized void setFactory(KeyedPoolableObjectFactory factory) throws IllegalStateException {
         if(0 < getNumActive()) {
             throw new IllegalStateException("Objects are already active");
         } else {
@@ -331,6 +325,37 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
         }
     }
 
+    private int getActiveCount(Object key) {
+        try {
+            return ((Integer)_activeCount.get(key)).intValue();
+        } catch(NoSuchElementException e) {
+            return 0;
+        } catch(NullPointerException e) {
+            return 0;
+        }
+    }
+
+    private void incrementActiveCount(Object key) {
+        _totActive++;
+        Integer old = (Integer)(_activeCount.get(key));
+        if(null == old) { 
+            _activeCount.put(key,new Integer(1));
+        } else {
+            _activeCount.put(key,new Integer(old.intValue() + 1));
+        }
+    }
+
+    private void decrementActiveCount(Object key) {
+        _totActive--;
+        Integer active = (Integer)(_activeCount.get(key));
+        if(null == active) {
+            // do nothing, either null or zero is OK
+        } else if(active.intValue() <= 1) {
+            _activeCount.remove(key);
+        } else {
+            _activeCount.put(key, new Integer(active.intValue() - 1));
+        }
+    }
 
     /** The default cap on the number of "sleeping" instances in the pool. */
     protected static final int DEFAULT_MAX_SLEEPING  = 8;

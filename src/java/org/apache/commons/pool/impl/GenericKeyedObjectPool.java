@@ -1,7 +1,7 @@
 /*
- * $Id: GenericKeyedObjectPool.java,v 1.16 2003/04/18 21:36:51 rwaldhoff Exp $
- * $Revision: 1.16 $
- * $Date: 2003/04/18 21:36:51 $
+ * $Id: GenericKeyedObjectPool.java,v 1.17 2003/04/24 18:07:09 rwaldhoff Exp $
+ * $Revision: 1.17 $
+ * $Date: 2003/04/24 18:07:09 $
  *
  * ====================================================================
  *
@@ -164,7 +164,7 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  * </p>
  * @see GenericObjectPool
  * @author Rodney Waldhoff
- * @version $Revision: 1.16 $ $Date: 2003/04/18 21:36:51 $
+ * @version $Revision: 1.17 $ $Date: 2003/04/24 18:07:09 $
  */
 public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
 
@@ -750,11 +750,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             if(null == pair) {
                 // check if we can create one
                 // (note we know that the num sleeping is 0, else we wouldn't be here)
-                int active = 0;
-                Integer act = (Integer)(_activeMap.get(key));
-                if(null != act) {
-                    active = act.intValue();
-                }
+                int active = getActiveCount(key);
                 if(_maxActive <= 0 || active < _maxActive) {
                     Object obj = _factory.makeObject(key);
                     pair = new ObjectTimestampPair(obj);
@@ -795,13 +791,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                     throw new NoSuchElementException("Could not create a validated object");
                 } // else keep looping
             } else {
-                Integer active = (Integer)(_activeMap.get(key));
-                if(null == active) {
-                    _activeMap.put(key,new Integer(1));
-                } else {
-                    _activeMap.put(key,new Integer(active.intValue() + 1));
-                }
-                _totalActive++;
+                incrementActiveCount(key);
                 return pair.value;
             }
         }
@@ -854,11 +844,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     }
 
     public synchronized int getNumActive(Object key) {
-        try {
-            return((Integer)(_activeMap.get(key))).intValue();
-        } catch(Exception e) {
-            return 0;
-        }
+        return getActiveCount(key);
     }
 
     public synchronized int getNumIdle(Object key) {
@@ -898,18 +884,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 _poolMap.put(key, pool);
                 _poolList.add(key);
             }
-            // subtract one from the total and keyed active counts
-            _totalActive--;
-            Integer active = (Integer)(_activeMap.get(key));
-            if(null == active) {
-                // do nothing, either null or zero is OK
-            } else if(active.intValue() <= 1) {
-                _activeMap.remove(key);
-            } else {
-                _activeMap.put(key, new Integer(active.intValue() - 1));
-            }
-            // if there's no space in the pool, flag the object
-            // for destruction
+            decrementActiveCount(key);
+            // if there's no space in the pool, flag the object for destruction
             // else if we passivated succesfully, return it to the pool
             if(_maxIdle >= 0 && (pool.size() >= _maxIdle)) {
                 shouldDestroy = true;
@@ -930,20 +906,20 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     }
 
     public synchronized void invalidateObject(Object key, Object obj) throws Exception {
-        _totalActive--;
-        Integer active = (Integer)(_activeMap.get(key));
-        if(null == active) {
-            // do nothing, either null or zero is OK
-        } else if(active.intValue() <= 1) {
-            _activeMap.remove(key);
-        } else {
-            _activeMap.put(key, new Integer(active.intValue() - 1));
-        }
+        decrementActiveCount(key);
         _factory.destroyObject(key,obj);
         notifyAll(); // _totalActive has changed
     }
 
-    synchronized public void close() throws Exception {
+    public void addObject(Object key) throws Exception {
+        Object obj = _factory.makeObject(key);
+        synchronized(this) {
+            incrementActiveCount(key); // returnObject will decrement this
+            returnObject(key,obj);
+        }
+    }
+
+    public synchronized void close() throws Exception {
         clear();
         _poolList = null;
         _poolMap = null;
@@ -1057,7 +1033,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         }
     }
 
-    //--- package methods --------------------------------------------
+    //--- package and private methods -----------------------------------------
 
     synchronized String debugInfo() {
         StringBuffer buf = new StringBuffer();
@@ -1076,6 +1052,37 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         } else {
             return(int)(Math.ceil((double)_totalIdle/Math.abs((double)_numTestsPerEvictionRun)));
         }
+    }
+
+    private void incrementActiveCount(Object key) {
+        _totalActive++;
+        Integer active = (Integer)(_activeMap.get(key));
+        if(null == active) {
+            _activeMap.put(key,new Integer(1));
+        } else {
+            _activeMap.put(key,new Integer(active.intValue() + 1));
+        }
+    }
+
+    private void decrementActiveCount(Object key) {
+        _totalActive--;
+        Integer active = (Integer)(_activeMap.get(key));
+        if(null == active) {
+            // do nothing, either null or zero is OK
+        } else if(active.intValue() <= 1) {
+            _activeMap.remove(key);
+        } else {
+            _activeMap.put(key, new Integer(active.intValue() - 1));
+        }
+    }
+
+    private int getActiveCount(Object key) {
+        int active = 0;
+        Integer act = (Integer)(_activeMap.get(key));
+        if(null != act) {
+            active = act.intValue();
+        }
+        return active;
     }
 
     //--- inner classes ----------------------------------------------
