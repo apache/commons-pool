@@ -5,12 +5,12 @@
   <name>Pool</name>
   <id>commons-pool</id>
   <currentVersion>1.1-dev</currentVersion>
-  <inceptionYear>2002</inceptionYear>
+  <inceptionYear>2001</inceptionYear>
   <gumpRepositoryId>jakarta</gumpRepositoryId>
-  <shortDescription>Commons Database Connection Pooling</shortDescription>
+  <shortDescription>Commons Object Pooling Library</shortDescription>
 
   <description>
-    Commons Database Connection Pooling
+    Commons Object Pooling Library
   </description>
   
   <developers>
@@ -33,8 +33,8 @@
       <organization></organization>
     </developer>
     <developer>
-      <name>Rodney Waldoff</name>
-      <id>rwaldof</id>
+      <name>Rodney Waldhoff</name>
+      <id>rwaldhoff</id>
       <email></email>
       <organization></organization>
     </developer>
@@ -61,7 +61,7 @@
     
     <unitTest>
       <includes>
-        <include>**/TestAll.java</include>
+        <include>org/apache/commons/pool/TestAll.java</include>
       </includes>
     </unitTest>
 
