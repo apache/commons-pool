@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/SoftReferenceObjectPool.java,v 1.2 2002/03/19 18:01:49 rwaldhoff Exp $
- * $Revision: 1.2 $
- * $Date: 2002/03/19 18:01:49 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/SoftReferenceObjectPool.java,v 1.3 2002/04/22 23:43:18 rwaldhoff Exp $
+ * $Revision: 1.3 $
+ * $Date: 2002/04/22 23:43:18 $
  *
  * ====================================================================
  *
@@ -74,7 +74,7 @@ import java.lang.ref.SoftReference;
  * {@link ObjectPool}.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.2 $ $Date: 2002/03/19 18:01:49 $
+ * @version $Revision: 1.3 $ $Date: 2002/04/22 23:43:18 $
  */
 public class SoftReferenceObjectPool implements ObjectPool {
     public SoftReferenceObjectPool() {
@@ -120,19 +120,35 @@ public class SoftReferenceObjectPool implements ObjectPool {
         return obj;
     }
 
-    public synchronized void returnObject(Object obj) throws Exception {
-        _numActive--;
-        if(null == _factory || _factory.validateObject(obj)) {
-            if(null != _factory) {
-                try {
-                    _factory.passivateObject(obj);
-                } catch(Exception e) {
-                    _factory.destroyObject(obj);
-                    return;
-                }
+    public void returnObject(Object obj) throws Exception {
+        boolean success = true;
+        if(!(_factory.validateObject(obj))) {
+            success = false;
+        } else {
+            try {
+                _factory.passivateObject(obj);
+            } catch(Exception e) {
+                success = false;
             }
         }
-        _pool.add(new SoftReference(obj));
+
+        boolean shouldDestroy = !success;
+        synchronized(this) {
+            _numActive--;
+            if(success) {
+                _pool.add(new SoftReference(obj));
+            }
+            notifyAll(); // _numActive has changed
+        }
+
+        if(shouldDestroy) {
+            try {
+                _factory.destroyObject(obj);
+            } catch(Exception e) {
+                // ignored
+            }
+        }
+
     }
 
     /** Returns an approximation not less than the of the number of idle instances in the pool. */

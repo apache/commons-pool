@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackObjectPool.java,v 1.2 2002/03/17 14:55:21 rwaldhoff Exp $
- * $Revision: 1.2 $
- * $Date: 2002/03/17 14:55:21 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackObjectPool.java,v 1.3 2002/04/22 23:43:18 rwaldhoff Exp $
+ * $Revision: 1.3 $
+ * $Date: 2002/04/22 23:43:18 $
  *
  * ====================================================================
  *
@@ -79,7 +79,7 @@ import java.util.Enumeration;
  * artificial limits.
  *
  * @author Rodney Waldhoff
- * @version $Id: StackObjectPool.java,v 1.2 2002/03/17 14:55:21 rwaldhoff Exp $
+ * @version $Id: StackObjectPool.java,v 1.3 2002/04/22 23:43:18 rwaldhoff Exp $
  */
 public class StackObjectPool implements ObjectPool {
     /**
@@ -172,27 +172,35 @@ public class StackObjectPool implements ObjectPool {
         return obj;
     }
 
-    public synchronized void returnObject(Object obj) throws Exception {
-        _numActive--;
-        if(null == _factory || _factory.validateObject(obj)) {
-            if(null != _factory) {
-                try {
-                    _factory.passivateObject(obj);
-                } catch(Exception e) {
-                    _factory.destroyObject(obj);
-                    return;
-                }
-            }
-            if(_pool.size() < _maxSleeping) {
-                _pool.push(obj);
-            } else {
-                if(null != _factory) {
-                    _factory.destroyObject(obj);
-                }
-            }
+    public void returnObject(Object obj) throws Exception {
+        boolean success = true;
+        if(!(_factory.validateObject(obj))) {
+            success = false;
         } else {
-            if(null != _factory) {
+            try {
+                _factory.passivateObject(obj);
+            } catch(Exception e) {
+                success = false;
+            }
+        }
+
+        boolean shouldDestroy = !success;
+
+        synchronized(this) {
+            _numActive--;
+            if(_pool.size() >= _maxSleeping) {
+                shouldDestroy = true;
+            } else if(success) {
+                _pool.push(obj);
+            }
+            notifyAll(); // _numActive has changed
+        }
+
+        if(shouldDestroy) {
+            try {
                 _factory.destroyObject(obj);
+            } catch(Exception e) {
+                // ignored
             }
         }
     }
