@@ -1,0 +1,110 @@
+<html>
+<head>
+<title>Status File for Jakarta Commons "Pool" Package</title>
+<head>
+<body bgcolor="white">
+
+
+<div align="center">
+<h1>The Jakarta Commons <em>Pool</em> Package</h1>
+$Id: STATUS.html,v 1.1 2001/04/14 16:40:32 rwaldhoff Exp $<br>
+<a href="#Introduction">[Introduction]</a>
+<a href="#Dependencies">[Dependencies]</a>
+<a href="#Release Info">[Release Info]</a>
+<a href="#Committers">[Committers]</a>
+<a href="#Action Items">[Action Items]</a>
+<br><br>
+</div>
+
+
+<a name="Introduction"></a>
+<h3>1.  INTRODUCTION</h3>
+
+<p>The <em>Pool</em> package defines a generalized object pooling interfaces,
+and provides several general-purpose implementations.
+The following major classes are provided:
+
+<ul>
+<li><strong>ObjectPool</strong> - the basic pooling interface, defining
+    borrowObject, returnObject and several optional methods.</li>
+<li><strong>KeyedObjectPool</strong> - a pooling interface that supports pooling
+    multiple <em>typed</em> objects.</li>
+<li><strong>PoolableObjectFactory</strong> - interface defining
+    lifecycle methods for object instances used within an ObjectPool.
+<li><strong>KeyedPoolableObjectFactory</strong> - interface defining
+    lifecycle methods for object instances used within a KeyedObjectPool.
+<li><strong>StackObjectPool/StackKeyedObjectPool</strong> - implementations
+    of ObjectPool and KeyedObjectPool backed by a simple Stack of
+    pooled instances</li>
+<li><strong>GenericObjectPool/GenericKeyedObjectPool</strong> - more
+    complex implementations of ObjectPool and KeyedObjectPool, supporting
+    asynchronous eviction of pooled instances, etc.</li>
+</ul>
+
+<a name="Dependencies"></a>
+<h3>2.  DEPENDENCIES</h3>
+
+<p>The <em>Pool</em> package is dependent upon the following external
+components for development and use:</p>
+<ul>
+<li><a href="http://java.sun.com/j2se">Java Development Kit</a>
+    (Version 1.2 or later)</li>
+<li>Jakarta-Commons Collections package (Version 1.0 or later)</li>
+<li><a href="http://www.junit.org">JUnit Testing Framework</a>
+    (Version 3.2 or later) - for unit tests only, not required
+    for deployment</li>
+</ul>
+
+
+<a name="Release Info"></a>
+<h3>3.  RELEASE INFO</h3>
+
+<p>Current Release:  <strong>Unreleased, CVS Repository Only</strong></p>
+
+<p>Planned Next Release:  TBD</p>
+
+<a name="Committers"></a>
+<h3>4.  COMMITTERS</h3>
+
+<p>The following individuals are the primary developers and maintainers of this
+component.  Developers who plan to use the <em>Pool</em> package in their own
+projects are encouraged to collaborate on the future development of this
+component to ensure that it continues to meet a variety of needs.</p>
+
+<ul>
+   <li><a href="mailto:morgand@apache.org">Morgan Delagrange</a></li>
+   <li><a href="mailto:geirm@apache.org">Geir Magnusson Jr.</a></li>
+   <li><a href="mailto:craigmcc@apache.org">Craig McClanahan</a></li>
+   <li><a href="mailto:rwaldhoff@apache.org">Rodney Waldhoff</a></li>
+   <li><a href="mailto:dweinr1@apache.org">David Weinrich</a></li>
+</ul>
+
+<a name="Action Items"></a>
+<h3>5.  ACTION ITEMS</h3>
+
+<p>The following action items need to be completed prior to a Version 1.0
+release of this component:</p>
+
+<table border="1">
+  <tr>
+    <th width="80%">Action Item</th>
+    <th width="20%">Volunteer</th>
+  </tr>
+
+  <tr>
+    <td><strong>Weak-Reference Based Pools</strong> - pool implementations
+    that keep weak references to the pooled instances, evicting objects
+    when the VM needs memory</td>
+    <td align="center">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td><strong>Install / Use Documentation</strong>.  Expanded examples and
+    installation documentation. </td>
+    <td align="center">&nbsp;</td>
+  </tr>
+
+</table>
+
+</body>
+</html>
