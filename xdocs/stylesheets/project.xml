@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project name="Commons - Pool" href="http://jakarta.apache.org/commons/pool">
-    <title>Pool</title>
-    <logo href="/images/logo.jpg">Commons</logo>
+    <title>Commons Pool</title>
+    <logo href="http://jakarta.apache.org/commons/pool/images/logo.jpg">Jakarta-Commons</logo>
     <!--
       Note: Per the .vsl file, "/site" links will be prefixed with "http://jakarta.apache.org/site"
             Other links starting with "/" become "./...".
@@ -9,25 +9,20 @@
     <body>
        <menu name="Home">
            <item name="Jakarta&#xA0;Commons"          href="http://jakarta.apache.org/commons/index.html" />
-           <item name="Pool"                          href="/index.html" />
+           <item name="Commons&#xA0;Pool"             href="/index.html" />
        </menu>
        <menu name="Information">
-           <item name="API&#xA0;Documentation"        href="http://nagoya.apache.org/gump/javadoc/jakarta-commons/pool/dist/docs/api/index.html"/>
+           <item name="API&#xA0;Documentation"        href="/apidocs/index.html"/>
            <item name="Examples"                      href="/examples.html"/>
        </menu>
        <menu name="Project Files">
-           <item name="Downloads"                     href="/downloads.html"/>
-           <item name="Source"                        href="http://cvs.apache.org/viewcvs/jakarta-commons/pool/"/>
-           <item name="Original&#xA0;Proposal"        href="http://cvs.apache.org/viewcvs/~checkout~/jakarta-commons/pool/PROPOSAL.html?content-type=text/html"/>
+           <item name="Releases"                      href="/downloads.html"/>
+           <item name="Source (Browse)"               href="http://cvs.apache.org/viewcvs/jakarta-commons/pool/"/>
+           <item name="Source (CVS)"                  href="http://jakarta.apache.org/site/cvsindex.html"/>
        </menu>
-       <menu name="About Us">
-           <item name="Contributors"                  href="/contributors.html"/>
+       <menu name="Administrivia">
            <item name="License"                       href="http://jakarta.apache.org/commons/license.html"/>
-       </menu>
-       <menu name="Jakarta Community">
-           <item name="Get&#xA0;Involved"             href="http://jakarta.apache.org/site/getinvolved.html"/>
-           <item name="Mailing&#xA0;Lists"            href="http://jakarta.apache.org/site/mail.html"/>
-           <item name="CVS&#xA0;Repositories"         href="http://jakarta.apache.org/site/cvsindex.html"/>
+           <item name="Original&#xA0;Proposal"        href="http://cvs.apache.org/viewcvs/~checkout~/jakarta-commons/pool/PROPOSAL.html?content-type=text/html"/>
        </menu>
     </body>
 </project>
