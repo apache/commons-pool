@@ -1,4 +1,5 @@
 # commons-collections.jar - Commons-Collections Classpath
-commons-collections.jar=${basedir}/../collections/build/commons-collections.jar
+commons-collections.home=${basedir}/../collections/dist
+commons-collections.jar=${commons-collections.home}/commons-collections.jar
 # junit.jar - JUnit 3.2+ Classpath
 junit.jar=/java/junit/junit.jar
