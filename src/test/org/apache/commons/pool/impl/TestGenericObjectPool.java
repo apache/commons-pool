@@ -1,7 +1,7 @@
 /*
- * $Id: TestGenericObjectPool.java,v 1.16 2003/08/12 22:46:57 dirkv Exp $
- * $Revision: 1.16 $
- * $Date: 2003/08/12 22:46:57 $
+ * $Id: TestGenericObjectPool.java,v 1.17 2003/08/21 18:19:11 dirkv Exp $
+ * $Revision: 1.17 $
+ * $Date: 2003/08/21 18:19:11 $
  *
  * ====================================================================
  *
@@ -73,7 +73,7 @@ import org.apache.commons.pool.TestObjectPool;
 /**
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
- * @version $Revision: 1.16 $ $Date: 2003/08/12 22:46:57 $
+ * @version $Revision: 1.17 $ $Date: 2003/08/21 18:19:11 $
  */
 public class TestGenericObjectPool extends TestObjectPool {
     public TestGenericObjectPool(String testName) {
@@ -477,6 +477,22 @@ public class TestGenericObjectPool extends TestObjectPool {
             GenericObjectPool pool = new GenericObjectPool(null,expected.maxActive, expected.whenExhaustedAction, expected.maxWait, expected.maxIdle, expected.testOnBorrow, expected.testOnReturn, expected.timeBetweenEvictionRunsMillis, expected.numTestsPerEvictionRun, expected.minEvictableIdleTimeMillis, expected.testWhileIdle);
             assertConfiguration(expected,pool);
         }
+        {
+            GenericObjectPool.Config expected = new GenericObjectPool.Config();
+            expected.maxActive = 2;
+            expected.maxIdle = 3;
+            expected.minIdle = 1;
+            expected.maxWait = 5L;
+            expected.minEvictableIdleTimeMillis = 7L;
+            expected.numTestsPerEvictionRun = 9;
+            expected.testOnBorrow = true;
+            expected.testOnReturn = true;
+            expected.testWhileIdle = true;
+            expected.timeBetweenEvictionRunsMillis = 11L;
+            expected.whenExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_GROW;
+            GenericObjectPool pool = new GenericObjectPool(null,expected.maxActive, expected.whenExhaustedAction, expected.maxWait, expected.maxIdle, expected.minIdle, expected.testOnBorrow, expected.testOnReturn, expected.timeBetweenEvictionRunsMillis, expected.numTestsPerEvictionRun, expected.minEvictableIdleTimeMillis, expected.testWhileIdle);
+            assertConfiguration(expected,pool);
+        }
     }
 
     public void testSetConfig() throws Exception {
@@ -548,7 +564,7 @@ public class TestGenericObjectPool extends TestObjectPool {
         pool.setMaxIdle(6);
         pool.setMaxActive(6);
         pool.setNumTestsPerEvictionRun(-2);
-        pool.setMinEvictableIdleTimeMillis(100L);
+        pool.setMinEvictableIdleTimeMillis(50L);
         pool.setTimeBetweenEvictionRunsMillis(100L);
 
         Object[] active = new Object[6];
@@ -573,7 +589,7 @@ public class TestGenericObjectPool extends TestObjectPool {
         pool.setMaxIdle(500);
         pool.setMaxActive(500);
         pool.setNumTestsPerEvictionRun(100);
-        pool.setMinEvictableIdleTimeMillis(500L);
+        pool.setMinEvictableIdleTimeMillis(250L);
         pool.setTimeBetweenEvictionRunsMillis(500L);
         pool.setTestWhileIdle(true);
 
@@ -617,6 +633,85 @@ public class TestGenericObjectPool extends TestObjectPool {
         assertTrue("Should be less than 100 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 100);
         try { Thread.sleep(600L); } catch(Exception e) { }
         assertEquals("Should be zero idle, found " + pool.getNumIdle(),0,pool.getNumIdle());
+    }
+
+    public void testMinIdle() throws Exception {
+        pool.setMaxIdle(500);
+        pool.setMinIdle(5);
+        pool.setMaxActive(10);
+        pool.setNumTestsPerEvictionRun(0);
+        pool.setMinEvictableIdleTimeMillis(50L);
+        pool.setTimeBetweenEvictionRunsMillis(100L);
+        pool.setTestWhileIdle(true);
+
+        try { Thread.sleep(150L); } catch(Exception e) { }
+        assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
+
+        Object[] active = new Object[5];
+        active[0] = pool.borrowObject();
+
+        try { Thread.sleep(150L); } catch(Exception e) { }
+        assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
+
+        for(int i=1 ; i<5 ; i++) {
+            active[i] = pool.borrowObject();
+        }
+
+        try { Thread.sleep(150L); } catch(Exception e) { }
+        assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
+
+        for(int i=0 ; i<5 ; i++) {
+            pool.returnObject(active[i]);
+        }
+
+        try { Thread.sleep(150L); } catch(Exception e) { }
+        assertTrue("Should be 10 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 10);
+    }
+
+    public void testMinIdleMaxActive() throws Exception {
+        pool.setMaxIdle(500);
+        pool.setMinIdle(5);
+        pool.setMaxActive(10);
+        pool.setNumTestsPerEvictionRun(0);
+        pool.setMinEvictableIdleTimeMillis(50L);
+        pool.setTimeBetweenEvictionRunsMillis(100L);
+        pool.setTestWhileIdle(true);
+
+        try { Thread.sleep(150L); } catch(Exception e) { }
+        assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
+
+        Object[] active = new Object[10];
+
+        try { Thread.sleep(150L); } catch(Exception e) { }
+        assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
+
+        for(int i=0 ; i<5 ; i++) {
+            active[i] = pool.borrowObject();
+        }
+
+        try { Thread.sleep(150L); } catch(Exception e) { }
+        assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
+
+        for(int i=0 ; i<5 ; i++) {
+            pool.returnObject(active[i]);
+        }
+
+        try { Thread.sleep(150L); } catch(Exception e) { }
+        assertTrue("Should be 10 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 10);
+
+        for(int i=0 ; i<10 ; i++) {
+            active[i] = pool.borrowObject();
+        }
+
+        try { Thread.sleep(150L); } catch(Exception e) { }
+        assertTrue("Should be 0 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 0);
+
+        for(int i=0 ; i<10 ; i++) {
+            pool.returnObject(active[i]);
+        }
+
+        try { Thread.sleep(150L); } catch(Exception e) { }
+        assertTrue("Should be 10 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 10);
     }
 
     public void testThreaded1() throws Exception {
