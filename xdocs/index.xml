@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <document>
    <properties>
-      <title>Home</title>
+      <title>Overview</title>
       <author email="commons-dev@jakarta.apache.org">Commons Documentation Team</author>
       <author email="rwaldhoff@apache.org">Rodney Waldhoff</author>
-      <revision>$Id: index.xml,v 1.8 2003/08/25 16:23:55 dirkv Exp $</revision>
+      <revision>$Id: index.xml,v 1.9 2003/11/16 17:34:32 dirkv Exp $</revision>
    </properties>
 
    <body>
