@@ -4,13 +4,14 @@
       <title>Downloads</title>
       <author email="commons-dev@jakarta.apache.org">Commons Documentation Team</author>
       <author email="rwaldhoff@apache.org">Rodney Waldhoff</author>
-      <revision>$Id: downloads.xml,v 1.4 2002/05/09 13:55:52 rwaldhoff Exp $</revision>
+      <revision>$Id: downloads.xml,v 1.5 2003/03/05 20:33:50 rwaldhoff Exp $</revision>
    </properties>
 
    <body>
-      <section name="Downloads">
+      <section name="Releases">
          <p>The following releases are available:</p>
          <ul>
+           <li><a href="http://jakarta.apache.org/builds/jakarta-commons/release/commons-pool/v1.0.1/">Release 1.0.1</a> - 12 August 2002</li>
            <li><a href="http://jakarta.apache.org/builds/jakarta-commons/release/commons-pool/v1.0/">Release 1.0</a> - 4 May 2002</li>
          </ul>
          <p>

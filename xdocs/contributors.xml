@@ -4,24 +4,16 @@
       <title>Contributors</title>
       <author email="commons-dev@jakarta.apache.org">Commons Documentation Team</author>
       <author email="rwaldhoff@apache.org">Rodney Waldhoff</author>
-      <revision>$Id: contributors.xml,v 1.2 2002/04/29 12:21:05 rwaldhoff Exp $</revision>
+      <revision>$Id: contributors.xml,v 1.3 2003/03/05 20:33:50 rwaldhoff Exp $</revision>
    </properties>
 
    <body>
       <section name="Contributors">
          <p>
-            The following volunteers have contributed code, documentation, testing
-            and support to <em>Pool</em>.
+            This page is deprecated.
+            Please see the <a href="http://jakarta.apache.org/commons/pool/team-list.html">Project Team</a>
+            page instead.  
          </p>
-         <!-- alphabetical by last name please -->
-         <ul>
-            <li>Morgan Delagrange</li>
-            <li>Geir Magnusson Jr.</li>
-            <li>Craig R. McClanahan</li>
-            <li>John McNally</li>
-            <li>Rodney Waldhoff</li>
-            <li>David Weinrich</li>
-         </ul>
       </section>
    </body>
 </document>
