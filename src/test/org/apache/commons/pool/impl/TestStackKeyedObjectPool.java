@@ -29,7 +29,7 @@ import org.apache.commons.pool.TestKeyedObjectPool;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision: 1.12 $ $Date: 2004/02/28 11:46:11 $
+ * @version $Revision: 1.13 $ $Date: 2004/02/28 12:21:41 $
  */
 public class TestStackKeyedObjectPool extends TestKeyedObjectPool {
     public TestStackKeyedObjectPool(String testName) {
@@ -140,21 +140,27 @@ public class TestStackKeyedObjectPool extends TestKeyedObjectPool {
     public void testVariousConstructors() throws Exception {
         {
             StackKeyedObjectPool pool = new StackKeyedObjectPool();
+            assertNotNull(pool);
         }
         {
             StackKeyedObjectPool pool = new StackKeyedObjectPool(10);
+            assertNotNull(pool);
         }
         {
             StackKeyedObjectPool pool = new StackKeyedObjectPool(10,5);
+            assertNotNull(pool);
         }
         {
             StackKeyedObjectPool pool = new StackKeyedObjectPool(null);
+            assertNotNull(pool);
         }
         {
             StackKeyedObjectPool pool = new StackKeyedObjectPool(null,10);
+            assertNotNull(pool);
         }
         {
             StackKeyedObjectPool pool = new StackKeyedObjectPool(null,10,5);
+            assertNotNull(pool);
         }
     }
     
