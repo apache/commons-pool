@@ -4,7 +4,7 @@
       <title>Home</title>
       <author email="commons-dev@jakarta.apache.org">Commons Documentation Team</author>
       <author email="rwaldhoff@apache.org">Rodney Waldhoff</author>
-      <revision>$Id: index.xml,v 1.4 2002/04/29 14:26:32 rwaldhoff Exp $</revision>
+      <revision>$Id: index.xml,v 1.5 2002/04/29 16:45:38 rwaldhoff Exp $</revision>
    </properties>
 
    <body>
@@ -44,12 +44,10 @@
              <a href="http://nagoya.apache.org/gump/javadoc/jakarta-commons/pool/dist/docs/api/org/apache/commons/pool/ObjectPool.html"><code>ObjectPool</code></a>
              defines a trivially simple pooling interface:
           </p>
-          <pre>
-            public interface ObjectPool {
-                Object borrowObject();
-                void returnObject(Object borrowed);
-            }
-          </pre>           
+          <pre>public interface ObjectPool {
+    Object borrowObject();
+    void returnObject(Object borrowed);
+}</pre>           
           <p>
             Some client classes won't integrate with <i>Pool</i> any more than this.
             Clients written to this interface can use arbitrary <code>ObjectPool</code> 
@@ -65,12 +63,10 @@
              <a href="http://nagoya.apache.org/gump/javadoc/jakarta-commons/pool/dist/docs/api/org/apache/commons/pool/KeyedObjectPool.html"><code>KeyedObjectPool</code></a>
              defines a similiar interface for pools composed of heterogenous objects:
           </p>
-          <pre>
-            public interface KeyedObjectPool {
-                Object borrowObject(Object key);
-                void returnObject(Object key, Object borrowed);
-            }
-          </pre>           
+          <pre>public interface KeyedObjectPool {
+    Object borrowObject(Object key);
+    void returnObject(Object key, Object borrowed);
+}</pre>           
         </subsection>
         <subsection name="PoolableObjectFactory">
           <p>
@@ -79,15 +75,13 @@
              <a href="http://nagoya.apache.org/gump/javadoc/jakarta-commons/pool/dist/docs/api/org/apache/commons/pool/PoolableObjectFactory.html"><code>PoolableObjectFactory</code></a>
              supports this by providing a generic inteface for the lifecycle of a pooled object:
           </p>
-          <pre>
-            public interface PoolableObjectFactory {
-                Object makeObject();
-                void activateObject(Object obj);
-                void passivateObject(Object obj);
-                boolean validateObject(Object obj);
-                void destroyObject(Object obj);
-            }
-          </pre>           
+          <pre>public interface PoolableObjectFactory {
+    Object makeObject();
+    void activateObject(Object obj);
+    void passivateObject(Object obj);
+    boolean validateObject(Object obj);
+    void destroyObject(Object obj);
+}</pre>           
           <p>
              <code>ObjectPool</code> implementations may be written to accept arbitrary
              <code>PoolableObjectFactory</code>s.
@@ -103,15 +97,13 @@
              <a href="http://nagoya.apache.org/gump/javadoc/jakarta-commons/pool/dist/docs/api/org/apache/commons/pool/KeyedPoolableObjectFactory.html"><code>KeyedPoolableObjectFactory</code></a>
              defines a similiar interface for <code>KeyedObjectPool</code>s:
           </p>
-          <pre>
-            public interface KeyedPoolableObjectFactory {
-                Object makeObject(Object key);
-                void activateObject(Object key, Object obj);
-                void passivateObject(Object key, Object obj);
-                boolean validateObject(Object key, Object obj);
-                void destroyObject(Object key, Object obj);
-            }
-          </pre>           
+          <pre>public interface KeyedPoolableObjectFactory {
+    Object makeObject(Object key);
+    void activateObject(Object key, Object obj);
+    void passivateObject(Object key, Object obj);
+    boolean validateObject(Object key, Object obj);
+    void destroyObject(Object key, Object obj);
+}</pre>           
           <p>
              <a href="http://nagoya.apache.org/gump/javadoc/jakarta-commons/pool/dist/docs/api/org/apache/commons/pool/BaseKeyedPoolableObjectFactory.html"><code>BaseKeyedPoolableObjectFactory</code></a>
              provides an abstract base implementation of <code>KeyedPoolableObjectFactory</code> that
