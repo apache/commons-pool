@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackObjectPoolFactory.java,v 1.2 2003/03/05 19:17:08 rwaldhoff Exp $
- * $Revision: 1.2 $
- * $Date: 2003/03/05 19:17:08 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackObjectPoolFactory.java,v 1.3 2003/04/24 00:59:46 rwaldhoff Exp $
+ * $Revision: 1.3 $
+ * $Date: 2003/04/24 00:59:46 $
  *
  * ====================================================================
  *
@@ -69,10 +69,10 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * A factory for creating {@link StackObjectPool} instances.
  *
  * @see StackObjectPool
- * @see KeyedObjectPoolFactory
+ * @see StackKeyedObjectPoolFactory
  *
  * @author Rodney Waldhoff
- * @version $Id: StackObjectPoolFactory.java,v 1.2 2003/03/05 19:17:08 rwaldhoff Exp $
+ * @version $Id: StackObjectPoolFactory.java,v 1.3 2003/04/24 00:59:46 rwaldhoff Exp $
  */
 public class StackObjectPoolFactory implements ObjectPoolFactory {
     public StackObjectPoolFactory() {
