@@ -1,4 +1,4 @@
-Release notes for Commons-Pool 2.0
+Release notes for Commons-Pool 1.1
 ===================================
 There were a lot changes since the 1.0.1 release on 12 Aug 2002.
 * A lot of corner cases were fixed
@@ -17,7 +17,7 @@ There were a lot changes since the 1.0.1 release on 12 Aug 2002.
 
 * UML Class & sequence diagrams
 
-* The following issues were resolved: (see Bugzilla for complete description)
+* The following issues were resolved since v1.0.1: (see Bugzilla for complete description)
 12840    2002-10-31    Enh    FIXE    Factor out syncronized block Evictor code to method
 12841    2002-10-30    Nor    FIXE    GenericObjectPool unused variable and unused synchronized block
 13128    2002-10-30    Maj    DUPL    GenericKeyedObjectPool: _activeMap.get(key) increment is not balanced with decrements
