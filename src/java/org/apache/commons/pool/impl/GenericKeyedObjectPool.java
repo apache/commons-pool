@@ -1,7 +1,7 @@
 /*
- * $Id: GenericKeyedObjectPool.java,v 1.9 2002/10/31 20:57:19 rwaldhoff Exp $
- * $Revision: 1.9 $
- * $Date: 2002/10/31 20:57:19 $
+ * $Id: GenericKeyedObjectPool.java,v 1.10 2002/12/01 18:29:06 rwaldhoff Exp $
+ * $Revision: 1.10 $
+ * $Date: 2002/12/01 18:29:06 $
  *
  * ====================================================================
  *
@@ -159,9 +159,14 @@ import java.util.Set;
  *   that fail to validate will be dropped from the pool.
  *  </li>
  * </ul>
+ * <p>
+ * GenericKeyedObjectPool is not usable without a {@link KeyedPoolableObjectFactory}.  A 
+ * non-<code>null</code> factory must be provided either as a constructor argument
+ * or via a call to {@link #setFactory} before the pool is used.
+ * </p>
  * @see GenericObjectPool
  * @author Rodney Waldhoff
- * @version $Revision: 1.9 $ $Date: 2002/10/31 20:57:19 $
+ * @version $Revision: 1.10 $ $Date: 2002/12/01 18:29:06 $
  */
 public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
 
@@ -287,6 +292,13 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     public static final long DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS = 1000L * 60L * 30L;
 
     //--- constructors -----------------------------------------------
+
+    /**
+     * Create a new <tt>GenericKeyedObjectPool</tt>..
+     */
+    public GenericKeyedObjectPool() {
+        this(null,DEFAULT_MAX_ACTIVE,DEFAULT_WHEN_EXHAUSTED_ACTION,DEFAULT_MAX_WAIT,DEFAULT_MAX_IDLE,DEFAULT_TEST_ON_BORROW,DEFAULT_TEST_ON_RETURN,DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,DEFAULT_NUM_TESTS_PER_EVICTION_RUN,DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,DEFAULT_TEST_WHILE_IDLE);
+    }
 
     /**
      * Create a new <tt>GenericKeyedObjectPool</tt> using the specified values.
