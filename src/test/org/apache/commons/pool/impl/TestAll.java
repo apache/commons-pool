@@ -1,13 +1,13 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/impl/TestAll.java,v 1.3 2003/03/05 19:17:08 rwaldhoff Exp $
- * $Revision: 1.3 $
- * $Date: 2003/03/05 19:17:08 $
+ * $Source: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/impl/TestAll.java,v $
+ * $Revision: 1.4 $
+ * $Date: 2003/08/22 14:33:30 $
  *
  * ====================================================================
  *
  * The Apache Software License, Version 1.1
  *
- * Copyright (c) 1999-2002 The Apache Software Foundation.  All rights
+ * Copyright (c) 1999-2003 The Apache Software Foundation.  All rights
  * reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,9 +23,9 @@
  *    distribution.
  *
  * 3. The end-user documentation included with the redistribution, if
- *    any, must include the following acknowlegement:
+ *    any, must include the following acknowledgement:
  *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
+ *        Apache Software Foundation - http://www.apache.org/"
  *    Alternately, this acknowlegement may appear in the software itself,
  *    if and wherever such third-party acknowlegements normally appear.
  *
@@ -55,7 +55,7 @@
  * This software consists of voluntary contributions made by many
  * individuals on behalf of the Apache Software Foundation.  For more
  * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
+ * http://www.apache.org/
  *
  */
 
@@ -70,7 +70,7 @@ import junit.framework.TestSuite;
  * package.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.3 $ $Date: 2003/03/05 19:17:08 $
+ * @version $Revision: 1.4 $ $Date: 2003/08/22 14:33:30 $
  */
 public class TestAll extends TestCase {
     public TestAll(String testName) {

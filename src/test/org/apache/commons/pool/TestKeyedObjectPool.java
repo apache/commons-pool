@@ -1,12 +1,13 @@
 /*
- * $Id: TestKeyedObjectPool.java,v 1.5 2003/04/24 18:07:10 rwaldhoff Exp $
- * $Revision: 1.5 $
- * $Date: 2003/04/24 18:07:10 $
+ * $Source: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/TestKeyedObjectPool.java,v $
+ * $Revision: 1.6 $
+ * $Date: 2003/08/22 14:33:30 $
+ *
  * ====================================================================
  *
  * The Apache Software License, Version 1.1
  *
- * Copyright (c) 2001-2002 The Apache Software Foundation.  All rights
+ * Copyright (c) 1999-2003 The Apache Software Foundation.  All rights
  * reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,9 +23,9 @@
  *    distribution.
  *
  * 3. The end-user documentation included with the redistribution, if
- *    any, must include the following acknowlegement:
+ *    any, must include the following acknowledgement:
  *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
+ *        Apache Software Foundation - http://www.apache.org/"
  *    Alternately, this acknowlegement may appear in the software itself,
  *    if and wherever such third-party acknowlegements normally appear.
  *
@@ -54,10 +55,9 @@
  * This software consists of voluntary contributions made by many
  * individuals on behalf of the Apache Software Foundation.  For more
  * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
+ * http://www.apache.org/
  *
  */
-
 package org.apache.commons.pool;
 
 import junit.framework.TestCase;
@@ -65,7 +65,7 @@ import junit.framework.TestCase;
 /**
  * Abstract {@link TestCase} for {@link ObjectPool} implementations.
  * @author Rodney Waldhoff
- * @version $Revision: 1.5 $ $Date: 2003/04/24 18:07:10 $
+ * @version $Revision: 1.6 $ $Date: 2003/08/22 14:33:30 $
  */
 public abstract class TestKeyedObjectPool extends TestCase {
     public TestKeyedObjectPool(String testName) {
