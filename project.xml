@@ -9,7 +9,7 @@
   <shortDescription>Commons Object Pooling Library</shortDescription>
   <description>Commons Object Pooling Library</description>
 
-  <currentVersion>1.1-RC1</currentVersion>
+  <currentVersion>1.1-RC2</currentVersion>
   <versions>
     <version>
       <id>1.0</id>
@@ -25,6 +25,11 @@
       <id>1.1-RC1</id>
       <name>1.1-RC1</name>
       <tag>POOL_1_1_RC1</tag>
+    </version>
+    <version>
+      <id>1.1-RC2</id>
+      <name>1.1-RC2</name>
+      <tag>POOL_1_1_RC2</tag>
     </version>
   </versions>
   <branches>
