@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/BaseObjectPool.java,v 1.9 2003/03/07 20:28:36 rwaldhoff Exp $
- * $Revision: 1.9 $
- * $Date: 2003/03/07 20:28:36 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/BaseObjectPool.java,v 1.10 2003/04/24 01:22:36 rwaldhoff Exp $
+ * $Revision: 1.10 $
+ * $Date: 2003/04/24 01:22:36 $
  *
  * ====================================================================
  *
@@ -67,7 +67,7 @@ package org.apache.commons.pool;
  * {@link UnsupportedOperationException}.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.9 $ $Date: 2003/03/07 20:28:36 $
+ * @version $Revision: 1.10 $ $Date: 2003/04/24 01:22:36 $
  */
 public abstract class BaseObjectPool implements ObjectPool {
     public abstract Object borrowObject() throws Exception;
@@ -92,6 +92,13 @@ public abstract class BaseObjectPool implements ObjectPool {
      * Not supported in this base implementation.
      */
     public void clear() throws Exception, UnsupportedOperationException {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Not supported in this base implementation.
+     */
+    public void addObject() throws Exception, UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 

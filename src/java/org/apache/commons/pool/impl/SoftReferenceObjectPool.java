@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/SoftReferenceObjectPool.java,v 1.8 2003/03/07 15:18:20 rwaldhoff Exp $
- * $Revision: 1.8 $
- * $Date: 2003/03/07 15:18:20 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/SoftReferenceObjectPool.java,v 1.9 2003/04/24 01:22:36 rwaldhoff Exp $
+ * $Revision: 1.9 $
+ * $Date: 2003/04/24 01:22:36 $
  *
  * ====================================================================
  *
@@ -76,7 +76,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * {@link ObjectPool}.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.8 $ $Date: 2003/03/07 15:18:20 $
+ * @version $Revision: 1.9 $ $Date: 2003/04/24 01:22:36 $
  */
 public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPool {
     public SoftReferenceObjectPool() {
@@ -160,6 +160,18 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
         _numActive--;
         _factory.destroyObject(obj);
         notifyAll(); // _numActive has changed
+    }
+
+    /**
+     * Create an object, and place it into the pool.
+     * addObject() is useful for "pre-loading" a pool with idle objects.
+     */
+    public void addObject() throws Exception {
+        Object obj = _factory.makeObject();
+        synchronized(this) {
+            _numActive++;   // A little slimy - must do this because returnObject decrements it.
+            this.returnObject(obj);
+        }
     }
 
     /** Returns an approximation not less than the of the number of idle instances in the pool. */
