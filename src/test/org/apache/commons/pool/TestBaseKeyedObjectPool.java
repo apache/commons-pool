@@ -20,8 +20,8 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 /**
- * @version $Revision: 1.5 $ $Date: 2004/02/28 11:46:11 $
  * @author Rodney Waldhoff
+ * @version $Revision: 1.6 $ $Date: 2004/02/28 12:16:21 $
  */
 public class TestBaseKeyedObjectPool extends TestCase {
     public TestBaseKeyedObjectPool(String testName) {

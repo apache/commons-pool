@@ -19,10 +19,10 @@ package org.apache.commons.pool;
 /**
  * A factory for creating {@link KeyedObjectPool}s.
  *
- * @author Rodney Waldhoff
- * @version $Revision: 1.6 $ $Date: 2004/02/28 11:46:33 $ 
- *
  * @see KeyedObjectPool
+ *
+ * @author Rodney Waldhoff
+ * @version $Revision: 1.7 $ $Date: 2004/02/28 12:16:21 $ 
  */
 public interface KeyedObjectPoolFactory {
     /**

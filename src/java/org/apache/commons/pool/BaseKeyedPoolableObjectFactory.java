@@ -21,10 +21,10 @@ package org.apache.commons.pool;
  * <p>
  * All operations defined here are essentially no-op's.
  *
- * @author Rodney Waldhoff
- * @version $Revision: 1.6 $ $Date: 2004/02/28 11:46:33 $ 
- *
  * @see KeyedPoolableObjectFactory
+ *
+ * @author Rodney Waldhoff
+ * @version $Revision: 1.7 $ $Date: 2004/02/28 12:16:21 $ 
  */
 public abstract class BaseKeyedPoolableObjectFactory implements KeyedPoolableObjectFactory {
     public abstract Object makeObject(Object key)
