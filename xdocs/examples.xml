@@ -1,0 +1,154 @@
+<?xml version="1.0"?>
+<document>
+   <properties>
+      <title>Examples</title>
+      <author email="commons-dev@jakarta.apache.org">Commons Documentation Team</author>
+      <author email="rwaldhoff@apache.org">Rodney Waldhoff</author>
+      <revision>$Id: examples.xml,v 1.1 2002/04/29 18:00:59 rwaldhoff Exp $</revision>
+   </properties>
+
+   <body>
+      <section name="A Simple Pool Client">
+       <p>
+        Suppose you're writing a set of <code>java.io.Reader</code> utilities, and would like to
+        provide a method for dumping the contents of a <code>Reader</code> to a <code>String</code>.
+        Here's the code for the <code>ReaderUtil</code>, implemented without an <code>ObjectPool</code>:
+       </p>
+<pre><font color="#000080">import</font><font color="#000000"> java.io.Reader; 
+</font><font color="#000080">import</font><font color="#000000"> java.io.IOException; 
+ 
+</font><font color="#000080">public</font><font color="#000000"> </font><font color="#000080">class</font><font color="#000000"> ReaderUtil { 
+    </font><font color="#000080">public</font><font color="#000000"> ReaderUtil() { 
+    } 
+ 
+    </font><font color="#808080"><i>/** 
+     * Dumps the contents of the {@link Reader} to a 
+     * String, closing the {@link Reader} when done. 
+     */</i></font><font color="#000000"> 
+    </font><font color="#000080">public</font><font color="#000000"> String readToString(Reader in) </font><font color="#000080">throws</font><font color="#000000"> IOException { 
+        StringBuffer buf = </font><font color="#000080">new</font><font color="#000000"> StringBuffer(); 
+        </font><font color="#000080">try</font><font color="#000000"> { 
+            </font><font color="#000080">for</font><font color="#000000">(</font><font color="#000080">int</font><font color="#000000"> c = in.read(); c != -</font><font color="#0000ff">1</font><font color="#000000">; c = in.read()) { 
+                buf.append((</font><font color="#000080">char</font><font color="#000000">)c); 
+            } 
+            </font><font color="#000080">return</font><font color="#000000"> buf.toString(); 
+        } </font><font color="#000080">catch</font><font color="#000000">(IOException e) { 
+            </font><font color="#000080">throw</font><font color="#000000"> e; 
+        } </font><font color="#000080">finally</font><font color="#000000"> { 
+            </font><font color="#000080">try</font><font color="#000000"> { 
+                in.close(); 
+            } </font><font color="#000080">catch</font><font color="#000000">(Exception e) { 
+                </font><font color="#808080"><i>// ignored</i></font><font color="#000000"> 
+            } 
+        } 
+    } 
+}</font></pre>
+       <p>
+        For the sake of this example, let's assume we want to to pool the <code>StringBuffer</code>s 
+        used to buffer the <code>Reader</code>'s contents. (A pool of <code>StringBuffer</code>s 
+        may or may not be useful in practice. We're just using it as a simple example here.)
+       </p>
+       <p>
+        Let's further assume that a complete pool implementation will be provided via 
+        a constructor. (We'll show you how to create such an implementation in just a moment.)  
+        Then to use the pool we simply call <code>borrowObject</code> to obtain the buffer, and
+        then call <code>returnObject</code> when we're done with it.
+        Then a <code>ReaderUtil</code> implementation using a pool of <code>StringBuffer</code>s might look 
+        like this (changed code is in <b>bold face</b>):
+       </p>
+<pre><b><font color="#000080">import</font><font color="#000000"> org.apache.commons.pool.ObjectPool;</font></b>
+<font color="#000080">import</font><font color="#000000"> java.io.Reader; 
+</font><font color="#000080">import</font><font color="#000000"> java.io.IOException; 
+ 
+</font><font color="#000080">public</font><font color="#000000"> </font><font color="#000080">class</font><font color="#000000"> ReaderUtil { 
+    </font><b><font color="#000080">private</font><font color="#000000"> ObjectPool pool;</font></b>
+ 
+    <font color="#000080">public</font><font color="#000000"> ReaderUtil(<b>ObjectPool pool</b>) { 
+        </font><font color="#000080"><b>this</b></font><font color="#000000"><b>.pool = pool;</b>
+    } 
+ 
+    </font><font color="#808080"><i>/** 
+     * Dumps the contents of the {@link Reader} to a 
+     * String, closing the {@link Reader} when done. 
+     */</i></font><font color="#000000"> 
+    </font><font color="#000080">public</font><font color="#000000"> String readToString(Reader in) </font><font color="#000080">throws</font><font color="#000000"> IOException { 
+        StringBuffer buf = </font><font color="#000080"><b>null</b></font><font color="#000000"><b>;</b>
+        </font><font color="#000080">try</font><font color="#000000"> { 
+            <b>buf = (StringBuffer)(pool.borrowObject());</b>
+            </font><font color="#000080">for</font><font color="#000000">(</font><font color="#000080">int</font><font color="#000000"> c = in.read(); c != -</font><font color="#0000ff">1</font><font color="#000000">; c = in.read()) { 
+                buf.append((</font><font color="#000080">char</font><font color="#000000">)c); 
+            } 
+            </font><font color="#000080">return</font><font color="#000000"> buf.toString(); 
+        } </font><font color="#000080">catch</font><font color="#000000">(IOException e) { 
+            </font><font color="#000080">throw</font><font color="#000000"> e; 
+        <b>}</b> </font><font color="#000080"><b>catch</b></font><font color="#000000"><b>(Exception e) {</b></font>
+            <b><font color="#000080">throw</font><font color="#000000"> </font><font color="#000080">new</font><font color="#000000"> RuntimeException(</font><font color="#008000">"Unable to borrow buffer from pool"</font></b><font color="#000000"><b> + </b>
+                    <b>e.toString());</b>
+        } </font><font color="#000080">finally</font><font color="#000000"> { 
+            </font><font color="#000080">try</font><font color="#000000"> { 
+                in.close(); 
+            } </font><font color="#000080">catch</font><font color="#000000">(Exception e) { 
+                </font><font color="#808080"><i>// ignored</i></font><font color="#000000"> 
+            } 
+            </font><b><font color="#000080">try</font><font color="#000000"> {</font></b>
+                <font color="#000080"><b>if</b></font><font color="#000000"><b>(</b></font><font color="#000080"><b>null</b></font><font color="#000000"><b> != buf) {</b>
+                    <b>pool.returnObject(buf);</b>
+                <b>}</b>
+            <b>} </b></font><font color="#000080"><b>catch</b></font><font color="#000000"><b>(Exception e) {</b></font>
+                <b><font color="#808080"><i>// ignored</i></font></b><font color="#000000">
+            <b>}</b>
+        } 
+    } 
+}</font></pre>
+      <p>
+       Since we've constrained ourselves to the <code>ObjectPool</code> interface, an arbitrary pool 
+       implementation (returning, in our case, <code>StringBuffer</code>s) can be used.  When a different
+       or "better" pool implemenatation comes along, we can simply drop it into our <code>ReaderUtil</code>
+       without changing a line of code.  
+      </p>
+      </section>
+      <section name="A PoolableObjectFactory">
+       <p>
+        Recall that <i>Pool</i> provides a simple toolkit for creating object pools.  The 
+        <code>PoolableObjectFactory</code> interface is an important part of this toolkit.
+        <code>PoolableObjectFactory</code> defines lifecycle methods for pooled objects. 
+        We can use it to separate the kinds of objects that are pooled and how they are 
+        created, persisted, or destroyed, from the pooling algorithm itself.
+       </p>
+       <p>
+        Suppose we have an <code>ObjectPool</code> implementation that accepts a 
+        <code>PoolableObjectFactory</code> (for example, any of the implementations in the
+        <code>org.apache.commons.pool.impl</code> package).  Then we need only provide 
+        the factory implemenation in order to pool a new kind of object.  
+       </p>
+       <p>
+        Here's a <code>PoolableObjectFactory</code> implementation that creates
+        <code>StringBuffer</code>s as used above.
+       </p>
+<pre><font color="#000080">import</font><font color="#000000"> org.apache.commons.pool.BasePoolableObjectFactory; 
+ 
+</font><font color="#000080">public</font><font color="#000000"> </font><font color="#000080">class</font><font color="#000000"> StringBufferFactory </font><font color="#000080">extends</font><font color="#000000"> BasePoolableObjectFactory { 
+    </font><font color="#808080"><i>// for makeObject we'll simply return a new buffer</i></font><font color="#000000"> 
+    </font><font color="#000080">public</font><font color="#000000"> Object makeObject() { 
+        </font><font color="#000080">return</font><font color="#000000"> </font><font color="#000080">new</font><font color="#000000"> StringBuffer(); 
+    } 
+     
+    </font><font color="#808080"><i>// when an object is returned to the pool, </i></font><font color="#000000"> 
+    </font><font color="#808080"><i>// we'll clear it out</i></font><font color="#000000"> 
+    </font><font color="#000080">public</font><font color="#000000"> </font><font color="#000080">void</font><font color="#000000"> passivateObject(Object obj) { 
+        StringBuffer buf = (StringBuffer)obj; 
+        buf.setLength(</font><font color="#0000ff">0</font><font color="#000000">); 
+    } 
+     
+    </font><font color="#808080"><i>// for all other methods, the no-op </i></font><font color="#000000"> 
+    </font><font color="#808080"><i>// implementation in BasePoolableObjectFactory</i></font><font color="#000000"> 
+    </font><font color="#808080"><i>// will suffice</i></font><font color="#000000"> 
+}</font></pre>
+      <p>
+       We can, for example, use this factory with the <code>StackObjectPool</code> to instantiate our
+       <code>ReaderUtil</code> as follows:
+      </p>
+      <pre><font color="#000080">new</font> ReaderUtil(<font color="#000080">new</font> StackObjectPool(<font color="#000080">new</font> StringBufferFactory()))</pre>
+      </section>
+   </body>
+</document>

@@ -12,18 +12,12 @@
            <item name="Pool"                          href="/index.html" />
        </menu>
        <menu name="Information">
-<!--           
-           <item name="Overview"                      href="/overview.html"/>
-           <item name="News"                          href="http://jakarta.apache.org/commons/pool/news.html"/>
--->           
            <item name="API&#xA0;Documentation"        href="http://nagoya.apache.org/gump/javadoc/jakarta-commons/pool/dist/docs/api/index.html"/>
+           <item name="Examples"                      href="/examples.html"/>
        </menu>
        <menu name="Project Files">
-<!--
-           <item name="Status"                        href="http://cvs.apache.org/viewcvs/~checkout~/jakarta-commons/pool/STATUS.html?content-type=text/html"/>
--->
            <item name="Downloads"                     href="/downloads.html"/>
-           <item name="CVS"                           href="http://cvs.apache.org/viewcvs/jakarta-commons/pool/"/>
+           <item name="Source"                        href="http://cvs.apache.org/viewcvs/jakarta-commons/pool/"/>
            <item name="Original&#xA0;Proposal"        href="http://cvs.apache.org/viewcvs/~checkout~/jakarta-commons/pool/PROPOSAL.html?content-type=text/html"/>
        </menu>
        <menu name="About Us">
