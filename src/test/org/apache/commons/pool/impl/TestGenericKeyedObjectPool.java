@@ -1,7 +1,7 @@
 /*
- * $Id: TestGenericKeyedObjectPool.java,v 1.11 2003/03/07 20:28:36 rwaldhoff Exp $
- * $Revision: 1.11 $
- * $Date: 2003/03/07 20:28:36 $
+ * $Id: TestGenericKeyedObjectPool.java,v 1.12 2003/04/18 20:58:40 rwaldhoff Exp $
+ * $Revision: 1.12 $
+ * $Date: 2003/04/18 20:58:40 $
  *
  * ====================================================================
  *
@@ -73,7 +73,7 @@ import org.apache.commons.pool.TestKeyedObjectPool;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision: 1.11 $ $Date: 2003/03/07 20:28:36 $
+ * @version $Revision: 1.12 $ $Date: 2003/04/18 20:58:40 $
  */
 public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     public TestGenericKeyedObjectPool(String testName) {
@@ -126,6 +126,17 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     public void tearDown() throws Exception {
         super.tearDown();
         pool = null;
+    }
+
+    public void testWithInitiallyInvalid() throws Exception {
+        GenericKeyedObjectPool pool = new GenericKeyedObjectPool(new SimpleFactory(false));
+        pool.setTestOnBorrow(true);
+        try {
+            pool.borrowObject("xyzzy");
+            fail("Expected NoSuchElementException");
+        } catch(NoSuchElementException e) {
+            // expected 
+        }
     }
 
     public void testZeroMaxActive() throws Exception {
@@ -462,12 +473,19 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     }
 
     static class SimpleFactory implements KeyedPoolableObjectFactory {
-        int counter = 0;
+        public SimpleFactory() {
+            this(true);
+        }
+        public SimpleFactory(boolean valid) {
+            this.valid = valid;
+        }
         public Object makeObject(Object key) { return String.valueOf(key) + String.valueOf(counter++); }
         public void destroyObject(Object key, Object obj) { }
-        public boolean validateObject(Object key, Object obj) { return true; }
+        public boolean validateObject(Object key, Object obj) { return valid; }
         public void activateObject(Object key, Object obj) { }
         public void passivateObject(Object key, Object obj) { }
+        int counter = 0;
+        boolean valid;
     }
 
 }

@@ -1,7 +1,7 @@
 /*
- * $Id: GenericKeyedObjectPool.java,v 1.14 2003/03/14 01:04:50 rwaldhoff Exp $
- * $Revision: 1.14 $
- * $Date: 2003/03/14 01:04:50 $
+ * $Id: GenericKeyedObjectPool.java,v 1.15 2003/04/18 20:58:40 rwaldhoff Exp $
+ * $Revision: 1.15 $
+ * $Date: 2003/04/18 20:58:40 $
  *
  * ====================================================================
  *
@@ -164,7 +164,7 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  * </p>
  * @see GenericObjectPool
  * @author Rodney Waldhoff
- * @version $Revision: 1.14 $ $Date: 2003/03/14 01:04:50 $
+ * @version $Revision: 1.15 $ $Date: 2003/04/18 20:58:40 $
  */
 public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
 
@@ -729,6 +729,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
     public synchronized Object borrowObject(Object key) throws Exception {
         long starttime = System.currentTimeMillis();
+        boolean newlyCreated = false;
         for(;;) {
             CursorableLinkedList pool = (CursorableLinkedList)(_poolMap.get(key));
             if(null == pool) {
@@ -757,6 +758,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 if(_maxActive <= 0 || active < _maxActive) {
                     Object obj = _factory.makeObject(key);
                     pair = new ObjectTimestampPair(obj);
+                    newlyCreated = true;
                 } else {
                     // the pool is exhausted
                     switch(_whenExhaustedAction) {
@@ -789,6 +791,9 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             _factory.activateObject(key,pair.value);
             if(_testOnBorrow && !_factory.validateObject(key,pair.value)) {
                 _factory.destroyObject(key,pair.value);
+                if(newlyCreated) {
+                    throw new NoSuchElementException("Could not create a validated object");
+                } // else keep looping
             } else {
                 Integer active = (Integer)(_activeMap.get(key));
                 if(null == active) {

@@ -1,7 +1,7 @@
 /*
- * $Id: TestGenericObjectPool.java,v 1.12 2003/03/14 00:58:59 rwaldhoff Exp $
- * $Revision: 1.12 $
- * $Date: 2003/03/14 00:58:59 $
+ * $Id: TestGenericObjectPool.java,v 1.13 2003/04/18 20:58:40 rwaldhoff Exp $
+ * $Revision: 1.13 $
+ * $Date: 2003/04/18 20:58:40 $
  *
  * ====================================================================
  *
@@ -72,7 +72,7 @@ import org.apache.commons.pool.TestObjectPool;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision: 1.12 $ $Date: 2003/03/14 00:58:59 $
+ * @version $Revision: 1.13 $ $Date: 2003/04/18 20:58:40 $
  */
 public class TestGenericObjectPool extends TestObjectPool {
     public TestGenericObjectPool(String testName) {
@@ -102,6 +102,17 @@ public class TestGenericObjectPool extends TestObjectPool {
     public void tearDown() throws Exception {
         super.tearDown();
         pool = null;
+    }
+
+    public void testWithInitiallyInvalid() throws Exception {
+        GenericObjectPool pool = new GenericObjectPool(new SimpleFactory(false));
+        pool.setTestOnBorrow(true);
+        try {
+            pool.borrowObject();
+            fail("Expected NoSuchElementException");
+        } catch(NoSuchElementException e) {
+            // expected 
+        }
     }
 
     public void testZeroMaxActive() throws Exception {
@@ -389,12 +400,19 @@ public class TestGenericObjectPool extends TestObjectPool {
     private GenericObjectPool pool = null;
 
     static class SimpleFactory implements PoolableObjectFactory {
-        int counter = 0;
+        public SimpleFactory() {
+            this(true);
+        }
+        public SimpleFactory(boolean valid) {
+            this.valid = valid;
+        }
         public Object makeObject() { return String.valueOf(counter++); }
         public void destroyObject(Object obj) { }
-        public boolean validateObject(Object obj) { return true; }
+        public boolean validateObject(Object obj) { return valid; }
         public void activateObject(Object obj) { }
         public void passivateObject(Object obj) { }
+        int counter = 0;
+        boolean valid = true;
     }
 }
 
