@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/KeyedObjectPool.java,v 1.6 2002/05/03 17:01:06 rwaldhoff Exp $
- * $Revision: 1.6 $
- * $Date: 2002/05/03 17:01:06 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/KeyedObjectPool.java,v 1.7 2002/10/30 22:54:41 rwaldhoff Exp $
+ * $Revision: 1.7 $
+ * $Date: 2002/10/30 22:54:41 $
  *
  * ====================================================================
  *
@@ -92,7 +92,7 @@ package org.apache.commons.pool;
  * </p>
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.6 $ $Date: 2002/05/03 17:01:06 $
+ * @version $Revision: 1.7 $ $Date: 2002/10/30 22:54:41 $
  *
  * @see KeyedPoolableObjectFactory
  * @see KeyedObjectPoolFactory
@@ -120,7 +120,7 @@ public interface KeyedObjectPool {
      * By contract, <i>obj</i> MUST have been obtained
      * using {@link #borrowObject(java.lang.Object) <tt>borrowObject</tt>}
      * or a related method as defined in an implementation
-     * or sub-interface,
+     * or sub-interface 
      * using a <i>key</i> that is equivalent to the one used to
      * borrow the <tt>Object</tt> in the first place.
      *
@@ -128,6 +128,25 @@ public interface KeyedObjectPool {
      * @param obj a {@link #borrowObject(java.lang.Object) borrowed} instance to be returned.
      */
     void returnObject(Object key, Object obj) throws Exception;
+
+    /**
+     * Invalidates an object from the pool
+     * By contract, <i>obj</i> MUST have been obtained
+     * using {@link #borrowObject() borrowObject}
+     * or a related method as defined in an implementation
+     * or sub-interface 
+     * using a <i>key</i> that is equivalent to the one used to
+     * borrow the <tt>Object</tt> in the first place.
+     * <p>
+     * This method should be used when an object that has been borrowed
+     * is determined (due to an exception or other problem) to be invalid.
+     * If the connection should be validated before or after borrowing,
+     * then the {@link PoolableObjectFactory#validateObject} method should be
+     * used instead.
+     *
+     * @param obj a {@link #borrowObject borrowed} instance to be returned.
+     */
+    void invalidateObject(Object key, Object obj) throws Exception;
 
     /**
      * Returns the number of instances

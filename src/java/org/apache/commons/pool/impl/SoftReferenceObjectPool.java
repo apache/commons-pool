@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/SoftReferenceObjectPool.java,v 1.5 2002/05/01 06:02:34 rwaldhoff Exp $
- * $Revision: 1.5 $
- * $Date: 2002/05/01 06:02:34 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/SoftReferenceObjectPool.java,v 1.6 2002/10/30 22:54:42 rwaldhoff Exp $
+ * $Revision: 1.6 $
+ * $Date: 2002/10/30 22:54:42 $
  *
  * ====================================================================
  *
@@ -75,7 +75,7 @@ import java.lang.ref.SoftReference;
  * {@link ObjectPool}.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.5 $ $Date: 2002/05/01 06:02:34 $
+ * @version $Revision: 1.6 $ $Date: 2002/10/30 22:54:42 $
  */
 public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPool {
     public SoftReferenceObjectPool() {
@@ -150,6 +150,12 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
             }
         }
 
+    }
+
+    public synchronized void invalidateObject(Object obj) throws Exception {
+        _numActive--;
+        _factory.destroyObject(obj);
+        notifyAll(); // _numActive has changed
     }
 
     /** Returns an approximation not less than the of the number of idle instances in the pool. */

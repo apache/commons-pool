@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/impl/TestStackObjectPool.java,v 1.3 2002/05/01 06:02:35 rwaldhoff Exp $
- * $Revision: 1.3 $
- * $Date: 2002/05/01 06:02:35 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/impl/TestStackObjectPool.java,v 1.4 2002/10/30 22:54:42 rwaldhoff Exp $
+ * $Revision: 1.4 $
+ * $Date: 2002/10/30 22:54:42 $
  *
  * ====================================================================
  *
@@ -66,7 +66,7 @@ import org.apache.commons.pool.*;
 
 /**
  * @author Rodney Waldhoff
- * @version $Id: TestStackObjectPool.java,v 1.3 2002/05/01 06:02:35 rwaldhoff Exp $
+ * @version $Id: TestStackObjectPool.java,v 1.4 2002/10/30 22:54:42 rwaldhoff Exp $
  */
 public class TestStackObjectPool extends TestCase {
     public TestStackObjectPool(String testName) {
@@ -160,6 +160,21 @@ public class TestStackObjectPool extends TestCase {
         assertEquals(0,pool.getNumIdle());
         Object obj2 = pool.borrowObject();
         assertEquals("2",obj2);
+    }
+
+    public void testInvalidateObject() throws Exception {
+        assertEquals(0,pool.getNumActive());
+        assertEquals(0,pool.getNumIdle());
+        Object obj0 = pool.borrowObject();
+        Object obj1 = pool.borrowObject();
+        assertEquals(2,pool.getNumActive());
+        assertEquals(0,pool.getNumIdle());
+        pool.invalidateObject(obj0);
+        assertEquals(1,pool.getNumActive());
+        assertEquals(0,pool.getNumIdle());
+        pool.invalidateObject(obj1);
+        assertEquals(0,pool.getNumActive());
+        assertEquals(0,pool.getNumIdle());
     }
 
     public void testIdleCap() throws Exception {

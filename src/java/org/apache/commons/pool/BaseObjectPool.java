@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/BaseObjectPool.java,v 1.5 2002/05/03 17:01:06 rwaldhoff Exp $
- * $Revision: 1.5 $
- * $Date: 2002/05/03 17:01:06 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/BaseObjectPool.java,v 1.6 2002/10/30 22:54:41 rwaldhoff Exp $
+ * $Revision: 1.6 $
+ * $Date: 2002/10/30 22:54:41 $
  *
  * ====================================================================
  *
@@ -67,11 +67,12 @@ package org.apache.commons.pool;
  * {@link UnsupportedOperationException}.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.5 $ $Date: 2002/05/03 17:01:06 $
+ * @version $Revision: 1.6 $ $Date: 2002/10/30 22:54:41 $
  */
 public abstract class BaseObjectPool implements ObjectPool {
     public abstract Object borrowObject() throws Exception;
     public abstract void returnObject(Object obj) throws Exception;
+    public abstract void invalidateObject(Object obj) throws Exception;
 
     /**
      * @deprecated Use {@link #getNumIdle} instead. Will be removed by release 2.0.

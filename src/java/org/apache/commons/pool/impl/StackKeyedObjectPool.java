@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackKeyedObjectPool.java,v 1.5 2002/06/05 22:02:22 rwaldhoff Exp $
- * $Revision: 1.5 $
- * $Date: 2002/06/05 22:02:22 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackKeyedObjectPool.java,v 1.6 2002/10/30 22:54:42 rwaldhoff Exp $
+ * $Revision: 1.6 $
+ * $Date: 2002/10/30 22:54:42 $
  *
  * ====================================================================
  *
@@ -81,7 +81,7 @@ import java.util.Iterator;
  * artificial limits.
  *
  * @author Rodney Waldhoff
- * @version $Id: StackKeyedObjectPool.java,v 1.5 2002/06/05 22:02:22 rwaldhoff Exp $
+ * @version $Id: StackKeyedObjectPool.java,v 1.6 2002/10/30 22:54:42 rwaldhoff Exp $
  */
 public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
     /**
@@ -217,6 +217,14 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
         }
         Integer old = (Integer)(_activeCount.get(key));
         _activeCount.put(key,new Integer(old.intValue() - 1));
+    }
+
+    public synchronized void invalidateObject(Object key, Object obj) throws Exception {
+        _totActive--;
+        Integer old = (Integer)(_activeCount.get(key));
+        _activeCount.put(key,new Integer(old.intValue() - 1));
+        _factory.destroyObject(key,obj);
+        notifyAll(); // _totalActive has changed
     }
 
     public int getNumIdle() {
