@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/ObjectPool.java,v 1.5 2002/04/29 12:11:30 rwaldhoff Exp $
- * $Revision: 1.5 $
- * $Date: 2002/04/29 12:11:30 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/ObjectPool.java,v 1.6 2002/05/01 06:02:34 rwaldhoff Exp $
+ * $Revision: 1.6 $
+ * $Date: 2002/05/01 06:02:34 $
  *
  * ====================================================================
  *
@@ -82,10 +82,10 @@ package org.apache.commons.pool;
  *       pool.returnObject(obj);
  *    }
  * }</pre></td></tr></table>
- * See {@link org.apache.commons.pool.impl.BaseObjectPool BaseObjectPool} for a simple base implementation.
+ * See {@link org.apache.commons.pool.BaseObjectPool BaseObjectPool} for a simple base implementation.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.5 $ $Date: 2002/04/29 12:11:30 $ 
+ * @version $Revision: 1.6 $ $Date: 2002/05/01 06:02:34 $ 
  *
  */
 public interface ObjectPool {
@@ -125,7 +125,7 @@ public interface ObjectPool {
      * @return the number of instances currently idle in my pool
      * @throws UnsupportedOperationException if this implementation does not support the operation
      */
-    int numIdle() throws UnsupportedOperationException;
+    int getNumIdle() throws UnsupportedOperationException;
 
     /**
      * Return the number of instances
@@ -135,7 +135,7 @@ public interface ObjectPool {
      * @return the number of instances currently borrowed in my pool
      * @throws UnsupportedOperationException if this implementation does not support the operation
      */
-    int numActive() throws UnsupportedOperationException;
+    int getNumActive() throws UnsupportedOperationException;
 
     /**
      * Clears any objects sitting idle in the pool, releasing any

@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/impl/TestGenericObjectPool.java,v 1.3 2002/03/17 14:55:21 rwaldhoff Exp $
- * $Revision: 1.3 $
- * $Date: 2002/03/17 14:55:21 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/impl/TestGenericObjectPool.java,v 1.4 2002/05/01 06:02:35 rwaldhoff Exp $
+ * $Revision: 1.4 $
+ * $Date: 2002/05/01 06:02:35 $
  *
  * ====================================================================
  *
@@ -66,7 +66,7 @@ import org.apache.commons.pool.*;
 
 /**
  * @author Rodney Waldhoff
- * @version $Id: TestGenericObjectPool.java,v 1.3 2002/03/17 14:55:21 rwaldhoff Exp $
+ * @version $Id: TestGenericObjectPool.java,v 1.4 2002/05/01 06:02:35 rwaldhoff Exp $
  */
 public class TestGenericObjectPool extends TestCase {
     public TestGenericObjectPool(String testName) {
@@ -128,36 +128,36 @@ public class TestGenericObjectPool extends TestCase {
     }
 
     public void testNumActiveNumIdle() throws Exception {
-        assertEquals(0,pool.numActive());
-        assertEquals(0,pool.numIdle());
+        assertEquals(0,pool.getNumActive());
+        assertEquals(0,pool.getNumIdle());
         Object obj0 = pool.borrowObject();
-        assertEquals(1,pool.numActive());
-        assertEquals(0,pool.numIdle());
+        assertEquals(1,pool.getNumActive());
+        assertEquals(0,pool.getNumIdle());
         Object obj1 = pool.borrowObject();
-        assertEquals(2,pool.numActive());
-        assertEquals(0,pool.numIdle());
+        assertEquals(2,pool.getNumActive());
+        assertEquals(0,pool.getNumIdle());
         pool.returnObject(obj1);
-        assertEquals(1,pool.numActive());
-        assertEquals(1,pool.numIdle());
+        assertEquals(1,pool.getNumActive());
+        assertEquals(1,pool.getNumIdle());
         pool.returnObject(obj0);
-        assertEquals(0,pool.numActive());
-        assertEquals(2,pool.numIdle());
+        assertEquals(0,pool.getNumActive());
+        assertEquals(2,pool.getNumIdle());
     }
 
     public void testClear() throws Exception {
-        assertEquals(0,pool.numActive());
-        assertEquals(0,pool.numIdle());
+        assertEquals(0,pool.getNumActive());
+        assertEquals(0,pool.getNumIdle());
         Object obj0 = pool.borrowObject();
         Object obj1 = pool.borrowObject();
-        assertEquals(2,pool.numActive());
-        assertEquals(0,pool.numIdle());
+        assertEquals(2,pool.getNumActive());
+        assertEquals(0,pool.getNumIdle());
         pool.returnObject(obj1);
         pool.returnObject(obj0);
-        assertEquals(0,pool.numActive());
-        assertEquals(2,pool.numIdle());
+        assertEquals(0,pool.getNumActive());
+        assertEquals(2,pool.getNumIdle());
         pool.clear();
-        assertEquals(0,pool.numActive());
-        assertEquals(0,pool.numIdle());
+        assertEquals(0,pool.getNumActive());
+        assertEquals(0,pool.getNumIdle());
         Object obj2 = pool.borrowObject();
         assertEquals("2",obj2);
     }
@@ -169,12 +169,12 @@ public class TestGenericObjectPool extends TestCase {
         for(int i=0;i<100;i++) {
             active[i] = pool.borrowObject();
         }
-        assertEquals(100,pool.numActive());
-        assertEquals(0,pool.numIdle());
+        assertEquals(100,pool.getNumActive());
+        assertEquals(0,pool.getNumIdle());
         for(int i=0;i<100;i++) {
             pool.returnObject(active[i]);
-            assertEquals(99 - i,pool.numActive());
-            assertEquals((i < 8 ? i+1 : 8),pool.numIdle());
+            assertEquals(99 - i,pool.getNumActive());
+            assertEquals((i < 8 ? i+1 : 8),pool.getNumIdle());
         }
     }
 
@@ -209,17 +209,17 @@ public class TestGenericObjectPool extends TestCase {
         }
 
         try { Thread.currentThread().sleep(2000L); } catch(Exception e) { }
-        assertTrue("Should be less than 500 idle, found " + pool.numIdle(),pool.numIdle() < 500);
+        assertTrue("Should be less than 500 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 500);
         try { Thread.currentThread().sleep(600L); } catch(Exception e) { }
-        assertTrue("Should be less than 400 idle, found " + pool.numIdle(),pool.numIdle() < 400);
+        assertTrue("Should be less than 400 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 400);
         try { Thread.currentThread().sleep(600L); } catch(Exception e) { }
-        assertTrue("Should be less than 300 idle, found " + pool.numIdle(),pool.numIdle() < 300);
+        assertTrue("Should be less than 300 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 300);
         try { Thread.currentThread().sleep(600L); } catch(Exception e) { }
-        assertTrue("Should be less than 200 idle, found " + pool.numIdle(),pool.numIdle() < 200);
+        assertTrue("Should be less than 200 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 200);
         try { Thread.currentThread().sleep(600L); } catch(Exception e) { }
-        assertTrue("Should be less than 100 idle, found " + pool.numIdle(),pool.numIdle() < 100);
+        assertTrue("Should be less than 100 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 100);
         try { Thread.currentThread().sleep(600L); } catch(Exception e) { }
-        assertEquals("Should be zero idle, found " + pool.numIdle(),0,pool.numIdle());
+        assertEquals("Should be zero idle, found " + pool.getNumIdle(),0,pool.getNumIdle());
 
         for(int i=0;i<500;i++) {
             active[i] = pool.borrowObject();
@@ -229,17 +229,17 @@ public class TestGenericObjectPool extends TestCase {
         }
 
         try { Thread.currentThread().sleep(2000L); } catch(Exception e) { }
-        assertTrue("Should be less than 500 idle, found " + pool.numIdle(),pool.numIdle() < 500);
+        assertTrue("Should be less than 500 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 500);
         try { Thread.currentThread().sleep(600L); } catch(Exception e) { }
-        assertTrue("Should be less than 400 idle, found " + pool.numIdle(),pool.numIdle() < 400);
+        assertTrue("Should be less than 400 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 400);
         try { Thread.currentThread().sleep(600L); } catch(Exception e) { }
-        assertTrue("Should be less than 300 idle, found " + pool.numIdle(),pool.numIdle() < 300);
+        assertTrue("Should be less than 300 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 300);
         try { Thread.currentThread().sleep(600L); } catch(Exception e) { }
-        assertTrue("Should be less than 200 idle, found " + pool.numIdle(),pool.numIdle() < 200);
+        assertTrue("Should be less than 200 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 200);
         try { Thread.currentThread().sleep(600L); } catch(Exception e) { }
-        assertTrue("Should be less than 100 idle, found " + pool.numIdle(),pool.numIdle() < 100);
+        assertTrue("Should be less than 100 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 100);
         try { Thread.currentThread().sleep(600L); } catch(Exception e) { }
-        assertEquals("Should be zero idle, found " + pool.numIdle(),0,pool.numIdle());
+        assertEquals("Should be zero idle, found " + pool.getNumIdle(),0,pool.getNumIdle());
     }
 
 

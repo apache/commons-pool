@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/BaseObjectPool.java,v 1.2 2002/05/01 04:54:52 rwaldhoff Exp $
- * $Revision: 1.2 $
- * $Date: 2002/05/01 04:54:52 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/BaseObjectPool.java,v 1.3 2002/05/01 06:02:34 rwaldhoff Exp $
+ * $Revision: 1.3 $
+ * $Date: 2002/05/01 06:02:34 $
  *
  * ====================================================================
  *
@@ -65,9 +65,9 @@ package org.apache.commons.pool;
  * A simple base impementation of {@link ObjectPool}.
  * All optional operations are implemented as throwing
  * {@link UnsupportedOperationException}.
- * 
+ *
  * @author Rodney Waldhoff
- * @version $Revision: 1.2 $ $Date: 2002/05/01 04:54:52 $
+ * @version $Revision: 1.3 $ $Date: 2002/05/01 06:02:34 $
  */
 public abstract class BaseObjectPool implements ObjectPool {
     public abstract Object borrowObject() throws Exception;
@@ -75,15 +75,31 @@ public abstract class BaseObjectPool implements ObjectPool {
 
     /**
      * Not supported in this base implementation.
+     * @deprecated Use {@link getNumIdle} instead;
      */
     public int numIdle() throws UnsupportedOperationException {
-        throw new UnsupportedOperationException();
+        return getNumIdle();
     }
 
     /**
      * Not supported in this base implementation.
      */
+    public int getNumIdle() throws UnsupportedOperationException {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Not supported in this base implementation.
+     * @deprecated Use {@link getNumActive} instead;
+     */
     public int numActive() throws UnsupportedOperationException {
+        return getNumActive();
+    }
+
+    /**
+     * Not supported in this base implementation.
+     */
+    public int getNumActive() throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 
