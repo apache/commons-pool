@@ -1,7 +1,7 @@
 /*
  * $Source: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/ObjectPoolFactory.java,v $
- * $Revision: 1.4 $
- * $Date: 2003/08/22 14:33:30 $
+ * $Revision: 1.5 $
+ * $Date: 2003/10/09 21:45:56 $
  *
  * ====================================================================
  *
@@ -26,8 +26,8 @@
  *    any, must include the following acknowledgement:
  *       "This product includes software developed by the
  *        Apache Software Foundation - http://www.apache.org/"
- *    Alternately, this acknowlegement may appear in the software itself,
- *    if and wherever such third-party acknowlegements normally appear.
+ *    Alternately, this acknowledgement may appear in the software itself,
+ *    if and wherever such third-party acknowledgements normally appear.
  *
  * 4. The names "The Jakarta Project", "Commons", and "Apache Software
  *    Foundation" must not be used to endorse or promote products derived
@@ -36,7 +36,7 @@
  *
  * 5. Products derived from this software may not be called "Apache"
  *    nor may "Apache" appear in their names without prior written
- *    permission of the Apache Group.
+ *    permission of the Apache Software Foundation.
  *
  * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -65,7 +65,7 @@ package org.apache.commons.pool;
  * A factory interface for creating {@link ObjectPool}s.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.4 $ $Date: 2003/08/22 14:33:30 $ 
+ * @version $Revision: 1.5 $ $Date: 2003/10/09 21:45:56 $ 
  *
  * @see ObjectPool
  */
