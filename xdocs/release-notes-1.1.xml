@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<!--
+   Copyright 2003-2004 The Apache Software Foundation
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<document>
+   <properties>
+      <title>Release notes for Commons-Pool 1.1</title>
+      <author email="commons-dev@jakarta.apache.org">Commons Documentation Team</author>
+      <revision>$Id: release-notes-1.1.xml,v 1.1 2004/05/20 15:30:03 dirkv Exp $</revision>
+   </properties>
+
+   <body>
+     <section name="Release notes for Commons-Pool 1.1">
+<p>
+There were a lot changes since the 1.0.1 release on 12 Aug 2002.
+<ul>
+<li>A lot of corner cases were fixed</li>
+<br/>
+<li>Performance improvement by optimizing pool synchronization,
+  the critical code paths were optimized by reducing pool synchronization
+  but we also added more synchronization where needed</li>
+<br/>
+<li>New minIdle feature: the minimum number of objects allowed in the pool
+  before the evictor thread (if active) spawns new objects.
+  (Note no objects are created when: numActive + numIdle >= maxActive)</li>
+<br/>
+<li>New maxTotal feature: a cap on the total number of instances controlled by a pool.
+  Only for GenericKeyedObjectPool where maxActive is a cap on the number of active 
+  instances from the pool (per key).</li>
+<br/>
+<li>UML Class and sequence diagrams</li>
+<br/>
+<li>The following issues were resolved since v1.0.1: (see Bugzilla for complete description)
+<table>
+<tr><th>ID</th><th>Date</th><th>Sev</th><th>State</th><th>Summary</th></tr>
+<tr><td><a href="http://issues.apache.org/bugzilla/show_bug.cgi?id=12840">12840</a></td><td>2002-10-31</td><td>Enh</td><td>FIXE</td><td>Factor out syncronized block Evictor code to method</td></tr>
+<tr><td><a href="http://issues.apache.org/bugzilla/show_bug.cgi?id=12841">12841</a></td><td>2002-10-30</td><td>Nor</td><td>FIXE</td><td>GenericObjectPool unused variable and unused synchronized block</td></tr>
+<tr><td><a href="http://issues.apache.org/bugzilla/show_bug.cgi?id=13128">13128</a></td><td>2002-10-30</td><td>Maj</td><td>DUPL</td><td>GenericKeyedObjectPool: _activeMap.get(key) increment is not balanced with decrements</td></tr>
+<tr><td><a href="http://issues.apache.org/bugzilla/show_bug.cgi?id=13649">13649</a></td><td>2002-10-29</td><td>Nor</td><td>FIXE</td><td>GenericObjectPool: Negative _maxActive doesn't allow growth</td></tr>
+<tr><td><a href="http://issues.apache.org/bugzilla/show_bug.cgi?id=13705">13705</a></td><td>2002-10-30</td><td>Nor</td><td>FIXE</td><td>Add invalidateObject() method to ObjectPool</td></tr>
+<tr><td><a href="http://issues.apache.org/bugzilla/show_bug.cgi?id=14970">14970</a></td><td>2002-11-30</td><td>Nor</td><td>FIXE</td><td>Passing null for Stack[Keyed]ObjectPool factory causes NullPointerException</td></tr>
+<tr><td><a href="http://issues.apache.org/bugzilla/show_bug.cgi?id=14981">14981</a></td><td>2003-04-24</td><td>Nor</td><td>FIXE</td><td>getNumActive() count is wrong when returnObject()  is used to pre-populate StackObjectPool</td></tr>
+<tr><td><a href="http://issues.apache.org/bugzilla/show_bug.cgi?id=14982">14982</a></td><td>2003-03-05</td><td>Enh</td><td>FIXE</td><td>GenericObjectPool does not work with null factory.</td></tr>
+<tr><td><a href="http://issues.apache.org/bugzilla/show_bug.cgi?id=14983">14983</a></td><td>2003-03-14</td><td>Enh</td><td>FIXE</td><td>GenericObjectPool should allow for manual population of the pool</td></tr>
+<tr><td><a href="http://issues.apache.org/bugzilla/show_bug.cgi?id=17931">17931</a></td><td>2003-03-13</td><td>Min</td><td>FIXE</td><td>Patch to update the javadocs for StackObjectPool</td></tr>
+<tr><td><a href="http://issues.apache.org/bugzilla/show_bug.cgi?id=17962">17962</a></td><td>2003-03-13</td><td>Nor</td><td>FIXE</td><td>Misc javadoc updates and clean up for GenericKeyedObjectPool</td></tr>
+<tr><td><a href="http://issues.apache.org/bugzilla/show_bug.cgi?id=17963">17963</a></td><td>2003-03-13</td><td>Enh</td><td>FIXE</td><td>General cleanup in GenericObjectPool</td></tr>
+<tr><td><a href="http://issues.apache.org/bugzilla/show_bug.cgi?id=17968">17968</a></td><td>2003-03-13</td><td>Enh</td><td>FIXE</td><td>Allow zero idle objects in GenericObjectPool</td></tr>
+<tr><td><a href="http://issues.apache.org/bugzilla/show_bug.cgi?id=17969">17969</a></td><td>2003-03-13</td><td>Nor</td><td>FIXE</td><td>Additional javadocs for StackKeyedObjectPool</td></tr>
+<tr><td><a href="http://issues.apache.org/bugzilla/show_bug.cgi?id=17990">17990</a></td><td>2003-04-18</td><td>Maj</td><td>FIXE</td><td>Leaking DB connections - synch problem in GenericKeyedObject</td></tr>
+<tr><td><a href="http://issues.apache.org/bugzilla/show_bug.cgi?id=18062">18062</a></td><td>2003-04-18</td><td>Cri</td><td>FIXE</td><td>borrowObject/validation infinite loop and deadlock issue in</td></tr>
+<tr><td><a href="http://issues.apache.org/bugzilla/show_bug.cgi?id=18617">18617</a></td><td>2003-04-07</td><td>Min</td><td>FIXE</td><td>DelegatingPreparedStatement throws misleading exception</td></tr>
+<tr><td><a href="http://issues.apache.org/bugzilla/show_bug.cgi?id=19192">19192</a></td><td>2003-04-22</td><td>Enh</td><td>FIXE</td><td>over agressive synchronize causing performance problem</td></tr>
+<tr><td><a href="http://issues.apache.org/bugzilla/show_bug.cgi?id=21838">21838</a></td><td>2003-08-11</td><td>Enh</td><td>FIXE</td><td>Weird HTML makes the pool example doc hard to read</td></tr>
+<tr><td><a href="http://issues.apache.org/bugzilla/show_bug.cgi?id=22597">22597</a></td><td>2003-08-21</td><td>Enh</td><td>FIXE</td><td>minIdle Functionality</td></tr>
+<tr><td><a href="http://issues.apache.org/bugzilla/show_bug.cgi?id=23060">23060</a></td><td>2003-09-20</td><td>Cri</td><td>FIXE</td><td>Pool not available for download</td></tr>
+</table>
+</li>
+</ul>
+</p>
+</section>
+</body>
+</document>
+
