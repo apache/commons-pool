@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackKeyedObjectPool.java,v 1.2 2002/03/17 14:55:21 rwaldhoff Exp $
- * $Revision: 1.2 $
- * $Date: 2002/03/17 14:55:21 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackKeyedObjectPool.java,v 1.3 2002/05/01 04:54:18 rwaldhoff Exp $
+ * $Revision: 1.3 $
+ * $Date: 2002/05/01 04:54:18 $
  *
  * ====================================================================
  *
@@ -81,9 +81,9 @@ import java.util.Iterator;
  * artificial limits.
  *
  * @author Rodney Waldhoff
- * @version $Id: StackKeyedObjectPool.java,v 1.2 2002/03/17 14:55:21 rwaldhoff Exp $
+ * @version $Id: StackKeyedObjectPool.java,v 1.3 2002/05/01 04:54:18 rwaldhoff Exp $
  */
-public class StackKeyedObjectPool implements KeyedObjectPool {
+public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
     /**
      * Create a new pool using
      * no factory. Clients must first populate the pool

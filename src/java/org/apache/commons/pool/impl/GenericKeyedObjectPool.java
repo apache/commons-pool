@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericKeyedObjectPool.java,v 1.2 2002/03/17 14:55:21 rwaldhoff Exp $
- * $Revision: 1.2 $
- * $Date: 2002/03/17 14:55:21 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericKeyedObjectPool.java,v 1.3 2002/05/01 04:54:18 rwaldhoff Exp $
+ * $Revision: 1.3 $
+ * $Date: 2002/05/01 04:54:18 $
  *
  * ====================================================================
  *
@@ -161,9 +161,9 @@ import java.util.Set;
  * </ul>
  * @see GenericObjectPool
  * @author Rodney Waldhoff
- * @version $Id: GenericKeyedObjectPool.java,v 1.2 2002/03/17 14:55:21 rwaldhoff Exp $
+ * @version $Id: GenericKeyedObjectPool.java,v 1.3 2002/05/01 04:54:18 rwaldhoff Exp $
  */
-public class GenericKeyedObjectPool implements KeyedObjectPool {
+public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
 
     //--- public constants -------------------------------------------
 
