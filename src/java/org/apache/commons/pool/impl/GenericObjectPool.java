@@ -1,7 +1,7 @@
 /*
- * $Id: GenericObjectPool.java,v 1.22 2003/08/13 12:42:28 dirkv Exp $
- * $Revision: 1.22 $
- * $Date: 2003/08/13 12:42:28 $
+ * $Id: GenericObjectPool.java,v 1.23 2003/08/13 19:05:23 dirkv Exp $
+ * $Revision: 1.23 $
+ * $Date: 2003/08/13 19:05:23 $
  *
  * ====================================================================
  *
@@ -164,7 +164,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * @see GenericKeyedObjectPool
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
- * @version $Revision: 1.22 $ $Date: 2003/08/13 12:42:28 $
+ * @version $Revision: 1.23 $ $Date: 2003/08/13 19:05:23 $
  */
 public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
@@ -738,7 +738,9 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                 // (note we know that the num sleeping is 0, else we wouldn't be here)
                 if(_maxActive <= 0 || _numActive < _maxActive) {
                     try {
-                        _numActive++;
+                        synchronized(this) {
+                            _numActive++;
+                        }
                         Object obj = _factory.makeObject();
                         pair = new ObjectTimestampPair(obj);
                         newlyCreated = true;
@@ -756,7 +758,9 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                     switch(_whenExhaustedAction) {
                         case WHEN_EXHAUSTED_GROW:
                             try {
-                                _numActive++;
+                                synchronized(this) {
+                                    _numActive++;
+                                }
                                 Object obj = _factory.makeObject();
                                 pair = new ObjectTimestampPair(obj);
                                 newlyCreated = true;
