@@ -4,7 +4,7 @@
       <title>Downloads</title>
       <author email="commons-dev@jakarta.apache.org">Commons Documentation Team</author>
       <author email="rwaldhoff@apache.org">Rodney Waldhoff</author>
-      <revision>$Id: downloads.xml,v 1.5 2003/03/05 20:33:50 rwaldhoff Exp $</revision>
+      <revision>$Id: downloads.xml,v 1.6 2003/08/11 11:45:04 dirkv Exp $</revision>
    </properties>
 
    <body>
@@ -15,7 +15,7 @@
            <li><a href="http://jakarta.apache.org/builds/jakarta-commons/release/commons-pool/v1.0/">Release 1.0</a> - 4 May 2002</li>
          </ul>
          <p>
-           <a href="http://jakarta.apache.org/builds/jakarta-commons/nightly/commons-pool/">Nightly source and binary drops</a> are also available.
+           <a href="http://cvs.apache.org/builds/jakarta-commons/nightly/commons-pool/">Nightly source and binary drops</a> are also available.
          </p>
          <p>
             The CVS repository for <em>Pool</em> can be
