@@ -1,7 +1,7 @@
 /*
- * $Id: TestObjectPool.java,v 1.3 2003/03/07 15:18:21 rwaldhoff Exp $
- * $Revision: 1.3 $
- * $Date: 2003/03/07 15:18:21 $
+ * $Id: TestObjectPool.java,v 1.4 2003/04/24 01:33:11 rwaldhoff Exp $
+ * $Revision: 1.4 $
+ * $Date: 2003/04/24 01:33:11 $
  * ====================================================================
  *
  * The Apache Software License, Version 1.1
@@ -65,7 +65,7 @@ import junit.framework.TestCase;
 /**
  * Abstract {@link TestCase} for {@link ObjectPool} implementations.
  * @author Rodney Waldhoff
- * @version $Revision: 1.3 $ $Date: 2003/03/07 15:18:21 $
+ * @version $Revision: 1.4 $ $Date: 2003/04/24 01:33:11 $
  */
 public abstract class TestObjectPool extends TestCase {
     public TestObjectPool(String testName) {
@@ -94,7 +94,7 @@ public abstract class TestObjectPool extends TestCase {
         _pool = null;
     }
     
-    public void testBorrow() throws Exception {
+    public void testBaseBorrow() throws Exception {
         try {
             _pool = makeEmptyPool(3);
         } catch(IllegalArgumentException e) {
@@ -105,7 +105,31 @@ public abstract class TestObjectPool extends TestCase {
         assertEquals(getNthObject(2),_pool.borrowObject());
     }
 
-    public void testBorrowReturn() throws Exception {
+    public void testBaseAddObject() throws Exception {
+        try {
+            _pool = makeEmptyPool(3);
+        } catch(IllegalArgumentException e) {
+            return; // skip this test if unsupported
+        }
+        try {
+            assertEquals(0,_pool.getNumIdle());
+            assertEquals(0,_pool.getNumActive());
+            _pool.addObject();
+            assertEquals(1,_pool.getNumIdle());
+            assertEquals(0,_pool.getNumActive());
+            Object obj = _pool.borrowObject();
+            assertEquals(getNthObject(0),obj);
+            assertEquals(0,_pool.getNumIdle());
+            assertEquals(1,_pool.getNumActive());
+            _pool.returnObject(obj);
+            assertEquals(1,_pool.getNumIdle());
+            assertEquals(0,_pool.getNumActive());
+        } catch(UnsupportedOperationException e) {
+            return; // skip this test if one of those calls is unsupported
+        }
+    }
+    
+    public void testBaseBorrowReturn() throws Exception {
         try {
             _pool = makeEmptyPool(3);
         } catch(IllegalArgumentException e) {
@@ -131,7 +155,7 @@ public abstract class TestObjectPool extends TestCase {
         assertEquals(getNthObject(0),obj0);
     }
 
-    public void testNumActiveNumIdle() throws Exception {
+    public void testBaseNumActiveNumIdle() throws Exception {
         try {
             _pool = makeEmptyPool(3);
         } catch(IllegalArgumentException e) {
@@ -153,7 +177,7 @@ public abstract class TestObjectPool extends TestCase {
         assertEquals(2,_pool.getNumIdle());
     }
 
-    public void testClear() throws Exception {
+    public void testBaseClear() throws Exception {
         try {
             _pool = makeEmptyPool(3);
         } catch(IllegalArgumentException e) {
@@ -176,7 +200,7 @@ public abstract class TestObjectPool extends TestCase {
         assertEquals(getNthObject(2),obj2);
     }
 
-    public void testInvalidateObject() throws Exception {
+    public void testBaseInvalidateObject() throws Exception {
         try {
             _pool = makeEmptyPool(3);
         } catch(IllegalArgumentException e) {
@@ -196,7 +220,7 @@ public abstract class TestObjectPool extends TestCase {
         assertEquals(0,_pool.getNumIdle());
     }
     
-    public void testClosePool() throws Exception {
+    public void testBaseClosePool() throws Exception {
         try {
             _pool = makeEmptyPool(3);
         } catch(IllegalArgumentException e) {
@@ -214,7 +238,7 @@ public abstract class TestObjectPool extends TestCase {
         }
     }
 
-    public void testCantCloseTwice() throws Exception {
+    public void testBaseCantCloseTwice() throws Exception {
         try {
             _pool = makeEmptyPool(3);
         } catch(IllegalArgumentException e) {
