@@ -18,14 +18,14 @@
    <properties>
       <title>Downloads</title>
       <author email="commons-dev@jakarta.apache.org">Commons Documentation Team</author>
-      <revision>$Id: downloads.xml,v 1.9 2004/02/29 09:50:58 scolebourne Exp $</revision>
+      <revision>$Id: downloads.xml,v 1.10 2004/05/20 15:31:36 dirkv Exp $</revision>
    </properties>
 
    <body>
      <section name="Releases">
          <p>The following releases are available:</p>
          <ul>
-           <li>Release 1.1 - 20 October 2003</li>
+           <li>Release 1.1 - 20 October 2003 - <a href="release-notes-1.1.html">(release notes)</a></li>
            <li>Release 1.0.1 - 12 August 2002</li>
            <li>Release 1.0 - 4 May 2002</li>
          </ul>
@@ -54,21 +54,26 @@
          </p>
       </section>
 
-<!--
       <section name="Release Candidate">
          <p>
-            Release candidates for the upcoming 1.1 release can be downloaded 
+            We are currently preparing the 1.2 release following this
+            <a href="release-plan.html">release plan</a>.
+         </p>
+         <p>
+            Release candidates for the upcoming 1.2 release can be downloaded 
             <a href="http://cvs.apache.org/~dirkv/builds/">here</a>.
+         </p>
+         <p>
+           Preliminary <a href="release-notes-1.2.html">release notes</a> are available.
          </p>
          <p>
             Please review and report any problem on the 
             <a href="mail-lists.html">mailing list</a>.
          </p>
          <p>
-            Final release target is 20 October 2003. 
+            Final release target is 31 May 2004. 
          </p>
       </section>
--->
    </body>
 </document>
 
