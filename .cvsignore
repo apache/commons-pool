@@ -4,3 +4,5 @@ target
 eclipse_classes
 .classpath
 .project
+maven.log
+velocity.log
