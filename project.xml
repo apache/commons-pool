@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project>
+  <extend>../project.xml</extend>
   <name>Pool</name>
   <id>commons-pool</id>
   <currentVersion>1.1-dev</currentVersion>
