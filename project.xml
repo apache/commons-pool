@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <project> 
-  <extend>../xdocs/maven/project-base.xml</extend>
+  <extend>../commons-build/project.xml</extend>
   <name>Commons Pool</name>
   <id>commons-pool</id>
   <logo>/images/pool-logo-blue.jpg</logo>
