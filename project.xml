@@ -4,7 +4,7 @@
   <extend>../project.xml</extend>
   <name>Pool</name>
   <id>commons-pool</id>
-  <currentVersion>1.1-dev</currentVersion>
+  <currentVersion>2.0-dev</currentVersion>
   <inceptionYear>2001</inceptionYear>
   <gumpRepositoryId>jakarta</gumpRepositoryId>
   <shortDescription>Commons Object Pooling Library</shortDescription>
