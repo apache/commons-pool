@@ -1,13 +1,12 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/TestAll.java,v 1.3 2003/04/22 23:14:52 rwaldhoff Exp $
- * $Revision: 1.3 $
+ * $Id: TestBasePoolableObjectFactory.java,v 1.1 2003/04/22 23:14:52 rwaldhoff Exp $
+ * $Revision: 1.1 $
  * $Date: 2003/04/22 23:14:52 $
- *
  * ====================================================================
  *
  * The Apache Software License, Version 1.1
  *
- * Copyright (c) 1999-2001 The Apache Software Foundation.  All rights
+ * Copyright (c) 2003 The Apache Software Foundation.  All rights
  * reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -66,26 +65,29 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 /**
+ * @version $Revision: 1.1 $ $Date: 2003/04/22 23:14:52 $
  * @author Rodney Waldhoff
- * @version $Id: TestAll.java,v 1.3 2003/04/22 23:14:52 rwaldhoff Exp $
  */
-public class TestAll extends TestCase {
-    public TestAll(String testName) {
+public class TestBasePoolableObjectFactory extends TestCase {
+    public TestBasePoolableObjectFactory(String testName) {
         super(testName);
     }
 
     public static Test suite() {
-        TestSuite suite = new TestSuite();
-        suite.addTest(org.apache.commons.pool.TestBaseObjectPool.suite());
-        suite.addTest(org.apache.commons.pool.TestBaseKeyedObjectPool.suite());
-        suite.addTest(org.apache.commons.pool.TestBasePoolableObjectFactory.suite());
-        suite.addTest(org.apache.commons.pool.TestBaseKeyedPoolableObjectFactory.suite());
-        suite.addTest(org.apache.commons.pool.impl.TestAll.suite());
-        return suite;
+        return new TestSuite(TestBasePoolableObjectFactory.class);
     }
-
-    public static void main(String args[]) {
-        String[] testCaseName = { TestAll.class.getName() };
-        junit.textui.TestRunner.main(testCaseName);
+    
+    // tests
+    public void testDefaultMethods() throws Exception {
+        PoolableObjectFactory factory = new BasePoolableObjectFactory() { 
+            public Object makeObject() throws Exception {
+                return null;
+            }
+        };   
+        
+        factory.activateObject(null); // a no-op
+        factory.passivateObject(null); // a no-op
+        factory.destroyObject(null); // a no-op
+        assertTrue(factory.validateObject(null)); // constant true
     }
 }
