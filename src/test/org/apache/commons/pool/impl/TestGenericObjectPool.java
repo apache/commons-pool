@@ -1,7 +1,7 @@
 /*
- * $Id: TestGenericObjectPool.java,v 1.15 2003/04/24 00:18:58 rwaldhoff Exp $
- * $Revision: 1.15 $
- * $Date: 2003/04/24 00:18:58 $
+ * $Id: TestGenericObjectPool.java,v 1.16 2003/08/12 22:46:57 dirkv Exp $
+ * $Revision: 1.16 $
+ * $Date: 2003/08/12 22:46:57 $
  *
  * ====================================================================
  *
@@ -72,7 +72,8 @@ import org.apache.commons.pool.TestObjectPool;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision: 1.15 $ $Date: 2003/04/24 00:18:58 $
+ * @author Dirk Verbeeck
+ * @version $Revision: 1.16 $ $Date: 2003/08/12 22:46:57 $
  */
 public class TestGenericObjectPool extends TestObjectPool {
     public TestGenericObjectPool(String testName) {
@@ -103,6 +104,43 @@ public class TestGenericObjectPool extends TestObjectPool {
         super.tearDown();
         pool.close();
         pool = null;
+    }
+
+    /**
+     * Activation failure on existing object doesn't fail the borrow 
+     */
+    public void testActivationException() throws Exception {
+        SimpleFactory factory = new SimpleFactory(true, false);
+        factory.setThrowExceptionOnActivate(true);
+        factory.setValidationEnabled(false);
+        GenericObjectPool pool = new GenericObjectPool(factory);
+        
+        Object obj1 = pool.borrowObject();
+        pool.returnObject(obj1);
+
+        // obj1 was returned to the pool but failed to activate the second borrow
+        // a new object obj2 needs te be created
+        Object obj2 = pool.borrowObject();
+        assertTrue(obj1 != obj2);        
+    }
+
+    /**
+     * Activation failure on new object fails the borrow 
+     */
+    public void testActivationExceptionOnNewObject() throws Exception {
+        SimpleFactory factory = new SimpleFactory(true, false);
+        factory.setThrowExceptionOnActivate(true);
+        factory.setValidationEnabled(false);
+        GenericObjectPool pool = new GenericObjectPool(factory);
+        
+        Object obj1 = pool.borrowObject();
+        try {
+            Object obj2 = pool.borrowObject();
+            System.out.println("obj1: " + obj1);
+            System.out.println("obj2: " + obj2);
+            fail("a second object should have been created and failed to activate");
+        }
+        catch (Exception e) {}
     }
 
     public void testWhenExhaustedGrow() throws Exception {
@@ -193,6 +231,7 @@ public class TestGenericObjectPool extends TestObjectPool {
         pool.setMaxIdle(10);
         pool.setFactory(new SimpleFactory());
         Object obj = pool.borrowObject();
+        assertNotNull(obj);
         try {
             pool.setFactory(null);
             fail("Expected IllegalStateException");
@@ -683,7 +722,20 @@ public class TestGenericObjectPool extends TestObjectPool {
     
     private GenericObjectPool pool = null;
 
-    static class SimpleFactory implements PoolableObjectFactory {
+    private void assertConfiguration(GenericObjectPool.Config expected, GenericObjectPool actual) throws Exception {
+        assertEquals("testOnBorrow",expected.testOnBorrow,actual.getTestOnBorrow());
+        assertEquals("testOnReturn",expected.testOnReturn,actual.getTestOnReturn());
+        assertEquals("testWhileIdle",expected.testWhileIdle,actual.getTestWhileIdle());
+        assertEquals("whenExhaustedAction",expected.whenExhaustedAction,actual.getWhenExhaustedAction());
+        assertEquals("maxActive",expected.maxActive,actual.getMaxActive());
+        assertEquals("maxIdle",expected.maxIdle,actual.getMaxIdle());
+        assertEquals("maxWait",expected.maxWait,actual.getMaxWait());
+        assertEquals("minEvictableIdleTimeMillis",expected.minEvictableIdleTimeMillis,actual.getMinEvictableIdleTimeMillis());
+        assertEquals("numTestsPerEvictionRun",expected.numTestsPerEvictionRun,actual.getNumTestsPerEvictionRun());
+        assertEquals("timeBetweenEvictionRunsMillis",expected.timeBetweenEvictionRunsMillis,actual.getTimeBetweenEvictionRunsMillis());
+    }
+
+    public class SimpleFactory implements PoolableObjectFactory {
         public SimpleFactory() {
             this(true);
         }
@@ -704,14 +756,27 @@ public class TestGenericObjectPool extends TestObjectPool {
         void setOddValid(boolean valid) {
             oddValid = valid;
         }
-        void setThrowExceptionOnPassivate(boolean bool) {
+        public void setThrowExceptionOnPassivate(boolean bool) {
             exceptionOnPassivate = bool;
         }
-        
+    
         public Object makeObject() { return String.valueOf(makeCounter++); }
         public void destroyObject(Object obj) { }
-        public boolean validateObject(Object obj) { return validateCounter++%2 == 0 ? evenValid : oddValid; }
-        public void activateObject(Object obj) { }
+        public boolean validateObject(Object obj) {
+            if (enableValidation) { 
+                return validateCounter++%2 == 0 ? evenValid : oddValid; 
+            }
+            else {
+                return true;
+            }
+        }
+        public void activateObject(Object obj) throws Exception {
+            if (exceptionOnActivate) {
+                if (!(validateCounter++%2 == 0 ? evenValid : oddValid)) {
+                    throw new Exception();
+                }
+            }
+        }
         public void passivateObject(Object obj) throws Exception {
             if(exceptionOnPassivate) {
                 throw new Exception();
@@ -722,21 +787,25 @@ public class TestGenericObjectPool extends TestObjectPool {
         boolean evenValid = true;
         boolean oddValid = true;
         boolean exceptionOnPassivate = false;
-    }
+        boolean exceptionOnActivate = false;
+        boolean enableValidation = true;
 
-    private void assertConfiguration(GenericObjectPool.Config expected, GenericObjectPool actual) throws Exception {
-        assertEquals("testOnBorrow",expected.testOnBorrow,actual.getTestOnBorrow());
-        assertEquals("testOnReturn",expected.testOnReturn,actual.getTestOnReturn());
-        assertEquals("testWhileIdle",expected.testWhileIdle,actual.getTestWhileIdle());
-        assertEquals("whenExhaustedAction",expected.whenExhaustedAction,actual.getWhenExhaustedAction());
-        assertEquals("maxActive",expected.maxActive,actual.getMaxActive());
-        assertEquals("maxIdle",expected.maxIdle,actual.getMaxIdle());
-        assertEquals("maxWait",expected.maxWait,actual.getMaxWait());
-        assertEquals("minEvictableIdleTimeMillis",expected.minEvictableIdleTimeMillis,actual.getMinEvictableIdleTimeMillis());
-        assertEquals("numTestsPerEvictionRun",expected.numTestsPerEvictionRun,actual.getNumTestsPerEvictionRun());
-        assertEquals("timeBetweenEvictionRunsMillis",expected.timeBetweenEvictionRunsMillis,actual.getTimeBetweenEvictionRunsMillis());
-    }
+        public boolean isThrowExceptionOnActivate() {
+            return exceptionOnActivate;
+        }
 
+        public void setThrowExceptionOnActivate(boolean b) {
+            exceptionOnActivate = b;
+        }
+
+        public boolean isValidationEnabled() {
+            return enableValidation;
+        }
+
+        public void setValidationEnabled(boolean b) {
+            enableValidation = b;
+        }
+    }
 }
 
 
