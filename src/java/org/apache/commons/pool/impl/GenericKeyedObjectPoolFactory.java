@@ -28,7 +28,7 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  *
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
- * @version $Revision: 1.7 $ $Date: 2004/02/28 12:16:21 $ 
+ * @version $Revision: 1.8 $ $Date: 2004/09/19 17:24:18 $ 
  */
 public class GenericKeyedObjectPoolFactory implements KeyedObjectPoolFactory {
     public GenericKeyedObjectPoolFactory(KeyedPoolableObjectFactory factory) {
@@ -68,9 +68,14 @@ public class GenericKeyedObjectPoolFactory implements KeyedObjectPoolFactory {
     }
 
     public GenericKeyedObjectPoolFactory(KeyedPoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, int maxTotal, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle) {
+        this(factory, maxActive, whenExhaustedAction, maxWait, maxIdle, GenericKeyedObjectPool.DEFAULT_MAX_TOTAL, GenericKeyedObjectPool.DEFAULT_MIN_IDLE , testOnBorrow, testOnReturn, timeBetweenEvictionRunsMillis, numTestsPerEvictionRun, minEvictableIdleTimeMillis, testWhileIdle);
+    }
+
+    public GenericKeyedObjectPoolFactory(KeyedPoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, int maxTotal, int minIdle, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle) {
         _maxIdle = maxIdle;
         _maxActive = maxActive;
         _maxTotal = maxTotal;
+        _minIdle = minIdle;
         _maxWait = maxWait;
         _whenExhaustedAction = whenExhaustedAction;
         _testOnBorrow = testOnBorrow;
@@ -83,7 +88,7 @@ public class GenericKeyedObjectPoolFactory implements KeyedObjectPoolFactory {
     }
 
     public KeyedObjectPool createPool() {
-        return new GenericKeyedObjectPool(_factory,_maxActive,_whenExhaustedAction,_maxWait,_maxIdle,_maxTotal,_testOnBorrow,_testOnReturn,_timeBetweenEvictionRunsMillis,_numTestsPerEvictionRun,_minEvictableIdleTimeMillis,_testWhileIdle);
+        return new GenericKeyedObjectPool(_factory,_maxActive,_whenExhaustedAction,_maxWait,_maxIdle,_maxTotal,_minIdle,_testOnBorrow,_testOnReturn,_timeBetweenEvictionRunsMillis,_numTestsPerEvictionRun,_minEvictableIdleTimeMillis,_testWhileIdle);
     }
 
     //--- protected attributes ---------------------------------------
@@ -91,6 +96,7 @@ public class GenericKeyedObjectPoolFactory implements KeyedObjectPoolFactory {
     protected int _maxIdle = GenericKeyedObjectPool.DEFAULT_MAX_IDLE;
     protected int _maxActive = GenericKeyedObjectPool.DEFAULT_MAX_ACTIVE;
     protected int _maxTotal = GenericKeyedObjectPool.DEFAULT_MAX_TOTAL;
+    protected int _minIdle = GenericKeyedObjectPool.DEFAULT_MIN_IDLE;
     protected long _maxWait = GenericKeyedObjectPool.DEFAULT_MAX_WAIT;
     protected byte _whenExhaustedAction = GenericKeyedObjectPool.DEFAULT_WHEN_EXHAUSTED_ACTION;
     protected boolean _testOnBorrow = GenericKeyedObjectPool.DEFAULT_TEST_ON_BORROW;
