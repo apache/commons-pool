@@ -1,7 +1,7 @@
 /*
- * $Id: TestStackObjectPool.java,v 1.5 2002/10/31 00:06:19 rwaldhoff Exp $
- * $Revision: 1.5 $
- * $Date: 2002/10/31 00:06:19 $
+ * $Id: TestStackObjectPool.java,v 1.6 2002/11/30 09:14:01 rwaldhoff Exp $
+ * $Revision: 1.6 $
+ * $Date: 2002/11/30 09:14:01 $
  *
  * ====================================================================
  *
@@ -61,6 +61,8 @@
 
 package org.apache.commons.pool.impl;
 
+import java.util.BitSet;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -70,7 +72,7 @@ import org.apache.commons.pool.TestObjectPool;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision: 1.5 $ $Date: 2002/10/31 00:06:19 $
+ * @version $Revision: 1.6 $ $Date: 2002/11/30 09:14:01 $
  */
 public class TestStackObjectPool extends TestObjectPool {
     public TestStackObjectPool(String testName) {
@@ -112,5 +114,28 @@ public class TestStackObjectPool extends TestObjectPool {
             assertEquals(99 - i,pool.getNumActive());
             assertEquals((i < 8 ? i+1 : 8),pool.getNumIdle());
         }
+    }
+
+    public void testPoolWithNullFactory() throws Exception {
+        ObjectPool pool = new StackObjectPool(10);
+        for(int i=0;i<10;i++) {
+            pool.returnObject(new Integer(i));
+        }
+        for(int j=0;j<3;j++) {
+            Integer[] borrowed = new Integer[10];
+            BitSet found = new BitSet();
+            for(int i=0;i<10;i++) {
+                borrowed[i] = (Integer)(pool.borrowObject());
+                assertNotNull(borrowed);
+                assertTrue(!found.get(borrowed[i].intValue()));
+                found.set(borrowed[i].intValue());
+            }
+            for(int i=0;i<10;i++) {
+                pool.returnObject(borrowed[i]);
+            }
+        }
+        pool.invalidateObject(pool.borrowObject());
+        pool.invalidateObject(pool.borrowObject());
+        pool.clear();        
     }
 }

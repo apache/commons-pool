@@ -1,7 +1,7 @@
 /*
- * $Id: TestStackKeyedObjectPool.java,v 1.6 2002/10/31 15:04:24 rwaldhoff Exp $
- * $Revision: 1.6 $
- * $Date: 2002/10/31 15:04:24 $
+ * $Id: TestStackKeyedObjectPool.java,v 1.7 2002/11/30 09:14:01 rwaldhoff Exp $
+ * $Revision: 1.7 $
+ * $Date: 2002/11/30 09:14:01 $
  *
  * ====================================================================
  *
@@ -61,6 +61,7 @@
 
 package org.apache.commons.pool.impl;
 
+import java.util.BitSet;
 import java.util.HashMap;
 
 import junit.framework.Test;
@@ -72,7 +73,7 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision: 1.6 $ $Date: 2002/10/31 15:04:24 $
+ * @version $Revision: 1.7 $ $Date: 2002/11/30 09:14:01 $
  */
 public class TestStackKeyedObjectPool extends TestCase {
     public TestStackKeyedObjectPool(String testName) {
@@ -171,4 +172,29 @@ public class TestStackKeyedObjectPool extends TestCase {
             assertEquals((i < 8 ? i+1 : 8),pool.getNumIdle(""));
         }
     }
+    
+    public void testPoolWithNullFactory() throws Exception {
+        KeyedObjectPool pool = new StackKeyedObjectPool(10);
+        for(int i=0;i<10;i++) {
+            pool.returnObject("X",new Integer(i));
+        }
+        for(int j=0;j<3;j++) {
+            Integer[] borrowed = new Integer[10];
+            BitSet found = new BitSet();
+            for(int i=0;i<10;i++) {
+                borrowed[i] = (Integer)(pool.borrowObject("X"));
+                assertNotNull(borrowed);
+                assertTrue(!found.get(borrowed[i].intValue()));
+                found.set(borrowed[i].intValue());
+            }
+            for(int i=0;i<10;i++) {
+                pool.returnObject("X",borrowed[i]);
+            }
+        }
+        pool.invalidateObject("X",pool.borrowObject("X"));
+        pool.invalidateObject("X",pool.borrowObject("X"));
+        pool.clear("X");        
+        pool.clear();        
+    }
+    
 }
