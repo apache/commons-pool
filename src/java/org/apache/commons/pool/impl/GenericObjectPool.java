@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericObjectPool.java,v 1.5 2002/05/01 06:02:34 rwaldhoff Exp $
- * $Revision: 1.5 $
- * $Date: 2002/05/01 06:02:34 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericObjectPool.java,v 1.6 2002/08/10 21:13:26 rwaldhoff Exp $
+ * $Revision: 1.6 $
+ * $Date: 2002/08/10 21:13:26 $
  *
  * ====================================================================
  *
@@ -159,7 +159,7 @@ import java.util.ListIterator;
  * </ul>
  * @see GenericKeyedObjectPool
  * @author Rodney Waldhoff
- * @version $Revision: 1.5 $ $Date: 2002/05/01 06:02:34 $
+ * @version $Revision: 1.6 $ $Date: 2002/08/10 21:13:26 $
  */
 public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
@@ -918,13 +918,14 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                                     cursor = (CursorableLinkedList.Cursor)(_pool.cursor(_pool.size()));
                                 } else {
                                     ObjectTimestampPair pair = (ObjectTimestampPair)(cursor.previous());
-                                    if(System.currentTimeMillis() - pair.tstamp > _minEvictableIdleTimeMillis) {
-                                        try {
-                                            cursor.remove();
-                                            _factory.destroyObject(pair.value);
-                                        } catch(Exception e) {
-                                            ; // ignored
-                                        }
+                                    if(_minEvictableIdleTimeMillis > 0 &&
+                                       System.currentTimeMillis() - pair.tstamp > _minEvictableIdleTimeMillis) {
+                                       try {
+                                           cursor.remove();
+                                           _factory.destroyObject(pair.value);
+                                       } catch(Exception e) {
+                                           ; // ignored
+                                       }
                                     } else if(_testWhileIdle) {
                                         boolean active = false;
                                         try {

@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericKeyedObjectPool.java,v 1.5 2002/05/01 14:43:15 rwaldhoff Exp $
- * $Revision: 1.5 $
- * $Date: 2002/05/01 14:43:15 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericKeyedObjectPool.java,v 1.6 2002/08/10 21:13:26 rwaldhoff Exp $
+ * $Revision: 1.6 $
+ * $Date: 2002/08/10 21:13:26 $
  *
  * ====================================================================
  *
@@ -161,7 +161,7 @@ import java.util.Set;
  * </ul>
  * @see GenericObjectPool
  * @author Rodney Waldhoff
- * @version $Id: GenericKeyedObjectPool.java,v 1.5 2002/05/01 14:43:15 rwaldhoff Exp $
+ * @version $Id: GenericKeyedObjectPool.java,v 1.6 2002/08/10 21:13:26 rwaldhoff Exp $
  */
 public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
 
@@ -1046,7 +1046,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                                 // if the objcursor has a previous object, then test it
                                 if(objcursor.hasPrevious()) {
                                     ObjectTimestampPair pair = (ObjectTimestampPair)(objcursor.previous());
-                                    if(System.currentTimeMillis() - pair.tstamp > _minEvictableIdleTimeMillis) {
+                                    if(_minEvictableIdleTimeMillis > 0 &&
+                                       System.currentTimeMillis() - pair.tstamp > _minEvictableIdleTimeMillis) {
                                         try {
                                             objcursor.remove();
                                             _totalIdle--;
