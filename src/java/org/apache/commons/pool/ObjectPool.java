@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/ObjectPool.java,v 1.4 2002/04/28 21:52:43 rwaldhoff Exp $
- * $Revision: 1.4 $
- * $Date: 2002/04/28 21:52:43 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/ObjectPool.java,v 1.5 2002/04/29 12:11:30 rwaldhoff Exp $
+ * $Revision: 1.5 $
+ * $Date: 2002/04/29 12:11:30 $
  *
  * ====================================================================
  *
@@ -64,6 +64,9 @@ package org.apache.commons.pool;
 /**
  * A pooling interface.
  * <p>
+ * <code>ObjectPool</code> defines a trivially simple pooling interface. The only 
+ * required methods are {@link #borrowObject borrowObject} and {@link #returnObject returnObject}.
+ * <p>
  * Example of use:
  * <table border="1" cellspacing="0" cellpadding="3" align="center" bgcolor="#FFFFFF"><tr><td><pre>
  * Object obj = <font color="#0000CC">null</font>;
@@ -79,13 +82,11 @@ package org.apache.commons.pool;
  *       pool.returnObject(obj);
  *    }
  * }</pre></td></tr></table>
+ * See {@link org.apache.commons.pool.impl.BaseObjectPool BaseObjectPool} for a simple base implementation.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.4 $ $Date: 2002/04/28 21:52:43 $ 
+ * @version $Revision: 1.5 $ $Date: 2002/04/29 12:11:30 $ 
  *
- * @see KeyedObjectPool
- * @see ObjectPoolFactory
- * @see PoolableObjectFactory
  */
 public interface ObjectPool {
     /**

@@ -1,13 +1,13 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericObjectPool.java,v 1.3 2002/04/22 23:43:18 rwaldhoff Exp $
- * $Revision: 1.3 $
- * $Date: 2002/04/22 23:43:18 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericObjectPool.java,v 1.4 2002/04/29 12:11:30 rwaldhoff Exp $
+ * $Revision: 1.4 $
+ * $Date: 2002/04/29 12:11:30 $
  *
  * ====================================================================
  *
  * The Apache Software License, Version 1.1
  *
- * Copyright (c) 1999-2001 The Apache Software Foundation.  All rights
+ * Copyright (c) 1999-2002 The Apache Software Foundation.  All rights
  * reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -159,9 +159,9 @@ import java.util.ListIterator;
  * </ul>
  * @see GenericKeyedObjectPool
  * @author Rodney Waldhoff
- * @version $Id: GenericObjectPool.java,v 1.3 2002/04/22 23:43:18 rwaldhoff Exp $
+ * @version $Revision: 1.4 $ $Date: 2002/04/29 12:11:30 $
  */
-public class GenericObjectPool implements ObjectPool {
+public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
     //--- public constants -------------------------------------------
 
