@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackKeyedObjectPool.java,v 1.4 2002/05/01 06:33:01 rwaldhoff Exp $
- * $Revision: 1.4 $
- * $Date: 2002/05/01 06:33:01 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackKeyedObjectPool.java,v 1.5 2002/06/05 22:02:22 rwaldhoff Exp $
+ * $Revision: 1.5 $
+ * $Date: 2002/06/05 22:02:22 $
  *
  * ====================================================================
  *
@@ -81,7 +81,7 @@ import java.util.Iterator;
  * artificial limits.
  *
  * @author Rodney Waldhoff
- * @version $Id: StackKeyedObjectPool.java,v 1.4 2002/05/01 06:33:01 rwaldhoff Exp $
+ * @version $Id: StackKeyedObjectPool.java,v 1.5 2002/06/05 22:02:22 rwaldhoff Exp $
  */
 public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
     /**
@@ -248,7 +248,9 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
     public synchronized void clear() {
         Iterator it = _pools.keySet().iterator();
         while(it.hasNext()) {
-            clear(it.next());
+            Object key = it.next();
+            Stack stack = (Stack)(_pools.get(key));
+            destroyStack(key,stack);
         }
         _totIdle = 0;
         _pools.clear();
@@ -257,6 +259,10 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
 
     public synchronized void clear(Object key) {
         Stack stack = (Stack)(_pools.remove(key));
+        destroyStack(key,stack);
+    }
+
+    private synchronized void destroyStack(Object key,Stack stack) {
         if(null == stack) {
             return;
         } else {

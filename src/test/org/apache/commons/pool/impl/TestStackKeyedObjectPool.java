@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/impl/TestStackKeyedObjectPool.java,v 1.3 2002/05/01 06:33:02 rwaldhoff Exp $
- * $Revision: 1.3 $
- * $Date: 2002/05/01 06:33:02 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/impl/TestStackKeyedObjectPool.java,v 1.4 2002/06/05 22:02:22 rwaldhoff Exp $
+ * $Revision: 1.4 $
+ * $Date: 2002/06/05 22:02:22 $
  *
  * ====================================================================
  *
@@ -66,7 +66,7 @@ import org.apache.commons.pool.*;
 
 /**
  * @author Rodney Waldhoff
- * @version $Id: TestStackKeyedObjectPool.java,v 1.3 2002/05/01 06:33:02 rwaldhoff Exp $
+ * @version $Id: TestStackKeyedObjectPool.java,v 1.4 2002/06/05 22:02:22 rwaldhoff Exp $
  */
 public class TestStackKeyedObjectPool extends TestCase {
     public TestStackKeyedObjectPool(String testName) {
@@ -209,6 +209,30 @@ public class TestStackKeyedObjectPool extends TestCase {
         assertEquals(0,pool.getNumIdle(""));
         Object obj2 = pool.borrowObject("");
         assertEquals("2",obj2);
+    }
+
+    public void testCloseBug() throws Exception {
+        {
+            Object obj0 = pool.borrowObject("");
+            Object obj1 = pool.borrowObject("");
+            assertEquals(2,pool.getNumActive(""));
+            assertEquals(0,pool.getNumIdle(""));
+            pool.returnObject("",obj1);
+            pool.returnObject("",obj0);
+            assertEquals(0,pool.getNumActive(""));
+            assertEquals(2,pool.getNumIdle(""));
+        }
+        {
+            Object obj0 = pool.borrowObject("2");
+            Object obj1 = pool.borrowObject("2");
+            assertEquals(2,pool.getNumActive("2"));
+            assertEquals(0,pool.getNumIdle("2"));
+            pool.returnObject("2",obj1);
+            pool.returnObject("2",obj0);
+            assertEquals(0,pool.getNumActive("2"));
+            assertEquals(2,pool.getNumIdle("2"));
+        }
+        pool.close();
     }
 
     public void testIdleCap() throws Exception {
