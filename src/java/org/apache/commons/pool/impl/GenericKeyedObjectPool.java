@@ -1,7 +1,7 @@
 /*
  * $Source: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericKeyedObjectPool.java,v $
- * $Revision: 1.20 $
- * $Date: 2003/08/26 14:14:15 $
+ * $Revision: 1.21 $
+ * $Date: 2003/08/26 15:00:06 $
  *
  * ====================================================================
  *
@@ -165,7 +165,7 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  * @see GenericObjectPool
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
- * @version $Revision: 1.20 $ $Date: 2003/08/26 14:14:15 $
+ * @version $Revision: 1.21 $ $Date: 2003/08/26 15:00:06 $
  */
 public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
 
@@ -441,12 +441,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         _activeMap = new HashMap();
         _poolList = new CursorableLinkedList();
 
-        if(_timeBetweenEvictionRunsMillis > 0) {
-            _evictor = new Evictor();
-            Thread t = new Thread(_evictor);
-            t.setDaemon(true);
-            t.start();
-        }
+        startEvictor(_timeBetweenEvictionRunsMillis);
     }
 
     //--- public methods ---------------------------------------------
@@ -665,19 +660,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @see #getTimeBetweenEvictionRunsMillis
      */
     public synchronized void setTimeBetweenEvictionRunsMillis(long timeBetweenEvictionRunsMillis) {
-        if(_timeBetweenEvictionRunsMillis > 0 && timeBetweenEvictionRunsMillis <= 0) {
-            _evictor.cancel();
-            _evictor = null;
-            _timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
-        } else if(_timeBetweenEvictionRunsMillis <= 0 && timeBetweenEvictionRunsMillis > 0) {
-            _timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
-            _evictor = new Evictor();
-            Thread t = new Thread(_evictor);
-            t.setDaemon(true);
-            t.start();
-        } else {
-            _timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
-        }
+        _timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
+        startEvictor(_timeBetweenEvictionRunsMillis);
     }
 
     /**
@@ -1091,7 +1075,25 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         }
     }
 
-    //--- package and private methods -----------------------------------------
+    //--- non-public methods ----------------------------------------
+
+    /**
+     * Start the eviction thread or service, or when
+     * <i>delay</i> is non-positive, stop it
+     * if it is already running.
+     */
+    protected synchronized void startEvictor(long delay) {
+        if(null != _evictor) {
+            _evictor.cancel();
+            _evictor = null;
+        }
+        if(delay > 0) {
+            _evictor = new Evictor(delay);
+            Thread t = new Thread(_evictor);
+            t.setDaemon(true);
+            t.start();
+        }
+    }
 
     synchronized String debugInfo() {
         StringBuffer buf = new StringBuffer();
@@ -1172,7 +1174,12 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @see #setTimeBetweenEvictionRunsMillis
      */
     class Evictor implements Runnable {
-        protected boolean _cancelled = false;
+        private boolean _cancelled = false;
+        private long _delay = 0L;
+
+        public Evictor(long delay) {
+            _delay = delay;
+        }
 
         void cancel() {
             _cancelled = true;
