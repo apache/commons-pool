@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/ObjectPool.java,v 1.3 2002/03/17 14:55:21 rwaldhoff Exp $
- * $Revision: 1.3 $
- * $Date: 2002/03/17 14:55:21 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/ObjectPool.java,v 1.4 2002/04/28 21:52:43 rwaldhoff Exp $
+ * $Revision: 1.4 $
+ * $Date: 2002/04/28 21:52:43 $
  *
  * ====================================================================
  *
@@ -81,7 +81,7 @@ package org.apache.commons.pool;
  * }</pre></td></tr></table>
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.3 $ $Date: 2002/03/17 14:55:21 $ 
+ * @version $Revision: 1.4 $ $Date: 2002/04/28 21:52:43 $ 
  *
  * @see KeyedObjectPool
  * @see ObjectPoolFactory
@@ -116,9 +116,10 @@ public interface ObjectPool {
 
     /**
      * Return the number of instances
-     * currently idle in my pool.
-     * Throws {@link UnsupportedOperationException}
-     * if this information is not available.
+     * currently idle in my pool (optional operation).  
+     * This may be considered an approximation of the number
+     * of objects that can be {@link #borrowObject borrowed}
+     * without creating any new instances.
      *
      * @return the number of instances currently idle in my pool
      * @throws UnsupportedOperationException if this implementation does not support the operation
@@ -127,9 +128,8 @@ public interface ObjectPool {
 
     /**
      * Return the number of instances
-     * currently borrowed from my pool, or
-     * throws {@link UnsupportedOperationException}
-     * if this information is not available.
+     * currently borrowed from my pool 
+     * (optional operation).
      *
      * @return the number of instances currently borrowed in my pool
      * @throws UnsupportedOperationException if this implementation does not support the operation
@@ -138,8 +138,7 @@ public interface ObjectPool {
 
     /**
      * Clears any objects sitting idle in the pool, releasing any
-     * associated resources, or throws {@link UnsupportedOperationException}
-     * if the pool cannot be cleared.
+     * associated resources (optional operation).
      *
      * @throws UnsupportedOperationException if this implementation does not support the operation
      */
@@ -152,8 +151,9 @@ public interface ObjectPool {
 
     /**
      * Sets the {@link PoolableObjectFactory factory} I use
-     * to create new instances.
+     * to create new instances (optional operation).
      * @param factory the {@link PoolableObjectFactory} I use to create new instances.
+     *
      * @throws IllegalStateException when the factory cannot be set at this time
      * @throws UnsupportedOperationException if this implementation does not support the operation
      */
