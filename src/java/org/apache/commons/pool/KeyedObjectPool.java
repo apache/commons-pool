@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/KeyedObjectPool.java,v 1.4 2002/05/01 04:54:52 rwaldhoff Exp $
- * $Revision: 1.4 $
- * $Date: 2002/05/01 04:54:52 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/KeyedObjectPool.java,v 1.5 2002/05/01 06:33:01 rwaldhoff Exp $
+ * $Revision: 1.5 $
+ * $Date: 2002/05/01 06:33:01 $
  *
  * ====================================================================
  *
@@ -64,14 +64,14 @@ package org.apache.commons.pool;
 /**
  * A  "keyed" pooling interface.
  * <p>
- * A keyed pool pools instances of multiple types. Each 
+ * A keyed pool pools instances of multiple types. Each
  * type may be accessed using an arbitrary key.
  * <p>
  * Example of use:
  * <table border="1" cellspacing="0" cellpadding="3" align="center" bgcolor="#FFFFFF"><tr><td><pre>
  * Object obj = <font color="#0000CC">null</font>;
  * Object key = <font color="#CC0000">"Key"</font>;
- * 
+ *
  * <font color="#0000CC">try</font> {
  *    obj = pool.borrowObject(key);
  *    <font color="#00CC00">//...use the object...</font>
@@ -87,12 +87,12 @@ package org.apache.commons.pool;
  * <p>
  * {@link KeyedObjectPool} implementations <i>may</i> choose to store at most
  * one instance per key value, or may choose to maintain a pool of instances
- * for each key (essentially creating a {@link java.util.Map Map} of 
+ * for each key (essentially creating a {@link java.util.Map Map} of
  * {@link ObjectPool pools}).
  * </p>
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.4 $ $Date: 2002/05/01 04:54:52 $ 
+ * @version $Revision: 1.5 $ $Date: 2002/05/01 06:33:01 $
  *
  * @see KeyedPoolableObjectFactory
  * @see KeyedObjectPoolFactory
@@ -140,11 +140,14 @@ public interface KeyedObjectPool {
      * @return the number of instances corresponding to the given <i>key</i> currently idle in my pool
      * @throws UnsupportedOperationException when this implementation doesn't support the operation
      */
+    int getNumIdle(Object key) throws UnsupportedOperationException;
+
+    /** @deprecated use {@link #getNumIdle} instead. */
     int numIdle(Object key) throws UnsupportedOperationException;
 
     /**
      * Returns the number of instances
-     * currently borrowed from but not yet returned 
+     * currently borrowed from but not yet returned
      * to my pool corresponding to the
      * given <i>key</i> (optional operation).
      * Throws {@link UnsupportedOperationException}
@@ -154,6 +157,9 @@ public interface KeyedObjectPool {
      * @return the number of instances corresponding to the given <i>key</i> currently borrowed in my pool
      * @throws UnsupportedOperationException when this implementation doesn't support the operation
      */
+    int getNumActive(Object key) throws UnsupportedOperationException;
+
+    /** @deprecated use {@link #getNumActive} instead. */
     int numActive(Object key) throws UnsupportedOperationException;
 
     /**
@@ -165,6 +171,9 @@ public interface KeyedObjectPool {
      * @return the total number of instances currently idle in my pool
      * @throws UnsupportedOperationException when this implementation doesn't support the operation
      */
+    int getNumIdle() throws UnsupportedOperationException;
+
+    /** @deprecated use {@link #getNumIdle} instead. */
     int numIdle() throws UnsupportedOperationException;
 
     /**
@@ -177,6 +186,9 @@ public interface KeyedObjectPool {
      * @return the total number of instances currently borrowed from my pool
      * @throws UnsupportedOperationException when this implementation doesn't support the operation
      */
+    int getNumActive() throws UnsupportedOperationException;
+
+    /** @deprecated use {@link #getNumActive} instead. */
     int numActive() throws UnsupportedOperationException;
 
     /**

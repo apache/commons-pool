@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/impl/TestStackKeyedObjectPool.java,v 1.2 2002/03/17 14:55:21 rwaldhoff Exp $
- * $Revision: 1.2 $
- * $Date: 2002/03/17 14:55:21 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/impl/TestStackKeyedObjectPool.java,v 1.3 2002/05/01 06:33:02 rwaldhoff Exp $
+ * $Revision: 1.3 $
+ * $Date: 2002/05/01 06:33:02 $
  *
  * ====================================================================
  *
@@ -66,7 +66,7 @@ import org.apache.commons.pool.*;
 
 /**
  * @author Rodney Waldhoff
- * @version $Id: TestStackKeyedObjectPool.java,v 1.2 2002/03/17 14:55:21 rwaldhoff Exp $
+ * @version $Id: TestStackKeyedObjectPool.java,v 1.3 2002/05/01 06:33:02 rwaldhoff Exp $
  */
 public class TestStackKeyedObjectPool extends TestCase {
     public TestStackKeyedObjectPool(String testName) {
@@ -128,85 +128,85 @@ public class TestStackKeyedObjectPool extends TestCase {
     }
 
     public void testNumActiveNumIdle() throws Exception {
-        assertEquals(0,pool.numActive(""));
-        assertEquals(0,pool.numIdle(""));
+        assertEquals(0,pool.getNumActive(""));
+        assertEquals(0,pool.getNumIdle(""));
         Object obj0 = pool.borrowObject("");
-        assertEquals(1,pool.numActive(""));
-        assertEquals(0,pool.numIdle(""));
+        assertEquals(1,pool.getNumActive(""));
+        assertEquals(0,pool.getNumIdle(""));
         Object obj1 = pool.borrowObject("");
-        assertEquals(2,pool.numActive(""));
-        assertEquals(0,pool.numIdle(""));
+        assertEquals(2,pool.getNumActive(""));
+        assertEquals(0,pool.getNumIdle(""));
         pool.returnObject("",obj1);
-        assertEquals(1,pool.numActive(""));
-        assertEquals(1,pool.numIdle(""));
+        assertEquals(1,pool.getNumActive(""));
+        assertEquals(1,pool.getNumIdle(""));
         pool.returnObject("",obj0);
-        assertEquals(0,pool.numActive(""));
-        assertEquals(2,pool.numIdle(""));
+        assertEquals(0,pool.getNumActive(""));
+        assertEquals(2,pool.getNumIdle(""));
     }
 
     public void testNumActiveNumIdle2() throws Exception {
-        assertEquals(0,pool.numActive());
-        assertEquals(0,pool.numIdle());
-        assertEquals(0,pool.numActive("A"));
-        assertEquals(0,pool.numIdle("A"));
-        assertEquals(0,pool.numActive("B"));
-        assertEquals(0,pool.numIdle("B"));
+        assertEquals(0,pool.getNumActive());
+        assertEquals(0,pool.getNumIdle());
+        assertEquals(0,pool.getNumActive("A"));
+        assertEquals(0,pool.getNumIdle("A"));
+        assertEquals(0,pool.getNumActive("B"));
+        assertEquals(0,pool.getNumIdle("B"));
 
         Object objA0 = pool.borrowObject("A");
         Object objB0 = pool.borrowObject("B");
 
-        assertEquals(2,pool.numActive());
-        assertEquals(0,pool.numIdle());
-        assertEquals(1,pool.numActive("A"));
-        assertEquals(0,pool.numIdle("A"));
-        assertEquals(1,pool.numActive("B"));
-        assertEquals(0,pool.numIdle("B"));
+        assertEquals(2,pool.getNumActive());
+        assertEquals(0,pool.getNumIdle());
+        assertEquals(1,pool.getNumActive("A"));
+        assertEquals(0,pool.getNumIdle("A"));
+        assertEquals(1,pool.getNumActive("B"));
+        assertEquals(0,pool.getNumIdle("B"));
 
         Object objA1 = pool.borrowObject("A");
         Object objB1 = pool.borrowObject("B");
 
-        assertEquals(4,pool.numActive());
-        assertEquals(0,pool.numIdle());
-        assertEquals(2,pool.numActive("A"));
-        assertEquals(0,pool.numIdle("A"));
-        assertEquals(2,pool.numActive("B"));
-        assertEquals(0,pool.numIdle("B"));
+        assertEquals(4,pool.getNumActive());
+        assertEquals(0,pool.getNumIdle());
+        assertEquals(2,pool.getNumActive("A"));
+        assertEquals(0,pool.getNumIdle("A"));
+        assertEquals(2,pool.getNumActive("B"));
+        assertEquals(0,pool.getNumIdle("B"));
 
         pool.returnObject("A",objA0);
         pool.returnObject("B",objB0);
 
-        assertEquals(2,pool.numActive());
-        assertEquals(2,pool.numIdle());
-        assertEquals(1,pool.numActive("A"));
-        assertEquals(1,pool.numIdle("A"));
-        assertEquals(1,pool.numActive("B"));
-        assertEquals(1,pool.numIdle("B"));
+        assertEquals(2,pool.getNumActive());
+        assertEquals(2,pool.getNumIdle());
+        assertEquals(1,pool.getNumActive("A"));
+        assertEquals(1,pool.getNumIdle("A"));
+        assertEquals(1,pool.getNumActive("B"));
+        assertEquals(1,pool.getNumIdle("B"));
 
         pool.returnObject("A",objA1);
         pool.returnObject("B",objB1);
 
-        assertEquals(0,pool.numActive());
-        assertEquals(4,pool.numIdle());
-        assertEquals(0,pool.numActive("A"));
-        assertEquals(2,pool.numIdle("A"));
-        assertEquals(0,pool.numActive("B"));
-        assertEquals(2,pool.numIdle("B"));
+        assertEquals(0,pool.getNumActive());
+        assertEquals(4,pool.getNumIdle());
+        assertEquals(0,pool.getNumActive("A"));
+        assertEquals(2,pool.getNumIdle("A"));
+        assertEquals(0,pool.getNumActive("B"));
+        assertEquals(2,pool.getNumIdle("B"));
     }
 
     public void testClear() throws Exception {
-        assertEquals(0,pool.numActive(""));
-        assertEquals(0,pool.numIdle(""));
+        assertEquals(0,pool.getNumActive(""));
+        assertEquals(0,pool.getNumIdle(""));
         Object obj0 = pool.borrowObject("");
         Object obj1 = pool.borrowObject("");
-        assertEquals(2,pool.numActive(""));
-        assertEquals(0,pool.numIdle(""));
+        assertEquals(2,pool.getNumActive(""));
+        assertEquals(0,pool.getNumIdle(""));
         pool.returnObject("",obj1);
         pool.returnObject("",obj0);
-        assertEquals(0,pool.numActive(""));
-        assertEquals(2,pool.numIdle(""));
+        assertEquals(0,pool.getNumActive(""));
+        assertEquals(2,pool.getNumIdle(""));
         pool.clear("");
-        assertEquals(0,pool.numActive(""));
-        assertEquals(0,pool.numIdle(""));
+        assertEquals(0,pool.getNumActive(""));
+        assertEquals(0,pool.getNumIdle(""));
         Object obj2 = pool.borrowObject("");
         assertEquals("2",obj2);
     }
@@ -216,12 +216,12 @@ public class TestStackKeyedObjectPool extends TestCase {
         for(int i=0;i<100;i++) {
             active[i] = pool.borrowObject("");
         }
-        assertEquals(100,pool.numActive(""));
-        assertEquals(0,pool.numIdle(""));
+        assertEquals(100,pool.getNumActive(""));
+        assertEquals(0,pool.getNumIdle(""));
         for(int i=0;i<100;i++) {
             pool.returnObject("",active[i]);
-            assertEquals(99 - i,pool.numActive(""));
-            assertEquals((i < 8 ? i+1 : 8),pool.numIdle(""));
+            assertEquals(99 - i,pool.getNumActive(""));
+            assertEquals((i < 8 ? i+1 : 8),pool.getNumIdle(""));
         }
     }
 }

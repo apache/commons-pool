@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/BaseKeyedObjectPool.java,v 1.1 2002/05/01 04:54:18 rwaldhoff Exp $
- * $Revision: 1.1 $
- * $Date: 2002/05/01 04:54:18 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/BaseKeyedObjectPool.java,v 1.2 2002/05/01 06:33:01 rwaldhoff Exp $
+ * $Revision: 1.2 $
+ * $Date: 2002/05/01 06:33:01 $
  *
  * ====================================================================
  *
@@ -67,37 +67,57 @@ package org.apache.commons.pool;
  * {@link UnsupportedOperationException}.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.1 $ $Date: 2002/05/01 04:54:18 $
+ * @version $Revision: 1.2 $ $Date: 2002/05/01 06:33:01 $
  */
 public abstract class BaseKeyedObjectPool implements KeyedObjectPool {
     public abstract Object borrowObject(Object key) throws Exception;
     public abstract void returnObject(Object key, Object obj) throws Exception;
 
-    /**
-     * Not supported in this base implementation.
-     */
-    public int numIdle(Object key) throws UnsupportedOperationException {
-        throw new UnsupportedOperationException();
+    /** @deprecated Use {@link #getNumIdle} */
+    public final int numIdle(Object key) throws UnsupportedOperationException {
+        return getNumIdle(key);
     }
 
     /**
      * Not supported in this base implementation.
      */
-    public int numActive(Object key) throws UnsupportedOperationException {
+    public int getNumIdle(Object key) throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
+    }
+
+    /** @deprecated Use {@link #getNumActive} */
+    public final int numActive(Object key) throws UnsupportedOperationException {
+        return getNumActive(key);
     }
 
     /**
      * Not supported in this base implementation.
      */
-    public int numIdle() throws UnsupportedOperationException {
+    public int getNumActive(Object key) throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
+    }
+
+    /** @deprecated Use {@link #getNumIdle} */
+    public final int numIdle() throws UnsupportedOperationException {
+        return getNumIdle();
     }
 
     /**
      * Not supported in this base implementation.
      */
-    public int numActive() throws UnsupportedOperationException {
+    public int getNumIdle() throws UnsupportedOperationException {
+        throw new UnsupportedOperationException();
+    }
+
+    /** @deprecated Use {@link #getNumActive} */
+    public final int numActive() throws UnsupportedOperationException {
+        return getNumActive();
+    }
+
+    /**
+     * Not supported in this base implementation.
+     */
+    public int getNumActive() throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 

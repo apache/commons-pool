@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericKeyedObjectPool.java,v 1.3 2002/05/01 04:54:18 rwaldhoff Exp $
- * $Revision: 1.3 $
- * $Date: 2002/05/01 04:54:18 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericKeyedObjectPool.java,v 1.4 2002/05/01 06:33:01 rwaldhoff Exp $
+ * $Revision: 1.4 $
+ * $Date: 2002/05/01 06:33:01 $
  *
  * ====================================================================
  *
@@ -161,7 +161,7 @@ import java.util.Set;
  * </ul>
  * @see GenericObjectPool
  * @author Rodney Waldhoff
- * @version $Id: GenericKeyedObjectPool.java,v 1.3 2002/05/01 04:54:18 rwaldhoff Exp $
+ * @version $Id: GenericKeyedObjectPool.java,v 1.4 2002/05/01 06:33:01 rwaldhoff Exp $
  */
 public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
 
@@ -838,15 +838,15 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         notifyAll();
     }
 
-    public int numActive() {
+    public int getNumActive() {
         return _totalActive;
     }
 
-    public int numIdle() {
+    public int getNumIdle() {
         return _totalIdle;
     }
 
-    public synchronized int numActive(Object key) {
+    public synchronized int getNumActive(Object key) {
         try {
             return((Integer)(_activeMap.get(key))).intValue();
         } catch(Exception e) {
@@ -854,7 +854,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         }
     }
 
-    public synchronized int numIdle(Object key) {
+    public synchronized int getNumIdle(Object key) {
         try {
             return((CursorableLinkedList)(_poolMap.get(key))).size();
         } catch(Exception e) {
@@ -912,7 +912,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     }
 
     synchronized public void setFactory(KeyedPoolableObjectFactory factory) throws IllegalStateException {
-        if(0 < numActive()) {
+        if(0 < getNumActive()) {
             throw new IllegalStateException("Objects are already active");
         } else {
             clear();
