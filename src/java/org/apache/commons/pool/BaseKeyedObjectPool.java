@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/BaseKeyedObjectPool.java,v 1.2 2002/05/01 06:33:01 rwaldhoff Exp $
- * $Revision: 1.2 $
- * $Date: 2002/05/01 06:33:01 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/BaseKeyedObjectPool.java,v 1.3 2002/05/03 17:01:06 rwaldhoff Exp $
+ * $Revision: 1.3 $
+ * $Date: 2002/05/03 17:01:06 $
  *
  * ====================================================================
  *
@@ -67,13 +67,13 @@ package org.apache.commons.pool;
  * {@link UnsupportedOperationException}.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.2 $ $Date: 2002/05/01 06:33:01 $
+ * @version $Revision: 1.3 $ $Date: 2002/05/03 17:01:06 $
  */
 public abstract class BaseKeyedObjectPool implements KeyedObjectPool {
     public abstract Object borrowObject(Object key) throws Exception;
     public abstract void returnObject(Object key, Object obj) throws Exception;
 
-    /** @deprecated Use {@link #getNumIdle} */
+    /** @deprecated Use {@link #getNumIdle} instead. Will be removed by release 2.0. */
     public final int numIdle(Object key) throws UnsupportedOperationException {
         return getNumIdle(key);
     }
@@ -85,7 +85,7 @@ public abstract class BaseKeyedObjectPool implements KeyedObjectPool {
         throw new UnsupportedOperationException();
     }
 
-    /** @deprecated Use {@link #getNumActive} */
+    /** @deprecated Use {@link #getNumActive} instead. Will be removed by release 2.0. */
     public final int numActive(Object key) throws UnsupportedOperationException {
         return getNumActive(key);
     }
@@ -97,7 +97,7 @@ public abstract class BaseKeyedObjectPool implements KeyedObjectPool {
         throw new UnsupportedOperationException();
     }
 
-    /** @deprecated Use {@link #getNumIdle} */
+    /** @deprecated Use {@link #getNumIdle} instead. Will be removed by release 2.0. */
     public final int numIdle() throws UnsupportedOperationException {
         return getNumIdle();
     }
@@ -109,7 +109,7 @@ public abstract class BaseKeyedObjectPool implements KeyedObjectPool {
         throw new UnsupportedOperationException();
     }
 
-    /** @deprecated Use {@link #getNumActive} */
+    /** @deprecated Use {@link #getNumActive} instead. Will be removed by release 2.0. */
     public final int numActive() throws UnsupportedOperationException {
         return getNumActive();
     }
