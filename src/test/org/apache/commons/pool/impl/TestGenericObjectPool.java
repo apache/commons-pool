@@ -1,7 +1,7 @@
 /*
- * $Id: TestGenericObjectPool.java,v 1.8 2002/10/31 00:06:19 rwaldhoff Exp $
- * $Revision: 1.8 $
- * $Date: 2002/10/31 00:06:19 $
+ * $Id: TestGenericObjectPool.java,v 1.9 2003/03/05 19:22:52 rwaldhoff Exp $
+ * $Revision: 1.9 $
+ * $Date: 2003/03/05 19:22:52 $
  *
  * ====================================================================
  *
@@ -70,7 +70,7 @@ import org.apache.commons.pool.TestObjectPool;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision: 1.8 $ $Date: 2002/10/31 00:06:19 $
+ * @version $Revision: 1.9 $ $Date: 2003/03/05 19:22:52 $
  */
 public class TestGenericObjectPool extends TestObjectPool {
     public TestGenericObjectPool(String testName) {
@@ -120,7 +120,7 @@ public class TestGenericObjectPool extends TestObjectPool {
 
     public void testZeroMaxActive() throws Exception {
         pool.setMaxActive(0);
-        pool.setWhenExhaustedAction(pool.WHEN_EXHAUSTED_FAIL);
+        pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_FAIL);
         Object obj = pool.borrowObject();
         assertEquals(getNthObject(0),obj);
         pool.returnObject(obj);
@@ -128,7 +128,7 @@ public class TestGenericObjectPool extends TestObjectPool {
 
     public void testNegativeMaxActive() throws Exception {
         pool.setMaxActive(-1);
-        pool.setWhenExhaustedAction(pool.WHEN_EXHAUSTED_FAIL);
+        pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_FAIL);
         Object obj = pool.borrowObject();
         assertEquals(getNthObject(0),obj);
         pool.returnObject(obj);
@@ -152,7 +152,7 @@ public class TestGenericObjectPool extends TestObjectPool {
 
     public void testMaxActive() throws Exception {
         pool.setMaxActive(3);
-        pool.setWhenExhaustedAction(pool.WHEN_EXHAUSTED_FAIL);
+        pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_FAIL);
 
         pool.borrowObject();
         pool.borrowObject();
@@ -180,17 +180,17 @@ public class TestGenericObjectPool extends TestObjectPool {
             pool.returnObject(active[i]);
         }
 
-        try { Thread.currentThread().sleep(1000L); } catch(Exception e) { }
+        try { Thread.sleep(1000L); } catch(Exception e) { }
         assertTrue("Should be less than 500 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 500);
-        try { Thread.currentThread().sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(Exception e) { }
         assertTrue("Should be less than 400 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 400);
-        try { Thread.currentThread().sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(Exception e) { }
         assertTrue("Should be less than 300 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 300);
-        try { Thread.currentThread().sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(Exception e) { }
         assertTrue("Should be less than 200 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 200);
-        try { Thread.currentThread().sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(Exception e) { }
         assertTrue("Should be less than 100 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 100);
-        try { Thread.currentThread().sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(Exception e) { }
         assertEquals("Should be zero idle, found " + pool.getNumIdle(),0,pool.getNumIdle());
 
         for(int i=0;i<500;i++) {
@@ -200,17 +200,17 @@ public class TestGenericObjectPool extends TestObjectPool {
             pool.returnObject(active[i]);
         }
 
-        try { Thread.currentThread().sleep(1000L); } catch(Exception e) { }
+        try { Thread.sleep(1000L); } catch(Exception e) { }
         assertTrue("Should be less than 500 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 500);
-        try { Thread.currentThread().sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(Exception e) { }
         assertTrue("Should be less than 400 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 400);
-        try { Thread.currentThread().sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(Exception e) { }
         assertTrue("Should be less than 300 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 300);
-        try { Thread.currentThread().sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(Exception e) { }
         assertTrue("Should be less than 200 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 200);
-        try { Thread.currentThread().sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(Exception e) { }
         assertTrue("Should be less than 100 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 100);
-        try { Thread.currentThread().sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(Exception e) { }
         assertEquals("Should be zero idle, found " + pool.getNumIdle(),0,pool.getNumIdle());
     }
 
@@ -228,7 +228,7 @@ public class TestGenericObjectPool extends TestObjectPool {
         for(int i=0;i<20;i++) {
             while(!(threads[i]).complete()) {
                 try {
-                    Thread.currentThread().sleep(500L);
+                    Thread.sleep(500L);
                 } catch(Exception e) {
                     // ignored
                 }
@@ -273,7 +273,7 @@ public class TestGenericObjectPool extends TestObjectPool {
         public void run() {
             for(int i=0;i<_iter;i++) {
                 try {
-                    Thread.currentThread().sleep((long)_random.nextInt(_delay));
+                    Thread.sleep((long)_random.nextInt(_delay));
                 } catch(Exception e) {
                     // ignored
                 }
@@ -287,7 +287,7 @@ public class TestGenericObjectPool extends TestObjectPool {
                 }
 
                 try {
-                    Thread.currentThread().sleep((long)_random.nextInt(_delay));
+                    Thread.sleep((long)_random.nextInt(_delay));
                 } catch(Exception e) {
                     // ignored
                 }

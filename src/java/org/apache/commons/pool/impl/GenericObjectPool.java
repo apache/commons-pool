@@ -1,7 +1,7 @@
 /*
- * $Id: GenericObjectPool.java,v 1.12 2002/12/01 18:29:06 rwaldhoff Exp $
- * $Revision: 1.12 $
- * $Date: 2002/12/01 18:29:06 $
+ * $Id: GenericObjectPool.java,v 1.13 2003/03/05 19:22:52 rwaldhoff Exp $
+ * $Revision: 1.13 $
+ * $Date: 2003/03/05 19:22:52 $
  *
  * ====================================================================
  *
@@ -163,7 +163,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * 
  * @see GenericKeyedObjectPool
  * @author Rodney Waldhoff
- * @version $Revision: 1.12 $ $Date: 2002/12/01 18:29:06 $
+ * @version $Revision: 1.13 $ $Date: 2003/03/05 19:22:52 $
  */
 public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
@@ -987,7 +987,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         public void run() {
             while(!_cancelled) {
                 try {
-                    Thread.currentThread().sleep(_delay);
+                    Thread.sleep(_delay);
                 } catch(Exception e) {
                     // ignored
                 }

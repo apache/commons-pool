@@ -1,7 +1,7 @@
 /*
- * $Id: GenericKeyedObjectPool.java,v 1.11 2003/03/05 19:17:08 rwaldhoff Exp $
- * $Revision: 1.11 $
- * $Date: 2003/03/05 19:17:08 $
+ * $Id: GenericKeyedObjectPool.java,v 1.12 2003/03/05 19:22:52 rwaldhoff Exp $
+ * $Revision: 1.12 $
+ * $Date: 2003/03/05 19:22:52 $
  *
  * ====================================================================
  *
@@ -164,7 +164,7 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  * </p>
  * @see GenericObjectPool
  * @author Rodney Waldhoff
- * @version $Revision: 1.11 $ $Date: 2003/03/05 19:17:08 $
+ * @version $Revision: 1.12 $ $Date: 2003/03/05 19:22:52 $
  */
 public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
 
@@ -1153,7 +1153,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                     sleeptime = _timeBetweenEvictionRunsMillis;
                 }
                 try {
-                    Thread.currentThread().sleep(sleeptime);
+                    Thread.sleep(sleeptime);
                 } catch(Exception e) {
                     ; // ignored
                 }
