@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericKeyedObjectPool.java,v 1.6 2002/08/10 21:13:26 rwaldhoff Exp $
- * $Revision: 1.6 $
- * $Date: 2002/08/10 21:13:26 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericKeyedObjectPool.java,v 1.7 2002/09/05 18:10:06 rwaldhoff Exp $
+ * $Revision: 1.7 $
+ * $Date: 2002/09/05 18:10:06 $
  *
  * ====================================================================
  *
@@ -161,7 +161,7 @@ import java.util.Set;
  * </ul>
  * @see GenericObjectPool
  * @author Rodney Waldhoff
- * @version $Id: GenericKeyedObjectPool.java,v 1.6 2002/08/10 21:13:26 rwaldhoff Exp $
+ * @version $Id: GenericKeyedObjectPool.java,v 1.7 2002/09/05 18:10:06 rwaldhoff Exp $
  */
 public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
 
@@ -744,7 +744,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 if(null != act) {
                     active = act.intValue();
                 }
-                if(_maxActive > 0 && active < _maxActive) {
+                if(_maxActive <= 0 || active < _maxActive) {
                     Object obj = _factory.makeObject(key);
                     pair = new ObjectTimestampPair(obj);
                 } else {

@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericObjectPool.java,v 1.6 2002/08/10 21:13:26 rwaldhoff Exp $
- * $Revision: 1.6 $
- * $Date: 2002/08/10 21:13:26 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericObjectPool.java,v 1.7 2002/09/05 18:10:06 rwaldhoff Exp $
+ * $Revision: 1.7 $
+ * $Date: 2002/09/05 18:10:06 $
  *
  * ====================================================================
  *
@@ -159,7 +159,7 @@ import java.util.ListIterator;
  * </ul>
  * @see GenericKeyedObjectPool
  * @author Rodney Waldhoff
- * @version $Revision: 1.6 $ $Date: 2002/08/10 21:13:26 $
+ * @version $Revision: 1.7 $ $Date: 2002/09/05 18:10:06 $
  */
 public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
@@ -723,7 +723,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
             if(null == pair) {
                 // check if we can create one
                 // (note we know that the num sleeping is 0, else we wouldn't be here)
-                if(_maxActive > 0 && _numActive < _maxActive) {
+                if(_maxActive <= 0 || _numActive < _maxActive) {
                     Object obj = _factory.makeObject();
                     pair = new ObjectTimestampPair(obj);
                 } else {
