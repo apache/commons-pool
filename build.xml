@@ -1,4 +1,4 @@
-<!-- $Id: build.xml,v 1.4 2001/12/11 07:38:02 sanders Exp $ -->
+<!-- $Id: build.xml,v 1.5 2002/01/15 01:20:52 rwaldhoff Exp $ -->
 <project name="commons-pool" default="test" basedir=".">
 
    <!-- patternset describing files to be copied from the doc directory -->
@@ -20,6 +20,10 @@
       <include name="**/*"/>
       <exclude name="**/Test*.java"/>
    </patternset>
+   
+   <!-- Anakia props -->
+   <property name="docs.src" value="./xdocs"/>
+   <property name="docs.dest" value="./docs"/>
 
    <!-- ######################################################### -->
 
@@ -233,5 +237,72 @@
    </target>
 
    <!-- ######################################################### -->
+
+  <target name="xdoc.fetch-stylesheet" unless="localstylesheet">
+      <echo>
+       ####################################################################
+       #
+       #  Fetching the latest stylesheet from jakarta-site2
+       #
+       #  NOTE : As this build target is meant for developers, this requires
+       #    a properly setup CVS.  But you are encouraged to use this to
+       #    experiment with Anakia - if the fetch fails, it may be because
+       #    you haven't yet logged into CVS. The way to do it, assuming you
+       #    have a resonable CVS client setup is
+       #
+       #  $ cvs -d :pserver:anoncvs@cvs.apache.org:/home/cvspublic login
+       #  password: anoncvs
+       #
+       #  and that should solve it.
+       #
+       #  See http://jakarta.apache.org/site/cvsindex.html for more
+       #      information, or http://www.cvshome.org/
+       #
+       #  Ant really is the bee's knees. http://jakarta.apache.org/ant/
+       #
+       ######################################################################
+       </echo>
+
+      <cvs cvsRoot=":pserver:anoncvs@cvs.apache.org:/home/cvspublic"
+          command="checkout -p jakarta-site2/xdocs/stylesheets/site.vsl"
+          output="${docs.src}/stylesheets/site.vsl"
+      />
+	</target>
+
+  <target name="xdoc" depends="xdoc.fetch-stylesheet"
+          description="Generates HTML documentation from XML source">
+      <taskdef name="anakia" classname="org.apache.velocity.anakia.AnakiaTask">
+          <classpath location="${velocity.jar}"/>
+          <classpath location="${jdom.jar}"/>
+          <classpath location="${xerces.jar}"/>
+      </taskdef>
+
+      <echo>
+       #######################################################
+       #
+       #  Now using Anakia to transform our XML documentation
+       #  to HTML.
+       #
+       #######################################################
+       </echo>
+
+      <anakia basedir="${docs.src}" destdir="${docs.dest}/"
+           extension=".html" style="./site.vsl"
+           projectFile="stylesheets/project.xml"
+           excludes="**/stylesheets/** empty.xml"
+           includes="**/*.xml"
+           lastModifiedCheck="true"
+           templatePath="xdocs/stylesheets">
+      </anakia>
+
+      <copy todir="${docs.dest}/images" filtering="no">
+          <fileset dir="${docs.src}/images">
+              <include name="**/*.gif"/>
+              <include name="**/*.jpeg"/>
+              <include name="**/*.jpg"/>
+          </fileset>
+      </copy>
+  </target>
+
 
 </project>
