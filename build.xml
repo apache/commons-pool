@@ -1,4 +1,4 @@
-<!-- $Id: build.xml,v 1.5 2002/01/15 01:20:52 rwaldhoff Exp $ -->
+<!-- $Id: build.xml,v 1.6 2002/04/23 00:08:53 rwaldhoff Exp $ -->
 <project name="commons-pool" default="test" basedir=".">
 
    <!-- patternset describing files to be copied from the doc directory -->
@@ -153,7 +153,8 @@
                destdir="${dest.doc.api}"
                windowtitle="${Name-Long}"
                doctitle="${Name-Long}"
-               bottom="&lt;small&gt;Copyright &amp;copy; 2001 Apache Software Foundation. Documenation generated ${TODAY}&lt;/small&gt;."
+               bottom="&lt;small&gt;Copyright &amp;copy; 2001-2002 Apache Software Foundation. Documenation generated ${TODAY}&lt;/small&gt;."
+               overview="${workdir}/org/apache/commons/pool/overview.html"
                public="true"
                version="true"
                author="true"
