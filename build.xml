@@ -1,4 +1,4 @@
-<!-- $Id: build.xml,v 1.6 2002/04/23 00:08:53 rwaldhoff Exp $ -->
+<!-- $Id: build.xml,v 1.7 2002/04/28 21:48:08 rwaldhoff Exp $ -->
 <project name="commons-pool" default="test" basedir=".">
 
    <!-- patternset describing files to be copied from the doc directory -->
@@ -263,7 +263,9 @@
        #
        ######################################################################
        </echo>
-
+      <cvspass cvsroot=":pserver:anoncvs@cvs.apache.org:/home/cvspublic"
+          password="anoncvs"
+      />
       <cvs cvsRoot=":pserver:anoncvs@cvs.apache.org:/home/cvspublic"
           command="checkout -p jakarta-site2/xdocs/stylesheets/site.vsl"
           output="${docs.src}/stylesheets/site.vsl"
