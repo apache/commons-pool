@@ -3,26 +3,54 @@
    <properties>
       <title>Downloads</title>
       <author email="commons-dev@jakarta.apache.org">Commons Documentation Team</author>
-      <author email="rwaldhoff@apache.org">Rodney Waldhoff</author>
-      <revision>$Id: downloads.xml,v 1.6 2003/08/11 11:45:04 dirkv Exp $</revision>
+      <revision>$Id: downloads.xml,v 1.7 2003/10/11 18:02:05 dirkv Exp $</revision>
    </properties>
 
    <body>
-      <section name="Releases">
+     <section name="Releases">
          <p>The following releases are available:</p>
          <ul>
-           <li><a href="http://jakarta.apache.org/builds/jakarta-commons/release/commons-pool/v1.0.1/">Release 1.0.1</a> - 12 August 2002</li>
-           <li><a href="http://jakarta.apache.org/builds/jakarta-commons/release/commons-pool/v1.0/">Release 1.0</a> - 4 May 2002</li>
+           <li>Release 1.0.1 - 12 August 2002</li>
+           <li>Release 1.0 - 4 May 2002</li>
          </ul>
+         <br/>
          <p>
-           <a href="http://cvs.apache.org/builds/jakarta-commons/nightly/commons-pool/">Nightly source and binary drops</a> are also available.
+            The latest binary release is always available on the 
+            <a href="http://jakarta.apache.org/site/binindex.cgi#commons-pool">
+            Jakarta Binary Downloads page</a>,
+            its source is available from 
+            <a href="http://jakarta.apache.org/site/sourceindex.cgi#commons-pool">
+            Jakarta Source Downloads page</a>.
          </p>
          <p>
-            The CVS repository for <em>Pool</em> can be
-            <a href="http://cvs.apache.org/viewcvs/jakarta-commons/pool/">browsed online</a>
-            or
-            <a href="http://jakarta.apache.org/site/cvsindex.html">downloaded using a CVS client</a>.
+            Older releases are retained by the Apache Software Foundation but are 
+            moved into a
+            <a href="http://archive.apache.org/dist/jakarta/commons/pool/">
+            special archive area</a>.
+         </p>
+         <p>
+           <a href="http://cvs.apache.org/builds/jakarta-commons/nightly/commons-pool/">
+           Nightly source and binary drops</a> are also available.
+         </p>
+         <p>
+            Access to the source tree to see the latest and greatest code is possible
+            through <a href="cvs-usage.html">anonymous CVS access</a>.
+         </p>
+      </section>
+
+      <section name="Release Candidate">
+         <p>
+            Release candidates for the upcoming 1.1 release can be downloaded 
+            <a href="http://cvs.apache.org/~dirkv/builds/">here</a>.
+         </p>
+         <p>
+            Please review and report any problem on the 
+            <a href="mail-lists.html">mailing list</a>.
+         </p>
+         <p>
+            Final release target is 20 October 2003. 
          </p>
       </section>
    </body>
 </document>
+
