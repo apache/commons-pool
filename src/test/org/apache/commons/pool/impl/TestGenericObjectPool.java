@@ -28,7 +28,7 @@ import org.apache.commons.pool.TestObjectPool;
 /**
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
- * @version $Revision: 1.20 $ $Date: 2004/02/28 11:46:11 $
+ * @version $Revision: 1.21 $ $Date: 2004/02/28 12:21:41 $
  */
 public class TestGenericObjectPool extends TestObjectPool {
     public TestGenericObjectPool(String testName) {
@@ -281,6 +281,7 @@ public class TestGenericObjectPool extends TestObjectPool {
                 GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
                 false
             );
+            assertNotNull(pool);
             fail("Expected IllegalArgumentException");
         } catch(IllegalArgumentException e) {
             // expected

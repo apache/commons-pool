@@ -28,7 +28,7 @@ import org.apache.commons.pool.TestObjectPool;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision: 1.11 $ $Date: 2004/02/28 11:46:11 $
+ * @version $Revision: 1.12 $ $Date: 2004/02/28 12:21:41 $
  */
 public class TestStackObjectPool extends TestObjectPool {
     public TestStackObjectPool(String testName) {
@@ -179,21 +179,27 @@ public class TestStackObjectPool extends TestObjectPool {
     public void testVariousConstructors() throws Exception {
         {
             StackObjectPool pool = new StackObjectPool();
+            assertNotNull(pool);
         }
         {
             StackObjectPool pool = new StackObjectPool(10);
+            assertNotNull(pool);
         }
         {
             StackObjectPool pool = new StackObjectPool(10,5);
+            assertNotNull(pool);
         }
         {
             StackObjectPool pool = new StackObjectPool(null);
+            assertNotNull(pool);
         }
         {
             StackObjectPool pool = new StackObjectPool(null,10);
+            assertNotNull(pool);
         }
         {
             StackObjectPool pool = new StackObjectPool(null,10,5);
+            assertNotNull(pool);
         }
     }
 
