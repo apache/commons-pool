@@ -90,7 +90,10 @@
   <build>
     <unitTest>
       <includes>
-        <include>org/apache/commons/pool/TestAll.java</include>
+        <include>org/apache/commons/pool/Test*Factory.java</include>
+        <include>org/apache/commons/pool/TestBaseObjectPool.java</include>
+        <include>org/apache/commons/pool/TestBaseKeyedObjectPool.java</include>
+        <include>org/apache/commons/pool/impl/Test*Pool.java</include>
       </includes>
     </unitTest>
   </build>
