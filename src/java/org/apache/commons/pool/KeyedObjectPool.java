@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/KeyedObjectPool.java,v 1.5 2002/05/01 06:33:01 rwaldhoff Exp $
- * $Revision: 1.5 $
- * $Date: 2002/05/01 06:33:01 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/KeyedObjectPool.java,v 1.6 2002/05/03 17:01:06 rwaldhoff Exp $
+ * $Revision: 1.6 $
+ * $Date: 2002/05/03 17:01:06 $
  *
  * ====================================================================
  *
@@ -92,7 +92,7 @@ package org.apache.commons.pool;
  * </p>
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.5 $ $Date: 2002/05/01 06:33:01 $
+ * @version $Revision: 1.6 $ $Date: 2002/05/03 17:01:06 $
  *
  * @see KeyedPoolableObjectFactory
  * @see KeyedObjectPoolFactory
@@ -142,9 +142,6 @@ public interface KeyedObjectPool {
      */
     int getNumIdle(Object key) throws UnsupportedOperationException;
 
-    /** @deprecated use {@link #getNumIdle} instead. */
-    int numIdle(Object key) throws UnsupportedOperationException;
-
     /**
      * Returns the number of instances
      * currently borrowed from but not yet returned
@@ -159,9 +156,6 @@ public interface KeyedObjectPool {
      */
     int getNumActive(Object key) throws UnsupportedOperationException;
 
-    /** @deprecated use {@link #getNumActive} instead. */
-    int numActive(Object key) throws UnsupportedOperationException;
-
     /**
      * Returns the total number of instances
      * currently idle in my pool (optional operation).
@@ -172,9 +166,6 @@ public interface KeyedObjectPool {
      * @throws UnsupportedOperationException when this implementation doesn't support the operation
      */
     int getNumIdle() throws UnsupportedOperationException;
-
-    /** @deprecated use {@link #getNumIdle} instead. */
-    int numIdle() throws UnsupportedOperationException;
 
     /**
      * Returns the total number of instances
@@ -187,9 +178,6 @@ public interface KeyedObjectPool {
      * @throws UnsupportedOperationException when this implementation doesn't support the operation
      */
     int getNumActive() throws UnsupportedOperationException;
-
-    /** @deprecated use {@link #getNumActive} instead. */
-    int numActive() throws UnsupportedOperationException;
 
     /**
      * Clears my pool, removing all pooled instances
