@@ -1,4 +1,4 @@
-<!-- $Id: build.xml,v 1.7 2002/04/28 21:48:08 rwaldhoff Exp $ -->
+<!-- $Id: build.xml,v 1.8 2002/04/29 19:56:40 craigmcc Exp $ -->
 <project name="commons-pool" default="test" basedir=".">
 
    <!-- patternset describing files to be copied from the doc directory -->
@@ -272,12 +272,15 @@
       />
 	</target>
 
-  <target name="xdoc" depends="xdoc.fetch-stylesheet"
+  <target name="xdoc" depends="init,xdoc.fetch-stylesheet"
           description="Generates HTML documentation from XML source">
+      <mkdir      dir="${dist.home}"/>
+      <mkdir      dir="${dist.home}/docs"/>
       <taskdef name="anakia" classname="org.apache.velocity.anakia.AnakiaTask">
           <classpath location="${velocity.jar}"/>
           <classpath location="${jdom.jar}"/>
           <classpath location="${xerces.jar}"/>
+          <classpath location="${commons-collections.jar}"/>
       </taskdef>
 
       <echo>
