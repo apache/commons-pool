@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/SoftReferenceObjectPool.java,v 1.3 2002/04/22 23:43:18 rwaldhoff Exp $
- * $Revision: 1.3 $
- * $Date: 2002/04/22 23:43:18 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/SoftReferenceObjectPool.java,v 1.4 2002/04/29 12:11:30 rwaldhoff Exp $
+ * $Revision: 1.4 $
+ * $Date: 2002/04/29 12:11:30 $
  *
  * ====================================================================
  *
@@ -62,6 +62,7 @@
 package org.apache.commons.pool.impl;
 
 import org.apache.commons.pool.ObjectPool;
+import org.apache.commons.pool.BaseObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
 import java.util.List;
 import java.util.ArrayList;
@@ -74,9 +75,9 @@ import java.lang.ref.SoftReference;
  * {@link ObjectPool}.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.3 $ $Date: 2002/04/22 23:43:18 $
+ * @version $Revision: 1.4 $ $Date: 2002/04/29 12:11:30 $
  */
-public class SoftReferenceObjectPool implements ObjectPool {
+public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPool {
     public SoftReferenceObjectPool() {
         _pool = new ArrayList();
         _factory = null;
