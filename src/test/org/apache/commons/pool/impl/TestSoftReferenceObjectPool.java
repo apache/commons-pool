@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/impl/TestSoftReferenceObjectPool.java,v 1.3 2002/10/30 22:54:42 rwaldhoff Exp $
- * $Revision: 1.3 $
- * $Date: 2002/10/30 22:54:42 $
+ * $Id: TestSoftReferenceObjectPool.java,v 1.4 2002/10/31 00:06:19 rwaldhoff Exp $
+ * $Revision: 1.4 $
+ * $Date: 2002/10/31 00:06:19 $
  *
  * ====================================================================
  *
@@ -61,15 +61,18 @@
 
 package org.apache.commons.pool.impl;
 
-import junit.framework.*;
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
+import org.apache.commons.pool.TestObjectPool;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision: 1.3 $ $Date: 2002/10/30 22:54:42 $
+ * @version $Revision: 1.4 $ $Date: 2002/10/31 00:06:19 $
  */
-public class TestSoftReferenceObjectPool extends TestCase {
+public class TestSoftReferenceObjectPool extends TestObjectPool {
     public TestSoftReferenceObjectPool(String testName) {
         super(testName);
     }
@@ -78,15 +81,8 @@ public class TestSoftReferenceObjectPool extends TestCase {
         return new TestSuite(TestSoftReferenceObjectPool.class);
     }
 
-    public static void main(String args[]) {
-        String[] testCaseName = { TestSoftReferenceObjectPool.class.getName() };
-        junit.textui.TestRunner.main(testCaseName);
-    }
-
-    private SoftReferenceObjectPool pool = null;
-
-    public void setUp() {
-        pool = new SoftReferenceObjectPool(
+    protected ObjectPool makeEmptyPool(int cap) {
+        return new SoftReferenceObjectPool(
             new PoolableObjectFactory()  {
                 int counter = 0;
                 public Object makeObject() { return String.valueOf(counter++); }
@@ -98,87 +94,8 @@ public class TestSoftReferenceObjectPool extends TestCase {
             );
     }
 
-    public void testBorrow() throws Exception {
-        Object obj0 = pool.borrowObject();
-        assertEquals("0",obj0);
-        Object obj1 = pool.borrowObject();
-        assertEquals("1",obj1);
-        Object obj2 = pool.borrowObject();
-        assertEquals("2",obj2);
-    }
-
-    public void testBorrowReturn() throws Exception {
-        Object obj0 = pool.borrowObject();
-        assertEquals("borrowObject from an empty pool should create a new instance.","0",obj0);
-        Object obj1 = pool.borrowObject();
-        assertEquals("A second borrowObject from an empty pool should create a second instance.","1",obj1);
-        Object obj2 = pool.borrowObject();
-        assertEquals("A third borrowObject from an empty pool should create a third instance.","2",obj2);
-
-        pool.returnObject(obj2);
-        obj2 = pool.borrowObject();
-        assertEquals("Having returned the third instance to the empty pool, borrowObject should return it.","2",obj2);
-
-        pool.returnObject(obj1);
-        obj1 = pool.borrowObject();
-        assertEquals("Having returned the second instance to the empty pool, borrowObject should return it.","1",obj1);
-
-        pool.returnObject(obj0);
-        pool.returnObject(obj2);
-        obj2 = pool.borrowObject();
-        assertEquals("Having returned the first, then third instance to the empty pool, borrowObject should return the third instance.","2",obj2);
-        obj0 = pool.borrowObject();
-        assertEquals("Having returned the first, then third instance to the empty pool, the second call to borrowObject should return the first instance.","0",obj0);
-    }
-
-    public void testNumActiveNumIdle() throws Exception {
-        assertEquals(0,pool.getNumActive());
-        assertEquals(0,pool.getNumIdle());
-        Object obj0 = pool.borrowObject();
-        assertEquals(1,pool.getNumActive());
-        assertEquals(0,pool.getNumIdle());
-        Object obj1 = pool.borrowObject();
-        assertEquals(2,pool.getNumActive());
-        assertEquals(0,pool.getNumIdle());
-        pool.returnObject(obj1);
-        assertEquals(1,pool.getNumActive());
-        assertEquals(1,pool.getNumIdle());
-        pool.returnObject(obj0);
-        assertEquals(0,pool.getNumActive());
-        assertEquals(2,pool.getNumIdle());
-    }
-
-    public void testClear() throws Exception {
-        assertEquals(0,pool.getNumActive());
-        assertEquals(0,pool.getNumIdle());
-        Object obj0 = pool.borrowObject();
-        Object obj1 = pool.borrowObject();
-        assertEquals(2,pool.getNumActive());
-        assertEquals(0,pool.getNumIdle());
-        pool.returnObject(obj1);
-        pool.returnObject(obj0);
-        assertEquals(0,pool.getNumActive());
-        assertEquals(2,pool.getNumIdle());
-        pool.clear();
-        assertEquals(0,pool.getNumActive());
-        assertEquals(0,pool.getNumIdle());
-        Object obj2 = pool.borrowObject();
-        assertEquals("2",obj2);
-    }
-
-    public void testInvalidateObject() throws Exception {
-        assertEquals(0,pool.getNumActive());
-        assertEquals(0,pool.getNumIdle());
-        Object obj0 = pool.borrowObject();
-        Object obj1 = pool.borrowObject();
-        assertEquals(2,pool.getNumActive());
-        assertEquals(0,pool.getNumIdle());
-        pool.invalidateObject(obj0);
-        assertEquals(1,pool.getNumActive());
-        assertEquals(0,pool.getNumIdle());
-        pool.invalidateObject(obj1);
-        assertEquals(0,pool.getNumActive());
-        assertEquals(0,pool.getNumIdle());
+    protected Object getNthObject(int n) {
+        return String.valueOf(n);
     }
 
 }
