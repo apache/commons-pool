@@ -11,10 +11,46 @@
 
 <section name="ObjectPool">
 <center><img src="../images/uml/ObjectPool.gif"/></center>
+<br/>
+<p>
+<a href="../apidocs/org/apache/commons/pool/ObjectPool.html">ObjectPool</a> defines a simple pooling interface.
+<ul>
+   <li>
+       <a href="../apidocs/org/apache/commons/pool/impl/GenericObjectPool.html">GenericObjectPool</a>:
+       ObjectPool implementation with a FIFO (First In First Out) behavior. This queue like behavior 
+       makes sure each object is regularly used. (helps preventing time-outs)
+   </li>
+   <li>
+       <a href="../apidocs/org/apache/commons/pool/impl/StackObjectPool.html">StackObjectPool</a>:
+       ObjectPool implementation with a LIFO (Last In First Out) behavior.
+   </li>
+   <li>
+       <a href="../apidocs/org/apache/commons/pool/impl/SoftReferenceObjectPool.html">SoftReferenceObjectPool</a>: 
+       ObjectPool implementation with a LIFO (Last In First Out) behavior. Additionally this pool wraps 
+       each object in a SoftReference allowing the garbage collector to remove them in response to 
+       memory demand.
+   </li>
+</ul>
+</p>
 </section>
 
 <section name="KeyedObjectPool">
 <center><img src="../images/uml/KeyedObjectPool.gif"/></center>
+<br/>
+<p>
+A <a href="../apidocs/org/apache/commons/pool/KeyedObjectPool.html">KeyedObjectPool</a>
+pools instances of multiple types. Each type may be accessed using an arbitrary key.
+<ul>
+   <li>
+       <a href="../apidocs/org/apache/commons/pool/impl/GenericKeyedObjectPool.html">GenericKeyedObjectPool</a>:
+       ObjectPool implementation with a FIFO (First In First Out) behavior.
+   </li>
+   <li>
+       <a href="../apidocs/org/apache/commons/pool/impl/StackKeyedObjectPool.html">StackKeyedObjectPool</a>:
+       ObjectPool implementation with a LIFO (Last In First Out) behavior.
+   </li>
+</ul>
+</p>
 </section>
 
 </body>
