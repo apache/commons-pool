@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="Commons - Pool" href="http://jakarta.apache.org/commons/pool">
+    <title>HTTP Client</title>
+    <logo href="/images/logo.jpg">Commons</logo>
+    <!--
+      Note: Per the .vsl file, "/site" links will be prefixed with "http://jakarta.apache.org/site"
+            Other links starting with "/" become "./...".
+    -->
+    <body>
+       <menu name="Home">
+           <item name="Jakarta&#xA0;Commons"          href="http://jakarta.apache.org/commons/index.html" />
+           <item name="Pool"                          href="/index.html" />
+       </menu>
+       <menu name="Information">
+<!--           
+           <item name="Overview"                      href="/overview.html"/>
+           <item name="News"                          href="http://jakarta.apache.org/commons/pool/news.html"/>
+-->           
+           <item name="API&#xA0;Documentation"        href="./dist/docs/api/index.html"/>
+       </menu>
+       <menu name="Project Files">
+           <item name="Status"                        href="http://cvs.apache.org/viewcvs/~checkout~/jakarta-commons/pool/STATUS.html?content-type=text/html"/>
+           <item name="Downloads"                     href="/downloads.html"/>
+           <item name="CVS"                           href="http://cvs.apache.org/viewcvs/jakarta-commons/pool/"/>
+           <item name="Original&#xA0;Proposal"        href="http://cvs.apache.org/viewcvs/~checkout~/jakarta-commons/pool/PROPOSAL.html?content-type=text/html"/>
+       </menu>
+       <menu name="About Us">
+           <item name="Contributors"                  href="/contributors.html"/>
+           <item name="License"                       href="http://jakarta.apache.org/commons/license.html"/>
+       </menu>
+       <menu name="Jakarta Community">
+           <item name="Get&#xA0;Involved"             href="http://jakarta.apache.org/site/getinvolved.html"/>
+           <item name="Mailing&#xA0;Lists"            href="http://jakarta.apache.org/site/mail.html"/>
+           <item name="CVS&#xA0;Repositories"         href="http://jakarta.apache.org/site/cvsindex.html"/>
+       </menu>
+    </body>
+</project>

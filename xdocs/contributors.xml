@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<document>
+   <properties>
+      <title>Contributors</title>
+      <author email="commons-dev@jakarta.apache.org">Commons Documentation Team</author>
+      <author email="rwaldhoff@apache.org">Rodney Waldhoff</author>
+      <revision>$Id: contributors.xml,v 1.1 2002/01/15 01:20:52 rwaldhoff Exp $</revision>
+   </properties>
+
+   <body>
+      <section name="Contributors">
+         <p>
+            The following volunteers have contributed code, documentation, testing
+            and support to <em>Pool</em>.
+         </p>
+         <!-- alphabetical by last name please -->
+         <ul>
+            <li>Morgan Delagrange</li>
+            <li>Geir Magnusson Jr.</li>
+            <li>Craig R. McClanahan</li>
+            <li>Rodney Waldhoff</li>
+            <li>David Weinrich</li>
+         </ul>
+      </section>
+   </body>
+</document>

@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<document>
+   <properties>
+      <title>Downloads</title>
+      <author email="commons-dev@jakarta.apache.org">Commons Documentation Team</author>
+      <author email="rwaldhoff@apache.org">Rodney Waldhoff</author>
+      <revision>$Id: downloads.xml,v 1.1 2002/01/15 01:20:52 rwaldhoff Exp $</revision>
+   </properties>
+
+   <body>
+      <section name="Downloads">
+         <p>
+            The following releases are available for download:
+         </p>
+         <ul>
+            <i>none yet</i>
+         </ul>
+         <p>
+            The CVS repository for <em>Pool</em> can be
+            <a href="http://cvs.apache.org/viewcvs/jakarta-commons/pool/">browsed online</a>
+            or
+            <a href="http://jakarta.apache.org/site/cvsindex.html">downloaded using a CVS client</a>.
+         </p>
+      </section>
+   </body>
+</document>
