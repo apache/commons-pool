@@ -28,7 +28,7 @@ import org.apache.commons.pool.TestKeyedObjectPool;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision: 1.19 $ $Date: 2004/07/04 17:31:23 $
+ * @version $Revision: 1.20 $ $Date: 2004/07/04 17:41:36 $
  */
 public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     public TestGenericKeyedObjectPool(String testName) {
@@ -93,14 +93,6 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         } catch(NoSuchElementException e) {
             // expected 
         }
-    }
-
-    public void testZeroMaxActive() throws Exception {
-        pool.setMaxActive(0);
-        pool.setWhenExhaustedAction(GenericKeyedObjectPool.WHEN_EXHAUSTED_FAIL);
-        Object obj = pool.borrowObject("");
-        assertEquals("0",obj);
-        pool.returnObject("",obj);
     }
 
     public void testNegativeMaxActive() throws Exception {
@@ -191,6 +183,18 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         }
     }
 
+    public void testMaxActiveZero() throws Exception {
+        pool.setMaxActive(0);
+        pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_FAIL);
+
+        try {
+            pool.borrowObject("a");
+            fail("Expected NoSuchElementException");
+        } catch(NoSuchElementException e) {
+            // expected
+        }
+    }
+
     public void testMaxTotal() throws Exception {
         pool.setMaxActive(2);
         pool.setMaxTotal(3);
@@ -219,6 +223,18 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         assertNotNull(o4);
         assertEquals(0, pool.getNumIdle());
         assertEquals(0, pool.getNumIdle("b"));
+    }
+
+    public void testMaxTotalZero() throws Exception {
+        pool.setMaxTotal(0);
+        pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_FAIL);
+
+        try {
+            pool.borrowObject("a");
+            fail("Expected NoSuchElementException");
+        } catch(NoSuchElementException e) {
+            // expected
+        }
     }
 
     public void testMaxTotalLRU() throws Exception {

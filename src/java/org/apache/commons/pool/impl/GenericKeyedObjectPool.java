@@ -123,7 +123,7 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  * @see GenericObjectPool
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
- * @version $Revision: 1.27 $ $Date: 2004/07/04 17:31:11 $
+ * @version $Revision: 1.28 $ $Date: 2004/07/04 17:41:15 $
  */
 public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
 
@@ -744,8 +744,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 // check if we can create one
                 // (note we know that the num sleeping is 0, else we wouldn't be here)
                 int active = getActiveCount(key);
-                if ((_maxActive <= 0 || active < _maxActive) &&
-                    (_maxTotal <= 0 || _totalActive + _totalIdle < _maxTotal)) {
+                if ((_maxActive < 0 || active < _maxActive) &&
+                    (_maxTotal < 0 || _totalActive + _totalIdle < _maxTotal)) {
                     Object obj = _factory.makeObject(key);
                     pair = new ObjectTimestampPair(obj);
                     newlyCreated = true;
