@@ -1,7 +1,7 @@
 /*
- * $Id: TestStackKeyedObjectPool.java,v 1.8 2003/03/07 20:28:35 rwaldhoff Exp $
- * $Revision: 1.8 $
- * $Date: 2003/03/07 20:28:35 $
+ * $Id: TestStackKeyedObjectPool.java,v 1.9 2003/04/24 20:14:03 rwaldhoff Exp $
+ * $Revision: 1.9 $
+ * $Date: 2003/04/24 20:14:03 $
  *
  * ====================================================================
  *
@@ -66,17 +66,17 @@ import java.util.HashMap;
 import java.util.NoSuchElementException;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.apache.commons.pool.KeyedObjectPool;
 import org.apache.commons.pool.KeyedPoolableObjectFactory;
+import org.apache.commons.pool.TestKeyedObjectPool;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision: 1.8 $ $Date: 2003/03/07 20:28:35 $
+ * @version $Revision: 1.9 $ $Date: 2003/04/24 20:14:03 $
  */
-public class TestStackKeyedObjectPool extends TestCase {
+public class TestStackKeyedObjectPool extends TestKeyedObjectPool {
     public TestStackKeyedObjectPool(String testName) {
         super(testName);
     }
@@ -201,6 +201,15 @@ public class TestStackKeyedObjectPool extends TestCase {
         {
             StackKeyedObjectPool pool = new StackKeyedObjectPool(null,10,5);
         }
+    }
+    
+    public void testToString() throws Exception {
+        StackKeyedObjectPool pool = new StackKeyedObjectPool(new SimpleFactory());
+        assertNotNull(pool.toString());
+        Object obj = pool.borrowObject("key");
+        assertNotNull(pool.toString());
+        pool.returnObject("key",obj);
+        assertNotNull(pool.toString());
     }
         
     public void testBorrowFromEmptyPoolWithNullFactory() throws Exception {

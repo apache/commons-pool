@@ -1,7 +1,7 @@
 /*
- * $Id: TestGenericKeyedObjectPool.java,v 1.12 2003/04/18 20:58:40 rwaldhoff Exp $
- * $Revision: 1.12 $
- * $Date: 2003/04/18 20:58:40 $
+ * $Id: TestGenericKeyedObjectPool.java,v 1.13 2003/04/24 20:14:03 rwaldhoff Exp $
+ * $Revision: 1.13 $
+ * $Date: 2003/04/24 20:14:03 $
  *
  * ====================================================================
  *
@@ -73,7 +73,7 @@ import org.apache.commons.pool.TestKeyedObjectPool;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision: 1.12 $ $Date: 2003/04/18 20:58:40 $
+ * @version $Revision: 1.13 $ $Date: 2003/04/24 20:14:03 $
  */
 public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     public TestGenericKeyedObjectPool(String testName) {
@@ -125,6 +125,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     
     public void tearDown() throws Exception {
         super.tearDown();
+        pool.close();
         pool = null;
     }
 

@@ -1,7 +1,7 @@
 /*
- * $Id: TestBaseKeyedObjectPool.java,v 1.1 2003/04/22 23:14:52 rwaldhoff Exp $
- * $Revision: 1.1 $
- * $Date: 2003/04/22 23:14:52 $
+ * $Id: TestBaseKeyedObjectPool.java,v 1.2 2003/04/24 20:14:03 rwaldhoff Exp $
+ * $Revision: 1.2 $
+ * $Date: 2003/04/24 20:14:03 $
  * ====================================================================
  *
  * The Apache Software License, Version 1.1
@@ -65,7 +65,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 /**
- * @version $Revision: 1.1 $ $Date: 2003/04/22 23:14:52 $
+ * @version $Revision: 1.2 $ $Date: 2003/04/24 20:14:03 $
  * @author Rodney Waldhoff
  */
 public class TestBaseKeyedObjectPool extends TestCase {
@@ -89,6 +89,13 @@ public class TestBaseKeyedObjectPool extends TestCase {
             }            
         };   
         
+        try {
+            pool.addObject("key");
+            fail("Expected UnsupportedOperationException");
+        } catch(UnsupportedOperationException e) {
+            // expected
+        }
+
         try {
             pool.getNumIdle();
             fail("Expected UnsupportedOperationException");
