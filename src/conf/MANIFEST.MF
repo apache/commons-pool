@@ -1,6 +1,9 @@
 Manifest-Version: 1.0
+Name: org/apache/commons/pool/
 Extension-Name: org.apache.commons.pool
-Specification-Vendor: Apache Software Foundation
-Specification-Version: 1.0
+Implementation-Title: Apache Jakarta Commons Pool
+Implementation-Version: 2.0-dev
 Implementation-Vendor: Apache Software Foundation
-Implementation-Version: 1.0.1
+Specification-Title: Apache Jakarta Commons Pool
+Specification-Vendor: Apache Software Foundation
+Specification-Version: 2.0-dev
