@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/impl/TestGenericKeyedObjectPool.java,v 1.4 2002/05/01 06:33:02 rwaldhoff Exp $
- * $Revision: 1.4 $
- * $Date: 2002/05/01 06:33:02 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/impl/TestGenericKeyedObjectPool.java,v 1.5 2002/05/04 12:15:46 rwaldhoff Exp $
+ * $Revision: 1.5 $
+ * $Date: 2002/05/04 12:15:46 $
  *
  * ====================================================================
  *
@@ -66,7 +66,7 @@ import org.apache.commons.pool.*;
 
 /**
  * @author Rodney Waldhoff
- * @version $Id: TestGenericKeyedObjectPool.java,v 1.4 2002/05/01 06:33:02 rwaldhoff Exp $
+ * @version $Id: TestGenericKeyedObjectPool.java,v 1.5 2002/05/04 12:15:46 rwaldhoff Exp $
  */
 public class TestGenericKeyedObjectPool extends TestCase {
     public TestGenericKeyedObjectPool(String testName) {
@@ -257,7 +257,7 @@ public class TestGenericKeyedObjectPool extends TestCase {
             pool.returnObject("",active[i]);
         }
 
-        try { Thread.currentThread().sleep(2000L); } catch(Exception e) { }
+        try { Thread.currentThread().sleep(1000L); } catch(Exception e) { }
         assertTrue("Should be less than 500 idle, found " + pool.getNumIdle(""),pool.getNumIdle("") < 500);
         try { Thread.currentThread().sleep(600L); } catch(Exception e) { }
         assertTrue("Should be less than 400 idle, found " + pool.getNumIdle(""),pool.getNumIdle("") < 400);
@@ -277,7 +277,7 @@ public class TestGenericKeyedObjectPool extends TestCase {
             pool.returnObject("",active[i]);
         }
 
-        try { Thread.currentThread().sleep(2000L); } catch(Exception e) { }
+        try { Thread.currentThread().sleep(1000L); } catch(Exception e) { }
         assertTrue("Should be less than 500 idle, found " + pool.getNumIdle(""),pool.getNumIdle("") < 500);
         try { Thread.currentThread().sleep(600L); } catch(Exception e) { }
         assertTrue("Should be less than 400 idle, found " + pool.getNumIdle(""),pool.getNumIdle("") < 400);
@@ -309,7 +309,7 @@ public class TestGenericKeyedObjectPool extends TestCase {
             pool.returnObject("2",active2[i]);
         }
 
-        try { Thread.currentThread().sleep(2000L); } catch(Exception e) { }
+        try { Thread.currentThread().sleep(1000L); } catch(Exception e) { }
         assertTrue("Should be less than 1000 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 1000);
         try { Thread.currentThread().sleep(600L); } catch(Exception e) { }
         assertTrue("Should be less than 900 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 900);
@@ -390,6 +390,7 @@ public class TestGenericKeyedObjectPool extends TestCase {
 
         public void run() {
             for(int i=0;i<_iter;i++) {
+                String key = String.valueOf(_random.nextInt(3));
                 try {
                     Thread.currentThread().sleep((long)_random.nextInt(_delay));
                 } catch(Exception e) {
@@ -397,7 +398,7 @@ public class TestGenericKeyedObjectPool extends TestCase {
                 }
                 Object obj = null;
                 try {
-                    obj = _pool.borrowObject("");
+                    obj = _pool.borrowObject(key);
                 } catch(Exception e) {
                     _failed = true;
                     _complete = true;
@@ -410,7 +411,7 @@ public class TestGenericKeyedObjectPool extends TestCase {
                     // ignored
                 }
                 try {
-                    _pool.returnObject("",obj);
+                    _pool.returnObject(key,obj);
                 } catch(Exception e) {
                     _failed = true;
                     _complete = true;
