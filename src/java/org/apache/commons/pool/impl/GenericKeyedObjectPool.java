@@ -1,7 +1,7 @@
 /*
  * $Source: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericKeyedObjectPool.java,v $
- * $Revision: 1.22 $
- * $Date: 2003/08/26 15:11:42 $
+ * $Revision: 1.23 $
+ * $Date: 2003/08/27 10:45:57 $
  *
  * ====================================================================
  *
@@ -165,7 +165,7 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  * @see GenericObjectPool
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
- * @version $Revision: 1.22 $ $Date: 2003/08/26 15:11:42 $
+ * @version $Revision: 1.23 $ $Date: 2003/08/27 10:45:57 $
  */
 public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
 
@@ -743,6 +743,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     public synchronized void setConfig(GenericKeyedObjectPool.Config conf) {
         setMaxIdle(conf.maxIdle);
         setMaxActive(conf.maxActive);
+        setMaxTotal(conf.maxTotal);
         setMaxWait(conf.maxWait);
         setWhenExhaustedAction(conf.whenExhaustedAction);
         setTestOnBorrow(conf.testOnBorrow);
@@ -1224,6 +1225,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     public static class Config {
         public int maxIdle = GenericKeyedObjectPool.DEFAULT_MAX_IDLE;
         public int maxActive = GenericKeyedObjectPool.DEFAULT_MAX_ACTIVE;
+        public int maxTotal = GenericKeyedObjectPool.DEFAULT_MAX_TOTAL;
         public long maxWait = GenericKeyedObjectPool.DEFAULT_MAX_WAIT;
         public byte whenExhaustedAction = GenericKeyedObjectPool.DEFAULT_WHEN_EXHAUSTED_ACTION;
         public boolean testOnBorrow = GenericKeyedObjectPool.DEFAULT_TEST_ON_BORROW;
