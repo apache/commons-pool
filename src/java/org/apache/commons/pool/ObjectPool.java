@@ -40,7 +40,7 @@ package org.apache.commons.pool;
  * See {@link org.apache.commons.pool.BaseObjectPool BaseObjectPool} for a simple base implementation.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.11 $ $Date: 2004/02/28 11:46:33 $ 
+ * @version $Revision$ $Date$ 
  *
  */
 public interface ObjectPool {

@@ -29,7 +29,7 @@ import org.apache.commons.pool.TestKeyedObjectPool;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision: 1.13 $ $Date: 2004/02/28 12:21:41 $
+ * @version $Revision$ $Date$
  */
 public class TestStackKeyedObjectPool extends TestKeyedObjectPool {
     public TestStackKeyedObjectPool(String testName) {

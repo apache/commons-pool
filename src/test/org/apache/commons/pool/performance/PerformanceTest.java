@@ -22,7 +22,7 @@ import org.apache.commons.pool.impl.GenericObjectPool;
  * Multi-thread performance test
  * 
  * @author Dirk Verbeeck
- * @version $Revision: 1.5 $ $Date: 2004/02/28 12:16:21 $ 
+ * @version $Revision$ $Date$ 
  */
 public class PerformanceTest {
     private int logLevel = 0;

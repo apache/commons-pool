@@ -28,7 +28,7 @@ import org.apache.commons.pool.TestObjectPool;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision: 1.12 $ $Date: 2004/02/28 12:21:41 $
+ * @version $Revision$ $Date$
  */
 public class TestStackObjectPool extends TestObjectPool {
     public TestStackObjectPool(String testName) {

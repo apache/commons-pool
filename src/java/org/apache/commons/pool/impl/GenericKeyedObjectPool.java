@@ -124,7 +124,7 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  * @see GenericObjectPool
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
- * @version $Revision: 1.29 $ $Date: 2004/09/19 17:24:18 $
+ * @version $Revision$ $Date$
  */
 public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
 

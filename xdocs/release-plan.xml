@@ -18,7 +18,7 @@
 	<properties>
 		<title>Release Plan</title>
 		<author email="commons-dev@jakarta.apache.org">Commons Documentation Team</author>
-		<revision>$Id: release-plan.xml,v 1.1 2004/05/20 15:28:59 dirkv Exp $</revision>
+		<revision>$Id$</revision>
 	</properties>
 	<body>
 		<section name="Release Plan for Pool 1.2">

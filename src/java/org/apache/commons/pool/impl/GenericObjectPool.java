@@ -119,7 +119,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * @see GenericKeyedObjectPool
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
- * @version $Revision: 1.35 $ $Date: 2004/08/10 19:39:36 $
+ * @version $Revision$ $Date$
  */
 public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 

@@ -57,7 +57,7 @@ package org.apache.commons.pool;
  * @see KeyedObjectPool
  * 
  * @author Rodney Waldhoff
- * @version $Revision: 1.8 $ $Date: 2004/02/28 12:16:21 $ 
+ * @version $Revision$ $Date$ 
  */
 public interface KeyedPoolableObjectFactory {
     /**

@@ -21,7 +21,7 @@ import junit.framework.TestSuite;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision: 1.5 $ $Date: 2004/02/28 12:16:21 $ 
+ * @version $Revision$ $Date$ 
  */
 public class TestBasePoolableObjectFactory extends TestCase {
     public TestBasePoolableObjectFactory(String testName) {

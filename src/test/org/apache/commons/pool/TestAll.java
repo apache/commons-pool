@@ -22,7 +22,7 @@ import junit.framework.TestSuite;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision: 1.7 $ $Date: 2004/02/28 12:16:21 $
+ * @version $Revision$ $Date$
  */
 public class TestAll extends TestCase {
     public TestAll(String testName) {

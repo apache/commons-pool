@@ -26,7 +26,7 @@ import java.util.HashMap;
 
 /**
  * @author Dirk Verbeeck
- * @version $Revision: 1.1 $ $Date: 2004/05/13 20:13:25 $
+ * @version $Revision$ $Date$
  */
 public class TestSoftRefOutOfMemory extends TestCase {
     private SoftReferenceObjectPool pool;

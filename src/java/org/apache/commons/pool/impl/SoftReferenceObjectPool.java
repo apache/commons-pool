@@ -31,7 +31,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * {@link ObjectPool}.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.12 $ $Date: 2004/02/28 11:46:33 $
+ * @version $Revision$ $Date$
  */
 public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPool {
     public SoftReferenceObjectPool() {
