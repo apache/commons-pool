@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<document>
+
+ <properties>
+  <title>Developers Guide</title>
+  <author email="commons-dev@jakarta.apache.org">Commons Documentation Team</author>
+ </properties>
+
+ <body>
+
+<section name="ObjectPool">
+<center><img src="../images/uml/ObjectPool.gif"/></center>
+</section>
+
+<section name="KeyedObjectPool">
+<center><img src="../images/uml/KeyedObjectPool.gif"/></center>
+</section>
+
+</body>
+</document>

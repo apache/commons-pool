@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<document>
+
+ <properties>
+  <title>Sequence Diagrams</title>
+  <author email="commons-dev@jakarta.apache.org">Commons Documentation Team</author>
+ </properties>
+
+ <body>
+
+<section name="GenericObjectPool">
+<center><img src="../images/uml/GenericObjectPool.gif"/></center>
+</section>
+
+<section name="GenericKeyedObjectPool">
+<center><img src="../images/uml/GenericKeyedObjectPool.gif"/></center>
+</section>
+
+
+</body>
+</document>
