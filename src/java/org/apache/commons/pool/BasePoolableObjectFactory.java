@@ -1,13 +1,13 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/BasePoolableObjectFactory.java,v 1.1 2001/04/14 16:40:40 rwaldhoff Exp $
- * $Revision: 1.1 $
- * $Date: 2001/04/14 16:40:40 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/BasePoolableObjectFactory.java,v 1.2 2002/01/15 00:07:03 rwaldhoff Exp $
+ * $Revision: 1.2 $
+ * $Date: 2002/01/15 00:07:03 $
  *
  * ====================================================================
  *
  * The Apache Software License, Version 1.1
  *
- * Copyright (c) 1999-2001 The Apache Software Foundation.  All rights
+ * Copyright (c) 2001-2002 The Apache Software Foundation.  All rights
  * reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -67,7 +67,7 @@ package org.apache.commons.pool;
  * All operations defined here are essentially no-op's.
  *
  * @author Rodney Waldhoff
- * @version $Id: BasePoolableObjectFactory.java,v 1.1 2001/04/14 16:40:40 rwaldhoff Exp $
+ * @version $Revision: 1.2 $ $Date: 2002/01/15 00:07:03 $ 
  *
  * @see PoolableObjectFactory
  * @see BaseKeyedPoolableObjectFactory
@@ -75,9 +75,7 @@ package org.apache.commons.pool;
 public abstract class BasePoolableObjectFactory implements PoolableObjectFactory {
     public abstract Object makeObject();
 
-    /**
-     * No-op.
-     */
+    /** No-op. */
     public void destroyObject(Object obj) {
     }
 
@@ -89,15 +87,11 @@ public abstract class BasePoolableObjectFactory implements PoolableObjectFactory
         return true;
     }
 
-    /**
-     * No-op.
-     */
+    /** No-op. */
     public void activateObject(Object obj) {
     }
 
-    /**
-     * No-op.
-     */
+    /** No-op. */
     public void passivateObject(Object obj) {
     }
 }

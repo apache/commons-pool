@@ -1,13 +1,13 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/ObjectPoolFactory.java,v 1.1 2001/04/14 16:40:50 rwaldhoff Exp $
- * $Revision: 1.1 $
- * $Date: 2001/04/14 16:40:50 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/ObjectPoolFactory.java,v 1.2 2002/01/15 00:07:03 rwaldhoff Exp $
+ * $Revision: 1.2 $
+ * $Date: 2002/01/15 00:07:03 $
  *
  * ====================================================================
  *
  * The Apache Software License, Version 1.1
  *
- * Copyright (c) 1999-2001 The Apache Software Foundation.  All rights
+ * Copyright (c) 2001-2002 The Apache Software Foundation.  All rights
  * reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -62,17 +62,17 @@
 package org.apache.commons.pool;
 
 /**
- * A simple factory interface for creating {@link ObjectPool}s.
+ * A factory interface for creating {@link ObjectPool}s.
  *
  * @author Rodney Waldhoff
- * @version $Id: ObjectPoolFactory.java,v 1.1 2001/04/14 16:40:50 rwaldhoff Exp $
+ * @version $Revision: 1.2 $ $Date: 2002/01/15 00:07:03 $ 
  *
  * @see ObjectPool
  */
 public interface ObjectPoolFactory {
     /**
      * Create and return a new {@link ObjectPool}.
-     * @return a new, empty {@link ObjectPool}
+     * @return a new {@link ObjectPool}
      */
     public abstract ObjectPool createPool();
 }
