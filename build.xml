@@ -1,4 +1,4 @@
-<!-- $Id: build.xml,v 1.9 2002/05/04 13:00:00 rwaldhoff Exp $ -->
+<!-- $Id: build.xml,v 1.10 2002/05/04 13:10:54 rwaldhoff Exp $ -->
 <project name="commons-pool" default="test" basedir=".">
 
    <!-- patternset describing files to be copied from the doc directory -->
@@ -55,7 +55,7 @@
       <property name="Name-Long" value="Jakarta Commons Object Pooling Package"/>
 
       <!-- The current version number of this component -->
-      <property name="component.version" value="1.0-beta1"/>
+      <property name="component.version" value="1.0"/>
 
       <property name="test.entry" value="org.apache.commons.pool.TestAll"/>
       <property name="test.failonerror" value="true" /> 
