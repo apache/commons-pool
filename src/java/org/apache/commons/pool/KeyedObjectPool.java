@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/KeyedObjectPool.java,v 1.9 2003/04/24 01:34:45 rwaldhoff Exp $
- * $Revision: 1.9 $
- * $Date: 2003/04/24 01:34:45 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/KeyedObjectPool.java,v 1.10 2003/04/24 18:07:10 rwaldhoff Exp $
+ * $Revision: 1.10 $
+ * $Date: 2003/04/24 18:07:10 $
  *
  * ====================================================================
  *
@@ -91,10 +91,8 @@ package org.apache.commons.pool;
  * {@link ObjectPool pools}).
  * </p>
  *
- * @TODO add optional addObject(Object key) method here and to implementations
- * 
  * @author Rodney Waldhoff
- * @version $Revision: 1.9 $ $Date: 2003/04/24 01:34:45 $
+ * @version $Revision: 1.10 $ $Date: 2003/04/24 18:07:10 $
  *
  * @see KeyedPoolableObjectFactory
  * @see KeyedObjectPoolFactory
@@ -149,6 +147,14 @@ public interface KeyedObjectPool {
      * @param obj a {@link #borrowObject borrowed} instance to be returned.
      */
     void invalidateObject(Object key, Object obj) throws Exception;
+
+    /**
+     * Create an object using my {@link #setFactory factory} or other
+     * implementation dependent mechanism, and place it into the pool.
+     * addObject() is useful for "pre-loading" a pool with idle objects.
+     * (Optional operation).
+     */
+    void addObject(Object key) throws Exception;
 
     /**
      * Returns the number of instances

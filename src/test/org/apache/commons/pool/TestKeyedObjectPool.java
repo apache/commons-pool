@@ -1,7 +1,7 @@
 /*
- * $Id: TestKeyedObjectPool.java,v 1.4 2003/04/24 17:44:08 rwaldhoff Exp $
- * $Revision: 1.4 $
- * $Date: 2003/04/24 17:44:08 $
+ * $Id: TestKeyedObjectPool.java,v 1.5 2003/04/24 18:07:10 rwaldhoff Exp $
+ * $Revision: 1.5 $
+ * $Date: 2003/04/24 18:07:10 $
  * ====================================================================
  *
  * The Apache Software License, Version 1.1
@@ -65,7 +65,7 @@ import junit.framework.TestCase;
 /**
  * Abstract {@link TestCase} for {@link ObjectPool} implementations.
  * @author Rodney Waldhoff
- * @version $Revision: 1.4 $ $Date: 2003/04/24 17:44:08 $
+ * @version $Revision: 1.5 $ $Date: 2003/04/24 18:07:10 $
  */
 public abstract class TestKeyedObjectPool extends TestCase {
     public TestKeyedObjectPool(String testName) {
@@ -265,6 +265,39 @@ public abstract class TestKeyedObjectPool extends TestCase {
         _pool.invalidateObject(keya,obj1);
         assertEquals(0,_pool.getNumActive(keya));
         assertEquals(0,_pool.getNumIdle(keya));
+    }
+
+    public void testBaseAddObject() throws Exception {
+        try {
+            _pool = makeEmptyPool(3);
+        } catch(IllegalArgumentException e) {
+            return; // skip this test if unsupported
+        }
+        Object key = makeKey(0);
+        try {
+            assertEquals(0,_pool.getNumIdle());
+            assertEquals(0,_pool.getNumActive());
+            assertEquals(0,_pool.getNumIdle(key));
+            assertEquals(0,_pool.getNumActive(key));
+            _pool.addObject(key);
+            assertEquals(1,_pool.getNumIdle());
+            assertEquals(0,_pool.getNumActive());
+            assertEquals(1,_pool.getNumIdle(key));
+            assertEquals(0,_pool.getNumActive(key));
+            Object obj = _pool.borrowObject(key);
+            assertEquals(getNthObject(key,0),obj);
+            assertEquals(0,_pool.getNumIdle());
+            assertEquals(1,_pool.getNumActive());
+            assertEquals(0,_pool.getNumIdle(key));
+            assertEquals(1,_pool.getNumActive(key));
+            _pool.returnObject(key,obj);
+            assertEquals(1,_pool.getNumIdle());
+            assertEquals(0,_pool.getNumActive());
+            assertEquals(1,_pool.getNumIdle(key));
+            assertEquals(0,_pool.getNumActive(key));
+        } catch(UnsupportedOperationException e) {
+            return; // skip this test if one of those calls is unsupported
+        }
     }
 
     private KeyedObjectPool _pool = null;
