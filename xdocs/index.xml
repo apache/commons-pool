@@ -4,7 +4,7 @@
       <title>Home</title>
       <author email="commons-dev@jakarta.apache.org">Commons Documentation Team</author>
       <author email="rwaldhoff@apache.org">Rodney Waldhoff</author>
-      <revision>$Id: index.xml,v 1.7 2003/08/11 11:44:21 dirkv Exp $</revision>
+      <revision>$Id: index.xml,v 1.8 2003/08/25 16:23:55 dirkv Exp $</revision>
    </properties>
 
    <body>
@@ -24,10 +24,14 @@
            </li>
           </ol>
          </p>
-         <p>
-          See the <a href="downloads.html">downloads</a> page for information on obtaining releases.
-         </p>           
       </section>
+
+      <section name="Releases">
+         <p>
+            See the <a href="downloads.html">downloads</a> page for information on obtaining releases.
+         </p>
+      </section>
+
       <section name="Features">
         <p>
             The 

@@ -1,28 +1,20 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<project name="Commons - Pool" href="http://jakarta.apache.org/commons/pool">
+<!DOCTYPE org.apache.commons.menus SYSTEM '../../../xdocs/stylesheets/menus/org-apache-commons-menus.dtd'>
+<project name="Commons Pool" href="http://jakarta.apache.org/commons/pool/">
     <title>Commons Pool</title>
     <logo href="http://jakarta.apache.org/commons/pool/images/logo.jpg">Jakarta-Commons</logo>
-    <!--
-      Note: Per the .vsl file, "/site" links will be prefixed with "http://jakarta.apache.org/site"
-            Other links starting with "/" become "./...".
-    -->
+
     <body>
-       <menu name="Home">
-           <item name="Jakarta&#xA0;Commons"          href="http://jakarta.apache.org/commons/index.html" />
-           <item name="Commons&#xA0;Pool"             href="/index.html" />
-       </menu>
-       <menu name="Information">
-           <item name="API&#xA0;Documentation"        href="/apidocs/index.html"/>
-           <item name="Examples"                      href="/examples.html"/>
-       </menu>
-       <menu name="Project Files">
-           <item name="Releases"                      href="/downloads.html"/>
-           <item name="Source (Browse)"               href="http://cvs.apache.org/viewcvs/jakarta-commons/pool/"/>
-           <item name="Source (CVS)"                  href="http://jakarta.apache.org/site/cvsindex.html"/>
-       </menu>
-       <menu name="Administrivia">
-           <item name="License"                       href="http://jakarta.apache.org/commons/license.html"/>
-           <item name="Original&#xA0;Proposal"        href="http://cvs.apache.org/viewcvs/~checkout~/jakarta-commons/pool/PROPOSAL.html?content-type=text/html"/>
-       </menu>
+        &about-menu;
+        <menu name="Commons&#xA0;Pool">
+            <item name="Overview"                      href="/index.html" />
+            <item name="API&#xA0;Documentation"        href="/apidocs/index.html"/>
+            <item name="Examples"                      href="/examples.html"/>
+            <item name="Downloads"                      href="/downloads.html"/>
+            <item name="Source (Browse)"               href="http://cvs.apache.org/viewcvs/jakarta-commons/pool/"/>
+        </menu>
+        &information-menu;
+        &community-menu;
+        &translations-menu;
     </body>
 </project>
