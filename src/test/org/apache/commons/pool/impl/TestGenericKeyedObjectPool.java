@@ -1,12 +1,12 @@
 /*
  * Copyright 1999-2004 The Apache Software Foundation.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,7 +28,7 @@ import org.apache.commons.pool.TestKeyedObjectPool;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision: 1.20 $ $Date: 2004/07/04 17:41:36 $
+ * @version $Revision: 1.21 $ $Date: 2004/09/19 17:24:28 $
  */
 public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     public TestGenericKeyedObjectPool(String testName) {
@@ -43,14 +43,14 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         GenericKeyedObjectPool pool = new GenericKeyedObjectPool(
             new KeyedPoolableObjectFactory()  {
                 HashMap map = new HashMap();
-                public Object makeObject(Object key) { 
+                public Object makeObject(Object key) {
                     int counter = 0;
                     Integer Counter = (Integer)(map.get(key));
                     if(null != Counter) {
                         counter = Counter.intValue();
                     }
-                    map.put(key,new Integer(counter + 1));                       
-                    return String.valueOf(key) + String.valueOf(counter); 
+                    map.put(key,new Integer(counter + 1));
+                    return String.valueOf(key) + String.valueOf(counter);
                 }
                 public void destroyObject(Object key, Object obj) { }
                 public boolean validateObject(Object key, Object obj) { return true; }
@@ -62,11 +62,11 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         pool.setMaxIdle(mincapacity);
         return pool;
     }
-    
+
     protected Object getNthObject(Object key, int n) {
         return String.valueOf(key) + String.valueOf(n);
     }
-    
+
     protected Object makeKey(int n) {
         return String.valueOf(n);
     }
@@ -77,7 +77,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         super.setUp();
         pool = new GenericKeyedObjectPool(new SimpleFactory());
     }
-    
+
     public void tearDown() throws Exception {
         super.tearDown();
         pool.close();
@@ -91,7 +91,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             pool.borrowObject("xyzzy");
             fail("Expected NoSuchElementException");
         } catch(NoSuchElementException e) {
-            // expected 
+            // expected
         }
     }
 
@@ -212,7 +212,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         } catch(NoSuchElementException e) {
             // expected
         }
-        
+
         assertEquals(0, pool.getNumIdle());
 
         pool.returnObject("b", o3);
@@ -458,6 +458,139 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         }
     }
 
+    public void testMinIdle() throws Exception {
+        pool.setMaxIdle(500);
+        pool.setMinIdle(5);
+        pool.setMaxActive(10);
+        pool.setNumTestsPerEvictionRun(0);
+        pool.setMinEvictableIdleTimeMillis(50L);
+        pool.setTimeBetweenEvictionRunsMillis(100L);
+        pool.setTestWhileIdle(true);
+
+
+        //Generate a random key
+        String key = "A";
+
+        pool.preparePool(key, true);
+
+        try { Thread.sleep(150L); } catch(Exception e) { }
+        assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
+
+        Object[] active = new Object[5];
+        active[0] = pool.borrowObject(key);
+
+        try { Thread.sleep(150L); } catch(Exception e) { }
+        assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
+
+        for(int i=1 ; i<5 ; i++) {
+            active[i] = pool.borrowObject(key);
+        }
+
+        try { Thread.sleep(150L); } catch(Exception e) { }
+        assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
+
+        for(int i=0 ; i<5 ; i++) {
+            pool.returnObject(key, active[i]);
+        }
+
+        try { Thread.sleep(150L); } catch(Exception e) { }
+        assertTrue("Should be 10 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 10);
+    }
+
+    public void testMinIdleMaxActive() throws Exception {
+        pool.setMaxIdle(500);
+        pool.setMinIdle(5);
+        pool.setMaxActive(10);
+        pool.setNumTestsPerEvictionRun(0);
+        pool.setMinEvictableIdleTimeMillis(50L);
+        pool.setTimeBetweenEvictionRunsMillis(100L);
+        pool.setTestWhileIdle(true);
+
+        String key = "A";
+
+        pool.preparePool(key, true);
+
+        try { Thread.sleep(150L); } catch(Exception e) { }
+        assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
+
+        Object[] active = new Object[10];
+
+        try { Thread.sleep(150L); } catch(Exception e) { }
+        assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
+
+        for(int i=0 ; i<5 ; i++) {
+            active[i] = pool.borrowObject(key);
+        }
+
+        try { Thread.sleep(150L); } catch(Exception e) { }
+        assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
+
+        for(int i=0 ; i<5 ; i++) {
+            pool.returnObject(key, active[i]);
+        }
+
+        try { Thread.sleep(150L); } catch(Exception e) { }
+        assertTrue("Should be 10 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 10);
+
+        for(int i=0 ; i<10 ; i++) {
+            active[i] = pool.borrowObject(key);
+        }
+
+        try { Thread.sleep(150L); } catch(Exception e) { }
+        assertTrue("Should be 0 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 0);
+
+        for(int i=0 ; i<10 ; i++) {
+            pool.returnObject(key, active[i]);
+        }
+
+        try { Thread.sleep(150L); } catch(Exception e) { }
+        assertTrue("Should be 10 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 10);
+    }
+    
+    public void testMinIdleNoPopulateImmediately() throws Exception {
+        pool.setMaxIdle(500);
+        pool.setMinIdle(5);
+        pool.setMaxActive(10);
+        pool.setNumTestsPerEvictionRun(0);
+        pool.setMinEvictableIdleTimeMillis(50L);
+        pool.setTimeBetweenEvictionRunsMillis(1000L);
+        pool.setTestWhileIdle(true);
+
+
+        //Generate a random key
+        String key = "A";
+        
+        pool.preparePool(key, false);
+        
+        assertTrue("Should be 0 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 0);
+        
+        try { Thread.sleep(1500L); } catch(Exception e) { }
+        assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
+    }
+    
+    public void testMinIdleNoPreparePool() throws Exception {
+        pool.setMaxIdle(500);
+        pool.setMinIdle(5);
+        pool.setMaxActive(10);
+        pool.setNumTestsPerEvictionRun(0);
+        pool.setMinEvictableIdleTimeMillis(50L);
+        pool.setTimeBetweenEvictionRunsMillis(100L);
+        pool.setTestWhileIdle(true);
+
+
+        //Generate a random key
+        String key = "A";
+
+        try { Thread.sleep(150L); } catch(Exception e) { }
+        assertTrue("Should be 0 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 0);
+
+        Object active = pool.borrowObject(key);
+        assertNotNull(active);
+
+        try { Thread.sleep(150L); } catch(Exception e) { }
+        assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
+    }
+    
     class TestThread implements Runnable {
         java.util.Random _random = new java.util.Random();
         KeyedObjectPool _pool = null;
