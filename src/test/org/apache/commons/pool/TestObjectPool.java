@@ -1,7 +1,7 @@
 /*
- * $Id: TestObjectPool.java,v 1.2 2003/03/05 19:17:08 rwaldhoff Exp $
- * $Revision: 1.2 $
- * $Date: 2003/03/05 19:17:08 $
+ * $Id: TestObjectPool.java,v 1.3 2003/03/07 15:18:21 rwaldhoff Exp $
+ * $Revision: 1.3 $
+ * $Date: 2003/03/07 15:18:21 $
  * ====================================================================
  *
  * The Apache Software License, Version 1.1
@@ -65,7 +65,7 @@ import junit.framework.TestCase;
 /**
  * Abstract {@link TestCase} for {@link ObjectPool} implementations.
  * @author Rodney Waldhoff
- * @version $Revision: 1.2 $ $Date: 2003/03/05 19:17:08 $
+ * @version $Revision: 1.3 $ $Date: 2003/03/07 15:18:21 $
  */
 public abstract class TestObjectPool extends TestCase {
     public TestObjectPool(String testName) {
@@ -194,6 +194,42 @@ public abstract class TestObjectPool extends TestCase {
         _pool.invalidateObject(obj1);
         assertEquals(0,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
+    }
+    
+    public void testClosePool() throws Exception {
+        try {
+            _pool = makeEmptyPool(3);
+        } catch(IllegalArgumentException e) {
+            return; // skip this test if unsupported
+        }
+        Object obj = _pool.borrowObject();
+        _pool.returnObject(obj);
+        
+        _pool.close();
+        try {
+            _pool.borrowObject();
+            fail("Expected IllegalStateException");
+        } catch(IllegalStateException e) {
+            // expected
+        }
+    }
+
+    public void testCantCloseTwice() throws Exception {
+        try {
+            _pool = makeEmptyPool(3);
+        } catch(IllegalArgumentException e) {
+            return; // skip this test if unsupported
+        }
+        Object obj = _pool.borrowObject();
+        _pool.returnObject(obj);
+        
+        _pool.close();
+        try {
+            _pool.close();
+            fail("Expected IllegalStateException");
+        } catch(IllegalStateException e) {
+            // expected
+        }
     }
 
     private ObjectPool _pool = null;

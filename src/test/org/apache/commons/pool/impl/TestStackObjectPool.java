@@ -1,7 +1,7 @@
 /*
- * $Id: TestStackObjectPool.java,v 1.6 2002/11/30 09:14:01 rwaldhoff Exp $
- * $Revision: 1.6 $
- * $Date: 2002/11/30 09:14:01 $
+ * $Id: TestStackObjectPool.java,v 1.7 2003/03/07 15:18:21 rwaldhoff Exp $
+ * $Revision: 1.7 $
+ * $Date: 2003/03/07 15:18:21 $
  *
  * ====================================================================
  *
@@ -62,6 +62,7 @@
 package org.apache.commons.pool.impl;
 
 import java.util.BitSet;
+import java.util.NoSuchElementException;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -72,7 +73,7 @@ import org.apache.commons.pool.TestObjectPool;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision: 1.6 $ $Date: 2002/11/30 09:14:01 $
+ * @version $Revision: 1.7 $ $Date: 2003/03/07 15:18:21 $
  */
 public class TestStackObjectPool extends TestObjectPool {
     public TestStackObjectPool(String testName) {
@@ -84,17 +85,7 @@ public class TestStackObjectPool extends TestObjectPool {
     }
 
     protected ObjectPool makeEmptyPool(int mincap) {
-        return new StackObjectPool(
-            new PoolableObjectFactory()  {
-                int counter = 0;
-                public Object makeObject() { return String.valueOf(counter++); }
-                public void destroyObject(Object obj) { }
-                public boolean validateObject(Object obj) { return true; }
-                public void activateObject(Object obj) { }
-                public void passivateObject(Object obj) { }
-            },
-            mincap
-            );
+        return new StackObjectPool(new SimpleFactory());
     }
     
     protected Object getNthObject(int n) {
@@ -138,4 +129,97 @@ public class TestStackObjectPool extends TestObjectPool {
         pool.invalidateObject(pool.borrowObject());
         pool.clear();        
     }
+    
+    public void testBorrowFromEmptyPoolWithNullFactory() throws Exception {
+        ObjectPool pool = new StackObjectPool();
+        try {
+            pool.borrowObject();
+            fail("Expected NoSuchElementException");
+        } catch(NoSuchElementException e) {
+            // expected
+        }
+    }
+    
+    public void testSetFactory() throws Exception {
+        ObjectPool pool = new StackObjectPool();
+        try {
+            pool.borrowObject();
+            fail("Expected NoSuchElementException");
+        } catch(NoSuchElementException e) {
+            // expected
+        }
+        pool.setFactory(new SimpleFactory());
+        Object obj = pool.borrowObject();
+        assertNotNull(obj);
+        pool.returnObject(obj);
+    }
+
+    public void testCantResetFactoryWithActiveObjects() throws Exception {
+        ObjectPool pool = new StackObjectPool();
+        pool.setFactory(new SimpleFactory());
+        Object obj = pool.borrowObject();
+        assertNotNull(obj);
+
+        try {
+            pool.setFactory(new SimpleFactory());
+            fail("Expected IllegalStateException");
+        } catch(IllegalStateException e) {
+            // expected
+        }        
+    }
+    
+    public void testCanResetFactoryWithoutActiveObjects() throws Exception {
+        ObjectPool pool = new StackObjectPool();
+        {
+            pool.setFactory(new SimpleFactory());
+            Object obj = pool.borrowObject();        
+            assertNotNull(obj);
+            pool.returnObject(obj);
+        }
+        {
+            pool.setFactory(new SimpleFactory());
+            Object obj = pool.borrowObject();        
+            assertNotNull(obj);
+            pool.returnObject(obj);
+        }
+    }
+
+    public void testBorrowReturnWithSometimesInvalidObjects() throws Exception {
+        ObjectPool pool = new StackObjectPool(20);
+        pool.setFactory(
+            new PoolableObjectFactory() {
+                int counter = 0;
+                public Object makeObject() { return new Integer(counter++); }
+                public void destroyObject(Object obj) { }
+                public boolean validateObject(Object obj) {
+                    if(obj instanceof Integer) {
+                        return ((((Integer)obj).intValue() % 2) == 0);
+                    } else {
+                        return false;
+                    }
+                }
+                public void activateObject(Object obj) { }
+                public void passivateObject(Object obj) { }
+            }
+        );
+
+        Object[] obj = new Object[10];
+        for(int i=0;i<10;i++) {
+            obj[i] = pool.borrowObject();
+        }
+        for(int i=0;i<10;i++) {
+            pool.returnObject(obj[i]);
+        }
+        assertEquals(5,pool.getNumIdle());
+    }
+    
+    static class SimpleFactory implements PoolableObjectFactory {
+        int counter = 0;
+        public Object makeObject() { return String.valueOf(counter++); }
+        public void destroyObject(Object obj) { }
+        public boolean validateObject(Object obj) { return true; }
+        public void activateObject(Object obj) { }
+        public void passivateObject(Object obj) { }
+    }
 }
+

@@ -1,7 +1,7 @@
 /*
- * $Id: GenericObjectPool.java,v 1.13 2003/03/05 19:22:52 rwaldhoff Exp $
- * $Revision: 1.13 $
- * $Date: 2003/03/05 19:22:52 $
+ * $Id: GenericObjectPool.java,v 1.14 2003/03/07 15:18:20 rwaldhoff Exp $
+ * $Revision: 1.14 $
+ * $Date: 2003/03/07 15:18:20 $
  *
  * ====================================================================
  *
@@ -163,7 +163,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * 
  * @see GenericKeyedObjectPool
  * @author Rodney Waldhoff
- * @version $Revision: 1.13 $ $Date: 2003/03/05 19:22:52 $
+ * @version $Revision: 1.14 $ $Date: 2003/03/07 15:18:20 $
  */
 public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
@@ -706,6 +706,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
     //-- ObjectPool methods ------------------------------------------
 
     public synchronized Object borrowObject() throws Exception {
+        assertOpen();
         long starttime = System.currentTimeMillis();
         for(;;) {
             ObjectTimestampPair pair = null;
@@ -766,12 +767,14 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
     }
 
     public synchronized void invalidateObject(Object obj) throws Exception {
+        assertOpen();
         _numActive--;
         _factory.destroyObject(obj);
         notifyAll(); // _numActive has changed
     }
 
     public synchronized void clear() {
+        assertOpen();
         Iterator it = _pool.iterator();
         while(it.hasNext()) {
             try {
@@ -786,14 +789,17 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
     }
 
     public int getNumActive() {
+        assertOpen();
         return _numActive;
     }
 
     public int getNumIdle() {
+        assertOpen();
         return _pool.size();
     }
 
     public void returnObject(Object obj) throws Exception {
+        assertOpen();
         boolean success = true;
         if(_testOnReturn && !(_factory.validateObject(obj))) {
             success = false;
@@ -835,9 +841,11 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
             _evictionCursor = null;
         }
         startEvictor(-1L);
+        super.close();
     }
 
     synchronized public void setFactory(PoolableObjectFactory factory) throws IllegalStateException {
+        assertOpen();
         if(0 < getNumActive()) {
             throw new IllegalStateException("Objects are already active");
         } else {
@@ -847,6 +855,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
     }
 
     public synchronized void evict() throws Exception {
+        assertOpen();
         if(!_pool.isEmpty()) {
             if(null == _evictionCursor) {
                 _evictionCursor = (CursorableLinkedList.Cursor)(_pool.cursor(_pool.size()));
