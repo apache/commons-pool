@@ -1,7 +1,7 @@
 /*
- * $Id: GenericObjectPool.java,v 1.15 2003/03/07 20:28:36 rwaldhoff Exp $
- * $Revision: 1.15 $
- * $Date: 2003/03/07 20:28:36 $
+ * $Id: GenericObjectPool.java,v 1.16 2003/03/13 18:52:44 rwaldhoff Exp $
+ * $Revision: 1.16 $
+ * $Date: 2003/03/13 18:52:44 $
  *
  * ====================================================================
  *
@@ -157,13 +157,13 @@ import org.apache.commons.pool.PoolableObjectFactory;
  *  </li>
  * </ul>
  * <p>
- * GenericObjectPool is not usable without a {@link PoolableObjectFactory}.  A 
+ * GenericObjectPool is not usable without a {@link PoolableObjectFactory}.  A
  * non-<code>null</code> factory must be provided either as a constructor argument
  * or via a call to {@link #setFactory} before the pool is used.
- * 
+ *
  * @see GenericKeyedObjectPool
  * @author Rodney Waldhoff
- * @version $Revision: 1.15 $ $Date: 2003/03/07 20:28:36 $
+ * @version $Revision: 1.16 $ $Date: 2003/03/13 18:52:44 $
  */
 public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
@@ -622,7 +622,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * Sets the number of objects to examine during each run of the
      * idle object evictor thread (if any).
      * <p>
-     * When a negative value is supplied, <tt>ceil({@link #numIdle})/abs({@link #getNumTestsPerEvictionRun})</tt>
+     * When a negative value is supplied, <tt>ceil({@link #getNumIdle})/abs({@link #getNumTestsPerEvictionRun})</tt>
      * tests will be run.  I.e., when the value is <i>-n</i>, roughly one <i>n</i>th of the
      * idle objects will be tested per run.
      *
@@ -713,7 +713,8 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
             // if there are any sleeping, just grab one of those
             try {
                 pair = (ObjectTimestampPair)(_pool.removeFirst());
-            } catch(NoSuchElementException e) { /* ignored */
+            } catch(NoSuchElementException e) {
+                ; /* ignored */
             }
             // otherwise
             if(null == pair) {
@@ -753,11 +754,6 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
             }
             _factory.activateObject(pair.value);
             if(_testOnBorrow && !_factory.validateObject(pair.value)) {
-                try {
-                    _factory.passivateObject(pair.value);
-                } catch(Exception e) {
-                    ; // ignored, we're throwing it out anyway
-                }
                 _factory.destroyObject(pair.value);
             } else {
                 _numActive++;
@@ -775,8 +771,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
     public synchronized void clear() {
         assertOpen();
-        Iterator it = _pool.iterator();
-        while(it.hasNext()) {
+        for(Iterator it = _pool.iterator(); it.hasNext(); ) {
             try {
                 _factory.destroyObject(((ObjectTimestampPair)(it.next())).value);
             } catch(Exception e) {
@@ -858,67 +853,58 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         assertOpen();
         if(!_pool.isEmpty()) {
             if(null == _evictionCursor) {
-                _evictionCursor = (CursorableLinkedList.Cursor)(_pool.cursor(_pool.size()));
+                _evictionCursor = (_pool.cursor(_pool.size()));
             } else if(!_evictionCursor.hasPrevious()) {
                 _evictionCursor.close();
-                _evictionCursor = (CursorableLinkedList.Cursor)(_pool.cursor(_pool.size()));
+                _evictionCursor = (_pool.cursor(_pool.size()));
             }
             for(int i=0,m=getNumTests();i<m;i++) {
                 if(!_evictionCursor.hasPrevious()) {
                     _evictionCursor.close();
-                    _evictionCursor = (CursorableLinkedList.Cursor)(_pool.cursor(_pool.size()));
+                    _evictionCursor = (_pool.cursor(_pool.size()));
                 } else {
+                    boolean removeObject = false;
                     ObjectTimestampPair pair = (ObjectTimestampPair)(_evictionCursor.previous());
                     if(_minEvictableIdleTimeMillis > 0 &&
                        System.currentTimeMillis() - pair.tstamp > _minEvictableIdleTimeMillis) {
-                       try {
-                           _evictionCursor.remove();
-                           _factory.destroyObject(pair.value);
-                       } catch(Exception e) {
-                           ; // ignored
-                       }
+                       removeObject = true;
                     } else if(_testWhileIdle) {
                         boolean active = false;
                         try {
                             _factory.activateObject(pair.value);
                             active = true;
                         } catch(Exception e) {
-                            _evictionCursor.remove();
-                            try {
-                                _factory.passivateObject(pair.value);
-                            } catch(Exception ex) {
-                                ; // ignored
-                            }
-                            _factory.destroyObject(pair.value);
+                            removeObject=true;
                         }
                         if(active) {
                             if(!_factory.validateObject(pair.value)) {
-                                _evictionCursor.remove();
-                                try {
-                                    _factory.passivateObject(pair.value);
-                                } catch(Exception ex) {
-                                    ; // ignored
-                                }
-                                _factory.destroyObject(pair.value);
+                                removeObject=true;
                             } else {
                                 try {
                                     _factory.passivateObject(pair.value);
                                 } catch(Exception e) {
-                                    _evictionCursor.remove();
-                                    _factory.destroyObject(pair.value);
+                                    removeObject=true;
                                 }
                             }
+                        }
+                    }
+                    if(removeObject) {
+                        try {
+                            _evictionCursor.remove();
+                            _factory.destroyObject(pair.value);
+                        } catch(Exception e) {
+                            ; // ignored
                         }
                     }
                 }
             }
         }
     }
-    
+
     //--- non-public methods ----------------------------------------
 
     /**
-     * Start the eviction thread or service, or when 
+     * Start the eviction thread or service, or when
      * <i>delay</i> is non-positive, stop it
      * if it is already running.
      */
@@ -934,7 +920,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
             t.start();
         }
     }
-    
+
     synchronized String debugInfo() {
         StringBuffer buf = new StringBuffer();
         buf.append("Active: ").append(getNumActive()).append("\n");
@@ -983,11 +969,11 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
     class Evictor implements Runnable {
         private boolean _cancelled = false;
         private long _delay = 0L;
-        
+
         public Evictor(long delay) {
             _delay = delay;
         }
-        
+
         void cancel() {
             _cancelled = true;
         }
@@ -1134,7 +1120,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * The number of objects to examine during each run of the
      * idle object evictor thread (if any).
      * <p>
-     * When a negative value is supplied, <tt>ceil({@link #numIdle})/abs({@link #getNumTestsPerEvictionRun})</tt>
+     * When a negative value is supplied, <tt>ceil({@link #getNumIdle})/abs({@link #getNumTestsPerEvictionRun})</tt>
      * tests will be run.  I.e., when the value is <i>-n</i>, roughly one <i>n</i>th of the
      * idle objects will be tested per run.
      *
@@ -1175,6 +1161,6 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * My idle object eviction thread, if any.
      */
     private Evictor _evictor = null;
-    
+
     private CursorableLinkedList.Cursor _evictionCursor = null;
 }
