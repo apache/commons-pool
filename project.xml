@@ -20,7 +20,7 @@
   <name>Commons Pool</name>
   <id>commons-pool</id>
   <inceptionYear>2001</inceptionYear>
-  <currentVersion>1.2-RC1</currentVersion>
+  <currentVersion>1.2</currentVersion>
   <shortDescription>Commons Object Pooling Library</shortDescription>
   <description>Commons Object Pooling Library</description>
   <logo>/images/pool-logo-white.png</logo>
@@ -31,7 +31,7 @@
   <organization>
     <name>The Apache Software Foundation</name>
     <url>http://jakarta.apache.org</url>
-    <logo>http://jakarta.apache.org/images/original-jakarta-logo.gif</logo>
+    <logo>http://jakarta.apache.org/images/jakarta-logo.gif</logo>
   </organization>
 
   <licenses>
@@ -85,9 +85,9 @@
       <tag>POOL_1_1</tag>
     </version>
     <version>
-      <id>1.2-RC1</id>
-      <name>1.2-RC1</name>
-      <tag>POOL_1_2_RC1</tag>
+      <id>1.2</id>
+      <name>1.2</name>
+      <tag>POOL_1_2</tag>
     </version>
   </versions>
 
