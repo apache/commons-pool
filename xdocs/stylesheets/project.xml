@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project name="Commons - Pool" href="http://jakarta.apache.org/commons/pool">
-    <title>HTTP Client</title>
+    <title>Pool</title>
     <logo href="/images/logo.jpg">Commons</logo>
     <!--
       Note: Per the .vsl file, "/site" links will be prefixed with "http://jakarta.apache.org/site"
