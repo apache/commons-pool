@@ -1,4 +1,4 @@
-<!-- $Id: build.xml,v 1.12 2002/05/04 13:31:26 rwaldhoff Exp $ -->
+<!-- $Id: build.xml,v 1.13 2002/05/04 13:48:10 rwaldhoff Exp $ -->
 <project name="commons-pool" default="test" basedir=".">
 
    <!-- patternset describing files to be copied from the doc directory -->
@@ -320,7 +320,7 @@
       <mkdir dir="${dest.jardir}"/>
 
       <cvs dest="${workdir}" cvsRoot="${cvs.root}" 
-          package="jakarta-commons/pool" tag="${cvs.tag}"/>
+          package="jakarta-commons" tag="${cvs.tag}"/>
       <move toDir="${workdir}/${src.name}">
         <fileset dir="${workdir}/jakarta-commons/pool"/>
       </move>
