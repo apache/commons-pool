@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/KeyedObjectPool.java,v 1.7 2002/10/30 22:54:41 rwaldhoff Exp $
- * $Revision: 1.7 $
- * $Date: 2002/10/30 22:54:41 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/KeyedObjectPool.java,v 1.8 2003/04/24 00:59:46 rwaldhoff Exp $
+ * $Revision: 1.8 $
+ * $Date: 2003/04/24 00:59:46 $
  *
  * ====================================================================
  *
@@ -92,7 +92,7 @@ package org.apache.commons.pool;
  * </p>
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.7 $ $Date: 2002/10/30 22:54:41 $
+ * @version $Revision: 1.8 $ $Date: 2003/04/24 00:59:46 $
  *
  * @see KeyedPoolableObjectFactory
  * @see KeyedObjectPoolFactory
@@ -132,7 +132,7 @@ public interface KeyedObjectPool {
     /**
      * Invalidates an object from the pool
      * By contract, <i>obj</i> MUST have been obtained
-     * using {@link #borrowObject() borrowObject}
+     * using {@link #borrowObject borrowObject}
      * or a related method as defined in an implementation
      * or sub-interface 
      * using a <i>key</i> that is equivalent to the one used to
