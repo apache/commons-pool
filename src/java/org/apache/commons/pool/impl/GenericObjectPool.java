@@ -119,7 +119,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * @see GenericKeyedObjectPool
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
- * @version $Revision: 1.34 $ $Date: 2004/07/04 17:28:19 $
+ * @version $Revision: 1.35 $ $Date: 2004/08/10 19:39:36 $
  */
 public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
@@ -249,6 +249,13 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      */
     public static final long DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS = 1000L * 60L * 30L;
 
+    /**
+     * The default value for {@link #getSoftMinEvictableIdleTimeMillis}.
+     * @see #getSoftMinEvictableIdleTimeMillis
+     * @see #setSoftMinEvictableIdleTimeMillis
+     */
+    public static final long DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS = -1;
+
     //--- constructors -----------------------------------------------
 
     /**
@@ -368,6 +375,26 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @param testWhileIdle whether or not to validate objects in the idle object eviction thread, if any (see {@link #setTestWhileIdle})
      */
     public GenericObjectPool(PoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, int minIdle, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle) {
+        this(factory, maxActive, whenExhaustedAction, maxWait, maxIdle, DEFAULT_MIN_IDLE, testOnBorrow, testOnReturn, timeBetweenEvictionRunsMillis, numTestsPerEvictionRun, minEvictableIdleTimeMillis, testWhileIdle, DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS);
+    }
+
+    /**
+     * Create a new <tt>GenericObjectPool</tt> using the specified values.
+     * @param factory the (possibly <tt>null</tt>)PoolableObjectFactory to use to create, validate and destroy objects
+     * @param maxActive the maximum number of objects that can be borrowed from me at one time (see {@link #setMaxActive})
+     * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #setWhenExhaustedAction})
+     * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted an and <i>whenExhaustedAction</i> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
+     * @param maxIdle the maximum number of idle objects in my pool (see {@link #setMaxIdle})
+     * @param minIdle the minimum number of idle objects in my pool (see {@link #setMinIdle})
+     * @param testOnBorrow whether or not to validate objects before they are returned by the {@link #borrowObject} method (see {@link #setTestOnBorrow})
+     * @param testOnReturn whether or not to validate objects after they are returned to the {@link #returnObject} method (see {@link #setTestOnReturn})
+     * @param timeBetweenEvictionRunsMillis the amount of time (in milliseconds) to sleep between examining idle objects for eviction (see {@link #setTimeBetweenEvictionRunsMillis})
+     * @param numTestsPerEvictionRun the number of idle objects to examine per run within the idle object eviction thread (if any) (see {@link #setNumTestsPerEvictionRun})
+     * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligable for evcition (see {@link #setMinEvictableIdleTimeMillis})
+     * @param testWhileIdle whether or not to validate objects in the idle object eviction thread, if any (see {@link #setTestWhileIdle})
+     * @param softMinEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligable for evcition with the extra condition that at least "minIdle" amount of object remain in the pool. (see {@link #setSoftMinEvictableIdleTimeMillis})
+     */
+    public GenericObjectPool(PoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, int minIdle, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle, long softMinEvictableIdleTimeMillis) {
         _factory = factory;
         _maxActive = maxActive;
         switch(whenExhaustedAction) {
@@ -387,6 +414,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         _timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
         _numTestsPerEvictionRun = numTestsPerEvictionRun;
         _minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
+        _softMinEvictableIdleTimeMillis = softMinEvictableIdleTimeMillis;
         _testWhileIdle = testWhileIdle;
 
         _pool = new CursorableLinkedList();
@@ -666,6 +694,32 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
     }
 
     /**
+     * Returns the minimum amount of time an object may sit idle in the pool
+     * before it is eligable for eviction by the idle object evictor
+     * (if any), with the extra condition that at least
+     * "minIdle" amount of object remain in the pool.
+     *
+     * @see #setSoftMinEvictableIdleTimeMillis
+     */
+    public synchronized long getSoftMinEvictableIdleTimeMillis() {
+        return _softMinEvictableIdleTimeMillis;
+    }
+
+    /**
+     * Sets the minimum amount of time an object may sit idle in the pool
+     * before it is eligable for eviction by the idle object evictor
+     * (if any), with the extra condition that at least
+     * "minIdle" amount of object remain in the pool.
+     * When non-positive, no objects will be evicted from the pool
+     * due to idle time alone.
+     *
+     * @see #getSoftMinEvictableIdleTimeMillis
+     */
+    public synchronized void setSoftMinEvictableIdleTimeMillis(long softMinEvictableIdleTimeMillis) {
+        _softMinEvictableIdleTimeMillis = softMinEvictableIdleTimeMillis;
+    }
+
+    /**
      * When <tt>true</tt>, objects will be
      * {@link PoolableObjectFactory#validateObject validated}
      * by the idle object evictor (if any).  If an object
@@ -927,9 +981,14 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                 } else {
                     boolean removeObject = false;
                     ObjectTimestampPair pair = (ObjectTimestampPair)(_evictionCursor.previous());
-                    if(_minEvictableIdleTimeMillis > 0 &&
-                       System.currentTimeMillis() - pair.tstamp > _minEvictableIdleTimeMillis) {
-                       removeObject = true;
+                    long idleTimeMilis = System.currentTimeMillis() - pair.tstamp;
+                    if ((_minEvictableIdleTimeMillis > 0) 
+                        && (idleTimeMilis > _minEvictableIdleTimeMillis)) {
+                        removeObject = true;
+                    } else if ((_softMinEvictableIdleTimeMillis > 0)
+                        && (idleTimeMilis > _softMinEvictableIdleTimeMillis)
+                        && (getNumIdle() > getMinIdle())) {
+                        removeObject = true;
                     } else if(_testWhileIdle) {
                         boolean active = false;
                         try {
@@ -1120,6 +1179,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         public long timeBetweenEvictionRunsMillis = GenericObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
         public int numTestsPerEvictionRun =  GenericObjectPool.DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
         public long minEvictableIdleTimeMillis = GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+        public long softMinEvictableIdleTimeMillis = GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
     }
 
     //--- private attributes ---------------------------------------
@@ -1253,6 +1313,19 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @see #setTimeBetweenEvictionRunsMillis
      */
     private long _minEvictableIdleTimeMillis = DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+
+    /**
+     * The minimum amount of time an object may sit idle in the pool
+     * before it is eligable for eviction by the idle object evictor
+     * (if any), with the extra condition that at least
+     * "minIdle" amount of object remain in the pool.
+     * When non-positive, no objects will be evicted from the pool
+     * due to idle time alone.
+     *
+     * @see #setSoftMinEvictableIdleTimeMillis
+     * @see #getSoftMinEvictableIdleTimeMillis
+     */
+    private long _softMinEvictableIdleTimeMillis = DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 
     /** My pool. */
     private CursorableLinkedList _pool = null;
