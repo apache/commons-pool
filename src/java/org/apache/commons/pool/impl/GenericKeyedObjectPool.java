@@ -1,7 +1,7 @@
 /*
- * $Id: GenericKeyedObjectPool.java,v 1.13 2003/03/13 18:47:53 rwaldhoff Exp $
- * $Revision: 1.13 $
- * $Date: 2003/03/13 18:47:53 $
+ * $Id: GenericKeyedObjectPool.java,v 1.14 2003/03/14 01:04:50 rwaldhoff Exp $
+ * $Revision: 1.14 $
+ * $Date: 2003/03/14 01:04:50 $
  *
  * ====================================================================
  *
@@ -87,7 +87,7 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  *  </li>
  *  <li>
  *    {@link #setMaxIdle <i>maxIdle</i>} controls the maximum number of objects that can
- *    sit idle in the pool (per key) at any time.  When non-positive, there
+ *    sit idle in the pool (per key) at any time.  When negative, there
  *    is no limit to the number of objects that may be idle at one time.
  *  </li>
  *  <li>
@@ -164,7 +164,7 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  * </p>
  * @see GenericObjectPool
  * @author Rodney Waldhoff
- * @version $Revision: 1.13 $ $Date: 2003/03/13 18:47:53 $
+ * @version $Revision: 1.14 $ $Date: 2003/03/14 01:04:50 $
  */
 public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
 
@@ -910,7 +910,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             // if there's no space in the pool, flag the object
             // for destruction
             // else if we passivated succesfully, return it to the pool
-            if(_maxIdle > 0 && (pool.size() >= _maxIdle)) {
+            if(_maxIdle >= 0 && (pool.size() >= _maxIdle)) {
                 shouldDestroy = true;
             } else if(success) {
                 pool.addFirst(new ObjectTimestampPair(obj));
