@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackObjectPool.java,v 1.4 2002/04/29 12:11:30 rwaldhoff Exp $
- * $Revision: 1.4 $
- * $Date: 2002/04/29 12:11:30 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackObjectPool.java,v 1.5 2002/05/01 06:02:34 rwaldhoff Exp $
+ * $Revision: 1.5 $
+ * $Date: 2002/05/01 06:02:34 $
  *
  * ====================================================================
  *
@@ -79,7 +79,7 @@ import java.util.Enumeration;
  * artificial limits.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.4 $ $Date: 2002/04/29 12:11:30 $
+ * @version $Revision: 1.5 $ $Date: 2002/05/01 06:02:34 $
  */
 public class StackObjectPool extends BaseObjectPool implements ObjectPool {
     /**
@@ -205,11 +205,11 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
         }
     }
 
-    public int numIdle() {
+    public int getNumIdle() {
         return _pool.size();
     }
 
-    public int numActive() {
+    public int getNumActive() {
         return _numActive;
     }
 
@@ -234,7 +234,7 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
     }
 
     synchronized public void setFactory(PoolableObjectFactory factory) throws IllegalStateException {
-        if(0 < numActive()) {
+        if(0 < getNumActive()) {
             throw new IllegalStateException("Objects are already active");
         } else {
             clear();
