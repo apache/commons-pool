@@ -1,0 +1,40 @@
+<!-- $Id: package.html,v 1.1 2001/04/14 16:40:54 rwaldhoff Exp $ -->
+<html>
+   <head>
+      <title>Package Documentation for org.apache.commons.pool</title>
+   </head>
+   <body>
+      <p>
+         Generic object pooling API.
+      </p>
+      <p>
+         The pool package seperates the way in which objects are pooled
+         from the way in which they are created.  To use the pooling API, simply
+         associate a
+         {@link org.apache.commons.pool.PoolableObjectFactory PoolableObjectFactory}
+         ({@link org.apache.commons.pool.KeyedPoolableObjectFactory KeyedPoolableObjectFactory})
+         implementation with an
+         {@link org.apache.commons.pool.ObjectPool ObjectPool}
+         ({@link org.apache.commons.pool.KeyedObjectPool KeyedObjectPool})
+         implementation.
+      </p>
+      <p>
+         {@link org.apache.commons.pool.ObjectPool ObjectPool} defines a simple
+         object pooling interface.
+         {@link org.apache.commons.pool.KeyedObjectPool KeyedObjectPool} defines a
+         similiar interface for pooling "typed" or "keyed" objects.
+      </p>
+      <p>
+         The {@link org.apache.commons.pool.PoolableObjectFactory PoolableObjectFactory}
+         interface defines lifecycle methods for instances to be returned from an
+         {@link org.apache.commons.pool.ObjectPool ObjectPool}.
+         The {@link org.apache.commons.pool.KeyedPoolableObjectFactory KeyedPoolableObjectFactory}
+         interface defines similiar methods for instances to be returned from a
+         {@link org.apache.commons.pool.KeyedObjectPool KeyedObjectPool}.
+      </p>
+      <p>
+         The {@link org.apache.commons.pool.impl} package contains several simple
+         pool implementations.
+      </p>
+   </body>
+</html>
