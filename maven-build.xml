@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+
+<project name="maven" default="maven:jar" basedir=".">
+
+  <!-- Give user a chance to override without editing this file
+       (and without typing -D each time they invoke a target) -->
+
+  <!-- Allow any user specific values to override the defaults -->
+  <property file="${user.home}/build.properties" />
+  <!-- Allow user defaults for this project -->
+  <property file="build.properties" />
+  <!-- Set default values for the build -->
+  <property file="project.properties" />
+
+  <!-- maven:start -->
+  
+  <!-- ================================================================== -->
+  <!-- D E L E G A T O R S                                                -->
+  <!-- ================================================================== -->
+        
+    <target name="maven:site">
+      <ant antfile="${maven.home}/build-docs.xml" target="site"/>
+    </target>
+
+    <target name="maven:fo">
+      <ant antfile="${maven.home}/build-docs.xml" target="docs:fo"/>
+    </target>
+
+    <target name="maven:pdf">
+      <ant antfile="${maven.home}/build-docs.xml" target="docs:pdf"/>
+    </target>
+        
+    <target name="maven:jar">
+      <ant antfile="${maven.home}/build-maven.xml" target="jar"/>
+    </target>
+        
+    <target name="maven:install-jar">
+      <ant antfile="${maven.home}/build-maven.xml" target="install-jar"/>
+    </target>
+        
+    <target name="maven:env">
+      <ant antfile="${maven.home}/build-maven.xml" target="env"/>
+    </target>
+        
+    <target name="maven:docs">
+      <ant antfile="${maven.home}/build-docs.xml" target="docs"/>
+    </target>
+        
+    <target name="maven:test">
+      <ant antfile="${maven.home}/build-test.xml" target="test"/>
+    </target>
+
+    <target name="maven:iutest">
+      <ant antfile="${maven.home}/build-iutest.xml" target="test"/>
+    </target>
+        
+    <target name="maven:clean">
+      <ant antfile="${maven.home}/build-maven.xml" target="clean"/>
+    </target>
+        
+    <target name="maven:metrics">
+      <ant antfile="${maven.home}/build-metrics.xml" target="metrics"/>
+    </target>
+        
+    <target name="maven:dist">
+      <ant antfile="${maven.home}/build-maven.xml" target="dist"/>
+    </target>
+        
+    <target name="maven:deploy-site">
+      <ant antfile="${maven.home}/build-docs.xml" target="deploy-site"/>
+    </target>
+        
+    <target name="maven:gump-descriptor">
+      <ant antfile="${maven.home}/build-maven.xml" target="gump-descriptor"/>
+    </target>
+        
+    <target name="maven:javadocs">
+      <ant antfile="${maven.home}/build-docs.xml" target="javadocs"/>
+    </target>
+        
+    <target name="maven:compile">
+      <ant antfile="${maven.home}/build-maven.xml" target="compile"/>
+    </target>
+    
+    <target name="maven:check-source">
+      <ant antfile="${maven.home}/build-maven.xml" target="check-source"/>
+    </target>
+        
+    <target name="maven:update-jars">
+      <ant antfile="${maven.home}/build-maven.xml" target="update-jars"/>
+    </target>
+
+    <target name="maven:announce">
+      <ant antfile="${maven.home}/build-maven.xml" target="announce"/>
+    </target>
+
+    <target name="maven:update-descriptor">
+      <ant antfile="${maven.home}/build-maven.xml" target="update-descriptor"/>
+    </target>
+
+    <target name="maven:updates-available">
+      <ant antfile="${maven.home}/build-maven.xml" target="updates-available"/>
+    </target>
+
+    <target name="maven:validate-pom">
+      <ant antfile="${maven.home}/build-maven.xml" target="validate-pom"/>
+    </target>
+
+    <target name="maven:maven-update">
+      <ant antfile="${maven.home}/build-maven.xml" target="maven-update"/>
+    </target>
+    
+  <!-- maven:end -->
+
+</project>
