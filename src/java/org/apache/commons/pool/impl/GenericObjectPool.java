@@ -1,7 +1,7 @@
 /*
- * $Id: GenericObjectPool.java,v 1.25 2003/08/21 18:17:35 dirkv Exp $
- * $Revision: 1.25 $
- * $Date: 2003/08/21 18:17:35 $
+ * $Id: GenericObjectPool.java,v 1.26 2003/08/22 12:49:21 dirkv Exp $
+ * $Revision: 1.26 $
+ * $Date: 2003/08/22 12:49:21 $
  *
  * ====================================================================
  *
@@ -164,7 +164,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * @see GenericKeyedObjectPool
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
- * @version $Revision: 1.25 $ $Date: 2003/08/21 18:17:35 $
+ * @version $Revision: 1.26 $ $Date: 2003/08/22 12:49:21 $
  */
 public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
@@ -447,7 +447,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @return the cap on the total number of active instances from my pool.
      * @see #setMaxActive
      */
-    public int getMaxActive() {
+    public synchronized int getMaxActive() {
         return _maxActive;
     }
 
@@ -457,11 +457,9 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      *                  Use a negative value for an infinite number of instances.
      * @see #getMaxActive
      */
-    public void setMaxActive(int maxActive) {
+    public synchronized void setMaxActive(int maxActive) {
         _maxActive = maxActive;
-        synchronized(this) {
-            notifyAll();
-        }
+        notifyAll();
     }
 
     /**
@@ -472,7 +470,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @return one of {@link #WHEN_EXHAUSTED_BLOCK}, {@link #WHEN_EXHAUSTED_FAIL} or {@link #WHEN_EXHAUSTED_GROW}
      * @see #setWhenExhaustedAction
      */
-    public byte getWhenExhaustedAction() {
+    public synchronized byte getWhenExhaustedAction() {
         return _whenExhaustedAction;
     }
 
@@ -534,6 +532,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      */
     public synchronized void setMaxWait(long maxWait) {
         _maxWait = maxWait;
+        notifyAll();
     }
 
     /**
@@ -541,7 +540,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @return the cap on the number of "idle" instances in the pool.
      * @see #setMaxIdle
      */
-    public int getMaxIdle() {
+    public synchronized int getMaxIdle() {
         return _maxIdle;
     }
 
@@ -552,11 +551,9 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      *                of idle instances.
      * @see #getMaxIdle
      */
-    public void setMaxIdle(int maxIdle) {
+    public synchronized void setMaxIdle(int maxIdle) {
         _maxIdle = maxIdle;
-        synchronized(this) {
-            notifyAll();
-        }
+        notifyAll();
     }
 
     /**
@@ -567,11 +564,9 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @param minIdle The minimum number of objects. 
      * @see #getMinIdle
      */
-    public void setMinIdle(int minIdle) {
+    public synchronized void setMinIdle(int minIdle) {
         _minIdle = minIdle;
-        synchronized(this) {
-            notifyAll();
-        }
+        notifyAll();
     }
 
     /**
@@ -596,7 +591,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      *
      * @see #setTestOnBorrow
      */
-    public boolean getTestOnBorrow() {
+    public synchronized boolean getTestOnBorrow() {
         return _testOnBorrow;
     }
 
@@ -610,7 +605,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      *
      * @see #getTestOnBorrow
      */
-    public void setTestOnBorrow(boolean testOnBorrow) {
+    public synchronized void setTestOnBorrow(boolean testOnBorrow) {
         _testOnBorrow = testOnBorrow;
     }
 
@@ -622,7 +617,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      *
      * @see #setTestOnReturn
      */
-    public boolean getTestOnReturn() {
+    public synchronized boolean getTestOnReturn() {
         return _testOnReturn;
     }
 
@@ -634,7 +629,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      *
      * @see #getTestOnReturn
      */
-    public void setTestOnReturn(boolean testOnReturn) {
+    public synchronized void setTestOnReturn(boolean testOnReturn) {
         _testOnReturn = testOnReturn;
     }
 
@@ -670,7 +665,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @see #setNumTestsPerEvictionRun
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    public int getNumTestsPerEvictionRun() {
+    public synchronized int getNumTestsPerEvictionRun() {
         return _numTestsPerEvictionRun;
     }
 
@@ -685,7 +680,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @see #getNumTestsPerEvictionRun
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    public void setNumTestsPerEvictionRun(int numTestsPerEvictionRun) {
+    public synchronized void setNumTestsPerEvictionRun(int numTestsPerEvictionRun) {
         _numTestsPerEvictionRun = numTestsPerEvictionRun;
     }
 
@@ -724,7 +719,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @see #setTestWhileIdle
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    public boolean getTestWhileIdle() {
+    public synchronized boolean getTestWhileIdle() {
         return _testWhileIdle;
     }
 
@@ -737,7 +732,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @see #getTestWhileIdle
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    public void setTestWhileIdle(boolean testWhileIdle) {
+    public synchronized void setTestWhileIdle(boolean testWhileIdle) {
         _testWhileIdle = testWhileIdle;
     }
 
@@ -862,11 +857,17 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         }
     }
 
-    public synchronized void invalidateObject(Object obj) throws Exception {
+    public void invalidateObject(Object obj) throws Exception {
         assertOpen();
-        _numActive--;
-        _factory.destroyObject(obj);
-        notifyAll(); // _numActive has changed
+        try {
+            _factory.destroyObject(obj);
+        }
+        finally {
+            synchronized(this) {
+                _numActive--;
+                notifyAll(); // _numActive has changed
+            }
+        }
     }
 
     public synchronized void clear() {
@@ -883,12 +884,12 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         notifyAll(); // num sleeping has changed
     }
 
-    public int getNumActive() {
+    public synchronized int getNumActive() {
         assertOpen();
         return _numActive;
     }
 
-    public int getNumIdle() {
+    public synchronized int getNumIdle() {
         assertOpen();
         return _pool.size();
     }
@@ -927,7 +928,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         }
     }
 
-    synchronized public void close() throws Exception {
+    public synchronized void close() throws Exception {
         clear();
         _pool = null;
         _factory = null;
@@ -939,7 +940,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         super.close();
     }
 
-    synchronized public void setFactory(PoolableObjectFactory factory) throws IllegalStateException {
+    public synchronized void setFactory(PoolableObjectFactory factory) throws IllegalStateException {
         assertOpen();
         if(0 < getNumActive()) {
             throw new IllegalStateException("Objects are already active");
