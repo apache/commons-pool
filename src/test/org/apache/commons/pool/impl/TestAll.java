@@ -1,13 +1,13 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/impl/TestAll.java,v 1.1 2001/04/14 16:42:02 rwaldhoff Exp $
- * $Revision: 1.1 $
- * $Date: 2001/04/14 16:42:02 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/impl/TestAll.java,v 1.2 2002/03/19 17:27:54 rwaldhoff Exp $
+ * $Revision: 1.2 $
+ * $Date: 2002/03/19 17:27:54 $
  *
  * ====================================================================
  *
  * The Apache Software License, Version 1.1
  *
- * Copyright (c) 1999-2001 The Apache Software Foundation.  All rights
+ * Copyright (c) 1999-2002 The Apache Software Foundation.  All rights
  * reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -68,7 +68,7 @@ import junit.framework.*;
  * package.
  *
  * @author Rodney Waldhoff
- * @version $Id: TestAll.java,v 1.1 2001/04/14 16:42:02 rwaldhoff Exp $
+ * @version $Revision: 1.2 $ $Date: 2002/03/19 17:27:54 $
  */
 public class TestAll extends TestCase {
     public TestAll(String testName) {
@@ -81,6 +81,7 @@ public class TestAll extends TestCase {
         suite.addTest(TestStackKeyedObjectPool.suite());
         suite.addTest(TestGenericObjectPool.suite());
         suite.addTest(TestGenericKeyedObjectPool.suite());
+        suite.addTest(TestSoftReferenceObjectPool.suite());
         return suite;
     }
 
