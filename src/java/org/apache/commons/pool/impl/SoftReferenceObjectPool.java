@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/SoftReferenceObjectPool.java,v 1.1 2002/03/19 17:27:54 rwaldhoff Exp $
- * $Revision: 1.1 $
- * $Date: 2002/03/19 17:27:54 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/SoftReferenceObjectPool.java,v 1.2 2002/03/19 18:01:49 rwaldhoff Exp $
+ * $Revision: 1.2 $
+ * $Date: 2002/03/19 18:01:49 $
  *
  * ====================================================================
  *
@@ -74,7 +74,7 @@ import java.lang.ref.SoftReference;
  * {@link ObjectPool}.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.1 $ $Date: 2002/03/19 17:27:54 $
+ * @version $Revision: 1.2 $ $Date: 2002/03/19 18:01:49 $
  */
 public class SoftReferenceObjectPool implements ObjectPool {
     public SoftReferenceObjectPool() {
@@ -111,9 +111,6 @@ public class SoftReferenceObjectPool implements ObjectPool {
             } else {
                 SoftReference ref = (SoftReference)(_pool.remove(_pool.size() - 1));
                 obj = ref.get();
-                if(null == obj) {
-                    System.out.println("Found a SoftReference " + ref + " in the pool, but its refferant was null.");
-                }
             }
         }
         if(null != _factory && null != obj) {
