@@ -1,7 +1,7 @@
 /*
- * $Id: GenericKeyedObjectPool.java,v 1.10 2002/12/01 18:29:06 rwaldhoff Exp $
- * $Revision: 1.10 $
- * $Date: 2002/12/01 18:29:06 $
+ * $Id: GenericKeyedObjectPool.java,v 1.11 2003/03/05 19:17:08 rwaldhoff Exp $
+ * $Revision: 1.11 $
+ * $Date: 2003/03/05 19:17:08 $
  *
  * ====================================================================
  *
@@ -61,16 +61,14 @@
 
 package org.apache.commons.pool.impl;
 
-import org.apache.commons.pool.*;
-import org.apache.commons.collections.CursorableLinkedList;
-import org.apache.commons.collections.CursorableLinkedList.Cursor;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Enumeration;
-import java.util.EmptyStackException;
-import java.util.ListIterator;
-import java.util.HashMap;
-import java.util.Set;
+
+import org.apache.commons.collections.CursorableLinkedList;
+import org.apache.commons.pool.BaseKeyedObjectPool;
+import org.apache.commons.pool.KeyedObjectPool;
+import org.apache.commons.pool.KeyedPoolableObjectFactory;
 
 /**
  * A configurable {@link KeyedObjectPool} implementation.
@@ -166,7 +164,7 @@ import java.util.Set;
  * </p>
  * @see GenericObjectPool
  * @author Rodney Waldhoff
- * @version $Revision: 1.10 $ $Date: 2002/12/01 18:29:06 $
+ * @version $Revision: 1.11 $ $Date: 2003/03/05 19:17:08 $
  */
 public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
 

@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackKeyedObjectPoolFactory.java,v 1.1 2001/04/14 16:41:52 rwaldhoff Exp $
- * $Revision: 1.1 $
- * $Date: 2001/04/14 16:41:52 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackKeyedObjectPoolFactory.java,v 1.2 2003/03/05 19:17:08 rwaldhoff Exp $
+ * $Revision: 1.2 $
+ * $Date: 2003/03/05 19:17:08 $
  *
  * ====================================================================
  *
@@ -61,10 +61,9 @@
 
 package org.apache.commons.pool.impl;
 
-import org.apache.commons.pool.*;
-import java.util.Stack;
-import java.util.NoSuchElementException;
-import java.util.Enumeration;
+import org.apache.commons.pool.KeyedObjectPool;
+import org.apache.commons.pool.KeyedObjectPoolFactory;
+import org.apache.commons.pool.KeyedPoolableObjectFactory;
 
 /**
  * A factory for creating {@link StackKeyedObjectPool} instances.
@@ -73,7 +72,7 @@ import java.util.Enumeration;
  * @see KeyedObjectPoolFactory
  *
  * @author Rodney Waldhoff
- * @version $Id: StackKeyedObjectPoolFactory.java,v 1.1 2001/04/14 16:41:52 rwaldhoff Exp $
+ * @version $Id: StackKeyedObjectPoolFactory.java,v 1.2 2003/03/05 19:17:08 rwaldhoff Exp $
  */
 public class StackKeyedObjectPoolFactory implements KeyedObjectPoolFactory {
     public StackKeyedObjectPoolFactory() {

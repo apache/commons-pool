@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/SoftReferenceObjectPool.java,v 1.6 2002/10/30 22:54:42 rwaldhoff Exp $
- * $Revision: 1.6 $
- * $Date: 2002/10/30 22:54:42 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/SoftReferenceObjectPool.java,v 1.7 2003/03/05 19:17:08 rwaldhoff Exp $
+ * $Revision: 1.7 $
+ * $Date: 2003/03/05 19:17:08 $
  *
  * ====================================================================
  *
@@ -61,21 +61,22 @@
 
 package org.apache.commons.pool.impl;
 
-import org.apache.commons.pool.ObjectPool;
-import org.apache.commons.pool.BaseObjectPool;
-import org.apache.commons.pool.PoolableObjectFactory;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
-import java.util.Iterator;
 import java.lang.ref.SoftReference;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+
+import org.apache.commons.pool.BaseObjectPool;
+import org.apache.commons.pool.ObjectPool;
+import org.apache.commons.pool.PoolableObjectFactory;
 
 /**
  * A {@link java.lang.ref.SoftReference SoftReference} based
  * {@link ObjectPool}.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.6 $ $Date: 2002/10/30 22:54:42 $
+ * @version $Revision: 1.7 $ $Date: 2003/03/05 19:17:08 $
  */
 public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPool {
     public SoftReferenceObjectPool() {

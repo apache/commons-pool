@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackObjectPoolFactory.java,v 1.1 2001/04/14 16:41:58 rwaldhoff Exp $
- * $Revision: 1.1 $
- * $Date: 2001/04/14 16:41:58 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackObjectPoolFactory.java,v 1.2 2003/03/05 19:17:08 rwaldhoff Exp $
+ * $Revision: 1.2 $
+ * $Date: 2003/03/05 19:17:08 $
  *
  * ====================================================================
  *
@@ -61,10 +61,9 @@
 
 package org.apache.commons.pool.impl;
 
-import org.apache.commons.pool.*;
-import java.util.Stack;
-import java.util.NoSuchElementException;
-import java.util.Enumeration;
+import org.apache.commons.pool.ObjectPool;
+import org.apache.commons.pool.ObjectPoolFactory;
+import org.apache.commons.pool.PoolableObjectFactory;
 
 /**
  * A factory for creating {@link StackObjectPool} instances.
@@ -73,7 +72,7 @@ import java.util.Enumeration;
  * @see KeyedObjectPoolFactory
  *
  * @author Rodney Waldhoff
- * @version $Id: StackObjectPoolFactory.java,v 1.1 2001/04/14 16:41:58 rwaldhoff Exp $
+ * @version $Id: StackObjectPoolFactory.java,v 1.2 2003/03/05 19:17:08 rwaldhoff Exp $
  */
 public class StackObjectPoolFactory implements ObjectPoolFactory {
     public StackObjectPoolFactory() {
