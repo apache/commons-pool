@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericObjectPool.java,v 1.1 2001/04/14 16:41:43 rwaldhoff Exp $
- * $Revision: 1.1 $
- * $Date: 2001/04/14 16:41:43 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericObjectPool.java,v 1.2 2002/03/17 14:55:21 rwaldhoff Exp $
+ * $Revision: 1.2 $
+ * $Date: 2002/03/17 14:55:21 $
  *
  * ====================================================================
  *
@@ -159,7 +159,7 @@ import java.util.ListIterator;
  * </ul>
  * @see GenericKeyedObjectPool
  * @author Rodney Waldhoff
- * @version $Id: GenericObjectPool.java,v 1.1 2001/04/14 16:41:43 rwaldhoff Exp $
+ * @version $Id: GenericObjectPool.java,v 1.2 2002/03/17 14:55:21 rwaldhoff Exp $
  */
 public class GenericObjectPool implements ObjectPool {
 
@@ -710,7 +710,7 @@ public class GenericObjectPool implements ObjectPool {
 
     //-- ObjectPool methods ------------------------------------------
 
-    public synchronized Object borrowObject() {
+    public synchronized Object borrowObject() throws Exception {
         long starttime = System.currentTimeMillis();
         for(;;) {
             ObjectTimestampPair pair = null;
@@ -770,10 +770,14 @@ public class GenericObjectPool implements ObjectPool {
         }
     }
 
-    public synchronized void clear() throws UnsupportedOperationException {
+    public synchronized void clear() {
         Iterator it = _pool.iterator();
         while(it.hasNext()) {
-            _factory.destroyObject(((ObjectTimestampPair)(it.next())).value);
+            try {
+                _factory.destroyObject(((ObjectTimestampPair)(it.next())).value);
+            } catch(Exception e) {
+                // ignore error, keep destroying the rest
+            }
             it.remove();
         }
         _pool.clear();
@@ -788,7 +792,7 @@ public class GenericObjectPool implements ObjectPool {
         return _pool.size();
     }
 
-    public synchronized void returnObject(Object obj) {
+    public synchronized void returnObject(Object obj) throws Exception {
         _numActive--;
         if(_maxIdle > 0 && (_pool.size() >= _maxIdle || (_testOnReturn && !_factory.validateObject(obj)))) {
             try {
@@ -808,7 +812,7 @@ public class GenericObjectPool implements ObjectPool {
         notifyAll(); // _numActive has changed
     }
 
-    synchronized public void close() {
+    synchronized public void close() throws Exception {
         clear();
         _pool = null;
         _factory = null;
@@ -818,7 +822,7 @@ public class GenericObjectPool implements ObjectPool {
         }
     }
 
-    synchronized public void setFactory(PoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
+    synchronized public void setFactory(PoolableObjectFactory factory) throws IllegalStateException {
         if(0 < numActive()) {
             throw new IllegalStateException("Objects are already active");
         } else {

@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/impl/TestGenericObjectPool.java,v 1.2 2001/12/11 07:38:02 sanders Exp $
- * $Revision: 1.2 $
- * $Date: 2001/12/11 07:38:02 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/impl/TestGenericObjectPool.java,v 1.3 2002/03/17 14:55:21 rwaldhoff Exp $
+ * $Revision: 1.3 $
+ * $Date: 2002/03/17 14:55:21 $
  *
  * ====================================================================
  *
@@ -66,7 +66,7 @@ import org.apache.commons.pool.*;
 
 /**
  * @author Rodney Waldhoff
- * @version $Id: TestGenericObjectPool.java,v 1.2 2001/12/11 07:38:02 sanders Exp $
+ * @version $Id: TestGenericObjectPool.java,v 1.3 2002/03/17 14:55:21 rwaldhoff Exp $
  */
 public class TestGenericObjectPool extends TestCase {
     public TestGenericObjectPool(String testName) {
@@ -97,7 +97,7 @@ public class TestGenericObjectPool extends TestCase {
             );
     }
 
-    public void testBorrow() {
+    public void testBorrow() throws Exception {
         Object obj0 = pool.borrowObject();
         assertEquals("0",obj0);
         Object obj1 = pool.borrowObject();
@@ -106,7 +106,7 @@ public class TestGenericObjectPool extends TestCase {
         assertEquals("2",obj2);
     }
 
-    public void testBorrowReturn() {
+    public void testBorrowReturn() throws Exception {
         Object obj0 = pool.borrowObject();
         assertEquals("0",obj0);
         Object obj1 = pool.borrowObject();
@@ -127,7 +127,7 @@ public class TestGenericObjectPool extends TestCase {
         assertEquals("0",obj0);
     }
 
-    public void testNumActiveNumIdle() {
+    public void testNumActiveNumIdle() throws Exception {
         assertEquals(0,pool.numActive());
         assertEquals(0,pool.numIdle());
         Object obj0 = pool.borrowObject();
@@ -144,7 +144,7 @@ public class TestGenericObjectPool extends TestCase {
         assertEquals(2,pool.numIdle());
     }
 
-    public void testClear() {
+    public void testClear() throws Exception {
         assertEquals(0,pool.numActive());
         assertEquals(0,pool.numIdle());
         Object obj0 = pool.borrowObject();
@@ -162,7 +162,7 @@ public class TestGenericObjectPool extends TestCase {
         assertEquals("2",obj2);
     }
 
-    public void testMaxIdle() {
+    public void testMaxIdle() throws Exception {
         pool.setMaxActive(100);
         pool.setMaxIdle(8);
         Object[] active = new Object[100];
@@ -178,7 +178,7 @@ public class TestGenericObjectPool extends TestCase {
         }
     }
 
-    public void testMaxActive() {
+    public void testMaxActive() throws Exception {
         pool.setMaxActive(3);
         pool.setWhenExhaustedAction(pool.WHEN_EXHAUSTED_FAIL);
 
@@ -193,7 +193,7 @@ public class TestGenericObjectPool extends TestCase {
         }
     }
 
-    public void testEviction() {
+    public void testEviction() throws Exception {
         pool.setMaxIdle(500);
         pool.setMaxActive(500);
         pool.setNumTestsPerEvictionRun(100);
@@ -243,7 +243,7 @@ public class TestGenericObjectPool extends TestCase {
     }
 
 
-    public void testThreaded1() {
+    public void testThreaded1() throws Exception {
         pool.setMaxActive(15);
         pool.setMaxIdle(15);
         pool.setMaxWait(1000L);
@@ -308,7 +308,7 @@ public class TestGenericObjectPool extends TestCase {
                 Object obj = null;
                 try {
                     obj = _pool.borrowObject();
-                } catch(java.util.NoSuchElementException e) {
+                } catch(Exception e) {
                     _failed = true;
                     _complete = true;
                     break;
@@ -319,7 +319,13 @@ public class TestGenericObjectPool extends TestCase {
                 } catch(Exception e) {
                     // ignored
                 }
-                _pool.returnObject(obj);
+                try {
+                    _pool.returnObject(obj);
+                } catch(Exception e) {
+                    _failed = true;
+                    _complete = true;
+                    break;
+                }
             }
             _complete = true;
         }

@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/impl/TestStackObjectPool.java,v 1.1 2001/04/14 16:42:18 rwaldhoff Exp $
- * $Revision: 1.1 $
- * $Date: 2001/04/14 16:42:18 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/test/org/apache/commons/pool/impl/TestStackObjectPool.java,v 1.2 2002/03/17 14:55:21 rwaldhoff Exp $
+ * $Revision: 1.2 $
+ * $Date: 2002/03/17 14:55:21 $
  *
  * ====================================================================
  *
@@ -66,7 +66,7 @@ import org.apache.commons.pool.*;
 
 /**
  * @author Rodney Waldhoff
- * @version $Id: TestStackObjectPool.java,v 1.1 2001/04/14 16:42:18 rwaldhoff Exp $
+ * @version $Id: TestStackObjectPool.java,v 1.2 2002/03/17 14:55:21 rwaldhoff Exp $
  */
 public class TestStackObjectPool extends TestCase {
     public TestStackObjectPool(String testName) {
@@ -97,7 +97,7 @@ public class TestStackObjectPool extends TestCase {
             );
     }
 
-    public void testBorrow() {
+    public void testBorrow() throws Exception {
         Object obj0 = pool.borrowObject();
         assertEquals("0",obj0);
         Object obj1 = pool.borrowObject();
@@ -106,7 +106,7 @@ public class TestStackObjectPool extends TestCase {
         assertEquals("2",obj2);
     }
 
-    public void testBorrowReturn() {
+    public void testBorrowReturn() throws Exception {
         Object obj0 = pool.borrowObject();
         assertEquals("0",obj0);
         Object obj1 = pool.borrowObject();
@@ -127,7 +127,7 @@ public class TestStackObjectPool extends TestCase {
         assertEquals("0",obj0);
     }
 
-    public void testNumActiveNumIdle() {
+    public void testNumActiveNumIdle() throws Exception {
         assertEquals(0,pool.numActive());
         assertEquals(0,pool.numIdle());
         Object obj0 = pool.borrowObject();
@@ -144,7 +144,7 @@ public class TestStackObjectPool extends TestCase {
         assertEquals(2,pool.numIdle());
     }
 
-    public void testClear() {
+    public void testClear() throws Exception {
         assertEquals(0,pool.numActive());
         assertEquals(0,pool.numIdle());
         Object obj0 = pool.borrowObject();
@@ -162,7 +162,7 @@ public class TestStackObjectPool extends TestCase {
         assertEquals("2",obj2);
     }
 
-    public void testIdleCap() {
+    public void testIdleCap() throws Exception {
         Object[] active = new Object[100];
         for(int i=0;i<100;i++) {
             active[i] = pool.borrowObject();

@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/ObjectPool.java,v 1.2 2002/01/15 00:07:03 rwaldhoff Exp $
- * $Revision: 1.2 $
- * $Date: 2002/01/15 00:07:03 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/ObjectPool.java,v 1.3 2002/03/17 14:55:21 rwaldhoff Exp $
+ * $Revision: 1.3 $
+ * $Date: 2002/03/17 14:55:21 $
  *
  * ====================================================================
  *
@@ -81,7 +81,7 @@ package org.apache.commons.pool;
  * }</pre></td></tr></table>
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.2 $ $Date: 2002/01/15 00:07:03 $ 
+ * @version $Revision: 1.3 $ $Date: 2002/03/17 14:55:21 $ 
  *
  * @see KeyedObjectPool
  * @see ObjectPoolFactory
@@ -101,7 +101,7 @@ public interface ObjectPool {
      *
      * @return an instance from my pool.
      */
-    public abstract Object borrowObject();
+    Object borrowObject() throws Exception;
 
     /**
      * Return an instance to my pool.
@@ -112,7 +112,7 @@ public interface ObjectPool {
      *
      * @param obj a {@link #borrowObject() borrowed} instance to be returned.
      */
-    public abstract void returnObject(Object obj);
+    void returnObject(Object obj) throws Exception;
 
     /**
      * Return the number of instances
@@ -123,7 +123,7 @@ public interface ObjectPool {
      * @return the number of instances currently idle in my pool
      * @throws UnsupportedOperationException if this implementation does not support the operation
      */
-    public abstract int numIdle() throws UnsupportedOperationException;
+    int numIdle() throws UnsupportedOperationException;
 
     /**
      * Return the number of instances
@@ -134,7 +134,7 @@ public interface ObjectPool {
      * @return the number of instances currently borrowed in my pool
      * @throws UnsupportedOperationException if this implementation does not support the operation
      */
-    public abstract int numActive() throws UnsupportedOperationException;
+    int numActive() throws UnsupportedOperationException;
 
     /**
      * Clears any objects sitting idle in the pool, releasing any
@@ -143,12 +143,12 @@ public interface ObjectPool {
      *
      * @throws UnsupportedOperationException if this implementation does not support the operation
      */
-    public abstract void clear() throws UnsupportedOperationException;
+    void clear() throws Exception, UnsupportedOperationException;
 
     /**
      * Close this pool, and free any resources associated with it.
      */
-    public abstract void close();
+    void close() throws Exception;
 
     /**
      * Sets the {@link PoolableObjectFactory factory} I use
@@ -157,5 +157,5 @@ public interface ObjectPool {
      * @throws IllegalStateException when the factory cannot be set at this time
      * @throws UnsupportedOperationException if this implementation does not support the operation
      */
-    public abstract void setFactory(PoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException;
+    void setFactory(PoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException;
 }
