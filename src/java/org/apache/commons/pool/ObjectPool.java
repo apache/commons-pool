@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/ObjectPool.java,v 1.7 2002/10/30 22:54:41 rwaldhoff Exp $
- * $Revision: 1.7 $
- * $Date: 2002/10/30 22:54:41 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/ObjectPool.java,v 1.8 2003/04/24 01:22:36 rwaldhoff Exp $
+ * $Revision: 1.8 $
+ * $Date: 2003/04/24 01:22:36 $
  *
  * ====================================================================
  *
@@ -85,7 +85,7 @@ package org.apache.commons.pool;
  * See {@link org.apache.commons.pool.BaseObjectPool BaseObjectPool} for a simple base implementation.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.7 $ $Date: 2002/10/30 22:54:41 $ 
+ * @version $Revision: 1.8 $ $Date: 2003/04/24 01:22:36 $ 
  *
  */
 public interface ObjectPool {
@@ -131,6 +131,14 @@ public interface ObjectPool {
      * @param obj a {@link #borrowObject borrowed} instance to be returned.
      */
     void invalidateObject(Object obj) throws Exception;
+
+    /**
+     * Create an object using my {@link #setFactory factory} or other
+     * implementation dependent mechanism, and place it into the pool.
+     * addObject() is useful for "pre-loading" a pool with idle objects.
+     * (Optional operation).
+     */
+    void addObject() throws Exception;
 
     /**
      * Return the number of instances

@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackObjectPool.java,v 1.11 2003/03/13 18:40:09 rwaldhoff Exp $
- * $Revision: 1.11 $
- * $Date: 2003/03/13 18:40:09 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/StackObjectPool.java,v 1.12 2003/04/24 01:22:36 rwaldhoff Exp $
+ * $Revision: 1.12 $
+ * $Date: 2003/04/24 01:22:36 $
  *
  * ====================================================================
  *
@@ -83,7 +83,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * artificial limits.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.11 $ $Date: 2003/03/13 18:40:09 $
+ * @version $Revision: 1.12 $ $Date: 2003/04/24 01:22:36 $
  */
 public class StackObjectPool extends BaseObjectPool implements ObjectPool {
     /**
@@ -258,6 +258,18 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
         _pool = null;
         _factory = null;
         super.close();
+    }
+
+    /**
+     * Create an object, and place it into the pool.
+     * addObject() is useful for "pre-loading" a pool with idle objects.
+     */
+    public void addObject() throws Exception {
+        Object obj = _factory.makeObject();
+        synchronized(this) {
+            _numActive++;   // A little slimy - must do this because returnObject decrements it.
+            this.returnObject(obj);
+        }
     }
 
     synchronized public void setFactory(PoolableObjectFactory factory) throws IllegalStateException {

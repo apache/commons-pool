@@ -1,7 +1,7 @@
 /*
- * $Id: TestBaseObjectPool.java,v 1.1 2003/04/22 23:14:52 rwaldhoff Exp $
- * $Revision: 1.1 $
- * $Date: 2003/04/22 23:14:52 $
+ * $Id: TestBaseObjectPool.java,v 1.2 2003/04/24 01:22:37 rwaldhoff Exp $
+ * $Revision: 1.2 $
+ * $Date: 2003/04/24 01:22:37 $
  * ====================================================================
  *
  * The Apache Software License, Version 1.1
@@ -65,7 +65,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 /**
- * @version $Revision: 1.1 $ $Date: 2003/04/22 23:14:52 $
+ * @version $Revision: 1.2 $ $Date: 2003/04/24 01:22:37 $
  * @author Rodney Waldhoff
  */
 public class TestBaseObjectPool extends TestCase {
@@ -105,6 +105,13 @@ public class TestBaseObjectPool extends TestCase {
 
         try {
             pool.clear();
+            fail("Expected UnsupportedOperationException");
+        } catch(UnsupportedOperationException e) {
+            // expected
+        }
+
+        try {
+            pool.addObject();
             fail("Expected UnsupportedOperationException");
         } catch(UnsupportedOperationException e) {
             // expected
