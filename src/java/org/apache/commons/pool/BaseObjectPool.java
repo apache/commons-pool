@@ -22,7 +22,7 @@ package org.apache.commons.pool;
  * {@link UnsupportedOperationException}.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.13 $ $Date: 2004/02/28 11:46:33 $
+ * @version $Revision$ $Date$
  */
 public abstract class BaseObjectPool implements ObjectPool {
     public abstract Object borrowObject() throws Exception;

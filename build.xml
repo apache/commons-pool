@@ -13,7 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<!-- $Id: build.xml,v 1.24 2004/05/20 16:30:46 dirkv Exp $ -->
+<!-- $Id$ -->
 <project name="commons-pool" default="test" basedir=".">
 
    <target name="init">

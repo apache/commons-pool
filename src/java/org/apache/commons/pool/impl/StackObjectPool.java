@@ -38,7 +38,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * artificial limits.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.16 $ $Date: 2004/07/04 17:23:35 $
+ * @version $Revision$ $Date$
  */
 public class StackObjectPool extends BaseObjectPool implements ObjectPool {
     /**

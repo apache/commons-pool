@@ -21,7 +21,7 @@ import junit.framework.TestSuite;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision: 1.6 $ $Date: 2004/02/28 12:16:21 $
+ * @version $Revision$ $Date$
  */
 public class TestBaseKeyedObjectPool extends TestCase {
     public TestBaseKeyedObjectPool(String testName) {

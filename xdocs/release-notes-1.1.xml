@@ -18,7 +18,7 @@
    <properties>
       <title>Release notes for Commons-Pool 1.1</title>
       <author email="commons-dev@jakarta.apache.org">Commons Documentation Team</author>
-      <revision>$Id: release-notes-1.1.xml,v 1.1 2004/05/20 15:30:03 dirkv Exp $</revision>
+      <revision>$Id$</revision>
    </properties>
 
    <body>

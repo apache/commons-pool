@@ -24,7 +24,7 @@ package org.apache.commons.pool;
  * @see KeyedPoolableObjectFactory
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.7 $ $Date: 2004/02/28 12:16:21 $ 
+ * @version $Revision$ $Date$ 
  */
 public abstract class BaseKeyedPoolableObjectFactory implements KeyedPoolableObjectFactory {
     public abstract Object makeObject(Object key)

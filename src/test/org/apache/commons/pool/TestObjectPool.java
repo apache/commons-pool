@@ -20,7 +20,7 @@ import junit.framework.TestCase;
 /**
  * Abstract {@link TestCase} for {@link ObjectPool} implementations.
  * @author Rodney Waldhoff
- * @version $Revision: 1.7 $ $Date: 2004/02/28 11:46:11 $
+ * @version $Revision$ $Date$
  */
 public abstract class TestObjectPool extends TestCase {
     public TestObjectPool(String testName) {

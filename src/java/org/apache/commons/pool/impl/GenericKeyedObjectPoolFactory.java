@@ -28,7 +28,7 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  *
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
- * @version $Revision: 1.8 $ $Date: 2004/09/19 17:24:18 $ 
+ * @version $Revision$ $Date$ 
  */
 public class GenericKeyedObjectPoolFactory implements KeyedObjectPoolFactory {
     public GenericKeyedObjectPoolFactory(KeyedPoolableObjectFactory factory) {

@@ -25,7 +25,7 @@ import org.apache.commons.pool.TestObjectPool;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision: 1.7 $ $Date: 2004/02/28 11:46:11 $
+ * @version $Revision$ $Date$
  */
 public class TestSoftReferenceObjectPool extends TestObjectPool {
     public TestSoftReferenceObjectPool(String testName) {

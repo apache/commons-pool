@@ -29,7 +29,7 @@ import org.apache.commons.pool.TestObjectPool;
 /**
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
- * @version $Revision: 1.25 $ $Date: 2004/08/10 19:58:07 $
+ * @version $Revision$ $Date$
  */
 public class TestGenericObjectPool extends TestObjectPool {
     public TestGenericObjectPool(String testName) {
