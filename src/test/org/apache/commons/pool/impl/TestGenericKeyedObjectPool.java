@@ -1,7 +1,7 @@
 /*
- * $Id: TestGenericKeyedObjectPool.java,v 1.10 2003/03/05 19:22:53 rwaldhoff Exp $
- * $Revision: 1.10 $
- * $Date: 2003/03/05 19:22:53 $
+ * $Id: TestGenericKeyedObjectPool.java,v 1.11 2003/03/07 20:28:36 rwaldhoff Exp $
+ * $Revision: 1.11 $
+ * $Date: 2003/03/07 20:28:36 $
  *
  * ====================================================================
  *
@@ -62,6 +62,7 @@
 package org.apache.commons.pool.impl;
 
 import java.util.HashMap;
+import java.util.NoSuchElementException;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -72,7 +73,7 @@ import org.apache.commons.pool.TestKeyedObjectPool;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision: 1.10 $ $Date: 2003/03/05 19:22:53 $
+ * @version $Revision: 1.11 $ $Date: 2003/03/07 20:28:36 $
  */
 public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     public TestGenericKeyedObjectPool(String testName) {
@@ -101,7 +102,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                 public void activateObject(Object key, Object obj) { }
                 public void passivateObject(Object key, Object obj) { }
             }
-            );
+        );
         pool.setMaxActive(mincapacity);
         pool.setMaxIdle(mincapacity);
         return pool;
@@ -119,16 +120,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
     public void setUp() throws Exception {
         super.setUp();
-        pool = new GenericKeyedObjectPool(
-            new KeyedPoolableObjectFactory()  {
-                int counter = 0;
-                public Object makeObject(Object key) { return String.valueOf(key) + String.valueOf(counter++); }
-                public void destroyObject(Object key, Object obj) { }
-                public boolean validateObject(Object key, Object obj) { return true; }
-                public void activateObject(Object key, Object obj) { }
-                public void passivateObject(Object key, Object obj) { }
-            }
-            );
+        pool = new GenericKeyedObjectPool(new SimpleFactory());
     }
     
     public void tearDown() throws Exception {
@@ -226,9 +218,66 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         pool.borrowObject("");
         try {
             pool.borrowObject("");
-            fail("Shouldn't get here.");
-        } catch(java.util.NoSuchElementException e) {
+            fail("Expected NoSuchElementException");
+        } catch(NoSuchElementException e) {
             // expected
+        }
+    }
+
+    public void testSettersAndGetters() throws Exception {
+        GenericKeyedObjectPool pool = new GenericKeyedObjectPool();
+        {
+            pool.setFactory(new SimpleFactory());
+        }
+        {
+            pool.setMaxActive(123);
+            assertEquals(123,pool.getMaxActive());
+        }
+        {
+            pool.setMaxIdle(12);
+            assertEquals(12,pool.getMaxIdle());
+        }
+        {
+            pool.setMaxWait(1234L);
+            assertEquals(1234L,pool.getMaxWait());
+        }
+        {
+            pool.setMinEvictableIdleTimeMillis(12345L);
+            assertEquals(12345L,pool.getMinEvictableIdleTimeMillis());
+        }
+        {
+            pool.setNumTestsPerEvictionRun(11);
+            assertEquals(11,pool.getNumTestsPerEvictionRun());
+        }
+        {
+            pool.setTestOnBorrow(true);
+            assertTrue(pool.getTestOnBorrow());
+            pool.setTestOnBorrow(false);
+            assertTrue(!pool.getTestOnBorrow());
+        }
+        {
+            pool.setTestOnReturn(true);
+            assertTrue(pool.getTestOnReturn());
+            pool.setTestOnReturn(false);
+            assertTrue(!pool.getTestOnReturn());
+        }
+        {
+            pool.setTestWhileIdle(true);
+            assertTrue(pool.getTestWhileIdle());
+            pool.setTestWhileIdle(false);
+            assertTrue(!pool.getTestWhileIdle());
+        }
+        {
+            pool.setTimeBetweenEvictionRunsMillis(11235L);
+            assertEquals(11235L,pool.getTimeBetweenEvictionRunsMillis());
+        }
+        {
+            pool.setWhenExhaustedAction(GenericKeyedObjectPool.WHEN_EXHAUSTED_BLOCK);
+            assertEquals(GenericObjectPool.WHEN_EXHAUSTED_BLOCK,pool.getWhenExhaustedAction());
+            pool.setWhenExhaustedAction(GenericKeyedObjectPool.WHEN_EXHAUSTED_FAIL);
+            assertEquals(GenericObjectPool.WHEN_EXHAUSTED_FAIL,pool.getWhenExhaustedAction());
+            pool.setWhenExhaustedAction(GenericKeyedObjectPool.WHEN_EXHAUSTED_GROW);
+            assertEquals(GenericObjectPool.WHEN_EXHAUSTED_GROW,pool.getWhenExhaustedAction());
         }
     }
 
@@ -411,6 +460,16 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             _complete = true;
         }
     }
+
+    static class SimpleFactory implements KeyedPoolableObjectFactory {
+        int counter = 0;
+        public Object makeObject(Object key) { return String.valueOf(key) + String.valueOf(counter++); }
+        public void destroyObject(Object key, Object obj) { }
+        public boolean validateObject(Object key, Object obj) { return true; }
+        public void activateObject(Object key, Object obj) { }
+        public void passivateObject(Object key, Object obj) { }
+    }
+
 }
 
 

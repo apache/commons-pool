@@ -1,7 +1,7 @@
 /*
- * $Id: GenericObjectPool.java,v 1.14 2003/03/07 15:18:20 rwaldhoff Exp $
- * $Revision: 1.14 $
- * $Date: 2003/03/07 15:18:20 $
+ * $Id: GenericObjectPool.java,v 1.15 2003/03/07 20:28:36 rwaldhoff Exp $
+ * $Revision: 1.15 $
+ * $Date: 2003/03/07 20:28:36 $
  *
  * ====================================================================
  *
@@ -163,7 +163,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * 
  * @see GenericKeyedObjectPool
  * @author Rodney Waldhoff
- * @version $Revision: 1.14 $ $Date: 2003/03/07 15:18:20 $
+ * @version $Revision: 1.15 $ $Date: 2003/03/07 20:28:36 $
  */
 public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
@@ -967,8 +967,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         long tstamp;
 
         ObjectTimestampPair(Object val) {
-            value = val;
-            tstamp = System.currentTimeMillis();
+            this(val,System.currentTimeMillis());
         }
 
         ObjectTimestampPair(Object val, long time) {
