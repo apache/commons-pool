@@ -46,12 +46,12 @@ package org.apache.commons.pool;
  * {@link ObjectPool pools}).
  * </p>
  *
- * @author Rodney Waldhoff
- * @version $Revision: 1.13 $ $Date: 2004/02/28 11:46:33 $
- *
  * @see KeyedPoolableObjectFactory
  * @see KeyedObjectPoolFactory
  * @see ObjectPool
+ *
+ * @author Rodney Waldhoff
+ * @version $Revision: 1.14 $ $Date: 2004/02/28 12:16:21 $
  */
 public interface KeyedObjectPool {
     /**

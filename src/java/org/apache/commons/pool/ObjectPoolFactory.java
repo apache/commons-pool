@@ -18,11 +18,11 @@ package org.apache.commons.pool;
 
 /**
  * A factory interface for creating {@link ObjectPool}s.
+ * 
+ * @see ObjectPool
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.6 $ $Date: 2004/02/28 11:46:33 $ 
- *
- * @see ObjectPool
+ * @version $Revision: 1.7 $ $Date: 2004/02/28 12:16:21 $ 
  */
 public interface ObjectPoolFactory {
     /**

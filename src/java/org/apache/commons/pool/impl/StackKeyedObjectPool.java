@@ -39,7 +39,7 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  * artificial limits.
  *
  * @author Rodney Waldhoff
- * @version $Id: StackKeyedObjectPool.java,v 1.13 2004/02/28 11:46:33 dirkv Exp $
+ * @version $Revision: 1.14 $ $Date: 2004/02/28 12:16:21 $ 
  */
 public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
     /**

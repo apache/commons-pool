@@ -27,7 +27,7 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  * @see KeyedObjectPoolFactory
  *
  * @author Rodney Waldhoff
- * @version $Id: StackKeyedObjectPoolFactory.java,v 1.5 2004/02/28 11:46:33 dirkv Exp $
+ * @version $Revision: 1.6 $ $Date: 2004/02/28 12:16:21 $ 
  */
 public class StackKeyedObjectPoolFactory implements KeyedObjectPoolFactory {
     public StackKeyedObjectPoolFactory() {

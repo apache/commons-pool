@@ -22,6 +22,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * Sleepy ObjectFactory (everything takes a while longer)
  * 
  * @author Dirk Verbeeck
+ * @version $Revision: 1.5 $ $Date: 2004/02/28 12:16:21 $ 
  */
 public class SleepingObjectFactory implements PoolableObjectFactory {
 
