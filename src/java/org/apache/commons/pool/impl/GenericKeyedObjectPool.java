@@ -1,13 +1,13 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericKeyedObjectPool.java,v 1.8 2002/10/30 22:54:41 rwaldhoff Exp $
- * $Revision: 1.8 $
- * $Date: 2002/10/30 22:54:41 $
+ * $Id: GenericKeyedObjectPool.java,v 1.9 2002/10/31 20:57:19 rwaldhoff Exp $
+ * $Revision: 1.9 $
+ * $Date: 2002/10/31 20:57:19 $
  *
  * ====================================================================
  *
  * The Apache Software License, Version 1.1
  *
- * Copyright (c) 1999-2001 The Apache Software Foundation.  All rights
+ * Copyright (c) 2001-2002 The Apache Software Foundation.  All rights
  * reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -161,7 +161,7 @@ import java.util.Set;
  * </ul>
  * @see GenericObjectPool
  * @author Rodney Waldhoff
- * @version $Id: GenericKeyedObjectPool.java,v 1.8 2002/10/30 22:54:41 rwaldhoff Exp $
+ * @version $Revision: 1.9 $ $Date: 2002/10/31 20:57:19 $
  */
 public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
 
@@ -945,6 +945,14 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         _poolList = null;
         _poolMap = null;
         _activeMap = null;
+        if(null != _evictionCursor) {
+            _evictionCursor.close();
+            _evictionCursor = null;
+        }
+        if(null != _evictionKeyCursor) {
+            _evictionKeyCursor.close();
+            _evictionKeyCursor = null;
+        }
         if(null != _evictor) {
             _evictor.cancel();
             _evictor = null;
@@ -960,6 +968,118 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         }
     }
 
+    synchronized public void evict() throws Exception {
+        Object key = null;
+        for(int i=0,m=getNumTests();i<m;i++) {
+            if(_poolMap.size() > 0) {
+                // if we don't have a key cursor, then create one, and close any object cursor
+                if(null == _evictionKeyCursor) {
+                    _evictionKeyCursor = _poolList.cursor();
+                    key = null;
+                    if(null != _evictionCursor) {
+                        _evictionCursor.close();
+                        _evictionCursor = null;
+                    }
+                }
+                // if we don't have an object cursor
+                if(null == _evictionCursor) {
+                    // if the _evictionKeyCursor has a next value, then use it
+                    if(_evictionKeyCursor.hasNext()) {
+                        key = _evictionKeyCursor.next();
+                        CursorableLinkedList pool = (CursorableLinkedList)(_poolMap.get(key));
+                        _evictionCursor = pool.cursor(pool.size());
+                    } else {
+                        // else close the key cursor and loop back around
+                        if(null != _evictionKeyCursor) {
+                            _evictionKeyCursor.close();
+                            _evictionKeyCursor = _poolList.cursor();
+                            if(null != _evictionCursor) {
+                                _evictionCursor.close();
+                                _evictionCursor = null;
+                            }
+                        }
+                        continue;
+                    }
+                }
+                // if the _evictionCursor has a previous object, then test it
+                if(_evictionCursor.hasPrevious()) {
+                    ObjectTimestampPair pair = (ObjectTimestampPair)(_evictionCursor.previous());
+                    if(_minEvictableIdleTimeMillis > 0 &&
+                       System.currentTimeMillis() - pair.tstamp > _minEvictableIdleTimeMillis) {
+                        try {
+                            _evictionCursor.remove();
+                            _totalIdle--;
+                            _factory.destroyObject(key,pair.value);
+
+                            // if that was the last object for that key, drop that pool
+                            if( ((CursorableLinkedList)(_poolMap.get(key))).isEmpty() ) {
+                                _poolMap.remove(key);
+                                _poolList.remove(key);
+                            }
+
+
+                        } catch(Exception e) {
+                            ; // ignored
+                        }
+                    } else if(_testWhileIdle) {
+                        boolean active = false;
+                        try {
+                            _factory.activateObject(key,pair.value);
+                            active = true;
+                        } catch(Exception e) {
+                            _evictionCursor.remove();
+                            try {
+                                _factory.passivateObject(key,pair.value);
+                            } catch(Exception ex) {
+                                ; // ignored
+                            }
+                            _factory.destroyObject(key,pair.value);
+                        }
+                        if(active) {
+                            if(!_factory.validateObject(key,pair.value)) {
+                                try {
+                                    _evictionCursor.remove();
+                                    _totalIdle--;
+                                    try {
+                                        _factory.passivateObject(key,pair.value);
+                                    } catch(Exception e) {
+                                        ; // ignored
+                                    }
+                                    _factory.destroyObject(key,pair.value);
+                                    if( ((CursorableLinkedList)(_poolMap.get(key))).isEmpty() ) {
+                                        _poolMap.remove(key);
+                                        _poolList.remove(key);
+                                    }
+
+                                } catch(Exception e) {
+                                    ; // ignored
+                                }
+                            } else {
+                                try {
+                                    _factory.passivateObject(key,pair.value);
+                                } catch(Exception e) {
+                                    _evictionCursor.remove();
+                                    _totalIdle--;
+                                    _factory.destroyObject(key,pair.value);
+                                    if( ((CursorableLinkedList)(_poolMap.get(key))).isEmpty() ) {
+                                        _poolMap.remove(key);
+                                        _poolList.remove(key);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    // else the _evictionCursor is done, so close it and loop around
+                    if(_evictionCursor != null) {
+                        _evictionCursor.close();
+                        _evictionCursor = null;
+                    }
+                }
+            }
+        }
+    }
+    
     //--- package methods --------------------------------------------
 
     synchronized String debugInfo() {
@@ -973,6 +1093,13 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         return buf.toString();
     }
 
+    private int getNumTests() {
+        if(_numTestsPerEvictionRun >= 0) {
+            return _numTestsPerEvictionRun;
+        } else {
+            return(int)(Math.ceil((double)_totalIdle/Math.abs((double)_numTestsPerEvictionRun)));
+        }
+    }
 
     //--- inner classes ----------------------------------------------
 
@@ -1010,10 +1137,6 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         }
 
         public void run() {
-            CursorableLinkedList.Cursor objcursor = null;
-            CursorableLinkedList.Cursor keycursor = null;
-            Object key = null;
-
             while(!_cancelled) {
                 long sleeptime = 0L;
                 synchronized(GenericKeyedObjectPool.this) {
@@ -1025,133 +1148,20 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                     ; // ignored
                 }
                 try {
-                    synchronized(GenericKeyedObjectPool.this) {
-                        for(int i=0,m=getNumTests();i<m;i++) {
-                            if(_poolMap.size() > 0) {
-                                // if we don't have a key cursor, then create one, and close any object cursor
-                                if(null == keycursor) {
-                                    keycursor = _poolList.cursor();
-                                    key = null;
-                                    if(null != objcursor) {
-                                        objcursor.close();
-                                        objcursor = null;
-                                    }
-                                }
-                                // if we don't have an object cursor
-                                if(null == objcursor) {
-                                    // if the keycursor has a next value, then use it
-                                    if(keycursor.hasNext()) {
-                                        key = keycursor.next();
-                                        CursorableLinkedList pool = (CursorableLinkedList)(_poolMap.get(key));
-                                        objcursor = pool.cursor(pool.size());
-                                    } else {
-                                        // else close the key cursor and loop back around
-                                        if(null != keycursor) {
-                                            keycursor.close();
-                                            keycursor = _poolList.cursor();
-                                            if(null != objcursor) {
-                                                objcursor.close();
-                                                objcursor = null;
-                                            }
-                                        }
-                                        continue;
-                                    }
-                                }
-                                // if the objcursor has a previous object, then test it
-                                if(objcursor.hasPrevious()) {
-                                    ObjectTimestampPair pair = (ObjectTimestampPair)(objcursor.previous());
-                                    if(_minEvictableIdleTimeMillis > 0 &&
-                                       System.currentTimeMillis() - pair.tstamp > _minEvictableIdleTimeMillis) {
-                                        try {
-                                            objcursor.remove();
-                                            _totalIdle--;
-                                            _factory.destroyObject(key,pair.value);
-
-                                            // if that was the last object for that key, drop that pool
-                                            if( ((CursorableLinkedList)(_poolMap.get(key))).isEmpty() ) {
-                                                _poolMap.remove(key);
-                                                _poolList.remove(key);
-                                            }
-
-
-                                        } catch(Exception e) {
-                                            ; // ignored
-                                        }
-                                    } else if(_testWhileIdle) {
-                                        boolean active = false;
-                                        try {
-                                            _factory.activateObject(key,pair.value);
-                                            active = true;
-                                        } catch(Exception e) {
-                                            objcursor.remove();
-                                            try {
-                                                _factory.passivateObject(key,pair.value);
-                                            } catch(Exception ex) {
-                                                ; // ignored
-                                            }
-                                            _factory.destroyObject(key,pair.value);
-                                        }
-                                        if(active) {
-                                            if(!_factory.validateObject(key,pair.value)) {
-                                                try {
-                                                    objcursor.remove();
-                                                    _totalIdle--;
-                                                    try {
-                                                        _factory.passivateObject(key,pair.value);
-                                                    } catch(Exception e) {
-                                                        ; // ignored
-                                                    }
-                                                    _factory.destroyObject(key,pair.value);
-                                                    if( ((CursorableLinkedList)(_poolMap.get(key))).isEmpty() ) {
-                                                        _poolMap.remove(key);
-                                                        _poolList.remove(key);
-                                                    }
-
-                                                } catch(Exception e) {
-                                                    ; // ignored
-                                                }
-                                            } else {
-                                                try {
-                                                    _factory.passivateObject(key,pair.value);
-                                                } catch(Exception e) {
-                                                    objcursor.remove();
-                                                    _totalIdle--;
-                                                    _factory.destroyObject(key,pair.value);
-                                                    if( ((CursorableLinkedList)(_poolMap.get(key))).isEmpty() ) {
-                                                        _poolMap.remove(key);
-                                                        _poolList.remove(key);
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    // else the objcursor is done, so close it and loop around
-                                    if(objcursor != null) {
-                                        objcursor.close();
-                                        objcursor = null;
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    evict();
                 } catch(Exception e) {
                     ; // ignored
                 }
             }
-            if(null != keycursor) {
-                keycursor.close();
-            }
-            if(null != objcursor) {
-                objcursor.close();
-            }
-        }
-
-        private int getNumTests() {
-            if(_numTestsPerEvictionRun >= 0) {
-                return _numTestsPerEvictionRun;
-            } else {
-                return(int)(Math.ceil((double)_totalIdle/Math.abs((double)_numTestsPerEvictionRun)));
+            synchronized(GenericKeyedObjectPool.this) {
+                if(null != _evictionCursor) {
+                    _evictionCursor.close();
+                    _evictionCursor = null;
+                }
+                if(null != _evictionKeyCursor) {
+                    _evictionKeyCursor.close();
+                    _evictionKeyCursor = null;
+                }
             }
         }
     }
@@ -1182,14 +1192,14 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @see #setMaxIdle
      * @see #getMaxIdle
      */
-    protected int _maxIdle = DEFAULT_MAX_IDLE;
+    private int _maxIdle = DEFAULT_MAX_IDLE;
 
     /**
      * The cap on the total number of active instances from the pool (per key).
      * @see #setMaxActive
      * @see #getMaxActive
      */
-    protected int _maxActive = DEFAULT_MAX_ACTIVE;
+    private int _maxActive = DEFAULT_MAX_ACTIVE;
 
     /**
      * The maximum amount of time (in millis) the
@@ -1207,7 +1217,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @see #setWhenExhaustedAction
      * @see #getWhenExhaustedAction
      */
-    protected long _maxWait = DEFAULT_MAX_WAIT;
+    private long _maxWait = DEFAULT_MAX_WAIT;
 
     /**
      * The action to take when the {@link #borrowObject} method
@@ -1221,7 +1231,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @see #setWhenExhaustedAction
      * @see #getWhenExhaustedAction
      */
-    protected byte _whenExhaustedAction = DEFAULT_WHEN_EXHAUSTED_ACTION;
+    private byte _whenExhaustedAction = DEFAULT_WHEN_EXHAUSTED_ACTION;
 
     /**
      * When <tt>true</tt>, objects will be
@@ -1234,7 +1244,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @see #setTestOnBorrow
      * @see #getTestOnBorrow
      */
-    protected boolean _testOnBorrow = DEFAULT_TEST_ON_BORROW;
+    private boolean _testOnBorrow = DEFAULT_TEST_ON_BORROW;
 
     /**
      * When <tt>true</tt>, objects will be
@@ -1245,7 +1255,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @see #getTestOnReturn
      * @see #setTestOnReturn
      */
-    protected boolean _testOnReturn = DEFAULT_TEST_ON_RETURN;
+    private boolean _testOnReturn = DEFAULT_TEST_ON_RETURN;
 
     /**
      * When <tt>true</tt>, objects will be
@@ -1258,7 +1268,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @see #getTimeBetweenEvictionRunsMillis
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    protected boolean _testWhileIdle = DEFAULT_TEST_WHILE_IDLE;
+    private boolean _testWhileIdle = DEFAULT_TEST_WHILE_IDLE;
 
     /**
      * The number of milliseconds to sleep between runs of the
@@ -1269,7 +1279,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @see #setTimeBetweenEvictionRunsMillis
      * @see #getTimeBetweenEvictionRunsMillis
      */
-    protected long _timeBetweenEvictionRunsMillis = DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
+    private long _timeBetweenEvictionRunsMillis = DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
 
     /**
      * The number of objects to examine during each run of the
@@ -1284,7 +1294,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @see #getTimeBetweenEvictionRunsMillis
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    protected int _numTestsPerEvictionRun =  DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
+    private int _numTestsPerEvictionRun =  DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
 
     /**
      * The minimum amount of time an object may sit idle in the pool
@@ -1298,34 +1308,35 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @see #getTimeBetweenEvictionRunsMillis
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    protected long _minEvictableIdleTimeMillis = DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
-
+    private long _minEvictableIdleTimeMillis = DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 
     /** My hash of pools (CursorableLinkedLists). */
-    protected HashMap _poolMap = null;
+    private HashMap _poolMap = null;
 
     /**
      * A cursorable list of my pools.
      * @see GenericKeyedObjectPool.Evictor#run
      */
-    protected CursorableLinkedList _poolList = null;
+    private CursorableLinkedList _poolList = null;
 
     /** Count of active objects, per key. */
-    protected HashMap _activeMap = null;
+    private HashMap _activeMap = null;
 
     /** The total number of active instances. */
-    protected int _totalActive = 0;
+    private int _totalActive = 0;
 
     /** The total number of idle instances. */
-    protected int _totalIdle = 0;
-
+    private int _totalIdle = 0;
 
     /** My {@link KeyedPoolableObjectFactory}. */
-    protected KeyedPoolableObjectFactory _factory = null;
+    private KeyedPoolableObjectFactory _factory = null;
 
     /**
      * My idle object eviction thread, if any.
      */
-    protected Evictor _evictor = null;
+    private Evictor _evictor = null;
+    
+    private CursorableLinkedList.Cursor _evictionCursor = null;
+    private CursorableLinkedList.Cursor _evictionKeyCursor = null;
 
 }
