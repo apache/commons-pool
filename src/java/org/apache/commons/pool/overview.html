@@ -1,0 +1,105 @@
+<!-- $Id: overview.html,v 1.1 2002/04/23 13:47:17 rwaldhoff Exp $ -->
+<html>
+   <head>
+      <title>Overview of the org.apache.commons.pool component</title>
+   </head>
+   <body>
+      <p>
+         Generic Object pooling API with several implementations.
+      </p>
+      <p>
+         The <code>org.apache.commons.pool</code> package defines a simple 
+         interface for a pool of object instances, and a handful of base 
+         classes that may be useful when creating pool implementations.
+         The api supports pooling of unique objects which can be requested
+         via a key as well as pools where all objects are equivalent.
+      </p>
+      <p>
+         The <code>org.apache.commons.pool.impl</code> package contains
+         several pool implementations.  
+         {@link org.apache.commons.pool.impl.StackObjectPool StackObjectPool}
+         is useful for supporting reuse of a limited number of instances while
+         allowing new instances to be created as needed to support high demand.
+         {@link org.apache.commons.pool.impl.GenericObjectPool 
+         GenericObjectPool} has many configuration options and can support
+         a limited set of objects such as would be useful in a database
+         connection pool.
+         {@link org.apache.commons.pool.impl.SoftReferenceObjectPool 
+         SoftReferenceObjectPool} has no limit on the number of objects in the
+         pool, but garbage collector can remove idle objects from the pool as
+         needed.  There are also keyed versions of the first two.
+      </p>
+      <p>
+         Here is a simple example of pooling <code>HashMap</code>'s.  First 
+         create an {@link org.apache.commons.pool.ObjectPoolFactory 
+         ObjectPoolFactory}
+      </p>
+<pre>
+    public class HashMapFactory 
+        extends {@link org.apache.commons.pool.BasePoolableObjectFactory BasePoolableObjectFactory}
+    {
+        /**
+         * Creates an instance that can be returned by the pool.
+         * @return an instance that can be returned by the pool.
+         */
+        public Object makeObject() 
+            throws Exception
+        {
+            return new HashMap();
+        }
+        
+        /**
+         * Uninitialize an instance to be returned to the pool.
+         * @param obj the instance to be passivated
+         */
+        public void passivateObject(Object obj) 
+            throws Exception
+        {
+            Map map = (Map)obj;
+            map.clear();
+        }
+    }
+</pre>
+      <p>
+         A class that makes frequent use of a Map could then use a pool
+         as shown below:
+      </p>
+<pre>
+    public class Foo
+    {
+        private {@link org.apache.commons.pool.ObjectPool ObjectPool} pool;
+        public Foo()
+        {
+            {@link org.apache.commons.pool.PoolableObjectFactory PoolableObjectFactory} factory = new HashMapFactory();
+            pool = new StackObjectPool(factory, 1000);
+        }
+
+        public doSomething()
+        {
+            ...
+            Map map = null;
+            try
+            {
+                map = (Map)pool.borrowObject();
+                // use map
+                ...
+            }
+            finally
+            {
+                if (map != null)
+                {
+                    pool.returnObject(map);
+                }
+            }
+            ...
+        }
+    }
+</pre>
+
+<p>
+The above example shows how one would use an 
+{@link org.apache.commons.pool.ObjectPool ObjectPool}.  The other supplied 
+implementations or another special purpose pool would be used similarly.
+</p>
+   </body>
+</html>
