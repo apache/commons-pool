@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericObjectPool.java,v 1.2 2002/03/17 14:55:21 rwaldhoff Exp $
- * $Revision: 1.2 $
- * $Date: 2002/03/17 14:55:21 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericObjectPool.java,v 1.3 2002/04/22 23:43:18 rwaldhoff Exp $
+ * $Revision: 1.3 $
+ * $Date: 2002/04/22 23:43:18 $
  *
  * ====================================================================
  *
@@ -159,7 +159,7 @@ import java.util.ListIterator;
  * </ul>
  * @see GenericKeyedObjectPool
  * @author Rodney Waldhoff
- * @version $Id: GenericObjectPool.java,v 1.2 2002/03/17 14:55:21 rwaldhoff Exp $
+ * @version $Id: GenericObjectPool.java,v 1.3 2002/04/22 23:43:18 rwaldhoff Exp $
  */
 public class GenericObjectPool implements ObjectPool {
 
@@ -792,24 +792,37 @@ public class GenericObjectPool implements ObjectPool {
         return _pool.size();
     }
 
-    public synchronized void returnObject(Object obj) throws Exception {
-        _numActive--;
-        if(_maxIdle > 0 && (_pool.size() >= _maxIdle || (_testOnReturn && !_factory.validateObject(obj)))) {
-            try {
-                _factory.passivateObject(obj);
-            } catch(Exception e) {
-                ; // ignored, we're throwing it out anway
-            }
-            _factory.destroyObject(obj);
+    public void returnObject(Object obj) throws Exception {
+        boolean success = true;
+        if(_testOnReturn && !(_factory.validateObject(obj))) {
+            success = false;
         } else {
             try {
                 _factory.passivateObject(obj);
-                _pool.addFirst(new ObjectTimestampPair(obj));
             } catch(Exception e) {
-                _factory.destroyObject(obj);
+                success = false;
             }
         }
-        notifyAll(); // _numActive has changed
+
+        boolean shouldDestroy = !success;
+
+        synchronized(this) {
+            _numActive--;
+            if((_maxIdle > 0) && (_pool.size() >= _maxIdle)) {
+                shouldDestroy = true;
+            } else if(success) {
+                _pool.addFirst(new ObjectTimestampPair(obj));
+            }
+            notifyAll(); // _numActive has changed
+        }
+
+        if(shouldDestroy) {
+            try {
+                _factory.destroyObject(obj);
+            } catch(Exception e) {
+                // ignored
+            }
+        }
     }
 
     synchronized public void close() throws Exception {
