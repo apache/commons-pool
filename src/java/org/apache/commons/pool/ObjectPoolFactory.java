@@ -1,7 +1,7 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/ObjectPoolFactory.java,v 1.2 2002/01/15 00:07:03 rwaldhoff Exp $
- * $Revision: 1.2 $
- * $Date: 2002/01/15 00:07:03 $
+ * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/ObjectPoolFactory.java,v 1.3 2002/05/01 04:54:52 rwaldhoff Exp $
+ * $Revision: 1.3 $
+ * $Date: 2002/05/01 04:54:52 $
  *
  * ====================================================================
  *
@@ -65,7 +65,7 @@ package org.apache.commons.pool;
  * A factory interface for creating {@link ObjectPool}s.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.2 $ $Date: 2002/01/15 00:07:03 $ 
+ * @version $Revision: 1.3 $ $Date: 2002/05/01 04:54:52 $ 
  *
  * @see ObjectPool
  */
@@ -74,5 +74,5 @@ public interface ObjectPoolFactory {
      * Create and return a new {@link ObjectPool}.
      * @return a new {@link ObjectPool}
      */
-    public abstract ObjectPool createPool();
+    ObjectPool createPool();
 }
