@@ -1,7 +1,7 @@
 /*
- * $Id: TestGenericObjectPool.java,v 1.13 2003/04/18 20:58:40 rwaldhoff Exp $
- * $Revision: 1.13 $
- * $Date: 2003/04/18 20:58:40 $
+ * $Id: TestGenericObjectPool.java,v 1.14 2003/04/23 18:21:13 rwaldhoff Exp $
+ * $Revision: 1.14 $
+ * $Date: 2003/04/23 18:21:13 $
  *
  * ====================================================================
  *
@@ -72,7 +72,7 @@ import org.apache.commons.pool.TestObjectPool;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision: 1.13 $ $Date: 2003/04/18 20:58:40 $
+ * @version $Revision: 1.14 $ $Date: 2003/04/23 18:21:13 $
  */
 public class TestGenericObjectPool extends TestObjectPool {
     public TestGenericObjectPool(String testName) {
@@ -246,6 +246,181 @@ public class TestGenericObjectPool extends TestObjectPool {
             assertEquals(GenericObjectPool.WHEN_EXHAUSTED_GROW,pool.getWhenExhaustedAction());
         }
     }
+    
+    public void testDefaultConfiguration() throws Exception {
+        GenericObjectPool pool = new GenericObjectPool();
+        assertConfiguration(new GenericObjectPool.Config(),pool);
+    }
+
+    public void testConstructors() throws Exception {
+        {
+            GenericObjectPool pool = new GenericObjectPool();
+            assertConfiguration(new GenericObjectPool.Config(),pool);
+        }
+        {
+            GenericObjectPool pool = new GenericObjectPool(new SimpleFactory());
+            assertConfiguration(new GenericObjectPool.Config(),pool);
+        }
+        {
+            GenericObjectPool.Config expected = new GenericObjectPool.Config();
+            expected.maxActive = 2;
+            expected.maxIdle = 3;
+            expected.maxWait = 5L;
+            expected.minEvictableIdleTimeMillis = 7L;
+            expected.numTestsPerEvictionRun = 9;
+            expected.testOnBorrow = true;
+            expected.testOnReturn = true;
+            expected.testWhileIdle = true;
+            expected.timeBetweenEvictionRunsMillis = 11L;
+            expected.whenExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_GROW;
+            GenericObjectPool pool = new GenericObjectPool(null,expected);
+            assertConfiguration(expected,pool);
+        }
+        {
+            GenericObjectPool.Config expected = new GenericObjectPool.Config();
+            expected.maxActive = 2;
+            GenericObjectPool pool = new GenericObjectPool(null,expected.maxActive);
+            assertConfiguration(expected,pool);
+        }
+        {
+            GenericObjectPool.Config expected = new GenericObjectPool.Config();
+            expected.maxActive = 2;
+            expected.maxWait = 5L;
+            expected.whenExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_GROW;
+            GenericObjectPool pool = new GenericObjectPool(null,expected.maxActive,expected.whenExhaustedAction,expected.maxWait);
+            assertConfiguration(expected,pool);
+        }
+        {
+            GenericObjectPool.Config expected = new GenericObjectPool.Config();
+            expected.maxActive = 2;
+            expected.maxWait = 5L;
+            expected.testOnBorrow = true;
+            expected.testOnReturn = true;
+            expected.whenExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_GROW;
+            GenericObjectPool pool = new GenericObjectPool(null,expected.maxActive,expected.whenExhaustedAction,expected.maxWait,expected.testOnBorrow,expected.testOnReturn);
+            assertConfiguration(expected,pool);
+        }
+        {
+            GenericObjectPool.Config expected = new GenericObjectPool.Config();
+            expected.maxActive = 2;
+            expected.maxIdle = 3;
+            expected.maxWait = 5L;
+            expected.whenExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_GROW;
+            GenericObjectPool pool = new GenericObjectPool(null,expected.maxActive,expected.whenExhaustedAction,expected.maxWait,expected.maxIdle);
+            assertConfiguration(expected,pool);
+        }
+        {
+            GenericObjectPool.Config expected = new GenericObjectPool.Config();
+            expected.maxActive = 2;
+            expected.maxIdle = 3;
+            expected.maxWait = 5L;
+            expected.whenExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_GROW;
+            expected.testOnBorrow = true;
+            expected.testOnReturn = true;
+            GenericObjectPool pool = new GenericObjectPool(null,expected.maxActive,expected.whenExhaustedAction,expected.maxWait,expected.maxIdle,expected.testOnBorrow,expected.testOnReturn);
+            assertConfiguration(expected,pool);
+        }
+        {
+            GenericObjectPool.Config expected = new GenericObjectPool.Config();
+            expected.maxActive = 2;
+            expected.maxIdle = 3;
+            expected.maxWait = 5L;
+            expected.minEvictableIdleTimeMillis = 7L;
+            expected.numTestsPerEvictionRun = 9;
+            expected.testOnBorrow = true;
+            expected.testOnReturn = true;
+            expected.testWhileIdle = true;
+            expected.timeBetweenEvictionRunsMillis = 11L;
+            expected.whenExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_GROW;
+            GenericObjectPool pool = new GenericObjectPool(null,expected.maxActive, expected.whenExhaustedAction, expected.maxWait, expected.maxIdle, expected.testOnBorrow, expected.testOnReturn, expected.timeBetweenEvictionRunsMillis, expected.numTestsPerEvictionRun, expected.minEvictableIdleTimeMillis, expected.testWhileIdle);
+            assertConfiguration(expected,pool);
+        }
+    }
+
+    public void testSetConfig() throws Exception {
+        GenericObjectPool.Config expected = new GenericObjectPool.Config();
+        GenericObjectPool pool = new GenericObjectPool();
+        assertConfiguration(expected,pool);
+        expected.maxActive = 2;
+        expected.maxIdle = 3;
+        expected.maxWait = 5L;
+        expected.minEvictableIdleTimeMillis = 7L;
+        expected.numTestsPerEvictionRun = 9;
+        expected.testOnBorrow = true;
+        expected.testOnReturn = true;
+        expected.testWhileIdle = true;
+        expected.timeBetweenEvictionRunsMillis = 11L;
+        expected.whenExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_GROW;
+        pool.setConfig(expected);
+        assertConfiguration(expected,pool);
+    }
+
+    public void testDebugInfo() throws Exception {
+        GenericObjectPool pool = new GenericObjectPool();
+        assertNotNull(pool.debugInfo());
+    }
+
+    public void testStartAndStopEvictor() throws Exception {
+        // set up pool without evictor
+        pool.setMaxIdle(6);
+        pool.setMaxActive(6);
+        pool.setNumTestsPerEvictionRun(6);
+        pool.setMinEvictableIdleTimeMillis(100L);
+
+        for(int j=0;j<2;j++) {
+            // populate the pool
+            {
+                Object[] active = new Object[6];
+                for(int i=0;i<6;i++) {
+                    active[i] = pool.borrowObject();
+                }
+                for(int i=0;i<6;i++) {
+                    pool.returnObject(active[i]);
+                }
+            }
+    
+            // note that it stays populated
+            assertEquals("Should have 6 idle",6,pool.getNumIdle());
+    
+            // start the evictor
+            pool.setTimeBetweenEvictionRunsMillis(50L);
+            
+            // wait a second (well, .2 seconds)
+            try { Thread.sleep(200L); } catch(Exception e) { }
+            
+            // assert that the evictor has cleared out the pool
+            assertEquals("Should have 0 idle",0,pool.getNumIdle());
+    
+            // stop the evictor 
+            pool.startEvictor(0L);
+        }
+    }
+
+    public void testEvictionWithNegativeNumTests() throws Exception {
+        // when numTestsPerEvictionRun is negative, it represents a fraction of the idle objects to test
+        pool.setMaxIdle(6);
+        pool.setMaxActive(6);
+        pool.setNumTestsPerEvictionRun(-2);
+        pool.setMinEvictableIdleTimeMillis(100L);
+        pool.setTimeBetweenEvictionRunsMillis(100L);
+
+        Object[] active = new Object[6];
+        for(int i=0;i<6;i++) {
+            active[i] = pool.borrowObject();
+        }
+        for(int i=0;i<6;i++) {
+            pool.returnObject(active[i]);
+        }
+
+        try { Thread.sleep(100L); } catch(Exception e) { }
+        assertTrue("Should at most 6 idle, found " + pool.getNumIdle(),pool.getNumIdle() <= 6);
+        try { Thread.sleep(100L); } catch(Exception e) { }
+        assertTrue("Should at most 3 idle, found " + pool.getNumIdle(),pool.getNumIdle() <= 3);
+        try { Thread.sleep(100L); } catch(Exception e) { }
+        assertTrue("Should be at most 2 idle, found " + pool.getNumIdle(),pool.getNumIdle() <= 2);
+        try { Thread.sleep(100L); } catch(Exception e) { }
+        assertEquals("Should be zero idle, found " + pool.getNumIdle(),0,pool.getNumIdle());
+    }
 
     public void testEviction() throws Exception {
         pool.setMaxIdle(500);
@@ -414,6 +589,20 @@ public class TestGenericObjectPool extends TestObjectPool {
         int counter = 0;
         boolean valid = true;
     }
+
+    private void assertConfiguration(GenericObjectPool.Config expected, GenericObjectPool actual) throws Exception {
+        assertEquals("testOnBorrow",expected.testOnBorrow,actual.getTestOnBorrow());
+        assertEquals("testOnReturn",expected.testOnReturn,actual.getTestOnReturn());
+        assertEquals("testWhileIdle",expected.testWhileIdle,actual.getTestWhileIdle());
+        assertEquals("whenExhaustedAction",expected.whenExhaustedAction,actual.getWhenExhaustedAction());
+        assertEquals("maxActive",expected.maxActive,actual.getMaxActive());
+        assertEquals("maxIdle",expected.maxIdle,actual.getMaxIdle());
+        assertEquals("maxWait",expected.maxWait,actual.getMaxWait());
+        assertEquals("minEvictableIdleTimeMillis",expected.minEvictableIdleTimeMillis,actual.getMinEvictableIdleTimeMillis());
+        assertEquals("numTestsPerEvictionRun",expected.numTestsPerEvictionRun,actual.getNumTestsPerEvictionRun());
+        assertEquals("timeBetweenEvictionRunsMillis",expected.timeBetweenEvictionRunsMillis,actual.getTimeBetweenEvictionRunsMillis());
+    }
+
 }
 
 
