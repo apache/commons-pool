@@ -85,8 +85,8 @@
       <tag>POOL_1_1</tag>
     </version>
     <version>
-      <id>1.2RC1</id>
-      <name>1.2RC1</name>
+      <id>1.2-RC1</id>
+      <name>1.2-RC1</name>
       <tag>POOL_1_2_RC1</tag>
     </version>
   </versions>
@@ -166,11 +166,20 @@
         <include>org/apache/commons/pool/impl/Test*Pool.java</include>
       </includes>
     </unitTest>
+
+    <resources>
+      <resource>
+        <targetPath>META-INF</targetPath>
+        <includes>
+          <include>NOTICE.txt</include>
+        </includes>
+      </resource>
+    </resources>
   </build>
   
   <reports>
-  	<report>maven-changelog-plugin</report>
-   	<report>maven-changes-plugin</report>
+    <report>maven-changelog-plugin</report>
+    <report>maven-changes-plugin</report>
     <report>maven-developer-activity-plugin</report>
     <report>maven-file-activity-plugin</report>
     <report>maven-javadoc-plugin</report>
