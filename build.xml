@@ -1,4 +1,4 @@
-<!-- $Id: build.xml,v 1.20 2003/10/04 18:10:27 dirkv Exp $ -->
+<!-- $Id: build.xml,v 1.21 2003/10/08 16:52:17 dirkv Exp $ -->
 <project name="commons-pool" default="test" basedir=".">
 
    <target name="init">
@@ -125,7 +125,7 @@
    <target name="build-jar" depends="compile">
       <mkdir dir="${dist.dir}"/>
       <jar jarfile="${dist.jar}">
-         <fileset dir="${build.dir}"/>
+         <fileset dir="${build.classes.dir}"/>
          <metainf dir="${basedir}" includes="LICENSE.txt"/>
          <manifest>
             <attribute name="Built-By" value="${user.name}"/>
