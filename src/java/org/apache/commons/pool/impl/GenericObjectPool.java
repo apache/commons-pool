@@ -1,7 +1,7 @@
 /*
  * $Source: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/GenericObjectPool.java,v $
- * $Revision: 1.27 $
- * $Date: 2003/08/22 14:33:30 $
+ * $Revision: 1.28 $
+ * $Date: 2003/08/26 16:38:57 $
  *
  * ====================================================================
  *
@@ -164,7 +164,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * @see GenericKeyedObjectPool
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
- * @version $Revision: 1.27 $ $Date: 2003/08/22 14:33:30 $
+ * @version $Revision: 1.28 $ $Date: 2003/08/26 16:38:57 $
  */
 public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
@@ -1000,18 +1000,32 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                 }
             }
         } // if !empty
-        
-        // Check to see if we are below our minimum number of objects
-        // if so enough to bring us back to our minimum.
+    }
+    
+    /**
+     * Check to see if we are below our minimum number of objects
+     * if so enough to bring us back to our minimum.
+     */
+    private void ensureMinIdle() throws Exception {
+        // this method isn't synchronized so the
+        // calculateDeficit is done at the beginning
+        // as a loop limit and a second time inside the loop
+        // to stop when another thread already returned the
+        // needed objects
+        int objectDeficit = calculateDeficit();
+        for ( int j = 0 ; j < objectDeficit && calculateDeficit() > 0 ; j++ ) {
+            addObject();
+        }
+    }
+
+    private synchronized int calculateDeficit() {
         int objectDeficit = getMinIdle() - getNumIdle();
         if (_maxActive > 0) {
             int growLimit = Math.max(0, getMaxActive() - getNumActive() - getNumIdle());
             objectDeficit = Math.min(objectDeficit, growLimit);
         }
-        for ( int j = 0; j < objectDeficit; j++ ) {
-            addObject();
-        }
-    }
+        return objectDeficit;
+    } 
 
     /**
      * Create an object, and place it into the pool.
@@ -1111,6 +1125,11 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                 }
                 try {
                     evict();
+                } catch(Exception e) {
+                    // ignored
+                }
+                try {
+                    ensureMinIdle();
                 } catch(Exception e) {
                     // ignored
                 }
