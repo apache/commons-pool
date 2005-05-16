@@ -91,7 +91,7 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
     /**
      * Create a new <tt>SimpleObjectPool</tt> using
      * the specified <i>factory</i> to create new instances,
-     * capping the number of "sleeping" instances to <i>max</i>
+     * capping the number of "sleeping" instances to <i>max</i>.
      *
      * @param factory the {@link PoolableObjectFactory} used to populate the pool
      * @param maxIdle cap on the number of "sleeping" instances in the pool
@@ -223,6 +223,7 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
     /**
      * Create an object, and place it into the pool.
      * addObject() is useful for "pre-loading" a pool with idle objects.
+     * @throws Exception when the {@link #_factory} has a problem creating an object.
      */
     public void addObject() throws Exception {
         Object obj = _factory.makeObject();
@@ -261,6 +262,6 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
     /** The cap on the number of "sleeping" instances in the pool. */
     protected int _maxSleeping = DEFAULT_MAX_SLEEPING;
 
-    /** Number of object borrowed but not yet returned to the pool */
+    /** Number of object borrowed but not yet returned to the pool. */
     protected int _numActive = 0;
 }
