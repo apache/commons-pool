@@ -16,7 +16,6 @@
 
 package org.apache.commons.pool.impl;
 
-import java.util.EmptyStackException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Stack;
@@ -123,9 +122,9 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
     public synchronized Object borrowObject() throws Exception {
         assertOpen();
         Object obj = null;
-        try {
+        if (!_pool.empty()) {
             obj = _pool.pop();
-        } catch(EmptyStackException e) {
+        } else {
             if(null == _factory) {
                 throw new NoSuchElementException();
             } else {
