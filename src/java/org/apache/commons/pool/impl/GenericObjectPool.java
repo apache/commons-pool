@@ -826,13 +826,19 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                     pair = new ObjectTimestampPair(obj);
                     newlyCreated = true;
                 }
-                catch (Exception e) {
+                catch (Throwable e) {
                     // object cannot be created
                     synchronized(this) {
                         _numActive--;
                         notifyAll();
                     }
-                    throw e;
+                    if (e instanceof Exception) {
+                        throw (Exception) e;
+                    } else if (e instanceof Error) {
+                        throw (Error) e;
+                    } else {
+                        throw new Exception(e);
+                    }
                 }
             }
 
@@ -844,7 +850,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                 }                
                 return pair.value;
             } 
-            catch (Exception e) {
+            catch (Throwable e) {
                 // object cannot be activated or is invalid
                 synchronized(this) {
                     _numActive--;
@@ -853,7 +859,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                 try {
                     _factory.destroyObject(pair.value);
                 } 
-                catch (Exception e2) {
+                catch (Throwable e2) {
                     // cannot destroy broken object 
                 }
                 if(newlyCreated) {
