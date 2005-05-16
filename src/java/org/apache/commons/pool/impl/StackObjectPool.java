@@ -38,6 +38,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * artificial limits.
  *
  * @author Rodney Waldhoff
+ * @author Dirk Verbeeck
  * @version $Revision$ $Date$
  */
 public class StackObjectPool extends BaseObjectPool implements ObjectPool {
@@ -157,10 +158,14 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
 
         synchronized(this) {
             _numActive--;
-            if(_pool.size() >= _maxSleeping) {
-                shouldDestroy = true;
-            } else if(success) {
+            if (success) {
+                Object toBeDestroyed = null;
+                if(_pool.size() >= _maxSleeping) {
+                    shouldDestroy = true;
+                    toBeDestroyed = _pool.remove(0); // remove the stalest object
+                }
                 _pool.push(obj);
+                obj = toBeDestroyed; // swap returned obj with the stalest one so it can be destroyed
             }
             notifyAll(); // _numActive has changed
         }

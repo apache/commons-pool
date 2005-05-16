@@ -18,6 +18,8 @@ package org.apache.commons.pool.impl;
 
 import java.util.BitSet;
 import java.util.NoSuchElementException;
+import java.util.List;
+import java.util.ArrayList;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -28,6 +30,7 @@ import org.apache.commons.pool.TestObjectPool;
 
 /**
  * @author Rodney Waldhoff
+ * @author Dirk Verbeeck
  * @version $Revision$ $Date$
  */
 public class TestStackObjectPool extends TestObjectPool {
@@ -203,7 +206,56 @@ public class TestStackObjectPool extends TestObjectPool {
         }
     }
 
-        
+    private final List destroyed = new ArrayList();
+    public void testReturnObjectDiscardOrder() throws Exception {
+        // setup
+        // We need a factory that tracks what was discarded.
+        PoolableObjectFactory pof = new PoolableObjectFactory() {
+            int i = 0;
+            public Object makeObject() throws Exception {
+                return new Integer(i++);
+            }
+
+            public void destroyObject(Object obj) throws Exception {
+                destroyed.add(obj);
+            }
+
+            public boolean validateObject(Object obj) {
+                return obj instanceof Integer;
+            }
+
+            public void activateObject(Object obj) throws Exception {
+            }
+
+            public void passivateObject(Object obj) throws Exception {
+            }
+        };
+        ObjectPool pool = new StackObjectPool(pof, 3);
+
+        // borrow more objects than the pool can hold
+        Integer i0 = (Integer)pool.borrowObject();
+        Integer i1 = (Integer)pool.borrowObject();
+        Integer i2 = (Integer)pool.borrowObject();
+        Integer i3 = (Integer)pool.borrowObject();
+
+        // tests
+        // return as many as the pool will hold.
+        pool.returnObject(i0);
+        pool.returnObject(i1);
+        pool.returnObject(i2);
+
+        // the pool should now be full.
+        assertEquals("No returned objects should have been destroyed yet.",0, destroyed.size());
+
+        // cause the pool to discard a returned object.
+        pool.returnObject(i3);
+        assertEquals("One object should have been destroyed.", 1, destroyed.size());
+
+        // check to see what object was destroyed
+        Integer d = (Integer)destroyed.get(0);
+        assertEquals("Destoryed objects should have the stalest object.", i0, d);
+    }
+
     static class SimpleFactory implements PoolableObjectFactory {
         int counter = 0;
         public Object makeObject() { return String.valueOf(counter++); }
