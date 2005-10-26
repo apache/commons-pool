@@ -138,7 +138,7 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
         return obj;
     }
 
-    public void returnObject(Object obj) throws Exception {
+    public synchronized void returnObject(Object obj) throws Exception {
         assertOpen();
         boolean success = true;
         if(null != _factory) {
@@ -155,19 +155,17 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
 
         boolean shouldDestroy = !success;
 
-        synchronized(this) {
-            _numActive--;
-            if (success) {
-                Object toBeDestroyed = null;
-                if(_pool.size() >= _maxSleeping) {
-                    shouldDestroy = true;
-                    toBeDestroyed = _pool.remove(0); // remove the stalest object
-                }
-                _pool.push(obj);
-                obj = toBeDestroyed; // swap returned obj with the stalest one so it can be destroyed
+        _numActive--;
+        if (success) {
+            Object toBeDestroyed = null;
+            if(_pool.size() >= _maxSleeping) {
+                shouldDestroy = true;
+                toBeDestroyed = _pool.remove(0); // remove the stalest object
             }
-            notifyAll(); // _numActive has changed
+            _pool.push(obj);
+            obj = toBeDestroyed; // swap returned obj with the stalest one so it can be destroyed
         }
+        notifyAll(); // _numActive has changed
 
         if(shouldDestroy) { // by constructor, shouldDestroy is false when _factory is null
             try {
@@ -187,12 +185,12 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
         notifyAll(); // _numActive has changed
     }
 
-    public int getNumIdle() {
+    public synchronized int getNumIdle() {
         assertOpen();
         return _pool.size();
     }
 
-    public int getNumActive() {
+    public synchronized int getNumActive() {
         assertOpen();
         return _numActive;
     }
@@ -212,7 +210,7 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
         _pool.clear();
     }
 
-    synchronized public void close() throws Exception {
+    public synchronized void close() throws Exception {
         clear();
         _pool = null;
         _factory = null;
@@ -224,15 +222,14 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
      * addObject() is useful for "pre-loading" a pool with idle objects.
      * @throws Exception when the {@link #_factory} has a problem creating an object.
      */
-    public void addObject() throws Exception {
+    public synchronized void addObject() throws Exception {
+        assertOpen();
         Object obj = _factory.makeObject();
-        synchronized(this) {
-            _numActive++;   // A little slimy - must do this because returnObject decrements it.
-            this.returnObject(obj);
-        }
+        _numActive++;   // A little slimy - must do this because returnObject decrements it.
+        this.returnObject(obj);
     }
 
-    synchronized public void setFactory(PoolableObjectFactory factory) throws IllegalStateException {
+    public synchronized void setFactory(PoolableObjectFactory factory) throws IllegalStateException {
         assertOpen();
         if(0 < getNumActive()) {
             throw new IllegalStateException("Objects are already active");
