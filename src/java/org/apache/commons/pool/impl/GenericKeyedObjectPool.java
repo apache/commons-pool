@@ -947,7 +947,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         }
     }
 
-    public void returnObject(Object key, Object obj) throws Exception {
+    public synchronized void returnObject(Object key, Object obj) throws Exception {
 
         // if we need to validate this object, do so
         boolean success = true; // whether or not this object passed validation
@@ -967,26 +967,24 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         }
 
         boolean shouldDestroy = false;
-        synchronized(this) {
-            // grab the pool (list) of objects associated with the given key
-            CursorableLinkedList pool = (CursorableLinkedList) (_poolMap.get(key));
-            // if it doesn't exist, create it
-            if(null == pool) {
-                pool = new CursorableLinkedList();
-                _poolMap.put(key, pool);
-                _poolList.add(key);
-            }
-            decrementActiveCount(key);
-            // if there's no space in the pool, flag the object for destruction
-            // else if we passivated succesfully, return it to the pool
-            if(_maxIdle >= 0 && (pool.size() >= _maxIdle)) {
-                shouldDestroy = true;
-            } else if(success) {
-                pool.addFirst(new ObjectTimestampPair(obj));
-                _totalIdle++;
-            }
-            notifyAll();
+        // grab the pool (list) of objects associated with the given key
+        CursorableLinkedList pool = (CursorableLinkedList) (_poolMap.get(key));
+        // if it doesn't exist, create it
+        if(null == pool) {
+            pool = new CursorableLinkedList();
+            _poolMap.put(key, pool);
+            _poolList.add(key);
         }
+        decrementActiveCount(key);
+        // if there's no space in the pool, flag the object for destruction
+        // else if we passivated succesfully, return it to the pool
+        if(_maxIdle >= 0 && (pool.size() >= _maxIdle)) {
+            shouldDestroy = true;
+        } else if(success) {
+            pool.addFirst(new ObjectTimestampPair(obj));
+            _totalIdle++;
+        }
+        notifyAll();
 
         if(shouldDestroy) {
             try {
@@ -997,24 +995,20 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         }
     }
 
-    public void invalidateObject(Object key, Object obj) throws Exception {
+    public synchronized void invalidateObject(Object key, Object obj) throws Exception {
         try {
             _factory.destroyObject(key, obj);
         }
         finally {
-            synchronized(this) {
-                decrementActiveCount(key);
-                notifyAll(); // _totalActive has changed
-            }
+            decrementActiveCount(key);
+            notifyAll(); // _totalActive has changed
         }
     }
 
-    public void addObject(Object key) throws Exception {
+    public synchronized void addObject(Object key) throws Exception {
         Object obj = _factory.makeObject(key);
-        synchronized(this) {
-            incrementActiveCount(key); // returnObject will decrement this
-            returnObject(key,obj);
-        }
+        incrementActiveCount(key); // returnObject will decrement this
+        returnObject(key,obj);
     }
 
     /**
@@ -1028,15 +1022,14 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @param populateImmediately - If this is <code>true</code>, the pool
      * will start a sustain cycle immediately.
      */
-    public void preparePool(Object key, boolean populateImmediately) {
-        synchronized(this) {
-            CursorableLinkedList pool = (CursorableLinkedList)(_poolMap.get(key));
-            if (null == pool) {
-                pool = new CursorableLinkedList();
-                _poolMap.put(key,pool);
-                _poolList.add(key);
-            }
+    public synchronized void preparePool(Object key, boolean populateImmediately) {
+        CursorableLinkedList pool = (CursorableLinkedList)(_poolMap.get(key));
+        if (null == pool) {
+            pool = new CursorableLinkedList();
+            _poolMap.put(key,pool);
+            _poolList.add(key);
         }
+        
         if (populateImmediately) {
             try {
                 // Create the pooled objects
@@ -1242,7 +1235,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         return buf.toString();
     }
 
-    private synchronized int getNumTests() {
+    private int getNumTests() {
         if(_numTestsPerEvictionRun >= 0) {
             return _numTestsPerEvictionRun;
         } else {
@@ -1250,7 +1243,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         }
     }
 
-    private synchronized void incrementActiveCount(Object key) {
+    private void incrementActiveCount(Object key) {
         _totalActive++;
         Integer active = (Integer)(_activeMap.get(key));
         if(null == active) {
@@ -1260,7 +1253,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         }
     }
 
-    private synchronized void decrementActiveCount(Object key) {
+    private void decrementActiveCount(Object key) {
         _totalActive--;
         Integer active = (Integer)(_activeMap.get(key));
         if(null == active) {
@@ -1272,7 +1265,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         }
     }
 
-    private synchronized int getActiveCount(Object key) {
+    private int getActiveCount(Object key) {
         int active = 0;
         Integer act = (Integer)(_activeMap.get(key));
         if(null != act) {
@@ -1280,6 +1273,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         }
         return active;
     }
+    
     /**
      * This returns the number of objects to create during the pool
      * sustain cycle. This will ensure that the minimum number of idle 
@@ -1293,7 +1287,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      *              objects to be re-created
      * @return The number of objects to be created
      */
-    private synchronized int calculateDefecit(Object key) {
+    private int calculateDefecit(Object key) {
         int objectDefecit = 0;
         
         //Calculate no of objects needed to be created, in order to have
