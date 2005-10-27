@@ -184,12 +184,10 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
         notifyAll(); // _totalActive has changed
     }
 
-    public void addObject(Object key) throws Exception {
+    public synchronized void addObject(Object key) throws Exception {
         Object obj = _factory.makeObject(key);
-        synchronized(this) {
-            incrementActiveCount(key); // returnObject will decrement this
-            returnObject(key,obj);
-        }
+        incrementActiveCount(key); // returnObject will decrement this
+        returnObject(key,obj);
     }
 
     public int getNumIdle() {
@@ -200,7 +198,7 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
         return _totActive;
     }
 
-    public int getNumActive(Object key) {
+    public synchronized int getNumActive(Object key) {
         return getActiveCount(key);
     }
 
