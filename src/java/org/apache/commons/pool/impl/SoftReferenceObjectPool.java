@@ -78,7 +78,7 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
         return obj;
     }
 
-    public void returnObject(Object obj) throws Exception {
+    public synchronized void returnObject(Object obj) throws Exception {
         assertOpen();
         boolean success = true;
         if(!(_factory.validateObject(obj))) {
@@ -92,13 +92,11 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
         }
 
         boolean shouldDestroy = !success;
-        synchronized(this) {
-            _numActive--;
-            if(success) {
-                _pool.add(new SoftReference(obj));
-            }
-            notifyAll(); // _numActive has changed
+        _numActive--;
+        if(success) {
+            _pool.add(new SoftReference(obj));
         }
+        notifyAll(); // _numActive has changed
 
         if(shouldDestroy) {
             try {
@@ -121,20 +119,21 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
      * Create an object, and place it into the pool.
      * addObject() is useful for "pre-loading" a pool with idle objects.
      */
-    public void addObject() throws Exception {
+    public synchronized void addObject() throws Exception {
+        assertOpen();
         Object obj = _factory.makeObject();
-        synchronized(this) {
-            _numActive++;   // A little slimy - must do this because returnObject decrements it.
-            this.returnObject(obj);
-        }
+        _numActive++;   // A little slimy - must do this because returnObject decrements it.
+        returnObject(obj);
     }
 
     /** Returns an approximation not less than the of the number of idle instances in the pool. */
-    public int getNumIdle() {
+    public synchronized int getNumIdle() {
+        assertOpen();
         return _pool.size();
     }
 
-    public int getNumActive() {
+    public synchronized int getNumActive() {
+        assertOpen();
         return _numActive;
     }
 
@@ -156,14 +155,14 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
         _pool.clear();
     }
 
-    synchronized public void close() throws Exception {
+    public synchronized void close() throws Exception {
         clear();
         _pool = null;
         _factory = null;
         super.close();
     }
 
-    synchronized public void setFactory(PoolableObjectFactory factory) throws IllegalStateException {
+    public synchronized void setFactory(PoolableObjectFactory factory) throws IllegalStateException {
         assertOpen();
         if(0 < getNumActive()) {
             throw new IllegalStateException("Objects are already active");
