@@ -17,8 +17,15 @@
 <!DOCTYPE org.apache.commons.menus SYSTEM '../../commons-build/menus/menus.dtd'>
 <project name="Commons Pool">
     <title>Commons Pool</title>
+    <organizationLogo href="/images/jakarta-logo-blue.gif">
+   		Jakarta
+  	</organizationLogo>
     <body>
-
+	    <links>
+	      <item name="Jakarta Commons"                   
+	            href="http://jakarta.apache.org/commons/"/>
+	    </links>
+    
         <menu name="Commons&#xA0;Pool">
             <item name="Overview"                      href="/index.html" />
             <item name="API&#xA0;Documentation"        href="/apidocs/index.html"/>
