@@ -23,6 +23,10 @@ import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.TestObjectPool;
 
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
  * @author Rodney Waldhoff
  * @version $Revision$ $Date$
@@ -51,6 +55,73 @@ public class TestSoftReferenceObjectPool extends TestObjectPool {
 
     protected Object getNthObject(int n) {
         return String.valueOf(n);
+    }
+
+    private List testFactorySequenceStates = new ArrayList(5);
+    public void testFactorySequence() throws Exception {
+        // setup
+        // We need a factory that tracks method call sequence.
+        PoolableObjectFactory pof = new PoolableObjectFactory() {
+            public Object makeObject() throws Exception {
+                testFactorySequenceStates.add("makeObject");
+                return new Object();
+            }
+
+            public void activateObject(Object obj) throws Exception {
+                testFactorySequenceStates.add("activateObject");
+            }
+
+            public boolean validateObject(Object obj) {
+                testFactorySequenceStates.add("validateObject");
+                return true;
+            }
+
+            public void passivateObject(Object obj) throws Exception {
+                testFactorySequenceStates.add("passivateObject");
+            }
+
+            public void destroyObject(Object obj) throws Exception {
+                testFactorySequenceStates.add("destroyObject");
+            }
+        };
+
+        ObjectPool pool = new SoftReferenceObjectPool(pof);
+
+        // check the order in which the factory is called during borrow
+        testFactorySequenceStates.clear();
+        Object o = pool.borrowObject();
+        List desiredSequence = Arrays.asList(new String[] {
+                "makeObject",
+                "activateObject",
+                "validateObject"
+        });
+        assertEquals("Wrong sequence", desiredSequence, testFactorySequenceStates);
+
+        // check the order in which the factory is called when returning an object
+        testFactorySequenceStates.clear();
+        pool.returnObject(o);
+        desiredSequence = Arrays.asList(new String[] {
+                "validateObject",
+                "passivateObject"
+        });
+        assertEquals("Wrong sequence", desiredSequence, testFactorySequenceStates);
+
+        // check the order in which the factory is called during borrow again
+        testFactorySequenceStates.clear();
+        o = pool.borrowObject();
+        desiredSequence = Arrays.asList(new String[] {
+                "activateObject",
+                "validateObject"
+        });
+        assertEquals("Wrong sequence", desiredSequence, testFactorySequenceStates);
+
+        // check the order in which the factory is called when invalidating an object
+        testFactorySequenceStates.clear();
+        pool.invalidateObject(o);
+        desiredSequence = Arrays.asList(new String[] {
+                "destroyObject"
+        });
+        assertEquals("Wrong sequence", desiredSequence, testFactorySequenceStates);
     }
 
 }
