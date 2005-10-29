@@ -31,7 +31,7 @@
   <organization>
     <name>The Apache Software Foundation</name>
     <url>http://jakarta.apache.org</url>
-    <logo>http://jakarta.apache.org/images/jakarta-logo.gif</logo>
+    <logo>http://jakarta.apache.org/images/original-jakarta-logo.gif</logo>
   </organization>
 
   <licenses>
@@ -155,11 +155,25 @@
     <dependency>
       <id>junit</id>
       <version>3.8.1</version>
+      <properties>
+          <comment>Only required to run unit tests</comment>
+      </properties>
     </dependency>
 
     <!-- these two are required by maven -->
-    <dependency><id>xml-apis</id><version>2.0.2</version></dependency>
-    <dependency><id>xerces</id><version>2.0.2</version></dependency>
+    <dependency>
+    	<id>xml-apis</id><version>2.0.2</version>
+        <properties>
+           <comment>Any JAXP compliant parser (1.2 or later).</comment>
+        </properties>
+    </dependency>
+    <dependency>
+    	<id>xerces</id>
+    	<version>2.0.2</version>
+        <properties>
+          <comment>Any JAXP compliant parser (1.2 or later).</comment>
+        </properties>
+    </dependency>
     <!-- /these two are required by maven -->
 
   </dependencies>
