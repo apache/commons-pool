@@ -591,6 +591,20 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
     }
     
+    public void testFIFO() throws Exception {
+        final Object key = "key";
+        pool.addObject(key); // "key0"
+        pool.addObject(key); // "key1"
+        pool.addObject(key); // "key2"
+        assertEquals("Oldest", "key0", pool.borrowObject(key));
+        assertEquals("Middle", "key1", pool.borrowObject(key));
+        assertEquals("Youngest", "key2", pool.borrowObject(key));
+        assertEquals("new-3", "key3", pool.borrowObject(key));
+        pool.returnObject(key, "r");
+        assertEquals("returned", "r", pool.borrowObject(key));
+        assertEquals("new-4", "key4", pool.borrowObject(key));
+    }
+
     class TestThread implements Runnable {
         java.util.Random _random = new java.util.Random();
         KeyedObjectPool _pool = null;
@@ -670,6 +684,14 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         public void passivateObject(Object key, Object obj) { }
         int counter = 0;
         boolean valid;
+    }
+
+    protected boolean isLifo() {
+        return false;
+    }
+
+    protected boolean isFifo() {
+        return true;
     }
 
 }

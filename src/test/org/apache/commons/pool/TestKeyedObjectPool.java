@@ -44,6 +44,18 @@ public abstract class TestKeyedObjectPool extends TestCase {
     protected abstract Object getNthObject(Object key, int n);
 
     protected abstract Object makeKey(int n);
+    
+    /**
+     * Is the implementations LIFO?
+     * @return
+     */
+    protected abstract boolean isLifo();
+    
+    /**
+     * Is the implementationn FIFO?
+     * @return
+     */
+    protected abstract boolean isFifo();
 
     public void setUp() throws Exception {
     }
@@ -90,9 +102,19 @@ public abstract class TestKeyedObjectPool extends TestCase {
         _pool.returnObject(keya,obj0);
         _pool.returnObject(keya,obj2);
         obj2 = _pool.borrowObject(keya);
-        assertEquals(getNthObject(keya,2),obj2);
+        if (isLifo()) {
+            assertEquals(getNthObject(keya,2),obj2);
+        }
+        if (isFifo()) {
+            assertEquals(getNthObject(keya,0),obj2);
+        }
         obj0 = _pool.borrowObject(keya);
-        assertEquals(getNthObject(keya,0),obj0);
+        if (isLifo()) {
+            assertEquals(getNthObject(keya,0),obj0);
+        }
+        if (isFifo()) {
+            assertEquals(getNthObject(keya,2),obj0);
+        }
     }
 
     public void testBaseNumActiveNumIdle() throws Exception {
