@@ -41,6 +41,18 @@ public abstract class TestObjectPool extends TestCase {
      * object (zero indexed) created by the _pool.
      */
     protected abstract Object getNthObject(int n);
+    
+    /**
+     * Is the implementations LIFO?
+     * @return
+     */
+    protected abstract boolean isLifo();
+    
+    /**
+     * Is the implementationn FIFO?
+     * @return
+     */
+    protected abstract boolean isFifo();
 
     public void setUp() throws Exception {
     }
@@ -105,9 +117,20 @@ public abstract class TestObjectPool extends TestCase {
         _pool.returnObject(obj0);
         _pool.returnObject(obj2);
         obj2 = _pool.borrowObject();
-        assertEquals(getNthObject(2),obj2);
+        if (isLifo()) {
+            assertEquals(getNthObject(2),obj2);
+        }
+        if (isFifo()) {
+            assertEquals(getNthObject(0),obj2);
+        }
+            
         obj0 = _pool.borrowObject();
-        assertEquals(getNthObject(0),obj0);
+        if (isLifo()) {
+            assertEquals(getNthObject(0),obj0);
+        }
+        if (isFifo()) {
+            assertEquals(getNthObject(2),obj0);
+        }
     }
 
     public void testBaseNumActiveNumIdle() throws Exception {

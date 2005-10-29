@@ -393,5 +393,13 @@ public class TestStackObjectPool extends TestObjectPool {
         public void activateObject(Object obj) { }
         public void passivateObject(Object obj) { }
     }
+
+    protected boolean isLifo() {
+        return false;
+    }
+
+    protected boolean isFifo() {
+        return false;
+    }
 }
 

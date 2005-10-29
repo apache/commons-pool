@@ -830,7 +830,20 @@ public class TestGenericObjectPool extends TestObjectPool {
             _complete = true;
         }
     }
-    
+
+    public void testFIFO() throws Exception {
+        pool.addObject(); // "0"
+        pool.addObject(); // "1"
+        pool.addObject(); // "2"
+        assertEquals("Oldest", "0", pool.borrowObject());
+        assertEquals("Middle", "1", pool.borrowObject());
+        assertEquals("Youngest", "2", pool.borrowObject());
+        assertEquals("new-3", "3", pool.borrowObject());
+        pool.returnObject("r");
+        assertEquals("returned", "r", pool.borrowObject());
+        assertEquals("new-4", "4", pool.borrowObject());
+    }
+
     public void testAddObject() throws Exception {
         assertEquals("should be zero idle", 0, pool.getNumIdle());
     	pool.addObject();
@@ -998,6 +1011,15 @@ public class TestGenericObjectPool extends TestObjectPool {
         public void setValidationEnabled(boolean b) {
             enableValidation = b;
         }
+    }
+
+    protected boolean isLifo() {
+ 
+        return false;
+    }
+
+    protected boolean isFifo() {
+        return true;
     }
 }
 

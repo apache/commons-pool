@@ -124,4 +124,12 @@ public class TestSoftReferenceObjectPool extends TestObjectPool {
         assertEquals("Wrong sequence", desiredSequence, testFactorySequenceStates);
     }
 
+    protected boolean isLifo() {
+        return false;
+    }
+
+    protected boolean isFifo() {
+        return false;
+    }
+
 }
