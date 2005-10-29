@@ -20,6 +20,7 @@ import java.util.BitSet;
 import java.util.NoSuchElementException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -142,14 +143,17 @@ public class TestStackObjectPool extends TestObjectPool {
         }
     }
 
-    public void testBorrowReturnWithSometimesInvalidObjects() throws Exception {
+
+    public void testBorrowWithSometimesInvalidObjects() throws Exception {
         ObjectPool pool = new StackObjectPool(20);
         pool.setFactory(
             new PoolableObjectFactory() {
+                // factory makes Integer objects
                 int counter = 0;
                 public Object makeObject() { return new Integer(counter++); }
                 public void destroyObject(Object obj) { }
                 public boolean validateObject(Object obj) {
+                    // only odd objects are valid
                     if(obj instanceof Integer) {
                         return ((((Integer)obj).intValue() % 2) == 1);
                     } else {
@@ -172,9 +176,67 @@ public class TestStackObjectPool extends TestObjectPool {
         Object[] obj = new Object[10];
         for(int i=0;i<10;i++) {
             obj[i] = pool.borrowObject();
+            assertEquals("Each time we borrow, get one more active.", i+1, pool.getNumActive());
+            
         }
         for(int i=0;i<10;i++) {
             pool.returnObject(obj[i]);
+            assertEquals("Each time we borrow, get one less active.", 9-i, pool.getNumActive());
+        }
+        assertEquals(7,pool.getNumIdle());
+    }
+    
+    public void testBorrowReturnWithSometimesInvalidObjects() throws Exception {
+        ObjectPool pool = new StackObjectPool(20);
+
+        class TestingPoolableObjectFactory implements PoolableObjectFactory {
+            // factory makes Integer objects
+            int counter = 0;
+            boolean reject = false;
+            public Object makeObject() { return new Integer(counter++); }
+            public void destroyObject(Object obj) { }
+            public boolean validateObject(Object obj) {
+                if (reject) {
+                    // only odd objects are valid
+                    if(obj instanceof Integer) {
+                        return ((((Integer)obj).intValue() % 2) == 1);
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return true;
+                }
+                    
+            }
+            public void activateObject(Object obj) { }
+            public void passivateObject(Object obj) { 
+                if(obj instanceof Integer) {
+                    if((((Integer)obj).intValue() % 3) == 0) {
+                        throw new RuntimeException("Couldn't passivate");
+                    }
+                } else {
+                    throw new RuntimeException("Couldn't passivate");
+                }
+            }
+        };
+        
+        TestingPoolableObjectFactory factory = new TestingPoolableObjectFactory();
+        
+        pool.setFactory(factory);
+
+        Object[] obj = new Object[10];
+        for(int i=0;i<10;i++) {
+            obj[i] = pool.borrowObject();
+            assertEquals("Each time we borrow, get one more active.", i+1, pool.getNumActive());
+            
+        }
+        
+        // now reject even numbers
+        factory.reject = true;
+        
+        for(int i=0;i<10;i++) {
+            pool.returnObject(obj[i]);
+            assertEquals("Each time we borrow, get one less active.", 9-i, pool.getNumActive());
         }
         assertEquals(3,pool.getNumIdle());
     }
@@ -254,6 +316,73 @@ public class TestStackObjectPool extends TestObjectPool {
         // check to see what object was destroyed
         Integer d = (Integer)destroyed.get(0);
         assertEquals("Destoryed objects should have the stalest object.", i0, d);
+    }
+
+    private List testFactorySequenceStates = new ArrayList(5);
+    public void testFactorySequence() throws Exception {
+        // setup
+        // We need a factory that tracks method call sequence.
+        PoolableObjectFactory pof = new PoolableObjectFactory() {
+            public Object makeObject() throws Exception {
+                testFactorySequenceStates.add("makeObject");
+                return new Object();
+            }
+
+            public void activateObject(Object obj) throws Exception {
+                testFactorySequenceStates.add("activateObject");
+            }
+
+            public boolean validateObject(Object obj) {
+                testFactorySequenceStates.add("validateObject");
+                return true;
+            }
+
+            public void passivateObject(Object obj) throws Exception {
+                testFactorySequenceStates.add("passivateObject");
+            }
+
+            public void destroyObject(Object obj) throws Exception {
+                testFactorySequenceStates.add("destroyObject");
+            }
+        };
+
+        ObjectPool pool = new StackObjectPool(pof, 1);
+
+        // check the order in which the factory is called during borrow
+        testFactorySequenceStates.clear();
+        Object o = pool.borrowObject();
+        List desiredSequence = Arrays.asList(new String[] {
+                "makeObject",
+                "activateObject",
+                "validateObject"
+        });
+        assertEquals("Wrong sequence", desiredSequence, testFactorySequenceStates);
+
+        // check the order in which the factory is called when returning an object
+        testFactorySequenceStates.clear();
+        pool.returnObject(o);
+        desiredSequence = Arrays.asList(new String[] {
+                "validateObject",
+                "passivateObject"
+        });
+        assertEquals("Wrong sequence", desiredSequence, testFactorySequenceStates);
+
+        // check the order in which the factory is called during borrow again
+        testFactorySequenceStates.clear();
+        o = pool.borrowObject();
+        desiredSequence = Arrays.asList(new String[] {
+                "activateObject",
+                "validateObject"
+        });
+        assertEquals("Wrong sequence", desiredSequence, testFactorySequenceStates);
+
+        // check the order in which the factory is called when invalidating an object
+        testFactorySequenceStates.clear();
+        pool.invalidateObject(o);
+        desiredSequence = Arrays.asList(new String[] {
+                "destroyObject"
+        });
+        assertEquals("Wrong sequence", desiredSequence, testFactorySequenceStates);
     }
 
     static class SimpleFactory implements PoolableObjectFactory {

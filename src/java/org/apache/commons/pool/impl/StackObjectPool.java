@@ -122,17 +122,23 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
     public synchronized Object borrowObject() throws Exception {
         assertOpen();
         Object obj = null;
-        if (!_pool.empty()) {
-            obj = _pool.pop();
-        } else {
-            if(null == _factory) {
-                throw new NoSuchElementException();
+        while (null == obj) {
+            if (!_pool.empty()) {
+                obj = _pool.pop();
             } else {
-                obj = _factory.makeObject();
+                if(null == _factory) {
+                    throw new NoSuchElementException();
+                } else {
+                    obj = _factory.makeObject();
+                }
             }
-        }
-        if(null != _factory && null != obj) {
-            _factory.activateObject(obj);
+            if(null != _factory && null != obj) {
+                _factory.activateObject(obj);
+            }
+            if (null != _factory && null != obj && !_factory.validateObject(obj)) {
+                _factory.destroyObject(obj);
+                obj = null;
+            }
         }
         _numActive++;
         return obj;
