@@ -925,7 +925,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         if((_maxIdle >= 0) && (_pool.size() >= _maxIdle)) {
             shouldDestroy = true;
         } else if(success) {
-            _pool.addFirst(new ObjectTimestampPair(obj));
+            _pool.addLast(new ObjectTimestampPair(obj));
         }
         notifyAll(); // _numActive has changed
 
