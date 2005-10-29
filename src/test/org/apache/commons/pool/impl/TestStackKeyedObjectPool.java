@@ -280,4 +280,12 @@ public class TestStackKeyedObjectPool extends TestKeyedObjectPool {
         public void activateObject(Object key, Object obj) { }
         public void passivateObject(Object key, Object obj) { }
     }
+
+    protected boolean isLifo() {
+        return true;
+    }
+
+    protected boolean isFifo() {
+        return false;
+    }
 }

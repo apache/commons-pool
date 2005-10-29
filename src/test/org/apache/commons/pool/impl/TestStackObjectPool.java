@@ -395,7 +395,7 @@ public class TestStackObjectPool extends TestObjectPool {
     }
 
     protected boolean isLifo() {
-        return false;
+        return true;
     }
 
     protected boolean isFifo() {

@@ -981,7 +981,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         if(_maxIdle >= 0 && (pool.size() >= _maxIdle)) {
             shouldDestroy = true;
         } else if(success) {
-            pool.addFirst(new ObjectTimestampPair(obj));
+            pool.addLast(new ObjectTimestampPair(obj));
             _totalIdle++;
         }
         notifyAll();
