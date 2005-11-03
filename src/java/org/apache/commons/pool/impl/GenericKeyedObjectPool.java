@@ -811,7 +811,14 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                                 if(_maxWait <= 0) {
                                     wait();
                                 } else {
-                                    wait(_maxWait);
+                                    // this code may be executed again after a notify then continue cycle
+                                    // so, need to calculate the amount of time to wait
+                                    final long elapsed = (System.currentTimeMillis() - starttime);
+                                    final long waitTime = _maxWait - elapsed;
+                                    if (waitTime > 0)
+                                    {
+                                        wait(waitTime);
+                                    }
                                 }
                             } catch(InterruptedException e) {
                                 // ignored
