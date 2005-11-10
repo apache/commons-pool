@@ -18,8 +18,9 @@ package org.apache.commons.pool.impl;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.LinkedList;
+import java.util.ListIterator;
 
-import org.apache.commons.collections.CursorableLinkedList;
 import org.apache.commons.pool.BaseObjectPool;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
@@ -417,7 +418,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         _softMinEvictableIdleTimeMillis = softMinEvictableIdleTimeMillis;
         _testWhileIdle = testWhileIdle;
 
-        _pool = new CursorableLinkedList();
+        _pool = new LinkedList();
         startEvictor(_timeBetweenEvictionRunsMillis);
     }
 
@@ -949,10 +950,6 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         clear();
         _pool = null;
         _factory = null;
-        if(null != _evictionCursor) {
-            _evictionCursor.close();
-            _evictionCursor = null;
-        }
         startEvictor(-1L);
         super.close();
     }
@@ -970,19 +967,18 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
     public synchronized void evict() throws Exception {
         assertOpen();
         if(!_pool.isEmpty()) {
-            if(null == _evictionCursor) {
-                _evictionCursor = (_pool.cursor(_pool.size()));
-            } else if(!_evictionCursor.hasPrevious()) {
-                _evictionCursor.close();
-                _evictionCursor = (_pool.cursor(_pool.size()));
+            ListIterator iter;
+            if (evictLastIndex < 0) {
+                iter = _pool.listIterator(_pool.size());
+            } else {
+                iter = _pool.listIterator(evictLastIndex);
             }
             for(int i=0,m=getNumTests();i<m;i++) {
-                if(!_evictionCursor.hasPrevious()) {
-                    _evictionCursor.close();
-                    _evictionCursor = (_pool.cursor(_pool.size()));
+                if(!iter.hasPrevious()) {
+                    iter = _pool.listIterator(_pool.size());
                 } else {
                     boolean removeObject = false;
-                    ObjectTimestampPair pair = (ObjectTimestampPair)(_evictionCursor.previous());
+                    ObjectTimestampPair pair = (ObjectTimestampPair)(iter.previous());
                     long idleTimeMilis = System.currentTimeMillis() - pair.tstamp;
                     if ((_minEvictableIdleTimeMillis > 0) 
                         && (idleTimeMilis > _minEvictableIdleTimeMillis)) {
@@ -1013,7 +1009,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                     }
                     if(removeObject) {
                         try {
-                            _evictionCursor.remove();
+                            iter.remove();
                             _factory.destroyObject(pair.value);
                         } catch(Exception e) {
                             ; // ignored
@@ -1021,6 +1017,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                     }
                 }
             }
+            evictLastIndex = iter.previousIndex(); // resume from here
         } // if !empty
     }
     
@@ -1122,7 +1119,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
     /**
      * The idle object evictor thread.
-     * @see #setTimeBetweenEvictionRunsMillis
+     * @see GenericObjectPool#setTimeBetweenEvictionRunsMillis
      */
     class Evictor implements Runnable {
         private boolean _cancelled = false;
@@ -1152,12 +1149,6 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                     ensureMinIdle();
                 } catch(Exception e) {
                     // ignored
-                }
-            }
-            synchronized(GenericObjectPool.this) {
-                if(null != _evictionCursor) {
-                    _evictionCursor.close();
-                    _evictionCursor = null;
                 }
             }
         }
@@ -1331,7 +1322,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
     private long _softMinEvictableIdleTimeMillis = DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 
     /** My pool. */
-    private CursorableLinkedList _pool = null;
+    private LinkedList _pool = null;
 
     /** My {@link PoolableObjectFactory}. */
     private PoolableObjectFactory _factory = null;
@@ -1347,5 +1338,8 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      */
     private Evictor _evictor = null;
 
-    private CursorableLinkedList.Cursor _evictionCursor = null;
+    /**
+     * Position in the _pool where the _evictor last stopped.
+     */
+    private int evictLastIndex = -1;
 }
