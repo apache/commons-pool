@@ -147,10 +147,6 @@
   </contributors>
   
   <dependencies>
-    <dependency>
-      <id>commons-collections</id>
-      <version>2.1</version>
-    </dependency>
 
     <dependency>
       <id>junit</id>
