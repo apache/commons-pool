@@ -1118,7 +1118,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @see #setTimeBetweenEvictionRunsMillis
      */
     class Evictor implements Runnable {
-        private boolean _cancelled = false;
+        private volatile boolean _cancelled = false;
         private long _delay = 0L;
 
         public Evictor(long delay) {
