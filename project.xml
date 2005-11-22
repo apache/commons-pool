@@ -160,7 +160,8 @@
 
     <!-- these two are required by maven -->
     <dependency>
-    	<id>xml-apis</id><version>2.0.2</version>
+    	<id>xml-apis</id>
+        <version>2.0.2</version>
         <properties>
            <comment>Any JAXP compliant parser (1.2 or later).</comment>
         </properties>
