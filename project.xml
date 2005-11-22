@@ -154,6 +154,7 @@
       <version>3.8.1</version>
       <properties>
           <comment>Only required to run unit tests</comment>
+          <scope>test</scope>
       </properties>
     </dependency>
 
