@@ -18,9 +18,10 @@
   <pomVersion>3</pomVersion>
   
   <name>Commons Pool</name>
-  <id>commons-pool</id>
+  <groupId>commons-pool</groupId>
+  <artifactId>commons-pool</artifactId>
   <inceptionYear>2001</inceptionYear>
-  <currentVersion>2.0-dev</currentVersion>
+  <currentVersion>2.0-SNAPSHOT</currentVersion>
   <shortDescription>Commons Object Pooling Library</shortDescription>
   <description>Commons Object Pooling Library</description>
   <logo>/images/pool-logo-white.png</logo>
@@ -189,6 +190,7 @@
 
     <resources>
       <resource>
+        <directory>${basedir}</directory>
         <targetPath>META-INF</targetPath>
         <includes>
           <include>NOTICE.txt</include>
