@@ -36,11 +36,11 @@
   </organization>
 
   <licenses>
-	<license>
-    	<name>The Apache Software License, Version 2.0</name>
-    	<url>/LICENSE.txt</url>
-    	<distribution>repo</distribution>
-	</license>
+    <license>
+        <name>The Apache Software License, Version 2.0</name>
+        <url>/LICENSE.txt</url>
+        <distribution>repo</distribution>
+    </license>
   </licenses>
   
   <gumpRepositoryId>jakarta</gumpRepositoryId>
@@ -150,7 +150,8 @@
   <dependencies>
 
     <dependency>
-      <id>junit</id>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
       <version>3.8.1</version>
       <properties>
           <comment>Only required to run unit tests</comment>
@@ -160,15 +161,17 @@
 
     <!-- these two are required by maven -->
     <dependency>
-    	<id>xml-apis</id>
+        <groupId>xml-apis</groupId>
+        <artifactId>xml-apis</artifactId>
         <version>2.0.2</version>
         <properties>
            <comment>Any JAXP compliant parser (1.2 or later).</comment>
         </properties>
     </dependency>
     <dependency>
-    	<id>xerces</id>
-    	<version>2.0.2</version>
+        <groupId>xerces</groupId>
+        <artifactId>xerces</artifactId>
+        <version>2.0.2</version>
         <properties>
           <comment>Any JAXP compliant parser (1.2 or later).</comment>
         </properties>
