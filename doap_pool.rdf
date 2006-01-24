@@ -8,7 +8,7 @@
     <license rdf:resource="http://usefulinc.com/doap/licenses/asl20"/>
     <bug-database rdf:resource="http://issues.apache.org/bugzilla/buglist.cgi?product=Commons&amp;component=pool"/>
     <download-page rdf:resource="http://jakarta.apache.org/site/downloads/downloads_commons-pool.cgi"/>
-    <asfext:pmc rdf:resource="Jakarta"/>
+    <asfext:pmc rdf:resource="http://jakarta.apache.org/"/>
     <shortdesc xml:lang="en">Commons Object Pooling Library</shortdesc>
     <description xml:lang="en">Commons Object Pooling Library</description>
     <repository>
