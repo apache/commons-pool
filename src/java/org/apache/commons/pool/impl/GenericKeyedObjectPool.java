@@ -787,7 +787,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 if ((_maxTotal > 0) && (_totalActive + _totalIdle >= _maxTotal)) {
                     clearOldest();
                 }
-                
+
                 // check if we can create one
                 // (note we know that the num sleeping is 0, else we wouldn't be here)
                 int active = getActiveCount(key);
@@ -1108,7 +1108,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                     if(_minEvictableIdleTimeMillis > 0 &&
                        System.currentTimeMillis() - pair.tstamp > _minEvictableIdleTimeMillis) {
                        removeObject=true;
-                    } else if(_testWhileIdle) {
+                    }
+                    if(_testWhileIdle && removeObject == false) {
                         boolean active = false;
                         try {
                             _factory.activateObject(key,pair.value);
