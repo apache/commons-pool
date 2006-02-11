@@ -987,7 +987,8 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                         && (idleTimeMilis > _softMinEvictableIdleTimeMillis)
                         && (getNumIdle() > getMinIdle())) {
                         removeObject = true;
-                    } else if(_testWhileIdle) {
+                    }
+                    if(_testWhileIdle && removeObject == false) {
                         boolean active = false;
                         try {
                             _factory.activateObject(pair.value);
