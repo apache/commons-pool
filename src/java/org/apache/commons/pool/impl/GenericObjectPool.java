@@ -770,7 +770,6 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
     public synchronized Object borrowObject() throws Exception {
         assertOpen();
         long starttime = System.currentTimeMillis();
-        boolean newlyCreated = false;
         for(;;) {
             ObjectTimestampPair pair = null;
 
@@ -825,22 +824,17 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
             _numActive++;
 
             // create new object when needed
+            boolean newlyCreated = false;
             if(null == pair) {
                 try {
                     Object obj = _factory.makeObject();
                     pair = new ObjectTimestampPair(obj);
                     newlyCreated = true;
-                }
-                catch (Throwable e) {
-                    // object cannot be created
-                    _numActive--;
-                    notifyAll();
-                    if (e instanceof Exception) {
-                        throw (Exception) e;
-                    } else if (e instanceof Error) {
-                        throw (Error) e;
-                    } else {
-                        throw new Exception(e);
+                } finally {
+                    if (!newlyCreated) {
+                        // object cannot be created
+                        _numActive--;
+                        notifyAll();
                     }
                 }
             }
