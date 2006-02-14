@@ -457,8 +457,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     }
 
     /**
-     * Returns the cap on the total number of instances from my pool.
-     * @return the cap on the total number of instances from my pool.
+     * Returns the cap on the total number of instances from my pool if non-positive.
+     * @return the cap on the total number of instances from my pool if non-positive.
      * @see #setMaxTotal
      */
     public synchronized int getMaxTotal() {
@@ -466,9 +466,9 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     }
 
     /**
-     * Sets the cap on the total number of instances from my pool.
+     * Sets the cap on the total number of instances from my pool if non-positive.
      * @param maxTotal The cap on the total number of instances from my pool.
-     *                  Use a negative value for an infinite number of instances.
+     *                  Use a non-positive value for an infinite number of instances.
      * @see #getMaxTotal
      */
     public synchronized void setMaxTotal(int maxTotal) {
@@ -1404,7 +1404,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     private int _maxActive = DEFAULT_MAX_ACTIVE;
 
     /**
-     * The cap on the total number of instances from the pool.
+     * The cap on the total number of instances from the pool if non-positive.
      * @see #setMaxTotal
      * @see #getMaxTotal
      */
