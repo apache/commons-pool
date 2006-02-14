@@ -20,6 +20,8 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.apache.commons.pool.BaseObjectPool;
 import org.apache.commons.pool.ObjectPool;
@@ -256,6 +258,13 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @see #setSoftMinEvictableIdleTimeMillis
      */
     public static final long DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS = -1;
+
+    //--- package constants -------------------------------------------
+
+    /**
+     * Idle object evition Timer. Shared between all {@link GenericObjectPool}s and {@link GenericKeyedObjectPool} s.
+     */
+    static final Timer EVICTION_TIMER = new Timer(true);
 
     //--- constructors -----------------------------------------------
 
@@ -1063,10 +1072,8 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
             _evictor = null;
         }
         if(delay > 0) {
-            _evictor = new Evictor(delay);
-            Thread t = new Thread(_evictor);
-            t.setDaemon(true);
-            t.start();
+            _evictor = new Evictor();
+            EVICTION_TIMER.schedule(_evictor, delay, delay);
         }
     }
 
@@ -1112,41 +1119,22 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
     }
 
     /**
-     * The idle object evictor thread.
+     * The idle object evictor {@link TimerTask}.
      * @see GenericObjectPool#setTimeBetweenEvictionRunsMillis
      */
-    class Evictor implements Runnable {
-        private volatile boolean _cancelled = false;
-        private long _delay = 0L;
-
-        public Evictor(long delay) {
-            _delay = delay;
-        }
-
-        void cancel() {
-            _cancelled = true;
-        }
-
+    private class Evictor extends TimerTask {
         public void run() {
-            while(!_cancelled) {
-                try {
-                    Thread.sleep(_delay);
-                } catch(Exception e) {
-                    // ignored
-                }
-                try {
-                    evict();
-                } catch(Exception e) {
-                    // ignored
-                }
-                try {
-                    ensureMinIdle();
-                } catch(Exception e) {
-                    // ignored
-                }
+            try {
+                evict();
+            } catch(Exception e) {
+                // ignored
+            }
+            try {
+                ensureMinIdle();
+            } catch(Exception e) {
+                // ignored
             }
         }
-
     }
 
     /**
@@ -1328,7 +1316,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
     private int _numActive = 0;
 
     /**
-     * My idle object eviction thread, if any.
+     * My idle object eviction {@link TimerTask}, if any.
      */
     private Evictor _evictor = null;
 
