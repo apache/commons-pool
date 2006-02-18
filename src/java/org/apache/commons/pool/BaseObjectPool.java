@@ -79,5 +79,5 @@ public abstract class BaseObjectPool implements ObjectPool {
         }
     }
     
-    private boolean closed = false;
+    private volatile boolean closed = false;
 }
