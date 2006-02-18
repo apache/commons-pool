@@ -77,10 +77,11 @@ public interface KeyedObjectPool {
      *
      * @param key the key used to obtain the object
      * @return an instance from this pool.
+     * @throws IllegalStateException after {@link #close} has been called on this pool.
      * @throws Exception when {@link KeyedPoolableObjectFactory#makeObject} throws an exception.
      * @throws NoSuchElementException when the pool is exhaused and cannot or will not return another instance.
      */
-    Object borrowObject(Object key) throws Exception, NoSuchElementException;
+    Object borrowObject(Object key) throws Exception, NoSuchElementException, IllegalStateException;
 
     /**
      * Return an instance to my pool.
@@ -120,8 +121,11 @@ public interface KeyedObjectPool {
      * implementation dependent mechanism, and place it into the pool.
      * addObject() is useful for "pre-loading" a pool with idle objects.
      * (Optional operation).
+     *
+     * @throws Exception when {@link KeyedPoolableObjectFactory#makeObject} fails.
+     * @throws IllegalStateException after {@link #close} has been called on this pool.
      */
-    void addObject(Object key) throws Exception;
+    void addObject(Object key) throws Exception, IllegalStateException;
 
     /**
      * Returns the number of instances
@@ -195,6 +199,12 @@ public interface KeyedObjectPool {
 
     /**
      * Close this pool, and free any resources associated with it.
+     * <p>
+     * Calling {@link #addObject} or {@link #borrowObject} after invoking
+     * this method on a pool will cause them to throw an
+     * {@link IllegalStateException}.
+     *
+     * @throws Exception <strong>deprecated</strong>: implementations should silently fail if not all reasources can be freed.
      */
     void close() throws Exception;
 
