@@ -28,6 +28,7 @@ public interface KeyedObjectPoolFactory {
     /**
      * Create a new {@link KeyedObjectPool}.
      * @return a new {@link KeyedObjectPool}
+     * @throws IllegalStateException when this pool factory is not configured properly
      */
-    KeyedObjectPool createPool();
+    KeyedObjectPool createPool() throws IllegalStateException;
 }
