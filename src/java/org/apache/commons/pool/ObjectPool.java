@@ -16,6 +16,8 @@
 
 package org.apache.commons.pool;
 
+import java.util.NoSuchElementException;
+
 /**
  * A pooling interface.
  * <p>
@@ -45,19 +47,27 @@ package org.apache.commons.pool;
  */
 public interface ObjectPool {
     /**
-     * Obtain an instance from my pool.
-     * By contract, clients MUST return
-     * the borrowed instance using
-     * {@link #returnObject(java.lang.Object) returnObject}
-     * or a related method as defined in an implementation
-     * or sub-interface.
+     * Obtains an instance from this pool.
+     * <p>
+     * Instances returned from this method will have been either newly created with
+     * {@link PoolableObjectFactory#makeObject} or will be a previously idle object and
+     * have been activated with {@link PoolableObjectFactory#activateObject} and
+     * then validated with {@link PoolableObjectFactory#validateObject}.
+     * <p>
+     * By contract, clients <strong>must</strong> return the borrowed instance using
+     * {@link #returnObject}, {@link #invalidateObject}, or a related method
+     * as defined in an implementation or sub-interface.
      * <p>
      * The behaviour of this method when the pool has been exhausted
-     * is not specified (although it may be specified by implementations).
+     * is not strictly specified (although it may be specified by implementations).
+     * Older versions of this method would return <code>null</code> to indicate exhasution,
+     * newer versions are encouraged to throw a {@link NoSuchElementException}.
      *
-     * @return an instance from my pool.
+     * @return an instance from this pool.
+     * @throws Exception when {@link PoolableObjectFactory#makeObject} throws an exception.
+     * @throws NoSuchElementException when the pool is exhaused and cannot or will not return another instance.
      */
-    Object borrowObject() throws Exception;
+    Object borrowObject() throws Exception, NoSuchElementException;
 
     /**
      * Return an instance to my pool.
