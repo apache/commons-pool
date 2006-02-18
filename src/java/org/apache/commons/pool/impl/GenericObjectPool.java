@@ -26,6 +26,7 @@ import java.util.TimerTask;
 import org.apache.commons.pool.BaseObjectPool;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
+import org.apache.commons.pool.impl.GenericKeyedObjectPool.ObjectTimestampPair;
 
 /**
  * A configurable {@link ObjectPool} implementation.
@@ -1100,23 +1101,6 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
     }
 
     //--- inner classes ----------------------------------------------
-
-    /**
-     * A simple "struct" encapsulating an object instance and a timestamp.
-     */
-    class ObjectTimestampPair {
-        Object value;
-        long tstamp;
-
-        ObjectTimestampPair(Object val) {
-            this(val,System.currentTimeMillis());
-        }
-
-        ObjectTimestampPair(Object val, long time) {
-            value = val;
-            tstamp = time;
-        }
-    }
 
     /**
      * The idle object evictor {@link TimerTask}.
