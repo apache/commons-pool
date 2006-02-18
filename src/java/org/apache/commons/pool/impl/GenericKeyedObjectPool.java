@@ -1310,14 +1310,15 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * A simple "struct" encapsulating an object instance and a timestamp.
      *
      * Implements Comparable, objects are sorted from old to new.
+     *
+     * This is also used by {@link GenericObjectPool}.
      */
-    class ObjectTimestampPair implements Comparable {
+    static class ObjectTimestampPair implements Comparable {
         Object value;
         long tstamp;
 
         ObjectTimestampPair(Object val) {
-            value = val;
-            tstamp = System.currentTimeMillis();
+            this(val, System.currentTimeMillis());
         }
 
         ObjectTimestampPair(Object val, long time) {
