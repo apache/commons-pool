@@ -28,6 +28,7 @@ public interface ObjectPoolFactory {
     /**
      * Create and return a new {@link ObjectPool}.
      * @return a new {@link ObjectPool}
+     * @throws IllegalStateException when this pool factory is not configured properly
      */
-    ObjectPool createPool();
+    ObjectPool createPool() throws IllegalStateException;
 }
