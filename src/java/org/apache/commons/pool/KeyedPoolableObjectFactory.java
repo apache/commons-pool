@@ -18,41 +18,49 @@ package org.apache.commons.pool;
 
 /**
  * An interface defining life-cycle methods for
- * instances to be served by a
- * {@link KeyedObjectPool KeyedObjectPool}.
+ * instances to be served by a {@link KeyedObjectPool}.
  * <p>
- * By contract, when an {@link KeyedObjectPool KeyedObjectPool}
- * delegates to a <tt>KeyedPoolableObjectFactory</tt>,
+ * By contract, when an {@link KeyedObjectPool}
+ * delegates to a {@link KeyedPoolableObjectFactory},
  * <ol>
  *  <li>
- *   {@link #makeObject makeObject} 
- *   is called  whenever a new instance is needed.
+ *   {@link #makeObject}
+ *   is called whenever a new instance is needed.
  *  </li>
  *  <li>
- *   {@link #activateObject activateObject} 
- *   is invoked on every instance before it is returned from the
- *   pool.
+ *   {@link #activateObject}
+ *   is invoked on every instance that has been
+ *   {@link #passivateObject passivated} before it is
+ *   {@link KeyedObjectPool#borrowObject borrowed} from the pool.
  *  </li>
  *  <li>
- *   {@link #passivateObject passivateObject} 
- *   is invoked on every instance when it is returned to the
- *   pool.
+ *   {@link #validateObject}
+ *   is invoked on {@link #activateObject activated} instances to make sure
+ *   they can be {@link KeyedObjectPool#borrowObject borrowed} from the pool.
+ *   {@link #validateObject} <strong>may</strong> also be used to test an
+ *   instance being {@link KeyedObjectPool#returnObject returned} to the pool
+ *   before it is {@link #passivateObject passivated}. It will only be invoked
+ *   on an {@link #activateObject activated} instance.
  *  </li>
  *  <li>
- *   {@link #destroyObject destroyObject} 
+ *   {@link #passivateObject}
+ *   is invoked on every instance when it is returned to the pool.
+ *  </li>
+ *  <li>
+ *   {@link #destroyObject}
  *   is invoked on every instance when it is being "dropped" from the
- *   pool (whether due to the response from
- *   {@link #validateObject validateObject}, or
- *   for reasons specific to the pool implementation.)
- *  </li>
- *  <li>
- *   {@link #validateObject validateObject} 
- *   is invoked in an implementation-specific fashion to determine if an instance
- *   is still valid to be returned by the pool.
- *   It will only be invoked on an {@link #activateObject "activated"}
- *   instance.
+ *   pool (whether due to the response from {@link #validateObject},
+ *   or for reasons specific to the pool implementation.) There is no
+ *   guarantee that the instance being {@link #destroyObject destroyed} will
+ *   be considered active or passive.
  *  </li>
  * </ol>
+ *
+ * <p>
+ * {@link KeyedPoolableObjectFactory} must be thread-safe. The only promise
+ * an {@link KeyedObjectPool} makes is that the same instance of an object will not
+ * be passed to more than one method of a {@link KeyedPoolableObjectFactory}
+ * at a time.
  *
  * @see KeyedObjectPool
  * 
