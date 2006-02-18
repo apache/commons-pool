@@ -16,6 +16,8 @@
 
 package org.apache.commons.pool;
 
+import java.util.NoSuchElementException;
+
 /**
  * A  "keyed" pooling interface.
  * <p>
@@ -55,20 +57,30 @@ package org.apache.commons.pool;
  */
 public interface KeyedObjectPool {
     /**
-     * Obtain an instance from my pool
-     * for the specified <i>key</i>.
-     * By contract, clients MUST return
-     * the borrowed object using
-     * {@link #returnObject(java.lang.Object,java.lang.Object) <tt>returnObject</tt>},
-     * or a related method as defined in an implementation
-     * or sub-interface,
-     * using a <i>key</i> that is equivalent to the one used to
+     * Obtains an instance from this pool for the specified <i>key</i>.
+     * <p>
+     * Instances returned from this method will have been either newly created with
+     * {@link KeyedPoolableObjectFactory#makeObject} or will be a previously idle object and
+     * have been activated with {@link KeyedPoolableObjectFactory#activateObject} and
+     * then validated with {@link KeyedPoolableObjectFactory#validateObject}.
+     * <p>
+     * By contract, clients <strong>must</strong> return the borrowed object using
+     * {@link #returnObject}, {@link #invalidateObject}, or a related method
+     * as defined in an implementation or sub-interface,
+     * using a <i>key</i> that is {@link Object#equals equivalent} to the one used to
      * borrow the instance in the first place.
+     * <p>
+     * The behaviour of this method when the pool has been exhausted
+     * is not strictly specified (although it may be specified by implementations).
+     * Older versions of this method would return <code>null</code> to indicate exhasution,
+     * newer versions are encouraged to throw a {@link NoSuchElementException}.
      *
      * @param key the key used to obtain the object
-     * @return an instance from my pool.
+     * @return an instance from this pool.
+     * @throws Exception when {@link KeyedPoolableObjectFactory#makeObject} throws an exception.
+     * @throws NoSuchElementException when the pool is exhaused and cannot or will not return another instance.
      */
-    Object borrowObject(Object key) throws Exception;
+    Object borrowObject(Object key) throws Exception, NoSuchElementException;
 
     /**
      * Return an instance to my pool.
