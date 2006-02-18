@@ -127,12 +127,12 @@ public interface KeyedObjectPool {
      * Returns the number of instances
      * corresponding to the given <i>key</i>
      * currently idle in my pool (optional operation).
-     * Throws {@link UnsupportedOperationException}
+     * Returns a negative value
      * if this information is not available.
      *
      * @param key the key
-     * @return the number of instances corresponding to the given <i>key</i> currently idle in my pool
-     * @throws UnsupportedOperationException when this implementation doesn't support the operation
+     * @return the number of instances corresponding to the given <i>key</i> currently idle in my pool or a negative value if unsupported
+     * @throws UnsupportedOperationException <strong>deprecated</strong>: when this implementation doesn't support the operation
      */
     int getNumIdle(Object key) throws UnsupportedOperationException;
 
@@ -141,23 +141,23 @@ public interface KeyedObjectPool {
      * currently borrowed from but not yet returned
      * to my pool corresponding to the
      * given <i>key</i> (optional operation).
-     * Throws {@link UnsupportedOperationException}
+     * Returns a negative value
      * if this information is not available.
      *
      * @param key the key
-     * @return the number of instances corresponding to the given <i>key</i> currently borrowed in my pool
-     * @throws UnsupportedOperationException when this implementation doesn't support the operation
+     * @return the number of instances corresponding to the given <i>key</i> currently borrowed in my pool or a negative value if unsupported
+     * @throws UnsupportedOperationException <strong>deprecated</strong>: when this implementation doesn't support the operation
      */
     int getNumActive(Object key) throws UnsupportedOperationException;
 
     /**
      * Returns the total number of instances
      * currently idle in my pool (optional operation).
-     * Throws {@link UnsupportedOperationException}
+     * Returns a negative value
      * if this information is not available.
      *
-     * @return the total number of instances currently idle in my pool
-     * @throws UnsupportedOperationException when this implementation doesn't support the operation
+     * @return the total number of instances currently idle in my pool or a negative value if unsupported
+     * @throws UnsupportedOperationException <strong>deprecated</strong>: when this implementation doesn't support the operation
      */
     int getNumIdle() throws UnsupportedOperationException;
 
@@ -165,11 +165,11 @@ public interface KeyedObjectPool {
      * Returns the total number of instances
      * current borrowed from my pool but not
      * yet returned (optional operation).
-     * Throws {@link UnsupportedOperationException}
+     * Returns a negative value
      * if this information is not available.
      *
-     * @return the total number of instances currently borrowed from my pool
-     * @throws UnsupportedOperationException when this implementation doesn't support the operation
+     * @return the total number of instances currently borrowed from my pool or a negative value if unsupported
+     * @throws UnsupportedOperationException <strong>deprecated</strong>: when this implementation doesn't support the operation
      */
     int getNumActive() throws UnsupportedOperationException;
 

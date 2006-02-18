@@ -111,9 +111,10 @@ public interface ObjectPool {
      * This may be considered an approximation of the number
      * of objects that can be {@link #borrowObject borrowed}
      * without creating any new instances.
+     * Returns a negative value if this information is not available.
      *
-     * @return the number of instances currently idle in my pool
-     * @throws UnsupportedOperationException if this implementation does not support the operation
+     * @return the number of instances currently idle in my pool or a negative value if unsupported
+     * @throws UnsupportedOperationException <strong>deprecated</strong>: if this implementation does not support the operation
      */
     int getNumIdle() throws UnsupportedOperationException;
 
@@ -121,9 +122,10 @@ public interface ObjectPool {
      * Return the number of instances
      * currently borrowed from my pool 
      * (optional operation).
+     * Returns a negative value if this information is not available.
      *
-     * @return the number of instances currently borrowed in my pool
-     * @throws UnsupportedOperationException if this implementation does not support the operation
+     * @return the number of instances currently borrowed in my pool or a negative value if unsupported
+     * @throws UnsupportedOperationException <strong>deprecated</strong>: if this implementation does not support the operation
      */
     int getNumActive() throws UnsupportedOperationException;
 
