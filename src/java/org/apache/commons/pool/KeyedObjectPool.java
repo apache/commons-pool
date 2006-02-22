@@ -124,8 +124,9 @@ public interface KeyedObjectPool {
      *
      * @throws Exception when {@link KeyedPoolableObjectFactory#makeObject} fails.
      * @throws IllegalStateException after {@link #close} has been called on this pool.
+     * @throws UnsupportedOperationException when this pool cannot add new idle objects.
      */
-    void addObject(Object key) throws Exception, IllegalStateException;
+    void addObject(Object key) throws Exception, IllegalStateException, UnsupportedOperationException;
 
     /**
      * Returns the number of instances
