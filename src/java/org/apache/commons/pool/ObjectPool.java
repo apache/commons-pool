@@ -106,8 +106,9 @@ public interface ObjectPool {
      *
      * @throws Exception when {@link PoolableObjectFactory#makeObject} fails.
      * @throws IllegalStateException after {@link #close} has been called on this pool.
+     * @throws UnsupportedOperationException when this pool cannot add new idle objects.
      */
-    void addObject() throws Exception, IllegalStateException;
+    void addObject() throws Exception, IllegalStateException, UnsupportedOperationException;
 
     /**
      * Return the number of instances
