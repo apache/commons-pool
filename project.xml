@@ -135,15 +135,17 @@
       <email></email>
       <organization>Apache Software Foundation</organization>
     </developer>
+    <developer>
+      <name>Sandy McArthur</name>
+      <id>sandymac</id>
+      <email></email>
+      <organization>Apache Software Foundation</organization>
+    </developer>
   </developers>
   <contributors>
     <contributor>
       <name>Todd Carmichael</name>
       <email>toddc@concur.com</email>
-    </contributor>
-    <contributor>
-      <name>Sandy McArthur</name>
-      <email>Sandy AT McArthur DOT org</email>
     </contributor>
   </contributors>
   
