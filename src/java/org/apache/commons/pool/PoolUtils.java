@@ -30,7 +30,7 @@ import java.util.TimerTask;
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  */
-public final class Pools {
+public final class PoolUtils {
 
     /**
      * Timer used to periodically check pools idle object count.
@@ -39,15 +39,17 @@ public final class Pools {
     private static Timer MIN_IDLE_TIMER;
 
     /**
-     * Prevent instantiation.
+     * PoolUtils instances should NOT be constructed in standard programming.
+     * Instead, the class should be used procedurally: PoolUtils.adapt(aPool);.
+     * This constructor is public to permit tools that require a JavaBean instance to operate.
      */
-    private Pools() {
+    public PoolUtils() {
     }
 
     /**
      * Adapt a <code>KeyedPoolableObjectFactory</code> instance to work where a <code>PoolableObjectFactory</code> is
      * needed. This method is the equivalent of calling
-     * {@link #adapt(KeyedPoolableObjectFactory, Object) Pools.adapt(aKeyedPoolableObjectFactory, new Object())}.
+     * {@link #adapt(KeyedPoolableObjectFactory, Object) PoolUtils.adapt(aKeyedPoolableObjectFactory, new Object())}.
      *
      * @param keyedFactory the {@link KeyedPoolableObjectFactory} to delegate to.
      * @return a {@link PoolableObjectFactory} that delegates to <code>keyedFactory</code> with an internal key.
@@ -86,7 +88,7 @@ public final class Pools {
 
     /**
      * Adapt a <code>KeyedObjectPool</code> instance to work where an <code>ObjectPool</code> is needed. This is the
-     * equivalent of calling {@link #adapt(KeyedObjectPool, Object) Pools.adapt(aKeyedObjectPool, new Object())}.
+     * equivalent of calling {@link #adapt(KeyedObjectPool, Object) PoolUtils.adapt(aKeyedObjectPool, new Object())}.
      *
      * @param keyedPool the {@link KeyedObjectPool} to delegate to.
      * @return an {@link ObjectPool} that delegates to <code>keyedPool</code> with an internal key.
