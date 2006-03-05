@@ -17,6 +17,9 @@
 package org.apache.commons.pool.impl;
 
 import java.util.NoSuchElementException;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -827,7 +830,20 @@ public class TestGenericObjectPool extends TestObjectPool {
             _complete = true;
         }
     }
-    
+
+    public void testFIFO() throws Exception {
+        pool.addObject(); // "0"
+        pool.addObject(); // "1"
+        pool.addObject(); // "2"
+        assertEquals("Oldest", "0", pool.borrowObject());
+        assertEquals("Middle", "1", pool.borrowObject());
+        assertEquals("Youngest", "2", pool.borrowObject());
+        assertEquals("new-3", "3", pool.borrowObject());
+        pool.returnObject("r");
+        assertEquals("returned", "r", pool.borrowObject());
+        assertEquals("new-4", "4", pool.borrowObject());
+    }
+
     public void testAddObject() throws Exception {
         assertEquals("should be zero idle", 0, pool.getNumIdle());
     	pool.addObject();
@@ -841,6 +857,75 @@ public class TestGenericObjectPool extends TestObjectPool {
 		assertEquals("should be zero active", 0, pool.getNumActive());
     }
     
+    private List testFactorySequenceStates = new ArrayList(5);
+    public void testFactorySequence() throws Exception {
+        // setup
+        // We need a factory that tracks method call sequence.
+        PoolableObjectFactory pof = new PoolableObjectFactory() {
+            public Object makeObject() throws Exception {
+                testFactorySequenceStates.add("makeObject");
+                return new Object();
+            }
+
+            public void activateObject(Object obj) throws Exception {
+                testFactorySequenceStates.add("activateObject");
+            }
+
+            public boolean validateObject(Object obj) {
+                testFactorySequenceStates.add("validateObject");
+                return true;
+            }
+
+            public void passivateObject(Object obj) throws Exception {
+                testFactorySequenceStates.add("passivateObject");
+            }
+
+            public void destroyObject(Object obj) throws Exception {
+                testFactorySequenceStates.add("destroyObject");
+            }
+        };
+
+        GenericObjectPool pool = new GenericObjectPool(pof);
+        pool.setTestOnBorrow(true);
+        pool.setTestOnReturn(true);
+
+        // check the order in which the factory is called during borrow
+        testFactorySequenceStates.clear();
+        Object o = pool.borrowObject();
+        List desiredSequence = Arrays.asList(new String[] {
+                "makeObject",
+                "activateObject",
+                "validateObject"
+        });
+        assertEquals("Wrong sequence", desiredSequence, testFactorySequenceStates);
+
+        // check the order in which the factory is called when returning an object
+        testFactorySequenceStates.clear();
+        pool.returnObject(o);
+        desiredSequence = Arrays.asList(new String[] {
+                "validateObject",
+                "passivateObject"
+        });
+        assertEquals("Wrong sequence", desiredSequence, testFactorySequenceStates);
+
+        // check the order in which the factory is called during borrow again
+        testFactorySequenceStates.clear();
+        o = pool.borrowObject();
+        desiredSequence = Arrays.asList(new String[] {
+                "activateObject",
+                "validateObject"
+        });
+        assertEquals("Wrong sequence", desiredSequence, testFactorySequenceStates);
+
+        // check the order in which the factory is called when invalidating an object
+        testFactorySequenceStates.clear();
+        pool.invalidateObject(o);
+        desiredSequence = Arrays.asList(new String[] {
+                "destroyObject"
+        });
+        assertEquals("Wrong sequence", desiredSequence, testFactorySequenceStates);
+    }
+
     private GenericObjectPool pool = null;
 
     private void assertConfiguration(GenericObjectPool.Config expected, GenericObjectPool actual) throws Exception {
@@ -926,6 +1011,15 @@ public class TestGenericObjectPool extends TestObjectPool {
         public void setValidationEnabled(boolean b) {
             enableValidation = b;
         }
+    }
+
+    protected boolean isLifo() {
+ 
+        return false;
+    }
+
+    protected boolean isFifo() {
+        return true;
     }
 }
 

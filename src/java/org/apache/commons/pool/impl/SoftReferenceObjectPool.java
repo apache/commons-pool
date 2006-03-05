@@ -70,9 +70,13 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
                 SoftReference ref = (SoftReference)(_pool.remove(_pool.size() - 1));
                 obj = ref.get();
             }
-        }
-        if(null != _factory && null != obj) {
-            _factory.activateObject(obj);
+            if(null != _factory && null != obj) {
+                _factory.activateObject(obj);
+            }
+            if (null != _factory && null != obj && !_factory.validateObject(obj)) {
+                _factory.destroyObject(obj);
+                obj = null;
+            }
         }
         _numActive++;
         return obj;

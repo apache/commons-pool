@@ -23,8 +23,10 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.LinkedList;
+import java.util.HashSet;
+import java.util.TimerTask;
 
-import org.apache.commons.collections.CursorableLinkedList;
 import org.apache.commons.pool.BaseKeyedObjectPool;
 import org.apache.commons.pool.KeyedObjectPool;
 import org.apache.commons.pool.KeyedPoolableObjectFactory;
@@ -426,7 +428,6 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
         _poolMap = new HashMap();
         _activeMap = new HashMap();
-        _poolList = new CursorableLinkedList();
 
         startEvictor(_timeBetweenEvictionRunsMillis);
     }
@@ -456,8 +457,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     }
 
     /**
-     * Returns the cap on the total number of instances from my pool.
-     * @return the cap on the total number of instances from my pool.
+     * Returns the cap on the total number of instances from my pool if non-positive.
+     * @return the cap on the total number of instances from my pool if non-positive.
      * @see #setMaxTotal
      */
     public synchronized int getMaxTotal() {
@@ -465,9 +466,9 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     }
 
     /**
-     * Sets the cap on the total number of instances from my pool.
+     * Sets the cap on the total number of instances from my pool if non-positive.
      * @param maxTotal The cap on the total number of instances from my pool.
-     *                  Use a negative value for an infinite number of instances.
+     *                  Use a non-positive value for an infinite number of instances.
      * @see #getMaxTotal
      */
     public synchronized void setMaxTotal(int maxTotal) {
@@ -576,7 +577,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     public synchronized void setMinIdle(int poolSize) {
         _minIdle = poolSize;
     }
-    
+
     /**
      * Returns the minimum number of idle objects in pool to maintain (per key)
      * @return the minimum number of idle objects in pool to maintain (per key)
@@ -585,7 +586,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     public synchronized int getMinIdle() {
         return _minIdle;
     }
-    
+
     /**
      * When <tt>true</tt>, objects will be
      * {@link org.apache.commons.pool.PoolableObjectFactory#validateObject validated}
@@ -766,11 +767,10 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         long starttime = System.currentTimeMillis();
         boolean newlyCreated = false;
         for(;;) {
-            CursorableLinkedList pool = (CursorableLinkedList)(_poolMap.get(key));
+            LinkedList pool = (LinkedList)(_poolMap.get(key));
             if(null == pool) {
-                pool = new CursorableLinkedList();
+                pool = new LinkedList();
                 _poolMap.put(key,pool);
-                _poolList.add(key);
             }
             ObjectTimestampPair pair = null;
             // if there are any sleeping, just grab one of those
@@ -788,7 +788,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 if ((_maxTotal > 0) && (_totalActive + _totalIdle >= _maxTotal)) {
                     clearOldest();
                 }
-                
+
                 // check if we can create one
                 // (note we know that the num sleeping is 0, else we wouldn't be here)
                 int active = getActiveCount(key);
@@ -811,7 +811,14 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                                 if(_maxWait <= 0) {
                                     wait();
                                 } else {
-                                    wait(_maxWait);
+                                    // this code may be executed again after a notify then continue cycle
+                                    // so, need to calculate the amount of time to wait
+                                    final long elapsed = (System.currentTimeMillis() - starttime);
+                                    final long waitTime = _maxWait - elapsed;
+                                    if (waitTime > 0)
+                                    {
+                                        wait(waitTime);
+                                    }
                                 }
                             } catch(InterruptedException e) {
                                 // ignored
@@ -840,9 +847,9 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     }
 
     public synchronized void clear() {
-        for(Iterator keyiter = _poolList.iterator(); keyiter.hasNext(); ) {
+        for(Iterator keyiter = _poolMap.keySet().iterator(); keyiter.hasNext(); ) {
             Object key = keyiter.next();
-            CursorableLinkedList list = (CursorableLinkedList)(_poolMap.get(key));
+            final LinkedList list = (LinkedList)(_poolMap.get(key));
             for(Iterator it = list.iterator(); it.hasNext(); ) {
                 try {
                     _factory.destroyObject(key,((ObjectTimestampPair)(it.next())).value);
@@ -853,21 +860,23 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             }
         }
         _poolMap.clear();
-        _poolList.clear();
+        if (_recentlyEvictedKeys != null) {
+            _recentlyEvictedKeys.clear();
+        }
         _totalIdle = 0;
         notifyAll();
     }
 
     /**
-     * Method clears oldest 15% of objects in pool.  The method sorts the 
+     * Method clears oldest 15% of objects in pool.  The method sorts the
      * objects into a TreeMap and then iterates the first 15% for removal
      */
     public synchronized void clearOldest() {
         // build sorted map of idle objects
         TreeMap map = new TreeMap();
-        for (Iterator keyiter = _poolList.iterator(); keyiter.hasNext();) {
+        for (Iterator keyiter = _poolMap.keySet().iterator(); keyiter.hasNext();) {
             Object key = keyiter.next();
-            CursorableLinkedList list = (CursorableLinkedList) _poolMap.get(key);
+            LinkedList list = (LinkedList) _poolMap.get(key);
             for (Iterator it = list.iterator(); it.hasNext();) {
                 // each item into the map uses the objectimestamppair object
                 // as the key.  It then gets sorted based on the timstamp field
@@ -876,11 +885,11 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 map.put(pair, key);
             }
         }
-        
+
         // Now iterate created map and kill the first 15% plus one to account for zero
         Set setPairKeys = map.entrySet();
         int itemsToRemove = ((int) (map.size() * 0.15)) + 1;
-        
+
         Iterator iter = setPairKeys.iterator();
         while (iter.hasNext() && itemsToRemove > 0) {
             Map.Entry entry = (Map.Entry) iter.next();
@@ -889,7 +898,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             // key references is the key of the list it belongs to.
             Object key = entry.getValue();
             ObjectTimestampPair pairTimeStamp = (ObjectTimestampPair) entry.getKey();
-            CursorableLinkedList list = (CursorableLinkedList) _poolMap.get(key);
+            LinkedList list = (LinkedList) _poolMap.get(key);
             list.remove(pairTimeStamp);
 
             try {
@@ -900,20 +909,18 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             // if that was the last object for that key, drop that pool
             if (list.isEmpty()) {
                 _poolMap.remove(key);
-                _poolList.remove(key);
             }
             _totalIdle--;
             itemsToRemove--;
         }
         notifyAll();
     }
-     
+
     public synchronized void clear(Object key) {
-        CursorableLinkedList pool = (CursorableLinkedList)(_poolMap.remove(key));
+        LinkedList pool = (LinkedList)(_poolMap.remove(key));
         if(null == pool) {
             return;
         } else {
-            _poolList.remove(key);
             for(Iterator it = pool.iterator(); it.hasNext(); ) {
                 try {
                     _factory.destroyObject(key,((ObjectTimestampPair)(it.next())).value);
@@ -941,7 +948,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
     public synchronized int getNumIdle(Object key) {
         try {
-            return((CursorableLinkedList)(_poolMap.get(key))).size();
+            return((LinkedList)(_poolMap.get(key))).size();
         } catch(Exception e) {
             return 0;
         }
@@ -968,12 +975,11 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
         boolean shouldDestroy = false;
         // grab the pool (list) of objects associated with the given key
-        CursorableLinkedList pool = (CursorableLinkedList) (_poolMap.get(key));
+        LinkedList pool = (LinkedList) (_poolMap.get(key));
         // if it doesn't exist, create it
         if(null == pool) {
-            pool = new CursorableLinkedList();
+            pool = new LinkedList();
             _poolMap.put(key, pool);
-            _poolList.add(key);
         }
         decrementActiveCount(key);
         // if there's no space in the pool, flag the object for destruction
@@ -981,7 +987,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         if(_maxIdle >= 0 && (pool.size() >= _maxIdle)) {
             shouldDestroy = true;
         } else if(success) {
-            pool.addFirst(new ObjectTimestampPair(obj));
+            pool.addLast(new ObjectTimestampPair(obj));
             _totalIdle++;
         }
         notifyAll();
@@ -1012,24 +1018,23 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     }
 
     /**
-     * Registers a key for pool control. 
-     * 
+     * Registers a key for pool control.
+     *
      * If <i>populateImmediately</i> is <code>true</code>, the pool will immediately commence
      * a sustain cycle. If <i>populateImmediately</i> is <code>false</code>, the pool will be
      * populated when the next schedules sustain task is run.
-     * 
+     *
      * @param key - The key to register for pool control.
      * @param populateImmediately - If this is <code>true</code>, the pool
      * will start a sustain cycle immediately.
      */
     public synchronized void preparePool(Object key, boolean populateImmediately) {
-        CursorableLinkedList pool = (CursorableLinkedList)(_poolMap.get(key));
+        LinkedList pool = (LinkedList)(_poolMap.get(key));
         if (null == pool) {
-            pool = new CursorableLinkedList();
+            pool = new LinkedList();
             _poolMap.put(key,pool);
-            _poolList.add(key);
         }
-        
+
         if (populateImmediately) {
             try {
                 // Create the pooled objects
@@ -1040,20 +1045,12 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             }
         }
     }
-    
+
     public synchronized void close() throws Exception {
         clear();
-        _poolList = null;
         _poolMap = null;
         _activeMap = null;
-        if(null != _evictionCursor) {
-            _evictionCursor.close();
-            _evictionCursor = null;
-        }
-        if(null != _evictionKeyCursor) {
-            _evictionKeyCursor.close();
-            _evictionKeyCursor = null;
-        }
+        _recentlyEvictedKeys = null;
         if(null != _evictor) {
             _evictor.cancel();
             _evictor = null;
@@ -1071,45 +1068,49 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
     public synchronized void evict() throws Exception {
         Object key = null;
+        if (_recentlyEvictedKeys == null) {
+            _recentlyEvictedKeys = new HashSet(_poolMap.size());
+        }
+        Set remainingKeys = new HashSet(_poolMap.keySet());
+        remainingKeys.removeAll(_recentlyEvictedKeys);
+        Iterator keyIter = remainingKeys.iterator();
+
+        ListIterator objIter = null;
+
         for(int i=0,m=getNumTests();i<m;i++) {
             if(_poolMap.size() > 0) {
-                // if we don't have a key cursor, then create one, and close any object cursor
-                if(null == _evictionKeyCursor) {
-                    _evictionKeyCursor = _poolList.cursor();
-                    key = null;
-                    if(null != _evictionCursor) {
-                        _evictionCursor.close();
-                        _evictionCursor = null;
+                // Find next idle object pool key to work on
+                if (key == null) {
+                    if (!keyIter.hasNext()) {
+                        _recentlyEvictedKeys.clear();
+                        remainingKeys = new HashSet(_poolMap.keySet());
+                        keyIter = remainingKeys.iterator();
                     }
-                }
-                // if we don't have an object cursor
-                if(null == _evictionCursor) {
-                    // if the _evictionKeyCursor has a next value, then use it
-                    if(_evictionKeyCursor.hasNext()) {
-                        key = _evictionKeyCursor.next();
-                        CursorableLinkedList pool = (CursorableLinkedList)(_poolMap.get(key));
-                        _evictionCursor = pool.cursor(pool.size());
-                    } else {
-                        // else close the key cursor and loop back around
-                        if(null != _evictionKeyCursor) {
-                            _evictionKeyCursor.close();
-                            _evictionKeyCursor = _poolList.cursor();
-                            if(null != _evictionCursor) {
-                                _evictionCursor.close();
-                                _evictionCursor = null;
-                            }
-                        }
-                        continue;
+                    if (!keyIter.hasNext()) {
+                        // done, there are no keyed pools
+                        return;
                     }
+                    key = keyIter.next();
                 }
+
+                // if we don't have a keyed object pool iterator
+                if (objIter == null) {
+                    final LinkedList list = (LinkedList)_poolMap.get(key);
+                    if (_evictLastIndex < 0 || _evictLastIndex > list.size()) {
+                        _evictLastIndex = list.size();
+                    }
+                    objIter = list.listIterator(_evictLastIndex);
+                }
+
                 // if the _evictionCursor has a previous object, then test it
-                if(_evictionCursor.hasPrevious()) {
-                    ObjectTimestampPair pair = (ObjectTimestampPair)(_evictionCursor.previous());
+                if(objIter.hasPrevious()) {
+                    ObjectTimestampPair pair = (ObjectTimestampPair)(objIter.previous());
                     boolean removeObject=false;
                     if(_minEvictableIdleTimeMillis > 0 &&
                        System.currentTimeMillis() - pair.tstamp > _minEvictableIdleTimeMillis) {
                        removeObject=true;
-                    } else if(_testWhileIdle) {
+                    }
+                    if(_testWhileIdle && removeObject == false) {
                         boolean active = false;
                         try {
                             _factory.activateObject(key,pair.value);
@@ -1131,29 +1132,27 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                     }
                     if(removeObject) {
                         try {
-                            _evictionCursor.remove();
+                            objIter.remove();
                             _totalIdle--;
                             _factory.destroyObject(key,pair.value);
 
                             // Do not remove the key from the _poolList or _poolmap, even if the list
-                            // stored in the _poolMap for this key is empty when the 
+                            // stored in the _poolMap for this key is empty when the
                             // {@link #getMinIdle <i>minIdle</i>} is > 0.
-                            // 
+                            //
                             // Otherwise if it was the last object for that key, drop that pool
-                            if ((_minIdle == 0) && (((CursorableLinkedList)(_poolMap.get(key))).isEmpty())) {
+                            if ((_minIdle == 0) && (((LinkedList)(_poolMap.get(key))).isEmpty())) {
                                 _poolMap.remove(key);
-                                _poolList.remove(key);
                             }
                         } catch(Exception e) {
                             ; // ignored
                         }
                     }
                 } else {
-                    // else the _evictionCursor is done, so close it and loop around
-                    if(_evictionCursor != null) {
-                        _evictionCursor.close();
-                        _evictionCursor = null;
-                    }
+                    // else done evicting keyed pool
+                    _recentlyEvictedKeys.add(key);
+                    _evictLastIndex = -1;
+                    objIter = null;
                 }
             }
         }
@@ -1167,8 +1166,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @throws Exception If there was an error whilst creating the pooled objects.
      */
     private synchronized void ensureMinIdle() throws Exception {
-        ListIterator iterator = _poolList.cursor();
-   
+        Iterator iterator = _poolMap.keySet().iterator();
+
         //Check if should sustain the pool
         if (_minIdle > 0) {
             // Loop through all elements in _poolList
@@ -1186,7 +1185,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     /**
      * Re-creates any needed objects to maintain the minimum levels of
      * pooled objects for the specified key.
-     * 
+     *
      * This method uses {@link #calculateDefecit} to calculate the number
      * of objects to be created. {@link #calculateDefecit} can be overridden to
      * provide a different method of calculating the number of objects to be
@@ -1197,13 +1196,13 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     private synchronized void ensureMinIdle(Object key) throws Exception {
         // Calculate current pool objects
         int numberToCreate = calculateDefecit(key);
-        
+
         //Create required pool objects, if none to create, this loop will not be run.
         for (int i = 0; i < numberToCreate; i++) {
             addObject(key);
         }
     }
-    
+
     //--- non-public methods ----------------------------------------
 
     /**
@@ -1217,10 +1216,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             _evictor = null;
         }
         if(delay > 0) {
-            _evictor = new Evictor(delay);
-            Thread t = new Thread(_evictor);
-            t.setDaemon(true);
-            t.start();
+            _evictor = new Evictor();
+            GenericObjectPool.EVICTION_TIMER.schedule(_evictor, delay, delay);
         }
     }
 
@@ -1228,7 +1225,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         StringBuffer buf = new StringBuffer();
         buf.append("Active: ").append(getNumActive()).append("\n");
         buf.append("Idle: ").append(getNumIdle()).append("\n");
-        Iterator it = _poolList.iterator();
+        Iterator it = _poolMap.keySet().iterator();
         while(it.hasNext()) {
             buf.append("\t").append(_poolMap.get(it.next())).append("\n");
         }
@@ -1273,23 +1270,23 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         }
         return active;
     }
-    
+
     /**
      * This returns the number of objects to create during the pool
-     * sustain cycle. This will ensure that the minimum number of idle 
+     * sustain cycle. This will ensure that the minimum number of idle
      * connections is maintained without going past the maxPool value.
      * <p>
-     * This method has been left public so derived classes can override 
-     * the way the defecit is calculated. ie... Increase/decrease the pool 
+     * This method has been left public so derived classes can override
+     * the way the defecit is calculated. ie... Increase/decrease the pool
      * size at certain times of day to accomodate for usage patterns.
-     *  
+     *
      * @param key - The key of the pool to calculate the number of
      *              objects to be re-created
      * @return The number of objects to be created
      */
     private int calculateDefecit(Object key) {
         int objectDefecit = 0;
-        
+
         //Calculate no of objects needed to be created, in order to have
         //the number of pooled objects < maxActive();
         objectDefecit = getMinIdle() - getNumIdle(key);
@@ -1297,8 +1294,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             int growLimit = Math.max(0, getMaxActive() - getNumActive(key) - getNumIdle(key));
             objectDefecit = Math.min(objectDefecit, growLimit);
         }
-        
-        // Take the maxTotal limit into account 
+
+        // Take the maxTotal limit into account
         if (getMaxTotal() > 0) {
             int growLimit = Math.max(0, getMaxTotal() - getNumActive() - getNumIdle());
             objectDefecit = Math.min(objectDefecit, growLimit);
@@ -1311,16 +1308,17 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
     /**
      * A simple "struct" encapsulating an object instance and a timestamp.
-     * 
+     *
      * Implements Comparable, objects are sorted from old to new.
+     *
+     * This is also used by {@link GenericObjectPool}.
      */
-    class ObjectTimestampPair implements Comparable {
+    static class ObjectTimestampPair implements Comparable {
         Object value;
         long tstamp;
 
         ObjectTimestampPair(Object val) {
-            value = val;
-            tstamp = System.currentTimeMillis();
+            this(val, System.currentTimeMillis());
         }
 
         ObjectTimestampPair(Object val, long time) {
@@ -1342,54 +1340,22 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     }
 
     /**
-     * The idle object evictor thread.
-     * @see #setTimeBetweenEvictionRunsMillis
+     * The idle object evictor {@link TimerTask}.
+     * @see GenericKeyedObjectPool#setTimeBetweenEvictionRunsMillis
      */
-    class Evictor implements Runnable {
-        private boolean _cancelled = false;
-        private long _delay = 0L;
-
-        public Evictor(long delay) {
-            _delay = delay;
-        }
-
-        void cancel() {
-            _cancelled = true;
-        }
-
+    private class Evictor extends TimerTask {
         public void run() {
-            while(!_cancelled) {
-                long sleeptime = 0L;
-                synchronized(GenericKeyedObjectPool.this) {
-                    sleeptime = _timeBetweenEvictionRunsMillis;
-                }
-                try {
-                    Thread.sleep(sleeptime);
-                } catch(Exception e) {
-                    ; // ignored
-                }
-                //Evict from the pool
-                try {
-                    evict();
-                } catch(Exception e) {
-                    ; // ignored
-                }
-                //Re-create the connections.
-                try {
-                    ensureMinIdle();
-                } catch (Exception e) { 
-                    ; // ignored
-                }
+            //Evict from the pool
+            try {
+                evict();
+            } catch(Exception e) {
+                // ignored
             }
-            synchronized(GenericKeyedObjectPool.this) {
-                if(null != _evictionCursor) {
-                    _evictionCursor.close();
-                    _evictionCursor = null;
-                }
-                if(null != _evictionKeyCursor) {
-                    _evictionKeyCursor.close();
-                    _evictionKeyCursor = null;
-                }
+            //Re-create the connections.
+            try {
+                ensureMinIdle();
+            } catch (Exception e) {
+                // ignored
             }
         }
     }
@@ -1439,7 +1405,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     private int _maxActive = DEFAULT_MAX_ACTIVE;
 
     /**
-     * The cap on the total number of instances from the pool.
+     * The cap on the total number of instances from the pool if non-positive.
      * @see #setMaxTotal
      * @see #getMaxTotal
      */
@@ -1557,12 +1523,6 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     /** My hash of pools (CursorableLinkedLists). */
     private HashMap _poolMap = null;
 
-    /**
-     * A cursorable list of my pools.
-     * @see GenericKeyedObjectPool.Evictor#run
-     */
-    private CursorableLinkedList _poolList = null;
-
     /** Count of active objects, per key. */
     private HashMap _activeMap = null;
 
@@ -1576,11 +1536,17 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     private KeyedPoolableObjectFactory _factory = null;
 
     /**
-     * My idle object eviction thread, if any.
+     * My idle object eviction {@link TimerTask}, if any.
      */
     private Evictor _evictor = null;
 
-    private CursorableLinkedList.Cursor _evictionCursor = null;
-    private CursorableLinkedList.Cursor _evictionKeyCursor = null;
+    /**
+     * Idle object pool keys that have been evicted recently.
+     */
+    private Set _recentlyEvictedKeys = null;
 
+    /**
+     * Position in the _pool where the _evictor last stopped.
+     */
+    private int _evictLastIndex = -1;
 }

@@ -18,7 +18,8 @@
   <pomVersion>3</pomVersion>
   
   <name>Commons Pool</name>
-  <id>commons-pool</id>
+  <groupId>commons-pool</groupId>
+  <artifactId>commons-pool</artifactId>
   <inceptionYear>2001</inceptionYear>
   <currentVersion>1.3-dev</currentVersion>
   <shortDescription>Commons Object Pooling Library</shortDescription>
@@ -35,11 +36,11 @@
   </organization>
 
   <licenses>
-	<license>
-    	<name>The Apache Software License, Version 2.0</name>
-    	<url>/LICENSE.txt</url>
-    	<distribution>repo</distribution>
-	</license>
+    <license>
+        <name>The Apache Software License, Version 2.0</name>
+        <url>/LICENSE.txt</url>
+        <distribution>repo</distribution>
+    </license>
   </licenses>
   
   <gumpRepositoryId>jakarta</gumpRepositoryId>
@@ -134,42 +135,45 @@
       <email></email>
       <organization>Apache Software Foundation</organization>
     </developer>
+    <developer>
+      <name>Sandy McArthur</name>
+      <id>sandymac</id>
+      <email></email>
+      <organization>Apache Software Foundation</organization>
+    </developer>
   </developers>
   <contributors>
     <contributor>
       <name>Todd Carmichael</name>
       <email>toddc@concur.com</email>
     </contributor>
-    <contributor>
-      <name>Sandy McArthur</name>
-      <email>Sandy AT McArthur DOT org</email>
-    </contributor>
   </contributors>
   
   <dependencies>
-    <dependency>
-      <id>commons-collections</id>
-      <version>2.1</version>
-    </dependency>
 
     <dependency>
-      <id>junit</id>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
       <version>3.8.1</version>
       <properties>
           <comment>Only required to run unit tests</comment>
+          <scope>test</scope>
       </properties>
     </dependency>
 
     <!-- these two are required by maven -->
     <dependency>
-    	<id>xml-apis</id><version>2.0.2</version>
+        <groupId>xml-apis</groupId>
+        <artifactId>xml-apis</artifactId>
+        <version>2.0.2</version>
         <properties>
            <comment>Any JAXP compliant parser (1.2 or later).</comment>
         </properties>
     </dependency>
     <dependency>
-    	<id>xerces</id>
-    	<version>2.0.2</version>
+        <groupId>xerces</groupId>
+        <artifactId>xerces</artifactId>
+        <version>2.0.2</version>
         <properties>
           <comment>Any JAXP compliant parser (1.2 or later).</comment>
         </properties>
@@ -193,6 +197,7 @@
 
     <resources>
       <resource>
+        <directory>${basedir}</directory>
         <targetPath>META-INF</targetPath>
         <includes>
           <include>NOTICE.txt</include>
