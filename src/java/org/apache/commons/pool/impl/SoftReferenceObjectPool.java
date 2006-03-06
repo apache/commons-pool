@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2004 The Apache Software Foundation.
+ * Copyright 1999-2006 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package org.apache.commons.pool.impl;
 
 import java.lang.ref.SoftReference;
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.Reference;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -31,6 +33,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * {@link ObjectPool}.
  *
  * @author Rodney Waldhoff
+ * @author Sandy McArthur
  * @version $Revision$ $Date$
  */
 public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPool {
@@ -51,7 +54,7 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
             for(int i=0;i<initSize;i++) {
                 Object obj = _factory.makeObject();
                 _factory.passivateObject(obj);
-                _pool.add(new SoftReference(obj));
+                _pool.add(new SoftReference(obj, refQueue));
             }
         }
     }
@@ -69,6 +72,7 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
             } else {
                 SoftReference ref = (SoftReference)(_pool.remove(_pool.size() - 1));
                 obj = ref.get();
+                ref.clear(); // prevent this ref from being enqueued with refQueue.
             }
             if(null != _factory && null != obj) {
                 _factory.activateObject(obj);
@@ -98,7 +102,7 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
         boolean shouldDestroy = !success;
         _numActive--;
         if(success) {
-            _pool.add(new SoftReference(obj));
+            _pool.add(new SoftReference(obj, refQueue));
         }
         notifyAll(); // _numActive has changed
 
@@ -133,6 +137,7 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
     /** Returns an approximation not less than the of the number of idle instances in the pool. */
     public synchronized int getNumIdle() {
         assertOpen();
+        pruneClearedReferences();
         return _pool.size();
     }
 
@@ -157,6 +162,7 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
             }
         }
         _pool.clear();
+        pruneClearedReferences();
     }
 
     public synchronized void close() throws Exception {
@@ -176,11 +182,33 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
         }
     }
 
+    /**
+     * If any idle objects were garabage collected, remove their
+     * {@link Reference} wrappers from the idle object pool.
+     */
+    private void pruneClearedReferences() {
+        Reference ref;
+        while ((ref = refQueue.poll()) != null) {
+            try {
+                _pool.remove(ref);
+            } catch (UnsupportedOperationException uoe) {
+                // ignored
+            }
+        }
+    }
+
     /** My pool. */
     private List _pool = null;
 
     /** My {@link PoolableObjectFactory}. */
     private PoolableObjectFactory _factory = null;
+
+    /**
+     * Queue of broken references that might be able to be removed from <code>_pool</code>.
+     * This is used to help {@link #getNumIdle()} be more accurate with minimial
+     * performance overhead.
+     */
+    private final ReferenceQueue refQueue = new ReferenceQueue();
 
     /** Number of active objects. */
     private int _numActive = 0;
