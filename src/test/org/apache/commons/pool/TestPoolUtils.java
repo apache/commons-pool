@@ -18,6 +18,8 @@ package org.apache.commons.pool;
 
 import junit.framework.TestCase;
 import junit.framework.AssertionFailedError;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 import java.lang.reflect.Proxy;
 import java.lang.reflect.InvocationHandler;
@@ -48,6 +50,10 @@ public class TestPoolUtils extends TestCase {
 
     /** Sleep time to let the minIdle tests run CHECK_COUNT times. */
     private static final int CHECK_SLEEP_PERIOD = CHECK_PERIOD * (CHECK_COUNT - 1) + CHECK_PERIOD / 2;
+
+    public static Test suite() {
+        return new TestSuite(TestPoolUtils.class);
+    }
 
     public void testJavaBeanInstantiation() {
         new PoolUtils();
