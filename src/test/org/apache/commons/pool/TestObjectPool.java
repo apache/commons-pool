@@ -216,23 +216,5 @@ public abstract class TestObjectPool extends TestCase {
         }
     }
 
-    public void testBaseCantCloseTwice() throws Exception {
-        try {
-            _pool = makeEmptyPool(3);
-        } catch(IllegalArgumentException e) {
-            return; // skip this test if unsupported
-        }
-        Object obj = _pool.borrowObject();
-        _pool.returnObject(obj);
-        
-        _pool.close();
-        try {
-            _pool.close();
-            fail("Expected IllegalStateException");
-        } catch(IllegalStateException e) {
-            // expected
-        }
-    }
-
     private ObjectPool _pool = null;
 }

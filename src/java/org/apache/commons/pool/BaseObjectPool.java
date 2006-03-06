@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2004 The Apache Software Foundation.
+ * Copyright 1999-2006 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,12 @@
 package org.apache.commons.pool;
 
 /**
- * A simple base impementation of {@link ObjectPool}.
- * All optional operations are implemented as throwing
- * {@link UnsupportedOperationException}.
+ * A simple base implementation of {@link ObjectPool}.
+ * Optional operations are implemented to either do nothing, return a value
+ * indicating it is unsupported or throw {@link UnsupportedOperationException}.
  *
  * @author Rodney Waldhoff
+ * @author Sandy McArthur
  * @version $Revision$ $Date$
  */
 public abstract class BaseObjectPool implements ObjectPool {
@@ -31,16 +32,18 @@ public abstract class BaseObjectPool implements ObjectPool {
 
     /**
      * Not supported in this base implementation.
+     * @return a negative value.
      */
     public int getNumIdle() throws UnsupportedOperationException {
-        throw new UnsupportedOperationException();
+        return -1;
     }
 
     /**
      * Not supported in this base implementation.
+     * @return a negative value.
      */
     public int getNumActive() throws UnsupportedOperationException {
-        throw new UnsupportedOperationException();
+        return -1;
     }
 
     /**
@@ -52,27 +55,39 @@ public abstract class BaseObjectPool implements ObjectPool {
 
     /**
      * Not supported in this base implementation.
+     * Always throws an {@link UnsupportedOperationException},
+     * subclasses should override this behavior.
      */
     public void addObject() throws Exception, UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 
     public void close() throws Exception {
-        assertOpen();
         closed = true;
     }
 
     /**
      * Not supported in this base implementation.
+     * Always throws an {@link UnsupportedOperationException},
+     * subclasses should override this behavior.
      */
     public void setFactory(PoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
-    
+
+    /**
+     * Has this pool instance been closed.
+     * @return <code>true</code> when this pool has been closed.
+     */
     protected final boolean isClosed() {
         return closed;
     }
-    
+
+    /**
+     * Throws an <code>IllegalStateException</code> when this pool has been closed.
+     * @throws IllegalStateException when this pool has been closed.
+     * @see #isClosed()
+     */
     protected final void assertOpen() throws IllegalStateException {
         if(isClosed()) {
             throw new IllegalStateException("Pool not open");

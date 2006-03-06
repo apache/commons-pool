@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2004 The Apache Software Foundation.
+ * Copyright 1999-2006 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import junit.framework.TestSuite;
 
 /**
  * @author Rodney Waldhoff
+ * @author Sandy McArthur
  * @version $Revision$ $Date$ 
  */
 public class TestBaseObjectPool extends TestCase {
@@ -43,20 +44,9 @@ public class TestBaseObjectPool extends TestCase {
             public void invalidateObject(Object obj) throws Exception {                
             }            
         };   
-        
-        try {
-            pool.getNumIdle();
-            fail("Expected UnsupportedOperationException");
-        } catch(UnsupportedOperationException e) {
-            // expected
-        }
 
-        try {
-            pool.getNumActive();
-            fail("Expected UnsupportedOperationException");
-        } catch(UnsupportedOperationException e) {
-            // expected
-        }
+        assertTrue("Negative expected.", pool.getNumIdle() < 0);
+        assertTrue("Negative expected.", pool.getNumActive() < 0);
 
         try {
             pool.clear();
@@ -78,5 +68,20 @@ public class TestBaseObjectPool extends TestCase {
         } catch(UnsupportedOperationException e) {
             // expected
         }
+    }
+
+    public void testClose() throws Exception {
+        ObjectPool pool = new BaseObjectPool() {
+            public Object borrowObject() throws Exception {
+                return null;
+            }
+            public void returnObject(Object obj) throws Exception {
+            }
+            public void invalidateObject(Object obj) throws Exception {
+            }
+        };
+
+        pool.close();
+        pool.close(); // should not error as of Pool 2.0.
     }
 }
