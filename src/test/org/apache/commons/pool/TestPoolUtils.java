@@ -17,6 +17,7 @@
 package org.apache.commons.pool;
 
 import junit.framework.TestCase;
+import junit.framework.AssertionFailedError;
 
 import java.lang.reflect.Proxy;
 import java.lang.reflect.InvocationHandler;
@@ -29,6 +30,7 @@ import java.util.TimerTask;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Iterator;
+import java.util.Arrays;
 
 /**
  * Unit tests for {@link PoolUtils}.
@@ -37,7 +39,7 @@ import java.util.Iterator;
  * @version $Revision$ $Date$
  */
 public class TestPoolUtils extends TestCase {
-    
+
     /** Period between checks for minIdle tests. Increase this if you happen to get too many false failures. */
     private static final int CHECK_PERIOD = 300;
 
@@ -79,21 +81,7 @@ public class TestPoolUtils extends TestCase {
                 (KeyedPoolableObjectFactory)createProxy(KeyedPoolableObjectFactory.class, calledMethods);
 
         final PoolableObjectFactory pof = PoolUtils.adapt(kpof);
-        pof.activateObject(null);
-        pof.destroyObject(null);
-        pof.makeObject();
-        pof.passivateObject(null);
-        pof.validateObject(null);
-        pof.toString();
-
-        final List expectedMethods = new ArrayList();
-        expectedMethods.add("activateObject");
-        expectedMethods.add("destroyObject");
-        expectedMethods.add("makeObject");
-        expectedMethods.add("passivateObject");
-        expectedMethods.add("validateObject");
-        expectedMethods.add("toString");
-
+        final List expectedMethods = invokeEveryMethod(pof);
         assertEquals(expectedMethods, calledMethods);
     }
 
@@ -110,21 +98,7 @@ public class TestPoolUtils extends TestCase {
                 (PoolableObjectFactory)createProxy(PoolableObjectFactory.class, calledMethods);
 
         final KeyedPoolableObjectFactory kpof = PoolUtils.adapt(pof);
-        kpof.activateObject(null, null);
-        kpof.destroyObject(null, null);
-        kpof.makeObject(null);
-        kpof.passivateObject(null, null);
-        kpof.validateObject(null, null);
-        kpof.toString();
-
-        final List expectedMethods = new ArrayList();
-        expectedMethods.add("activateObject");
-        expectedMethods.add("destroyObject");
-        expectedMethods.add("makeObject");
-        expectedMethods.add("passivateObject");
-        expectedMethods.add("validateObject");
-        expectedMethods.add("toString");
-
+        final List expectedMethods = invokeEveryMethod(kpof);
         assertEquals(expectedMethods, calledMethods);
     }
 
@@ -155,29 +129,7 @@ public class TestPoolUtils extends TestCase {
         final KeyedObjectPool kop = (KeyedObjectPool)createProxy(KeyedObjectPool.class, calledMethods);
 
         final ObjectPool op = PoolUtils.adapt(kop, new Object());
-        op.addObject();
-        op.borrowObject();
-        op.clear();
-        op.close();
-        op.getNumActive();
-        op.getNumIdle();
-        op.invalidateObject(null);
-        op.returnObject(null);
-        op.setFactory((PoolableObjectFactory)createProxy(PoolableObjectFactory.class, null));
-        op.toString();
-
-        final List expectedMethods = new ArrayList();
-        expectedMethods.add("addObject");
-        expectedMethods.add("borrowObject");
-        expectedMethods.add("clear");
-        expectedMethods.add("close");
-        expectedMethods.add("getNumActive");
-        expectedMethods.add("getNumIdle");
-        expectedMethods.add("invalidateObject");
-        expectedMethods.add("returnObject");
-        expectedMethods.add("setFactory");
-        expectedMethods.add("toString");
-
+        final List expectedMethods = invokeEveryMethod(op);
         assertEquals(expectedMethods, calledMethods);
     }
 
@@ -193,35 +145,7 @@ public class TestPoolUtils extends TestCase {
         final ObjectPool op = (ObjectPool)createProxy(ObjectPool.class, calledMethods);
 
         final KeyedObjectPool kop = PoolUtils.adapt(op);
-        kop.addObject(null);
-        kop.borrowObject(null);
-        kop.clear();
-        kop.clear(null);
-        kop.close();
-        kop.getNumActive();
-        kop.getNumActive(null);
-        kop.getNumIdle();
-        kop.getNumIdle(null);
-        kop.invalidateObject(null, null);
-        kop.returnObject(null, null);
-        kop.setFactory((KeyedPoolableObjectFactory)createProxy(KeyedPoolableObjectFactory.class, null));
-        kop.toString();
-
-        final List expectedMethods = new ArrayList();
-        expectedMethods.add("addObject");
-        expectedMethods.add("borrowObject");
-        expectedMethods.add("clear");
-        expectedMethods.add("clear");
-        expectedMethods.add("close");
-        expectedMethods.add("getNumActive");
-        expectedMethods.add("getNumActive");
-        expectedMethods.add("getNumIdle");
-        expectedMethods.add("getNumIdle");
-        expectedMethods.add("invalidateObject");
-        expectedMethods.add("returnObject");
-        expectedMethods.add("setFactory");
-        expectedMethods.add("toString");
-
+        final List expectedMethods = invokeEveryMethod(kop);
         assertEquals(expectedMethods, calledMethods);
     }
 
@@ -240,21 +164,34 @@ public class TestPoolUtils extends TestCase {
             // expected
         }
 
-        final List calledMethods = new ArrayList();
-        final ObjectPool pool = (ObjectPool)createProxy(ObjectPool.class, calledMethods);
-        final TimerTask task = PoolUtils.checkMinIdle(pool, 1, CHECK_PERIOD); // checks minIdle immediately
+        // Because this isn't determinist and you can get false failures, try more than once.
+        AssertionFailedError afe = null;
+        int triesLeft = 3;
+        do {
+            afe = null;
+            try {
+                final List calledMethods = new ArrayList();
+                final ObjectPool pool = (ObjectPool)createProxy(ObjectPool.class, calledMethods);
+                final TimerTask task = PoolUtils.checkMinIdle(pool, 1, CHECK_PERIOD); // checks minIdle immediately
 
-        Thread.sleep(CHECK_SLEEP_PERIOD); // will check CHECK_COUNT more times.
-        task.cancel();
-        task.toString();
+                Thread.sleep(CHECK_SLEEP_PERIOD); // will check CHECK_COUNT more times.
+                task.cancel();
+                task.toString();
 
-        final List expectedMethods = new ArrayList();
-        for (int i=0; i < CHECK_COUNT; i++) {
-            expectedMethods.add("getNumIdle");
-            expectedMethods.add("addObject");
+                final List expectedMethods = new ArrayList();
+                for (int i=0; i < CHECK_COUNT; i++) {
+                    expectedMethods.add("getNumIdle");
+                    expectedMethods.add("addObject");
+                }
+                expectedMethods.add("toString");
+                assertEquals(expectedMethods, calledMethods); // may fail because of the thread scheduler
+            } catch (AssertionFailedError e) {
+                afe = e;
+            }
+        } while (--triesLeft > 0 && afe != null);
+        if (afe != null) {
+            throw afe;
         }
-        expectedMethods.add("toString");
-        assertEquals(expectedMethods, calledMethods); // may fail because of the thread scheduler
     }
 
     public void testCheckMinIdleKeyedObjectPool() throws Exception {
@@ -279,22 +216,35 @@ public class TestPoolUtils extends TestCase {
             // expected
         }
 
-        final List calledMethods = new ArrayList();
-        final KeyedObjectPool pool = (KeyedObjectPool)createProxy(KeyedObjectPool.class, calledMethods);
-        final Object key = new Object();
-        final TimerTask task = PoolUtils.checkMinIdle(pool, key, 1, CHECK_PERIOD); // checks minIdle immediately
+        // Because this isn't determinist and you can get false failures, try more than once.
+        AssertionFailedError afe = null;
+        int triesLeft = 3;
+        do {
+            afe = null;
+            try {
+                final List calledMethods = new ArrayList();
+                final KeyedObjectPool pool = (KeyedObjectPool)createProxy(KeyedObjectPool.class, calledMethods);
+                final Object key = new Object();
+                final TimerTask task = PoolUtils.checkMinIdle(pool, key, 1, CHECK_PERIOD); // checks minIdle immediately
 
-        Thread.sleep(CHECK_SLEEP_PERIOD); // will check CHECK_COUNT more times.
-        task.cancel();
-        task.toString();
+                Thread.sleep(CHECK_SLEEP_PERIOD); // will check CHECK_COUNT more times.
+                task.cancel();
+                task.toString();
 
-        final List expectedMethods = new ArrayList();
-        for (int i=0; i < CHECK_COUNT; i++) {
-            expectedMethods.add("getNumIdle");
-            expectedMethods.add("addObject");
+                final List expectedMethods = new ArrayList();
+                for (int i=0; i < CHECK_COUNT; i++) {
+                    expectedMethods.add("getNumIdle");
+                    expectedMethods.add("addObject");
+                }
+                expectedMethods.add("toString");
+                assertEquals(expectedMethods, calledMethods); // may fail because of the thread scheduler
+            } catch (AssertionFailedError e) {
+                afe = e;
+            }
+        } while (--triesLeft > 0 && afe != null);
+        if (afe != null) {
+            throw afe;
         }
-        expectedMethods.add("toString");
-        assertEquals(expectedMethods, calledMethods); // may fail because of the thread scheduler
     }
 
     public void testCheckMinIdleKeyedObjectPoolKeys() throws Exception {
@@ -306,26 +256,39 @@ public class TestPoolUtils extends TestCase {
             // expected
         }
 
-        final List calledMethods = new ArrayList();
-        final KeyedObjectPool pool = (KeyedObjectPool)createProxy(KeyedObjectPool.class, calledMethods);
-        final Collection keys = new ArrayList(2);
-        keys.add("one");
-        keys.add("two");
-        final Map tasks = PoolUtils.checkMinIdle(pool, keys, 1, CHECK_PERIOD); // checks minIdle immediately
+        // Because this isn't determinist and you can get false failures, try more than once.
+        AssertionFailedError afe = null;
+        int triesLeft = 3;
+        do {
+            afe = null;
+            try {
+                final List calledMethods = new ArrayList();
+                final KeyedObjectPool pool = (KeyedObjectPool)createProxy(KeyedObjectPool.class, calledMethods);
+                final Collection keys = new ArrayList(2);
+                keys.add("one");
+                keys.add("two");
+                final Map tasks = PoolUtils.checkMinIdle(pool, keys, 1, CHECK_PERIOD); // checks minIdle immediately
 
-        Thread.sleep(CHECK_SLEEP_PERIOD); // will check CHECK_COUNT more times.
-        final Iterator iter = tasks.values().iterator();
-        while (iter.hasNext()) {
-            final TimerTask task = (TimerTask)iter.next();
-            task.cancel();
-        }
+                Thread.sleep(CHECK_SLEEP_PERIOD); // will check CHECK_COUNT more times.
+                final Iterator iter = tasks.values().iterator();
+                while (iter.hasNext()) {
+                    final TimerTask task = (TimerTask)iter.next();
+                    task.cancel();
+                }
 
-        final List expectedMethods = new ArrayList();
-        for (int i=0; i < CHECK_COUNT * keys.size(); i++) {
-            expectedMethods.add("getNumIdle");
-            expectedMethods.add("addObject");
+                final List expectedMethods = new ArrayList();
+                for (int i=0; i < CHECK_COUNT * keys.size(); i++) {
+                    expectedMethods.add("getNumIdle");
+                    expectedMethods.add("addObject");
+                }
+                assertEquals(expectedMethods, calledMethods); // may fail because of the thread scheduler
+            } catch (AssertionFailedError e) {
+                afe = e;
+            }
+        } while (--triesLeft > 0 && afe != null);
+        if (afe != null) {
+            throw afe;
         }
-        assertEquals(expectedMethods, calledMethods); // may fail because of the thread scheduler
     }
 
     public void testPrefillObjectPool() throws Exception {
@@ -416,6 +379,14 @@ public class TestPoolUtils extends TestCase {
         } catch(IllegalArgumentException iae) {
             // expected
         }
+
+        final List calledMethods = new ArrayList();
+        final ObjectPool op = (ObjectPool)createProxy(ObjectPool.class, calledMethods);
+
+        final ObjectPool sop = PoolUtils.synchronizedPool(op);
+        final List expectedMethods = invokeEveryMethod(sop);
+        assertEquals(expectedMethods, calledMethods);
+
         // TODO: Anyone feel motivated to construct a test that verifies proper synchronization?
     }
 
@@ -426,6 +397,14 @@ public class TestPoolUtils extends TestCase {
         } catch(IllegalArgumentException iae) {
             // expected
         }
+
+        final List calledMethods = new ArrayList();
+        final KeyedObjectPool kop = (KeyedObjectPool)createProxy(KeyedObjectPool.class, calledMethods);
+
+        final KeyedObjectPool skop = PoolUtils.synchronizedPool(kop);
+        final List expectedMethods = invokeEveryMethod(skop);
+        assertEquals(expectedMethods, calledMethods);
+
         // TODO: Anyone feel motivated to construct a test that verifies proper synchronization?
     }
 
@@ -436,6 +415,15 @@ public class TestPoolUtils extends TestCase {
         } catch(IllegalArgumentException iae) {
             // expected
         }
+
+        final List calledMethods = new ArrayList();
+        final PoolableObjectFactory pof =
+                (PoolableObjectFactory)createProxy(PoolableObjectFactory.class, calledMethods);
+
+        final PoolableObjectFactory spof = PoolUtils.synchronizedPoolableFactory(pof);
+        final List expectedMethods = invokeEveryMethod(spof);
+        assertEquals(expectedMethods, calledMethods);
+
         // TODO: Anyone feel motivated to construct a test that verifies proper synchronization?
     }
 
@@ -446,7 +434,89 @@ public class TestPoolUtils extends TestCase {
         } catch(IllegalArgumentException iae) {
             // expected
         }
+
+        final List calledMethods = new ArrayList();
+        final KeyedPoolableObjectFactory kpof =
+                (KeyedPoolableObjectFactory)createProxy(KeyedPoolableObjectFactory.class, calledMethods);
+
+        final KeyedPoolableObjectFactory skpof = PoolUtils.synchronizedPoolableFactory(kpof);
+        final List expectedMethods = invokeEveryMethod(skpof);
+        assertEquals(expectedMethods, calledMethods);
+
         // TODO: Anyone feel motivated to construct a test that verifies proper synchronization?
+    }
+
+    private static List invokeEveryMethod(ObjectPool op) throws Exception {
+        op.addObject();
+        op.borrowObject();
+        op.clear();
+        op.close();
+        op.getNumActive();
+        op.getNumIdle();
+        op.invalidateObject(null);
+        op.returnObject(null);
+        op.setFactory((PoolableObjectFactory)createProxy(PoolableObjectFactory.class, null));
+        op.toString();
+
+        final List expectedMethods = Arrays.asList(new String[] {
+                "addObject", "borrowObject", "clear", "close",
+                "getNumActive", "getNumIdle", "invalidateObject",
+                "returnObject", "setFactory", "toString"
+        });
+        return expectedMethods;
+    }
+
+    private static List invokeEveryMethod(KeyedObjectPool kop) throws Exception {
+        kop.addObject(null);
+        kop.borrowObject(null);
+        kop.clear();
+        kop.clear(null);
+        kop.close();
+        kop.getNumActive();
+        kop.getNumActive(null);
+        kop.getNumIdle();
+        kop.getNumIdle(null);
+        kop.invalidateObject(null, null);
+        kop.returnObject(null, null);
+        kop.setFactory((KeyedPoolableObjectFactory)createProxy(KeyedPoolableObjectFactory.class, null));
+        kop.toString();
+
+        final List expectedMethods = Arrays.asList(new String[] {
+                "addObject", "borrowObject", "clear", "clear", "close",
+                "getNumActive", "getNumActive", "getNumIdle", "getNumIdle", "invalidateObject",
+                "returnObject", "setFactory", "toString"
+        });
+        return expectedMethods;
+    }
+
+    private static List invokeEveryMethod(PoolableObjectFactory pof) throws Exception {
+        pof.activateObject(null);
+        pof.destroyObject(null);
+        pof.makeObject();
+        pof.passivateObject(null);
+        pof.validateObject(null);
+        pof.toString();
+
+        final List expectedMethods = Arrays.asList(new String[] {
+                "activateObject", "destroyObject", "makeObject",
+                "passivateObject", "validateObject", "toString",
+        });
+        return expectedMethods;
+    }
+
+    private static List invokeEveryMethod(KeyedPoolableObjectFactory kpof) throws Exception {
+        kpof.activateObject(null, null);
+        kpof.destroyObject(null, null);
+        kpof.makeObject(null);
+        kpof.passivateObject(null, null);
+        kpof.validateObject(null, null);
+        kpof.toString();
+
+        final List expectedMethods = Arrays.asList(new String[] {
+                "activateObject", "destroyObject", "makeObject",
+                "passivateObject", "validateObject", "toString",
+        });
+        return expectedMethods;
     }
 
     private static Object createProxy(final Class clazz, final List logger) {
