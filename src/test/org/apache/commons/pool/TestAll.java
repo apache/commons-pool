@@ -35,6 +35,7 @@ public class TestAll extends TestCase {
         suite.addTest(org.apache.commons.pool.TestBaseKeyedObjectPool.suite());
         suite.addTest(org.apache.commons.pool.TestBasePoolableObjectFactory.suite());
         suite.addTest(org.apache.commons.pool.TestBaseKeyedPoolableObjectFactory.suite());
+        suite.addTest(org.apache.commons.pool.TestPoolUtils.suite());
         suite.addTest(org.apache.commons.pool.impl.TestAll.suite());
         return suite;
     }
