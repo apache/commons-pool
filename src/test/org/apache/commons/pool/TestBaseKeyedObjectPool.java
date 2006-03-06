@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2004 The Apache Software Foundation.
+ * Copyright 1999-2006 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import junit.framework.TestSuite;
 
 /**
  * @author Rodney Waldhoff
+ * @author Sandy McArthur
  * @version $Revision$ $Date$
  */
 public class TestBaseKeyedObjectPool extends TestCase {
@@ -51,36 +52,13 @@ public class TestBaseKeyedObjectPool extends TestCase {
             // expected
         }
 
-        try {
-            pool.getNumIdle();
-            fail("Expected UnsupportedOperationException");
-        } catch(UnsupportedOperationException e) {
-            // expected
-        }
-
-        try {
-            pool.getNumActive();
-            fail("Expected UnsupportedOperationException");
-        } catch(UnsupportedOperationException e) {
-            // expected
-        }
+        assertTrue("Negative expected.", pool.getNumIdle() < 0);
+        assertTrue("Negative expected.", pool.getNumIdle("key") < 0);
+        assertTrue("Negative expected.", pool.getNumActive() < 0);
+        assertTrue("Negative expected.", pool.getNumActive("key") < 0);
 
         try {
             pool.clear();
-            fail("Expected UnsupportedOperationException");
-        } catch(UnsupportedOperationException e) {
-            // expected
-        }
-
-        try {
-            pool.getNumIdle("key");
-            fail("Expected UnsupportedOperationException");
-        } catch(UnsupportedOperationException e) {
-            // expected
-        }
-
-        try {
-            pool.getNumActive("key");
             fail("Expected UnsupportedOperationException");
         } catch(UnsupportedOperationException e) {
             // expected
