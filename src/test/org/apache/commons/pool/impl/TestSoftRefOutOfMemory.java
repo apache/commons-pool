@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2004 The Apache Software Foundation.
+ * Copyright 1999-2006 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,13 @@ import org.apache.commons.pool.PoolableObjectFactory;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * @author Dirk Verbeeck
+ * @author Sandy McArthur
  * @version $Revision$ $Date$
  */
 public class TestSoftRefOutOfMemory extends TestCase {
@@ -54,23 +58,23 @@ public class TestSoftRefOutOfMemory extends TestCase {
         assertEquals("1", obj);
         pool.returnObject(obj);
         obj = null;
-        
+
         assertEquals(1, pool.getNumIdle());
 
-        try {
-            HashMap map = new HashMap();
-
-            for (int i = 0; i < 1000000; i++) {
-                map.put(new Integer(i), new String("Fred Flintstone" + i));
-            }
-        } catch (OutOfMemoryError ex) {
-            
+        final List garbage = new LinkedList();
+        final Runtime runtime = Runtime.getRuntime();
+        while (pool.getNumIdle() > 0) {
+            garbage.add(new byte[Math.min(1024 * 1024, (int)runtime.freeMemory())]);
+            System.gc();
         }
+        garbage.clear();
+        System.gc();
+
         obj = pool.borrowObject();
         assertEquals("2", obj);
         pool.returnObject(obj);
         obj = null;
-            
+
         assertEquals(1, pool.getNumIdle());
     }
 
@@ -85,23 +89,23 @@ public class TestSoftRefOutOfMemory extends TestCase {
         assertEquals("1000", obj);
         pool.returnObject(obj);
         obj = null;
-        
+
         assertEquals(1000, pool.getNumIdle());
 
-        try {
-            HashMap map = new HashMap();
-
-            for (int i = 0; i < 1000000; i++) {
-                map.put(new Integer(i), new String("Fred Flintstone" + i));
-            }
+        final List garbage = new LinkedList();
+        final Runtime runtime = Runtime.getRuntime();
+        while (pool.getNumIdle() > 0) {
+            garbage.add(new byte[Math.min(1024 * 1024, (int)runtime.freeMemory())]);
+            System.gc();
         }
-        catch (OutOfMemoryError ex) { }
-        
+        garbage.clear();
+        System.gc();
+
         obj = pool.borrowObject();
         assertEquals("1001", obj);
         pool.returnObject(obj);
         obj = null;
-            
+
         assertEquals(1, pool.getNumIdle());
     }
 
@@ -112,23 +116,23 @@ public class TestSoftRefOutOfMemory extends TestCase {
         assertTrue(((String)obj).startsWith("1."));
         pool.returnObject(obj);
         obj = null;
-        
+
         assertEquals(1, pool.getNumIdle());
 
-        try {
-            HashMap map = new HashMap();
-
-            for (int i = 0; i < 1000000; i++) {
-                map.put(new Integer(i), new String("Fred Flintstone" + i));
-            }
+        final List garbage = new LinkedList();
+        final Runtime runtime = Runtime.getRuntime();
+        while (pool.getNumIdle() > 0) {
+            garbage.add(new byte[Math.min(1024 * 1024, (int)runtime.freeMemory())]);
+            System.gc();
         }
-        catch (OutOfMemoryError ex) { }
-        
+        garbage.clear();
+        System.gc();
+
         obj = pool.borrowObject();
         assertTrue(((String)obj).startsWith("2."));
         pool.returnObject(obj);
         obj = null;
-            
+
         assertEquals(1, pool.getNumIdle());
     }
 
@@ -139,14 +143,18 @@ public class TestSoftRefOutOfMemory extends TestCase {
         assertTrue(((String)obj).startsWith("1."));
         pool.returnObject(obj);
         obj = null;
-        
+
         assertEquals(1, pool.getNumIdle());
 
         // allocate map outside try/catch block
-        HashMap map = new HashMap();
+        final Map map = new HashMap();
         try {
-            for (int i = 0; i < 1000000; i++) {
-                map.put(new Integer(i), new String("Fred Flintstone" + i));
+            final Runtime runtime = Runtime.getRuntime();
+            int i = 0;
+            while (true) {
+                final int size = Math.max(1, Math.min(1048576, (int)runtime.freeMemory() / 2));
+                final byte[] data = new byte[size];
+                map.put(new Integer(i++), data);
             }
         }
         catch (OutOfMemoryError ex) { }
@@ -161,10 +169,15 @@ public class TestSoftRefOutOfMemory extends TestCase {
 
     public static class SmallPoolableObjectFactory implements PoolableObjectFactory {
         private int counter = 0;
-        
+
         public Object makeObject() {
             counter++;
-            return String.valueOf(counter);
+            // It seems that as of Java 1.4 String.valueOf may return an
+            // intern()'ed String this may cause problems when the tests
+            // depend on the returned object to be eventually garbaged
+            // collected. Either way, making sure a new String instance
+            // is returned eliminated false failures.
+            return new String(String.valueOf(counter));
         }
         public boolean validateObject(Object obj) {
             return true;
@@ -177,13 +190,13 @@ public class TestSoftRefOutOfMemory extends TestCase {
     public static class LargePoolableObjectFactory implements PoolableObjectFactory {
         private String buffer;
         private int counter = 0;
-        
+
         public LargePoolableObjectFactory(int size) {
             char[] data = new char[size];
             Arrays.fill(data, '.');
             buffer = new String(data);
         }
-        
+
         public Object makeObject() {
             counter++;
             return String.valueOf(counter) + buffer;
