@@ -155,6 +155,109 @@ public class TestPoolUtils extends TestCase {
         assertEquals(expectedMethods, calledMethods);
     }
 
+    public void testCheckedPoolObjectPool() throws Exception {
+        try {
+            PoolUtils.checkedPool((ObjectPool)null, Object.class);
+            fail("PoolUtils.checkedPool(ObjectPool, Class) must not allow a null pool.");
+        } catch(IllegalArgumentException iae) {
+            // expected
+        }
+        try {
+            PoolUtils.checkedPool((ObjectPool)createProxy(ObjectPool.class, null), null);
+            fail("PoolUtils.checkedPool(ObjectPool, Class) must not allow a null type.");
+        } catch(IllegalArgumentException iae) {
+            // expected
+        }
+
+        final List calledMethods = new ArrayList();
+        ObjectPool op = (ObjectPool)createProxy(ObjectPool.class, calledMethods);
+
+        ObjectPool cop = PoolUtils.checkedPool(op, Object.class);
+        final List expectedMethods = invokeEveryMethod(cop);
+        assertEquals(expectedMethods, calledMethods);
+
+        op = new BaseObjectPool() {
+            public Object borrowObject() throws Exception {
+                return new Integer(0);
+            }
+            public void returnObject(Object obj) {}
+            public void invalidateObject(Object obj) {}
+        };
+        cop = PoolUtils.checkedPool(op, String.class);
+
+        try {
+            cop.borrowObject();
+            fail("borrowObject should have failed as Integer !instanceof String.");
+        } catch (ClassCastException cce) {
+            // expected
+        }
+        try {
+            cop.returnObject(new Integer(1));
+            fail("returnObject should have failed as Integer !instanceof String.");
+        } catch (ClassCastException cce) {
+            // expected
+        }
+        try {
+            cop.invalidateObject(new Integer(2));
+            fail("invalidateObject should have failed as Integer !instanceof String.");
+        } catch (ClassCastException cce) {
+            // expected
+        }
+    }
+
+    public void testCheckedPoolKeyedObjectPool() throws Exception {
+        try {
+            PoolUtils.checkedPool((KeyedObjectPool)null, Object.class);
+            fail("PoolUtils.checkedPool(KeyedObjectPool, Class) must not allow a null pool.");
+        } catch(IllegalArgumentException iae) {
+            // expected
+        }
+        try {
+            PoolUtils.checkedPool((KeyedObjectPool)createProxy(KeyedObjectPool.class, null), null);
+            fail("PoolUtils.checkedPool(KeyedObjectPool, Class) must not allow a null type.");
+        } catch(IllegalArgumentException iae) {
+            // expected
+        }
+
+        final List calledMethods = new ArrayList();
+        KeyedObjectPool op = (KeyedObjectPool)createProxy(KeyedObjectPool.class, calledMethods);
+
+        KeyedObjectPool cop = PoolUtils.checkedPool(op, Object.class);
+        final List expectedMethods = invokeEveryMethod(cop);
+        assertEquals(expectedMethods, calledMethods);
+
+
+        op = new BaseKeyedObjectPool() {
+            public Object borrowObject(Object key) {
+                return new Integer(0);
+            }
+
+            public void returnObject(Object key, Object obj) {}
+
+            public void invalidateObject(Object key, Object obj) {}
+        };
+        cop = PoolUtils.checkedPool(op, String.class);
+
+        try {
+            cop.borrowObject(null);
+            fail("borrowObject should have failed as Integer !instanceof String.");
+        } catch (ClassCastException cce) {
+            // expected
+        }
+        try {
+            cop.returnObject(null, new Integer(1));
+            fail("returnObject should have failed as Integer !instanceof String.");
+        } catch (ClassCastException cce) {
+            // expected
+        }
+        try {
+            cop.invalidateObject(null, new Integer(2));
+            fail("invalidateObject should have failed as Integer !instanceof String.");
+        } catch (ClassCastException cce) {
+            // expected
+        }
+    }
+
     public void testCheckMinIdleObjectPool() throws Exception {
         try {
             PoolUtils.checkMinIdle(null, 1, 1);
@@ -459,8 +562,8 @@ public class TestPoolUtils extends TestCase {
         op.close();
         op.getNumActive();
         op.getNumIdle();
-        op.invalidateObject(null);
-        op.returnObject(null);
+        op.invalidateObject(new Object());
+        op.returnObject(new Object());
         op.setFactory((PoolableObjectFactory)createProxy(PoolableObjectFactory.class, null));
         op.toString();
 
@@ -482,8 +585,8 @@ public class TestPoolUtils extends TestCase {
         kop.getNumActive(null);
         kop.getNumIdle();
         kop.getNumIdle(null);
-        kop.invalidateObject(null, null);
-        kop.returnObject(null, null);
+        kop.invalidateObject(null, new Object());
+        kop.returnObject(null, new Object());
         kop.setFactory((KeyedPoolableObjectFactory)createProxy(KeyedPoolableObjectFactory.class, null));
         kop.toString();
 
