@@ -62,6 +62,10 @@ public abstract class BaseObjectPool implements ObjectPool {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Close this pool.
+     * This affects the behavior of <code>isClosed</code> and <code>assertOpen</code>.
+     */
     public void close() throws Exception {
         closed = true;
     }

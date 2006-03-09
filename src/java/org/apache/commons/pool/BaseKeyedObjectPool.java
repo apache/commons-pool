@@ -86,11 +86,12 @@ public abstract class BaseKeyedObjectPool implements KeyedObjectPool {
     }
 
     /**
-     * Does nothing this base implementation.
+     * Close this pool.
+     * This affects the behavior of <code>isClosed</code> and <code>assertOpen</code>.
      */
     public void close() throws Exception {
+        closed = true;
     }
-
 
     /**
      * Not supported in this base implementation.
@@ -101,4 +102,24 @@ public abstract class BaseKeyedObjectPool implements KeyedObjectPool {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Has this pool instance been closed.
+     * @return <code>true</code> when this pool has been closed.
+     */
+    protected final boolean isClosed() {
+        return closed;
+    }
+
+    /**
+     * Throws an <code>IllegalStateException</code> when this pool has been closed.
+     * @throws IllegalStateException when this pool has been closed.
+     * @see #isClosed()
+     */
+    protected final void assertOpen() throws IllegalStateException {
+        if(isClosed()) {
+            throw new IllegalStateException("Pool not open");
+        }
+    }
+
+    private volatile boolean closed = false;
 }

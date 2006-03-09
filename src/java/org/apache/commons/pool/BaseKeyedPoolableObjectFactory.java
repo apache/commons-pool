@@ -17,7 +17,7 @@
 package org.apache.commons.pool;
 
 /**
- * A base implemenation of {@link KeyedPoolableObjectFactory KeyedPoolableObjectFactory}.
+ * A base implementation of <code>KeyedPoolableObjectFactory</code>.
  * <p>
  * All operations defined here are essentially no-op's.
  *
