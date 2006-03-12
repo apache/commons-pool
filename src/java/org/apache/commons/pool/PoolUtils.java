@@ -29,6 +29,7 @@ import java.util.TimerTask;
  *
  * @author Sandy McArthur
  * @version $Revision$ $Date$
+ * @since Pool 1.3
  */
 public final class PoolUtils {
 
@@ -55,6 +56,7 @@ public final class PoolUtils {
      * @return a {@link PoolableObjectFactory} that delegates to <code>keyedFactory</code> with an internal key.
      * @throws IllegalArgumentException when <code>keyedFactory</code> is <code>null</code>.
      * @see #adapt(KeyedPoolableObjectFactory, Object)
+     * @since Pool 1.3
      */
     public static PoolableObjectFactory adapt(final KeyedPoolableObjectFactory keyedFactory) throws IllegalArgumentException {
         return adapt(keyedFactory, new Object());
@@ -69,6 +71,7 @@ public final class PoolUtils {
      * @return a {@link PoolableObjectFactory} that delegates to <code>keyedFactory</code> with the specified key.
      * @throws IllegalArgumentException when <code>keyedFactory</code> or <code>key</code> is <code>null</code>.
      * @see #adapt(KeyedPoolableObjectFactory)
+     * @since Pool 1.3
      */
     public static PoolableObjectFactory adapt(final KeyedPoolableObjectFactory keyedFactory, final Object key) throws IllegalArgumentException {
         return new PoolableObjectFactoryAdaptor(keyedFactory, key);
@@ -81,6 +84,7 @@ public final class PoolUtils {
      * @param factory the {@link PoolableObjectFactory} to delegate to.
      * @return a {@link KeyedPoolableObjectFactory} that delegates to <code>factory</code> ignoring the key.
      * @throws IllegalArgumentException when <code>factory</code> is <code>null</code>.
+     * @since Pool 1.3
      */
     public static KeyedPoolableObjectFactory adapt(final PoolableObjectFactory factory) throws IllegalArgumentException {
         return new KeyedPoolableObjectFactoryAdaptor(factory);
@@ -94,6 +98,7 @@ public final class PoolUtils {
      * @return an {@link ObjectPool} that delegates to <code>keyedPool</code> with an internal key.
      * @throws IllegalArgumentException when <code>keyedPool</code> is <code>null</code>.
      * @see #adapt(KeyedObjectPool, Object)
+     * @since Pool 1.3
      */
     public static ObjectPool adapt(final KeyedObjectPool keyedPool) throws IllegalArgumentException {
         return adapt(keyedPool, new Object());
@@ -108,6 +113,7 @@ public final class PoolUtils {
      * @return an {@link ObjectPool} that delegates to <code>keyedPool</code> with the specified key.
      * @throws IllegalArgumentException when <code>keyedPool</code> or <code>key</code> is <code>null</code>.
      * @see #adapt(KeyedObjectPool)
+     * @since Pool 1.3
      */
     public static ObjectPool adapt(final KeyedObjectPool keyedPool, final Object key) throws IllegalArgumentException {
         return new ObjectPoolAdaptor(keyedPool, key);
@@ -120,6 +126,7 @@ public final class PoolUtils {
      * @param pool the {@link ObjectPool} to delegate to.
      * @return a {@link KeyedObjectPool} that delegates to <code>keyedPool</code> ignoring the key.
      * @throws IllegalArgumentException when <code>keyedPool</code> is <code>null</code>.
+     * @since Pool 1.3
      */
     public static KeyedObjectPool adapt(final ObjectPool pool) throws IllegalArgumentException {
         return new KeyedObjectPoolAdaptor(pool);
@@ -131,6 +138,7 @@ public final class PoolUtils {
      *
      * @param pool the keyedPool to enforce type safety on
      * @return an <code>ObjectPool</code> that will only allow objects of <code>type</code>
+     * @since Pool 1.3
      */
     public static ObjectPool checkedPool(final ObjectPool pool, final Class type) {
         if (pool == null) {
@@ -148,6 +156,7 @@ public final class PoolUtils {
      *
      * @param keyedPool the keyedPool to enforce type safety on
      * @return an <code>KeyedObjectPool</code> that will only allow objects of <code>type</code>
+     * @since Pool 1.3
      */
     public static KeyedObjectPool checkedPool(final KeyedObjectPool keyedPool, final Class type) {
         if (keyedPool == null) {
@@ -171,6 +180,7 @@ public final class PoolUtils {
      * @throws IllegalArgumentException when <code>keyedPool</code> is <code>null</code> or
      *      when <code>minIdle</code> is negative or when <code>period</code> isn't
      *      valid for {@link Timer#schedule(TimerTask, long, long)}.
+     * @since Pool 1.3
      */
     public static TimerTask checkMinIdle(final ObjectPool pool, final int minIdle, final long period) throws IllegalArgumentException {
         if (pool == null) {
@@ -198,6 +208,7 @@ public final class PoolUtils {
      * @throws IllegalArgumentException when <code>keyedPool</code>, <code>key</code> is <code>null</code> or
      *      when <code>minIdle</code> is negative or when <code>period</code> isn't
      *      valid for {@link Timer#schedule(TimerTask, long, long)}.
+     * @since Pool 1.3
      */
     public static TimerTask checkMinIdle(final KeyedObjectPool keyedPool, final Object key, final int minIdle, final long period) throws IllegalArgumentException {
         if (keyedPool == null) {
@@ -228,6 +239,7 @@ public final class PoolUtils {
      *      collection is <code>null</code> or when <code>minIdle</code> is negative or when <code>period</code> isn't
      *      valid for {@link Timer#schedule(TimerTask, long, long)}.
      * @see #checkMinIdle(KeyedObjectPool, Object, int, long)
+     * @since Pool 1.3
      */
     public static Map checkMinIdle(final KeyedObjectPool keyedPool, final Collection keys, final int minIdle, final long period) throws IllegalArgumentException {
         if (keys == null) {
@@ -250,6 +262,7 @@ public final class PoolUtils {
      * @param count the number of idle objects to add.
      * @throws Exception when {@link ObjectPool#addObject()} fails.
      * @throws IllegalArgumentException when <code>keyedPool</code> is <code>null</code>.
+     * @since Pool 1.3
      */
     public static void prefill(final ObjectPool pool, final int count) throws Exception, IllegalArgumentException {
         if (pool == null) {
@@ -269,6 +282,7 @@ public final class PoolUtils {
      * @param count the number of idle objects to add for <code>key</code>.
      * @throws Exception when {@link KeyedObjectPool#addObject(Object)} fails.
      * @throws IllegalArgumentException when <code>keyedPool</code> or <code>key</code> is <code>null</code>.
+     * @since Pool 1.3
      */
     public static void prefill(final KeyedObjectPool keyedPool, final Object key, final int count) throws Exception, IllegalArgumentException {
         if (keyedPool == null) {
@@ -294,6 +308,7 @@ public final class PoolUtils {
      * @throws IllegalArgumentException when <code>keyedPool</code>, <code>keys</code>, or
      *      any value in <code>keys</code> is <code>null</code>.
      * @see #prefill(KeyedObjectPool, Object, int)
+     * @since Pool 1.3
      */
     public static void prefill(final KeyedObjectPool keyedPool, final Collection keys, final int count) throws Exception, IllegalArgumentException {
         if (keys == null) {
@@ -307,8 +322,10 @@ public final class PoolUtils {
 
     /**
      * Returns a synchronized (thread-safe) ObjectPool backed by the specified ObjectPool.
+     *
      * @param pool the ObjectPool to be "wrapped" in a synchronized ObjectPool.
      * @return a synchronized view of the specified ObjectPool.
+     * @since Pool 1.3
      */
     public static ObjectPool synchronizedPool(final ObjectPool pool) {
         return new SynchronizedObjectPool(pool);
@@ -316,8 +333,10 @@ public final class PoolUtils {
 
     /**
      * Returns a synchronized (thread-safe) KeyedObjectPool backed by the specified KeyedObjectPool.
+     *
      * @param keyedPool the KeyedObjectPool to be "wrapped" in a synchronized KeyedObjectPool.
      * @return a synchronized view of the specified KeyedObjectPool.
+     * @since Pool 1.3
      */
     public static KeyedObjectPool synchronizedPool(final KeyedObjectPool keyedPool) {
         return new SynchronizedKeyedObjectPool(keyedPool);
@@ -325,8 +344,10 @@ public final class PoolUtils {
 
     /**
      * Returns a synchronized (thread-safe) PoolableObjectFactory backed by the specified PoolableObjectFactory.
+     *
      * @param factory the PoolableObjectFactory to be "wrapped" in a synchronized PoolableObjectFactory.
      * @return a synchronized view of the specified PoolableObjectFactory.
+     * @since Pool 1.3
      */
     public static PoolableObjectFactory synchronizedPoolableFactory(final PoolableObjectFactory factory) {
         return new SynchronizedPoolableObjectFactory(factory);
@@ -334,8 +355,10 @@ public final class PoolUtils {
 
     /**
      * Returns a synchronized (thread-safe) KeyedPoolableObjectFactory backed by the specified KeyedPoolableObjectFactory.
+     *
      * @param keyedFactory the KeyedPoolableObjectFactory to be "wrapped" in a synchronized KeyedPoolableObjectFactory.
      * @return a synchronized view of the specified KeyedPoolableObjectFactory.
+     * @since Pool 1.3
      */
     public static KeyedPoolableObjectFactory synchronizedPoolableFactory(final KeyedPoolableObjectFactory keyedFactory) {
         return new SynchronizedKeyedPoolableObjectFactory(keyedFactory);
@@ -343,7 +366,9 @@ public final class PoolUtils {
 
     /**
      * Get the <code>Timer</code> for checking keyedPool's idle count. Lazily create the {@link Timer} as needed.
+     *
      * @return the {@link Timer} for checking keyedPool's idle count.
+     * @since Pool 1.3
      */
     private static synchronized Timer getMinIdleTimer() {
         if (MIN_IDLE_TIMER == null) {
