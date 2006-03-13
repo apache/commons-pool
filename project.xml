@@ -161,6 +161,32 @@
       </properties>
     </dependency>
 
+    <dependency>
+      <groupId>maven</groupId>
+      <artifactId>maven-changelog-plugin</artifactId>
+      <version>1.8.2</version>
+      <url>http://maven.apache.org/maven-1.x/plugins/changelog/</url>
+      <type>plugin</type>
+      <properties>
+          <comment>
+              &lt;strong&gt;Site Only&lt;/strong&gt; - v1.8.2 (minimum)
+          </comment>
+      </properties>
+    </dependency>
+
+    <dependency>
+      <groupId>maven</groupId>
+      <artifactId>maven-developer-activity-plugin</artifactId>
+      <version>1.5.1</version>
+      <url>http://maven.apache.org/maven-1.x/plugins/developer-activity/</url>
+      <type>plugin</type>
+      <properties>
+          <comment>
+              &lt;strong&gt;Site Only&lt;/strong&gt; - v1.5.2 (minimum)
+          </comment>
+      </properties>
+    </dependency>
+
   </dependencies>
 
   <build>
