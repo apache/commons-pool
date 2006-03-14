@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2004 The Apache Software Foundation.
+ * Copyright 1999-2004,2006 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,21 @@
 
 package org.apache.commons.pool.impl;
 
-import java.util.BitSet;
-import java.util.NoSuchElementException;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.TestObjectPool;
 
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.List;
+import java.util.NoSuchElementException;
+
 /**
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
+ * @author Sandy McArthur
  * @version $Revision$ $Date$
  */
 public class TestStackObjectPool extends TestObjectPool {
@@ -46,7 +45,11 @@ public class TestStackObjectPool extends TestObjectPool {
     protected ObjectPool makeEmptyPool(int mincap) {
         return new StackObjectPool(new SimpleFactory());
     }
-    
+
+    protected ObjectPool makeEmptyPool(final PoolableObjectFactory factory) {
+        return new StackObjectPool(factory);
+    }
+
     protected Object getNthObject(int n) {
         return String.valueOf(n);
     }
@@ -162,12 +165,9 @@ public class TestStackObjectPool extends TestObjectPool {
                 }
                 public void activateObject(Object obj) { }
                 public void passivateObject(Object obj) { 
-                    if(obj instanceof Integer) {
-                        if((((Integer)obj).intValue() % 3) == 0) {
-                            throw new RuntimeException("Couldn't passivate");
-                        }
-                    } else {
-                        throw new RuntimeException("Couldn't passivate");
+                    final Integer integer = (Integer)obj;
+                    if (integer.intValue() % 3 == 0) {
+                        throw new RuntimeException("Couldn't passivate: " + integer);
                     }
                 }
             }
@@ -177,13 +177,12 @@ public class TestStackObjectPool extends TestObjectPool {
         for(int i=0;i<10;i++) {
             obj[i] = pool.borrowObject();
             assertEquals("Each time we borrow, get one more active.", i+1, pool.getNumActive());
-            
         }
         for(int i=0;i<10;i++) {
             pool.returnObject(obj[i]);
             assertEquals("Each time we borrow, get one less active.", 9-i, pool.getNumActive());
         }
-        assertEquals(7,pool.getNumIdle());
+        assertEquals(6,pool.getNumIdle());
     }
     
     public void testBorrowReturnWithSometimesInvalidObjects() throws Exception {
@@ -233,12 +232,12 @@ public class TestStackObjectPool extends TestObjectPool {
         
         // now reject even numbers
         factory.reject = true;
-        
+
         for(int i=0;i<10;i++) {
             pool.returnObject(obj[i]);
             assertEquals("Each time we borrow, get one less active.", 9-i, pool.getNumActive());
         }
-        assertEquals(3,pool.getNumIdle());
+        assertEquals(6,pool.getNumIdle());
     }
     
     public void testVariousConstructors() throws Exception {
@@ -316,73 +315,6 @@ public class TestStackObjectPool extends TestObjectPool {
         // check to see what object was destroyed
         Integer d = (Integer)destroyed.get(0);
         assertEquals("Destoryed objects should have the stalest object.", i0, d);
-    }
-
-    private List testFactorySequenceStates = new ArrayList(5);
-    public void testFactorySequence() throws Exception {
-        // setup
-        // We need a factory that tracks method call sequence.
-        PoolableObjectFactory pof = new PoolableObjectFactory() {
-            public Object makeObject() throws Exception {
-                testFactorySequenceStates.add("makeObject");
-                return new Object();
-            }
-
-            public void activateObject(Object obj) throws Exception {
-                testFactorySequenceStates.add("activateObject");
-            }
-
-            public boolean validateObject(Object obj) {
-                testFactorySequenceStates.add("validateObject");
-                return true;
-            }
-
-            public void passivateObject(Object obj) throws Exception {
-                testFactorySequenceStates.add("passivateObject");
-            }
-
-            public void destroyObject(Object obj) throws Exception {
-                testFactorySequenceStates.add("destroyObject");
-            }
-        };
-
-        ObjectPool pool = new StackObjectPool(pof, 1);
-
-        // check the order in which the factory is called during borrow
-        testFactorySequenceStates.clear();
-        Object o = pool.borrowObject();
-        List desiredSequence = Arrays.asList(new String[] {
-                "makeObject",
-                "activateObject",
-                "validateObject"
-        });
-        assertEquals("Wrong sequence", desiredSequence, testFactorySequenceStates);
-
-        // check the order in which the factory is called when returning an object
-        testFactorySequenceStates.clear();
-        pool.returnObject(o);
-        desiredSequence = Arrays.asList(new String[] {
-                "validateObject",
-                "passivateObject"
-        });
-        assertEquals("Wrong sequence", desiredSequence, testFactorySequenceStates);
-
-        // check the order in which the factory is called during borrow again
-        testFactorySequenceStates.clear();
-        o = pool.borrowObject();
-        desiredSequence = Arrays.asList(new String[] {
-                "activateObject",
-                "validateObject"
-        });
-        assertEquals("Wrong sequence", desiredSequence, testFactorySequenceStates);
-
-        // check the order in which the factory is called when invalidating an object
-        testFactorySequenceStates.clear();
-        pool.invalidateObject(o);
-        desiredSequence = Arrays.asList(new String[] {
-                "destroyObject"
-        });
-        assertEquals("Wrong sequence", desiredSequence, testFactorySequenceStates);
     }
 
     static class SimpleFactory implements PoolableObjectFactory {

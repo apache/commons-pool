@@ -18,14 +18,12 @@ package org.apache.commons.pool.impl;
 
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
+import org.apache.commons.pool.BasePoolableObjectFactory;
 import org.apache.commons.pool.PoolableObjectFactory;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 import java.util.LinkedList;
-import java.util.Map;
+import java.util.List;
 
 /**
  * @author Dirk Verbeeck
@@ -136,34 +134,45 @@ public class TestSoftRefOutOfMemory extends TestCase {
         assertEquals(1, pool.getNumIdle());
     }
 
-    public void testOutOfMemoryKeepMap() throws Exception {
-        pool = new SoftReferenceObjectPool(new LargePoolableObjectFactory(1000000));
-
-        Object obj = pool.borrowObject();
-        assertTrue(((String)obj).startsWith("1."));
-        pool.returnObject(obj);
-        obj = null;
-
-        assertEquals(1, pool.getNumIdle());
-
-        // allocate map outside try/catch block
-        final Map map = new HashMap();
-        try {
-            final Runtime runtime = Runtime.getRuntime();
-            int i = 0;
-            while (true) {
-                final int size = Math.max(1, Math.min(1048576, (int)runtime.freeMemory() / 2));
-                final byte[] data = new byte[size];
-                map.put(new Integer(i++), data);
+    /**
+     * Makes sure an {@link OutOfMemoryError} isn't swallowed.
+     */
+    public void testOutOfMemoryError() throws Exception {
+        pool = new SoftReferenceObjectPool(new BasePoolableObjectFactory() {
+            public Object makeObject() throws Exception {
+                throw new OutOfMemoryError();
             }
-        }
-        catch (OutOfMemoryError ex) { }
+        });
 
         try {
-            obj = pool.borrowObject();
-            fail("Expected out of memory");
+            pool.borrowObject();
+            fail("Expected out of memory.");
         }
-        catch (OutOfMemoryError ex) { }
+        catch (OutOfMemoryError ex) {
+            // expected
+        }
+        pool.close();
+
+        pool = new SoftReferenceObjectPool(new BasePoolableObjectFactory() {
+            public Object makeObject() throws Exception {
+                return new Object();
+            }
+
+            public boolean validateObject(Object obj) {
+                throw new OutOfMemoryError();
+            }
+        });
+
+        pool.returnObject(pool.borrowObject());
+
+        try {
+            pool.borrowObject();
+            fail("Expected out of memory.");
+        }
+        catch (OutOfMemoryError ex) {
+            // expected
+        }
+        pool.close();
     }
 
 

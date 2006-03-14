@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2004 The Apache Software Foundation.
+ * Copyright 1999-2004,2006 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,14 +38,20 @@ import org.apache.commons.pool.PoolableObjectFactory;
  *
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
+ * @author Sandy McArthur
  * @version $Revision$ $Date$
  */
 public class StackObjectPool extends BaseObjectPool implements ObjectPool {
     /**
      * Create a new pool using
-     * no factory. Clients must first populate the pool
+     * no factory.
+     * Clients must first {@link #setFactory(PoolableObjectFactory) set the factory}
+     * else this pool will not behave correctly.
+     * Clients may first populate the pool
      * using {@link #returnObject(java.lang.Object)}
-     * before they can be {@link #borrowObject borrowed}.
+     * before they can be {@link #borrowObject borrowed} but this useage is <strong>discouraged</strong>.
+     *
+     * @see #StackObjectPool(PoolableObjectFactory)
      */
     public StackObjectPool() {
         this((PoolableObjectFactory)null,DEFAULT_MAX_SLEEPING,DEFAULT_INIT_SLEEPING_CAPACITY);
@@ -53,11 +59,15 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
 
     /**
      * Create a new pool using
-     * no factory. Clients must first populate the pool
+     * no factory.
+     * Clients must first {@link #setFactory(PoolableObjectFactory) set the factory}
+     * else this pool will not behave correctly.
+     * Clients may first populate the pool
      * using {@link #returnObject(java.lang.Object)}
-     * before they can be {@link #borrowObject borrowed}.
+     * before they can be {@link #borrowObject borrowed} but this useage is <strong>discouraged</strong>.
      *
      * @param maxIdle cap on the number of "sleeping" instances in the pool
+     * @see #StackObjectPool(PoolableObjectFactory, int)
      */
     public StackObjectPool(int maxIdle) {
         this((PoolableObjectFactory)null,maxIdle,DEFAULT_INIT_SLEEPING_CAPACITY);
@@ -65,13 +75,17 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
 
     /**
      * Create a new pool using
-     * no factory. Clients must first populate the pool
+     * no factory.
+     * Clients must first {@link #setFactory(PoolableObjectFactory) set the factory}
+     * else this pool will not behave correctly.
+     * Clients may first populate the pool
      * using {@link #returnObject(java.lang.Object)}
-     * before they can be {@link #borrowObject borrowed}.
+     * before they can be {@link #borrowObject borrowed} but this useage is <strong>discouraged</strong>.
      *
      * @param maxIdle cap on the number of "sleeping" instances in the pool
      * @param initIdleCapacity initial size of the pool (this specifies the size of the container,
      *             it does not cause the pool to be pre-populated.)
+     * @see #StackObjectPool(PoolableObjectFactory, int, int)
      */
     public StackObjectPool(int maxIdle, int initIdleCapacity) {
         this((PoolableObjectFactory)null,maxIdle,initIdleCapacity);
@@ -122,6 +136,7 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
     public synchronized Object borrowObject() throws Exception {
         assertOpen();
         Object obj = null;
+        boolean newlyCreated = false;
         while (null == obj) {
             if (!_pool.empty()) {
                 obj = _pool.pop();
@@ -129,15 +144,39 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
                 if(null == _factory) {
                     throw new NoSuchElementException();
                 } else {
+                    newlyCreated = true;
                     obj = _factory.makeObject();
                 }
             }
-            if(null != _factory && null != obj) {
-                _factory.activateObject(obj);
+            if (!newlyCreated && null != _factory && null != obj) {
+                try {
+                    _factory.activateObject(obj);
+                } catch (Exception e) {
+                    try {
+                        _factory.destroyObject(obj);
+                    } catch (Exception e2) {
+                        // swallowed
+                    } finally {
+                        obj = null;
+                    }
+                }
             }
-            if (null != _factory && null != obj && !_factory.validateObject(obj)) {
-                _factory.destroyObject(obj);
-                obj = null;
+            if (!newlyCreated && null != _factory && null != obj) {
+                boolean validated = false;
+                try {
+                    validated = _factory.validateObject(obj);
+                } catch (Exception e) {
+                    // swallowed
+                }
+                if (!validated) {
+                    try {
+                        _factory.destroyObject(obj);
+                    } catch(Exception e) {
+                        // swallowed
+                    } finally {
+                        obj = null;
+                    }
+                }
             }
         }
         _numActive++;
@@ -145,17 +184,12 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
     }
 
     public synchronized void returnObject(Object obj) throws Exception {
-        assertOpen();
-        boolean success = true;
+        boolean success = !isClosed();
         if(null != _factory) {
-            if(!(_factory.validateObject(obj))) {
+            try {
+                _factory.passivateObject(obj);
+            } catch(Exception e) {
                 success = false;
-            } else {
-                try {
-                    _factory.passivateObject(obj);
-                } catch(Exception e) {
-                    success = false;
-                }
             }
         }
 
@@ -183,26 +217,40 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
     }
 
     public synchronized void invalidateObject(Object obj) throws Exception {
-        assertOpen();
         _numActive--;
-        if(null != _factory ) {
-            _factory.destroyObject(obj);
+        if (null != _factory) {
+            try {
+                _factory.destroyObject(obj);
+            } catch (Exception e) {
+                // swallowed
+            }
         }
         notifyAll(); // _numActive has changed
     }
 
+    /**
+     * Return the number of instances
+     * currently idle in this pool.
+     *
+     * @return the number of instances currently idle in this pool
+     */
     public synchronized int getNumIdle() {
-        assertOpen();
         return _pool.size();
     }
 
+    /**
+     * Return the number of instances currently borrowed from this pool.
+     *
+     * @return the number of instances currently borrowed from this pool
+     */
     public synchronized int getNumActive() {
-        assertOpen();
         return _numActive;
     }
 
+    /**
+     * Clears any objects sitting idle in the pool.
+     */
     public synchronized void clear() {
-        assertOpen();
         if(null != _factory) {
             Iterator it = _pool.iterator();
             while(it.hasNext()) {
@@ -216,10 +264,18 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
         _pool.clear();
     }
 
+    /**
+     * Close this pool, and free any resources associated with it.
+     * <p>
+     * Calling {@link #addObject} or {@link #borrowObject} after invoking
+     * this method on a pool will cause them to throw an
+     * {@link IllegalStateException}.
+     * </p>
+     *
+     * @throws Exception <strong>deprecated</strong>: implementations should silently fail if not all resources can be freed.
+     */
     public synchronized void close() throws Exception {
         clear();
-        _pool = null;
-        _factory = null;
         super.close();
     }
 
@@ -231,10 +287,43 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
     public synchronized void addObject() throws Exception {
         assertOpen();
         Object obj = _factory.makeObject();
-        _numActive++;   // A little slimy - must do this because returnObject decrements it.
-        this.returnObject(obj);
+
+        boolean success = true;
+        if(null != _factory) {
+            _factory.passivateObject(obj);
+        }
+
+        boolean shouldDestroy = !success;
+
+        if (success) {
+            Object toBeDestroyed = null;
+            if(_pool.size() >= _maxSleeping) {
+                shouldDestroy = true;
+                toBeDestroyed = _pool.remove(0); // remove the stalest object
+            }
+            _pool.push(obj);
+            obj = toBeDestroyed; // swap returned obj with the stalest one so it can be destroyed
+        }
+        notifyAll(); // _numIdle has changed
+
+        if(shouldDestroy) { // by constructor, shouldDestroy is false when _factory is null
+            try {
+                _factory.destroyObject(obj);
+            } catch(Exception e) {
+                // ignored
+            }
+        }
     }
 
+    /**
+     * Sets the {@link PoolableObjectFactory factory} this pool uses
+     * to create new instances. Trying to change
+     * the <code>factory</code> while there are borrowed objects will
+     * throw an {@link IllegalStateException}.
+     *
+     * @param factory the {@link PoolableObjectFactory} used to create new instances.
+     * @throws IllegalStateException when the factory cannot be set at this time
+     */
     public synchronized void setFactory(PoolableObjectFactory factory) throws IllegalStateException {
         assertOpen();
         if(0 < getNumActive()) {

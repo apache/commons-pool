@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2004 The Apache Software Foundation.
+ * Copyright 1999-2004,2006 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,15 @@ package org.apache.commons.pool;
 
 import junit.framework.TestCase;
 
+import java.util.List;
+import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Iterator;
+
 /**
  * Abstract {@link TestCase} for {@link ObjectPool} implementations.
  * @author Rodney Waldhoff
+ * @author Sandy McArthur
  * @version $Revision$ $Date$
  */
 public abstract class TestObjectPool extends TestCase {
@@ -27,7 +33,7 @@ public abstract class TestObjectPool extends TestCase {
         super(testName);
     }
 
-    /** 
+    /**
      * Create an {@link ObjectPool} instance
      * that can contain at least <i>mincapacity</i>
      * idle and active objects, or
@@ -37,30 +43,36 @@ public abstract class TestObjectPool extends TestCase {
     protected abstract ObjectPool makeEmptyPool(int mincapacity);
 
     /**
+     * Create an <code>ObjectPool</code> with the specified factory.
+     * The pool should be in a default configuration and conform to the expected
+     * behaviors described in {@link ObjectPool}.
+     * Generally speaking there should be no limits on the various object counts.
+     */
+    protected abstract ObjectPool makeEmptyPool(PoolableObjectFactory factory);
+
+    /**
      * Return what we expect to be the n<sup>th</sup>
-     * object (zero indexed) created by the _pool.
+     * object (ZERO indexed) created by the _pool.
      */
     protected abstract Object getNthObject(int n);
-    
+
     /**
      * Is the implementations LIFO?
-     * @return
      */
     protected abstract boolean isLifo();
-    
+
     /**
      * Is the implementationn FIFO?
-     * @return
      */
     protected abstract boolean isFifo();
 
     public void setUp() throws Exception {
     }
-    
+
     public void tearDown() throws Exception {
         _pool = null;
     }
-    
+
     public void testBaseBorrow() throws Exception {
         try {
             _pool = makeEmptyPool(3);
@@ -95,7 +107,7 @@ public abstract class TestObjectPool extends TestCase {
             return; // skip this test if one of those calls is unsupported
         }
     }
-    
+
     public void testBaseBorrowReturn() throws Exception {
         try {
             _pool = makeEmptyPool(3);
@@ -123,7 +135,7 @@ public abstract class TestObjectPool extends TestCase {
         if (isFifo()) {
             assertEquals(getNthObject(0),obj2);
         }
-            
+
         obj0 = _pool.borrowObject();
         if (isLifo()) {
             assertEquals(getNthObject(0),obj0);
@@ -197,7 +209,7 @@ public abstract class TestObjectPool extends TestCase {
         assertEquals(0,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
     }
-    
+
     public void testBaseClosePool() throws Exception {
         try {
             _pool = makeEmptyPool(3);
@@ -206,7 +218,7 @@ public abstract class TestObjectPool extends TestCase {
         }
         Object obj = _pool.borrowObject();
         _pool.returnObject(obj);
-        
+
         _pool.close();
         try {
             _pool.borrowObject();
@@ -216,5 +228,472 @@ public abstract class TestObjectPool extends TestCase {
         }
     }
 
+    public void testClosedPoolBehavior() throws Exception {
+        final ObjectPool pool = makeEmptyPool(new BasePoolableObjectFactory() {
+            public Object makeObject() throws Exception {
+                return new Object();
+            }
+        });
+        Object o1 = pool.borrowObject();
+        Object o2 = pool.borrowObject();
+
+        pool.close();
+
+        try {
+            pool.addObject();
+            fail("A closed pool must throw an IllegalStateException when addObject is called.");
+        } catch (IllegalStateException ise) {
+            // expected
+        }
+
+        try {
+            pool.borrowObject();
+            fail("A closed pool must throw an IllegalStateException when borrowObject is called.");
+        } catch (IllegalStateException ise) {
+            // expected
+        }
+
+        // The following should not throw exceptions just because the pool is closed.
+        assertEquals("A closed pool shouldn't have any idle objects.", 0, pool.getNumIdle());
+        pool.getNumActive();
+        pool.returnObject(o1);
+        assertEquals("returnObject should not add items back into the idle object pool for a closed pool.", 0, pool.getNumIdle());
+        pool.invalidateObject(o2);
+        pool.clear();
+        pool.close();
+    }
+
+    private final Integer ZERO = new Integer(0);
+    private final Integer ONE = new Integer(1);
+
+    public void testPOFAddObjectUsage() throws Exception {
+        final FailingPoolableObjectFactory factory = new FailingPoolableObjectFactory();
+        final ObjectPool pool = makeEmptyPool(factory);
+        final List expectedMethods = new ArrayList();
+
+        // addObject should make a new object, pasivate it and put it in the pool
+        pool.addObject();
+        expectedMethods.add(new MethodCall("makeObject").returned(ZERO));
+        expectedMethods.add(new MethodCall("passivateObject", ZERO));
+        assertEquals(expectedMethods, factory.getMethodCalls());
+
+        //// Test exception handling of addObject
+        reset(pool, factory, expectedMethods);
+
+        // makeObject Exceptions should be propagated to client code from addObject
+        factory.setMakeObjectFail(true);
+        try {
+            pool.addObject();
+            fail("Expected addObject to propagate makeObject exception.");
+        } catch (PrivateException pe) {
+            // expected
+        }
+        expectedMethods.add(new MethodCall("makeObject"));
+        assertEquals(expectedMethods, factory.getMethodCalls());
+
+        clear(factory, expectedMethods);
+
+        // passivateObject Exceptions should be propagated to client code from addObject
+        factory.setMakeObjectFail(false);
+        factory.setPassivateObjectFail(true);
+        try {
+            pool.addObject();
+            fail("Expected addObject to propagate passivateObject exception.");
+        } catch (PrivateException pe) {
+            // expected
+        }
+        expectedMethods.add(new MethodCall("makeObject").returned(ONE));
+        expectedMethods.add(new MethodCall("passivateObject", ONE));
+        assertEquals(expectedMethods, factory.getMethodCalls());
+    }
+
+    public void testPOFBorrowObjectUsages() throws Exception {
+        final FailingPoolableObjectFactory factory = new FailingPoolableObjectFactory();
+        final ObjectPool pool = makeEmptyPool(factory);
+        final List expectedMethods = new ArrayList();
+        Object obj;
+
+        /// Test correct behavior code paths
+
+        // existing idle object should be activated and validated
+        pool.addObject();
+        clear(factory, expectedMethods);
+        obj = pool.borrowObject();
+        expectedMethods.add(new MethodCall("activateObject", ZERO));
+        expectedMethods.add(new MethodCall("validateObject", ZERO).returned(Boolean.TRUE));
+        assertEquals(expectedMethods, factory.getMethodCalls());
+        pool.returnObject(obj);
+
+        //// Test exception handling of borrowObject
+        reset(pool, factory, expectedMethods);
+
+        // makeObject Exceptions should be propagated to client code from borrowObject
+        factory.setMakeObjectFail(true);
+        try {
+            obj = pool.borrowObject();
+            fail("Expected borrowObject to propagate makeObject exception.");
+        } catch (PrivateException pe) {
+            // expected
+        }
+        expectedMethods.add(new MethodCall("makeObject"));
+        assertEquals(expectedMethods, factory.getMethodCalls());
+
+
+        // when activateObject fails in borrowObject, a new object should be borrowed/created
+        reset(pool, factory, expectedMethods);
+        pool.addObject();
+        clear(factory, expectedMethods);
+
+        factory.setActivateObjectFail(true);
+        expectedMethods.add(new MethodCall("activateObject", obj));
+        obj = pool.borrowObject();
+        expectedMethods.add(new MethodCall("makeObject").returned(ONE));
+        removeDestroyObjectCall(factory.getMethodCalls()); // The exact timing of destroyObject is flexible here.
+        assertEquals(expectedMethods, factory.getMethodCalls());
+        pool.returnObject(obj);
+
+        // when validateObject fails in borrowObject, a new object should be borrowed/created
+        reset(pool, factory, expectedMethods);
+        pool.addObject();
+        clear(factory, expectedMethods);
+
+        factory.setValidateObjectFail(true);
+        expectedMethods.add(new MethodCall("activateObject", ZERO));
+        expectedMethods.add(new MethodCall("validateObject", ZERO));
+        obj = pool.borrowObject();
+        expectedMethods.add(new MethodCall("makeObject").returned(ONE));
+        removeDestroyObjectCall(factory.getMethodCalls()); // The exact timing of destroyObject is flexible here.
+        assertEquals(expectedMethods, factory.getMethodCalls());
+        pool.returnObject(obj);
+    }
+
+    public void testPOFReturnObjectUsages() throws Exception {
+        final FailingPoolableObjectFactory factory = new FailingPoolableObjectFactory();
+        final ObjectPool pool = makeEmptyPool(factory);
+        final List expectedMethods = new ArrayList();
+        Object obj;
+        int idleCount;
+
+        /// Test correct behavior code paths
+        obj = pool.borrowObject();
+        clear(factory, expectedMethods);
+
+        // returned object should be passivated
+        pool.returnObject(obj);
+        expectedMethods.add(new MethodCall("passivateObject", obj));
+        assertEquals(expectedMethods, factory.getMethodCalls());
+
+        //// Test exception handling of returnObject
+        reset(pool, factory, expectedMethods);
+
+        // passivateObject should swallow exceptions and not add the object to the pool
+        idleCount = pool.getNumIdle();
+        obj = pool.borrowObject();
+        clear(factory, expectedMethods);
+        factory.setPassivateObjectFail(true);
+        pool.returnObject(obj);
+        expectedMethods.add(new MethodCall("passivateObject", obj));
+        removeDestroyObjectCall(factory.getMethodCalls()); // The exact timing of destroyObject is flexible here.
+        assertEquals(expectedMethods, factory.getMethodCalls());
+        assertEquals(idleCount, pool.getNumIdle());
+
+        // destroyObject should swallow exceptions too
+        reset(pool, factory, expectedMethods);
+        obj = pool.borrowObject();
+        clear(factory, expectedMethods);
+        factory.setPassivateObjectFail(true);
+        factory.setDestroyObjectFail(true);
+        pool.returnObject(obj);
+    }
+
+    public void testPOFInvalidateObjectUsages() throws Exception {
+        final FailingPoolableObjectFactory factory = new FailingPoolableObjectFactory();
+        final ObjectPool pool = makeEmptyPool(factory);
+        final List expectedMethods = new ArrayList();
+        Object obj;
+
+        /// Test correct behavior code paths
+
+        obj = pool.borrowObject();
+        clear(factory, expectedMethods);
+
+        // invalidated object should be destroyed
+        pool.invalidateObject(obj);
+        expectedMethods.add(new MethodCall("destroyObject", obj));
+        assertEquals(expectedMethods, factory.getMethodCalls());
+
+        //// Test exception handling of invalidateObject
+        reset(pool, factory, expectedMethods);
+        obj = pool.borrowObject();
+        clear(factory, expectedMethods);
+        factory.setDestroyObjectFail(true);
+        pool.invalidateObject(obj);
+        Thread.sleep(250); // could be defered
+        removeDestroyObjectCall(factory.getMethodCalls());
+        assertEquals(expectedMethods, factory.getMethodCalls());
+    }
+
+    public void testPOFClearUsages() throws Exception {
+        final FailingPoolableObjectFactory factory = new FailingPoolableObjectFactory();
+        final ObjectPool pool = makeEmptyPool(factory);
+        final List expectedMethods = new ArrayList();
+
+        /// Test correct behavior code paths
+        PoolUtils.prefill(pool, 5);
+        pool.clear();
+
+        //// Test exception handling clear should swallow destory object failures
+        reset(pool, factory, expectedMethods);
+        factory.setDestroyObjectFail(true);
+        PoolUtils.prefill(pool, 5);
+        pool.clear();
+    }
+
+    public void testPOFCloseUsages() throws Exception {
+        final FailingPoolableObjectFactory factory = new FailingPoolableObjectFactory();
+        ObjectPool pool = makeEmptyPool(factory);
+        final List expectedMethods = new ArrayList();
+
+        /// Test correct behavior code paths
+        PoolUtils.prefill(pool, 5);
+        pool.close();
+
+
+        //// Test exception handling close should swallow failures
+        pool = makeEmptyPool(factory);
+        reset(pool, factory, expectedMethods);
+        factory.setDestroyObjectFail(true);
+        PoolUtils.prefill(pool, 5);
+        pool.close();
+    }
+
+    private void removeDestroyObjectCall(List calls) {
+        Iterator iter = calls.iterator();
+        while (iter.hasNext()) {
+            MethodCall call = (MethodCall)iter.next();
+            if ("destroyObject".equals(call.getName())) {
+                iter.remove();
+            }
+        }
+    }
+
+    private void reset(final ObjectPool pool, final FailingPoolableObjectFactory factory, final List expectedMethods) throws Exception {
+        pool.clear();
+        clear(factory, expectedMethods);
+        factory.reset();
+    }
+
+    private void clear(final FailingPoolableObjectFactory factory, final List expectedMethods) {
+        factory.getMethodCalls().clear();
+        expectedMethods.clear();
+    }
+
     private ObjectPool _pool = null;
+
+    private static class FailingPoolableObjectFactory implements PoolableObjectFactory {
+        private final List methodCalls = new ArrayList();
+        private int count = 0;
+        private boolean makeObjectFail;
+        private boolean activateObjectFail;
+        private boolean validateObjectFail;
+        private boolean passivateObjectFail;
+        private boolean destroyObjectFail;
+
+        public void reset() {
+            count = 0;
+            getMethodCalls().clear();
+            setMakeObjectFail(false);
+            setActivateObjectFail(false);
+            setValidateObjectFail(false);
+            setPassivateObjectFail(false);
+            setDestroyObjectFail(false);
+        }
+
+        public List getMethodCalls() {
+            return methodCalls;
+        }
+
+        public int getCurrentCount() {
+            return count;
+        }
+
+        public void setCurrentCount(final int count) {
+            this.count = count;
+        }
+
+        public boolean isMakeObjectFail() {
+            return makeObjectFail;
+        }
+
+        public void setMakeObjectFail(boolean makeObjectFail) {
+            this.makeObjectFail = makeObjectFail;
+        }
+
+        public boolean isDestroyObjectFail() {
+            return destroyObjectFail;
+        }
+
+        public void setDestroyObjectFail(boolean destroyObjectFail) {
+            this.destroyObjectFail = destroyObjectFail;
+        }
+
+        public boolean isValidateObjectFail() {
+            return validateObjectFail;
+        }
+
+        public void setValidateObjectFail(boolean validateObjectFail) {
+            this.validateObjectFail = validateObjectFail;
+        }
+
+        public boolean isActivateObjectFail() {
+            return activateObjectFail;
+        }
+
+        public void setActivateObjectFail(boolean activateObjectFail) {
+            this.activateObjectFail = activateObjectFail;
+        }
+
+        public boolean isPassivateObjectFail() {
+            return passivateObjectFail;
+        }
+
+        public void setPassivateObjectFail(boolean passivateObjectFail) {
+            this.passivateObjectFail = passivateObjectFail;
+        }
+
+        public Object makeObject() throws Exception {
+            final MethodCall call = new MethodCall("makeObject");
+            methodCalls.add(call);
+            int count = this.count++;
+            if (makeObjectFail) {
+                throw new PrivateException("makeObject");
+            }
+            final Integer obj = new Integer(count);
+            call.setReturned(obj);
+            return obj;
+        }
+
+        public void activateObject(final Object obj) throws Exception {
+            methodCalls.add(new MethodCall("activateObject", obj));
+            if (activateObjectFail) {
+                throw new PrivateException("activateObject");
+            }
+        }
+
+        public boolean validateObject(final Object obj) {
+            final MethodCall call = new MethodCall("validateObject", obj);
+            methodCalls.add(call);
+            if (validateObjectFail) {
+                throw new PrivateException("validateObject");
+            }
+            final boolean r = true;
+            call.returned(Boolean.valueOf(r));
+            return r;
+        }
+
+        public void passivateObject(final Object obj) throws Exception {
+            methodCalls.add(new MethodCall("passivateObject", obj));
+            if (passivateObjectFail) {
+                throw new PrivateException("passivateObject");
+            }
+        }
+
+        public void destroyObject(final Object obj) throws Exception {
+            methodCalls.add(new MethodCall("destroyObject", obj));
+            if (destroyObjectFail) {
+                throw new PrivateException("destroyObject");
+            }
+        }
+    }
+
+    private static class MethodCall {
+        private final String name;
+        private final List params;
+        private Object returned;
+
+        MethodCall(final String name) {
+            this(name, null);
+        }
+
+        MethodCall(final String name, final Object param) {
+            this(name, Collections.singletonList(param));
+        }
+
+        MethodCall(final String name, final List params) {
+            if (name == null) {
+                throw new IllegalArgumentException("name must not be null.");
+            }
+            this.name = name;
+            if (params != null) {
+                this.params = params;
+            } else {
+                this.params = Collections.EMPTY_LIST;
+            }
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public List getParams() {
+            return params;
+        }
+
+        public Object getReturned() {
+            return returned;
+        }
+
+        public void setReturned(final Object returned) {
+            this.returned = returned;
+        }
+
+        public MethodCall returned(Object obj) {
+            setReturned(obj);
+            return this;
+        }
+
+        public boolean equals(final Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            final MethodCall that = (MethodCall)o;
+
+            if (name != null ? !name.equals(that.name) : that.name != null) return false;
+            if (params != null ? !params.equals(that.params) : that.params != null) return false;
+            if (returned != null ? !returned.equals(that.returned) : that.returned != null) return false;
+
+            return true;
+        }
+
+        public int hashCode() {
+            int result;
+            result = (name != null ? name.hashCode() : 0);
+            result = 29 * result + (params != null ? params.hashCode() : 0);
+            result = 29 * result + (returned != null ? returned.hashCode() : 0);
+            return result;
+        }
+
+        public String toString() {
+            final StringBuffer sb = new StringBuffer();
+            sb.append("MethodCall");
+            sb.append("{name='").append(name).append('\'');
+            if (!params.isEmpty()) {
+                sb.append(", params=").append(params);
+            }
+            if (returned != null) {
+                sb.append(", returned=").append(returned);
+            }
+            sb.append('}');
+            return sb.toString();
+        }
+    }
+
+    /**
+     * An exception that only is thrown by this test.
+     */
+    private static class PrivateException extends RuntimeException {
+        PrivateException(final String message) {
+            super(message);
+        }
+    }
 }
