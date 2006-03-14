@@ -124,7 +124,7 @@ public interface KeyedObjectPool {
 
     /**
      * Create an object using the {@link KeyedPoolableObjectFactory factory} or other
-     * implementation dependent mechanism, and place it into the pool.
+     * implementation dependent mechanism, passivated, and then placed in the idle object pool.
      * addObject() is useful for "pre-loading" a pool with idle objects.
      * (Optional operation).
      *
