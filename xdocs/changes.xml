@@ -23,6 +23,10 @@
 
     <release version="2.0" date="pending" description="Significant clean ups">
       <action dev="sandymac" type="fix">
+        Implemented until tests to verify ObjectPool implementations conformed to Pool 2 contracts.
+        Updated GenericObjectPool, StackObjectPool, and SoftReferenceObjectPool to conformant behavior.
+      </action>
+      <action dev="sandymac" type="fix">
         Fix JavaDocs to conform to Pool 2 contracts.
       </action>
       <action dev="sandymac" type="update">

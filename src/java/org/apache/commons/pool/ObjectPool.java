@@ -50,7 +50,7 @@ import java.util.NoSuchElementException;
  *
  * @author Rodney Waldhoff
  * @author Sandy McArthur
- * @version $Revision$ $Date$ 
+ * @version $Revision$ $Date$
  * @see PoolableObjectFactory
  * @see ObjectPoolFactory
  * @see KeyedObjectPool
@@ -124,24 +124,24 @@ public interface ObjectPool {
 
     /**
      * Return the number of instances
-     * currently idle in my pool (optional operation).
+     * currently idle in this pool (optional operation).
      * This may be considered an approximation of the number
      * of objects that can be {@link #borrowObject borrowed}
      * without creating any new instances.
      * Returns a negative value if this information is not available.
      *
-     * @return the number of instances currently idle in my pool or a negative value if unsupported
+     * @return the number of instances currently idle in this pool or a negative value if unsupported
      * @throws UnsupportedOperationException <strong>deprecated</strong>: if this implementation does not support the operation
      */
     int getNumIdle() throws UnsupportedOperationException;
 
     /**
      * Return the number of instances
-     * currently borrowed from my pool 
+     * currently borrowed from this pool
      * (optional operation).
      * Returns a negative value if this information is not available.
      *
-     * @return the number of instances currently borrowed in my pool or a negative value if unsupported
+     * @return the number of instances currently borrowed from this pool or a negative value if unsupported
      * @throws UnsupportedOperationException <strong>deprecated</strong>: if this implementation does not support the operation
      */
     int getNumActive() throws UnsupportedOperationException;
@@ -149,6 +149,7 @@ public interface ObjectPool {
     /**
      * Clears any objects sitting idle in the pool, releasing any
      * associated resources (optional operation).
+     * Idle objects cleared must be {@link PoolableObjectFactory#destroyObject(Object) destroyed}.
      *
      * @throws UnsupportedOperationException if this implementation does not support the operation
      */
@@ -173,7 +174,7 @@ public interface ObjectPool {
      * throw an {@link UnsupportedOperationException}. It is up to the pool
      * implementation to determine when it is acceptable to call this method.
      *
-     * @param factory the {@link PoolableObjectFactory} I use to create new instances.
+     * @param factory the {@link PoolableObjectFactory} used to create new instances.
      * @throws IllegalStateException when the factory cannot be set at this time
      * @throws UnsupportedOperationException if this implementation does not support the operation
      */

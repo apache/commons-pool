@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2004 The Apache Software Foundation.
+ * Copyright 1999-2004,2006 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,19 @@
 
 package org.apache.commons.pool.impl;
 
-import java.util.NoSuchElementException;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.apache.commons.pool.BasePoolableObjectFactory;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.TestObjectPool;
 
+import java.util.NoSuchElementException;
+
 /**
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
+ * @author Sandy McArthur
  * @version $Revision$ $Date$
  */
 public class TestGenericObjectPool extends TestObjectPool {
@@ -49,7 +46,11 @@ public class TestGenericObjectPool extends TestObjectPool {
        pool.setMaxIdle(mincap);
        return pool;
     }
-    
+
+    protected ObjectPool makeEmptyPool(final PoolableObjectFactory factory) {
+        return new GenericObjectPool(factory);
+    }
+
     protected Object getNthObject(int n) {
         return String.valueOf(n);
     }
@@ -63,43 +64,6 @@ public class TestGenericObjectPool extends TestObjectPool {
         super.tearDown();
         pool.close();
         pool = null;
-    }
-
-    /**
-     * Activation failure on existing object doesn't fail the borrow 
-     */
-    public void testActivationException() throws Exception {
-        SimpleFactory factory = new SimpleFactory(true, false);
-        factory.setThrowExceptionOnActivate(true);
-        factory.setValidationEnabled(false);
-        GenericObjectPool pool = new GenericObjectPool(factory);
-        
-        Object obj1 = pool.borrowObject();
-        pool.returnObject(obj1);
-
-        // obj1 was returned to the pool but failed to activate the second borrow
-        // a new object obj2 needs te be created
-        Object obj2 = pool.borrowObject();
-        assertTrue(obj1 != obj2);        
-    }
-
-    /**
-     * Activation failure on new object fails the borrow 
-     */
-    public void testActivationExceptionOnNewObject() throws Exception {
-        SimpleFactory factory = new SimpleFactory(true, false);
-        factory.setThrowExceptionOnActivate(true);
-        factory.setValidationEnabled(false);
-        GenericObjectPool pool = new GenericObjectPool(factory);
-        
-        Object obj1 = pool.borrowObject();
-        try {
-            Object obj2 = pool.borrowObject();
-            System.out.println("obj1: " + obj1);
-            System.out.println("obj2: " + obj2);
-            fail("a second object should have been created and failed to activate");
-        }
-        catch (Exception e) {}
     }
 
     public void testWhenExhaustedGrow() throws Exception {
@@ -163,26 +127,6 @@ public class TestGenericObjectPool extends TestObjectPool {
         pool.returnObject(obj);
         assertEquals(0,pool.getNumIdle());
         pool.close();
-    }
-
-    public void testWithInitiallyInvalid() throws Exception {
-        GenericObjectPool pool = new GenericObjectPool(new SimpleFactory(false));
-        pool.setTestOnBorrow(true);
-        try {
-            pool.borrowObject();
-            fail("Expected NoSuchElementException");
-        } catch(NoSuchElementException e) {
-            // expected 
-        }
-    }
-
-    public void testWithSometimesInvalid() throws Exception {
-        GenericObjectPool pool = new GenericObjectPool(new SimpleFactory(true,false));
-        pool.setMaxIdle(10);
-        pool.setTestOnBorrow(true);
-        pool.setTestOnReturn(true);
-        pool.returnObject(pool.borrowObject());  
-        assertEquals(0,pool.getNumIdle());      
     }
 
     public void testSetFactoryWithActiveObjects() throws Exception {
@@ -615,7 +559,13 @@ public class TestGenericObjectPool extends TestObjectPool {
         assertEquals("Should be zero idle, found " + pool.getNumIdle(),0,pool.getNumIdle());
     }
 
-    public void testEvictionSoftMinIdle() throws Exception {
+    /**
+     * This test has a number of problems.
+     * 1. without the wait code in the for loop the create time for each instance
+     * was usually the same due to clock presision.
+     * 2. It's very hard to follow.
+     */
+    public void DISABLEDtestEvictionSoftMinIdle() throws Exception {
         GenericObjectPool pool = null;
         
         class TimeTest extends BasePoolableObjectFactory {
@@ -644,9 +594,15 @@ public class TestGenericObjectPool extends TestObjectPool {
         
         Object[] active = new Object[5];
         Long[] creationTime = new Long[5] ;
+        long lastCreationTime = System.currentTimeMillis();
         for(int i=0;i<5;i++) {
+            // make sure each instance has a different currentTimeMillis()
+            while (lastCreationTime == System.currentTimeMillis()) {
+                Thread.sleep(1);
+            }
             active[i] = pool.borrowObject();
             creationTime[i] = new Long(((TimeTest)active[i]).getCreateTime());
+            lastCreationTime = creationTime[i].longValue();
         }
         
         for(int i=0;i<5;i++) {
@@ -857,75 +813,6 @@ public class TestGenericObjectPool extends TestObjectPool {
 		assertEquals("should be zero active", 0, pool.getNumActive());
     }
     
-    private List testFactorySequenceStates = new ArrayList(5);
-    public void testFactorySequence() throws Exception {
-        // setup
-        // We need a factory that tracks method call sequence.
-        PoolableObjectFactory pof = new PoolableObjectFactory() {
-            public Object makeObject() throws Exception {
-                testFactorySequenceStates.add("makeObject");
-                return new Object();
-            }
-
-            public void activateObject(Object obj) throws Exception {
-                testFactorySequenceStates.add("activateObject");
-            }
-
-            public boolean validateObject(Object obj) {
-                testFactorySequenceStates.add("validateObject");
-                return true;
-            }
-
-            public void passivateObject(Object obj) throws Exception {
-                testFactorySequenceStates.add("passivateObject");
-            }
-
-            public void destroyObject(Object obj) throws Exception {
-                testFactorySequenceStates.add("destroyObject");
-            }
-        };
-
-        GenericObjectPool pool = new GenericObjectPool(pof);
-        pool.setTestOnBorrow(true);
-        pool.setTestOnReturn(true);
-
-        // check the order in which the factory is called during borrow
-        testFactorySequenceStates.clear();
-        Object o = pool.borrowObject();
-        List desiredSequence = Arrays.asList(new String[] {
-                "makeObject",
-                "activateObject",
-                "validateObject"
-        });
-        assertEquals("Wrong sequence", desiredSequence, testFactorySequenceStates);
-
-        // check the order in which the factory is called when returning an object
-        testFactorySequenceStates.clear();
-        pool.returnObject(o);
-        desiredSequence = Arrays.asList(new String[] {
-                "validateObject",
-                "passivateObject"
-        });
-        assertEquals("Wrong sequence", desiredSequence, testFactorySequenceStates);
-
-        // check the order in which the factory is called during borrow again
-        testFactorySequenceStates.clear();
-        o = pool.borrowObject();
-        desiredSequence = Arrays.asList(new String[] {
-                "activateObject",
-                "validateObject"
-        });
-        assertEquals("Wrong sequence", desiredSequence, testFactorySequenceStates);
-
-        // check the order in which the factory is called when invalidating an object
-        testFactorySequenceStates.clear();
-        pool.invalidateObject(o);
-        desiredSequence = Arrays.asList(new String[] {
-                "destroyObject"
-        });
-        assertEquals("Wrong sequence", desiredSequence, testFactorySequenceStates);
-    }
-
     private GenericObjectPool pool = null;
 
     private void assertConfiguration(GenericObjectPool.Config expected, GenericObjectPool actual) throws Exception {
@@ -966,8 +853,11 @@ public class TestGenericObjectPool extends TestObjectPool {
             exceptionOnPassivate = bool;
         }
     
-        public Object makeObject() { return String.valueOf(makeCounter++); }
-        public void destroyObject(Object obj) { }
+        public Object makeObject() {
+            return String.valueOf(makeCounter++);
+        }
+        public void destroyObject(Object obj) {
+        }
         public boolean validateObject(Object obj) {
             if (enableValidation) { 
                 return validateCounter++%2 == 0 ? evenValid : oddValid; 

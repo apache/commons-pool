@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2004 The Apache Software Foundation.
+ * Copyright 1999-2004,2006 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -123,6 +123,7 @@ import org.apache.commons.pool.impl.GenericKeyedObjectPool.ObjectTimestampPair;
  * @see GenericKeyedObjectPool
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
+ * @author Sandy McArthur
  * @version $Revision$ $Date$
  */
 public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
@@ -211,7 +212,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @see #getTestOnBorrow
      * @see #setTestOnBorrow
      */
-    public static final boolean DEFAULT_TEST_ON_BORROW = false;
+    public static final boolean DEFAULT_TEST_ON_BORROW = true;
 
     /**
      * The default "test on return" value.
@@ -840,6 +841,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                     Object obj = _factory.makeObject();
                     pair = new ObjectTimestampPair(obj);
                     newlyCreated = true;
+                    return pair.value;
                 } finally {
                     if (!newlyCreated) {
                         // object cannot be created
@@ -878,18 +880,22 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
     }
 
     public synchronized void invalidateObject(Object obj) throws Exception {
-        assertOpen();
         try {
-            _factory.destroyObject(obj);
-        }
-        finally {
+            if (_factory != null) {
+                _factory.destroyObject(obj);
+            }
+        } catch (Exception e) {
+            // swallowed
+        } finally {
             _numActive--;
             notifyAll(); // _numActive has changed
         }
     }
 
+    /**
+     * Clears any objects sitting idle in the pool.
+     */
     public synchronized void clear() {
-        assertOpen();
         for(Iterator it = _pool.iterator(); it.hasNext(); ) {
             try {
                 _factory.destroyObject(((ObjectTimestampPair)(it.next())).value);
@@ -902,31 +908,46 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         notifyAll(); // num sleeping has changed
     }
 
+    /**
+     * Return the number of instances currently borrowed from this pool.
+     *
+     * @return the number of instances currently borrowed from this pool
+     */
     public synchronized int getNumActive() {
-        assertOpen();
         return _numActive;
     }
 
+    /**
+     * Return the number of instances currently idle in this pool.
+     *
+     * @return the number of instances currently idle in this pool
+     */
     public synchronized int getNumIdle() {
-        assertOpen();
         return _pool.size();
     }
 
     public synchronized void returnObject(Object obj) throws Exception {
-        assertOpen();
-        addObjectToPool(obj, true);
+        try {
+            addObjectToPool(obj, true);
+        } catch (Exception e) {
+            if (_factory != null) {
+                try {
+                    _factory.destroyObject(obj);
+                } catch (Exception e2) {
+                    // swallowed
+                }
+            }
+        }
     }
 
     private void addObjectToPool(Object obj, boolean decrementNumActive) throws Exception {
-        boolean success = true;
+        boolean success;
         if(_testOnReturn && !(_factory.validateObject(obj))) {
             success = false;
         } else {
-            try {
-                _factory.passivateObject(obj);
-            } catch(Exception e) {
-                success = false;
-            }
+            success = false;
+            _factory.passivateObject(obj);
+            success = !isClosed();
         }
 
         boolean shouldDestroy = !success;
@@ -942,7 +963,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         notifyAll(); // _numActive has changed
 
         if(shouldDestroy) {
-            try {
+            try { // TODO: remove try/catch
                 _factory.destroyObject(obj);
             } catch(Exception e) {
                 // ignored
@@ -952,12 +973,19 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
     public synchronized void close() throws Exception {
         clear();
-        _pool = null;
-        _factory = null;
         startEvictor(-1L);
         super.close();
     }
 
+    /**
+     * Sets the {@link PoolableObjectFactory factory} this pool uses
+     * to create new instances. Trying to change
+     * the <code>factory</code> while there are borrowed objects will
+     * throw an {@link IllegalStateException}.
+     *
+     * @param factory the {@link PoolableObjectFactory} used to create new instances.
+     * @throws IllegalStateException when the factory cannot be set at this time
+     */
     public synchronized void setFactory(PoolableObjectFactory factory) throws IllegalStateException {
         assertOpen();
         if(0 < getNumActive()) {
