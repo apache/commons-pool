@@ -63,6 +63,10 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         return pool;
     }
 
+    protected KeyedObjectPool makeEmptyPool(KeyedPoolableObjectFactory factory) {
+        return new GenericKeyedObjectPool(factory);
+    }
+
     protected Object getNthObject(Object key, int n) {
         return String.valueOf(key) + String.valueOf(n);
     }
@@ -82,17 +86,6 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         super.tearDown();
         pool.close();
         pool = null;
-    }
-
-    public void testWithInitiallyInvalid() throws Exception {
-        GenericKeyedObjectPool pool = new GenericKeyedObjectPool(new SimpleFactory(false));
-        pool.setTestOnBorrow(true);
-        try {
-            pool.borrowObject("xyzzy");
-            fail("Expected NoSuchElementException");
-        } catch(NoSuchElementException e) {
-            // expected
-        }
     }
 
     public void testNegativeMaxActive() throws Exception {

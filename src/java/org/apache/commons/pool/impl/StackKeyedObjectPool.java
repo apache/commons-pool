@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2004 The Apache Software Foundation.
+ * Copyright 1999-2004,2006 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,17 @@
 
 package org.apache.commons.pool.impl;
 
+import org.apache.commons.pool.BaseKeyedObjectPool;
+import org.apache.commons.pool.KeyedObjectPool;
+import org.apache.commons.pool.KeyedPoolableObjectFactory;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Stack;
 
-import org.apache.commons.pool.BaseKeyedObjectPool;
-import org.apache.commons.pool.KeyedObjectPool;
-import org.apache.commons.pool.KeyedPoolableObjectFactory;
-
 /**
- * A simple, {@link java.util.Stack Stack}-based {@link KeyedObjectPool} implementation.
+ * A simple, <code>Stack</code>-based <code>KeyedObjectPool</code> implementation.
  * <p>
  * Given a {@link KeyedPoolableObjectFactory}, this class will maintain
  * a simple pool of instances.  A finite number of "sleeping"
@@ -34,52 +34,62 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  * empty, new instances are created to support the new load.
  * Hence this class places no limit on the number of "active"
  * instances created by the pool, but is quite useful for
- * re-using <tt>Object</tt>s without introducing
+ * re-using <code>Object</code>s without introducing
  * artificial limits.
+ * </p>
  *
  * @author Rodney Waldhoff
- * @version $Revision$ $Date$ 
+ * @author Sandy McArthur
+ * @version $Revision$ $Date$
+ * @see Stack
  */
 public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
     /**
-     * Create a new pool using
-     * no factory. Clients must first populate the pool
-     * using {@link #returnObject(java.lang.Object,java.lang.Object)}
-     * before they can be {@link #borrowObject(java.lang.Object) borrowed}.
+     * Create a new pool using no factory.
+     * Clients must first set the {@link #setFactory factory} or
+     * may populate the pool using {@link #returnObject returnObject}
+     * before they can be {@link #borrowObject borrowed}.
+     *
+     * @see #StackKeyedObjectPool(KeyedPoolableObjectFactory)
+     * @see #setFactory(KeyedPoolableObjectFactory)
      */
     public StackKeyedObjectPool() {
         this((KeyedPoolableObjectFactory)null,DEFAULT_MAX_SLEEPING,DEFAULT_INIT_SLEEPING_CAPACITY);
     }
 
     /**
-     * Create a new pool using
-     * no factory. Clients must first populate the pool
-     * using {@link #returnObject(java.lang.Object,java.lang.Object)}
-     * before they can be {@link #borrowObject(java.lang.Object) borrowed}.
+     * Create a new pool using no factory.
+     * Clients must first set the {@link #setFactory factory} or
+     * may populate the pool using {@link #returnObject returnObject}
+     * before they can be {@link #borrowObject borrowed}.
      *
      * @param max cap on the number of "sleeping" instances in the pool
+     * @see #StackKeyedObjectPool(KeyedPoolableObjectFactory, int)
+     * @see #setFactory(KeyedPoolableObjectFactory)
      */
     public StackKeyedObjectPool(int max) {
         this((KeyedPoolableObjectFactory)null,max,DEFAULT_INIT_SLEEPING_CAPACITY);
     }
 
     /**
-     * Create a new pool using
-     * no factory. Clients must first populate the pool
-     * using {@link #returnObject(java.lang.Object,java.lang.Object)}
-     * before they can be {@link #borrowObject(java.lang.Object) borrowed}.
+     * Create a new pool using no factory.
+     * Clients must first set the {@link #setFactory factory} or
+     * may populate the pool using {@link #returnObject returnObject}
+     * before they can be {@link #borrowObject borrowed}.
      *
      * @param max cap on the number of "sleeping" instances in the pool
      * @param init initial size of the pool (this specifies the size of the container,
      *             it does not cause the pool to be pre-populated.)
+     * @see #StackKeyedObjectPool(KeyedPoolableObjectFactory, int, int)
+     * @see #setFactory(KeyedPoolableObjectFactory)
      */
     public StackKeyedObjectPool(int max, int init) {
         this((KeyedPoolableObjectFactory)null,max,init);
     }
 
     /**
-     * Create a new <tt>SimpleKeyedObjectPool</tt> using
-     * the specified <i>factory</i> to create new instances.
+     * Create a new <code>SimpleKeyedObjectPool</code> using
+     * the specified <code>factory</code> to create new instances.
      *
      * @param factory the {@link KeyedPoolableObjectFactory} used to populate the pool
      */
@@ -88,9 +98,9 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
     }
 
     /**
-     * Create a new <tt>SimpleKeyedObjectPool</tt> using
-     * the specified <i>factory</i> to create new instances.
-     * capping the number of "sleeping" instances to <i>max</i>
+     * Create a new <code>SimpleKeyedObjectPool</code> using
+     * the specified <code>factory</code> to create new instances.
+     * capping the number of "sleeping" instances to <code>max</code>
      *
      * @param factory the {@link KeyedPoolableObjectFactory} used to populate the pool
      * @param max cap on the number of "sleeping" instances in the pool
@@ -100,11 +110,11 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
     }
 
     /**
-     * Create a new <tt>SimpleKeyedObjectPool</tt> using
-     * the specified <i>factory</i> to create new instances.
-     * capping the number of "sleeping" instances to <i>max</i>,
+     * Create a new <code>SimpleKeyedObjectPool</code> using
+     * the specified <code>factory</code> to create new instances.
+     * capping the number of "sleeping" instances to <code>max</code>,
      * and initially allocating a container capable of containing
-     * at least <i>init</i> instances.
+     * at least <code>init</code> instances.
      *
      * @param factory the {@link KeyedPoolableObjectFactory} used to populate the pool
      * @param max cap on the number of "sleeping" instances in the pool
@@ -120,88 +130,203 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
     }
 
     public synchronized Object borrowObject(Object key) throws Exception {
-        Object obj = null;
+        assertOpen();
         Stack stack = (Stack)(_pools.get(key));
         if(null == stack) {
             stack = new Stack();
             stack.ensureCapacity( _initSleepingCapacity > _maxSleeping ? _maxSleeping : _initSleepingCapacity);
             _pools.put(key,stack);
         }
-        try {
-            obj = stack.pop();
-            _totIdle--;
-        } catch(Exception e) {
-            if(null == _factory) {
-                throw new NoSuchElementException();
+        Object obj = null;
+        do {
+            boolean newlyMade = false;
+            // TODO: Don't use exception, test size.
+            if (!stack.empty()) {
+                obj = stack.pop();
+                _totIdle--;
             } else {
-                obj = _factory.makeObject(key);
+                if(null == _factory) {
+                    throw new NoSuchElementException("pools without a factory cannot create new objects as needed.");
+                } else {
+                    obj = _factory.makeObject(key);
+                    newlyMade = true;
+                }
             }
-        }
-        if(null != obj && null != _factory) {
-            _factory.activateObject(key,obj);
-        }
+            if(!newlyMade && null != obj && null != _factory) {
+                try {
+                    _factory.activateObject(key, obj);
+                    if (!_factory.validateObject(key, obj)) {
+                        try {
+                            _factory.destroyObject(key, obj);
+                        } catch (Exception e2) {
+                            // swallowed
+                        }
+                        obj = null;
+                    }
+                } catch (Exception e) {
+                    try {
+                        _factory.destroyObject(key, obj);
+                    } catch (Exception e2) {
+                        // swallowed
+                    }
+                    obj = null;
+                }
+            }
+        } while (obj == null);
         incrementActiveCount(key);
         return obj;
     }
 
     public synchronized void returnObject(Object key, Object obj) throws Exception {
         decrementActiveCount(key);
-        if(null == _factory || _factory.validateObject(key,obj)) {
-            Stack stack = (Stack)(_pools.get(key));
-            if(null == stack) {
-                stack = new Stack();
-                stack.ensureCapacity( _initSleepingCapacity > _maxSleeping ? _maxSleeping : _initSleepingCapacity);
-                _pools.put(key,stack);
+        if (null != _factory) {
+            try {
+                _factory.passivateObject(key, obj);
+            } catch (Exception e) {
+                try {
+                    _factory.destroyObject(key, obj);
+                } catch (Exception e2) {
+                    // swallowed
+                }
+                return;
+            }
+        }
+
+        if (isClosed()) {
+            if (null != _factory) {
+                try {
+                    _factory.destroyObject(key, obj);
+                } catch (Exception e) {
+                    // swallowed
+                }
+            }
+            return;
+        }
+
+        Stack stack = (Stack)_pools.get(key);
+        if(null == stack) {
+            stack = new Stack();
+            stack.ensureCapacity( _initSleepingCapacity > _maxSleeping ? _maxSleeping : _initSleepingCapacity);
+            _pools.put(key,stack);
+        }
+        final int stackSize = stack.size();
+        if (stackSize >= _maxSleeping) {
+            final Object staleObj;
+            if (stackSize > 0) {
+                staleObj = stack.remove(0);
+                _totIdle--;
+            } else {
+                staleObj = obj;
             }
             if(null != _factory) {
                 try {
-                    _factory.passivateObject(key,obj);
-                } catch(Exception e) {
-                    _factory.destroyObject(key,obj);
-                    return;
+                    _factory.destroyObject(key, staleObj);
+                } catch (Exception e) {
+                    // swallowed
                 }
-            }
-            if(stack.size() < _maxSleeping) {
-                stack.push(obj);
-                _totIdle++;
-            } else {
-                if(null != _factory) {
-                    _factory.destroyObject(key,obj);
-                }
-            }
-        } else {
-            if(null != _factory) {
-                _factory.destroyObject(key,obj);
             }
         }
+        stack.push(obj);
+        _totIdle++;
     }
 
     public synchronized void invalidateObject(Object key, Object obj) throws Exception {
         decrementActiveCount(key);
         if(null != _factory) {
+            try {
             _factory.destroyObject(key,obj);
+            } catch (Exception e) {
+                // swallowed
+            }
         }
         notifyAll(); // _totalActive has changed
     }
 
+    /**
+     * Create an object using the {@link KeyedPoolableObjectFactory#makeObject factory},
+     * passivate it, and then placed in the idle object pool.
+     * <code>addObject</code> is useful for "pre-loading" a pool with idle objects.
+     *
+     * @param key the key a new instance should be added to
+     * @throws Exception when {@link KeyedPoolableObjectFactory#makeObject} fails.
+     * @throws IllegalStateException when no {@link #setFactory factory} has been set or after {@link #close} has been called on this pool.
+     */
     public synchronized void addObject(Object key) throws Exception {
+        assertOpen();
+        if (_factory == null) {
+            throw new IllegalStateException("Cannot add objects without a factory.");
+        }
         Object obj = _factory.makeObject(key);
-        incrementActiveCount(key); // returnObject will decrement this
-        returnObject(key,obj);
+
+        _factory.passivateObject(key, obj);
+
+        Stack stack = (Stack)_pools.get(key);
+        if(null == stack) {
+            stack = new Stack();
+            stack.ensureCapacity( _initSleepingCapacity > _maxSleeping ? _maxSleeping : _initSleepingCapacity);
+            _pools.put(key,stack);
+        }
+
+        final int stackSize = stack.size();
+        if (stackSize >= _maxSleeping) {
+            final Object staleObj;
+            if (stackSize > 0) {
+                staleObj = stack.remove(0);
+                _totIdle--;
+            } else {
+                staleObj = obj;
+            }
+            if(null != _factory) {
+                try {
+                    _factory.destroyObject(key, staleObj);
+                } catch (Exception e) {
+                    // Don't swallow destroying the newly created object.
+                    if (obj == staleObj) {
+                        throw e;
+                    }
+                }
+            }
+        } else {
+            stack.push(obj);
+            _totIdle++;
+        }
     }
 
+    /**
+     * Returns the total number of instances currently idle in this pool.
+     *
+     * @return the total number of instances currently idle in this pool
+     */
     public int getNumIdle() {
         return _totIdle;
     }
 
+    /**
+     * Returns the total number of instances current borrowed from this pool but not yet returned.
+     *
+     * @return the total number of instances currently borrowed from this pool
+     */
     public int getNumActive() {
         return _totActive;
     }
 
+    /**
+     * Returns the number of instances currently borrowed from but not yet returned
+     * to the pool corresponding to the given <code>key</code>.
+     *
+     * @param key the key to query
+     * @return the number of instances corresponding to the given <code>key</code> currently borrowed in this pool
+     */
     public synchronized int getNumActive(Object key) {
         return getActiveCount(key);
     }
 
+    /**
+     * Returns the number of instances corresponding to the given <code>key</code> currently idle in this pool.
+     *
+     * @param key the key to query
+     * @return the number of instances corresponding to the given <code>key</code> currently idle in this pool
+     */
     public synchronized int getNumIdle(Object key) {
         try {
             return((Stack)(_pools.get(key))).size();
@@ -210,6 +335,9 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
         }
     }
 
+    /**
+     * Clears the pool, removing all pooled instances.
+     */
     public synchronized void clear() {
         Iterator it = _pools.keySet().iterator();
         while(it.hasNext()) {
@@ -222,6 +350,11 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
         _activeCount.clear();
     }
 
+    /**
+     * Clears the specified pool, removing all pooled instances corresponding to the given <code>key</code>.
+     *
+     * @param key the key to clear
+     */
     public synchronized void clear(Object key) {
         Stack stack = (Stack)(_pools.remove(key));
         destroyStack(key,stack);
@@ -261,13 +394,29 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
         return buf.toString();
     }
 
+    /**
+     * Close this pool, and free any resources associated with it.
+     * <p>
+     * Calling {@link #addObject addObject} or {@link #borrowObject borrowObject} after invoking
+     * this method on a pool will cause them to throw an {@link IllegalStateException}.
+     * </p>
+     *
+     * @throws Exception <strong>deprecated</strong>: implementations should silently fail if not all resources can be freed.
+     */
     public synchronized void close() throws Exception {
         clear();
-        _pools = null;
-        _factory = null;
-        _activeCount = null;
+        super.close();
     }
 
+    /**
+     * Sets the {@link KeyedPoolableObjectFactory factory} the pool uses
+     * to create new instances.
+     * Trying to change the <code>factory</code> after a pool has been used will frequently
+     * throw an {@link UnsupportedOperationException}.
+     *
+     * @param factory the {@link KeyedPoolableObjectFactory} used to create new instances.
+     * @throws IllegalStateException when the factory cannot be set at this time
+     */
     public synchronized void setFactory(KeyedPoolableObjectFactory factory) throws IllegalStateException {
         if(0 < getNumActive()) {
             throw new IllegalStateException("Objects are already active");
@@ -325,7 +474,7 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
     /** My {@link KeyedPoolableObjectFactory}. */
     protected KeyedPoolableObjectFactory _factory = null;
 
-    /** The cap on the number of "sleeping" instances in <i>each</i> pool. */
+    /** The cap on the number of "sleeping" instances in <code>each</code> pool. */
     protected int _maxSleeping = DEFAULT_MAX_SLEEPING;
 
     /** The initial capacity of each pool. */
