@@ -44,7 +44,11 @@ public class TestStackKeyedObjectPool extends TestKeyedObjectPool {
         StackKeyedObjectPool pool = new StackKeyedObjectPool(new SimpleFactory(),mincapacity);
         return pool;
     }
-    
+
+    protected KeyedObjectPool makeEmptyPool(KeyedPoolableObjectFactory factory) {
+        return new StackKeyedObjectPool(factory);
+    }
+
     protected Object getNthObject(Object key, int n) {
         return String.valueOf(key) + String.valueOf(n);
     }
@@ -228,8 +232,7 @@ public class TestStackKeyedObjectPool extends TestKeyedObjectPool {
     }
 
     public void testBorrowReturnWithSometimesInvalidObjects() throws Exception {
-        KeyedObjectPool pool = new StackKeyedObjectPool();
-        pool.setFactory(
+        KeyedObjectPool pool = new StackKeyedObjectPool(
             new KeyedPoolableObjectFactory() {
                 int counter = 0;
                 public Object makeObject(Object key) { return new Integer(counter++); }
@@ -261,7 +264,7 @@ public class TestStackKeyedObjectPool extends TestKeyedObjectPool {
         for(int i=0;i<10;i++) {
             pool.returnObject("key",obj[i]);
         }
-        assertEquals(3,pool.getNumIdle("key"));
+        assertEquals(6,pool.getNumIdle("key"));
     }
  
     class SimpleFactory implements KeyedPoolableObjectFactory {

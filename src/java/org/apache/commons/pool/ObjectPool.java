@@ -112,8 +112,8 @@ public interface ObjectPool {
 
     /**
      * Create an object using the {@link PoolableObjectFactory factory} or other
-     * implementation dependent mechanism, passivated, and then placed in the idle object pool.
-     * addObject() is useful for "pre-loading" a pool with idle objects.
+     * implementation dependent mechanism, passivate it, and then place it in the idle object pool.
+     * <code>addObject</code> is useful for "pre-loading" a pool with idle objects.
      * (Optional operation).
      *
      * @throws Exception when {@link PoolableObjectFactory#makeObject} fails.

@@ -23,6 +23,26 @@
 
     <release version="2.0" date="pending" description="Significant clean ups">
       <action dev="sandymac" type="fix">
+        Edited all KeyedObjectPool related JavaDocs to have meaningful and correct content.
+      </action>
+      <action dev="sandymac" type="fix">
+        Implemented until tests to verify KeyedObjectPool implementations conformed to Pool 2 contracts.
+        Updated GenericKeyedObjectPool and StackKeyedObjectPool to conformant behavior.
+      </action>
+      <action dev="sandymac" type="fix">
+        Don't ignore maxTotal parameter in
+        <code>GenericKeyedObjectPool(KeyedPoolableObjectFactory factory, int maxActive, byte whenExhaustedAction,
+          long maxWait, int maxIdle, int maxTotal, boolean testOnBorrow, boolean testOnReturn,
+          long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis,
+          boolean testWhileIdle)</code>
+      </action>
+      <action dev="sandymac" type="fix">
+        Change StackKeyedObjectPool to discard stalest, not freshest, idle object when maxSleeping is reached.
+      </action>
+      <action dev="sandymac" type="fix">
+        Edited all ObjectPool related JavaDocs to have meaningful and correct content.
+      </action>
+      <action dev="sandymac" type="fix">
         Implemented until tests to verify ObjectPool implementations conformed to Pool 2 contracts.
         Updated GenericObjectPool, StackObjectPool, and SoftReferenceObjectPool to conformant behavior.
       </action>

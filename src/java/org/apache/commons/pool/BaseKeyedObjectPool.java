@@ -17,7 +17,7 @@
 package org.apache.commons.pool;
 
 /**
- * A simple base implementation of {@link ObjectPool}.
+ * A simple base implementation of <code>KeyedObjectPool</code>.
  * Optional operations are implemented to either do nothing, return a value
  * indicating it is unsupported or throw {@link UnsupportedOperationException}.
  *
