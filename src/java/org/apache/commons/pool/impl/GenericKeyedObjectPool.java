@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2004 The Apache Software Foundation.
+ * Copyright 1999-2004,2006 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,7 +82,7 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  *    When {@link #setTestOnBorrow <i>testOnBorrow</i>} is set, the pool will
  *    attempt to validate each object before it is returned from the
  *    {@link #borrowObject} method. (Using the provided factory's
- *    {@link org.apache.commons.pool.PoolableObjectFactory#validateObject} method.)  Objects that fail
+ *    {@link KeyedPoolableObjectFactory#validateObject} method.)  Objects that fail
  *    to validate will be dropped from the pool, and a different object will
  *    be borrowed.
  *  </li>
@@ -90,7 +90,7 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  *    When {@link #setTestOnReturn <i>testOnReturn</i>} is set, the pool will
  *    attempt to validate each object before it is returned to the pool in the
  *    {@link #returnObject} method. (Using the provided factory's
- *    {@link org.apache.commons.pool.PoolableObjectFactory#validateObject}
+ *    {@link KeyedPoolableObjectFactory#validateObject}
  *    method.)  Objects that fail to validate will be dropped from the pool.
  *  </li>
  * </ul>
@@ -114,7 +114,7 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  *  <li>
  *   {@link #setTestWhileIdle <i>testWhileIdle</i>} indicates whether or not idle
  *   objects should be validated using the factory's
- *   {@link org.apache.commons.pool.PoolableObjectFactory#validateObject} method.  Objects
+ *   {@link KeyedPoolableObjectFactory#validateObject} method.  Objects
  *   that fail to validate will be dropped from the pool.
  *  </li>
  * </ul>
@@ -384,7 +384,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @param testWhileIdle whether or not to validate objects in the idle object eviction thread, if any (see {@link #setTestWhileIdle})
      */
     public GenericKeyedObjectPool(KeyedPoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, int maxTotal, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle) {
-        this(factory, maxActive, whenExhaustedAction, maxWait, maxIdle, GenericKeyedObjectPool.DEFAULT_MAX_TOTAL, GenericKeyedObjectPool.DEFAULT_MIN_IDLE, testOnBorrow, testOnReturn, timeBetweenEvictionRunsMillis, numTestsPerEvictionRun, minEvictableIdleTimeMillis, testWhileIdle);
+        this(factory, maxActive, whenExhaustedAction, maxWait, maxIdle, maxTotal, GenericKeyedObjectPool.DEFAULT_MIN_IDLE, testOnBorrow, testOnReturn, timeBetweenEvictionRunsMillis, numTestsPerEvictionRun, minEvictableIdleTimeMillis, testWhileIdle);
     }
     
     /**
