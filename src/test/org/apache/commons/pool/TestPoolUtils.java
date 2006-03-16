@@ -34,6 +34,9 @@ import java.util.Map;
 import java.util.Iterator;
 import java.util.Arrays;
 
+import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.commons.pool.impl.GenericKeyedObjectPool;
+
 /**
  * Unit tests for {@link PoolUtils}.
  *
@@ -273,13 +276,32 @@ public class TestPoolUtils extends TestCase {
             // expected
         }
 
-        // Because this isn't determinist and you can get false failures, try more than once.
+        final List calledMethods = new ArrayList();
+
+        // Test that the minIdle check doesn't add too many idle objects
+        final PoolableObjectFactory pof = (PoolableObjectFactory)createProxy(PoolableObjectFactory.class, calledMethods);
+        final ObjectPool op = new GenericObjectPool(pof);
+        PoolUtils.checkMinIdle(op, 2, 100);
+        Thread.sleep(400);
+        assertEquals(2, op.getNumIdle());
+        op.close();
+        int makeObjectCount = 0;
+        final Iterator iter = calledMethods.iterator();
+        while (iter.hasNext()) {
+            final String methodName = (String)iter.next();
+            if ("makeObject".equals(methodName)) {
+                makeObjectCount++;
+            }
+        }
+        assertEquals("makeObject should have been called two time", 2, makeObjectCount);
+
+        // Because this isn't deterministic and you can get false failures, try more than once.
         AssertionFailedError afe = null;
         int triesLeft = 3;
         do {
             afe = null;
             try {
-                final List calledMethods = new ArrayList();
+                calledMethods.clear();
                 final ObjectPool pool = (ObjectPool)createProxy(ObjectPool.class, calledMethods);
                 final TimerTask task = PoolUtils.checkMinIdle(pool, 1, CHECK_PERIOD); // checks minIdle immediately
 
@@ -325,15 +347,35 @@ public class TestPoolUtils extends TestCase {
             // expected
         }
 
-        // Because this isn't determinist and you can get false failures, try more than once.
+        final List calledMethods = new ArrayList();
+        final Object key = new Object();
+
+        // Test that the minIdle check doesn't add too many idle objects
+        final KeyedPoolableObjectFactory kpof = (KeyedPoolableObjectFactory)createProxy(KeyedPoolableObjectFactory.class, calledMethods);
+        final KeyedObjectPool kop = new GenericKeyedObjectPool(kpof);
+        PoolUtils.checkMinIdle(kop, key, 2, 100);
+        Thread.sleep(400);
+        assertEquals(2, kop.getNumIdle(key));
+        assertEquals(2, kop.getNumIdle());
+        kop.close();
+        int makeObjectCount = 0;
+        final Iterator iter = calledMethods.iterator();
+        while (iter.hasNext()) {
+            final String methodName = (String)iter.next();
+            if ("makeObject".equals(methodName)) {
+                makeObjectCount++;
+            }
+        }
+        assertEquals("makeObject should have been called two time", 2, makeObjectCount);
+
+        // Because this isn't deterministic and you can get false failures, try more than once.
         AssertionFailedError afe = null;
         int triesLeft = 3;
         do {
             afe = null;
             try {
-                final List calledMethods = new ArrayList();
+                calledMethods.clear();
                 final KeyedObjectPool pool = (KeyedObjectPool)createProxy(KeyedObjectPool.class, calledMethods);
-                final Object key = new Object();
                 final TimerTask task = PoolUtils.checkMinIdle(pool, key, 1, CHECK_PERIOD); // checks minIdle immediately
 
                 Thread.sleep(CHECK_SLEEP_PERIOD); // will check CHECK_COUNT more times.
