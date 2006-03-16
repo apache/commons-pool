@@ -276,14 +276,12 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
             } else {
                 staleObj = obj;
             }
-            if(null != _factory) {
-                try {
-                    _factory.destroyObject(key, staleObj);
-                } catch (Exception e) {
-                    // Don't swallow destroying the newly created object.
-                    if (obj == staleObj) {
-                        throw e;
-                    }
+            try {
+                _factory.destroyObject(key, staleObj);
+            } catch (Exception e) {
+                // Don't swallow destroying the newly created object.
+                if (obj == staleObj) {
+                    throw e;
                 }
             }
         } else {

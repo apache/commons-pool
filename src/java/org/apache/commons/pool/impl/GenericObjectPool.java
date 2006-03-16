@@ -1084,6 +1084,9 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      */
     public synchronized void addObject() throws Exception {
         assertOpen();
+        if (_factory == null) {
+            throw new IllegalStateException("Cannot add objects without a factory.");
+        }
         Object obj = _factory.makeObject();
         addObjectToPool(obj, false);
     }
