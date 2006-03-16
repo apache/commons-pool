@@ -175,6 +175,9 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
      */
     public synchronized void addObject() throws Exception {
         assertOpen();
+        if (_factory == null) {
+            throw new IllegalStateException("Cannot add objects without a factory.");
+        }
         Object obj = _factory.makeObject();
 
         boolean success = true;

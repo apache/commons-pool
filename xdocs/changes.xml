@@ -22,6 +22,9 @@
   <body>
 
     <release version="2.0" date="pending" description="Significant clean ups">
+      <action dev="sandymac" type="update">
+        Where there is no factory calling addObject is bogus so throw an IllegalStateExecption.
+      </action>
       <action dev="sandymac" type="fix">
         Edited all KeyedObjectPool related JavaDocs to have meaningful and correct content.
       </action>

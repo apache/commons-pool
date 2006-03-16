@@ -286,12 +286,13 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
      */
     public synchronized void addObject() throws Exception {
         assertOpen();
+        if (_factory == null) {
+            throw new IllegalStateException("Cannot add objects without a factory.");
+        }
         Object obj = _factory.makeObject();
 
         boolean success = true;
-        if(null != _factory) {
-            _factory.passivateObject(obj);
-        }
+        _factory.passivateObject(obj);
 
         boolean shouldDestroy = !success;
 
