@@ -22,6 +22,7 @@ import org.apache.commons.pool.BasePoolableObjectFactory;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.TestObjectPool;
+import org.apache.commons.pool.PoolUtils;
 
 import java.util.NoSuchElementException;
 
@@ -117,6 +118,31 @@ public class TestGenericObjectPool extends TestObjectPool {
         pool.evict();
         pool.evict();
         pool.close();
+    }
+
+    public void testEvict() throws Exception {
+        // yea this is hairy but it tests all the code paths in GOP.evict()
+        final SimpleFactory factory = new SimpleFactory();
+        final GenericObjectPool pool = new GenericObjectPool(factory);
+        pool.setSoftMinEvictableIdleTimeMillis(10);
+        pool.setMinIdle(2);
+        pool.setTestWhileIdle(true);
+        PoolUtils.prefill(pool, 5);
+        pool.evict();
+        factory.setEvenValid(false);
+        factory.setOddValid(false);
+        factory.setThrowExceptionOnActivate(true);
+        pool.evict();
+        PoolUtils.prefill(pool, 5);
+        factory.setThrowExceptionOnActivate(false);
+        factory.setThrowExceptionOnPassivate(true);
+        pool.evict();
+        factory.setThrowExceptionOnPassivate(false);
+        factory.setEvenValid(true);
+        factory.setOddValid(true);
+        Thread.sleep(125);
+        pool.evict();
+        assertEquals(2, pool.getNumIdle());
     }
 
     public void testExceptionOnPassivateDuringReturn() throws Exception {
@@ -302,6 +328,10 @@ public class TestGenericObjectPool extends TestObjectPool {
         {
             pool.setTimeBetweenEvictionRunsMillis(11235L);
             assertEquals(11235L,pool.getTimeBetweenEvictionRunsMillis());
+        }
+        {
+            pool.setSoftMinEvictableIdleTimeMillis(12135L);
+            assertEquals(12135L,pool.getSoftMinEvictableIdleTimeMillis());
         }
         {
             pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_BLOCK);
@@ -811,6 +841,15 @@ public class TestGenericObjectPool extends TestObjectPool {
 		pool.returnObject(obj);
 		assertEquals("should be one idle", 1, pool.getNumIdle());
 		assertEquals("should be zero active", 0, pool.getNumActive());
+
+        ObjectPool op = new GenericObjectPool();
+        try {
+            op.addObject();
+            fail("Expected IllegalStateException when there is no factory.");
+        } catch (IllegalStateException ise) {
+            //expected
+        }
+        op.close();
     }
     
     private GenericObjectPool pool = null;
