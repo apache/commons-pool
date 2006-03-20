@@ -637,11 +637,9 @@ public class TestGenericObjectPool extends TestObjectPool {
         pool.setMaxActive(5);
         pool.setNumTestsPerEvictionRun(5);
         pool.setMinEvictableIdleTimeMillis(3000L);
-        pool.setTimeBetweenEvictionRunsMillis(250L);
-        pool.setTestWhileIdle(true);
         pool.setSoftMinEvictableIdleTimeMillis(1000L);
         pool.setMinIdle(2);
-        
+
         Object[] active = new Object[5];
         Long[] creationTime = new Long[5] ;
         for(int i=0;i<5;i++) {
@@ -652,16 +650,16 @@ public class TestGenericObjectPool extends TestObjectPool {
         for(int i=0;i<5;i++) {
             pool.returnObject(active[i]);
         }
-        
-        try { Thread.sleep(1500L); } catch(Exception e) { }
-        assertTrue("Should be 2 OLD idle, found " + pool.getNumIdle(),pool.getNumIdle() == 2 &&
-                ((TimeTest)pool.borrowObject()).getCreateTime() == creationTime[3].longValue() &&
-                ((TimeTest)pool.borrowObject()).getCreateTime() == creationTime[4].longValue());
-        
-        try { Thread.sleep(2000L); } catch(Exception e) { }
-        assertTrue("Should be 2 NEW idle , found " + pool.getNumIdle(),pool.getNumIdle() == 2 &&
-                ((TimeTest)pool.borrowObject()).getCreateTime() != creationTime[0].longValue() &&
-                ((TimeTest)pool.borrowObject()).getCreateTime() != creationTime[1].longValue());
+
+        // Soft evict all but minIdle(2)
+        Thread.sleep(1500L);
+        pool.evict();
+        assertEquals("Idle count different than expected.", 2, pool.getNumIdle());
+
+        // Hard evict the rest.
+        Thread.sleep(2000L);
+        pool.evict();
+        assertEquals("Idle count different than expected.", 0, pool.getNumIdle());
     }
 
     public void testMinIdle() throws Exception {
