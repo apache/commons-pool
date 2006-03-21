@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
-   Copyright 2003-2004 The Apache Software Foundation
+   Copyright 2003-2004,2006 The Apache Software Foundation
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -32,15 +32,18 @@
          </ul>
          <br/>
          <p>
-            The latest binary release is always available on the 
-            <a href="http://jakarta.apache.org/site/binindex.cgi#commons-pool">
-            Jakarta Binary Downloads page</a>,
-            its source is available from 
-            <a href="http://jakarta.apache.org/site/sourceindex.cgi#commons-pool">
-            Jakarta Source Downloads page</a>.
+            The latest release binary and source releases are always available on the
+            <a href="http://jakarta.apache.org/site/downloads/downloads_commons-pool.cgi">
+            Jakarta Commons Pool Downloads page</a>.
          </p>
          <p>
-            Commons-pool depends at runtime on 
+            Commons-pool 2.0 only depends at runtime on a Java 1.4 or better JVM.
+         </p>
+         <p>
+            Commons-pool 1.3 only depends at runtime on a Java 1.3 or better JVM.
+         </p>
+         <p>
+            Commons-pool 1.2 depends at runtime on
             <a href="http://jakarta.apache.org/commons/collections/">commons-collections</a>.
          </p>
          <p>
@@ -58,28 +61,7 @@
             through <a href="cvs-usage.html">anonymous SVN access</a>.
          </p>
       </section>
-<!--
-      <section name="Release Candidate">
-         <p>
-            We are currently preparing the 1.2 release following this
-            <a href="release-plan.html">release plan</a>.
-         </p>
-         <p>
-            Release candidates for the upcoming 1.2 release can be downloaded 
-            <a href="http://cvs.apache.org/~dirkv/builds/">here</a>.
-         </p>
-         <p>
-           Preliminary <a href="release-notes-1.2.html">release notes</a> are available.
-         </p>
-         <p>
-            Please review and report any problem on the 
-            <a href="mail-lists.html">mailing list</a>.
-         </p>
-         <p>
-            Final release target is 31 May 2004. 
-         </p>
-      </section>
--->
+
    </body>
 </document>
 

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
-   Copyright 2003-2004 The Apache Software Foundation
+   Copyright 2003-2004,2006 The Apache Software Foundation
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -161,6 +161,97 @@
       </properties>
     </dependency>
 
+    <dependency>
+      <groupId>maven</groupId>
+      <artifactId>maven-plugin-plugin</artifactId>
+      <version>1.7</version>
+      <url>http://maven.apache.org/maven-1.x/plugins/plugin/</url>
+      <type>plugin</type>
+      <properties>
+          <comment>
+              &lt;strong&gt;Site Only&lt;/strong&gt; - v1.7 (minimum)
+          </comment>
+      </properties>
+    </dependency>
+
+    <dependency>
+      <groupId>maven</groupId>
+      <artifactId>maven-scm-plugin</artifactId>
+      <version>1.5</version>
+      <url>http://maven.apache.org/maven-1.x/plugins/scm/</url>
+      <type>plugin</type>
+      <properties>
+          <comment>
+              &lt;strong&gt;Site Only&lt;/strong&gt; - v1.5 (minimum)
+          </comment>
+      </properties>
+    </dependency>
+
+    <dependency>
+      <groupId>maven</groupId>
+      <artifactId>maven-jdiff-plugin</artifactId>
+      <version>1.5</version>
+      <url>http://maven.apache.org/maven-1.x/plugins/jdiff/</url>
+      <type>plugin</type>
+      <properties>
+          <comment>
+              &lt;strong&gt;Site Only&lt;/strong&gt; - v1.5 (minimum)
+          </comment>
+      </properties>
+    </dependency>
+
+    <dependency>
+      <groupId>maven</groupId>
+      <artifactId>maven-changes-plugin</artifactId>
+      <version>1.6</version>
+      <url>http://maven.apache.org/maven-1.x/plugins/changes/</url>
+      <type>plugin</type>
+      <properties>
+          <comment>
+              &lt;strong&gt;Site Only&lt;/strong&gt; - v1.6 (minimum)
+          </comment>
+      </properties>
+    </dependency>
+
+    <dependency>
+      <groupId>maven</groupId>
+      <artifactId>maven-changelog-plugin</artifactId>
+      <version>1.9</version>
+      <url>http://maven.apache.org/maven-1.x/plugins/changelog/</url>
+      <type>plugin</type>
+      <properties>
+          <comment>
+              &lt;strong&gt;Site Only&lt;/strong&gt; - v1.9 (minimum)
+          </comment>
+      </properties>
+    </dependency>
+
+    <dependency>
+      <groupId>maven</groupId>
+      <artifactId>maven-file-activity-plugin</artifactId>
+      <version>1.6</version>
+      <url>http://maven.apache.org/maven-1.x/plugins/file-activity/</url>
+      <type>plugin</type>
+      <properties>
+          <comment>
+              &lt;strong&gt;Site Only&lt;/strong&gt; - v1.6 (minimum)
+          </comment>
+      </properties>
+    </dependency>
+
+    <dependency>
+      <groupId>maven</groupId>
+      <artifactId>maven-developer-activity-plugin</artifactId>
+      <version>1.5.1</version>
+      <url>http://maven.apache.org/maven-1.x/plugins/developer-activity/</url>
+      <type>plugin</type>
+      <properties>
+          <comment>
+              &lt;strong&gt;Site Only&lt;/strong&gt; - v1.5.2 (minimum)
+          </comment>
+      </properties>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -195,6 +286,7 @@
     <report>maven-file-activity-plugin</report>
     <report>maven-javadoc-plugin</report>
     <report>maven-jdepend-plugin</report>
+    <report>maven-jdiff-plugin</report>
     <report>maven-junit-report-plugin</report>
     <report>maven-jxr-plugin</report>
     <report>maven-license-plugin</report>
