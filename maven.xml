@@ -65,15 +65,15 @@
   <postGoal name="dist:build-bin">
     <j:set var="distDir" value="${pom.getPluginContext('maven-dist-plugin').getVariable('maven.dist.dir')}"/>
     <j:set var="finalName" value="${pom.getPluginContext('maven-dist-plugin').getVariable('maven.final.name')}"/>
-    <ant:checksum file="${distDir}/${finalName}.tar.gz"/>
-    <ant:checksum file="${distDir}/${finalName}.zip"/>
+    <ant:checksum file="${distDir}/${finalName}.tar.gz" algorithm="MD5" fileext=".md5"/>
+    <ant:checksum file="${distDir}/${finalName}.zip" algorithm="MD5" fileext=".md5"/>
   </postGoal>
   
   <postGoal name="dist:build-src">
     <j:set var="distDir" value="${pom.getPluginContext('maven-dist-plugin').getVariable('maven.dist.dir')}"/>
     <j:set var="finalName" value="${pom.getPluginContext('maven-dist-plugin').getVariable('maven.final.name')}"/>
-    <ant:checksum file="${distDir}/${finalName}-src.tar.gz"/>
-    <ant:checksum file="${distDir}/${finalName}-src.zip"/>
+    <ant:checksum file="${distDir}/${finalName}-src.tar.gz" algorithm="MD5" fileext=".md5"/>
+    <ant:checksum file="${distDir}/${finalName}-src.zip" algorithm="MD5" fileext=".md5"/>
   </postGoal>
   
 </project>
