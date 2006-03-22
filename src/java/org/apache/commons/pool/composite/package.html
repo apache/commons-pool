@@ -1,0 +1,166 @@
+<!--
+  ~ Copyright 2006 The Apache Software Foundation.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!-- $Id: $ -->
+<html>
+<body>
+<p>
+    Composite [Keyed] Object Pool implementation.
+</p>
+
+<h3>About</h3>
+<p>
+    The classes in this package are used to implement the {@link org.apache.commons.pool.ObjectPool} and
+    the {@link org.apache.commons.pool.KeyedObjectPool} interfaces building the desired feature set via
+    object composition. Almost every interesting class or method in this package is package-private or
+    privately scoped. This is intentional as clients of this code should not care about implementations
+    as much as the desired feature set. This should make future transitions to more correct or better
+    performant code painless or at least much less painful.
+</p>
+
+<h3>Public Code Tour</h3>
+
+<h4>Factories</h4>
+<p>
+    There are two object pool factories in this package:
+    {@link org.apache.commons.pool.composite.CompositeObjectPoolFactory} and
+    {@link org.apache.commons.pool.composite.CompositeKeyedObjectPoolFactory}.
+</p>
+<p>
+    {@link org.apache.commons.pool.composite.CompositeKeyedObjectPoolFactory}
+    actually delegates almost all of it's work to the regular
+    composite object pool factory. The only interesting part about it is in the
+    {@link org.apache.commons.pool.composite.CompositeKeyedObjectPoolFactory#setKeyedFactory} method
+    where it wraps the {@link org.apache.commons.pool.KeyedPoolableObjectFactory} in an adapter that uses a
+    ThreadLocal to pass the key through the {@link org.apache.commons.pool.composite.CompositeObjectPool}
+    backing the {@link org.apache.commons.pool.composite.CompositeKeyedObjectPool} for that particular key.
+    More on that later.
+</p>
+<p>
+    {@link org.apache.commons.pool.composite.CompositeObjectPoolFactory} does all of it's heavy lifting in
+    three methods:
+    {@link org.apache.commons.pool.composite.CompositeObjectPoolFactory#getLender},
+    {@link org.apache.commons.pool.composite.CompositeObjectPoolFactory#getManager}, and
+    {@link org.apache.commons.pool.composite.CompositeObjectPoolFactory#getTracker}.
+    All other methods are little more than java bean pattern getters and setters.
+    Those three methods check that the factory has not been configured in an invalid way and compose the
+    each of the three components that make up a {@link org.apache.commons.pool.composite.CompositeObjectPool}.
+    Also, if possible any optimizations are made here.
+</p>
+
+<h4>Type safe enums</h4>
+<p>
+    Any public class not mentioned in the above facades or factories sections is a type safe enum used by the factories
+    to specify the desired configuration. Type safe enums are used for two reasons. First, they represent the desired
+    feature set as opposed to a specific implementation. Second, by using them it is nearly impossible to configure
+    a factory in an invalid configuration.
+</p>
+
+<hr width="50%"/>
+
+<h3>Private Code Tour</h3>
+<p>
+    The following is intended to help those who wish to better understand the design of the composite object pool
+    implementation.
+</p>
+
+<h3>Object Pools</h3>
+<p>
+    Behind the scenes there are two package-private object pool implementations:
+    {@link org.apache.commons.pool.composite.CompositeObjectPool} and
+    {@link org.apache.commons.pool.composite.CompositeKeyedObjectPool}.
+</p>
+
+<h4>CompositeKeyedObjectPool</h4>
+<p>
+    The {@link org.apache.commons.pool.composite.CompositeKeyedObjectPool} is implemented as a map of keys to
+    object pools. When a new key is used it uses a {@link org.apache.commons.pool.ObjectPoolFactory} to create an
+    object pool for that key. I do not believe there is anything in
+    {@link org.apache.commons.pool.composite.CompositeKeyedObjectPool} that requires the use of
+    {@link org.apache.commons.pool.composite.CompositeObjectPool} to back each key. Also there is nothing to
+    prevent the use of {@link org.apache.commons.pool.ObjectPool}s that are configured differently for each key
+    but this feature seemed to have minimal utility. Such functionality could be obtained via careful use of the
+    {@link org.apache.commons.pool.composite.CompositeKeyedObjectPoolFactory#createPool(org.apache.commons.pool.ObjectPoolFactory)}
+    method.
+</p>
+
+<h4>CompositeObjectPool</h4>
+<p>
+    The {@link org.apache.commons.pool.composite.CompositeObjectPool} is the heart and soul of this object pool
+    implementation. Again, delegation is what makes this sucker tick. There are three component types the composite
+    object pool delegates it's work to and from where it acquires it's feature set.
+</p>
+
+<h5>Lender</h5>
+<p>
+    A {@link org.apache.commons.pool.composite.Lender} maintains idle objects and the order in which objects are
+    borrowed. It is common for lenders to be stacked to get the desired functionality. There are three terminating
+    lenders: {@link org.apache.commons.pool.composite.FifoLender},
+    {@link org.apache.commons.pool.composite.LifoLender}, and
+    {@link org.apache.commons.pool.composite.NullLender}.
+    Next there is a {@link org.apache.commons.pool.composite.SoftLender} which can be used to allow garbage
+    collection of idle objects. It would be possible to create a WeakLender but I'm not sure I see any utility in that.
+    Finally there is a class of {@link org.apache.commons.pool.composite.EvictorLender}s that are used to
+    preform idle object eviction.
+</p>
+
+<h6>EvictorLenders</h6>
+<p>
+    There are two {@link org.apache.commons.pool.composite.EvictorLender}s that can be chained together:
+    {@link org.apache.commons.pool.composite.IdleEvictorLender} and
+    {@link org.apache.commons.pool.composite.InvalidEvictorLender}.
+    Both evictor types use a {@link java.util.Timer} to schedule their work. The Timer class claims to be very scalable
+    which is good because there will be a lot of {@link java.util.TimerTask}s in a large object pool.
+    Each of the evictor types create a TimerTask that will run at a future time to possibly evict one idle object.
+    This design makes idle object eviction quite deterministic and limits contention for the object pool to the bare
+    minimum.
+</p>
+
+<h5>Manager</h5>
+<p>
+    {@link org.apache.commons.pool.composite.Manager}: a manager does most of the heavy lifting between a
+    {@link org.apache.commons.pool.composite.Lender} and a
+    {@link org.apache.commons.pool.composite.Tracker}. A manager is responsible for activating and validating
+    idle objects and passivating and possibly validating active objects. It is also responsible for controlling the
+    growth and size of the pool. Managers can also be stacked together to get the desired feature set. There are two
+    terminating mangers: {@link org.apache.commons.pool.composite.FailManager} and
+    {@link org.apache.commons.pool.composite.GrowManager}. These two manager interact with the poolable object
+    factory and the lenders to activate idle object or create new ones.
+    {@link org.apache.commons.pool.composite.IdleLimitManager} is a unique in that it is really the only manager
+    that does any interesting work in the {@link org.apache.commons.pool.composite.IdleLimitManager#returnToPool}
+    method. Finally there are two {@link org.apache.commons.pool.composite.ActiveLimitManager}s that implement
+    the behaviors for when a pool has reached it's limit of active objects:
+    {@link org.apache.commons.pool.composite.FailLimitManager} and
+    {@link org.apache.commons.pool.composite.WaitLimitManager}.
+</p>
+
+<h5>Tracker</h5>
+<p>
+    {@link org.apache.commons.pool.composite.Tracker}: a tracker's sole responsibility is keeping track of
+    active objects borrowed from the pool. A tracker will never touch an object that is considered to be idle. The
+    {@link org.apache.commons.pool.composite.NullTracker} and
+    {@link org.apache.commons.pool.composite.SimpleTracker} classes are very simple. The
+    {@link org.apache.commons.pool.composite.ReferenceTracker} is much more interesting. It can detect when a
+    borrowed object is not returned to the pool (assuming the garbage collector does it's thing in a timely manner).
+    Most of it's complexity comes from the need to carefully track borrowed objects without creating a strong reference
+    to them. The trickery needed to make this work is rather neat, especially when the
+    {@link org.apache.commons.pool.composite.DebugTracker} is used.
+</p>
+
+@author Sandy McArthur
+
+</body>
+</html>
