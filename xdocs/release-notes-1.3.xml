@@ -47,6 +47,11 @@
     </li>
     <li>
         <p>
+            The PoolUtils class with a number static decorator methods has been added. 
+        </p>
+    </li>
+    <li>
+        <p>
             The following issues were resolved since v1.2: (see Bugzilla for complete description)
         </p>
 <table>
