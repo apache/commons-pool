@@ -66,15 +66,27 @@
   <postGoal name="dist:build-bin">
     <j:set var="distDir" value="${pom.getPluginContext('maven-dist-plugin').getVariable('maven.dist.dir')}"/>
     <j:set var="finalName" value="${pom.getPluginContext('maven-dist-plugin').getVariable('maven.final.name')}"/>
-    <ant:checksum file="${distDir}/${finalName}.tar.gz" algorithm="MD5" fileext=".md5"/>
-    <ant:checksum file="${distDir}/${finalName}.zip" algorithm="MD5" fileext=".md5"/>
+
+    <!-- create checksum for binary tar.gz -->
+    <ant:checksum file="${distDir}/${finalName}.tar.gz" property="tar.gz.md5"/>
+    <ant:echo message="${tar.gz.md5} *${finalName}.tar.gz" file="${distDir}/${finalName}.tar.gz.md5" />
+
+    <!-- create checksum for binary zip -->
+    <ant:checksum file="${distDir}/${finalName}.zip" property="zip.md5"/>
+    <ant:echo message="${zip.md5} *${finalName}.zip" file="${distDir}/${finalName}.zip.md5" />
   </postGoal>
   
   <postGoal name="dist:build-src">
     <j:set var="distDir" value="${pom.getPluginContext('maven-dist-plugin').getVariable('maven.dist.dir')}"/>
     <j:set var="finalName" value="${pom.getPluginContext('maven-dist-plugin').getVariable('maven.final.name')}"/>
-    <ant:checksum file="${distDir}/${finalName}-src.tar.gz" algorithm="MD5" fileext=".md5"/>
-    <ant:checksum file="${distDir}/${finalName}-src.zip" algorithm="MD5" fileext=".md5"/>
+
+    <!-- create checksum for source tar.gz -->
+    <ant:checksum file="${distDir}/${finalName}-src.tar.gz" property="src.tar.gz.md5"/>
+    <ant:echo message="${src.tar.gz.md5} *${finalName}-src.tar.gz" file="${distDir}/${finalName}-src.tar.gz.md5" />
+
+    <!-- create checksum for source zip -->
+    <ant:checksum file="${distDir}/${finalName}-src.zip" property="src.zip.md5"/>
+    <ant:echo message="${src.zip.md5} *${finalName}-src.zip" file="${distDir}/${finalName}-src.zip.md5" />
   </postGoal>
   
 </project>
