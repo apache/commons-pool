@@ -21,7 +21,7 @@
   <groupId>commons-pool</groupId>
   <artifactId>commons-pool</artifactId>
   <inceptionYear>2001</inceptionYear>
-  <currentVersion>1.3-rc1</currentVersion>
+  <currentVersion>1.3-rc2</currentVersion>
   <shortDescription>Commons Object Pooling Library</shortDescription>
   <description>Commons Object Pooling Library</description>
   <logo>/images/pool-logo-white.png</logo>
@@ -213,48 +213,6 @@
       </properties>
     </dependency>
 
-    <dependency>
-      <groupId>maven</groupId>
-      <artifactId>maven-changelog-plugin</artifactId>
-      <version>1.9</version>
-      <url>http://maven.apache.org/maven-1.x/plugins/changelog/</url>
-      <type>plugin</type>
-      <properties>
-          <comment>
-              &lt;strong&gt;Site Only&lt;/strong&gt; - v1.9 (minimum)
-          </comment>
-      </properties>
-    </dependency>
-
-    <dependency>
-      <groupId>maven</groupId>
-      <artifactId>maven-file-activity-plugin</artifactId>
-      <version>1.6</version>
-      <url>http://maven.apache.org/maven-1.x/plugins/file-activity/</url>
-      <type>plugin</type>
-      <properties>
-          <comment>
-              &lt;strong&gt;Site Only&lt;/strong&gt; - v1.6 (minimum)
-          </comment>
-      </properties>
-    </dependency>
-
-    <!-- This dependency isn't needed when the maven-developer-activity-plugin is disabled. -->
-    <!--
-    <dependency>
-      <groupId>maven</groupId>
-      <artifactId>maven-developer-activity-plugin</artifactId>
-      <version>1.5.1</version>
-      <url>http://maven.apache.org/maven-1.x/plugins/developer-activity/</url>
-      <type>plugin</type>
-      <properties>
-          <comment>
-              &lt;strong&gt;Site Only&lt;/strong&gt; - v1.5.2 (minimum)
-          </comment>
-      </properties>
-    </dependency>
-    -->
-
   </dependencies>
 
   <build>
@@ -283,11 +241,7 @@
   </build>
   
   <reports>
-    <report>maven-changelog-plugin</report>
     <report>maven-changes-plugin</report>
-    <!-- This report is suspected not to accurate when run against the ASF repository -->
-    <!--<report>maven-developer-activity-plugin</report>-->
-    <report>maven-file-activity-plugin</report>
     <report>maven-javadoc-plugin</report>
     <report>maven-jdepend-plugin</report>
     <report>maven-jdiff-plugin</report>

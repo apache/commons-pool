@@ -45,6 +45,7 @@
     <ant:copy todir="${maven.dist.src.assembly.dir}">
       <ant:fileset dir=".">
         <ant:include name="NOTICE.txt"/>
+        <ant:include name="build.properties.sample"/>
       </ant:fileset>
     </ant:copy>
 
