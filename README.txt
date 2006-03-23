@@ -21,3 +21,14 @@ Notable Additions since 1.2:
 
 * The one dependency on Commons Collections has been removed (okay,
   technically a deletion) and the only requirement is Java 1.3 or above.
+
+Miscellaneous issues:
+
+Some of the unit tests may fail spuriously because they are trying to test
+behavior that depends on the thread scheduler or the garbage collector. If
+you get a test failure that has "evictor" or "thread" in the test name,
+please run this test a few times before reporting a bug report for it. If
+you know how to make one of these unit tests better, please submit a patch.
+
+
+The Apache Jakarta Commons Team, March 2006
