@@ -236,44 +236,46 @@ public final class CompositeKeyedObjectPoolFactory implements KeyedObjectPoolFac
     }
 
     /**
-     * Maximum number of idle objects in the pool.
+     * Maximum number of idle objects in the pool for each key.
      * A negative value means unlimited.
      * Zero means the pool will behave like a factory.
      * A positve value limits the number of idle objects.
      *
-     * @return a non-negative value is the maximum number of idle objects in the pool, else unlimited.
+     * @return a non-negative value is the maximum number of idle objects in the pool for each key, else unlimited.
      */
-    public int getMaxIdle() {
+    public int getMaxIdlePerKey() {
         return factory.getMaxIdle();
     }
 
     /**
-     * Set the maximum number of idle objects in the pool.
+     * Set the maximum number of idle objects in the pool for each key.
      * A negative value means unlimited.
      * Zero means the pool will behave like a factory.
      * A positve value limits the number of idle objects.
      *
-     * @param maxIdle a non-negative value is the maximum number of idle objects in the pool, else unlimited.
+     * @param maxIdle a non-negative value is the maximum number of idle objects in the pool for each key, else unlimited.
      */
-    public void setMaxIdle(final int maxIdle) {
+    public void setMaxIdlePerKey(final int maxIdle) {
         factory.setMaxIdle(maxIdle);
     }
 
     /**
-     * Maximum number of active objects borrowed from this pool. A non-positive value means there is no limit.
+     * Maximum number of active objects borrowed from this pool for each key.
+     * A non-positive value means there is no limit.
      *
-     * @return if &gt; 0 the the maximum number of active objects else unlimited.
+     * @return if &gt; 0 the the maximum number of active objects for each key else unlimited.
      */
-    public int getMaxActive() {
+    public int getMaxActivePerKey() {
         return factory.getMaxActive();
     }
 
     /**
-     * Set the maximum active objects borrowed from this pool. Any non-positive value means there is no limit.
+     * Set the maximum number of active objects borrowed from this pool for each key.
+     * Any non-positive value means there is no limit.
      *
-     * @param maxActive the limit of active objects from the pool or &lt;= 0 for unlimited.
+     * @param maxActive the limit for each key of active objects from the pool or &lt;= 0 for unlimited.
      */
-    public void setMaxActive(final int maxActive) {
+    public void setMaxActivePerKey(final int maxActive) {
         factory.setMaxActive(maxActive);
     }
 
