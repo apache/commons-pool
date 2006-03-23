@@ -26,12 +26,11 @@ import org.apache.commons.pool.PoolableObjectFactory;
 import java.io.Serializable;
 
 /**
- * {@link KeyedObjectPoolFactory} that builds a custom {@link KeyedObjectPool} via composition of custom
- * {@link ObjectPool}s.
+ * <code>KeyedObjectPoolFactory</code> that builds an optimized custom <code>KeyedObjectPool</code> with the requested feature set.
  *
- * <p>Note: Currently the default values and behavior is effectivly inherited from {@link CompositeObjectPoolFactory},
- * review it if you are uncertian about the behavior of this factory. Future verions of this factory may not inherit
- * behavior from the {@link CompositeObjectPoolFactory}.
+ * <p>Note: Currently the default values and behavior is effectively inherited from {@link CompositeObjectPoolFactory},
+ * review it if you are uncertain about the behavior of this factory. Future versions of this factory may not inherit
+ * behavior from the <code>CompositeObjectPoolFactory</code>.
  * </p>
  *
  * @see CompositeObjectPoolFactory
@@ -53,9 +52,9 @@ public final class CompositeKeyedObjectPoolFactory implements KeyedObjectPoolFac
     private final CompositeObjectPoolFactory factory;
 
     /**
-     * Create a new keyed object pool factory witht he specific keyed object factory.
+     * Create a new keyed object pool factory with the specified keyed poolable object factory.
      *
-     * @param factory the keyed object factory for this pool, must not be null.
+     * @param factory the factory for created pools, must not be <code>null</code>.
      * @throws IllegalArgumentException if <code>factory</code> is <code>null</code>.
      * @see #setKeyedFactory(KeyedPoolableObjectFactory)
      */
@@ -67,11 +66,11 @@ public final class CompositeKeyedObjectPoolFactory implements KeyedObjectPoolFac
     }
 
     /**
-     * Create a new keyed object pool factory with the specific object factory. This is a convenience constructor for
-     * when you have a {@link PoolableObjectFactory} but want a {@link KeyedObjectPool} and the
-     * {@link PoolableObjectFactory object factory} doesn't care about the key.
+     * Create a new keyed object pool factory with the specified poolable object factory. This is a convenience
+     * constructor for when you have a {@link PoolableObjectFactory} but want a {@link KeyedObjectPool} and the
+     * poolable object factory doesn't care about the key.
      *
-     * @param factory the object factory for this pool, must not be null.
+     * @param factory the poolable object factory for created pools, must not be <code>null</code>.
      * @throws IllegalArgumentException if <code>factory</code> is <code>null</code>.
      * @see #setFactory(PoolableObjectFactory)
      */
@@ -83,10 +82,10 @@ public final class CompositeKeyedObjectPoolFactory implements KeyedObjectPoolFac
     }
 
     /**
-     * Create a new keyed object pool factory that uses a {@link CompositeObjectPoolFactory} to create
-     * {@link ObjectPool}s for each key.
+     * Create a new keyed object pool factory that uses a <code>CompositeObjectPoolFactory</code> to create object pools
+     * for each key.
      *
-     * @param factory the object factory to back this keyed object factory.
+     * @param factory the object pool factory to back this keyed object pool factory.
      * @throws IllegalArgumentException if <code>factory</code> is <code>null</code>.
      */
     public CompositeKeyedObjectPoolFactory(final CompositeObjectPoolFactory factory) throws IllegalArgumentException {
@@ -104,7 +103,7 @@ public final class CompositeKeyedObjectPoolFactory implements KeyedObjectPoolFac
     }
 
     /**
-     * Create a new {@link KeyedObjectPool}.
+     * Create a new <code>KeyedObjectPool</code>.
      *
      * @return a new {@link KeyedObjectPool}
      */
@@ -121,12 +120,12 @@ public final class CompositeKeyedObjectPoolFactory implements KeyedObjectPoolFac
     }
 
     /**
-     * Create a new {@link KeyedObjectPool} that uses an {@link ObjectPoolFactory} to create an internal
-     * {@link ObjectPool} to back each key. Use of this method is generally discouraged but it could be used to do some
-     * generally funky and intersting things.
+     * Create a new <code>KeyedObjectPool</code> that uses an <code>ObjectPoolFactory</code> to create an internal
+     * <code>ObjectPool</code> to back each key. Use of this method is generally discouraged but it could be used to do
+     * some generally funky and interesting things.
      *
-     * <p><b>There are no guarentees the {@link KeyedObjectPool} returned by this method will behave in previously
-     * guarenteed way. Use at your own risk.</b></p>
+     * <p><b>There are no guarantees the <code>KeyedObjectPool</code> returned by this method will behave in previously
+     * guaranteed way. Use at your own risk.</b></p>
      *
      * @param factory the object pool factory that creates object pools to back each key.
      * @return a keyed object pool that uses an object pool factory to create object pools to back each key.
@@ -217,9 +216,9 @@ public final class CompositeKeyedObjectPoolFactory implements KeyedObjectPoolFac
     }
 
     /**
-     * Behavior of the pool when all idle objects have been exhasted.
+     * Behavior of the pool when all idle objects have been exhausted.
      *
-     * @return behavior of the pool when all idle objects have been exhasted.
+     * @return behavior of the pool when all idle objects have been exhausted.
      */
     public ExhaustionBehavior getExhaustionBehavior() {
         return factory.getExhaustionBehavior();
@@ -239,7 +238,7 @@ public final class CompositeKeyedObjectPoolFactory implements KeyedObjectPoolFac
      * Maximum number of idle objects in the pool for each key.
      * A negative value means unlimited.
      * Zero means the pool will behave like a factory.
-     * A positve value limits the number of idle objects.
+     * A positive value limits the number of idle objects.
      *
      * @return a non-negative value is the maximum number of idle objects in the pool for each key, else unlimited.
      */
@@ -251,7 +250,7 @@ public final class CompositeKeyedObjectPoolFactory implements KeyedObjectPoolFac
      * Set the maximum number of idle objects in the pool for each key.
      * A negative value means unlimited.
      * Zero means the pool will behave like a factory.
-     * A positve value limits the number of idle objects.
+     * A positive value limits the number of idle objects.
      *
      * @param maxIdle a non-negative value is the maximum number of idle objects in the pool for each key, else unlimited.
      */
@@ -301,7 +300,7 @@ public final class CompositeKeyedObjectPoolFactory implements KeyedObjectPoolFac
     }
 
     /**
-     * Wait time in milli-seconds for an object to become available to the pool when the {@link LimitBehavior#WAIT WAIT}
+     * Wait time in milliseconds for an object to become available to the pool when the {@link LimitBehavior#WAIT WAIT}
      * {@link #setLimitBehavior(LimitBehavior) limit behavior} is used.
      *
      * @return the wait time for an object to become available to the pool.
@@ -312,11 +311,11 @@ public final class CompositeKeyedObjectPoolFactory implements KeyedObjectPoolFac
     }
 
     /**
-     * Set the wait time in milli-seconds for an object to become available to the pool when it was exhausted.
+     * Set the wait time in milliseconds for an object to become available to the pool when it was exhausted.
      * This has no effect unless the {@link #setLimitBehavior(LimitBehavior) limit behavior}
      * is set to {@link LimitBehavior#WAIT}.
      *
-     * @param maxWaitMillis the milli-seconds to wait for an available object in the pool or &lt;= 0 for no limit.
+     * @param maxWaitMillis the milliseconds to wait for an available object in the pool or &lt;= 0 for no limit.
      * @see #setLimitBehavior(LimitBehavior)
      */
     public void setMaxWaitMillis(final int maxWaitMillis) {
@@ -364,7 +363,7 @@ public final class CompositeKeyedObjectPoolFactory implements KeyedObjectPoolFac
      * Idle timeout for idle objects to be evicted.
      * A non-positive value means do not evict objects just because they are idle.
      *
-     * @return if positive the time in milli-seconds to evict idle objects.
+     * @return if positive the time in milliseconds to evict idle objects.
      */
     public long getEvictIdleMillis() {
         return factory.getEvictIdleMillis();
@@ -374,7 +373,7 @@ public final class CompositeKeyedObjectPoolFactory implements KeyedObjectPoolFac
      * Set the idle timeout for idle objects to be evicted.
      * A non-positive value means do not evict objects just because they are idle.
      *
-     * @param evictIdleMillis if positive the time in milli-seconds to evict idle objects.
+     * @param evictIdleMillis if positive the time in milliseconds to evict idle objects.
      */
     public void setEvictIdleMillis(final long evictIdleMillis) {
         factory.setEvictIdleMillis(evictIdleMillis);
@@ -384,7 +383,7 @@ public final class CompositeKeyedObjectPoolFactory implements KeyedObjectPoolFac
      * Frequency idle objects should be checked to be still valid.
      * A non-positive value means do not evict objects just because they fail to validate.
      *
-     * @return if positive the frequency in milli-seconds to check that idle objects are still valid.
+     * @return if positive the frequency in milliseconds to check that idle objects are still valid.
      */
     public long getEvictInvalidFrequencyMillis() {
         return factory.getEvictInvalidFrequencyMillis();
@@ -394,7 +393,7 @@ public final class CompositeKeyedObjectPoolFactory implements KeyedObjectPoolFac
      * Set the frequency idle objects should be checked to be still valid.
      * A non-positive value means do not evict objects just because they fail to validate.
      *
-     * @param evictInvalidFrequencyMillis if positive the frequency in milli-seconds to check that
+     * @param evictInvalidFrequencyMillis if positive the frequency in milliseconds to check that
      * idle objects are still valid.
      */
     public void setEvictInvalidFrequencyMillis(final long evictInvalidFrequencyMillis) {
@@ -418,7 +417,7 @@ public final class CompositeKeyedObjectPoolFactory implements KeyedObjectPoolFac
         if (!getClass().equals(CompositeKeyedObjectPoolFactory.class)) {
             throw new CloneNotSupportedException("Subclasses must not call super.clone()");
         }
-        // factory will be cloned in the constuctor
+        // factory will be cloned in the constructor
         return new CompositeKeyedObjectPoolFactory(factory);
     }
 }

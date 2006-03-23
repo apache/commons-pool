@@ -34,7 +34,7 @@ final class InvalidEvictorLender extends EvictorLender implements Serializable {
     private static final long serialVersionUID = -3200445766813431919L;
 
     /**
-     * Time, in milli-seconds, between the checks that idle objects are still
+     * Time, in milliseconds, between the checks that idle objects are still
      * {@link PoolableObjectFactory#validateObject(Object) valid}.
      */
     private long validationFrequencyMillis = 10L * 60L * 1000L; // 10 minute
@@ -55,20 +55,20 @@ final class InvalidEvictorLender extends EvictorLender implements Serializable {
     }
 
     /**
-     * Get the time, in milli-seconds, between the checks that idle objects are still
+     * Get the time, in milliseconds, between the checks that idle objects are still
      * {@link PoolableObjectFactory#validateObject(Object) valid}.
      *
-     * @return time, in milli-seconds, between the checks that idle objects are still valid.
+     * @return time, in milliseconds, between the checks that idle objects are still valid.
      */
     public long getValidationFrequencyMillis() {
         return validationFrequencyMillis;
     }
 
     /**
-     * Set the time, in milli-seconds, between the checks that idle objects are still
+     * Set the time, in milliseconds, between the checks that idle objects are still
      * {@link PoolableObjectFactory#validateObject(Object) valid}.
      *
-     * @param validationFrequencyMillis time, in milli-seconds, between the checks that idle objects are still valid.
+     * @param validationFrequencyMillis time, in milliseconds, between the checks that idle objects are still valid.
      * @throws IllegalArgumentException if validationFrequencyMillis is negative
      */
     public void setValidationFrequencyMillis(final long validationFrequencyMillis) throws IllegalArgumentException {

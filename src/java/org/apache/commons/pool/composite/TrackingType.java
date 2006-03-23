@@ -35,7 +35,7 @@ public final class TrackingType implements Serializable {
 
     /**
      * Do not track how objects are borrowed from the pool. While this is the fastest tracking type it is
-     * incompatable with pools that limit the number of objects in the pool.
+     * incompatible with pools that limit the number of objects in the pool.
      */
     public static final TrackingType NULL = new TrackingType("NULL");
 
