@@ -526,7 +526,7 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
     }
 
     /**
-     * Set the maximum objects associated with this pool. Any non-positive value means there is no limit.
+     * Set the maximum number of objects associated with this pool. Any non-positive value means there is no limit.
      *
      * @param maxActive the limit of active and idle objects in the pool or &lt;= 0 for no limit.
      */
