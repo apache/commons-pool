@@ -16,6 +16,9 @@
 
 package org.apache.commons.pool.composite;
 
+import org.apache.commons.pool.ObjectPool;
+import org.apache.commons.pool.KeyedObjectPool;
+
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.NoSuchElementException;
@@ -34,14 +37,20 @@ public final class LimitBehavior implements Serializable {
     private static final long serialVersionUID = -4325661345028907604L;
 
     /**
-     * When the number of active objects has been reached fail with a {@link NoSuchElementException} instead of
+     * When the number of active objects has been reached, fail with a <code>NoSuchElementException</code> instead of
      * returning a new object.
+     * @see NoSuchElementException
+     * @see ObjectPool#getNumActive
+     * @see KeyedObjectPool#getNumActive
      */
     public static final LimitBehavior FAIL = new LimitBehavior("FAIL");
 
     /**
-     * When the number of active objects has been reached wait for the specified amount of time before failing with
-     * a {@link NoSuchElementException}.
+     * When the number of active objects has been reached, wait for the specified amount of time before failing with
+     * a <code>NoSuchElementException</code>.
+     * @see NoSuchElementException
+     * @see ObjectPool#getNumActive
+     * @see KeyedObjectPool#getNumActive
      */
     public static final LimitBehavior WAIT = new LimitBehavior("WAIT");
 

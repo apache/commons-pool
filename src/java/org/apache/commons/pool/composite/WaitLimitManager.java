@@ -77,16 +77,16 @@ final class WaitLimitManager extends ActiveLimitManager implements Serializable 
     }
 
     /**
-     * The max wait time in milli-seconds for a pooled object to become available.
+     * The max wait time in milliseconds for a pooled object to become available.
      *
-     * @return max wait time in milli-seconds for a pooled object to become available.
+     * @return max wait time in milliseconds for a pooled object to become available.
      */
     public long getMaxWaitMillis() {
         return maxWaitMillis;
     }
 
     /**
-     * Set the max wait time in milli-seconds for a pooled object to become available.
+     * Set the max wait time in milliseconds for a pooled object to become available.
      * A non-positve value means wait forever.
      *
      * @param maxWaitMillis max wait for an object to become available or &lt;= 0 for no limit.

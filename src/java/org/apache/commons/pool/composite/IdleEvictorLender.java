@@ -31,7 +31,7 @@ final class IdleEvictorLender extends EvictorLender implements Serializable {
     private static final long serialVersionUID = 2422278988668384937L;
 
     /**
-     * Time, in milli-seconds, before the idle objects are evicted.
+     * Time, in milliseconds, before the idle objects are evicted.
      */
     private long idleTimeoutMillis = 60L * 60L * 1000L; // 60 minute
 
@@ -50,17 +50,17 @@ final class IdleEvictorLender extends EvictorLender implements Serializable {
     }
 
     /**
-     * Get the time, in milli-seconds, before the idle objects are evicted.
-     * @return the time, in milli-seconds, before the idle objects are evicted.
+     * Get the time, in milliseconds, before the idle objects are evicted.
+     * @return the time, in milliseconds, before the idle objects are evicted.
      */
     public long getIdleTimeoutMillis() {
         return idleTimeoutMillis;
     }
 
     /**
-     * Set the time, in milli-seconds, before the idle objects are evicted.
+     * Set the time, in milliseconds, before the idle objects are evicted.
      *
-     * @param idleTimeoutMillis the time, in milli-seconds, before the idle objects are evicted.
+     * @param idleTimeoutMillis the time, in milliseconds, before the idle objects are evicted.
      */
     public void setIdleTimeoutMillis(final long idleTimeoutMillis) {
         this.idleTimeoutMillis = idleTimeoutMillis;

@@ -60,7 +60,7 @@ public final class BorrowType implements Serializable {
     public static final BorrowType SOFT_LIFO = new BorrowType("SOFT_LIFO");
 
     /**
-     * Never returns an object from the pool nor returns one to the pool. This basicly turns the pool into a factory,
+     * Never returns an object from the pool nor returns one to the pool. This basically turns the pool into a factory,
      * it may have some utility if used with {@link CompositeObjectPoolFactory#setMaxActive(int) maxActive}.
      * This is not compatible with {@link ExhaustionBehavior#FAIL}.
      */

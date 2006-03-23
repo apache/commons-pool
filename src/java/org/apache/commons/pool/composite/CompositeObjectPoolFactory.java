@@ -27,7 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * {@link ObjectPoolFactory} that builds a custom {@link ObjectPool} via composition.
+ * <code>ObjectPoolFactory</code> that builds an optimized custom <code>ObjectPool</code> with the requested feature set.
  *
  * <p>Default values for a newly created factory:
  * <ul>
@@ -36,11 +36,11 @@ import java.util.List;
  *  <li>{@link #setExhaustionBehavior(ExhaustionBehavior) exhaustionBehavior}:
  *      {@link ExhaustionBehavior#GROW GROW}</li>
  *  <li>{@link #setMaxIdle(int) maxIdle}: a negative value (unlimited)</li>
- *  <li>{@link #setMaxActive(int) maxActive}: a non-positve value (unlimited)</li>
+ *  <li>{@link #setMaxActive(int) maxActive}: a non-positive value (unlimited)</li>
  *  <li>{@link #setLimitBehavior(LimitBehavior) limitBehavior}:
  *      {@link LimitBehavior#FAIL FAIL}
  *      (has no effect unless {@link #setMaxActive(int) maxActive} is positive)</li>
- *  <li>{@link #setMaxWaitMillis(int) maxWaitMillis}: a non-positve value (wait forever)
+ *  <li>{@link #setMaxWaitMillis(int) maxWaitMillis}: a non-positive value (wait forever)
  *      (has no effect unless {@link #setLimitBehavior(LimitBehavior) limitBehavior} is
  *      {@link LimitBehavior#WAIT WAIT})</li>
  *  <li>{@link #setTrackerType(TrackingType) trackingType}:
@@ -86,7 +86,7 @@ import java.util.List;
  * pool.addObject(); pool.addObject(); pool.addObject();
  * </pre>
  *
- * <p>To create a fifo {@link ObjectPool} that doesn't prevent idle objects from being garabage collected, detects when
+ * <p>To create a fifo {@link ObjectPool} that doesn't prevent idle objects from being garbage collected, detects when
  * borrowed objects are not returned to the pool and prints a stack trace from where they were borrowed.
  * </p>
  * <pre>
@@ -126,7 +126,7 @@ import java.util.List;
  *      borrowed from the serialized {@link ObjectPool} must not be returned to the deserialized {@link ObjectPool}.
  *      All other behavior and settings of the {@link ObjectPool} will be maintained.</li>
  *  <li>{@link ObjectPool}s created by this factory are {@link Cloneable}. Cloned instances do not retain the idle
- *      objects of the original instance and any active objects borrowed from the originial must not be returned to the
+ *      objects of the original instance and any active objects borrowed from the original must not be returned to the
  *      new clone.</li>
  * </ul>
  * </p>
@@ -175,12 +175,12 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
      * Maximum number of idle objects in the pool.
      * A negative value means unlimited.
      * Zero means the pool will behave like a factory.
-     * A positve value limits the number of idle objects.
+     * A positive value limits the number of idle objects.
      */
     private int maxIdle = -1;
 
     /**
-     * Maximum nuber of active objects from the pool. A non-positive value means unlimited.
+     * Maximum number of active objects from the pool. A non-positive value means unlimited.
      *
      * @see ActiveLimitManager
      */
@@ -192,19 +192,19 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
     private LimitBehavior limitBehavior = LimitBehavior.FAIL;
 
     /**
-     * Configured max wait time for an available object. Non-positve means wait forever.
+     * Configured max wait time for an available object. Non-positive means wait forever.
      *
      * @see WaitLimitManager
      */
     private int maxWaitMillis = -1;
 
     /**
-     * Configued {@link Tracker} type.
+     * Configured {@link Tracker} type.
      */
     private TrackingType trackerType = TrackingType.SIMPLE;
 
     /**
-     * Should the object pool validate borrowed objects when they are reutrned.
+     * Should the object pool validate borrowed objects when they are returned.
      */
     private boolean validateOnReturn = false;
 
@@ -230,7 +230,7 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
     }
 
     /**
-     * Create and return a new {@link ObjectPool}.
+     * Create and return a new <code>ObjectPool</code>.
      *
      * @return a new {@link ObjectPool}
      */
@@ -274,7 +274,7 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
 
         } else {
             // For small list sizes the cost of shuffling the items in an array down one spot
-            // is cheaper than for LinkList to manage it's internal stuctures.
+            // is cheaper than for LinkedList to manage it's internal structures.
             // The threshold (10) was based on some benchmarks on some 1.4 and 1.5 JVMs was between 10 to 25
             if (0 <= config.maxIdle && config.maxIdle <= 10) {
                 list = new ArrayList(config.maxIdle);
@@ -465,9 +465,9 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
     }
 
     /**
-     * Behavior of the pool when all idle objects have been exhasted.
+     * Behavior of the pool when all idle objects have been exhausted.
      *
-     * @return behavior of the pool when all idle objects have been exhasted.
+     * @return behavior of the pool when all idle objects have been exhausted.
      */
     public ExhaustionBehavior getExhaustionBehavior() {
         return exhaustionBehavior;
@@ -493,7 +493,7 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
      * Maximum number of idle objects in the pool.
      * A negative value means unlimited.
      * Zero means the pool will behave like a factory.
-     * A positve value limits the number of idle objects.
+     * A positive value limits the number of idle objects.
      *
      * @return a non-negative value is the maximum number of idle objects in the pool, else unlimited.
      */
@@ -505,7 +505,7 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
      * Set the maximum number of idle objects in the pool.
      * A negative value means unlimited.
      * Zero means the pool will behave like a factory.
-     * A positve value limits the number of idle objects.
+     * A positive value limits the number of idle objects.
      *
      * @param maxIdle a non-negative value is the maximum number of idle objects in the pool, else unlimited.
      */
@@ -565,22 +565,23 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
     }
 
     /**
-     * Wait time in milli-seconds for an object to become available to the pool when the {@link LimitBehavior#WAIT WAIT}
-     * {@link #setLimitBehavior(LimitBehavior) limit behavior} is used.
+     * Wait time in milliseconds for an object to become available to the pool when the {@link LimitBehavior#WAIT WAIT}
+     * <code>LimitBehavior</code> is used.
      *
      * @return the wait time for an object to become available to the pool.
      * @see #getLimitBehavior()
+     * @see LimitBehavior#WAIT
      */
     public int getMaxWaitMillis() {
         return maxWaitMillis;
     }
 
     /**
-     * Set the wait time in milli-seconds for an object to become available to the pool when it was exhausted.
+     * Set the wait time in milliseconds for an object to become available to the pool when it was exhausted.
      * This has no effect unless the {@link #setLimitBehavior(LimitBehavior) limit behavior}
      * is set to {@link LimitBehavior#WAIT}.
      *
-     * @param maxWaitMillis the milli-seconds to wait for an available object in the pool or &lt;= 0 for no limit.
+     * @param maxWaitMillis the milliseconds to wait for an available object in the pool or &lt;= 0 for no limit.
      * @see #setLimitBehavior(LimitBehavior)
      */
     public void setMaxWaitMillis(final int maxWaitMillis) {
@@ -640,7 +641,7 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
      * Idle timeout for idle objects to be evicted.
      * A non-positive value means do not evict objects just because they are idle.
      *
-     * @return if positive the time in milli-seconds to evict idle objects.
+     * @return if positive the time in milliseconds to evict idle objects.
      */
     public long getEvictIdleMillis() {
         synchronized (lock) {
@@ -652,7 +653,7 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
      * Set the idle timeout for idle objects to be evicted.
      * A non-positive value means do not evict objects just because they are idle.
      *
-     * @param evictIdleMillis if positive the time in milli-seconds to evict idle objects.
+     * @param evictIdleMillis if positive the time in milliseconds to evict idle objects.
      */
     public void setEvictIdleMillis(final long evictIdleMillis) {
         synchronized (lock){
@@ -665,7 +666,7 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
      * Frequency idle objects should be checked to be still valid.
      * A non-positive value means do not evict objects just because they fail to validate.
      *
-     * @return if positive the frequency in milli-seconds to check that idle objects are still valid.
+     * @return if positive the frequency in milliseconds to check that idle objects are still valid.
      */
     public long getEvictInvalidFrequencyMillis() {
         synchronized (lock) {
@@ -677,7 +678,7 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
      * Set the frequency idle objects should be checked to be still valid.
      * A non-positive value means do not evict objects just because they fail to validate.
      *
-     * @param evictInvalidFrequencyMillis if positive the frequency in milli-seconds to check that
+     * @param evictInvalidFrequencyMillis if positive the frequency in milliseconds to check that
      * idle objects are still valid.
      */
     public void setEvictInvalidFrequencyMillis(final long evictInvalidFrequencyMillis) {
@@ -747,7 +748,7 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
         private final long evictInvalidFrequencyMillis;
 
         /**
-         * Convenience constuctor. This <b>must</b> be called from a synchronized context to be thread-safe.
+         * Convenience constructor. This <b>must</b> be called from a synchronized context to be thread-safe.
          */
         FactoryConfig(final CompositeObjectPoolFactory copf) {
             this(copf.getFactory(), copf.getBorrowType(), copf.getExhaustionBehavior(), copf.getMaxIdle(),

@@ -17,13 +17,14 @@
 package org.apache.commons.pool.composite;
 
 import org.apache.commons.pool.ObjectPool;
+import org.apache.commons.pool.PoolUtils;
 
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.NoSuchElementException;
 
 /**
- * Specifies the behavor of the pool when the pool is out of idle objects.
+ * Specifies the behavior of the pool when the pool is out of idle objects.
  *
  * @see CompositeObjectPoolFactory#setExhaustionBehavior(ExhaustionBehavior)
  * @see CompositeKeyedObjectPoolFactory#setExhaustionBehavior(ExhaustionBehavior)
@@ -41,8 +42,10 @@ public final class ExhaustionBehavior implements Serializable {
     public static final ExhaustionBehavior GROW = new ExhaustionBehavior("GROW");
 
     /**
-     * Throw a {@link NoSuchElementException} when all idle objects have been exhaused. Clients of the poll must
+     * Throw a <code>NoSuchElementException</code> when all idle objects have been exhausted. Clients of the pool must
      * call {@link ObjectPool#addObject()} to prefill the pool.
+     * @see NoSuchElementException
+     * @see PoolUtils#prefill
      */
     public static final ExhaustionBehavior FAIL = new ExhaustionBehavior("FAIL");
 
