@@ -22,13 +22,14 @@ import junit.framework.TestSuite;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.TestObjectPool;
+import org.apache.commons.pool.TestBaseObjectPool;
 
 /**
  * @author Rodney Waldhoff
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  */
-public class TestSoftReferenceObjectPool extends TestObjectPool {
+public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
     public TestSoftReferenceObjectPool(String testName) {
         super(testName);
     }

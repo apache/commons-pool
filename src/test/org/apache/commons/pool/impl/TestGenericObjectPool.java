@@ -23,6 +23,7 @@ import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.TestObjectPool;
 import org.apache.commons.pool.PoolUtils;
+import org.apache.commons.pool.TestBaseObjectPool;
 
 import java.util.NoSuchElementException;
 
@@ -32,7 +33,7 @@ import java.util.NoSuchElementException;
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  */
-public class TestGenericObjectPool extends TestObjectPool {
+public class TestGenericObjectPool extends TestBaseObjectPool {
     public TestGenericObjectPool(String testName) {
         super(testName);
     }

@@ -21,6 +21,7 @@ import junit.framework.TestSuite;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.TestObjectPool;
+import org.apache.commons.pool.TestBaseObjectPool;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -33,7 +34,7 @@ import java.util.NoSuchElementException;
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  */
-public class TestStackObjectPool extends TestObjectPool {
+public class TestStackObjectPool extends TestBaseObjectPool {
     public TestStackObjectPool(String testName) {
         super(testName);
     }

@@ -33,206 +33,25 @@ public abstract class TestObjectPool extends TestCase {
     }
 
     /**
-     * Create an {@link ObjectPool} instance
-     * that can contain at least <i>mincapacity</i>
-     * idle and active objects, or
-     * throw {@link IllegalArgumentException}
-     * if such a pool cannot be created.
-     */
-    protected abstract ObjectPool makeEmptyPool(int mincapacity);
-
-    /**
      * Create an <code>ObjectPool</code> with the specified factory.
      * The pool should be in a default configuration and conform to the expected
      * behaviors described in {@link ObjectPool}.
      * Generally speaking there should be no limits on the various object counts.
+     * @throws UnsupportedOperationException if the pool being tested does not follow pool contracts.
      */
-    protected abstract ObjectPool makeEmptyPool(PoolableObjectFactory factory);
-
-    /**
-     * Return what we expect to be the n<sup>th</sup>
-     * object (ZERO indexed) created by the _pool.
-     */
-    protected abstract Object getNthObject(int n);
-
-    /**
-     * Is the implementations LIFO?
-     */
-    protected abstract boolean isLifo();
-
-    /**
-     * Is the implementationn FIFO?
-     */
-    protected abstract boolean isFifo();
-
-    public void setUp() throws Exception {
-    }
-
-    public void tearDown() throws Exception {
-        _pool = null;
-    }
-
-    public void testBaseBorrow() throws Exception {
-        try {
-            _pool = makeEmptyPool(3);
-        } catch(IllegalArgumentException e) {
-            return; // skip this test if unsupported
-        }
-        assertEquals(getNthObject(0),_pool.borrowObject());
-        assertEquals(getNthObject(1),_pool.borrowObject());
-        assertEquals(getNthObject(2),_pool.borrowObject());
-    }
-
-    public void testBaseAddObject() throws Exception {
-        try {
-            _pool = makeEmptyPool(3);
-        } catch(IllegalArgumentException e) {
-            return; // skip this test if unsupported
-        }
-        try {
-            assertEquals(0,_pool.getNumIdle());
-            assertEquals(0,_pool.getNumActive());
-            _pool.addObject();
-            assertEquals(1,_pool.getNumIdle());
-            assertEquals(0,_pool.getNumActive());
-            Object obj = _pool.borrowObject();
-            assertEquals(getNthObject(0),obj);
-            assertEquals(0,_pool.getNumIdle());
-            assertEquals(1,_pool.getNumActive());
-            _pool.returnObject(obj);
-            assertEquals(1,_pool.getNumIdle());
-            assertEquals(0,_pool.getNumActive());
-        } catch(UnsupportedOperationException e) {
-            return; // skip this test if one of those calls is unsupported
-        }
-    }
-
-    public void testBaseBorrowReturn() throws Exception {
-        try {
-            _pool = makeEmptyPool(3);
-        } catch(IllegalArgumentException e) {
-            return; // skip this test if unsupported
-        }
-        Object obj0 = _pool.borrowObject();
-        assertEquals(getNthObject(0),obj0);
-        Object obj1 = _pool.borrowObject();
-        assertEquals(getNthObject(1),obj1);
-        Object obj2 = _pool.borrowObject();
-        assertEquals(getNthObject(2),obj2);
-        _pool.returnObject(obj2);
-        obj2 = _pool.borrowObject();
-        assertEquals(getNthObject(2),obj2);
-        _pool.returnObject(obj1);
-        obj1 = _pool.borrowObject();
-        assertEquals(getNthObject(1),obj1);
-        _pool.returnObject(obj0);
-        _pool.returnObject(obj2);
-        obj2 = _pool.borrowObject();
-        if (isLifo()) {
-            assertEquals(getNthObject(2),obj2);
-        }
-        if (isFifo()) {
-            assertEquals(getNthObject(0),obj2);
-        }
-
-        obj0 = _pool.borrowObject();
-        if (isLifo()) {
-            assertEquals(getNthObject(0),obj0);
-        }
-        if (isFifo()) {
-            assertEquals(getNthObject(2),obj0);
-        }
-    }
-
-    public void testBaseNumActiveNumIdle() throws Exception {
-        try {
-            _pool = makeEmptyPool(3);
-        } catch(IllegalArgumentException e) {
-            return; // skip this test if unsupported
-        }
-        assertEquals(0,_pool.getNumActive());
-        assertEquals(0,_pool.getNumIdle());
-        Object obj0 = _pool.borrowObject();
-        assertEquals(1,_pool.getNumActive());
-        assertEquals(0,_pool.getNumIdle());
-        Object obj1 = _pool.borrowObject();
-        assertEquals(2,_pool.getNumActive());
-        assertEquals(0,_pool.getNumIdle());
-        _pool.returnObject(obj1);
-        assertEquals(1,_pool.getNumActive());
-        assertEquals(1,_pool.getNumIdle());
-        _pool.returnObject(obj0);
-        assertEquals(0,_pool.getNumActive());
-        assertEquals(2,_pool.getNumIdle());
-    }
-
-    public void testBaseClear() throws Exception {
-        try {
-            _pool = makeEmptyPool(3);
-        } catch(IllegalArgumentException e) {
-            return; // skip this test if unsupported
-        }
-        assertEquals(0,_pool.getNumActive());
-        assertEquals(0,_pool.getNumIdle());
-        Object obj0 = _pool.borrowObject();
-        Object obj1 = _pool.borrowObject();
-        assertEquals(2,_pool.getNumActive());
-        assertEquals(0,_pool.getNumIdle());
-        _pool.returnObject(obj1);
-        _pool.returnObject(obj0);
-        assertEquals(0,_pool.getNumActive());
-        assertEquals(2,_pool.getNumIdle());
-        _pool.clear();
-        assertEquals(0,_pool.getNumActive());
-        assertEquals(0,_pool.getNumIdle());
-        Object obj2 = _pool.borrowObject();
-        assertEquals(getNthObject(2),obj2);
-    }
-
-    public void testBaseInvalidateObject() throws Exception {
-        try {
-            _pool = makeEmptyPool(3);
-        } catch(IllegalArgumentException e) {
-            return; // skip this test if unsupported
-        }
-        assertEquals(0,_pool.getNumActive());
-        assertEquals(0,_pool.getNumIdle());
-        Object obj0 = _pool.borrowObject();
-        Object obj1 = _pool.borrowObject();
-        assertEquals(2,_pool.getNumActive());
-        assertEquals(0,_pool.getNumIdle());
-        _pool.invalidateObject(obj0);
-        assertEquals(1,_pool.getNumActive());
-        assertEquals(0,_pool.getNumIdle());
-        _pool.invalidateObject(obj1);
-        assertEquals(0,_pool.getNumActive());
-        assertEquals(0,_pool.getNumIdle());
-    }
-
-    public void testBaseClosePool() throws Exception {
-        try {
-            _pool = makeEmptyPool(3);
-        } catch(IllegalArgumentException e) {
-            return; // skip this test if unsupported
-        }
-        Object obj = _pool.borrowObject();
-        _pool.returnObject(obj);
-
-        _pool.close();
-        try {
-            _pool.borrowObject();
-            fail("Expected IllegalStateException");
-        } catch(IllegalStateException e) {
-            // expected
-        }
-    }
+    protected abstract ObjectPool makeEmptyPool(PoolableObjectFactory factory) throws UnsupportedOperationException;
 
     public void testClosedPoolBehavior() throws Exception {
-        final ObjectPool pool = makeEmptyPool(new BasePoolableObjectFactory() {
-            public Object makeObject() throws Exception {
-                return new Object();
-            }
-        });
+        final ObjectPool pool;
+        try {
+            pool = makeEmptyPool(new BasePoolableObjectFactory() {
+                public Object makeObject() throws Exception {
+                    return new Object();
+                }
+            });
+        } catch (UnsupportedOperationException uoe) {
+            return; // test not supported
+        }
         Object o1 = pool.borrowObject();
         Object o2 = pool.borrowObject();
 
@@ -253,11 +72,26 @@ public abstract class TestObjectPool extends TestCase {
         }
 
         // The following should not throw exceptions just because the pool is closed.
-        assertEquals("A closed pool shouldn't have any idle objects.", 0, pool.getNumIdle());
-        pool.getNumActive();
+        if (pool.getNumIdle() >= 0) {
+            assertEquals("A closed pool shouldn't have any idle objects.", 0, pool.getNumIdle());
+        }
+        if (pool.getNumActive() >= 0) {
+            assertEquals("A closed pool should still keep count of active objects.", 2, pool.getNumActive());
+        }
         pool.returnObject(o1);
-        assertEquals("returnObject should not add items back into the idle object pool for a closed pool.", 0, pool.getNumIdle());
+        if (pool.getNumIdle() >= 0) {
+            assertEquals("returnObject should not add items back into the idle object pool for a closed pool.", 0, pool.getNumIdle());
+        }
+        if (pool.getNumActive() >= 0) {
+            assertEquals("A closed pool should still keep count of active objects.", 1, pool.getNumActive());
+        }
         pool.invalidateObject(o2);
+        if (pool.getNumIdle() >= 0) {
+            assertEquals("invalidateObject must not add items back into the idle object pool.", 0, pool.getNumIdle());
+        }
+        if (pool.getNumActive() >= 0) {
+            assertEquals("A closed pool should still keep count of active objects.", 0, pool.getNumActive());
+        }
         pool.clear();
         pool.close();
     }
@@ -267,7 +101,12 @@ public abstract class TestObjectPool extends TestCase {
 
     public void testPOFAddObjectUsage() throws Exception {
         final FailingPoolableObjectFactory factory = new FailingPoolableObjectFactory();
-        final ObjectPool pool = makeEmptyPool(factory);
+        final ObjectPool pool;
+        try {
+            pool = makeEmptyPool(factory);
+        } catch(UnsupportedOperationException uoe) {
+            return; // test not supported
+        }
         final List expectedMethods = new ArrayList();
 
         // addObject should make a new object, pasivate it and put it in the pool
@@ -308,7 +147,12 @@ public abstract class TestObjectPool extends TestCase {
 
     public void testPOFBorrowObjectUsages() throws Exception {
         final FailingPoolableObjectFactory factory = new FailingPoolableObjectFactory();
-        final ObjectPool pool = makeEmptyPool(factory);
+        final ObjectPool pool;
+        try {
+            pool = makeEmptyPool(factory);
+        } catch (UnsupportedOperationException uoe) {
+            return; // test not supported
+        }
         final List expectedMethods = new ArrayList();
         Object obj;
 
@@ -368,7 +212,12 @@ public abstract class TestObjectPool extends TestCase {
 
     public void testPOFReturnObjectUsages() throws Exception {
         final FailingPoolableObjectFactory factory = new FailingPoolableObjectFactory();
-        final ObjectPool pool = makeEmptyPool(factory);
+        final ObjectPool pool;
+        try {
+            pool = makeEmptyPool(factory);
+        } catch (UnsupportedOperationException uoe) {
+            return; // test not supported
+        }
         final List expectedMethods = new ArrayList();
         Object obj;
         int idleCount;
@@ -407,7 +256,12 @@ public abstract class TestObjectPool extends TestCase {
 
     public void testPOFInvalidateObjectUsages() throws Exception {
         final FailingPoolableObjectFactory factory = new FailingPoolableObjectFactory();
-        final ObjectPool pool = makeEmptyPool(factory);
+        final ObjectPool pool;
+        try {
+            pool = makeEmptyPool(factory);
+        } catch (UnsupportedOperationException uoe) {
+            return; // test not supported
+        }
         final List expectedMethods = new ArrayList();
         Object obj;
 
@@ -434,7 +288,12 @@ public abstract class TestObjectPool extends TestCase {
 
     public void testPOFClearUsages() throws Exception {
         final FailingPoolableObjectFactory factory = new FailingPoolableObjectFactory();
-        final ObjectPool pool = makeEmptyPool(factory);
+        final ObjectPool pool;
+        try {
+            pool = makeEmptyPool(factory);
+        } catch (UnsupportedOperationException uoe) {
+            return; // test not supported
+        }
         final List expectedMethods = new ArrayList();
 
         /// Test correct behavior code paths
@@ -450,7 +309,12 @@ public abstract class TestObjectPool extends TestCase {
 
     public void testPOFCloseUsages() throws Exception {
         final FailingPoolableObjectFactory factory = new FailingPoolableObjectFactory();
-        ObjectPool pool = makeEmptyPool(factory);
+        ObjectPool pool;
+        try {
+            pool = makeEmptyPool(factory);
+        } catch (UnsupportedOperationException uoe) {
+            return; // test not supported
+        }
         final List expectedMethods = new ArrayList();
 
         /// Test correct behavior code paths
@@ -459,7 +323,11 @@ public abstract class TestObjectPool extends TestCase {
 
 
         //// Test exception handling close should swallow failures
-        pool = makeEmptyPool(factory);
+        try {
+            pool = makeEmptyPool(factory);
+        } catch (UnsupportedOperationException uoe) {
+            return; // test not supported
+        }
         reset(pool, factory, expectedMethods);
         factory.setDestroyObjectFail(true);
         PoolUtils.prefill(pool, 5);
@@ -476,18 +344,16 @@ public abstract class TestObjectPool extends TestCase {
         }
     }
 
-    private void reset(final ObjectPool pool, final FailingPoolableObjectFactory factory, final List expectedMethods) throws Exception {
+    private static void reset(final ObjectPool pool, final FailingPoolableObjectFactory factory, final List expectedMethods) throws Exception {
         pool.clear();
         clear(factory, expectedMethods);
         factory.reset();
     }
 
-    private void clear(final FailingPoolableObjectFactory factory, final List expectedMethods) {
+    private static void clear(final FailingPoolableObjectFactory factory, final List expectedMethods) {
         factory.getMethodCalls().clear();
         expectedMethods.clear();
     }
-
-    private ObjectPool _pool = null;
 
     private static class FailingPoolableObjectFactory implements PoolableObjectFactory {
         private final List methodCalls = new ArrayList();

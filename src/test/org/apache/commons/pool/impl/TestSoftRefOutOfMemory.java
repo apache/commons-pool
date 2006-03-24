@@ -62,7 +62,7 @@ public class TestSoftRefOutOfMemory extends TestCase {
         final List garbage = new LinkedList();
         final Runtime runtime = Runtime.getRuntime();
         while (pool.getNumIdle() > 0) {
-            garbage.add(new byte[Math.min(1024 * 1024, (int)runtime.freeMemory())]);
+            garbage.add(new byte[Math.min(1024 * 1024, (int)runtime.freeMemory()/4)]);
             System.gc();
         }
         garbage.clear();
@@ -93,7 +93,7 @@ public class TestSoftRefOutOfMemory extends TestCase {
         final List garbage = new LinkedList();
         final Runtime runtime = Runtime.getRuntime();
         while (pool.getNumIdle() > 0) {
-            garbage.add(new byte[Math.min(1024 * 1024, (int)runtime.freeMemory())]);
+            garbage.add(new byte[Math.min(1024 * 1024, (int)runtime.freeMemory()/4)]);
             System.gc();
         }
         garbage.clear();
@@ -120,7 +120,7 @@ public class TestSoftRefOutOfMemory extends TestCase {
         final List garbage = new LinkedList();
         final Runtime runtime = Runtime.getRuntime();
         while (pool.getNumIdle() > 0) {
-            garbage.add(new byte[Math.min(1024 * 1024, (int)runtime.freeMemory())]);
+            garbage.add(new byte[Math.min(1024 * 1024, (int)runtime.freeMemory()/4)]);
             System.gc();
         }
         garbage.clear();
