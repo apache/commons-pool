@@ -19,6 +19,7 @@ package org.apache.commons.pool.composite;
 import junit.framework.TestCase;
 import org.apache.commons.pool.BasePoolableObjectFactory;
 import org.apache.commons.pool.PoolableObjectFactory;
+import org.apache.commons.pool.TestObjectPool;
 
 import java.util.NoSuchElementException;
 import java.util.SortedSet;
@@ -37,10 +38,10 @@ import java.util.LinkedList;
 public class TestCompositeObjectPool extends TestCase {
     private CompositeObjectPool pool = null;
 
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
     }
 
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         if (pool != null) {
             pool.close();
             pool = null;
@@ -258,21 +259,15 @@ public class TestCompositeObjectPool extends TestCase {
      */
     public void testNullTracker() throws Exception {
         pool = new CompositeObjectPool(new IntegerFactory(), new GrowManager(), new FifoLender(), new NullTracker(), false);
-        try {
-            pool.getNumActive();
-            fail("Should have thrown an UnsupportedOperationException.");
-        } catch(UnsupportedOperationException usoee) {
-            // expected
-        }
+        assertTrue("Expected negative value.", pool.getNumActive() < 0);
 
-        Integer zero = (Integer)pool.borrowObject();
+        final Integer zero = (Integer)pool.borrowObject();
 
-        try {
-            pool.getNumActive();
-            fail("Should have thrown an UnsupportedOperationException.");
-        } catch(UnsupportedOperationException usoee) {
-            // expected
-        }
+        assertTrue("Expected negative value.", pool.getNumActive() < 0);
+
+        pool.returnObject(zero);
+
+        assertTrue("Expected negative value.", pool.getNumActive() < 0);
     }
 
     /**

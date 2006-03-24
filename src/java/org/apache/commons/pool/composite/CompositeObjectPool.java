@@ -165,10 +165,8 @@ final class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
     }
 
     /**
-     * Create an object using my {@link #setFactory factory} or other
-     * implementation dependent mechanism, and place it into the pool.
-     * addObject() is useful for "pre-loading" a pool with idle objects.
-     * (Optional operation).
+     * Create an object using the {@link #setFactory factory} and place it into the pool.
+     * <code>addObject</code> is useful for "pre-loading" a pool with idle objects.
      *
      * @throws Exception if there is an unexpected problem.
      */
@@ -182,17 +180,16 @@ final class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
     }
 
     /**
-     * Obtain an instance from my pool.
-     * By contract, clients MUST return
-     * the borrowed instance using
-     * {@link #returnObject(Object) returnObject}
-     * or a related method as defined in an implementation
-     * or sub-interface.
-     * <p/>
-     * The behaviour of this method when the pool has been exhausted
-     * is not specified (although it may be specified by implementations).
+     * Obtain an instance from this pool. By contract, clients
+     * <strong>must</strong> return the borrowed instance using
+     * {@link #returnObject returnObject} or a related method as defined
+     * in an implementation or sub-interface.
+     * <p>
+     * The behaviour of this method when the pool has been exhausted will
+     * depend on the requested configuration.
+     * </p>
      *
-     * @return an instance from my pool.
+     * @return an instance from this pool.
      * @throws Exception if there is an unexpected problem.
      */
     public Object borrowObject() throws Exception {
@@ -205,7 +202,7 @@ final class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
      * Basicly just the {@link #borrowObject()} method that doesn't check if the pool has been {@link #close() closed}.
      * Needed by {@link #clear()}.
      *
-     * @return an instance from my pool.
+     * @return an instance from this pool.
      * @throws Exception if there is an unexpected problem.
      * @see #borrowObject()
      */
@@ -223,16 +220,14 @@ final class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
     }
 
     /**
-     * Return an instance to my pool.
-     * By contract, <i>obj</i> MUST have been obtained
-     * using {@link #borrowObject() borrowObject}
-     * or a related method as defined in an implementation
-     * or sub-interface.
+     * Return an instance to this pool. By contract, <code>obj</code>
+     * <strong>must</strong> have been obtained using
+     * {@link #borrowObject() borrowObject} or a related method as defined
+     * in an implementation or sub-interface.
      *
      * @param obj a {@link #borrowObject borrowed} instance to be returned.
-     * @throws Exception if there is an unexpected problem.
      */
-    public void returnObject(final Object obj) throws Exception {
+    public void returnObject(final Object obj) {
         if (validateOnReturn) {
             if (!factory.validateObject(obj)) {
                 invalidateObject(obj);
@@ -258,21 +253,21 @@ final class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
 
     /**
      * Invalidates an object from the pool
-     * By contract, <i>obj</i> MUST have been obtained
+     * By contract, <code>obj</code> <strong>must</strong> have been obtained
      * using {@link #borrowObject() borrowObject}
      * or a related method as defined in an implementation
      * or sub-interface.
-     * <p/>
+     * <p>
      * This method should be used when an object that has been borrowed
      * is determined (due to an exception or other problem) to be invalid.
      * If the connection should be validated before or after borrowing,
      * then the {@link PoolableObjectFactory#validateObject} method should be
      * used instead.
+     * </p>
      *
      * @param obj a {@link #borrowObject borrowed} instance to be returned.
-     * @throws Exception if there is an unexpected problem.
      */
-    public void invalidateObject(final Object obj) throws Exception {
+    public void invalidateObject(final Object obj) {
         synchronized (pool) {
             if (pool.contains(obj)) {
                 throw new IllegalStateException("An object currently in the pool cannot be invalidated.");
@@ -311,53 +306,50 @@ final class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
 
     /**
      * Close this pool, and free any resources associated with it.
-     *
-     * @throws Exception if there is an unexpected problem.
      */
-    public void close() throws Exception {
+    public void close() {
         open = false;
         Thread.yield(); // encourage any threads currently executing in the pool to finish first.
         synchronized (pool) {
-            clear();
+            try {
+                clear();
+            } catch (Exception e) {
+                // swallowed
+            }
             pool.notifyAll(); // Tell any WaitLimitManagers currently blocking to exit
         }
     }
 
     /**
-     * Sets the {@link PoolableObjectFactory factory} I use
-     * to create new instances (optional operation).
+     * Always throws <code>UnsupportedOperationException</code>.
      *
-     * @param factory the {@link PoolableObjectFactory} I use to create new instances.
-     * @throws IllegalStateException         when the factory cannot be set at this time
+     * @param factory the {@link PoolableObjectFactory} used to create new instances.
      * @throws UnsupportedOperationException if this implementation does not support the operation
      */
     public void setFactory(final PoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
-        throw new UnsupportedOperationException("Replacing the factory not supported. Create a new pool instance instead.");
+        if (this.factory != factory) {
+            throw new UnsupportedOperationException("Replacing the factory not supported. Create a new pool instance instead.");
+        }
     }
 
     /**
-     * Return the number of instances
-     * currently borrowed from my pool
-     * (optional operation).
+     * Return the number of instances currently borrowed from this pool.
      *
-     * @return the number of instances currently borrowed in my pool
-     * @throws UnsupportedOperationException if this implementation does not support the operation
+     * @return the number of instances currently borrowed from this pool
      */
-    public int getNumActive() throws UnsupportedOperationException {
+    public int getNumActive() {
         return tracker.getBorrowed();
     }
 
     /**
-     * Return the number of instances
-     * currently idle in my pool (optional operation).
+     * Return the number of instances currently idle in this pool.
      * This may be considered an approximation of the number
      * of objects that can be {@link #borrowObject borrowed}
      * without creating any new instances.
      *
-     * @return the number of instances currently idle in my pool
-     * @throws UnsupportedOperationException if this implementation does not support the operation
+     * @return the number of instances currently idle in this pool
      */
-    public int getNumIdle() throws UnsupportedOperationException {
+    public int getNumIdle() {
         return lender.size();
     }
 

@@ -47,13 +47,12 @@ final class NullTracker implements Tracker, Serializable {
     }
 
     /**
-     * Throws {@link UnsupportedOperationException}.
+     * Unsupported, returns a negative value.
      * 
-     * @return doesn't, always throws an {@link UnsupportedOperationException}.
-     * @throws UnsupportedOperationException
+     * @return a negative value.
      */
     public int getBorrowed() {
-        throw new UnsupportedOperationException("tracking disabled");
+        return -1;
     }
 
     public String toString() {

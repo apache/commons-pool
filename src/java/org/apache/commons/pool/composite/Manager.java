@@ -58,7 +58,6 @@ interface Manager {
      * Return an object to the pool. Object will be {@link PoolableObjectFactory#passivateObject(Object) passivated}.
      *
      * @param obj the object to return to the pool.
-     * @throws Exception as thrown by {@link PoolableObjectFactory#passivateObject(Object)}.
      */
-    public void returnToPool(Object obj) throws Exception;
+    public void returnToPool(Object obj);
 }

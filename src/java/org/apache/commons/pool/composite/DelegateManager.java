@@ -79,9 +79,8 @@ abstract class DelegateManager extends AbstractManager implements Serializable {
      * Delegates to another {@link Manager}.
      *
      * @param obj the object to return to the pool.
-     * @throws Exception as thrown by {@link PoolableObjectFactory#passivateObject(Object)}.
      */
-    public void returnToPool(final Object obj) throws Exception {
+    public void returnToPool(final Object obj) {
         delegate.returnToPool(obj);
     }
 
