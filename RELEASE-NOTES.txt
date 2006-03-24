@@ -1,0 +1,39 @@
+$Id$
+
+			 Commons Pool Package
+			    Version 1.3
+			   Release Notes
+
+Full Release Notes can be found online at
+http://jakarta.apache.org/commons/pool/release-notes-1.3.html
+or in the binary distrobution in the docs/release-notes-1.3.html
+
+
+Compatibility with 1.2
+----------------------
+
+Binary compatible - Yes
+
+Source compatible - Yes
+
+Semantic compatible - Yes*
+
+
+* GenericObjectPool and GenericKeyedObjectPool have always
+  been documented to be a FIFO but it was actually
+  implemented as a LIFO. Code that depends on the previous
+  LIFO behavior may have issues.
+
+
+Feedback
+--------
+Open source works best when you give feedback:
+http://jakarta.apache.org/commons/pool/
+
+Please direct all bug reports to Bugzilla (prefix bug reports by [io])
+http://issues.apache.org/bugzilla/buglist.cgi?product=Commons&component=Pool
+
+Or subscribe to the commons-user mailing list (prefix emails by [io])
+http://jakarta.apache.org/site/mail.html
+
+The Commons-Pool Team
