@@ -88,10 +88,10 @@ final class KeyedPoolableObjectFactoryAdapter implements PoolableObjectFactory, 
 
     /**
      * Ensures that the instance is safe to be returned by the pool.
-     * Returns <tt>false</tt> if this object should be destroyed.
+     * Returns <code>false</code> if this object should be destroyed.
      * @param obj the instance to be validated
-     * @return <tt>false</tt> if this <i>obj</i> is not valid and should
-     *         be dropped from the pool, <tt>true</tt> otherwise.
+     * @return <code>false</code> if this <code>obj</code> is not valid and should
+     *         be dropped from the pool, <code>true</code> otherwise.
      */
     public boolean validateObject(final Object obj) {
         return delegate.validateObject(keys.get(), obj);

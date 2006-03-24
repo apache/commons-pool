@@ -58,7 +58,7 @@ interface Tracker {
     /**
      * The number of "borrowed" or active objects from the pool.
      *
-     * @return the number of "borrowed" active objects.
+     * @return the number of "borrowed" active objects or negative if unsupported.
      */
     public int getBorrowed();
 }

@@ -106,18 +106,15 @@ final class CompositeKeyedObjectPool implements KeyedObjectPool, Cloneable, Seri
     }
 
     /**
-     * Obtain an instance from my pool
-     * for the specified <i>key</i>.
-     * By contract, clients MUST return
-     * the borrowed object using
-     * {@link #returnObject(Object,Object) <tt>returnObject</tt>},
-     * or a related method as defined in an implementation
-     * or sub-interface,
-     * using a <i>key</i> that is equivalent to the one used to
+     * Obtain an instance from this pool for the specified <code>key</code>.
+     * By contract, clients <strong>must</strong> return the borrowed object using
+     * {@link #returnObject(Object,Object) <code>returnObject</code>},
+     * or a related method as defined in an implementation or sub-interface,
+     * using a <code>key</code> that is equivalent to the one used to
      * borrow the instance in the first place.
      *
      * @param key the key used to obtain the object
-     * @return an instance from my pool.
+     * @return an instance from this pool.
      * @throws Exception if there is an unexpected problem.
      */
     public Object borrowObject(final Object key) throws Exception {
@@ -136,26 +133,26 @@ final class CompositeKeyedObjectPool implements KeyedObjectPool, Cloneable, Seri
     }
 
     /**
-     * Return an instance to my pool.
-     * By contract, <i>obj</i> MUST have been obtained
-     * using {@link #borrowObject(Object) <tt>borrowObject</tt>}
-     * or a related method as defined in an implementation
-     * or sub-interface
-     * using a <i>key</i> that is equivalent to the one used to
-     * borrow the <tt>Object</tt> in the first place.
+     * Return an instance to this pool. By contract, <code>obj</code>
+     * <strong>must</strong> have been obtained using
+     * {@link #borrowObject borrowObject} or a related method as defined
+     * in an implementation or sub-interface using a <code>key</code> that
+     * is equivalent to the one used to borrow the <code>Object</code> in
+     * the first place.
      *
      * @param key the key used to obtain the object
-     * @param obj a {@link #borrowObject(Object) borrowed} instance to be returned.
-     * @throws Exception if there is an unexpected problem.
+     * @param obj a {@link #borrowObject borrowed} instance to be returned.
      */
-    public void returnObject(final Object key, final Object obj) throws Exception {
-        assertOpen();
+    public void returnObject(final Object key, final Object obj) {
         final ObjectPool pool = getObjectPool(key);
         try {
             if (keys != null) {
                 keys.set(key);
             }
             pool.returnObject(obj);
+        } catch (Exception e) {
+            // swallowed
+            // XXX: In pool 3 this catch block will not be necessary and shouled be removed
         } finally {
             if (keys != null) {
                 keys.set(null); // unset key
@@ -164,32 +161,33 @@ final class CompositeKeyedObjectPool implements KeyedObjectPool, Cloneable, Seri
     }
 
     /**
-     * Invalidates an object from the pool
-     * By contract, <i>obj</i> MUST have been obtained
-     * using {@link #borrowObject borrowObject}
-     * or a related method as defined in an implementation
-     * or sub-interface
-     * using a <i>key</i> that is equivalent to the one used to
-     * borrow the <tt>Object</tt> in the first place.
+     * Invalidates an object from this pool. By contract, <code>obj</code>
+     * <strong>must</strong> have been obtained using
+     * {@link #borrowObject borrowObject} or a related method as defined
+     * in an implementation or sub-interface using a <code>key</code> that
+     * is equivalent to the one used to borrow the <code>Object</code> in
+     * the first place.
      * <p>
      * This method should be used when an object that has been borrowed
      * is determined (due to an exception or other problem) to be invalid.
      * If the connection should be validated before or after borrowing,
      * then the {@link PoolableObjectFactory#validateObject} method should be
      * used instead.
+     * </p>
      *
      * @param key the key used to obtain the object
      * @param obj a {@link #borrowObject borrowed} instance to be returned.
-     * @throws Exception if there is an unexpected problem.
      */
-    public void invalidateObject(final Object key, final Object obj) throws Exception {
-        assertOpen();
+    public void invalidateObject(final Object key, final Object obj) {
         final ObjectPool pool = getObjectPool(key);
         try {
             if (keys != null) {
                 keys.set(key);
             }
             pool.invalidateObject(obj);
+        } catch (Exception e) {
+            // swallowed
+            // XXX: In pool 3 this catch block will not be necessary and shouled be removed
         } finally {
             if (keys != null) {
                 keys.set(null); // unset key
@@ -198,10 +196,8 @@ final class CompositeKeyedObjectPool implements KeyedObjectPool, Cloneable, Seri
     }
 
     /**
-     * Create an object using my {@link #setFactory factory} or other
-     * implementation dependent mechanism, and place it into the pool.
-     * addObject() is useful for "pre-loading" a pool with idle objects.
-     * (Optional operation).
+     * Create an object using the {@link #setFactory factory} and place it into the pool.
+     * <code>addObject</code> is useful for "pre-loading" a pool with idle objects.
      *
      * @param key the key used to obtain the object
      * @throws Exception if there is an unexpected problem.
@@ -222,18 +218,12 @@ final class CompositeKeyedObjectPool implements KeyedObjectPool, Cloneable, Seri
     }
 
     /**
-     * Returns the number of instances
-     * corresponding to the given <i>key</i>
-     * currently idle in my pool (optional operation).
-     * Throws {@link UnsupportedOperationException}
-     * if this information is not available.
+     * Returns the number of instances corresponding to the given <code>key</code> currently idle in this pool.
      *
      * @param key the key
-     * @return the number of instances corresponding to the given <i>key</i> currently idle in my pool
-     * @throws UnsupportedOperationException when this implementation doesn't support the operation
+     * @return the number of instances corresponding to the given <code>key</code> currently idle in this pool
      */
-    public int getNumIdle(final Object key) throws UnsupportedOperationException {
-        assertOpen();
+    public int getNumIdle(final Object key) {
         final ObjectPool pool = getObjectPool(key);
         try {
             if (keys != null) {
@@ -250,17 +240,13 @@ final class CompositeKeyedObjectPool implements KeyedObjectPool, Cloneable, Seri
     /**
      * Returns the number of instances
      * currently borrowed from but not yet returned
-     * to my pool corresponding to the
-     * given <i>key</i> (optional operation).
-     * Throws {@link UnsupportedOperationException}
-     * if this information is not available.
+     * to this pool corresponding to the
+     * given <code>key</code>.
      *
      * @param key the key
-     * @return the number of instances corresponding to the given <i>key</i> currently borrowed in my pool
-     * @throws UnsupportedOperationException when this implementation doesn't support the operation
+     * @return the number of instances corresponding to the given <code>key</code> currently borrowed in this pool
      */
-    public int getNumActive(final Object key) throws UnsupportedOperationException {
-        assertOpen();
+    public int getNumActive(final Object key) {
         final ObjectPool pool = getObjectPool(key);
         try {
             if (keys != null) {
@@ -275,16 +261,11 @@ final class CompositeKeyedObjectPool implements KeyedObjectPool, Cloneable, Seri
     }
 
     /**
-     * Returns the total number of instances
-     * currently idle in my pool (optional operation).
-     * Throws {@link UnsupportedOperationException}
-     * if this information is not available.
+     * Returns the total number of instances currently idle in this pool.
      *
-     * @return the total number of instances currently idle in my pool
-     * @throws UnsupportedOperationException when this implementation doesn't support the operation
+     * @return the total number of instances currently idle in this pool
      */
-    public int getNumIdle() throws UnsupportedOperationException {
-        assertOpen();
+    public int getNumIdle() {
         int numIdle = 0;
         synchronized (objectPools) {
             final Iterator iter = objectPools.values().iterator();
@@ -297,17 +278,12 @@ final class CompositeKeyedObjectPool implements KeyedObjectPool, Cloneable, Seri
     }
 
     /**
-     * Returns the total number of instances
-     * current borrowed from my pool but not
-     * yet returned (optional operation).
-     * Throws {@link UnsupportedOperationException}
-     * if this information is not available.
+     * Returns the total number of instances current borrowed
+     * from this pool but not yet returned.
      *
-     * @return the total number of instances currently borrowed from my pool
-     * @throws UnsupportedOperationException when this implementation doesn't support the operation
+     * @return the total number of instances currently borrowed from this pool
      */
-    public int getNumActive() throws UnsupportedOperationException {
-        assertOpen();
+    public int getNumActive() {
         int numActive = 0;
         synchronized (objectPools) {
             final Iterator iter = objectPools.values().iterator();
@@ -320,43 +296,42 @@ final class CompositeKeyedObjectPool implements KeyedObjectPool, Cloneable, Seri
     }
 
     /**
-     * Clears my pool, removing all pooled instances
-     * (optional operation).
-     * Throws {@link UnsupportedOperationException}
-     * if the pool cannot be cleared.
+     * Clears this pool, removing all pooled instances.
      *
-     * @throws UnsupportedOperationException when this implementation doesn't support the operation
      * @throws Exception if there is an unexpected problem.
      */
-    public void clear() throws Exception, UnsupportedOperationException {
+    public void clear() throws Exception {
         synchronized (objectPools) {
-            final Iterator iter = objectPools.values().iterator();
+            final Iterator iter = objectPools.keySet().iterator();
             while (iter.hasNext()) {
-                final ObjectPool pool = (ObjectPool)iter.next();
-                pool.clear();
+                final Object key = iter.next();
+                clear(key);
             }
         }
     }
 
     /**
-     * Clears the specified pool, removing all
-     * pooled instances corresponding to
-     * the given <i>key</i>  (optional operation).
-     * Throws {@link UnsupportedOperationException}
-     * if the pool cannot be cleared.
+     * Clears the specified pool, removing all pooled instances
+     * corresponding to the given <code>key</code>.
      *
      * @param key the key to clear
-     * @throws UnsupportedOperationException when this implementation doesn't support the operation
      * @throws Exception if there is an unexpected problem.
      */
-    public void clear(final Object key) throws Exception, UnsupportedOperationException {
-        assertOpen();
+    public void clear(final Object key) throws Exception {
         final ObjectPool pool = getObjectPool(key);
         try {
             if (keys != null) {
                 keys.set(key);
             }
             pool.clear();
+
+            // Remove this pool if we know no more active objects will be returned.
+            synchronized (objectPools) {
+                if (pool.getNumActive() == 0) {
+                    objectPools.remove(key);
+                    pool.close();
+                }
+            }
         } finally {
             if (keys != null) {
                 keys.set(null); // unset key
@@ -366,18 +341,40 @@ final class CompositeKeyedObjectPool implements KeyedObjectPool, Cloneable, Seri
 
     /**
      * Close this pool, and free any resources associated with it.
-     *
-     * @throws Exception if there is an unexpected problem.
      */
-    public void close() throws Exception {
+    public void close() {
         open = false;
         Thread.yield(); // encourage any threads currently executing in the pool to finish first.
         synchronized (objectPools) {
-            final Iterator iter = objectPools.values().iterator();
+            final Iterator iter = objectPools.keySet().iterator();
             while (iter.hasNext()) {
-                final ObjectPool pool = (ObjectPool)iter.next();
-                pool.close();
-                iter.remove();
+                final Object key = iter.next();
+                close(key);
+            }
+        }
+    }
+
+    private void close(final Object key) {
+        final ObjectPool pool = getObjectPool(key);
+        try {
+            if (keys != null) {
+                keys.set(key);
+            }
+            pool.close();
+
+            // Remove this pool if we know no more active objects will be returned.
+            synchronized (objectPools) {
+                if (pool.getNumActive() == 0) {
+                    objectPools.remove(key);
+                    pool.close();
+                }
+            }
+        } catch (Exception e) {
+            // swallowed
+            // XXX: In pool 3 this catch block will not be necessary and shouled be removed
+        } finally {
+            if (keys != null) {
+                keys.set(null); // unset key
             }
         }
     }

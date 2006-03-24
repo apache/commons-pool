@@ -46,9 +46,8 @@ final class IdleLimitManager extends DelegateManager implements Serializable {
      * Possible remove an idle object and delegates to another {@link Manager}.
      *
      * @param obj the object to return to the pool.
-     * @throws Exception as thrown by {@link PoolableObjectFactory#passivateObject(Object)}.
      */
-    public void returnToPool(final Object obj) throws Exception {
+    public void returnToPool(final Object obj) {
         assert Thread.holdsLock(objectPool.getPool());
         if (maxIdle > 0 && maxIdle <= objectPool.getNumIdle()) {
             // XXX Does this remove the most stale object in

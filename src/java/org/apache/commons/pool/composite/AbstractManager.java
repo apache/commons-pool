@@ -70,9 +70,8 @@ abstract class AbstractManager implements Manager, Serializable {
      * Return an object to the pool. Object will be {@link PoolableObjectFactory#passivateObject(Object) passivated}.
      *
      * @param obj the object to return to the pool.
-     * @throws Exception as thrown by {@link PoolableObjectFactory#passivateObject(Object)}.
      */
-    public void returnToPool(final Object obj) throws Exception {
+    public void returnToPool(final Object obj) {
         assert Thread.holdsLock(objectPool.getPool());
         objectPool.getLender().repay(obj);
     }
