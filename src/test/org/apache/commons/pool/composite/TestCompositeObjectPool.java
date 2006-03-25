@@ -421,7 +421,11 @@ public class TestCompositeObjectPool extends TestObjectPool {
         List garbage = new LinkedList();
         Runtime runtime = Runtime.getRuntime();
         while (pool.getNumIdle() > 0) {
-            garbage.add(new byte[Math.min(1024 * 1024, (int)runtime.freeMemory()/4)]);
+            try {
+                garbage.add(new byte[Math.min(1024 * 1024, (int)runtime.freeMemory()/2)]);
+            } catch (OutOfMemoryError oome) {
+                System.gc();
+            }
             System.gc();
         }
         garbage.clear();
