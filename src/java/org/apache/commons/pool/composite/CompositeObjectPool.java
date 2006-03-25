@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Timer;
 
 /**
  * An object pool who's behavior and functionality is determined by composition.
@@ -51,6 +52,12 @@ import java.util.List;
 final class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
 
     private static final long serialVersionUID = -5874499972956918952L;
+
+    /**
+     * Shared Timer for use by various parts of the composite implementation.
+     * XXX: When Java 1.5 is acceptable convert this to a java.util.concurrent.ScheduledThreadPoolExecutor
+     */
+    static final Timer COMPOSITE_TIMER = new Timer(true);
 
     /**
      * Factory used by this pool.
