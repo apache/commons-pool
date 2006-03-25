@@ -35,11 +35,6 @@ abstract class EvictorLender extends DelegateLender implements Serializable {
     private static final long serialVersionUID = 4040627184050939757L;
 
     /**
-     * Shared evictor timer used by all {@link EvictorLender}s.
-     */
-    private static final Timer EVICTOR = new Timer(true);
-
-    /**
      * If this evictor delegates to another evictor then don't bother pruning when {@link #size()} is called because the
      * delegate will do that too.
      */
@@ -123,7 +118,7 @@ abstract class EvictorLender extends DelegateLender implements Serializable {
      */
     protected final Timer getTimer() {
         // Future version may want to manage more than one TimerTask. For now one is fine.
-        return EVICTOR;
+        return CompositeObjectPool.COMPOSITE_TIMER;
     }
 
     /**
