@@ -144,16 +144,23 @@ final class InvalidEvictorLender extends EvictorLender implements Serializable {
 
                 final PoolableObjectFactory factory = getObjectPool().getFactory();
                 synchronized(getObjectPool().getPool()) {
-                    if (referant == null) {
+                    // Unwrap any LenderReferences
+                    Object r = referant;
+                    while (r instanceof LenderReference) {
+                        r = ((LenderReference)r).get();
+                    }
+
+                    if (r == null) {
                         cancel();
                         return;
                     }
+
                     try {
-                        factory.activateObject(referant);
-                        if (factory.validateObject(referant)) {
-                            factory.passivateObject(referant);
+                        factory.activateObject(r);
+                        if (factory.validateObject(r)) {
+                            factory.passivateObject(r);
                         } else {
-                            factory.destroyObject(referant);
+                            factory.destroyObject(r);
                             clear();
                         }
                     } catch (Exception e) {
