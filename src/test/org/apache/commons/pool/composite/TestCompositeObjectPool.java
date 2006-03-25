@@ -16,17 +16,17 @@
 
 package org.apache.commons.pool.composite;
 
-import junit.framework.TestCase;
 import org.apache.commons.pool.BasePoolableObjectFactory;
+import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.TestObjectPool;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.LinkedList;
 
 /**
  * Test {@link CompositeObjectPool} and it's components.
@@ -35,8 +35,12 @@ import java.util.LinkedList;
  * @since #.#
  * @version $Revision$ $Date$
  */
-public class TestCompositeObjectPool extends TestCase {
+public class TestCompositeObjectPool extends TestObjectPool {
     private CompositeObjectPool pool = null;
+
+    public TestCompositeObjectPool(final String testName) {
+        super(testName);
+    }
 
     public void setUp() throws Exception {
     }
@@ -46,6 +50,11 @@ public class TestCompositeObjectPool extends TestCase {
             pool.close();
             pool = null;
         }
+    }
+
+    protected ObjectPool makeEmptyPool(final PoolableObjectFactory factory) {
+        final CompositeObjectPoolFactory copf = new CompositeObjectPoolFactory(factory);
+        return copf.createPool();
     }
 
     // Test Managers --------------------------------------

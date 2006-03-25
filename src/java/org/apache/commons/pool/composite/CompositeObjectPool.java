@@ -174,8 +174,14 @@ final class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
         assertOpen();
         synchronized (pool) {
             final Object obj = factory.makeObject();
-            tracker.borrowed(obj); // pretend it was borrowed so it can be returned.
-            returnObject(obj);
+            factory.passivateObject(obj);
+            // if the pool is closed, discard returned objects
+            if (isOpen()) {
+                manager.returnToPool(obj);
+            } else {
+                tracker.borrowed(obj); // pretend it was borrowed so it can be invalidated.
+                invalidateObject(obj);
+            }
         }
     }
 
@@ -243,10 +249,12 @@ final class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
         }
 
         synchronized (pool) {
-            tracker.returned(obj);
             // if the pool is closed, discard returned objects
             if (isOpen()) {
+                tracker.returned(obj);
                 manager.returnToPool(obj);
+            } else {
+                invalidateObject(obj);
             }
         }
     }
