@@ -17,6 +17,7 @@
 package org.apache.commons.pool.composite;
 
 import java.util.ListIterator;
+import java.lang.ref.Reference;
 
 /**
  * Handles how idle objects are added and removed from the idle object pool.
@@ -75,4 +76,14 @@ interface Lender {
      * @return the size of the idle object pool the lender is accessing.
      */
     public int size();
+
+    /**
+     * Like a {@link Reference} but allows a "strong reference".
+     */
+    interface LenderReference {
+        /**
+         * Like {@link Reference#get}.
+         */
+        public Object get();
+    }
 }

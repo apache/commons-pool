@@ -21,6 +21,7 @@ import org.apache.commons.pool.ObjectPool;
 import java.io.Serializable;
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
+import java.lang.ref.ReferenceQueue;
 import java.util.Iterator;
 import java.util.ListIterator;
 
@@ -54,7 +55,7 @@ final class SoftLender extends DelegateLender implements Serializable {
      * @return a previously idle object.
      */
     public Object borrow() {
-        return ((Reference)super.borrow()).get();
+        return ((LenderReference)super.borrow()).get();
     }
 
     /**
@@ -64,7 +65,7 @@ final class SoftLender extends DelegateLender implements Serializable {
      * @param obj the object to return to the idle object pool.
      */
     public void repay(final Object obj) {
-        super.repay(new SoftReference(obj));
+        super.repay(new SoftLenderReference(obj));
     }
 
     /**
@@ -99,6 +100,18 @@ final class SoftLender extends DelegateLender implements Serializable {
 
     public String toString() {
         return "Soft{" + super.toString() + "}";
+    }
+
+    /**
+     * Make a {@link SoftReference} implement {@link LenderReference}.
+     */
+    private static class SoftLenderReference extends SoftReference implements LenderReference {
+        public SoftLenderReference(Object referent) {
+            super(referent);
+        }
+        public SoftLenderReference(Object referent, ReferenceQueue q) {
+            super(referent, q);
+        }
     }
 
     /**

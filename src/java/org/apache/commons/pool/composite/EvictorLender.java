@@ -130,7 +130,7 @@ abstract class EvictorLender extends DelegateLender implements Serializable {
      * This is designed to mimick the {@link Reference} api.
      * The only reason a {@link Reference} subclass isn't used is there is no "StrongReference" implementation.
      */
-    protected interface EvictorReference {
+    protected interface EvictorReference extends LenderReference {
         /**
          * Returns this evictor reference's referent.
          *
