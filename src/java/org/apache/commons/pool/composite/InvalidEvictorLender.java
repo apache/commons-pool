@@ -113,15 +113,19 @@ final class InvalidEvictorLender extends EvictorLender implements Serializable {
         }
 
         public Object get() {
-            return referant;
+            synchronized (this) {
+                return referant;
+            }
         }
 
         public void clear() {
-            task.cancel();
-            if (referant instanceof EvictorReference) {
-                ((EvictorReference)referant).clear();
+            synchronized (this) {
+                task.cancel();
+                if (referant instanceof EvictorReference) {
+                    ((EvictorReference)referant).clear();
+                }
+                referant = null;
             }
-            referant = null;
         }
 
         /**
@@ -143,7 +147,7 @@ final class InvalidEvictorLender extends EvictorLender implements Serializable {
                 }
 
                 final PoolableObjectFactory factory = getObjectPool().getFactory();
-                synchronized(getObjectPool().getPool()) {
+                synchronized (InvalidEvictorReference.this) {
                     // Unwrap any LenderReferences
                     Object r = referant;
                     while (r instanceof LenderReference) {
@@ -151,7 +155,7 @@ final class InvalidEvictorLender extends EvictorLender implements Serializable {
                     }
 
                     if (r == null) {
-                        cancel();
+                        clear();
                         return;
                     }
 
