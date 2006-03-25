@@ -60,8 +60,10 @@ abstract class EvictorLender extends DelegateLender implements Serializable {
         final EvictorReference ref = (EvictorReference)super.borrow();
         Object obj = null;
         if (ref != null) {
-            obj = ref.get();
-            ref.clear();
+            synchronized (ref) {
+                obj = ref.get();
+                ref.clear();
+            }
         }
         return obj;
     }
@@ -92,7 +94,7 @@ abstract class EvictorLender extends DelegateLender implements Serializable {
                 final Iterator iter = super.listIterator();
                 while (iter.hasNext()) {
                     final EvictorReference ref = (EvictorReference)iter.next();
-                    if (ref.get() == null) {
+                    if (ref != null && ref.get() == null) {
                         iter.remove();
                     }
                 }
@@ -124,6 +126,9 @@ abstract class EvictorLender extends DelegateLender implements Serializable {
     /**
      * This is designed to mimick the {@link Reference} api.
      * The only reason a {@link Reference} subclass isn't used is there is no "StrongReference" implementation.
+     * Because evictors run in a different thread, implementations must be thread safe and callers need to
+     * synchronize on the <code>EvictorReference</code> if they need to call more than one method in a thread
+     * safe manner.
      */
     protected interface EvictorReference extends LenderReference {
         /**

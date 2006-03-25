@@ -100,15 +100,19 @@ final class IdleEvictorLender extends EvictorLender implements Serializable {
         }
 
         public Object get() {
-            return referant;
+            synchronized (this) {
+                return referant;
+            }
         }
 
         public void clear() {
-            task.cancel();
-            if (referant instanceof EvictorReference) {
-                ((EvictorReference)referant).clear();
+            synchronized (this) {
+                task.cancel();
+                if (referant instanceof EvictorReference) {
+                    ((EvictorReference)referant).clear();
+                }
+                referant = null;
             }
-            referant = null;
         }
 
         /**
@@ -120,8 +124,8 @@ final class IdleEvictorLender extends EvictorLender implements Serializable {
              * Evict the idle object.
              */
             public void run() {
-                synchronized(getObjectPool().getPool()) {
-                    referant = null;
+                synchronized(IdleEvictorReference.this) {
+                    clear();
                 }
             }
         }
