@@ -68,13 +68,9 @@ final class FailManager extends AbstractManager implements Serializable {
                         objectPool.invalidateObject(obj);
                         obj = null; // try again
                     }
-                } catch (Exception e1) {
-                    updateCause(e1);
-                    try {
-                        objectPool.getFactory().destroyObject(obj);
-                    } catch (Exception e2) {
-                        // ignore
-                    }
+                } catch (Exception e) {
+                    updateCause(e);
+                    deferDestroyObject(obj);
                     obj = null; // try again
                 }
             }
@@ -106,13 +102,9 @@ final class FailManager extends AbstractManager implements Serializable {
     private Object activateOrDestroy(final Object obj) {
         try {
             objectPool.getFactory().activateObject(obj);
-        } catch (Exception e1) {
-            updateCause(e1);
-            try {
-                objectPool.getFactory().destroyObject(obj);
-            } catch (Exception e2) {
-                updateCause(e2);
-            }
+        } catch (Exception e) {
+            updateCause(e);
+            deferDestroyObject(obj);
             return null; // try again
         }
         return obj;
