@@ -119,15 +119,16 @@ final class FailManager extends AbstractManager implements Serializable {
     }
 
     /**
-     * Set the {@link #cause} for failure if it hasn't been set yet.
+     * Set the {@link #cause} linking any previous causes.
      *
      * @param t the real {@link Throwable#initCause(Throwable) cause}.
      */
     private void updateCause(final Throwable t) {
         final Throwable previousCause = (Throwable)cause.get();
-        if (previousCause == null) {
-            cause.set(t);
+        if (previousCause != null) {
+            t.initCause(previousCause);
         }
+        cause.set(t);
     }
 
     public String toString() {
