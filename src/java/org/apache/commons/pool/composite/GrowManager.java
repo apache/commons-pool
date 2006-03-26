@@ -64,12 +64,8 @@ final class GrowManager extends AbstractManager implements Serializable {
                         objectPool.invalidateObject(obj);
                         obj = null; // try again
                     }
-                } catch (Exception e1) {
-                    try {
-                        objectPool.getFactory().destroyObject(obj);
-                    } catch (Exception e2) {
-                        // ignore
-                    }
+                } catch (Exception e) {
+                    deferDestroyObject(obj);
                     obj = null; // try again
                 }
             }
@@ -96,12 +92,8 @@ final class GrowManager extends AbstractManager implements Serializable {
     private Object activateOrDestroy(final Object obj) {
         try {
             objectPool.getFactory().activateObject(obj);
-        } catch (Exception e1) {
-            try {
-                objectPool.getFactory().destroyObject(obj);
-            } catch (Exception e2) {
-                // ignore
-            }
+        } catch (Exception e) {
+            deferDestroyObject(obj);
             return null; // try again
         }
         return obj;
