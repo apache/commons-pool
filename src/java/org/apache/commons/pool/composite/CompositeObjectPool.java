@@ -179,10 +179,10 @@ final class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
      */
     public void addObject() throws Exception {
         assertOpen();
+        final Object obj = factory.makeObject();
+        factory.passivateObject(obj);
         synchronized (pool) {
-            final Object obj = factory.makeObject();
-            factory.passivateObject(obj);
-            // if the pool is closed, discard returned objects
+            // if the pool was closed between the asserOpen and the synchronize then discard returned objects
             if (isOpen()) {
                 manager.returnToPool(obj);
             } else {
