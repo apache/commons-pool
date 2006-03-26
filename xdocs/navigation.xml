@@ -28,7 +28,7 @@
     
         <menu name="Commons&#xA0;Pool">
             <item name="Overview"                      href="/index.html" />
-            <item name="API&#xA0;Documentation"        href="/apidocs/index.html"/>
+            <item name="Javadoc"                       href="/apidocs/index.html"/>
             <item name="Developers&#xA0;Guide"         href="/guide/index.html" collapse="true">
                 <item name="Class&#xA0;Diagrams"       href="/guide/classdiagrams.html"/>
                 <item name="Sequence&#xA0;Diagrams"    href="/guide/sequencediagrams.html"/>
