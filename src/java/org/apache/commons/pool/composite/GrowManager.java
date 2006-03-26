@@ -155,7 +155,14 @@ final class GrowManager extends AbstractManager implements Serializable {
      */
     private void schedulePrefill() {
         if (objectPool.getLender().size() == 0 && isMakeObjectExpensive()) {
-            PREFILL_TIMER.schedule(new PrefillTask(), 0L);
+            // When we are part of a CompositeKeyedObjectPool we need to pass the key to the Timer's thread.
+            final CompositeKeyedObjectPool ckop = objectPool.getOwningCompositeKeyedObjectPool();
+            if (ckop != null) {
+                final Object key = ckop.getKeys().get();
+                PREFILL_TIMER.schedule(new KeyedPrefillTask(key), 0L);
+            } else {
+                PREFILL_TIMER.schedule(new PrefillTask(), 0L);
+            }
         }
     }
 
@@ -174,6 +181,35 @@ final class GrowManager extends AbstractManager implements Serializable {
                 }
             } catch (Exception e) {
                 // swallowed
+            }
+        }
+    }
+
+    /**
+     * A <code>TimerTask</code> that will add another object if the pool is empty.
+     */
+    private class KeyedPrefillTask extends TimerTask {
+        private final Object key;
+
+        KeyedPrefillTask(final Object key) {
+            this.key = key;
+        }
+
+        public void run() {
+            ThreadLocal keys = null;
+            try {
+                if (objectPool.getNumIdle() == 0) {
+                    keys = objectPool.getOwningCompositeKeyedObjectPool().getKeys();
+                    keys.set(key);
+                    objectPool.addObject();
+                }
+            } catch (Exception e) {
+                // swallowed
+            } finally {
+                // clear the key
+                if (keys != null) {
+                    keys.set(null);
+                }
             }
         }
     }

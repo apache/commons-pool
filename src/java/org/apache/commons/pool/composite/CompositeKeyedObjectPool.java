@@ -100,6 +100,10 @@ final class CompositeKeyedObjectPool implements KeyedObjectPool, Cloneable, Seri
             if (pool == null) {
                 pool = poolFactory.createPool();
                 objectPools.put(key, pool);
+                // Tell CompositeObjectPools that we own them.
+                if (pool instanceof CompositeObjectPool) {
+                    ((CompositeObjectPool)pool).setOwningCompositeKeyedObjectPool(this);
+                }
             }
         }
         return pool;

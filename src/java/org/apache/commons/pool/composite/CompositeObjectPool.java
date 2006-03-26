@@ -101,6 +101,11 @@ final class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
      */
     private final CompositeObjectPoolFactory.FactoryConfig factoryConfig;
 
+    /**
+     * When not-<code>null</code> this pool is part of a {@link CompositeKeyedObjectPool}.
+     */
+    private CompositeKeyedObjectPool owningCompositeKeyedObjectPool = null;
+
     CompositeObjectPool(final PoolableObjectFactory factory, final Manager manager, final Lender lender, final Tracker tracker, final boolean validateOnReturn) {
         this(factory, manager, lender, tracker, validateOnReturn, null);
     }
@@ -169,6 +174,25 @@ final class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
      */
     List getPool() {
         return pool;
+    }
+
+    /**
+     * Set the owner of this pool.
+     * @param ckop the owner of this pool
+     */
+    void setOwningCompositeKeyedObjectPool(final CompositeKeyedObjectPool ckop) {
+        if (owningCompositeKeyedObjectPool != null) {
+            throw new IllegalStateException("CompositeObjectPools cannot change ownership.");
+        }
+        owningCompositeKeyedObjectPool = ckop;
+    }
+
+    /**
+     * Get the owner of this pool or <code>null</code>.
+     * @return the owner of this pool or <code>null</code>
+     */
+    CompositeKeyedObjectPool getOwningCompositeKeyedObjectPool() {
+        return owningCompositeKeyedObjectPool;
     }
 
     /**
