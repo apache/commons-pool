@@ -19,6 +19,8 @@ package org.apache.commons.pool.composite;
 import org.apache.commons.pool.PoolableObjectFactory;
 
 import java.io.Serializable;
+import java.util.TimerTask;
+import java.util.Timer;
 
 /**
  * Grows the pool automatically when it is exhausted.
@@ -33,6 +35,11 @@ import java.io.Serializable;
 final class GrowManager extends AbstractManager implements Serializable {
 
     private static final long serialVersionUID = 1225746308358794900L;
+    private static final Timer PREFILL_TIMER = CompositeObjectPool.COMPOSITE_TIMER;
+
+    private final Object avgLock = new Object();
+    private long activateAvg = 0;
+    private long makeAvg = 0;
 
     /**
      * Retreives the next object from the pool, creating new objects if the pool has been exhausted.
@@ -43,6 +50,8 @@ final class GrowManager extends AbstractManager implements Serializable {
     public Object nextFromPool() throws Exception {
         assert Thread.holdsLock(objectPool.getPool());
         Object obj = null;
+
+        final long startActivateTime = System.currentTimeMillis();
         // Drain until good or empty
         while (objectPool.getLender().size() > 0 && obj == null) {
             obj = objectPool.getLender().borrow();
@@ -65,10 +74,15 @@ final class GrowManager extends AbstractManager implements Serializable {
                 }
             }
         }
-
-        if (obj == null) {
+        if (obj != null) {
+            updateActivateTimings(startActivateTime, System.currentTimeMillis());
+        } else {
+            final long startMakeTime = System.currentTimeMillis();
             obj = objectPool.getFactory().makeObject();
+            updateMakeTimings(startMakeTime, System.currentTimeMillis());
         }
+
+        schedulePrefill();
         return obj;
     }
 
@@ -93,7 +107,74 @@ final class GrowManager extends AbstractManager implements Serializable {
         return obj;
     }
 
+    /**
+     * Update the moving average of how long it takes to activate and validate idle objects.
+     * @param start start of activation and validation
+     * @param end end of activation and validation
+     */
+    private void updateActivateTimings(final long start, final long end) {
+        final long elapsed = end - start;
+        if (elapsed > 0L) {
+            synchronized (avgLock) {
+                activateAvg = (activateAvg * 9L + elapsed) / 10L;
+            }
+        }
+    }
+
+    /**
+     * Update the moving average of how long it takes to make a new objects.
+     * @param start start of makeObject
+     * @param end end of makeObject
+     */
+    private void updateMakeTimings(final long start, final long end) {
+        final long elapsed = end - start;
+        if (elapsed > 0L) {
+            synchronized (avgLock) {
+                makeAvg = (makeAvg * 9L + elapsed) / 10L;
+            }
+        }
+    }
+
+    /**
+     * Does {@link PoolableObjectFactory#makeObject} take a relativly long time compared to
+     * {@link PoolableObjectFactory#activateObject} and {@link PoolableObjectFactory#validateObject}.
+     * @return <code>true</code> if {@link PoolableObjectFactory#makeObject} takes a long time.
+     */
+    private boolean isMakeObjectExpensive() {
+        synchronized (avgLock) {
+            // XXX: This is a guess at an optimal balance.
+            // Considering makeObject  to be expensive if it takes 3 times longer than activation takes.
+            // That is based on a benchmark by Peter Steijn for database connection pooling.
+            return activateAvg > 0L && activateAvg * 3L < makeAvg;
+        }
+    }
+
+    /**
+     * Schedule a <code>PrefillTask</code> if the idle object pool is empty
+     * and <code>makeObject</code> is relatively expensive.
+     */
+    private void schedulePrefill() {
+        if (objectPool.getLender().size() == 0 && isMakeObjectExpensive()) {
+            PREFILL_TIMER.schedule(new PrefillTask(), 0L);
+        }
+    }
+
     public String toString() {
-        return "GrowManager{}";
+        return "GrowManager{makeObjectExpensive=" + isMakeObjectExpensive() + "}";
+    }
+
+    /**
+     * A <code>TimerTask</code> that will add another object if the pool is empty.
+     */
+    private class PrefillTask extends TimerTask {
+        public void run() {
+            try {
+                if (objectPool.getNumIdle() == 0) {
+                    objectPool.addObject();
+                }
+            } catch (Exception e) {
+                // swallowed
+            }
+        }
     }
 }
