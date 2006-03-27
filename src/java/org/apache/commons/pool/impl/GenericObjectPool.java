@@ -105,7 +105,7 @@ import org.apache.commons.pool.impl.GenericKeyedObjectPool.ObjectTimestampPair;
  *  <li>
  *   {@link #setMinEvictableIdleTimeMillis <i>minEvictableIdleTimeMillis</i>}
  *   specifies the minimum amount of time that an object may sit idle in the pool
- *   before it is eligable for eviction due to idle time.  When non-positive, no object
+ *   before it is eligible for eviction due to idle time.  When non-positive, no object
  *   will be dropped from the pool due to idle time alone.
  *  </li>
  *  <li>
@@ -364,7 +364,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @param testOnReturn whether or not to validate objects after they are returned to the {@link #returnObject} method (see {@link #setTestOnReturn})
      * @param timeBetweenEvictionRunsMillis the amount of time (in milliseconds) to sleep between examining idle objects for eviction (see {@link #setTimeBetweenEvictionRunsMillis})
      * @param numTestsPerEvictionRun the number of idle objects to examine per run within the idle object eviction thread (if any) (see {@link #setNumTestsPerEvictionRun})
-     * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligable for evcition (see {@link #setMinEvictableIdleTimeMillis})
+     * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligible for evcition (see {@link #setMinEvictableIdleTimeMillis})
      * @param testWhileIdle whether or not to validate objects in the idle object eviction thread, if any (see {@link #setTestWhileIdle})
      */
     public GenericObjectPool(PoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle) {
@@ -383,7 +383,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @param testOnReturn whether or not to validate objects after they are returned to the {@link #returnObject} method (see {@link #setTestOnReturn})
      * @param timeBetweenEvictionRunsMillis the amount of time (in milliseconds) to sleep between examining idle objects for eviction (see {@link #setTimeBetweenEvictionRunsMillis})
      * @param numTestsPerEvictionRun the number of idle objects to examine per run within the idle object eviction thread (if any) (see {@link #setNumTestsPerEvictionRun})
-     * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligable for evcition (see {@link #setMinEvictableIdleTimeMillis})
+     * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligible for evcition (see {@link #setMinEvictableIdleTimeMillis})
      * @param testWhileIdle whether or not to validate objects in the idle object eviction thread, if any (see {@link #setTestWhileIdle})
      */
     public GenericObjectPool(PoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, int minIdle, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle) {
@@ -402,9 +402,9 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @param testOnReturn whether or not to validate objects after they are returned to the {@link #returnObject} method (see {@link #setTestOnReturn})
      * @param timeBetweenEvictionRunsMillis the amount of time (in milliseconds) to sleep between examining idle objects for eviction (see {@link #setTimeBetweenEvictionRunsMillis})
      * @param numTestsPerEvictionRun the number of idle objects to examine per run within the idle object eviction thread (if any) (see {@link #setNumTestsPerEvictionRun})
-     * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligable for evcition (see {@link #setMinEvictableIdleTimeMillis})
+     * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligible for evcition (see {@link #setMinEvictableIdleTimeMillis})
      * @param testWhileIdle whether or not to validate objects in the idle object eviction thread, if any (see {@link #setTestWhileIdle})
-     * @param softMinEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligable for evcition with the extra condition that at least "minIdle" amount of object remain in the pool. (see {@link #setSoftMinEvictableIdleTimeMillis})
+     * @param softMinEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligible for evcition with the extra condition that at least "minIdle" amount of object remain in the pool. (see {@link #setSoftMinEvictableIdleTimeMillis})
      */
     public GenericObjectPool(PoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, int minIdle, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle, long softMinEvictableIdleTimeMillis) {
         _factory = factory;
@@ -681,7 +681,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
     /**
      * Returns the minimum amount of time an object may sit idle in the pool
-     * before it is eligable for eviction by the idle object evictor
+     * before it is eligible for eviction by the idle object evictor
      * (if any).
      *
      * @see #setMinEvictableIdleTimeMillis
@@ -693,7 +693,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
     /**
      * Sets the minimum amount of time an object may sit idle in the pool
-     * before it is eligable for eviction by the idle object evictor
+     * before it is eligible for eviction by the idle object evictor
      * (if any).
      * When non-positive, no objects will be evicted from the pool
      * due to idle time alone.
@@ -707,7 +707,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
     /**
      * Returns the minimum amount of time an object may sit idle in the pool
-     * before it is eligable for eviction by the idle object evictor
+     * before it is eligible for eviction by the idle object evictor
      * (if any), with the extra condition that at least
      * "minIdle" amount of object remain in the pool.
      *
@@ -719,7 +719,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
     /**
      * Sets the minimum amount of time an object may sit idle in the pool
-     * before it is eligable for eviction by the idle object evictor
+     * before it is eligible for eviction by the idle object evictor
      * (if any), with the extra condition that at least
      * "minIdle" amount of object remain in the pool.
      * When non-positive, no objects will be evicted from the pool
@@ -1293,7 +1293,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
     /**
      * The minimum amount of time an object may sit idle in the pool
-     * before it is eligable for eviction by the idle object evictor
+     * before it is eligible for eviction by the idle object evictor
      * (if any).
      * When non-positive, no objects will be evicted from the pool
      * due to idle time alone.
@@ -1307,7 +1307,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
     /**
      * The minimum amount of time an object may sit idle in the pool
-     * before it is eligable for eviction by the idle object evictor
+     * before it is eligible for eviction by the idle object evictor
      * (if any), with the extra condition that at least
      * "minIdle" amount of object remain in the pool.
      * When non-positive, no objects will be evicted from the pool
