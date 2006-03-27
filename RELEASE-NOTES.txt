@@ -30,10 +30,10 @@ Feedback
 Open source works best when you give feedback:
 http://jakarta.apache.org/commons/pool/
 
-Please direct all bug reports to Bugzilla (prefix bug reports by [io])
+Please direct all bug reports to Bugzilla (prefix bug reports by [Pool])
 http://issues.apache.org/bugzilla/buglist.cgi?product=Commons&component=Pool
 
-Or subscribe to the commons-user mailing list (prefix emails by [io])
+Or subscribe to the commons-user mailing list (prefix emails by [Pool])
 http://jakarta.apache.org/site/mail.html
 
 The Commons-Pool Team
