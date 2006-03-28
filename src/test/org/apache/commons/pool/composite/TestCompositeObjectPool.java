@@ -28,6 +28,9 @@ import java.util.NoSuchElementException;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
 /**
  * Test {@link CompositeObjectPool} and it's components.
  *
@@ -40,6 +43,10 @@ public class TestCompositeObjectPool extends TestObjectPool {
 
     public TestCompositeObjectPool(final String testName) {
         super(testName);
+    }
+
+    public static Test suite() {
+        return new TestSuite(TestCompositeObjectPool.class);
     }
 
     public void setUp() throws Exception {

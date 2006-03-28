@@ -106,11 +106,8 @@ final class SoftLender extends DelegateLender implements Serializable {
      * Make a {@link SoftReference} implement {@link LenderReference}.
      */
     private static class SoftLenderReference extends SoftReference implements LenderReference {
-        public SoftLenderReference(Object referent) {
+        SoftLenderReference(final Object referent) {
             super(referent);
-        }
-        public SoftLenderReference(Object referent, ReferenceQueue q) {
-            super(referent, q);
         }
     }
 

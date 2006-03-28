@@ -83,7 +83,7 @@ abstract class EvictorLender extends DelegateLender implements Serializable {
     }
 
     /**
-     * Return the size of the idle object pool. Also removes any broken {@link EvictorLender.EvictorReference}s so the
+     * Return the size of the idle object pool. Also removes any broken {@link Lender.LenderReference}s so the
      * size is more accurate.
      *
      * @return the size of the idle object pool the lender is accessing.
@@ -93,8 +93,12 @@ abstract class EvictorLender extends DelegateLender implements Serializable {
             synchronized (getObjectPool().getPool()) {
                 final Iterator iter = super.listIterator();
                 while (iter.hasNext()) {
-                    final EvictorReference ref = (EvictorReference)iter.next();
-                    if (ref != null && ref.get() == null) {
+                    Object o = iter.next();
+                    // unwrap
+                    while (o instanceof LenderReference) {
+                        o = ((LenderReference)o).get();
+                    }
+                    if (o == null) {
                         iter.remove();
                     }
                 }
