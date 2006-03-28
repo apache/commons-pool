@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2004 The Apache Software Foundation.
+ * Copyright 1999-2004,2006 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ public class TestAll extends TestCase {
         suite.addTest(org.apache.commons.pool.TestBaseKeyedPoolableObjectFactory.suite());
         suite.addTest(org.apache.commons.pool.TestPoolUtils.suite());
         suite.addTest(org.apache.commons.pool.impl.TestAll.suite());
+        suite.addTest(org.apache.commons.pool.composite.TestAll.suite());
         return suite;
     }
 

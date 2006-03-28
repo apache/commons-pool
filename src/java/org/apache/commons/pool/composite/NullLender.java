@@ -28,20 +28,9 @@ import java.util.ListIterator;
  * @since #.#
  * @version $Revision$ $Date$
  */
-final class NullLender implements Lender, Serializable {
+final class NullLender extends AbstractLender implements Serializable {
 
     private static final long serialVersionUID = -135471856936204860L;
-
-    /**
-     * Called once to associate this manager with an object pool by the {@link CompositeObjectPool} constructor.
-     *
-     * @param objectPool the pool to associate with.
-     * @throws IllegalArgumentException if <code>objectPool</code> is <code>null</code>.
-     * @throws IllegalStateException if this method is called more than once.
-     */
-    public void setCompositeObjectPool(final CompositeObjectPool objectPool) throws IllegalArgumentException, IllegalStateException {
-        // nothing
-    }
 
     /**
      * Return <code>null</code>.
