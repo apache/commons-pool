@@ -40,20 +40,20 @@ interface Tracker {
      * {@link PoolableObjectFactory#activateObject(Object) activated} and
      * {@link PoolableObjectFactory#validateObject(Object) validated} and is about to be returned to the client.
      *
-     * <p>Objects created via {@link ObjectPool#addObject()} are also "borrowed" so that when
-     * {@link ObjectPool#returnObject(Object)} {@link #returned(Object) returns} that object it isn't unexpected.
-     *
      * @param obj was borrowed from the pool.
+     * @throws IllegalArgumentException may be thrown if <code>null</code> is not allowed.
      */
-    public void borrowed(Object obj);
+    public void borrowed(Object obj) throws IllegalArgumentException;
 
     /**
      * An object is being {@link ObjectPool#returnObject(Object) returned} to the pool.
      * {@link ObjectPool#invalidateObject(Object) Invalid} objects are also "returned" via this method.
      *
      * @param obj being returned to the pool.
+     * @throws IllegalArgumentException may be thrown if <code>null</code> is not allowed.
+     * @throws IllegalStateException may be thrown if an object is returned that wasn't borrowed.
      */
-    public void returned(Object obj);
+    public void returned(Object obj) throws IllegalArgumentException, IllegalStateException;
 
     /**
      * The number of "borrowed" or active objects from the pool.
