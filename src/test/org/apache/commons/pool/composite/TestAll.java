@@ -38,6 +38,7 @@ public class TestAll extends TestCase {
 
     public static Test suite() {
         final TestSuite suite = new TestSuite();
+
         // Lenders unit tests
         suite.addTest(TestFifoLender.suite());
         suite.addTest(TestIdleEvictorLender.suite());
@@ -45,8 +46,14 @@ public class TestAll extends TestCase {
         suite.addTest(TestLifoLender.suite());
         suite.addTest(TestNullLender.suite());
         suite.addTest(TestSoftLender.suite());
+
         // Managers unit tests
+
         // Tackers unit tests
+        suite.addTest(TestNullTracker.suite());
+        suite.addTest(TestReferenceTracker.suite());
+        suite.addTest(TestDebugTracker.suite());
+        suite.addTest(TestSimpleTracker.suite());
 
         // Remaining unit tests
         suite.addTest(TestCompositeObjectPool.suite());

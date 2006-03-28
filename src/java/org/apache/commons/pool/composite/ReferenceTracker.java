@@ -53,6 +53,9 @@ class ReferenceTracker implements Tracker, Serializable {
     private transient int lost = 0;
 
     public void borrowed(final Object obj) {
+        if (obj == null) {
+            throw new IllegalArgumentException("Cannot track null borrowed from pool.");
+        }
         workQueue();
         final IdentityReference ref;
         synchronized (rq) {
@@ -79,6 +82,9 @@ class ReferenceTracker implements Tracker, Serializable {
      * @throws IllegalStateException when an object that wasn't brorrowed from this pool is returned.
      */
     public void returned(final Object obj) throws IllegalStateException {
+        if (obj == null) {
+            throw new IllegalArgumentException("Cannot track null returned to the pool.");
+        }
         workQueue();
         final IdentityKey key = new IdentityKey(obj);
         final IdentityReference ref = (IdentityReference)map.remove(key);
