@@ -27,7 +27,7 @@ import java.util.Map;
 /**
  * Keeps track of active objects with {@link Reference}s and detectes when they are not returned to the pool.
  *
- * @see TrackingType#REFERENCE
+ * @see TrackingPolicy#REFERENCE
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  * @since #.#

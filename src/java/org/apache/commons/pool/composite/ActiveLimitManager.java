@@ -21,7 +21,7 @@ import java.io.Serializable;
 /**
  * Base class for all {@link Manager}s that limit the number of active objects associate with the pool.
  *
- * @see LimitBehavior
+ * @see LimitPolicy
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  * @since #.#

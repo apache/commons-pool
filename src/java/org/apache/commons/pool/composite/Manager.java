@@ -25,8 +25,8 @@ import java.util.NoSuchElementException;
  * Managers are expected to transition an object from an active or idle state and vice versa.
  * Implementations are expected to be called from a synchronized context on the idle object pool.
  *
- * @see ExhaustionBehavior
- * @see LimitBehavior
+ * @see ExhaustionPolicy
+ * @see LimitPolicy
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  * @since #.#

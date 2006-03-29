@@ -21,7 +21,7 @@ import java.io.Serializable;
 /**
  * Doesn't actually track active objects. Not compatiable with any {@link ActiveLimitManager} implementation.
  *
- * @see TrackingType#NULL
+ * @see TrackingPolicy#NULL
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  * @since #.#

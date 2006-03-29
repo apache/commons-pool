@@ -31,20 +31,20 @@ import java.util.List;
  *
  * <p>Default values for a newly created factory:
  * <ul>
- *  <li>{@link #setBorrowType(BorrowType) borrowType}:
- *      {@link BorrowType#FIFO FIFO}</li>
- *  <li>{@link #setExhaustionBehavior(ExhaustionBehavior) exhaustionBehavior}:
- *      {@link ExhaustionBehavior#GROW GROW}</li>
+ *  <li>{@link #setBorrowPolicy(BorrowPolicy) borrowPolicy}:
+ *      {@link BorrowPolicy#FIFO FIFO}</li>
+ *  <li>{@link #setExhaustionPolicy(ExhaustionPolicy) exhaustionPolicy}:
+ *      {@link ExhaustionPolicy#GROW GROW}</li>
  *  <li>{@link #setMaxIdle(int) maxIdle}: a negative value (unlimited)</li>
  *  <li>{@link #setMaxActive(int) maxActive}: a non-positive value (unlimited)</li>
- *  <li>{@link #setLimitBehavior(LimitBehavior) limitBehavior}:
- *      {@link LimitBehavior#FAIL FAIL}
+ *  <li>{@link #setLimitPolicy(LimitPolicy) limitPolicy}:
+ *      {@link LimitPolicy#FAIL FAIL}
  *      (has no effect unless {@link #setMaxActive(int) maxActive} is positive)</li>
  *  <li>{@link #setMaxWaitMillis(int) maxWaitMillis}: a non-positive value (wait forever)
- *      (has no effect unless {@link #setLimitBehavior(LimitBehavior) limitBehavior} is
- *      {@link LimitBehavior#WAIT WAIT})</li>
- *  <li>{@link #setTrackerType(TrackingType) trackingType}:
- *      {@link TrackingType#SIMPLE SIMPLE}</li>
+ *      (has no effect unless {@link #setLimitPolicy(LimitPolicy) limitPolicy} is
+ *      {@link LimitPolicy#WAIT WAIT})</li>
+ *  <li>{@link #setTrackerType(TrackingPolicy) trackingPolicy}:
+ *      {@link TrackingPolicy#SIMPLE SIMPLE}</li>
  *  <li>{@link #setValidateOnReturn(boolean) validateOnReturn}: false (do not validate on return)</li>
  *  <li>{@link #setEvictIdleMillis(long) evictIdleMillis}: non-positive (do not evict objects for being idle)</li>
  *  <li>{@link #setEvictInvalidFrequencyMillis(long) evictInvalidFrequencyMillis}: non-positive (do not check if idle
@@ -63,11 +63,11 @@ import java.util.List;
  * <pre>
  * PoolableObjectFactory pof = ...;
  * CompositeObjectPoolFactory copf = new CompositeObjectPoolFactory(pof);
- * copf.setBorrowType(BorrowType.LIFO)
+ * copf.setBorrowPolicy(BorrowPolicy.LIFO)
  * copf.setMaxIdle(5);
  * copf.setEvictInvalidFrequencyMillis(5 * 60 * 1000);
  * copf.setEvictIdleMillis(60 * 60 * 1000);
- * copf.setTrackingType(TrackingType.REFERENCE);
+ * copf.setTrackingPolicy(TrackingPolicy.REFERENCE);
  * ObjectPool pool = copf.createPool();
  * </pre>
  *
@@ -78,9 +78,9 @@ import java.util.List;
  * <pre>
  * PoolableObjectFactory pof = ...;
  * CompositeObjectPoolFactory copf = new CompositeObjectPoolFactory(pof);
- * copf.setsetExhaustionBehavior(ExhaustionBehavior.FAIL);
+ * copf.setsetExhaustionPolicy(ExhaustionPolicy.FAIL);
  * copf.setMaxActive(2);
- * copf.setLimitBehavior(LimitBehavior.WAIT);
+ * copf.setLimitPolicy(LimitPolicy.WAIT);
  * copf.setMaxWaitMillis(10 * 1000);
  * ObjectPool pool = copf.createPool();
  * pool.addObject(); pool.addObject(); pool.addObject();
@@ -92,8 +92,8 @@ import java.util.List;
  * <pre>
  * PoolableObjectFactory pof = ...;
  * CompositeObjectPoolFactory copf = new CompositeObjectPoolFactory(pof);
- * copf.setBorrowType(BorrowType.SOFT_FIFO);
- * copf.setTrackingType(TrackingType.DEBUG);
+ * copf.setBorrowPolicy(BorrowPolicy.SOFT_FIFO);
+ * copf.setTrackingPolicy(TrackingPolicy.DEBUG);
  * ObjectPool pool = copf.createPool();
  * </pre>
  *
@@ -131,10 +131,10 @@ import java.util.List;
  * </ul>
  * </p>
  *
- * @see BorrowType
- * @see ExhaustionBehavior
- * @see LimitBehavior
- * @see TrackingType
+ * @see BorrowPolicy
+ * @see ExhaustionPolicy
+ * @see LimitPolicy
+ * @see TrackingPolicy
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  * @since #.#
@@ -164,12 +164,12 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
     /**
      * Configured {@link Lender} type.
      */
-    private BorrowType borrowType = BorrowType.FIFO;
+    private BorrowPolicy borrowPolicy = BorrowPolicy.FIFO;
 
     /**
      * Configured {@link Manager} type.
      */
-    private ExhaustionBehavior exhaustionBehavior = ExhaustionBehavior.GROW;
+    private ExhaustionPolicy exhaustionPolicy = ExhaustionPolicy.GROW;
 
     /**
      * Maximum number of idle objects in the pool.
@@ -189,7 +189,7 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
     /**
      * Configured {@link ActiveLimitManager} type. Not used if {@link #maxActive} is non-positive.
      */
-    private LimitBehavior limitBehavior = LimitBehavior.FAIL;
+    private LimitPolicy limitPolicy = LimitPolicy.FAIL;
 
     /**
      * Configured max wait time for an available object. Non-positive means wait forever.
@@ -201,7 +201,7 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
     /**
      * Configured {@link Tracker} type.
      */
-    private TrackingType trackerType = TrackingType.SIMPLE;
+    private TrackingPolicy trackerPolicy = TrackingPolicy.SIMPLE;
 
     /**
      * Should the object pool validate borrowed objects when they are returned.
@@ -260,11 +260,11 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
      */
     private static List getList(final FactoryConfig config) {
         final List list; // LIFO is more suited to an ArrayList, FIFO is more suited to a LinkedList
-        if (BorrowType.NULL.equals(config.borrowType) || config.maxIdle == 0) {
+        if (BorrowPolicy.NULL.equals(config.borrowPolicy) || config.maxIdle == 0) {
             // an empty pool can use an empty list.
             list = Collections.EMPTY_LIST;
 
-        } else if (BorrowType.LIFO.equals(config.borrowType) || BorrowType.SOFT_LIFO.equals(config.borrowType)) {
+        } else if (BorrowPolicy.LIFO.equals(config.borrowPolicy) || BorrowPolicy.SOFT_LIFO.equals(config.borrowPolicy)) {
             // pre-allocate the backing array if the max size is known.
             if (config.maxIdle >= 0) {
                 list = new ArrayList(config.maxIdle);
@@ -292,21 +292,21 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
      * @param config
      */
     private static Lender getLender(final FactoryConfig config) {
-        final BorrowType borrowType = config.borrowType;
+        final BorrowPolicy borrowPolicy = config.borrowPolicy;
         Lender lender;
         if (config.maxIdle != 0) {
-            if (BorrowType.FIFO.equals(borrowType)) {
+            if (BorrowPolicy.FIFO.equals(borrowPolicy)) {
                 lender = new FifoLender();
-            } else if (BorrowType.LIFO.equals(borrowType)) {
+            } else if (BorrowPolicy.LIFO.equals(borrowPolicy)) {
                 lender = new LifoLender();
-            } else if (BorrowType.SOFT_FIFO.equals(borrowType)) {
+            } else if (BorrowPolicy.SOFT_FIFO.equals(borrowPolicy)) {
                 lender = new SoftLender(new FifoLender());
-            } else if (BorrowType.SOFT_LIFO.equals(borrowType)) {
+            } else if (BorrowPolicy.SOFT_LIFO.equals(borrowPolicy)) {
                 lender = new SoftLender(new LifoLender());
-            } else if (BorrowType.NULL.equals(borrowType)) {
+            } else if (BorrowPolicy.NULL.equals(borrowPolicy)) {
                 lender = new NullLender();
             } else {
-                throw new IllegalStateException("No clue what this borrow type is: " + borrowType);
+                throw new IllegalStateException("No clue what this borrow type is: " + borrowPolicy);
             }
         } else {
             lender = new NullLender();
@@ -337,33 +337,33 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
      */
     private static Manager getManager(final FactoryConfig config) {
         Manager manager;
-        final ExhaustionBehavior exhaustionBehavior = config.exhaustionBehavior;
-        if (ExhaustionBehavior.GROW.equals(exhaustionBehavior)) {
+        final ExhaustionPolicy exhaustionPolicy = config.exhaustionPolicy;
+        if (ExhaustionPolicy.GROW.equals(exhaustionPolicy)) {
             manager = new GrowManager();
-        } else if (ExhaustionBehavior.FAIL.equals(exhaustionBehavior)) {
-            if (BorrowType.NULL.equals(config.borrowType)) {
+        } else if (ExhaustionPolicy.FAIL.equals(exhaustionPolicy)) {
+            if (BorrowPolicy.NULL.equals(config.borrowPolicy)) {
                 throw new IllegalStateException("Using the NULL borrow type with the FAIL exhaustion behavior is pointless.");
             } else if (config.maxIdle == 0) {
                 throw new IllegalStateException("Using the FAIL exhaustion behavior with a max of zero idle objects is pointless.");
             }
             manager = new FailManager();
         } else {
-            throw new IllegalStateException("No clue what this exhaustion behavior is: " + exhaustionBehavior);
+            throw new IllegalStateException("No clue what this exhaustion behavior is: " + exhaustionPolicy);
         }
 
         final int maxActive = config.maxActive;
         if (maxActive > 0) {
-            if (TrackingType.NULL.equals(config.trackerType)) {
+            if (TrackingPolicy.NULL.equals(config.trackerPolicy)) {
                 throw new IllegalStateException("Using the NULL tracker and limiting pool size is not valid.");
             }
-            final LimitBehavior limitBehavior = config.limitBehavior;
-            if (LimitBehavior.FAIL.equals(limitBehavior)) {
+            final LimitPolicy limitPolicy = config.limitPolicy;
+            if (LimitPolicy.FAIL.equals(limitPolicy)) {
                 manager = new FailLimitManager(manager);
-            } else if (LimitBehavior.WAIT.equals(limitBehavior)) {
+            } else if (LimitPolicy.WAIT.equals(limitPolicy)) {
                 manager = new WaitLimitManager(manager);
                 ((WaitLimitManager)manager).setMaxWaitMillis(config.maxWaitMillis);
             } else {
-                throw new IllegalStateException("No clue what this wait behavior is: " + limitBehavior);
+                throw new IllegalStateException("No clue what this wait behavior is: " + limitPolicy);
             }
             ((ActiveLimitManager)manager).setMaxActive(maxActive);
         }
@@ -383,17 +383,17 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
      */
     private static Tracker getTracker(final FactoryConfig config) {
         final Tracker tracker;
-        final TrackingType trackerType = config.trackerType;
-        if (TrackingType.SIMPLE.equals(trackerType)) {
+        final TrackingPolicy trackerPolicy = config.trackerPolicy;
+        if (TrackingPolicy.SIMPLE.equals(trackerPolicy)) {
             tracker = new SimpleTracker();
-        } else if (TrackingType.NULL.equals(trackerType)) {
+        } else if (TrackingPolicy.NULL.equals(trackerPolicy)) {
             tracker = new NullTracker();
-        } else if (TrackingType.REFERENCE.equals(trackerType)) {
+        } else if (TrackingPolicy.REFERENCE.equals(trackerPolicy)) {
             tracker = new ReferenceTracker();
-        } else if (TrackingType.DEBUG.equals(trackerType)) {
+        } else if (TrackingPolicy.DEBUG.equals(trackerPolicy)) {
             tracker = new DebugTracker();
         } else {
-            throw new IllegalStateException("No clue what this tracking type is: " + trackerType);
+            throw new IllegalStateException("No clue what this tracking type is: " + trackerPolicy);
         }
         return tracker;
     }
@@ -442,8 +442,8 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
      *
      * @return the order in which objects are pooled.
      */
-    public BorrowType getBorrowType() {
-        return borrowType;
+    public BorrowPolicy getBorrowPolicy() {
+        return borrowPolicy;
     }
 
     /**
@@ -451,16 +451,16 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
      *
      * <p>Note: this doesn't mean much if {@link #setMaxIdle(int) maxIdle} is set to zero.</p>
      *
-     * @param borrowType the order in which objects are pooled.
-     * @throws IllegalArgumentException when <code>borrowType</code> is <code>null</code>.
+     * @param borrowPolicy the order in which objects are pooled.
+     * @throws IllegalArgumentException when <code>borrowPolicy</code> is <code>null</code>.
      */
-    public void setBorrowType(final BorrowType borrowType) throws IllegalArgumentException {
-        if (borrowType == null) {
+    public void setBorrowPolicy(final BorrowPolicy borrowPolicy) throws IllegalArgumentException {
+        if (borrowPolicy == null) {
             throw new IllegalArgumentException("borrow type must not be null.");
         }
         synchronized (lock){
             config = null;
-            this.borrowType = borrowType;
+            this.borrowPolicy = borrowPolicy;
         }
     }
 
@@ -469,23 +469,23 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
      *
      * @return behavior of the pool when all idle objects have been exhausted.
      */
-    public ExhaustionBehavior getExhaustionBehavior() {
-        return exhaustionBehavior;
+    public ExhaustionPolicy getExhaustionPolicy() {
+        return exhaustionPolicy;
     }
 
     /**
      * Set the behavior for when the pool is exhausted of any idle objects.
      *
-     * @param exhaustionBehavior the desired exhausted behavior of the pool.
-     * @throws IllegalArgumentException when <code>exhaustionBehavior</code> is <code>null</code>.
+     * @param exhaustionPolicy the desired exhausted behavior of the pool.
+     * @throws IllegalArgumentException when <code>exhaustionPolicy</code> is <code>null</code>.
      */
-    public void setExhaustionBehavior(final ExhaustionBehavior exhaustionBehavior) throws IllegalArgumentException {
-        if (exhaustionBehavior == null) {
+    public void setExhaustionPolicy(final ExhaustionPolicy exhaustionPolicy) throws IllegalArgumentException {
+        if (exhaustionPolicy == null) {
             throw new IllegalArgumentException("exhaustion behavior must not be null.");
         }
         synchronized (lock){
             config = null;
-            this.exhaustionBehavior = exhaustionBehavior;
+            this.exhaustionPolicy = exhaustionPolicy;
         }
     }
 
@@ -543,34 +543,34 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
      * @return the behavior of the pool when the limit of active objects has been reached.
      * @see #getMaxWaitMillis()
      */
-    public LimitBehavior getLimitBehavior() {
-        return limitBehavior;
+    public LimitPolicy getLimitPolicy() {
+        return limitPolicy;
     }
 
     /**
      * Set the behavior of when the pool's limit of active objects has been reached.
      *
-     * @param limitBehavior action to take if the pool has an object limit and is exhausted.
-     * @throws IllegalArgumentException when <code>limitBehavior</code> is <code>null</code>.
+     * @param limitPolicy action to take if the pool has an object limit and is exhausted.
+     * @throws IllegalArgumentException when <code>limitPolicy</code> is <code>null</code>.
      * @see #setMaxWaitMillis(int)
      */
-    public void setLimitBehavior(final LimitBehavior limitBehavior) throws IllegalArgumentException {
-        if (limitBehavior == null) {
+    public void setLimitPolicy(final LimitPolicy limitPolicy) throws IllegalArgumentException {
+        if (limitPolicy == null) {
             throw new IllegalArgumentException("limit behavior must not be null.");
         }
         synchronized (lock){
             config = null;
-            this.limitBehavior = limitBehavior;
+            this.limitPolicy = limitPolicy;
         }
     }
 
     /**
-     * Wait time in milliseconds for an object to become available to the pool when the {@link LimitBehavior#WAIT WAIT}
-     * <code>LimitBehavior</code> is used.
+     * Wait time in milliseconds for an object to become available to the pool when the {@link LimitPolicy#WAIT WAIT}
+     * <code>LimitPolicy</code> is used.
      *
      * @return the wait time for an object to become available to the pool.
-     * @see #getLimitBehavior()
-     * @see LimitBehavior#WAIT
+     * @see #getLimitPolicy()
+     * @see LimitPolicy#WAIT
      */
     public int getMaxWaitMillis() {
         return maxWaitMillis;
@@ -578,11 +578,11 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
 
     /**
      * Set the wait time in milliseconds for an object to become available to the pool when it was exhausted.
-     * This has no effect unless the {@link #setLimitBehavior(LimitBehavior) limit behavior}
-     * is set to {@link LimitBehavior#WAIT}.
+     * This has no effect unless the {@link #setLimitPolicy(LimitPolicy) limit behavior}
+     * is set to {@link LimitPolicy#WAIT}.
      *
      * @param maxWaitMillis the milliseconds to wait for an available object in the pool or &lt;= 0 for no limit.
-     * @see #setLimitBehavior(LimitBehavior)
+     * @see #setLimitPolicy(LimitPolicy)
      */
     public void setMaxWaitMillis(final int maxWaitMillis) {
         synchronized (lock){
@@ -596,23 +596,23 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
      *
      * @return Type of tracking for active objects while they are borrowed from the pool.
      */
-    public TrackingType getTrackerType() {
-        return trackerType;
+    public TrackingPolicy getTrackerType() {
+        return trackerPolicy;
     }
 
     /**
      * Set the type of tracking for active objects while they are borrowed from the pool.
      *
-     * @param trackerType type of tracking for active objects.
-     * @throws IllegalArgumentException when <code>trackerType</code> is <code>null</code>.
+     * @param trackerPolicy type of tracking for active objects.
+     * @throws IllegalArgumentException when <code>trackerPolicy</code> is <code>null</code>.
      */
-    public void setTrackerType(final TrackingType trackerType) throws IllegalArgumentException {
-        if (trackerType == null) {
+    public void setTrackerType(final TrackingPolicy trackerPolicy) throws IllegalArgumentException {
+        if (trackerPolicy == null) {
             throw new IllegalArgumentException("tracker type must not be null.");
         }
         synchronized (lock){
             config = null;
-            this.trackerType = trackerType;
+            this.trackerPolicy = trackerPolicy;
         }
     }
 
@@ -717,11 +717,11 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
         // XXX: Add better handling of when this instance is not Serializable
         private final PoolableObjectFactory factory;
 
-        /** @see CompositeObjectPoolFactory#borrowType */
-        private final BorrowType borrowType;
+        /** @see CompositeObjectPoolFactory#borrowPolicy */
+        private final BorrowPolicy borrowPolicy;
 
-        /** @see CompositeObjectPoolFactory#exhaustionBehavior */
-        private final ExhaustionBehavior exhaustionBehavior;
+        /** @see CompositeObjectPoolFactory#exhaustionPolicy */
+        private final ExhaustionPolicy exhaustionPolicy;
 
         /** @see CompositeObjectPoolFactory#maxIdle */
         private final int maxIdle;
@@ -729,14 +729,14 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
         /** @see CompositeObjectPoolFactory#maxActive */
         private final int maxActive;
 
-        /** @see CompositeObjectPoolFactory#limitBehavior */
-        private final LimitBehavior limitBehavior;
+        /** @see CompositeObjectPoolFactory#limitPolicy */
+        private final LimitPolicy limitPolicy;
 
         /** @see CompositeObjectPoolFactory#maxWaitMillis */
         private final int maxWaitMillis;
 
-        /** @see CompositeObjectPoolFactory#trackerType */
-        private final TrackingType trackerType;
+        /** @see CompositeObjectPoolFactory#trackerPolicy */
+        private final TrackingPolicy trackerPolicy;
 
         /** @see CompositeObjectPoolFactory#validateOnReturn */
         private final boolean validateOnReturn;
@@ -751,24 +751,24 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
          * Convenience constructor. This <b>must</b> be called from a synchronized context to be thread-safe.
          */
         FactoryConfig(final CompositeObjectPoolFactory copf) {
-            this(copf.getFactory(), copf.getBorrowType(), copf.getExhaustionBehavior(), copf.getMaxIdle(),
-                    copf.getMaxActive(), copf.getLimitBehavior(), copf.getMaxWaitMillis(), copf.getTrackerType(),
+            this(copf.getFactory(), copf.getBorrowPolicy(), copf.getExhaustionPolicy(), copf.getMaxIdle(),
+                    copf.getMaxActive(), copf.getLimitPolicy(), copf.getMaxWaitMillis(), copf.getTrackerType(),
                     copf.isValidateOnReturn(), copf.getEvictIdleMillis(), copf.getEvictInvalidFrequencyMillis());
         }
 
-        FactoryConfig(final PoolableObjectFactory factory, final BorrowType borrowType,
-                      final ExhaustionBehavior exhaustionBehavior, final int maxIdle, final int maxActive,
-                      final LimitBehavior limitBehavior, final int maxWaitMillis, final TrackingType trackerType,
+        FactoryConfig(final PoolableObjectFactory factory, final BorrowPolicy borrowPolicy,
+                      final ExhaustionPolicy exhaustionPolicy, final int maxIdle, final int maxActive,
+                      final LimitPolicy limitPolicy, final int maxWaitMillis, final TrackingPolicy trackerPolicy,
                       final boolean validateOnReturn, final long evictIdleMillis,
                       final long evictInvalidFrequencyMillis) {
             this.factory = factory;
-            this.borrowType = borrowType;
-            this.exhaustionBehavior = exhaustionBehavior;
+            this.borrowPolicy = borrowPolicy;
+            this.exhaustionPolicy = exhaustionPolicy;
             this.maxIdle = maxIdle;
             this.maxActive = maxActive;
-            this.limitBehavior = limitBehavior;
+            this.limitPolicy = limitPolicy;
             this.maxWaitMillis = maxWaitMillis;
-            this.trackerType = trackerType;
+            this.trackerPolicy = trackerPolicy;
             this.validateOnReturn = validateOnReturn;
             this.evictIdleMillis = evictIdleMillis;
             this.evictInvalidFrequencyMillis = evictInvalidFrequencyMillis;
@@ -778,17 +778,17 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
         public String toString() {
             final StringBuffer sb = new StringBuffer();
             sb.append("factory=").append(factory);
-            sb.append(", borrowType=").append(borrowType);
-            sb.append(", exhaustionBehavior=").append(exhaustionBehavior);
+            sb.append(", borrowPolicy=").append(borrowPolicy);
+            sb.append(", exhaustionPolicy=").append(exhaustionPolicy);
             sb.append(", maxIdle=").append(maxIdle);
             sb.append(", maxActive=").append(maxActive);
             if (maxActive > 0) {
-                sb.append(", limitBehavior=").append(limitBehavior);
-                if (LimitBehavior.WAIT.equals(limitBehavior)) {
+                sb.append(", limitPolicy=").append(limitPolicy);
+                if (LimitPolicy.WAIT.equals(limitPolicy)) {
                     sb.append(", maxWaitMillis=").append(maxWaitMillis);
                 }
             }
-            sb.append(", trackerType=").append(trackerType);
+            sb.append(", trackerPolicy=").append(trackerPolicy);
             sb.append(", validateOnReturn=").append(validateOnReturn);
             if (evictIdleMillis > 0) {
                 sb.append(", evictIdleMillis=").append(evictIdleMillis);

@@ -23,7 +23,7 @@ import java.util.ListIterator;
 /**
  * Neither borrow nor return objects.
  *
- * @see BorrowType#NULL
+ * @see BorrowPolicy#NULL
  * @author Sandy McArthur
  * @since #.#
  * @version $Revision$ $Date$

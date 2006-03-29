@@ -39,26 +39,26 @@ import java.util.LinkedList;
  */
 public class PerformanceTest {
     public static final Object LOCK = new Object();
-    private static final List borrowTypes = Arrays.asList(BorrowType.values());
-    private static final List exhaustionBehaviors = Arrays.asList(ExhaustionBehavior.values());
+    private static final List borrowPolicies = Arrays.asList(BorrowPolicy.values());
+    private static final List exhaustionPolicies = Arrays.asList(ExhaustionPolicy.values());
     private static final List maxIdles = Arrays.asList(new Integer[] {new Integer(-1), new Integer(10)});
     private static final List maxActives = Arrays.asList(new Integer[] {new Integer(-1), new Integer(10)});
-    private static final List limitBehaviors = Arrays.asList(LimitBehavior.values());
+    private static final List limitPolicies = Arrays.asList(LimitPolicy.values());
     private static final List maxWaits = Arrays.asList(new Integer[] {new Integer(-1), new Integer(50)}); // not sure how to use this
-    private static final List trackingTypes = new ArrayList(Arrays.asList(TrackingType.values()));
+    private static final List trackingPolicies = new ArrayList(Arrays.asList(TrackingPolicy.values()));
     private static final List validateOnReturns = Arrays.asList(new Boolean[] {Boolean.FALSE, Boolean.TRUE});
     // evictIdleMillis
     // evictInvalidFrequencyMillis
     static {
-        trackingTypes.remove(TrackingType.DEBUG); // based off of TrackingType.REFERENCE and slower (about 1/5 as fast)
+        trackingPolicies.remove(TrackingPolicy.DEBUG); // based off of TrackingPolicy.REFERENCE and slower (about 1/5 as fast)
     }
 
-    private Iterator borrowIter = borrowTypes.iterator();
-    private Iterator exhaustionIter = exhaustionBehaviors.iterator();
+    private Iterator borrowIter = borrowPolicies.iterator();
+    private Iterator exhaustionIter = exhaustionPolicies.iterator();
     private Iterator maxIdleIter = maxIdles.iterator();
     private Iterator maxActiveIter = maxActives.iterator();
-    private Iterator limitIter = limitBehaviors.iterator();
-    private Iterator trackingIter = trackingTypes.iterator();
+    private Iterator limitIter = limitPolicies.iterator();
+    private Iterator trackingIter = trackingPolicies.iterator();
     private Iterator validateIter = validateOnReturns.iterator();
 
     private PoolableObjectFactory objectFactory = new IntegerFactory();
@@ -73,10 +73,10 @@ public class PerformanceTest {
             validateIter = validateOnReturns.iterator();
 
             if (!trackingIter.hasNext()) {
-                trackingIter = trackingTypes.iterator();
+                trackingIter = trackingPolicies.iterator();
 
                 if (!limitIter.hasNext()) {
-                    limitIter = limitBehaviors.iterator();
+                    limitIter = limitPolicies.iterator();
 
                     if (!maxActiveIter.hasNext()) {
                         maxActiveIter = maxActives.iterator();
@@ -85,23 +85,23 @@ public class PerformanceTest {
                             maxIdleIter = maxIdles.iterator();
 
                             if (!exhaustionIter.hasNext()) {
-                                exhaustionIter = exhaustionBehaviors.iterator();
+                                exhaustionIter = exhaustionPolicies.iterator();
 
                                 if (!borrowIter.hasNext()) {
-                                    borrowIter = borrowTypes.iterator();
+                                    borrowIter = borrowPolicies.iterator();
                                     newCombination = false;
                                 }
-                                poolFactory.setBorrowType((BorrowType)borrowIter.next());
+                                poolFactory.setBorrowPolicy((BorrowPolicy)borrowIter.next());
                             }
-                            poolFactory.setExhaustionBehavior((ExhaustionBehavior)exhaustionIter.next());
+                            poolFactory.setExhaustionPolicy((ExhaustionPolicy)exhaustionIter.next());
                         }
                         poolFactory.setMaxIdle(((Integer)maxIdleIter.next()).intValue());
                     }
                     poolFactory.setMaxActive(((Integer)maxActiveIter.next()).intValue());
                 }
-                poolFactory.setLimitBehavior((LimitBehavior)limitIter.next());
+                poolFactory.setLimitPolicy((LimitPolicy)limitIter.next());
             }
-            poolFactory.setTrackerType((TrackingType)trackingIter.next());
+            poolFactory.setTrackerType((TrackingPolicy)trackingIter.next());
         }
         poolFactory.setValidateOnReturn(((Boolean)validateIter.next()).booleanValue());
 
@@ -493,10 +493,10 @@ public class PerformanceTest {
             maxActive = (Integer)maxActiveIter.next();
             validateOnReturn = (Boolean)validateIter.next();
 
-            compositeFactory.setBorrowType(BorrowType.FIFO);
-            compositeFactory.setExhaustionBehavior(ExhaustionBehavior.GROW);
-            compositeFactory.setLimitBehavior(LimitBehavior.FAIL);
-            compositeFactory.setTrackerType(TrackingType.SIMPLE);
+            compositeFactory.setBorrowPolicy(BorrowPolicy.FIFO);
+            compositeFactory.setExhaustionPolicy(ExhaustionPolicy.GROW);
+            compositeFactory.setLimitPolicy(LimitPolicy.FAIL);
+            compositeFactory.setTrackerType(TrackingPolicy.SIMPLE);
 
             genericConfig.minIdle = 0;
             genericConfig.testOnBorrow = true;

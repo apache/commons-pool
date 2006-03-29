@@ -26,7 +26,7 @@ import java.util.NoSuchElementException;
  * object doesn't become available in the specified amount of time. For this to work all {@link Lender}s must call
  * {@link Object#notifyAll()} on the idle object pool once they've returned an object.
  *
- * @see LimitBehavior#WAIT
+ * @see LimitPolicy#WAIT
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  * @since #.#
