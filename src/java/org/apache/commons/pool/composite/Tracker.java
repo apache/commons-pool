@@ -28,7 +28,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * <p>Implementations must not make any assumptions about nor modify the state of the objects it sees. This is simply
  * a tool for active object accounting.</p>
  *
- * @see TrackingType
+ * @see TrackingPolicy
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  * @since #.#

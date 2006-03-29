@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * A Last In First Out (LIFO) {@link Lender}. 
  *
- * @see BorrowType#LIFO
+ * @see BorrowPolicy#LIFO
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  * @since #.#

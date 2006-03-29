@@ -24,7 +24,7 @@ import java.util.NoSuchElementException;
 /**
  * Throws {@link NoSuchElementException} when the max number of active objects has been reached.
  *
- * @see LimitBehavior#FAIL
+ * @see LimitPolicy#FAIL
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  * @since #.#

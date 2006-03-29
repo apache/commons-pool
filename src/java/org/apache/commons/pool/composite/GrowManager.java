@@ -27,7 +27,7 @@ import java.util.Timer;
  * Whe the idle object pool is exhausted a new new object will be created via
  * {@link PoolableObjectFactory#makeObject()}.
  *
- * @see ExhaustionBehavior#GROW
+ * @see ExhaustionPolicy#GROW
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  * @since #.#

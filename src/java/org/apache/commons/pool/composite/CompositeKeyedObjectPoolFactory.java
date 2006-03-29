@@ -34,10 +34,10 @@ import java.io.Serializable;
  * </p>
  *
  * @see CompositeObjectPoolFactory
- * @see BorrowType
- * @see ExhaustionBehavior
- * @see LimitBehavior
- * @see TrackingType
+ * @see BorrowPolicy
+ * @see ExhaustionPolicy
+ * @see LimitPolicy
+ * @see TrackingPolicy
  * @author Sandy McArthur
  * @since #.#
  * @version $Revision$ $Date$
@@ -201,18 +201,18 @@ public final class CompositeKeyedObjectPoolFactory implements KeyedObjectPoolFac
      *
      * @return the order in which objects are pooled.
      */
-    public BorrowType getBorrowType() {
-        return factory.getBorrowType();
+    public BorrowPolicy getBorrowPolicy() {
+        return factory.getBorrowPolicy();
     }
 
     /**
      * Set the order in which objects are borrowed from the pool.
      *
-     * @param borrowType the order in which objects are pooled.
-     * @throws IllegalArgumentException when <code>borrowType</code> is <code>null</code>.
+     * @param borrowPolicy the order in which objects are pooled.
+     * @throws IllegalArgumentException when <code>borrowPolicy</code> is <code>null</code>.
      */
-    public void setBorrowType(final BorrowType borrowType) throws IllegalArgumentException {
-        factory.setBorrowType(borrowType);
+    public void setBorrowPolicy(final BorrowPolicy borrowPolicy) throws IllegalArgumentException {
+        factory.setBorrowPolicy(borrowPolicy);
     }
 
     /**
@@ -220,18 +220,18 @@ public final class CompositeKeyedObjectPoolFactory implements KeyedObjectPoolFac
      *
      * @return behavior of the pool when all idle objects have been exhausted.
      */
-    public ExhaustionBehavior getExhaustionBehavior() {
-        return factory.getExhaustionBehavior();
+    public ExhaustionPolicy getExhaustionPolicy() {
+        return factory.getExhaustionPolicy();
     }
 
     /**
      * Set the behavior for when the pool is exhausted of any idle objects.
      *
-     * @param exhaustionBehavior the desired exhausted behavior of the pool.
-     * @throws IllegalArgumentException when <code>exhaustionBehavior</code> is <code>null</code>.
+     * @param exhaustionPolicy the desired exhausted behavior of the pool.
+     * @throws IllegalArgumentException when <code>exhaustionPolicy</code> is <code>null</code>.
      */
-    public void setExhaustionBehavior(final ExhaustionBehavior exhaustionBehavior) throws IllegalArgumentException {
-        factory.setExhaustionBehavior(exhaustionBehavior);
+    public void setExhaustionPolicy(final ExhaustionPolicy exhaustionPolicy) throws IllegalArgumentException {
+        factory.setExhaustionPolicy(exhaustionPolicy);
     }
 
     /**
@@ -284,27 +284,27 @@ public final class CompositeKeyedObjectPoolFactory implements KeyedObjectPoolFac
      * @return the behavior of the pool when the limit of active objects has been reached.
      * @see #getMaxWaitMillis()
      */
-    public LimitBehavior getLimitBehavior() {
-        return factory.getLimitBehavior();
+    public LimitPolicy getLimitPolicy() {
+        return factory.getLimitPolicy();
     }
 
     /**
      * Set the behavior of when the pool's limit of active objects has been reached.
      *
-     * @param limitBehavior action to take if the pool has an active object limit and is exhausted.
-     * @throws IllegalArgumentException when <code>limitBehavior</code> is <code>null</code>.
+     * @param limitPolicy action to take if the pool has an active object limit and is exhausted.
+     * @throws IllegalArgumentException when <code>limitPolicy</code> is <code>null</code>.
      * @see #setMaxWaitMillis(int)
      */
-    public void setLimitBehavior(final LimitBehavior limitBehavior) throws IllegalArgumentException {
-        factory.setLimitBehavior(limitBehavior);
+    public void setLimitPolicy(final LimitPolicy limitPolicy) throws IllegalArgumentException {
+        factory.setLimitPolicy(limitPolicy);
     }
 
     /**
-     * Wait time in milliseconds for an object to become available to the pool when the {@link LimitBehavior#WAIT WAIT}
-     * {@link #setLimitBehavior(LimitBehavior) limit behavior} is used.
+     * Wait time in milliseconds for an object to become available to the pool when the {@link LimitPolicy#WAIT WAIT}
+     * {@link #setLimitPolicy(LimitPolicy) limit behavior} is used.
      *
      * @return the wait time for an object to become available to the pool.
-     * @see #getLimitBehavior()
+     * @see #getLimitPolicy()
      */
     public int getMaxWaitMillis() {
         return factory.getMaxWaitMillis();
@@ -312,11 +312,11 @@ public final class CompositeKeyedObjectPoolFactory implements KeyedObjectPoolFac
 
     /**
      * Set the wait time in milliseconds for an object to become available to the pool when it was exhausted.
-     * This has no effect unless the {@link #setLimitBehavior(LimitBehavior) limit behavior}
-     * is set to {@link LimitBehavior#WAIT}.
+     * This has no effect unless the {@link #setLimitPolicy(LimitPolicy) limit behavior}
+     * is set to {@link LimitPolicy#WAIT}.
      *
      * @param maxWaitMillis the milliseconds to wait for an available object in the pool or &lt;= 0 for no limit.
-     * @see #setLimitBehavior(LimitBehavior)
+     * @see #setLimitPolicy(LimitPolicy)
      */
     public void setMaxWaitMillis(final int maxWaitMillis) {
         factory.setMaxWaitMillis(maxWaitMillis);
@@ -327,18 +327,18 @@ public final class CompositeKeyedObjectPoolFactory implements KeyedObjectPoolFac
      *
      * @return Type of tracking for active objects while they are borrowed from the pool.
      */
-    public TrackingType getTrackerType() {
+    public TrackingPolicy getTrackerType() {
         return factory.getTrackerType();
     }
 
     /**
      * Set the type of tracking for active objects while they are borrowed from the pool.
      *
-     * @param trackerType type of tracking for active objects.
-     * @throws IllegalArgumentException when <code>trackerType</code> is <code>null</code>.
+     * @param trackerPolicy type of tracking for active objects.
+     * @throws IllegalArgumentException when <code>trackerPolicy</code> is <code>null</code>.
      */
-    public void setTrackerType(final TrackingType trackerType) throws IllegalArgumentException {
-        factory.setTrackerType(trackerType);
+    public void setTrackerType(final TrackingPolicy trackerPolicy) throws IllegalArgumentException {
+        factory.setTrackerType(trackerPolicy);
     }
 
     /**

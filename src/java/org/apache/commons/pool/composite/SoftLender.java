@@ -21,7 +21,6 @@ import org.apache.commons.pool.ObjectPool;
 import java.io.Serializable;
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
-import java.lang.ref.ReferenceQueue;
 import java.util.Iterator;
 import java.util.ListIterator;
 
@@ -29,8 +28,8 @@ import java.util.ListIterator;
  * Wraps object in a {@link SoftReference} before letting a delegate {@link Lender} add them to the idle object pool.
  * Idle objects that are garbage collected will not be {@link ObjectPool#invalidateObject(Object) invalidated}.  
  *
- * @see BorrowType#SOFT_FIFO
- * @see BorrowType#SOFT_LIFO
+ * @see BorrowPolicy#SOFT_FIFO
+ * @see BorrowPolicy#SOFT_LIFO
  * @author Sandy McArthur
  * @since #.#
  * @version $Revision$ $Date$

@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * A First In First Out (FIFO) {@link Lender}.
  *
- * @see BorrowType#FIFO
+ * @see BorrowPolicy#FIFO
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  * @since #.#

@@ -23,7 +23,7 @@ import java.io.Serializable;
  * trusts the user will properly return an object. If the counter goes negative it throws an
  * {@link IllegalStateException}.
  *
- * @see TrackingType#SIMPLE
+ * @see TrackingPolicy#SIMPLE
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  * @since #.#

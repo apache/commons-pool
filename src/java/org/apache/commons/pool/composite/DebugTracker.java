@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 /**
  * Keeps track of active objects with {@link Reference}s and logs when they are not returned to the pool.
  *
- * @see TrackingType#DEBUG
+ * @see TrackingPolicy#DEBUG
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  * @since #.#

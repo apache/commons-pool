@@ -26,7 +26,7 @@ import java.util.NoSuchElementException;
  * Throws a {@link NoSuchElementException} when the idle pool is exhausted. If you want to add objects to the pool you
  * should call {@link ObjectPool#addObject()}.
  *
- * @see ExhaustionBehavior#FAIL
+ * @see ExhaustionPolicy#FAIL
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  * @since #.#
