@@ -210,8 +210,7 @@ final class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
             if (isOpen()) {
                 manager.returnToPool(obj);
             } else {
-                tracker.borrowed(obj); // pretend it was borrowed so it can be invalidated.
-                invalidateObject(obj);
+                factory.destroyObject(obj);
             }
         }
     }
@@ -232,7 +231,7 @@ final class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
     public Object borrowObject() throws Exception {
         assertOpen();
 
-        return borrowObjectPrivately();
+        return internalBorrowObject();
     }
 
     /**
@@ -243,7 +242,7 @@ final class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
      * @throws Exception if there is an unexpected problem.
      * @see #borrowObject()
      */
-    private Object borrowObjectPrivately() throws Exception {
+    private Object internalBorrowObject() throws Exception {
         final Object obj;
 
         synchronized (pool) {
@@ -333,7 +332,7 @@ final class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
     public void clear() throws Exception, UnsupportedOperationException {
         synchronized (pool) {
             while (pool.size() > 0) {
-                final Object obj = borrowObjectPrivately();
+                final Object obj = internalBorrowObject();
                 invalidateObject(obj);
             }
             if (pool instanceof ArrayList) {

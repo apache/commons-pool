@@ -18,6 +18,7 @@ package org.apache.commons.pool.composite;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+import org.apache.commons.pool.MethodCallPoolableObjectFactory;
 
 /**
  * Tests for {@link InvalidEvictorLender}.
@@ -62,58 +63,42 @@ public class TestInvalidEvictorLender extends TestLender {
 
     public void testInvalidEviction() throws Exception {
         InvalidEvictorLender lender = createLender(50L);
-        final ValidatePoolableObjectFactory vpof = new ValidatePoolableObjectFactory();
-        CompositeObjectPool cop = createPool(vpof, lender);
+        final MethodCallPoolableObjectFactory mcpof = new MethodCallPoolableObjectFactory();
+        CompositeObjectPool cop = createPool(mcpof, lender);
 
         cop.addObject();
         assertEquals(1, cop.getNumIdle());
-        vpof.setValid(false);
+        mcpof.setValid(false);
         Thread.sleep(100L);
         assertEquals(0, cop.getNumIdle());
         cop.close();
 
-        vpof.setValid(true);
+        mcpof.setValid(true);
 
         // Test when InvalidEvictorLender delegates to another EvictorLender
         lender = new InvalidEvictorLender(new IdleEvictorLender(new FifoLender()));
         lender.setValidationFrequencyMillis(50L);
-        cop = createPool(vpof, lender);
+        cop = createPool(mcpof, lender);
 
         cop.addObject();
         assertEquals(1, cop.getNumIdle());
-        vpof.setValid(false);
+        mcpof.setValid(false);
         Thread.sleep(100L);
         assertEquals(0, cop.getNumIdle());
         cop.close();
 
-        vpof.setValid(true);
+        mcpof.setValid(true);
 
         // Test when another EvictorLender delegates to InvalidEvictorLender
         lender = new InvalidEvictorLender(new FifoLender());
         lender.setValidationFrequencyMillis(50L);
-        cop = createPool(vpof, new IdleEvictorLender(lender));
+        cop = createPool(mcpof, new IdleEvictorLender(lender));
 
         cop.addObject();
         assertEquals(1, cop.getNumIdle());
-        vpof.setValid(false);
+        mcpof.setValid(false);
         Thread.sleep(100L);
         assertEquals(0, cop.getNumIdle());
         cop.close();
-    }
-
-    static class ValidatePoolableObjectFactory extends CountingPoolableObjectFactory {
-        private boolean valid = true;
-
-        public boolean validateObject(final Object obj) {
-            return valid;
-        }
-
-        public boolean isValid() {
-            return valid;
-        }
-
-        public void setValid(boolean valid) {
-            this.valid = valid;
-        }
     }
 }

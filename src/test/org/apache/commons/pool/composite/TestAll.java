@@ -48,6 +48,11 @@ public class TestAll extends TestCase {
         suite.addTest(TestSoftLender.suite());
 
         // Managers unit tests
+        suite.addTest(TestFailManager.suite());
+        suite.addTest(TestGrowManager.suite());
+        suite.addTest(TestIdleLimitManager.suite());
+        suite.addTest(TestFailLimitManager.suite());
+        suite.addTest(TestWaitLimitManager.suite());
 
         // Tackers unit tests
         suite.addTest(TestNullTracker.suite());

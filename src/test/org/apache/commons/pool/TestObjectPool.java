@@ -44,11 +44,7 @@ public abstract class TestObjectPool extends TestCase {
     public void testClosedPoolBehavior() throws Exception {
         final ObjectPool pool;
         try {
-            pool = makeEmptyPool(new BasePoolableObjectFactory() {
-                public Object makeObject() throws Exception {
-                    return new Object();
-                }
-            });
+            pool = makeEmptyPool(new MethodCallPoolableObjectFactory());
         } catch (UnsupportedOperationException uoe) {
             return; // test not supported
         }
@@ -100,7 +96,7 @@ public abstract class TestObjectPool extends TestCase {
     private final Integer ONE = new Integer(1);
 
     public void testPOFAddObjectUsage() throws Exception {
-        final FailingPoolableObjectFactory factory = new FailingPoolableObjectFactory();
+        final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
         final ObjectPool pool;
         try {
             pool = makeEmptyPool(factory);
@@ -146,7 +142,7 @@ public abstract class TestObjectPool extends TestCase {
     }
 
     public void testPOFBorrowObjectUsages() throws Exception {
-        final FailingPoolableObjectFactory factory = new FailingPoolableObjectFactory();
+        final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
         final ObjectPool pool;
         try {
             pool = makeEmptyPool(factory);
@@ -211,7 +207,7 @@ public abstract class TestObjectPool extends TestCase {
     }
 
     public void testPOFReturnObjectUsages() throws Exception {
-        final FailingPoolableObjectFactory factory = new FailingPoolableObjectFactory();
+        final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
         final ObjectPool pool;
         try {
             pool = makeEmptyPool(factory);
@@ -255,7 +251,7 @@ public abstract class TestObjectPool extends TestCase {
     }
 
     public void testPOFInvalidateObjectUsages() throws Exception {
-        final FailingPoolableObjectFactory factory = new FailingPoolableObjectFactory();
+        final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
         final ObjectPool pool;
         try {
             pool = makeEmptyPool(factory);
@@ -287,7 +283,7 @@ public abstract class TestObjectPool extends TestCase {
     }
 
     public void testPOFClearUsages() throws Exception {
-        final FailingPoolableObjectFactory factory = new FailingPoolableObjectFactory();
+        final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
         final ObjectPool pool;
         try {
             pool = makeEmptyPool(factory);
@@ -308,7 +304,7 @@ public abstract class TestObjectPool extends TestCase {
     }
 
     public void testPOFCloseUsages() throws Exception {
-        final FailingPoolableObjectFactory factory = new FailingPoolableObjectFactory();
+        final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
         ObjectPool pool;
         try {
             pool = makeEmptyPool(factory);
@@ -344,130 +340,14 @@ public abstract class TestObjectPool extends TestCase {
         }
     }
 
-    private static void reset(final ObjectPool pool, final FailingPoolableObjectFactory factory, final List expectedMethods) throws Exception {
+    private static void reset(final ObjectPool pool, final MethodCallPoolableObjectFactory factory, final List expectedMethods) throws Exception {
         pool.clear();
         clear(factory, expectedMethods);
         factory.reset();
     }
 
-    private static void clear(final FailingPoolableObjectFactory factory, final List expectedMethods) {
+    private static void clear(final MethodCallPoolableObjectFactory factory, final List expectedMethods) {
         factory.getMethodCalls().clear();
         expectedMethods.clear();
-    }
-
-    private static class FailingPoolableObjectFactory implements PoolableObjectFactory {
-        private final List methodCalls = new ArrayList();
-        private int count = 0;
-        private boolean makeObjectFail;
-        private boolean activateObjectFail;
-        private boolean validateObjectFail;
-        private boolean passivateObjectFail;
-        private boolean destroyObjectFail;
-
-        public void reset() {
-            count = 0;
-            getMethodCalls().clear();
-            setMakeObjectFail(false);
-            setActivateObjectFail(false);
-            setValidateObjectFail(false);
-            setPassivateObjectFail(false);
-            setDestroyObjectFail(false);
-        }
-
-        public List getMethodCalls() {
-            return methodCalls;
-        }
-
-        public int getCurrentCount() {
-            return count;
-        }
-
-        public void setCurrentCount(final int count) {
-            this.count = count;
-        }
-
-        public boolean isMakeObjectFail() {
-            return makeObjectFail;
-        }
-
-        public void setMakeObjectFail(boolean makeObjectFail) {
-            this.makeObjectFail = makeObjectFail;
-        }
-
-        public boolean isDestroyObjectFail() {
-            return destroyObjectFail;
-        }
-
-        public void setDestroyObjectFail(boolean destroyObjectFail) {
-            this.destroyObjectFail = destroyObjectFail;
-        }
-
-        public boolean isValidateObjectFail() {
-            return validateObjectFail;
-        }
-
-        public void setValidateObjectFail(boolean validateObjectFail) {
-            this.validateObjectFail = validateObjectFail;
-        }
-
-        public boolean isActivateObjectFail() {
-            return activateObjectFail;
-        }
-
-        public void setActivateObjectFail(boolean activateObjectFail) {
-            this.activateObjectFail = activateObjectFail;
-        }
-
-        public boolean isPassivateObjectFail() {
-            return passivateObjectFail;
-        }
-
-        public void setPassivateObjectFail(boolean passivateObjectFail) {
-            this.passivateObjectFail = passivateObjectFail;
-        }
-
-        public Object makeObject() throws Exception {
-            final MethodCall call = new MethodCall("makeObject");
-            methodCalls.add(call);
-            int count = this.count++;
-            if (makeObjectFail) {
-                throw new PrivateException("makeObject");
-            }
-            final Integer obj = new Integer(count);
-            call.setReturned(obj);
-            return obj;
-        }
-
-        public void activateObject(final Object obj) throws Exception {
-            methodCalls.add(new MethodCall("activateObject", obj));
-            if (activateObjectFail) {
-                throw new PrivateException("activateObject");
-            }
-        }
-
-        public boolean validateObject(final Object obj) {
-            final MethodCall call = new MethodCall("validateObject", obj);
-            methodCalls.add(call);
-            if (validateObjectFail) {
-                throw new PrivateException("validateObject");
-            }
-            final boolean r = true;
-            call.returned(Boolean.valueOf(r));
-            return r;
-        }
-
-        public void passivateObject(final Object obj) throws Exception {
-            methodCalls.add(new MethodCall("passivateObject", obj));
-            if (passivateObjectFail) {
-                throw new PrivateException("passivateObject");
-            }
-        }
-
-        public void destroyObject(final Object obj) throws Exception {
-            methodCalls.add(new MethodCall("destroyObject", obj));
-            if (destroyObjectFail) {
-                throw new PrivateException("destroyObject");
-            }
-        }
     }
 }

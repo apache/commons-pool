@@ -59,7 +59,7 @@ public class TestReferenceTracker extends TestTracker {
     public void testLostBorrowed() {
         final Tracker tracker = createTracker();
 
-        Object obj = new Object();
+        Object obj = new String("This stack trace to stderr is expected by the unit tests.");
         tracker.borrowed(obj);
         assertEquals(1, tracker.getBorrowed());
         obj = null;

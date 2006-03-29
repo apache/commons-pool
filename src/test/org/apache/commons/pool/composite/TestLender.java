@@ -17,7 +17,7 @@
 package org.apache.commons.pool.composite;
 
 import junit.framework.TestCase;
-import org.apache.commons.pool.BasePoolableObjectFactory;
+import org.apache.commons.pool.MethodCallPoolableObjectFactory;
 import org.apache.commons.pool.PoolableObjectFactory;
 
 import java.util.List;
@@ -30,7 +30,7 @@ import java.util.ListIterator;
  * @version $Revision$ $Date$
  */
 public abstract class TestLender extends TestCase {
-    private CompositeObjectPoolFactory factory = new CompositeObjectPoolFactory(new CountingPoolableObjectFactory());
+    private CompositeObjectPoolFactory factory = new CompositeObjectPoolFactory(new MethodCallPoolableObjectFactory());
 
     /**
      * Constructs a test case with the given name.
@@ -110,7 +110,7 @@ public abstract class TestLender extends TestCase {
     }
 
     protected final CompositeObjectPool createPool(final Lender lender) {
-        return createPool(new CountingPoolableObjectFactory(), lender);
+        return createPool(new MethodCallPoolableObjectFactory(), lender);
     }
 
     protected final CompositeObjectPool createPool(final PoolableObjectFactory pof, final Lender lender) {
@@ -118,14 +118,7 @@ public abstract class TestLender extends TestCase {
     }
 
     protected final CompositeObjectPool createPool(final List list, final Lender lender) {
-        return new CompositeObjectPool(new CountingPoolableObjectFactory(), list,
+        return new CompositeObjectPool(new MethodCallPoolableObjectFactory(), list,
                 new GrowManager(), lender, new SimpleTracker(), false, null);
-    }
-
-    protected static class CountingPoolableObjectFactory extends BasePoolableObjectFactory {
-        private int count = 0;
-        public Object makeObject() throws Exception {
-            return new Integer(count++);
-        }
     }
 }

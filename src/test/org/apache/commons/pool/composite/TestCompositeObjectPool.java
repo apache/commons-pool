@@ -20,6 +20,8 @@ import org.apache.commons.pool.BasePoolableObjectFactory;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.TestObjectPool;
+import org.apache.commons.pool.PrivateException;
+import org.apache.commons.pool.MethodCallPoolableObjectFactory;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -491,11 +493,8 @@ public class TestCompositeObjectPool extends TestObjectPool {
      * {@link PoolableObjectFactory#makeObject()}.
      */
     public void testExceptionOnNewObject() throws Exception {
-        PoolableObjectFactory pof = new BasePoolableObjectFactory() {
-            public Object makeObject() throws Exception {
-                throw new PrivateException("Cannot make new objects.");
-            }
-        };
+        MethodCallPoolableObjectFactory pof = new MethodCallPoolableObjectFactory();
+        pof.setMakeObjectFail(true);
         pool = new CompositeObjectPool(pof, new GrowManager(), new SoftLender(new FifoLender()), new SimpleTracker(), false);
 
         try {
@@ -514,11 +513,8 @@ public class TestCompositeObjectPool extends TestObjectPool {
     }
 
     public void testExceptionOnActivateObject() throws Exception {
-        PoolableObjectFactory pof = new IntegerFactory() {
-            public void activateObject(Object obj) throws Exception {
-                throw new PrivateException("Cannot activate objects.");
-            }
-        };
+        MethodCallPoolableObjectFactory pof = new MethodCallPoolableObjectFactory();
+        pof.setActivateObjectFail(true);
         pool = new CompositeObjectPool(pof, new GrowManager(), new FifoLender(), new SimpleTracker(), false);
 
         Integer zero = (Integer)pool.borrowObject();
@@ -537,11 +533,8 @@ public class TestCompositeObjectPool extends TestObjectPool {
     }
 
     public void testExceptionOnValidateObject() throws Exception {
-        PoolableObjectFactory pof = new IntegerFactory() {
-            public boolean validateObject(final Object obj) {
-                throw new PrivateException("Cannot validate objects.");
-            }
-        };
+        MethodCallPoolableObjectFactory pof = new MethodCallPoolableObjectFactory();
+        pof.setValidateObjectFail(true);
         pool = new CompositeObjectPool(pof, new GrowManager(), new FifoLender(), new SimpleTracker(), false);
 
         Integer zero = (Integer)pool.borrowObject();
@@ -575,11 +568,8 @@ public class TestCompositeObjectPool extends TestObjectPool {
     }
 
     public void testExceptionOnDestroyObject() throws Exception {
-        PoolableObjectFactory pof = new IntegerFactory() {
-            public void destroyObject(final Object obj) throws Exception {
-                throw new PrivateException("Cannot destroy objects.");
-            }
-        };
+        MethodCallPoolableObjectFactory pof = new MethodCallPoolableObjectFactory();
+        pof.setDestroyObjectFail(true);
         pool = new CompositeObjectPool(pof, new GrowManager(), new FifoLender(), new SimpleTracker(), false);
 
         Integer zero = (Integer)pool.borrowObject();
@@ -622,15 +612,6 @@ public class TestCompositeObjectPool extends TestObjectPool {
 
         public void setEvenValid(final boolean evenValid) {
             this.evenValid = evenValid;
-        }
-    }
-
-    /**
-     * An exception that only is thrown by this test.
-     */
-    private static class PrivateException extends RuntimeException {
-        PrivateException(final String message) {
-            super(message);
         }
     }
 }

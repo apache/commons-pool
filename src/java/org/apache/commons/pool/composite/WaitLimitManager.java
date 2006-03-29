@@ -56,7 +56,7 @@ final class WaitLimitManager extends ActiveLimitManager implements Serializable 
         final long endTime = maxWaitMillis > 0 ? System.currentTimeMillis() + maxWaitMillis : Long.MAX_VALUE;
         while (maxWaitMillis <= 0 || endTime > System.currentTimeMillis()) {
             if (Thread.currentThread().isInterrupted()) {
-                throw new InterruptedException();
+                throw new InterruptedException("Interruption while waiting for an available object.");
             }
             if (objectPool.getNumActive() < getMaxActive()) {
                 return super.nextFromPool();
