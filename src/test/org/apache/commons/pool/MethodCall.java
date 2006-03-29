@@ -26,24 +26,24 @@ import java.util.Arrays;
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  */
-class MethodCall {
+public class MethodCall {
     private final String name;
     private final List params;
     private Object returned;
 
-    MethodCall(final String name) {
+    public MethodCall(final String name) {
         this(name, null);
     }
 
-    MethodCall(final String name, final Object param) {
+    public MethodCall(final String name, final Object param) {
         this(name, Collections.singletonList(param));
     }
 
-    MethodCall(final String name, final Object param1, final Object param2) {
+    public MethodCall(final String name, final Object param1, final Object param2) {
         this(name, Arrays.asList(new Object[] {param1, param2}));
     }
 
-    MethodCall(final String name, final List params) {
+    public MethodCall(final String name, final List params) {
         if (name == null) {
             throw new IllegalArgumentException("name must not be null.");
         }

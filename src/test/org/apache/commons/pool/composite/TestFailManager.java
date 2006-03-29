@@ -14,13 +14,30 @@
  * limitations under the License.
  */
 
-package org.apache.commons.pool;
+package org.apache.commons.pool.composite;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 /**
- * An exception that only is thrown by these tests.
+ * Unit tests for {@link FailManager}.
+ *
+ * @author Sandy McArthur
+ * @version $Revision$ $Date$
  */
-public class PrivateException extends RuntimeException {
-    public PrivateException(final String message) {
-        super(message);
+public class TestFailManager extends TestManager {
+    /**
+     * Constructs a test case with the given name.
+     */
+    public TestFailManager(final String name) {
+        super(name);
+    }
+
+    public static Test suite() {
+        return new TestSuite(TestFailManager.class);
+    }
+
+    protected Manager createManager() {
+        return new FailManager();
     }
 }

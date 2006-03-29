@@ -14,13 +14,23 @@
  * limitations under the License.
  */
 
-package org.apache.commons.pool;
+package org.apache.commons.pool.composite;
 
 /**
- * An exception that only is thrown by these tests.
+ * TODO: Fix JavaDoc
+ *
+ * @author sandymac
+ * @since Mar 29, 2006
+ * @version $Revision$ $Date$
  */
-public class PrivateException extends RuntimeException {
-    public PrivateException(final String message) {
-        super(message);
+public abstract class TestDelegateManager extends TestManager {
+    public TestDelegateManager(final String name) {
+        super(name);
     }
+
+    protected Manager createManager() {
+        return createManager(new GrowManager());
+    }
+
+    protected abstract Manager createManager(Manager delegate);
 }
