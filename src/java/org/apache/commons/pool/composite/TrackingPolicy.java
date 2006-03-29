@@ -21,7 +21,7 @@ import java.io.Serializable;
 import java.lang.ref.WeakReference;
 
 /**
- * Specifies how active objects are tracked while they are out of the pool.
+ * Configures how active objects are tracked while they are borrowed from the pool.
  *
  * @see CompositeObjectPoolFactory#setTrackerType(TrackingPolicy)
  * @see CompositeKeyedObjectPoolFactory#setTrackerType(TrackingPolicy)
@@ -29,6 +29,7 @@ import java.lang.ref.WeakReference;
  * @since #.#
  * @version $Revision$ $Date$
  */
+/* XXX For Pool 3: public enum TrackingPolicy {NULL, SIMPLE, REFERENCE, DEBUG} but keep existing Javadoc. */
 public final class TrackingPolicy implements Serializable {
 
     private static final long serialVersionUID = 181851949909846032L;

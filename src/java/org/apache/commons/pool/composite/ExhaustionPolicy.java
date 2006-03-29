@@ -24,7 +24,7 @@ import java.io.Serializable;
 import java.util.NoSuchElementException;
 
 /**
- * Specifies the behavior of the pool when the pool is out of idle objects.
+ * Configures the behavior of the pool when the pool is out of idle objects.
  *
  * @see CompositeObjectPoolFactory#setExhaustionPolicy(ExhaustionPolicy)
  * @see CompositeKeyedObjectPoolFactory#setExhaustionPolicy(ExhaustionPolicy)
@@ -32,6 +32,7 @@ import java.util.NoSuchElementException;
  * @since #.#
  * @version $Revision$ $Date$
  */
+/* XXX For Pool 3: public enum ExhaustionPolicy {GROW, FAIL} but keep existing Javadoc. */
 public final class ExhaustionPolicy implements Serializable {
 
     private static final long serialVersionUID = -4895490364329810018L;

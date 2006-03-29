@@ -23,7 +23,7 @@ import java.io.Serializable;
 import java.lang.ref.SoftReference;
 
 /**
- * Specifies the order in which objects are borrowed and returned to the pool.
+ * Configures how objects are borrowed and returned to the pool.
  *
  * @see CompositeObjectPoolFactory#setBorrowPolicy(BorrowPolicy)
  * @see CompositeKeyedObjectPoolFactory#setBorrowPolicy(BorrowPolicy)
@@ -31,6 +31,7 @@ import java.lang.ref.SoftReference;
  * @since #.#
  * @version $Revision$ $Date$
  */
+/* XXX For Pool 3: public enum BorrowPolicy {FIFO, LIFO, SOFT_FIFO, SOFT_LIFO, NULL} but keep existing Javadoc. */
 public final class BorrowPolicy implements Serializable {
 
     private static final long serialVersionUID = 3357921765798594792L;
