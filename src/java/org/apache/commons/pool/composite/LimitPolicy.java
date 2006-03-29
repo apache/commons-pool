@@ -24,7 +24,7 @@ import java.io.Serializable;
 import java.util.NoSuchElementException;
 
 /**
- * Specifies the behavior of when the max number of active objects has been reached.
+ * Configures the behavior of the pool when there is a limit on the number of concurrently borrowed objects.
  *
  * @see CompositeObjectPoolFactory#setLimitPolicy(LimitPolicy)
  * @see CompositeKeyedObjectPoolFactory#setLimitPolicy(LimitPolicy)
@@ -32,6 +32,7 @@ import java.util.NoSuchElementException;
  * @since #.#
  * @version $Revision$ $Date$
  */
+/* XXX For Pool 3: public enum LimitPolicy {FAIL, WAIT} but keep existing Javadoc. */
 public final class LimitPolicy implements Serializable {
 
     private static final long serialVersionUID = -4325661345028907604L;
