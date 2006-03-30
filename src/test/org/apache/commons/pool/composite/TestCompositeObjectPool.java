@@ -66,6 +66,57 @@ public class TestCompositeObjectPool extends TestObjectPool {
         return copf.createPool();
     }
 
+    public void testConstructors() {
+        try {
+            new CompositeObjectPool(null, new GrowManager(), new FifoLender(), new SimpleTracker(), false);
+            fail("IllegalArgumentException expected on null PoolableObjectFactory.");
+        } catch (IllegalArgumentException iae) {
+            // expected
+        }
+
+        try {
+            new CompositeObjectPool(new MethodCallPoolableObjectFactory(), null, new FifoLender(), new SimpleTracker(), false);
+            fail("IllegalArgumentException expected on null Manager.");
+        } catch (IllegalArgumentException iae) {
+            // expected
+        }
+
+        try {
+            new CompositeObjectPool(new MethodCallPoolableObjectFactory(), new GrowManager(), null, new SimpleTracker(), false);
+            fail("IllegalArgumentException expected on null Lender.");
+        } catch (IllegalArgumentException iae) {
+            // expected
+        }
+
+        try {
+            new CompositeObjectPool(new MethodCallPoolableObjectFactory(), new GrowManager(), new FifoLender(), null, false);
+            fail("IllegalArgumentException expected on null Tracker.");
+        } catch (IllegalArgumentException iae) {
+            // expected
+        }
+
+        try {
+            new CompositeObjectPool(new MethodCallPoolableObjectFactory(), null, new GrowManager(), new FifoLender(), new SimpleTracker(), false, null);
+            fail("IllegalArgumentException expected on null List.");
+        } catch (IllegalArgumentException iae) {
+            // expected
+        }
+    }
+
+    public void testSetFactory() throws Exception {
+        super.testSetFactory();
+        final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
+        final CompositeObjectPoolFactory copf = new CompositeObjectPoolFactory(factory);
+        final CompositeObjectPool pool = (CompositeObjectPool)copf.createPool();
+        pool.setFactory(factory);
+    }
+
+    public void testToString() {
+        super.testToString();
+        final ObjectPool pool = new CompositeObjectPool(new MethodCallPoolableObjectFactory(), new FailManager(), new FifoLender(), new DebugTracker(), false);
+        pool.toString();
+    }
+
     // Test Managers --------------------------------------
 
     /**
