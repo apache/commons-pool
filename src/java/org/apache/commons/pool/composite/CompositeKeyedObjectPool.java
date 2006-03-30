@@ -440,28 +440,6 @@ final class CompositeKeyedObjectPool implements KeyedObjectPool, Cloneable, Seri
     }
 
     /**
-     * Creates a new keyed object pool with the same settings as this one. The new instance will not contian any
-     * existing idle objects nor should you return active objects to it.
-     *
-     * @return a new keyed object pool with the same settings.
-     */
-    public Object clone() throws CloneNotSupportedException {
-        if (!getClass().equals(CompositeKeyedObjectPool.class)) {
-            throw new CloneNotSupportedException("Subclasses must not call super.clone()");
-        }
-        if (poolFactory instanceof CompositeObjectPoolFactory) {
-            final PoolableObjectFactory pof = ((CompositeObjectPoolFactory)poolFactory).getFactory();
-            if (pof instanceof KeyedPoolableObjectFactoryAdapter) {
-                final KeyedPoolableObjectFactory kopf = ((KeyedPoolableObjectFactoryAdapter)pof).getDelegate();
-                final CompositeObjectPoolFactory opf = (CompositeObjectPoolFactory)((CompositeObjectPoolFactory)poolFactory).clone();
-                opf.setFactory(new KeyedPoolableObjectFactoryAdapter(kopf));
-                return new CompositeKeyedObjectPool(opf);
-            }
-        }
-        return new CompositeKeyedObjectPool(poolFactory);
-    }
-
-    /**
      * The {@link ThreadLocal} keys is not serializable and final, must create a new instance for this to be correct.
      */
     private Object readResolve() throws ObjectStreamException {

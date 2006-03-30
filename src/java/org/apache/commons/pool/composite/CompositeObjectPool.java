@@ -441,17 +441,4 @@ final class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
         sb.append('}');
         return sb.toString();
     }
-
-    /**
-     * Create a new pool with the same settings. Active or Idle objects are not shared with the new pool.
-     *
-     * @return a new {@link CompositeObjectPool} with the same configuration.
-     * @throws CloneNotSupportedException when this pool was contstucted without a factoryConfig.
-     */
-    public Object clone() throws CloneNotSupportedException {
-        if (factoryConfig == null) {
-            throw new CloneNotSupportedException("Cloning not supported without a factoryConfig.");
-        }
-        return CompositeObjectPoolFactory.createPool(factoryConfig);
-    }
 }
