@@ -694,7 +694,13 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
      * @throws CloneNotSupportedException if {@link Object#clone()} does.
      */
     public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+        final CompositeObjectPoolFactory copf = (CompositeObjectPoolFactory)super.clone();
+        // Cannot share KeyedPoolableObjectFactoryAdapter between instances because of ThreadLocal usage
+        if (copf.factory instanceof KeyedPoolableObjectFactoryAdapter) {
+            KeyedPoolableObjectFactoryAdapter kpofa = (KeyedPoolableObjectFactoryAdapter)copf.factory;
+            copf.factory = new KeyedPoolableObjectFactoryAdapter(kpofa.getDelegate());
+        }
+        return copf;
     }
 
     public String toString() {
