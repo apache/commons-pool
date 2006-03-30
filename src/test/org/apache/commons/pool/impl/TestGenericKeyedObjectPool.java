@@ -25,12 +25,13 @@ import junit.framework.TestSuite;
 import org.apache.commons.pool.KeyedObjectPool;
 import org.apache.commons.pool.KeyedPoolableObjectFactory;
 import org.apache.commons.pool.TestKeyedObjectPool;
+import org.apache.commons.pool.TestBaseKeyedObjectPool;
 
 /**
  * @author Rodney Waldhoff
  * @version $Revision$ $Date$
  */
-public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
+public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     public TestGenericKeyedObjectPool(String testName) {
         super(testName);
     }
@@ -539,7 +540,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         try { Thread.sleep(150L); } catch(Exception e) { }
         assertTrue("Should be 10 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 10);
     }
-    
+
     public void testMinIdleNoPopulateImmediately() throws Exception {
         pool.setMaxIdle(500);
         pool.setMinIdle(5);
@@ -552,15 +553,15 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
         //Generate a random key
         String key = "A";
-        
+
         pool.preparePool(key, false);
-        
+
         assertTrue("Should be 0 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 0);
-        
+
         try { Thread.sleep(1500L); } catch(Exception e) { }
         assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
     }
-    
+
     public void testMinIdleNoPreparePool() throws Exception {
         pool.setMaxIdle(500);
         pool.setMinIdle(5);
@@ -583,7 +584,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         try { Thread.sleep(150L); } catch(Exception e) { }
         assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
     }
-    
+
     public void testFIFO() throws Exception {
         final Object key = "key";
         pool.addObject(key); // "key0"
