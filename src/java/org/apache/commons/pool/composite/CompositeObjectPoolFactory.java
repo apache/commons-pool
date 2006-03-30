@@ -125,9 +125,6 @@ import java.util.List;
  *  <li>Deserialized {@link ObjectPool}s produced by this factory will not retain their idle objects. Active objects
  *      borrowed from the serialized {@link ObjectPool} must not be returned to the deserialized {@link ObjectPool}.
  *      All other behavior and settings of the {@link ObjectPool} will be maintained.</li>
- *  <li>{@link ObjectPool}s created by this factory are {@link Cloneable}. Cloned instances do not retain the idle
- *      objects of the original instance and any active objects borrowed from the original must not be returned to the
- *      new clone.</li>
  * </ul>
  * </p>
  *
