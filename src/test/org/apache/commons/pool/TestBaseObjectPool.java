@@ -71,6 +71,9 @@ public class TestBaseObjectPool extends TestObjectPool {
 
     // tests
     public void testUnsupportedOperations() throws Exception {
+        if (!getClass().equals(TestBaseObjectPool.class)) {
+            return; // skip redundant tests
+        }
         ObjectPool pool = new BaseObjectPool() { 
             public Object borrowObject() throws Exception {
                 return null;

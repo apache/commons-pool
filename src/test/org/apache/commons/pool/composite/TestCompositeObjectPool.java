@@ -52,9 +52,11 @@ public class TestCompositeObjectPool extends TestObjectPool {
     }
 
     public void setUp() throws Exception {
+        super.setUp();
     }
 
     public void tearDown() throws Exception {
+        super.tearDown();
         if (pool != null) {
             pool.close();
             pool = null;

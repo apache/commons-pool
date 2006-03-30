@@ -34,7 +34,7 @@ public class TestWaitLimitManager extends TestActiveLimitManager {
      * Because {@link System#currentTimeMillis()} or {@link Object#wait} aren't perfectly granular,
      * allow a little leeway.
      */
-    private static long FUZZ = 5L;
+    private static long FUZZ = 10L;
 
     /**
      * Constructs a test case with the given name.

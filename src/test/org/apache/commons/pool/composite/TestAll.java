@@ -62,7 +62,8 @@ public class TestAll extends TestCase {
 
         // Remaining unit tests
         suite.addTest(TestCompositeObjectPool.suite());
-        //suite.addTest(TestCompositeKeyedObjectPool.suite());
+        suite.addTest(TestCompositeKeyedObjectPool.suite());
+        suite.addTest(TestCompositeKeyedObjectPool2.suite());
         //suite.addTest(TestCompositeObjectPoolFactory.suite());
         //suite.addTest(TestCompositeKeyedObjectPoolFactory.suite());
         return suite;
