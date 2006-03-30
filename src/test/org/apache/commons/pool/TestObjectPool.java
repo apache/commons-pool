@@ -330,6 +330,31 @@ public abstract class TestObjectPool extends TestCase {
         pool.close();
     }
 
+    public void testSetFactory() throws Exception {
+        ObjectPool pool;
+        try {
+            pool = makeEmptyPool(new MethodCallPoolableObjectFactory());
+        } catch (UnsupportedOperationException uoe) {
+            return; // test not supported
+        }
+        final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
+        try {
+            pool.setFactory(factory);
+        } catch (UnsupportedOperationException uoe) {
+            return;
+        }
+    }
+
+    public void testToString() {
+        ObjectPool pool;
+        try {
+            pool = makeEmptyPool(new MethodCallPoolableObjectFactory());
+        } catch (UnsupportedOperationException uoe) {
+            return; // test not supported
+        }
+        pool.toString();
+    }
+
     static void removeDestroyObjectCall(List calls) {
         Iterator iter = calls.iterator();
         while (iter.hasNext()) {
