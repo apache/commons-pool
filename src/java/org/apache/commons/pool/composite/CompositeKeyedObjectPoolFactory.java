@@ -334,11 +334,11 @@ public final class CompositeKeyedObjectPoolFactory implements KeyedObjectPoolFac
     /**
      * Set the type of tracking for active objects while they are borrowed from the pool.
      *
-     * @param trackerPolicy type of tracking for active objects.
-     * @throws IllegalArgumentException when <code>trackerPolicy</code> is <code>null</code>.
+     * @param trackingPolicy type of tracking for active objects.
+     * @throws IllegalArgumentException when <code>trackingPolicy</code> is <code>null</code>.
      */
-    public void setTrackingPolicy(final TrackingPolicy trackerPolicy) throws IllegalArgumentException {
-        factory.setTrackingPolicy(trackerPolicy);
+    public void setTrackingPolicy(final TrackingPolicy trackingPolicy) throws IllegalArgumentException {
+        factory.setTrackingPolicy(trackingPolicy);
     }
 
     /**

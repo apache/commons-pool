@@ -198,7 +198,7 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
     /**
      * Configured {@link Tracker} type.
      */
-    private TrackingPolicy trackerPolicy = TrackingPolicy.SIMPLE;
+    private TrackingPolicy trackingPolicy = TrackingPolicy.SIMPLE;
 
     /**
      * Should the object pool validate borrowed objects when they are returned.
@@ -352,7 +352,7 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
 
         final int maxActive = config.maxActive;
         if (maxActive > 0) {
-            if (TrackingPolicy.NULL.equals(config.trackerPolicy)) {
+            if (TrackingPolicy.NULL.equals(config.trackingPolicy)) {
                 throw new IllegalStateException("Using the NULL tracker and limiting pool size is not valid.");
             }
             final LimitPolicy limitPolicy = config.limitPolicy;
@@ -382,17 +382,17 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
      */
     private static Tracker getTracker(final FactoryConfig config) {
         final Tracker tracker;
-        final TrackingPolicy trackerPolicy = config.trackerPolicy;
-        if (TrackingPolicy.SIMPLE.equals(trackerPolicy)) {
+        final TrackingPolicy trackingPolicy = config.trackingPolicy;
+        if (TrackingPolicy.SIMPLE.equals(trackingPolicy)) {
             tracker = new SimpleTracker();
-        } else if (TrackingPolicy.NULL.equals(trackerPolicy)) {
+        } else if (TrackingPolicy.NULL.equals(trackingPolicy)) {
             tracker = new NullTracker();
-        } else if (TrackingPolicy.REFERENCE.equals(trackerPolicy)) {
+        } else if (TrackingPolicy.REFERENCE.equals(trackingPolicy)) {
             tracker = new ReferenceTracker();
-        } else if (TrackingPolicy.DEBUG.equals(trackerPolicy)) {
+        } else if (TrackingPolicy.DEBUG.equals(trackingPolicy)) {
             tracker = new DebugTracker();
         } else {
-            throw new IllegalStateException("No clue what this tracking type is: " + trackerPolicy);
+            throw new IllegalStateException("No clue what this tracking type is: " + trackingPolicy);
         }
         return tracker;
     }
@@ -596,22 +596,22 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
      * @return Type of tracking for active objects while they are borrowed from the pool.
      */
     public TrackingPolicy getTrackingPolicy() {
-        return trackerPolicy;
+        return trackingPolicy;
     }
 
     /**
      * Set the type of tracking for active objects while they are borrowed from the pool.
      *
-     * @param trackerPolicy type of tracking for active objects.
-     * @throws IllegalArgumentException when <code>trackerPolicy</code> is <code>null</code>.
+     * @param trackingPolicy type of tracking for active objects.
+     * @throws IllegalArgumentException when <code>trackingPolicy</code> is <code>null</code>.
      */
-    public void setTrackingPolicy(final TrackingPolicy trackerPolicy) throws IllegalArgumentException {
-        if (trackerPolicy == null) {
+    public void setTrackingPolicy(final TrackingPolicy trackingPolicy) throws IllegalArgumentException {
+        if (trackingPolicy == null) {
             throw new IllegalArgumentException("tracker type must not be null.");
         }
         synchronized (lock){
             config = null;
-            this.trackerPolicy = trackerPolicy;
+            this.trackingPolicy = trackingPolicy;
         }
     }
 
@@ -740,8 +740,8 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
         /** @see CompositeObjectPoolFactory#maxWaitMillis */
         private final int maxWaitMillis;
 
-        /** @see CompositeObjectPoolFactory#trackerPolicy */
-        private final TrackingPolicy trackerPolicy;
+        /** @see CompositeObjectPoolFactory#trackingPolicy */
+        private final TrackingPolicy trackingPolicy;
 
         /** @see CompositeObjectPoolFactory#validateOnReturn */
         private final boolean validateOnReturn;
@@ -763,7 +763,7 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
 
         FactoryConfig(final PoolableObjectFactory factory, final BorrowPolicy borrowPolicy,
                       final ExhaustionPolicy exhaustionPolicy, final int maxIdle, final int maxActive,
-                      final LimitPolicy limitPolicy, final int maxWaitMillis, final TrackingPolicy trackerPolicy,
+                      final LimitPolicy limitPolicy, final int maxWaitMillis, final TrackingPolicy trackingPolicy,
                       final boolean validateOnReturn, final long evictIdleMillis,
                       final long evictInvalidFrequencyMillis) {
             this.factory = factory;
@@ -773,7 +773,7 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
             this.maxActive = maxActive;
             this.limitPolicy = limitPolicy;
             this.maxWaitMillis = maxWaitMillis;
-            this.trackerPolicy = trackerPolicy;
+            this.trackingPolicy = trackingPolicy;
             this.validateOnReturn = validateOnReturn;
             this.evictIdleMillis = evictIdleMillis;
             this.evictInvalidFrequencyMillis = evictInvalidFrequencyMillis;
@@ -793,7 +793,7 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
                     sb.append(", maxWaitMillis=").append(maxWaitMillis);
                 }
             }
-            sb.append(", trackerPolicy=").append(trackerPolicy);
+            sb.append(", trackingPolicy=").append(trackingPolicy);
             sb.append(", validateOnReturn=").append(validateOnReturn);
             if (evictIdleMillis > 0) {
                 sb.append(", evictIdleMillis=").append(evictIdleMillis);

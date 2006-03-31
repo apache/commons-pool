@@ -101,7 +101,7 @@ public class PerformanceTest {
                 }
                 poolFactory.setLimitPolicy((LimitPolicy)limitIter.next());
             }
-            poolFactory.setTrackerType((TrackingPolicy)trackingIter.next());
+            poolFactory.setTrackingPolicy((TrackingPolicy)trackingIter.next());
         }
         poolFactory.setValidateOnReturn(((Boolean)validateIter.next()).booleanValue());
 
@@ -496,7 +496,7 @@ public class PerformanceTest {
             compositeFactory.setBorrowPolicy(BorrowPolicy.FIFO);
             compositeFactory.setExhaustionPolicy(ExhaustionPolicy.GROW);
             compositeFactory.setLimitPolicy(LimitPolicy.FAIL);
-            compositeFactory.setTrackerType(TrackingPolicy.SIMPLE);
+            compositeFactory.setTrackingPolicy(TrackingPolicy.SIMPLE);
 
             genericConfig.minIdle = 0;
             genericConfig.testOnBorrow = true;

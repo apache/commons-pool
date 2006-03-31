@@ -53,7 +53,7 @@ public class TestIdleEvictorLender extends TestLender {
     }
 
     public void testIdleEviction() throws Exception {
-        IdleEvictorLender lender = createLender(50L);
+        IdleEvictorLender lender = createLender(75L);
         CompositeObjectPool cop = createPool(lender);
 
         cop.addObject();
@@ -65,7 +65,7 @@ public class TestIdleEvictorLender extends TestLender {
 
         // Test when IdleEvictorLender delegates to another EvictorLender
         lender = new IdleEvictorLender(new InvalidEvictorLender(new FifoLender()));
-        lender.setIdleTimeoutMillis(50L);
+        lender.setIdleTimeoutMillis(75L);
         cop = createPool(lender);
 
         cop.addObject();
@@ -77,7 +77,7 @@ public class TestIdleEvictorLender extends TestLender {
 
         // Test when another EvictorLender delegates to IdleEvictorLender
         lender = new IdleEvictorLender(new FifoLender());
-        lender.setIdleTimeoutMillis(50L);
+        lender.setIdleTimeoutMillis(75L);
         cop = createPool(new InvalidEvictorLender(lender));
 
         cop.addObject();

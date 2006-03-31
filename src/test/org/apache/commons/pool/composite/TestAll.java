@@ -64,7 +64,7 @@ public class TestAll extends TestCase {
         suite.addTest(TestCompositeObjectPool.suite());
         suite.addTest(TestCompositeKeyedObjectPool.suite());
         suite.addTest(TestCompositeKeyedObjectPool2.suite());
-        //suite.addTest(TestCompositeObjectPoolFactory.suite());
+        suite.addTest(TestCompositeObjectPoolFactory.suite());
         //suite.addTest(TestCompositeKeyedObjectPoolFactory.suite());
         return suite;
     }
