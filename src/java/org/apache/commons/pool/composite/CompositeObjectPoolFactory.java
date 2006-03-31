@@ -315,7 +315,7 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
         if (!(lender instanceof NullLender)) {
             // If the evictIdleMillis were less than evictInvalidFrequencyMillis
             // then the InvalidEvictorLender would never run.
-            if (config.evictInvalidFrequencyMillis > 0 && config.evictIdleMillis > config.evictInvalidFrequencyMillis) {
+            if (config.evictInvalidFrequencyMillis > 0 && config.evictIdleMillis < config.evictInvalidFrequencyMillis) {
                 lender = new InvalidEvictorLender(lender);
                 ((InvalidEvictorLender)lender).setValidationFrequencyMillis(config.evictInvalidFrequencyMillis);
             }
