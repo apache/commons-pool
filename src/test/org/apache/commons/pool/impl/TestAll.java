@@ -39,7 +39,11 @@ public class TestAll extends TestCase {
         suite.addTest(TestGenericObjectPool.suite());
         suite.addTest(TestGenericKeyedObjectPool.suite());
         suite.addTest(TestSoftReferenceObjectPool.suite());
-        suite.addTest(TestSoftRefOutOfMemory.suite()); // isn't reliable
+        suite.addTest(TestSoftRefOutOfMemory.suite()); // isn't reliable?
+
+        // Pool Factory tests
+        suite.addTest(TestGenericObjectPoolFactory.suite());
+        suite.addTest(TestStackObjectPoolFactory.suite());
         return suite;
     }
 
