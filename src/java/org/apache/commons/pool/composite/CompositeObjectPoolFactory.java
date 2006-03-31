@@ -43,7 +43,7 @@ import java.util.List;
  *  <li>{@link #setMaxWaitMillis(int) maxWaitMillis}: a non-positive value (wait forever)
  *      (has no effect unless {@link #setLimitPolicy(LimitPolicy) limitPolicy} is
  *      {@link LimitPolicy#WAIT WAIT})</li>
- *  <li>{@link #setTrackerType(TrackingPolicy) trackingPolicy}:
+ *  <li>{@link #setTrackingPolicy(TrackingPolicy) trackingPolicy}:
  *      {@link TrackingPolicy#SIMPLE SIMPLE}</li>
  *  <li>{@link #setValidateOnReturn(boolean) validateOnReturn}: false (do not validate on return)</li>
  *  <li>{@link #setEvictIdleMillis(long) evictIdleMillis}: non-positive (do not evict objects for being idle)</li>
@@ -230,8 +230,9 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
      * Create and return a new <code>ObjectPool</code>.
      *
      * @return a new {@link ObjectPool}
+     * @throws IllegalStateException when this pool factory is not configured properly
      */
-    public ObjectPool createPool() {
+    public ObjectPool createPool() throws IllegalStateException {
         return createPool(getConfig());
     }
 
@@ -240,8 +241,9 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
      *
      * @param config the settings to use to construct said pool.
      * @return a new {@link ObjectPool}
+     * @throws IllegalStateException when this pool factory is not configured properly
      */
-    static ObjectPool createPool(final FactoryConfig config) {
+    static ObjectPool createPool(final FactoryConfig config) throws IllegalStateException {
         if (config == null) {
             throw new IllegalArgumentException("config must not be null.");
         }
@@ -593,7 +595,7 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
      *
      * @return Type of tracking for active objects while they are borrowed from the pool.
      */
-    public TrackingPolicy getTrackerType() {
+    public TrackingPolicy getTrackingPolicy() {
         return trackerPolicy;
     }
 
@@ -603,7 +605,7 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
      * @param trackerPolicy type of tracking for active objects.
      * @throws IllegalArgumentException when <code>trackerPolicy</code> is <code>null</code>.
      */
-    public void setTrackerType(final TrackingPolicy trackerPolicy) throws IllegalArgumentException {
+    public void setTrackingPolicy(final TrackingPolicy trackerPolicy) throws IllegalArgumentException {
         if (trackerPolicy == null) {
             throw new IllegalArgumentException("tracker type must not be null.");
         }
@@ -755,7 +757,7 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
          */
         FactoryConfig(final CompositeObjectPoolFactory copf) {
             this(copf.getFactory(), copf.getBorrowPolicy(), copf.getExhaustionPolicy(), copf.getMaxIdle(),
-                    copf.getMaxActive(), copf.getLimitPolicy(), copf.getMaxWaitMillis(), copf.getTrackerType(),
+                    copf.getMaxActive(), copf.getLimitPolicy(), copf.getMaxWaitMillis(), copf.getTrackingPolicy(),
                     copf.isValidateOnReturn(), copf.getEvictIdleMillis(), copf.getEvictInvalidFrequencyMillis());
         }
 

@@ -23,8 +23,8 @@ import java.lang.ref.WeakReference;
 /**
  * Configures how active objects are tracked while they are borrowed from the pool.
  *
- * @see CompositeObjectPoolFactory#setTrackerType(TrackingPolicy)
- * @see CompositeKeyedObjectPoolFactory#setTrackerType(TrackingPolicy)
+ * @see CompositeObjectPoolFactory#setTrackingPolicy(TrackingPolicy)
+ * @see CompositeKeyedObjectPoolFactory#setTrackingPolicy(TrackingPolicy)
  * @author Sandy McArthur
  * @since #.#
  * @version $Revision$ $Date$

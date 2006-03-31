@@ -327,8 +327,8 @@ public final class CompositeKeyedObjectPoolFactory implements KeyedObjectPoolFac
      *
      * @return Type of tracking for active objects while they are borrowed from the pool.
      */
-    public TrackingPolicy getTrackerType() {
-        return factory.getTrackerType();
+    public TrackingPolicy getTrackingPolicy() {
+        return factory.getTrackingPolicy();
     }
 
     /**
@@ -337,8 +337,8 @@ public final class CompositeKeyedObjectPoolFactory implements KeyedObjectPoolFac
      * @param trackerPolicy type of tracking for active objects.
      * @throws IllegalArgumentException when <code>trackerPolicy</code> is <code>null</code>.
      */
-    public void setTrackerType(final TrackingPolicy trackerPolicy) throws IllegalArgumentException {
-        factory.setTrackerType(trackerPolicy);
+    public void setTrackingPolicy(final TrackingPolicy trackerPolicy) throws IllegalArgumentException {
+        factory.setTrackingPolicy(trackerPolicy);
     }
 
     /**
