@@ -34,25 +34,25 @@ public class StackObjectPoolFactory implements ObjectPoolFactory {
         this((PoolableObjectFactory)null,StackObjectPool.DEFAULT_MAX_SLEEPING,StackObjectPool.DEFAULT_INIT_SLEEPING_CAPACITY);
     }
 
-    public StackObjectPoolFactory(int max) {
-        this((PoolableObjectFactory)null,max,StackObjectPool.DEFAULT_INIT_SLEEPING_CAPACITY);
+    public StackObjectPoolFactory(int maxIdle) {
+        this((PoolableObjectFactory)null,maxIdle,StackObjectPool.DEFAULT_INIT_SLEEPING_CAPACITY);
     }
 
-    public StackObjectPoolFactory(int max, int init) {
-        this((PoolableObjectFactory)null,max,init);
+    public StackObjectPoolFactory(int maxIdle, int init) {
+        this((PoolableObjectFactory)null,maxIdle,init);
     }
 
     public StackObjectPoolFactory(PoolableObjectFactory factory) {
         this(factory,StackObjectPool.DEFAULT_MAX_SLEEPING,StackObjectPool.DEFAULT_INIT_SLEEPING_CAPACITY);
     }
 
-    public StackObjectPoolFactory(PoolableObjectFactory factory, int max) {
-        this(factory,max,StackObjectPool.DEFAULT_INIT_SLEEPING_CAPACITY);
+    public StackObjectPoolFactory(PoolableObjectFactory factory, int maxIdle) {
+        this(factory,maxIdle,StackObjectPool.DEFAULT_INIT_SLEEPING_CAPACITY);
     }
 
-    public StackObjectPoolFactory(PoolableObjectFactory factory, int max, int init) {
+    public StackObjectPoolFactory(PoolableObjectFactory factory, int maxIdle, int init) {
         _factory = factory;
-        _maxSleeping = max;
+        _maxSleeping = maxIdle;
         _initCapacity = init;
     }
 
