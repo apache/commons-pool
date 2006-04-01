@@ -19,8 +19,11 @@ package org.apache.commons.pool.impl;
 import org.apache.commons.pool.TestObjectPoolFactory;
 import org.apache.commons.pool.ObjectPoolFactory;
 import org.apache.commons.pool.PoolableObjectFactory;
+import org.apache.commons.pool.MethodCallPoolableObjectFactory;
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
+import java.util.NoSuchElementException;
 
 /**
  * Tests for {@link StackObjectPoolFactory}.
@@ -39,5 +42,30 @@ public class TestStackObjectPoolFactory extends TestObjectPoolFactory {
 
     protected ObjectPoolFactory makeFactory(final PoolableObjectFactory objectFactory) throws UnsupportedOperationException {
         return new StackObjectPoolFactory(objectFactory);
+    }
+
+    public void testConstructors() throws Exception {
+        StackObjectPoolFactory factory = new StackObjectPoolFactory();
+        factory.createPool().close();
+
+        
+        factory = new StackObjectPoolFactory(1);
+        StackObjectPool pool = (StackObjectPool)factory.createPool();
+        pool.close();
+
+
+        factory = new StackObjectPoolFactory(1, 1);
+        pool = (StackObjectPool)factory.createPool();
+        pool.close();
+
+
+        factory = new StackObjectPoolFactory(new MethodCallPoolableObjectFactory(), 1);
+        pool = (StackObjectPool)factory.createPool();
+        Object a = pool.borrowObject();
+        Object b = pool.borrowObject();
+        pool.returnObject(a);
+        pool.returnObject(b);
+        assertEquals(1, pool.getNumIdle());
+        pool.close();
     }
 }
