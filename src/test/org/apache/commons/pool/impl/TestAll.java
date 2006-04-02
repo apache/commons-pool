@@ -44,6 +44,8 @@ public class TestAll extends TestCase {
         // Pool Factory tests
         suite.addTest(TestGenericObjectPoolFactory.suite());
         suite.addTest(TestStackObjectPoolFactory.suite());
+        suite.addTest(TestGenericKeyedObjectPoolFactory.suite());
+        suite.addTest(TestStackKeyedObjectPoolFactory.suite());
         return suite;
     }
 
