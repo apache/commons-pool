@@ -61,6 +61,16 @@ public class TestCompositeObjectPoolFactory extends TestObjectPoolFactory {
         }
     }
 
+    public void testBorrowPolicy() throws Exception {
+        final CompositeObjectPoolFactory copf = (CompositeObjectPoolFactory)makeFactory();
+        try {
+            copf.setBorrowPolicy(null);
+            fail();
+        } catch (IllegalArgumentException iae) {
+            // expected
+        }
+    }
+
     public void testBorrowPolicyNull() throws Exception {
         final CompositeObjectPoolFactory copf = (CompositeObjectPoolFactory)makeFactory();
         copf.setBorrowPolicy(BorrowPolicy.NULL);
@@ -134,6 +144,16 @@ public class TestCompositeObjectPoolFactory extends TestObjectPoolFactory {
         assertSame(b, aa);
     }
 
+    public void testExhaustionPolicy() throws Exception {
+        final CompositeObjectPoolFactory copf = (CompositeObjectPoolFactory)makeFactory();
+        try {
+            copf.setExhaustionPolicy(null);
+            fail();
+        } catch (IllegalArgumentException iae) {
+            // expected
+        }
+    }
+
     public void testExhaustionPolicyFail() throws Exception {
         final CompositeObjectPoolFactory copf = (CompositeObjectPoolFactory)makeFactory();
         copf.setExhaustionPolicy(ExhaustionPolicy.FAIL);
@@ -157,6 +177,16 @@ public class TestCompositeObjectPoolFactory extends TestObjectPoolFactory {
 
         assertEquals(0, pool.getNumIdle());
         pool.borrowObject();
+    }
+
+    public void testLimitPolicy() throws Exception {
+        final CompositeObjectPoolFactory copf = (CompositeObjectPoolFactory)makeFactory();
+        try {
+            copf.setLimitPolicy(null);
+            fail();
+        } catch (IllegalArgumentException iae) {
+            // expected
+        }
     }
 
     public void testLimitPolicyFail() throws Exception {
@@ -199,6 +229,16 @@ public class TestCompositeObjectPoolFactory extends TestObjectPoolFactory {
 
         pool.returnObject(a);
         pool.borrowObject();
+    }
+
+    public void testTrackingPolicy() throws Exception {
+        final CompositeObjectPoolFactory copf = (CompositeObjectPoolFactory)makeFactory();
+        try {
+            copf.setTrackingPolicy(null);
+            fail();
+        } catch (IllegalArgumentException iae) {
+            // expected
+        }
     }
 
     public void testTrackingPolicyNull() throws Exception {
@@ -330,6 +370,17 @@ public class TestCompositeObjectPoolFactory extends TestObjectPoolFactory {
         factory.setValid(false);
         Thread.sleep(75L);
         assertEquals(0, pool.getNumIdle());
+    }
+
+    public void testSetFactory() {
+        CompositeObjectPoolFactory factory = (CompositeObjectPoolFactory)makeFactory();
+
+        try {
+            factory.setFactory(null);
+            fail();
+        } catch (IllegalArgumentException iae) {
+            // expected
+        }
     }
 
     public void testToString() {
