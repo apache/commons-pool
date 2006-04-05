@@ -31,7 +31,7 @@ import java.util.Timer;
  * <p>Instances of this class should only be instantiated by {@link CompositeObjectPoolFactory} or other package-local
  * classes that are intimately familiar with it's proper usage.</p>
  *
- * <p>Composit object pools are divided into three parts.</p>
+ * <p>Composite object pools are divided into three parts.</p>
  *
  * <p>{@link Lender}: a lender's sole responsibilty is to maintain idle objects. A lender will never touch an object
  * that is considered to be active with the possible exception of an idle object being validated for possible eviction.
