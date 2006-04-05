@@ -971,10 +971,12 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         }
     }
 
-    public synchronized void close() throws Exception {
-        clear();
-        startEvictor(-1L);
+    public void close() throws Exception {
         super.close();
+        synchronized (this) {
+            clear();
+            startEvictor(-1L);
+        }
     }
 
     /**

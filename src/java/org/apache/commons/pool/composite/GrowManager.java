@@ -19,8 +19,7 @@ package org.apache.commons.pool.composite;
 import org.apache.commons.pool.PoolableObjectFactory;
 
 import java.io.Serializable;
-import java.util.TimerTask;
-import java.util.Timer;
+import java.util.List;
 
 /**
  * Grows the pool automatically when it is exhausted.
@@ -35,11 +34,6 @@ import java.util.Timer;
 final class GrowManager extends AbstractManager implements Serializable {
 
     private static final long serialVersionUID = 1225746308358794900L;
-    private static final Timer PREFILL_TIMER = CompositeObjectPool.COMPOSITE_TIMER;
-
-    private final Object avgLock = new Object();
-    private long activateAvg = 0;
-    private long makeAvg = 0;
 
     /**
      * Retreives the next object from the pool, creating new objects if the pool has been exhausted.
@@ -48,13 +42,19 @@ final class GrowManager extends AbstractManager implements Serializable {
      * @throws Exception when {@link PoolableObjectFactory#makeObject()} fails.
      */
     public Object nextFromPool() throws Exception {
-        assert Thread.holdsLock(objectPool.getPool());
+        final List pool = objectPool.getPool();
         Object obj = null;
 
-        final long startActivateTime = System.currentTimeMillis();
         // Drain until good or empty
-        while (objectPool.getLender().size() > 0 && obj == null) {
-            obj = objectPool.getLender().borrow();
+        boolean tryAgain = true;
+        while (tryAgain && obj == null) {
+            synchronized (pool) {
+                if (objectPool.getLender().size() > 0) {
+                    obj = objectPool.getLender().borrow();
+                } else {
+                    tryAgain = false;
+                }
+            }
 
             if (obj != null) {
                 obj = activateOrDestroy(obj);
@@ -70,15 +70,10 @@ final class GrowManager extends AbstractManager implements Serializable {
                 }
             }
         }
-        if (obj != null) {
-            updateActivateTimings(startActivateTime, System.currentTimeMillis());
-        } else {
-            final long startMakeTime = System.currentTimeMillis();
+        if (obj == null) {
             obj = objectPool.getFactory().makeObject();
-            updateMakeTimings(startMakeTime, System.currentTimeMillis());
         }
 
-        schedulePrefill();
         return obj;
     }
 
@@ -99,110 +94,7 @@ final class GrowManager extends AbstractManager implements Serializable {
         return obj;
     }
 
-    /**
-     * Update the moving average of how long it takes to activate and validate idle objects.
-     * @param start start of activation and validation
-     * @param end end of activation and validation
-     */
-    private void updateActivateTimings(final long start, final long end) {
-        final long elapsed = end - start;
-        if (elapsed > 0L) {
-            synchronized (avgLock) {
-                activateAvg = (activateAvg * 9L + elapsed) / 10L;
-            }
-        }
-    }
-
-    /**
-     * Update the moving average of how long it takes to make a new objects.
-     * @param start start of makeObject
-     * @param end end of makeObject
-     */
-    private void updateMakeTimings(final long start, final long end) {
-        final long elapsed = end - start;
-        if (elapsed > 0L) {
-            synchronized (avgLock) {
-                makeAvg = (makeAvg * 9L + elapsed) / 10L;
-            }
-        }
-    }
-
-    /**
-     * Does {@link PoolableObjectFactory#makeObject} take a relativly long time compared to
-     * {@link PoolableObjectFactory#activateObject} and {@link PoolableObjectFactory#validateObject}.
-     * @return <code>true</code> if {@link PoolableObjectFactory#makeObject} takes a long time.
-     */
-    private boolean isMakeObjectExpensive() {
-        synchronized (avgLock) {
-            // XXX: This is a guess at an optimal balance.
-            // Considering makeObject  to be expensive if it takes 3 times longer than activation takes.
-            // That is based on a benchmark by Peter Steijn for database connection pooling.
-            return activateAvg > 0L && activateAvg * 3L < makeAvg;
-        }
-    }
-
-    /**
-     * Schedule a <code>PrefillTask</code> if the idle object pool is empty
-     * and <code>makeObject</code> is relatively expensive.
-     */
-    private void schedulePrefill() {
-        if (objectPool.getLender().size() == 0 && isMakeObjectExpensive()) {
-            // When we are part of a CompositeKeyedObjectPool we need to pass the key to the Timer's thread.
-            final CompositeKeyedObjectPool ckop = objectPool.getOwningCompositeKeyedObjectPool();
-            if (ckop != null) {
-                final Object key = ckop.getKeys().get();
-                PREFILL_TIMER.schedule(new KeyedPrefillTask(key), 0L);
-            } else {
-                PREFILL_TIMER.schedule(new PrefillTask(), 0L);
-            }
-        }
-    }
-
     public String toString() {
-        return "GrowManager{makeObjectExpensive=" + isMakeObjectExpensive() + "}";
-    }
-
-    /**
-     * A <code>TimerTask</code> that will add another object if the pool is empty.
-     */
-    private class PrefillTask extends TimerTask {
-        public void run() {
-            try {
-                if (objectPool.getNumIdle() == 0) {
-                    objectPool.addObject();
-                }
-            } catch (Exception e) {
-                // swallowed
-            }
-        }
-    }
-
-    /**
-     * A <code>TimerTask</code> that will add another object if the pool is empty.
-     */
-    private class KeyedPrefillTask extends TimerTask {
-        private final Object key;
-
-        KeyedPrefillTask(final Object key) {
-            this.key = key;
-        }
-
-        public void run() {
-            ThreadLocal keys = null;
-            try {
-                if (objectPool.getNumIdle() == 0) {
-                    keys = objectPool.getOwningCompositeKeyedObjectPool().getKeys();
-                    keys.set(key);
-                    objectPool.addObject();
-                }
-            } catch (Exception e) {
-                // swallowed
-            } finally {
-                // clear the key
-                if (keys != null) {
-                    keys.set(null);
-                }
-            }
-        }
+        return "GrowManager{}";
     }
 }

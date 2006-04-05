@@ -17,37 +17,42 @@
 package org.apache.commons.pool.performance;
 
 import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.commons.pool.ObjectPool;
+import org.apache.commons.pool.composite.CompositeObjectPoolFactory;
+import org.apache.commons.pool.composite.LimitPolicy;
 
 /**
  * Multi-thread performance test
- * 
+ * <b>This test has threading issues.</b>
+ *
  * @author Dirk Verbeeck
- * @version $Revision$ $Date$ 
+ * @version $Revision$ $Date$
  */
 public class PerformanceTest {
     private int logLevel = 0;
     private int nrIterations = 5;
     private int nrThreads = 100;
 
-    private GenericObjectPool pool;
+    private ObjectPool pool;
     private boolean start = false;
+    // XXX: Making these volatile doesn't make them thread safe, these numbers aren't reliable
     private volatile int waiting = 0;
     private volatile int complete = 0;
     private volatile long totalBorrowTime = 0;
     private volatile long totalReturnTime = 0;
-    private volatile int nrSamples = 0; 
+    private volatile int nrSamples = 0;
 
     public void setLogLevel(int i) {
         logLevel = i;
     }
-    
+
     private void init() {
         start = false;
         waiting = 0;
         complete = 0;
         totalBorrowTime = 0;
         totalReturnTime = 0;
-        nrSamples = 0;     
+        nrSamples = 0;
     }
 
     class MyThread implements Runnable {
@@ -56,7 +61,7 @@ public class PerformanceTest {
 
         public void runOnce() {
             try {
-                waiting++;
+                waiting++; // XXX: not thread-safe
                 if (logLevel >= 5) {
                     String name = "thread" + Thread.currentThread().getName();
                     System.out.println(name + "   waiting: " + waiting + "   complete: " + complete);
@@ -64,7 +69,7 @@ public class PerformanceTest {
                 long bbegin = System.currentTimeMillis();
                 Object o = pool.borrowObject();
                 long bend = System.currentTimeMillis();
-                waiting--;
+                waiting--; // XXX: not thread-safe
                 do {
                     Thread.yield();
                 }
@@ -74,12 +79,12 @@ public class PerformanceTest {
                     String name = "thread" + Thread.currentThread().getName();
                     System.out.println(name + "    waiting: " + waiting + "   complete: " + complete);
                 }
-                                 
+
                 long rbegin = System.currentTimeMillis();
                 pool.returnObject(o);
                 long rend = System.currentTimeMillis();
                 Thread.yield();
-                complete++;
+                complete++; // XXX: not thread-safe
                 borrowTime = (bend-bbegin);
                 returnTime = (rend-rbegin);
             } catch (Exception e) {
@@ -91,13 +96,13 @@ public class PerformanceTest {
             runOnce(); // warmup
             for (int i = 0; i<nrIterations; i++) {
                 runOnce();
-                totalBorrowTime += borrowTime;
-                totalReturnTime += returnTime;
-                nrSamples++;
+                totalBorrowTime += borrowTime; // XXX: not thread-safe
+                totalReturnTime += returnTime; // XXX: not thread-safe
+                nrSamples++; // XXX: not thread-safe
                 if (logLevel >= 2) {
                     String name = "thread" + Thread.currentThread().getName();
                     System.out.println(
-                        "result " + nrSamples + "\t" + name 
+                        "result " + nrSamples + "\t" + name
                         + "\t" + "borrow time: " + borrowTime + "\t" + "return time: " + returnTime
                         + "\t" + "waiting: " + waiting + "\t" + "complete: " + complete);
                 }
@@ -106,23 +111,28 @@ public class PerformanceTest {
     }
 
     private void run(int nrIterations, int nrThreads, int maxActive, int maxIdle) {
+        runGOP(nrIterations, nrThreads, maxActive, maxIdle);
+        runCOP(nrIterations, nrThreads, maxActive, maxIdle);
+    }
+
+    private void runGOP(int nrIterations, int nrThreads, int maxActive, int maxIdle) {
         this.nrIterations = nrIterations;
         this.nrThreads = nrThreads;
         init();
-        
+
         SleepingObjectFactory factory = new SleepingObjectFactory();
-        if (logLevel >= 4) { factory.setDebug(true); } 
-        pool = new GenericObjectPool(factory);
+        if (logLevel >= 4) { factory.setDebug(true); }
+        GenericObjectPool pool = new GenericObjectPool(factory);
         pool.setMaxActive(maxActive);
         pool.setMaxIdle(maxIdle);
-        pool.setTestOnBorrow(true);
+        this.pool = pool;
 
         Thread[] threads = new Thread[nrThreads];
         for (int i = 0; i < threads.length; i++) {
             threads[i]= new Thread(new MyThread(), Integer.toString(i));
             Thread.yield();
         }
-        if (logLevel >= 1) { System.out.println("created"); } 
+        if (logLevel >= 1) { System.out.println("created"); }
         Thread.yield();
 
         for (int i = 0; i < threads.length; i++) {
@@ -144,7 +154,59 @@ public class PerformanceTest {
             }
         }
         if (logLevel >= 1) { System.out.println("finish"); }
-        System.out.println("-----------------------------------------");
+        System.out.println("---GOP-----------------------------------");
+        System.out.println("nrIterations: " + nrIterations);
+        System.out.println("nrThreads: " + nrThreads);
+        System.out.println("maxActive: " + maxActive);
+        System.out.println("maxIdle: " + maxIdle);
+        System.out.println("nrSamples: " + nrSamples);
+        System.out.println("totalBorrowTime: " + totalBorrowTime);
+        System.out.println("totalReturnTime: " + totalReturnTime);
+        System.out.println("avg BorrowTime: " + totalBorrowTime/nrSamples);
+        System.out.println("avg ReturnTime: " + totalReturnTime/nrSamples);
+    }
+
+    private void runCOP(int nrIterations, int nrThreads, int maxActive, int maxIdle) {
+        this.nrIterations = nrIterations;
+        this.nrThreads = nrThreads;
+        init();
+
+        SleepingObjectFactory factory = new SleepingObjectFactory();
+        if (logLevel >= 4) { factory.setDebug(true); }
+        CompositeObjectPoolFactory copf = new CompositeObjectPoolFactory(factory);
+        copf.setLimitPolicy(LimitPolicy.WAIT);
+        copf.setMaxActive(maxActive);
+        copf.setMaxIdle(maxIdle);
+        pool = copf.createPool();
+
+        Thread[] threads = new Thread[nrThreads];
+        for (int i = 0; i < threads.length; i++) {
+            threads[i]= new Thread(new MyThread(), Integer.toString(i));
+            Thread.yield();
+        }
+        if (logLevel >= 1) { System.out.println("created"); }
+        Thread.yield();
+
+        for (int i = 0; i < threads.length; i++) {
+            threads[i].start();
+            Thread.yield();
+        }
+        if (logLevel >= 1) { System.out.println("started"); }
+        Thread.yield();
+
+        start = true;
+        if (logLevel >= 1) { System.out.println("go"); }
+        Thread.yield();
+
+        for (int i = 0; i < threads.length; i++) {
+            try {
+                threads[i].join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        if (logLevel >= 1) { System.out.println("finish"); }
+        System.out.println("---COP-----------------------------------");
         System.out.println("nrIterations: " + nrIterations);
         System.out.println("nrThreads: " + nrThreads);
         System.out.println("maxActive: " + maxActive);

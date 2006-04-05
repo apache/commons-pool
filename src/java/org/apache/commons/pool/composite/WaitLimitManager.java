@@ -52,7 +52,9 @@ final class WaitLimitManager extends ActiveLimitManager implements Serializable 
      */
     public Object nextFromPool() throws NoSuchElementException, Exception, InterruptedException {
         final Object poolLock = objectPool.getPool();
-        assert Thread.holdsLock(poolLock);
+        if (!Thread.holdsLock(poolLock)) {
+            throw new AssertionError("WaitLimitManager needs to be externally synchronized for proper behavior.");
+        }
         final long endTime = maxWaitMillis > 0 ? System.currentTimeMillis() + maxWaitMillis : Long.MAX_VALUE;
         while (maxWaitMillis <= 0 || endTime > System.currentTimeMillis()) {
             if (Thread.currentThread().isInterrupted()) {

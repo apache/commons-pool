@@ -32,6 +32,8 @@ final class SimpleTracker implements Tracker, Serializable {
 
     private static final long serialVersionUID = -7300626285071421255L;
 
+    private final Object lock = new Object();
+
     /**
      * The number of "borrowed" or active objects from the pool.
      */
@@ -43,7 +45,9 @@ final class SimpleTracker implements Tracker, Serializable {
      * @param obj was borrowed from the pool.
      */
     public void borrowed(final Object obj) {
-        active++;
+        synchronized (lock) {
+            active++;
+        }
     }
 
     /**
@@ -53,9 +57,11 @@ final class SimpleTracker implements Tracker, Serializable {
      * @throws IllegalStateException when more objects have been returned than borrowed.
      */
     public void returned(final Object obj) throws IllegalStateException {
-        if (--active < 0) {
-            active++; // undo, object won't be returned
-            throw new IllegalStateException("More objects returned than were borrowed. Most recent object: " + obj);
+        synchronized (lock) {
+            if (--active < 0) {
+                active++; // undo, object won't be returned
+                throw new IllegalStateException("More objects returned than were borrowed. Most recent object: " + obj);
+            }
         }
     }
 
@@ -70,7 +76,7 @@ final class SimpleTracker implements Tracker, Serializable {
 
     public String toString() {
         return "SimpleTracker{" +
-                "active=" + active +
+                "active=" + getBorrowed() +
                 '}';
     }
 }

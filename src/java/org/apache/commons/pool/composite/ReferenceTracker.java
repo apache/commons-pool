@@ -60,8 +60,8 @@ class ReferenceTracker implements Tracker, Serializable {
         final IdentityReference ref;
         synchronized (rq) {
             ref = wrapBorrowed(obj);
+            map.put(ref.getKey(), ref);
         }
-        map.put(ref.getKey(), ref);
     }
 
     /**
@@ -87,7 +87,10 @@ class ReferenceTracker implements Tracker, Serializable {
         }
         workQueue();
         final IdentityKey key = new IdentityKey(obj);
-        final IdentityReference ref = (IdentityReference)map.remove(key);
+        final IdentityReference ref;
+        synchronized (rq) {
+            ref = (IdentityReference)map.remove(key);
+        }
         if (ref != null) {
             ref.clear();
         } else {
@@ -97,7 +100,9 @@ class ReferenceTracker implements Tracker, Serializable {
 
     public int getBorrowed() {
         workQueue();
-        return map.size();
+        synchronized (rq) {
+            return map.size();
+        }
     }
 
     /**

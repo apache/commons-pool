@@ -17,10 +17,9 @@
 package org.apache.commons.pool.composite;
 
 /**
- * TODO: Fix JavaDoc
+ * Tests for {@link DelegateManager}s.
  *
- * @author sandymac
- * @since Mar 29, 2006
+ * @author Sandy McArthur
  * @version $Revision$ $Date$
  */
 public abstract class TestDelegateManager extends TestManager {

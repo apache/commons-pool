@@ -165,7 +165,7 @@ public abstract class TestManager extends TestCase {
         return createPool(new MethodCallPoolableObjectFactory(), manager);
     }
 
-    protected final CompositeObjectPool createPool(final PoolableObjectFactory pof, final Manager manager) {
+    protected CompositeObjectPool createPool(final PoolableObjectFactory pof, final Manager manager) {
         return new CompositeObjectPool(pof, manager, new FifoLender(), new SimpleTracker(), false, null);
     }
 }

@@ -22,6 +22,8 @@ import junit.framework.TestSuite;
 import java.util.NoSuchElementException;
 import java.util.TimerTask;
 
+import org.apache.commons.pool.PoolableObjectFactory;
+
 /**
  * Tests for {@link WaitLimitManager}.
  *
@@ -52,6 +54,10 @@ public class TestWaitLimitManager extends TestActiveLimitManager {
         wlm.setMaxActive(Integer.MAX_VALUE);
         wlm.setMaxWaitMillis(15L);
         return wlm;
+    }
+
+    protected CompositeObjectPool createPool(final PoolableObjectFactory pof, final Manager manager) {
+        return new CompositeObjectPoolFullSync(pof, manager, new FifoLender(), new SimpleTracker(), false, null);
     }
 
     public void testMaxWaitMillis() throws Exception {

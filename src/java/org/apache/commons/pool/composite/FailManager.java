@@ -21,6 +21,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
 
 import java.io.Serializable;
 import java.util.NoSuchElementException;
+import java.util.List;
 
 /**
  * Throws a {@link NoSuchElementException} when the idle pool is exhausted. If you want to add objects to the pool you
@@ -54,24 +55,26 @@ final class FailManager extends AbstractManager implements Serializable {
      * @throws Exception usually from {@link PoolableObjectFactory} methods.
      */
     public Object nextFromPool() throws Exception {
-        assert Thread.holdsLock(objectPool.getPool());
+        final List pool = objectPool.getPool();
         Object obj = null;
         // Drain until good or empty
-        while (objectPool.getLender().size() > 0 && obj == null) {
-            obj = objectPool.getLender().borrow();
+        synchronized (pool) {
+            while (objectPool.getLender().size() > 0 && obj == null) {
+                obj = objectPool.getLender().borrow();
 
-            if (obj != null) {
-                obj = activateOrDestroy(obj);
+                if (obj != null) {
+                    obj = activateOrDestroy(obj);
 
-                try {
-                    if (obj != null && !objectPool.getFactory().validateObject(obj)) {
+                    try {
+                        if (obj != null && !objectPool.getFactory().validateObject(obj)) {
+                            deferDestroyObject(obj);
+                            obj = null; // try again
+                        }
+                    } catch (Exception e) {
+                        updateCause(e);
                         deferDestroyObject(obj);
                         obj = null; // try again
                     }
-                } catch (Exception e) {
-                    updateCause(e);
-                    deferDestroyObject(obj);
-                    obj = null; // try again
                 }
             }
         }

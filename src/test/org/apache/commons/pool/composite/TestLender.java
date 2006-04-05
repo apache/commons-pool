@@ -81,12 +81,11 @@ public abstract class TestLender extends TestCase {
         final CompositeObjectPool cop = createPool(lender);
         cop.addObject();
         final List list = cop.getPool();
-        final ListIterator li = lender.listIterator();
-
-        assertNotNull(li);
 
         try {
             synchronized (list) {
+                final ListIterator li = lender.listIterator();
+                assertNotNull(li);
                 if (li.hasNext()) {
                     li.next();
                 }

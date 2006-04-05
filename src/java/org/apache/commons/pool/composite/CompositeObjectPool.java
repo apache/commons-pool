@@ -31,7 +31,7 @@ import java.util.Timer;
  * <p>Instances of this class should only be instantiated by {@link CompositeObjectPoolFactory} or other package-local
  * classes that are intimately familiar with it's proper usage.</p>
  *
- * <p>Composit object pools are divided into three parts.</p>
+ * <p>Composite object pools are divided into three parts.</p>
  *
  * <p>{@link Lender}: a lender's sole responsibilty is to maintain idle objects. A lender will never touch an object
  * that is considered to be active with the possible exception of an idle object being validated for possible eviction.
@@ -49,7 +49,7 @@ import java.util.Timer;
  * @version $Revision$ $Date$
  * @since #.#
  */
-final class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
+class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
 
     private static final long serialVersionUID = -5874499972956918952L;
 
@@ -158,6 +158,14 @@ final class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
         return lender;
     }
 
+    Manager getManager() {
+        return manager;
+    }
+
+    Tracker getTracker() {
+        return tracker;
+    }
+
     /**
      * Factory used by this pool.
      *
@@ -205,14 +213,17 @@ final class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
         assertOpen();
         final Object obj = factory.makeObject();
         factory.passivateObject(obj);
-        synchronized (pool) {
-            // if the pool was closed between the asserOpen and the synchronize then discard returned objects
-            if (isOpen()) {
-                manager.returnToPool(obj);
-            } else {
-                factory.destroyObject(obj);
-            }
+        if (!addObjectToPool(obj)) {
+            factory.destroyObject(obj);
         }
+    }
+
+    protected boolean addObjectToPool(final Object obj) {
+        if (isOpen()) {
+            manager.returnToPool(obj);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -230,8 +241,7 @@ final class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
      */
     public Object borrowObject() throws Exception {
         assertOpen();
-
-        return internalBorrowObject();
+        return borrowObjectFromPool();
     }
 
     /**
@@ -242,16 +252,9 @@ final class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
      * @throws Exception if there is an unexpected problem.
      * @see #borrowObject()
      */
-    private Object internalBorrowObject() throws Exception {
-        final Object obj;
-
-        synchronized (pool) {
-            obj = manager.nextFromPool();
-
-            // Must be synced else getNumActive() could be wrong in WaitLimitManager
-            tracker.borrowed(obj);
-        }
-
+    protected Object borrowObjectFromPool() throws Exception {
+        final Object obj = manager.nextFromPool();
+        tracker.borrowed(obj);
         return obj;
     }
 
@@ -278,15 +281,19 @@ final class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
             return;
         }
 
-        synchronized (pool) {
-            // if the pool is closed, discard returned objects
-            if (isOpen()) {
-                tracker.returned(obj);
-                manager.returnToPool(obj);
-            } else {
-                invalidateObject(obj);
-            }
+        if (!returnObjectToPool(obj)) {
+            invalidateObject(obj);
         }
+    }
+
+    protected boolean returnObjectToPool(Object obj) {
+        // if the pool is closed, don't return objects
+        if (isOpen()) {
+            tracker.returned(obj);
+            manager.returnToPool(obj);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -312,13 +319,12 @@ final class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
             }
 
             tracker.returned(obj);
-            try {
-                factory.destroyObject(obj);
-            } catch (Exception e) {
-                // ignored
-            } finally {
-                pool.notifyAll(); // tell any wait managers to try again.
-            }
+            pool.notifyAll(); // tell any wait managers to try again.
+        }
+        try {
+            factory.destroyObject(obj);
+        } catch (Exception e) {
+            // ignored
         }
     }
 
@@ -332,12 +338,11 @@ final class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
     public void clear() throws Exception, UnsupportedOperationException {
         synchronized (pool) {
             while (pool.size() > 0) {
-                final Object obj = internalBorrowObject();
+                final Object obj = borrowObjectFromPool();
                 invalidateObject(obj);
             }
             if (pool instanceof ArrayList) {
                 ((ArrayList)pool).trimToSize();
-
             }
         }
     }
@@ -396,7 +401,7 @@ final class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
      * This is needed by the {@link WaitLimitManager} so it can terminate when the pool is {@link #close() closed}.
      * @return <code>false</code> if this pool has been closed.
      */
-    boolean isOpen() {
+    protected final boolean isOpen() {
         return open;
     }
 
@@ -407,7 +412,7 @@ final class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
      *
      * @throws IllegalStateException when the pool has been closed.
      */
-    private void assertOpen() throws IllegalStateException {
+    protected void assertOpen() throws IllegalStateException {
         if (!isOpen()) {
             throw new IllegalStateException("pool has been closed.");
         }

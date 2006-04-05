@@ -247,8 +247,17 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
         if (config == null) {
             throw new IllegalArgumentException("config must not be null.");
         }
-        return new CompositeObjectPool(config.factory, getList(config), getManager(config), getLender(config),
-                getTracker(config), config.validateOnReturn, config);
+        if (needsFullSync(config)) {
+            return new CompositeObjectPoolFullSync(config.factory, getList(config), getManager(config), getLender(config),
+                    getTracker(config), config.validateOnReturn, config);
+        } else {
+            return new CompositeObjectPool(config.factory, getList(config), getManager(config), getLender(config),
+                    getTracker(config), config.validateOnReturn, config);
+        }
+    }
+
+    private static boolean needsFullSync(FactoryConfig config) {
+        return LimitPolicy.WAIT.equals(config.limitPolicy);
     }
 
     /**

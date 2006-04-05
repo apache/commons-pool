@@ -213,20 +213,10 @@ public class PerformanceTest {
             ObjectPool objectPool;
             gc();
 
-            try {
-                System.out.print("GOP:noTestOnBorrow\t" + ccg + "\t");
-                objectPool = ccg.getGeneric();
-                ((GenericObjectPool)objectPool).setTestOnBorrow(false);
-                testForNumSeconds(seconds, objectPool);
-            } catch (Exception e) {
-                System.out.println("exception thrown! " + e.getMessage());
-            }
-
             double gopBPS = -1;
             try {
                 System.out.print("GenericObjectPool\t" + ccg + "\t");
                 objectPool = ccg.getGeneric();
-                ((GenericObjectPool)objectPool).setTestOnBorrow(true);
                 gopBPS = testForNumSeconds(seconds, objectPool);
             } catch (Exception e) {
                 System.out.println("exception thrown! " + e.getMessage());
@@ -303,20 +293,11 @@ public class PerformanceTest {
             ObjectPool objectPool;
             gc();
 
-            try {
-                System.out.print("GOP:noTestOnBorrow\t" + ccg + "\t");
-                objectPool = ccg.getGeneric();
-                ((GenericObjectPool)objectPool).setTestOnBorrow(false);
-                runThreadedTest(objectPool, numThreads, seconds);
-            } catch (Exception e) {
-                System.out.println("exception thrown! " + e.getMessage());
-            }
-
             double gopBPS = -1;
             try {
                 System.out.print("GenericObjectPool\t" + ccg + "\t");
                 objectPool = ccg.getGeneric();
-                ((GenericObjectPool)objectPool).setTestOnBorrow(true);
+                //objectPool = ccg.getGenerator();
                 gopBPS = runThreadedTest(objectPool, numThreads, seconds);
             } catch (Exception e) {
                 System.out.println("exception thrown! " + e.getMessage());
@@ -345,7 +326,7 @@ public class PerformanceTest {
         System.out.println("Testing Class: " + PerformanceTest.class.getName());
         PerformanceTest test = new PerformanceTest();
 
-        if (true) {
+        if (false) {
             System.out.println("Single Threaded Test");
             System.out.println("Warm up run (15): " + new Date());
             test.compareCompositeGerneic(15);
@@ -358,8 +339,8 @@ public class PerformanceTest {
             System.out.println("Done: " + new Date());
         }
 
-        if (false) {
-            int numThreads = 5;
+        if (true) {
+            int numThreads = 100;
             System.out.println("Threaded Test: " + numThreads);
             System.out.println("Warm up run (15): " + new Date());
             test.compareThreadedCompositeGerneic(numThreads, 15);
@@ -474,11 +455,11 @@ public class PerformanceTest {
     private static class CompareCompositeGeneric {
         private static final List maxIdles = Arrays.asList(new Integer[] {new Integer(-1), new Integer(10)});
         private static final List maxActives = Arrays.asList(new Integer[] {new Integer(-1), new Integer(10)});
-        private static final List validateOnReturns = Arrays.asList(new Boolean[] {Boolean.FALSE, Boolean.TRUE});
+        //private static final List validateOnReturns = Arrays.asList(new Boolean[] {Boolean.FALSE, Boolean.TRUE});
 
         private Iterator maxIdleIter = maxIdles.iterator();
         private Iterator maxActiveIter = maxActives.iterator();
-        private Iterator validateIter = validateOnReturns.iterator();
+        //private Iterator validateIter = validateOnReturns.iterator();
 
         private IntegerFactory objectFactory = new IntegerFactory();
         private CompositeObjectPoolFactory compositeFactory = new CompositeObjectPoolFactory(objectFactory);
@@ -486,12 +467,12 @@ public class PerformanceTest {
 
         private Integer maxIdle;
         private Integer maxActive;
-        private Boolean validateOnReturn;
+        //private Boolean validateOnReturn;
 
         public CompareCompositeGeneric() {
             maxIdle = (Integer)maxIdleIter.next();
             maxActive = (Integer)maxActiveIter.next();
-            validateOnReturn = (Boolean)validateIter.next();
+            //validateOnReturn = (Boolean)validateIter.next();
 
             compositeFactory.setBorrowPolicy(BorrowPolicy.FIFO);
             compositeFactory.setExhaustionPolicy(ExhaustionPolicy.GROW);
@@ -506,8 +487,8 @@ public class PerformanceTest {
 
         public boolean nextSettings() {
             boolean newCombination = true;
-            if (!validateIter.hasNext()) {
-                validateIter = validateOnReturns.iterator();
+            //if (!validateIter.hasNext()) {
+            //    validateIter = validateOnReturns.iterator();
 
                 if (!maxActiveIter.hasNext()) {
                     maxActiveIter = maxActives.iterator();
@@ -519,8 +500,8 @@ public class PerformanceTest {
                     maxIdle = (Integer)maxIdleIter.next();
                 }
                 maxActive = (Integer)maxActiveIter.next();
-            }
-            validateOnReturn = (Boolean)validateIter.next();
+            //}
+            //validateOnReturn = (Boolean)validateIter.next();
 
             return newCombination;
         }
@@ -529,7 +510,7 @@ public class PerformanceTest {
             objectFactory.reset();
             compositeFactory.setMaxActive(maxActive.intValue());
             compositeFactory.setMaxIdle(maxIdle.intValue());
-            compositeFactory.setValidateOnReturn(validateOnReturn.booleanValue());
+            //compositeFactory.setValidateOnReturn(validateOnReturn.booleanValue());
             return (CompositeObjectPool)compositeFactory.createPool();
         }
 
@@ -537,30 +518,39 @@ public class PerformanceTest {
             objectFactory.reset();
             genericConfig.maxActive = maxActive.intValue();
             genericConfig.maxIdle = maxIdle.intValue();
-            genericConfig.testOnReturn = validateOnReturn.booleanValue();
+            //genericConfig.testOnReturn = validateOnReturn.booleanValue();
             return new GenericObjectPool(objectFactory, genericConfig);
         }
-
 
         public String toString() {
             return '{' +
                     "maxIdle=" + maxIdle +
                     ", maxActive=" + maxActive +
-                    ", validateOnReturn=" + validateOnReturn +
+                    //", validateOnReturn=" + validateOnReturn +
                     '}';
         }
     }
+
     private static class IntegerFactory extends BasePoolableObjectFactory {
         private int count = 0;
         private boolean oddValid = true;
         private boolean evenValid = true;
 
         public Object makeObject() throws Exception {
+            long end = System.currentTimeMillis() + 30;
+            Thread.sleep(5);
+            while (end > System.currentTimeMillis()) {
+                Math.random();
+            }
             return new Integer(count++);
         }
 
         public boolean validateObject(final Object obj) {
             final Integer num = (Integer)obj;
+            long end = System.currentTimeMillis() + 5;
+            while (end > System.currentTimeMillis()) {
+                Math.random();
+            }
             if (num.intValue() % 2 == 0) {
                 return evenValid;
             } else {

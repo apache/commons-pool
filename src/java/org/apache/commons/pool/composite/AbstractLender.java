@@ -50,17 +50,23 @@ abstract class AbstractLender implements Lender, Serializable {
 
     public void repay(final Object obj) {
         final List pool = getObjectPool().getPool();
-        assert Thread.holdsLock(pool);
-        pool.add(obj);
-        pool.notifyAll();
+        synchronized (pool) {
+            pool.add(obj);
+            pool.notifyAll();
+        }
     }
 
     public ListIterator listIterator() {
-        return getObjectPool().getPool().listIterator();
+        final List pool = getObjectPool().getPool();
+        assert Thread.holdsLock(pool);
+        return pool.listIterator();
     }
 
     public int size() {
-        return getObjectPool().getPool().size();
+        final List pool = getObjectPool().getPool();
+        synchronized (pool) {
+            return getObjectPool().getPool().size();
+        }
     }
 
     /**

@@ -64,8 +64,7 @@ public class TestCompositeObjectPool extends TestObjectPool {
     }
 
     protected ObjectPool makeEmptyPool(final PoolableObjectFactory factory) {
-        final CompositeObjectPoolFactory copf = new CompositeObjectPoolFactory(factory);
-        return copf.createPool();
+        return new CompositeObjectPool(factory, new GrowManager(), new FifoLender(), new SimpleTracker(), false);
     }
 
     public void testConstructors() {
@@ -270,56 +269,12 @@ public class TestCompositeObjectPool extends TestObjectPool {
         manager.setMaxWaitMillis(100);
         pool = new CompositeObjectPool(new IntegerFactory(), manager, new FifoLender(), new DebugTracker(), false);
 
-        assertEquals(0, pool.getNumActive());
-
-        final Integer zero = (Integer)pool.borrowObject();
-        assertEquals(1, pool.getNumActive());
-
-        // Test that the max wait
         try {
             pool.borrowObject();
-            fail("Should have thrown a NoSuchElementException");
-        } catch(NoSuchElementException nsee) {
+            fail("WaitLimitManager should fail with a normal CompositeObjectPool.");
+        } catch (AssertionError ae) {
             // expected
         }
-
-        // test that if an object is returned while waiting it works.
-        // What happens is:
-        // this thread locks pool.pool and starts Thread t.
-        // this thread will get wait for an object to become available and relase the lock on pool.pool
-        // Thread t will then be able to lock on pool.pool and return an object
-        // this thread will then be able to borrow an object and should reutrn.
-        final List actualOrder = new ArrayList();
-        final Runnable r = new Runnable() {
-            public void run() {
-                try {
-                    synchronized(pool.getPool()) {
-                        pool.returnObject(zero);
-                        actualOrder.add("returned");
-                    }
-                } catch (Exception e) {
-                    waitFailed = true;
-                }
-            }
-        };
-        final Thread t = new Thread(r);
-
-        synchronized (pool.getPool()) {
-            t.start();
-
-            actualOrder.add("waiting");
-            assertEquals(zero, pool.borrowObject());
-            actualOrder.add("borrowed");
-        }
-
-        assertEquals("Wait failed", false, waitFailed);
-
-        List expectedOrder = new ArrayList();
-        expectedOrder.add("waiting");
-        expectedOrder.add("returned");
-        expectedOrder.add("borrowed");
-
-        assertEquals(expectedOrder, actualOrder);
     }
     private boolean waitFailed = false;
 
@@ -636,7 +591,7 @@ public class TestCompositeObjectPool extends TestObjectPool {
 
     // Utility classes ------------------------------------
 
-    private static class IntegerFactory extends BasePoolableObjectFactory {
+    protected static class IntegerFactory extends BasePoolableObjectFactory {
         private int count = 0;
         private boolean oddValid = true;
         private boolean evenValid = true;
