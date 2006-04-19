@@ -274,9 +274,9 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
      *
      * @throws Exception <strong>deprecated</strong>: implementations should silently fail if not all resources can be freed.
      */
-    public synchronized void close() throws Exception {
-        clear();
+    public void close() throws Exception {
         super.close();
+        clear();
     }
 
     /**
