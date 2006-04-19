@@ -256,8 +256,8 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
         }
     }
 
-    private static boolean needsFullSync(FactoryConfig config) {
-        return LimitPolicy.WAIT.equals(config.limitPolicy);
+    private static boolean needsFullSync(final FactoryConfig config) {
+        return config.maxActive > 0 && LimitPolicy.WAIT.equals(config.limitPolicy);
     }
 
     /**
@@ -794,9 +794,11 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
             sb.append("factory=").append(factory);
             sb.append(", borrowPolicy=").append(borrowPolicy);
             sb.append(", exhaustionPolicy=").append(exhaustionPolicy);
-            sb.append(", maxIdle=").append(maxIdle);
-            sb.append(", maxActive=").append(maxActive);
+            if (maxIdle >= 0) {
+                sb.append(", maxIdle=").append(maxIdle);
+            }
             if (maxActive > 0) {
+                sb.append(", maxActive=").append(maxActive);
                 sb.append(", limitPolicy=").append(limitPolicy);
                 if (LimitPolicy.WAIT.equals(limitPolicy)) {
                     sb.append(", maxWaitMillis=").append(maxWaitMillis);

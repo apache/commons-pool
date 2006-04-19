@@ -20,6 +20,8 @@ import org.apache.commons.pool.PoolableObjectFactory;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.TimerTask;
+import java.util.Timer;
 
 /**
  * Grows the pool automatically when it is exhausted.
@@ -35,6 +37,8 @@ final class GrowManager extends AbstractManager implements Serializable {
 
     private static final long serialVersionUID = 1225746308358794900L;
 
+    private static final Timer GENERATOR_TIMER = CompositeObjectPool.COMPOSITE_TIMER;
+
     /**
      * Retreives the next object from the pool, creating new objects if the pool has been exhausted.
      *
@@ -46,13 +50,14 @@ final class GrowManager extends AbstractManager implements Serializable {
         Object obj = null;
 
         // Drain until good or empty
-        boolean tryAgain = true;
-        while (tryAgain && obj == null) {
+        Generator generator = null;
+        while (obj == null) {
             synchronized (pool) {
                 if (objectPool.getLender().size() > 0) {
                     obj = objectPool.getLender().borrow();
-                } else {
-                    tryAgain = false;
+                    if (generator != null) {
+                        generator.cancel();
+                    }
                 }
             }
 
@@ -68,13 +73,98 @@ final class GrowManager extends AbstractManager implements Serializable {
                     deferDestroyObject(obj);
                     obj = null; // try again
                 }
+            } else {
+                if (generator == null) {
+                    generator = new Generator();
+                    GENERATOR_TIMER.schedule(generator, 0L);
+                }
+                synchronized (pool) {
+                    pool.wait(10L);
+                    obj = generator.getObj();
+                }
             }
         }
-        if (obj == null) {
-            obj = objectPool.getFactory().makeObject();
+        if (generator != null) {
+            generator.cancel();
+        }
+        return obj;
+    }
+
+    private class Generator extends TimerTask {
+        private boolean returnToThread = true;
+        private volatile boolean done = false;
+        private volatile Object obj;
+        private Throwable throwable;
+
+        private final Object key;
+        private final ThreadLocal keys;
+
+        Generator() {
+            final CompositeKeyedObjectPool ockop = objectPool.getOwningCompositeKeyedObjectPool();
+            if (ockop != null) {
+                keys = ockop.getKeys();
+                key = keys.get();
+            } else {
+                keys = null;
+                key = null;
+            }
         }
 
-        return obj;
+        public void run() {
+            try {
+                if (keys != null) {
+                    keys.set(key);
+                }
+                final Object obj;
+                try {
+                    obj = objectPool.getFactory().makeObject();
+                } catch (Throwable t) {
+                    throwable = t;
+                    return;
+                }
+                final List pool = objectPool.getPool();
+                synchronized (pool) {
+                    done = true;
+                    if (returnToThread) {
+                        this.obj = obj;
+                        pool.notifyAll();
+                    } else {
+                        try {
+                            objectPool.getFactory().passivateObject(obj);
+                        } catch (Throwable t) {
+                            throwable = t;
+                            return;
+                        }
+                        objectPool.returnObjectToPoolManager(obj);
+                    }
+                }
+            } finally {
+                if (keys != null) {
+                    keys.set(null);
+                }
+            }
+        }
+
+        public boolean cancel() {
+            synchronized (objectPool.getPool()) {
+                returnToThread = false;
+            }
+            return super.cancel();
+        }
+
+        public Object getObj() throws Exception {
+            assert Thread.holdsLock(objectPool.getPool());
+            if (throwable != null) {
+                if (throwable instanceof Exception) {
+                    throw (Exception)throwable;
+                } else if (throwable instanceof Error) {
+                    throw (Error)throwable;
+                } else {
+                    throw new Exception(throwable);
+                }
+            }
+            return obj;
+        }
     }
 
     /**

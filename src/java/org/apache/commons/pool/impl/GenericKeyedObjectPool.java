@@ -1160,13 +1160,15 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         }
     }
 
-    public synchronized void close() throws Exception {
-        clear();
-        if (null != _evictor) {
-            _evictor.cancel();
-            _evictor = null;
-        }
+    public void close() throws Exception {
         super.close();
+        synchronized (this) {
+            clear();
+            if (null != _evictor) {
+                _evictor.cancel();
+                _evictor = null;
+            }
+        }
     }
 
     public synchronized void setFactory(KeyedPoolableObjectFactory factory) throws IllegalStateException {

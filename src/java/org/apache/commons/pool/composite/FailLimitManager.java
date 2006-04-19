@@ -52,10 +52,11 @@ final class FailLimitManager extends ActiveLimitManager implements Serializable 
      * @throws Exception usually from {@link PoolableObjectFactory} methods.
      */
     public Object nextFromPool() throws NoSuchElementException, Exception {
-        if (objectPool.getNumActive() < getMaxActive()) {
+        final int numActive = objectPool.getNumActive();
+        if (numActive < getMaxActive()) {
             return super.nextFromPool();
         } else {
-            throw new NoSuchElementException("No more than " + getMaxActive() + " objects allowed from this pool. Currently " + objectPool.getNumActive() + " have been borrowed.");
+            throw new NoSuchElementException("No more than " + getMaxActive() + " objects allowed from this pool. Currently " + numActive + " have been borrowed.");
         }
     }
 

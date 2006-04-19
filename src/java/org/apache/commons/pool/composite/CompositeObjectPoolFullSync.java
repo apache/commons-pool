@@ -80,4 +80,10 @@ final class CompositeObjectPoolFullSync extends CompositeObjectPool {
         }
         return false;
     }
+
+    protected void returnObjectToPoolManager(final Object obj) {
+        synchronized (getPool()) {
+            getManager().returnToPool(obj);
+        }
+    }
 }

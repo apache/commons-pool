@@ -105,8 +105,12 @@ public abstract class TestObjectPool extends TestCase {
         }
         final List expectedMethods = new ArrayList();
 
+        assertEquals(0, pool.getNumActive());
+        assertEquals(0, pool.getNumIdle());
         // addObject should make a new object, pasivate it and put it in the pool
         pool.addObject();
+        assertEquals(0, pool.getNumActive());
+        assertEquals(1, pool.getNumIdle());
         expectedMethods.add(new MethodCall("makeObject").returned(ZERO));
         expectedMethods.add(new MethodCall("passivateObject", ZERO));
         assertEquals(expectedMethods, factory.getMethodCalls());

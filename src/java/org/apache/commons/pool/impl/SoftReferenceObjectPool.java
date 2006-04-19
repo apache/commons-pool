@@ -234,9 +234,9 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
         pruneClearedReferences();
     }
 
-    public synchronized void close() throws Exception {
-        clear();
+    public void close() throws Exception {
         super.close();
+        clear();
     }
 
     /**

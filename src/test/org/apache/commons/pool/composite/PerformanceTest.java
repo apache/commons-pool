@@ -297,8 +297,8 @@ public class PerformanceTest {
             try {
                 System.out.print("GenericObjectPool\t" + ccg + "\t");
                 objectPool = ccg.getGeneric();
-                //objectPool = ccg.getGenerator();
                 gopBPS = runThreadedTest(objectPool, numThreads, seconds);
+                System.out.println(objectPool);
             } catch (Exception e) {
                 System.out.println("exception thrown! " + e.getMessage());
             }
@@ -310,6 +310,7 @@ public class PerformanceTest {
                 System.out.print("CompositeObjectPool\t" + ccg + "\t");
                 objectPool = ccg.getComposite();
                 copBPS = runThreadedTest(objectPool, numThreads, seconds);
+                System.out.println(objectPool);
             } catch (Exception e) {
                 System.out.println("exception thrown! " + e.getMessage());
             }
@@ -476,7 +477,8 @@ public class PerformanceTest {
 
             compositeFactory.setBorrowPolicy(BorrowPolicy.FIFO);
             compositeFactory.setExhaustionPolicy(ExhaustionPolicy.GROW);
-            compositeFactory.setLimitPolicy(LimitPolicy.FAIL);
+            //compositeFactory.setLimitPolicy(LimitPolicy.FAIL);
+            compositeFactory.setLimitPolicy(LimitPolicy.WAIT);
             compositeFactory.setTrackingPolicy(TrackingPolicy.SIMPLE);
 
             genericConfig.minIdle = 0;
@@ -538,7 +540,7 @@ public class PerformanceTest {
 
         public Object makeObject() throws Exception {
             long end = System.currentTimeMillis() + 30;
-            Thread.sleep(5);
+            Thread.sleep(5); // fake some IO wait
             while (end > System.currentTimeMillis()) {
                 Math.random();
             }
@@ -548,6 +550,11 @@ public class PerformanceTest {
         public boolean validateObject(final Object obj) {
             final Integer num = (Integer)obj;
             long end = System.currentTimeMillis() + 5;
+            try {
+                Thread.sleep(1); // fake some IO wait
+            } catch (InterruptedException e) {
+                // ignored
+            }
             while (end > System.currentTimeMillis()) {
                 Math.random();
             }

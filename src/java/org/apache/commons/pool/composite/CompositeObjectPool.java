@@ -286,7 +286,7 @@ class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
         }
     }
 
-    protected boolean returnObjectToPool(Object obj) {
+    protected boolean returnObjectToPool(final Object obj) {
         // if the pool is closed, don't return objects
         if (isOpen()) {
             tracker.returned(obj);
@@ -294,6 +294,10 @@ class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
             return true;
         }
         return false;
+    }
+
+    protected void returnObjectToPoolManager(final Object obj) {
+        manager.returnToPool(obj);
     }
 
     /**
@@ -431,17 +435,13 @@ class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
             sb.append(", validateOnReturn=").append(validateOnReturn);
         }
         sb.append(", open=").append(open);
-        try {
-            final int numActive = getNumActive();
+        final int numActive = getNumActive();
+        if (numActive >= 0) {
             sb.append(", activeObjects=").append(numActive);
-        } catch (Exception e) {
-            // ignored
         }
-        try {
-            final int numIdle = getNumIdle();
+        final int numIdle = getNumIdle();
+        if (numIdle >= 0) {
             sb.append(", idleObjects=").append(numIdle);
-        } catch (Exception e) {
-            // ignored
         }
         sb.append('}');
         return sb.toString();
