@@ -41,14 +41,14 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  * <p>A <code>GenericKeyedObjectPool</code> provides a number of configurable parameters:</p>
  * <ul>
  *  <li>
- *    {@link #setMaxActive maxActive} controls the maximum number of objects (per key)
+ *    {@link #setMaxActive maxActive} controls the maximum number of objects
  *    that can be borrowed from the pool at one time.  When non-positive, there
  *    is no limit to the number of objects that may be active at one time.
  *    When {@link #setMaxActive maxActive} is exceeded, the pool is said to be exhausted.
  *  </li>
  *  <li>
  *    {@link #setMaxIdle maxIdle} controls the maximum number of objects that can
- *    sit idle in the pool (per key) at any time.  When negative, there
+ *    sit idle in the pool at any time.  When negative, there
  *    is no limit to the number of objects that may be idle at one time.
  *  </li>
  *  <li>
@@ -170,16 +170,14 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     public static final byte WHEN_EXHAUSTED_GROW   = 2;
 
     /**
-     * The default cap on the number of idle instances in the pool
-     * (per key).
+     * The default cap on the number of idle instances in the pool.
      * @see #getMaxIdle
      * @see #setMaxIdle
      */
     public static final int DEFAULT_MAX_IDLE  = 8;
 
     /**
-     * The default cap on the total number of active instances from the pool
-     * (per key).
+     * The default cap on the total number of active instances from the pool.
      * @see #getMaxActive
      * @see #setMaxActive
      */
@@ -298,7 +296,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     /**
      * Create a new <code>GenericKeyedObjectPool</code> using the specified values.
      * @param factory the <code>KeyedPoolableObjectFactory</code> to use to create, validate, and destroy objects if not <code>null</code>
-     * @param maxActive the maximum number of objects that can be borrowed from me at one time (per key) (see {@link #setMaxActive})
+     * @param maxActive the maximum number of objects that can be borrowed from me at one time (see {@link #setMaxActive})
      */
     public GenericKeyedObjectPool(KeyedPoolableObjectFactory factory, int maxActive) {
         this(factory,maxActive,DEFAULT_WHEN_EXHAUSTED_ACTION,DEFAULT_MAX_WAIT,DEFAULT_MAX_IDLE,DEFAULT_TEST_ON_BORROW,DEFAULT_TEST_ON_RETURN,DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,DEFAULT_NUM_TESTS_PER_EVICTION_RUN,DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,DEFAULT_TEST_WHILE_IDLE);
@@ -307,7 +305,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     /**
      * Create a new <code>GenericKeyedObjectPool</code> using the specified values.
      * @param factory the <code>KeyedPoolableObjectFactory</code> to use to create, validate, and destroy objects if not <code>null</code>
-     * @param maxActive the maximum number of objects that can be borrowed from me at one time (per key) (see {@link #setMaxActive})
+     * @param maxActive the maximum number of objects that can be borrowed from me at one time (see {@link #setMaxActive})
      * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #setWhenExhaustedAction})
      * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted an and <code>whenExhaustedAction</code> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
      */
@@ -318,7 +316,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     /**
      * Create a new <code>GenericKeyedObjectPool</code> using the specified values.
      * @param factory the <code>KeyedPoolableObjectFactory</code> to use to create, validate, and destroy objects if not <code>null</code>
-     * @param maxActive the maximum number of objects that can be borrowed from me at one time (per key) (see {@link #setMaxActive})
+     * @param maxActive the maximum number of objects that can be borrowed from me at one time (see {@link #setMaxActive})
      * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted an and <code>whenExhaustedAction</code> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
      * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #setWhenExhaustedAction})
      * @param testOnBorrow whether or not to validate objects before they are returned by the {@link #borrowObject} method (see {@link #setTestOnBorrow})
@@ -331,10 +329,10 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     /**
      * Create a new <code>GenericKeyedObjectPool</code> using the specified values.
      * @param factory the <code>KeyedPoolableObjectFactory</code> to use to create, validate, and destroy objects if not <code>null</code>
-     * @param maxActive the maximum number of objects that can be borrowed from me at one time (per key) (see {@link #setMaxActive})
+     * @param maxActive the maximum number of objects that can be borrowed from me at one time (see {@link #setMaxActive})
      * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #setWhenExhaustedAction})
      * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted an and <code>whenExhaustedAction</code> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
-     * @param maxIdle the maximum number of idle objects in my pool (per key) (see {@link #setMaxIdle})
+     * @param maxIdle the maximum number of idle objects in my pool (see {@link #setMaxIdle})
      */
     public GenericKeyedObjectPool(KeyedPoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle) {
         this(factory,maxActive,whenExhaustedAction,maxWait,maxIdle,DEFAULT_TEST_ON_BORROW,DEFAULT_TEST_ON_RETURN,DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,DEFAULT_NUM_TESTS_PER_EVICTION_RUN,DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,DEFAULT_TEST_WHILE_IDLE);
@@ -343,7 +341,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     /**
      * Create a new <code>GenericKeyedObjectPool</code> using the specified values.
      * @param factory the <code>KeyedPoolableObjectFactory</code> to use to create, validate, and destroy objects if not <code>null</code>
-     * @param maxActive the maximum number of objects that can be borrowed from me at one time (per key) (see {@link #setMaxActive})
+     * @param maxActive the maximum number of objects that can be borrowed from me at one time (see {@link #setMaxActive})
      * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #setWhenExhaustedAction})
      * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted an and <code>whenExhaustedAction</code> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #getMaxWait})
      * @param maxIdle the maximum number of idle objects in my pool (see {@link #setMaxIdle})
@@ -357,7 +355,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     /**
      * Create a new <code>GenericKeyedObjectPool</code> using the specified values.
      * @param factory the <code>KeyedPoolableObjectFactory</code> to use to create, validate, and destroy objects if not <code>null</code>
-     * @param maxActive the maximum number of objects that can be borrowed from me at one time (per key) (see {@link #setMaxActive})
+     * @param maxActive the maximum number of objects that can be borrowed from me at one time (see {@link #setMaxActive})
      * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #setWhenExhaustedAction})
      * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted an and <code>whenExhaustedAction</code> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
      * @param maxIdle the maximum number of idle objects in my pool (see {@link #setMaxIdle})
@@ -375,7 +373,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     /**
      * Create a new <code>GenericKeyedObjectPool</code> using the specified values.
      * @param factory the <code>KeyedPoolableObjectFactory</code> to use to create, validate, and destroy objects if not <code>null</code>
-     * @param maxActive the maximum number of objects that can be borrowed from me at one time (per key) (see {@link #setMaxActive})
+     * @param maxActive the maximum number of objects that can be borrowed from me at one time (see {@link #setMaxActive})
      * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #setWhenExhaustedAction})
      * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted an and <code>whenExhaustedAction</code> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
      * @param maxIdle the maximum number of idle objects in my pool (see {@link #setMaxIdle})
@@ -394,7 +392,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     /**
      * Create a new <code>GenericKeyedObjectPool</code> using the specified values.
      * @param factory the <code>KeyedPoolableObjectFactory</code> to use to create, validate, and destroy objects if not <code>null</code>
-     * @param maxActive the maximum number of objects that can be borrowed from me at one time (per key) (see {@link #setMaxActive})
+     * @param maxActive the maximum number of objects that can be borrowed from me at one time (see {@link #setMaxActive})
      * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #setWhenExhaustedAction})
      * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted an and <code>whenExhaustedAction</code> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
      * @param maxIdle the maximum number of idle objects in my pool (see {@link #setMaxIdle})
@@ -441,8 +439,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     //--- configuration methods --------------------------------------
 
     /**
-     * Returns the cap on the number of active instances from my pool (per key).
-     * @return the cap on the number of active instances from my pool (per key).
+     * Returns the cap on the number of active instances from my pool.
+     * @return the cap on the number of active instances from my pool.
      * @see #setMaxActive
      */
     public synchronized int getMaxActive() {
@@ -450,8 +448,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     }
 
     /**
-     * Sets the cap on the number of active instances from my pool (per key).
-     * @param maxActive The cap on the number of active instances from my pool (per key).
+     * Sets the cap on the number of active instances from my pool.
+     * @param maxActive The cap on the number of active instances from my pool.
      *                  Use a negative value for an infinite number of instances.
      * @see #getMaxActive
      */
@@ -574,7 +572,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     }
 
     /**
-     * Sets the minimum number of idle objects in pool to maintain (per key)
+     * Sets the minimum number of idle objects in pool to maintain
      * @param poolSize - The minimum size of the pool
      * @see #getMinIdle
      */
@@ -583,8 +581,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     }
 
     /**
-     * Returns the minimum number of idle objects in pool to maintain (per key)
-     * @return the minimum number of idle objects in pool to maintain (per key)
+     * Returns the minimum number of idle objects in pool to maintain.
+     * @return the minimum number of idle objects in pool to maintain.
      * @see #setMinIdle
      */
     public synchronized int getMinIdle() {
@@ -1502,21 +1500,21 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     //--- protected attributes ---------------------------------------
 
     /**
-     * The cap on the number of idle instances in the pool (per key).
+     * The cap on the number of idle instances in the pool.
      * @see #setMaxIdle
      * @see #getMaxIdle
      */
     private int _maxIdle = DEFAULT_MAX_IDLE;
 
     /**
-     * The minimum no of idle objects to keep in the pool (per key)
+     * The minimum no of idle objects to keep in the pool.
      * @see #setMinIdle
      * @see #getMinIdle
      */
     private int _minIdle = DEFAULT_MIN_IDLE;
 
     /**
-     * The cap on the number of active instances from the pool (per key).
+     * The cap on the number of active instances from the pool.
      * @see #setMaxActive
      * @see #getMaxActive
      */
