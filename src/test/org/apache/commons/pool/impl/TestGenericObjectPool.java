@@ -53,6 +53,12 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         return new GenericObjectPool(factory);
     }
 
+    protected ObjectPool makeEmptyPoolWithActiveLimit(final PoolableObjectFactory factory, final int activeLimit) throws UnsupportedOperationException {
+        final GenericObjectPool pool = (GenericObjectPool)makeEmptyPool(factory);
+        pool.setMaxActive(activeLimit);
+        return pool;
+    }
+
     protected Object getNthObject(int n) {
         return String.valueOf(n);
     }

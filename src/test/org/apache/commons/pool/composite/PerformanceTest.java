@@ -298,7 +298,8 @@ public class PerformanceTest {
                 System.out.print("GenericObjectPool\t" + ccg + "\t");
                 objectPool = ccg.getGeneric();
                 gopBPS = runThreadedTest(objectPool, numThreads, seconds);
-                System.out.println(objectPool);
+                //System.out.println(objectPool);
+                System.out.println(ccg.objectFactory);
             } catch (Exception e) {
                 System.out.println("exception thrown! " + e.getMessage());
             }
@@ -310,7 +311,8 @@ public class PerformanceTest {
                 System.out.print("CompositeObjectPool\t" + ccg + "\t");
                 objectPool = ccg.getComposite();
                 copBPS = runThreadedTest(objectPool, numThreads, seconds);
-                System.out.println(objectPool);
+                //System.out.println(objectPool);
+                System.out.println(ccg.objectFactory);
             } catch (Exception e) {
                 System.out.println("exception thrown! " + e.getMessage());
             }
@@ -537,6 +539,13 @@ public class PerformanceTest {
         private int count = 0;
         private boolean oddValid = true;
         private boolean evenValid = true;
+        private final transient Object lock = new Object();
+        private transient int maxActive = 0;
+        private transient int maxIdle = 0;
+        private transient Set active = new HashSet(100);
+        private transient Set idle = new HashSet(100);
+        private transient Set destroyed = new HashSet(100);
+
 
         public Object makeObject() throws Exception {
             long end = System.currentTimeMillis() + 30;
@@ -544,7 +553,11 @@ public class PerformanceTest {
             while (end > System.currentTimeMillis()) {
                 Math.random();
             }
-            return new Integer(count++);
+            final int count;
+            synchronized (lock) {
+                count = this.count++;
+            }
+            return new Integer(count);
         }
 
         public boolean validateObject(final Object obj) {
@@ -565,6 +578,35 @@ public class PerformanceTest {
             }
         }
 
+        public void activateObject(Object obj) throws Exception {
+            synchronized (lock) {
+                active.add(obj);
+                idle.remove(obj);
+                if (active.size() > maxActive) {
+                    maxActive = active.size();
+                }
+            }
+        }
+
+        public void passivateObject(Object obj) throws Exception {
+            synchronized (lock) {
+                idle.add(obj);
+                active.remove(obj);
+                if (idle.size() > maxIdle) {
+                    maxIdle = idle.size();
+                }
+            }
+        }
+
+        public void destroyObject(Object obj) throws Exception {
+            synchronized (lock) {
+                destroyed.add(obj);
+                idle.remove(obj);
+                active.remove(obj);
+            }
+
+        }
+
         public void setValid(final boolean valid) {
             setEvenValid(valid);
             setOddValid(valid);
@@ -582,10 +624,22 @@ public class PerformanceTest {
             count = 0;
             oddValid = true;
             evenValid = true;
+            maxActive = 0;
+            maxIdle = 0;
+            active.clear();
+            idle.clear();
+            destroyed.clear();
         }
 
         public String toString() {
-            return "IntegerFactory{}";
+            final StringBuffer sb = new StringBuffer();
+            sb.append("IntegerFactory");
+            sb.append("{count=").append(count);
+            sb.append(", maxIdle=").append(maxIdle);
+            sb.append(", maxActive=").append(maxActive);
+            sb.append(", destroyed=").append(destroyed.size());
+            sb.append('}');
+            return sb.toString();
         }
     }
 

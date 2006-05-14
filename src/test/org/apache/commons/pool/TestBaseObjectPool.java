@@ -48,6 +48,13 @@ public class TestBaseObjectPool extends TestObjectPool {
         throw new UnsupportedOperationException("BaseObjectPool isn't a complete implementation.");
     }
 
+    protected ObjectPool makeEmptyPoolWithActiveLimit(PoolableObjectFactory factory, int activeLimit) throws UnsupportedOperationException {
+        if (this.getClass() != TestBaseObjectPool.class) {
+            throw new AssertionError("Subclasses of TestBaseObjectPool must reimplement this method.");
+        }
+        throw new UnsupportedOperationException("BaseObjectPool isn't a complete implementation.");
+    }
+
     protected Object getNthObject(final int n) {
         if (this.getClass() != TestBaseObjectPool.class) {
             throw new AssertionError("Subclasses of TestBaseObjectPool must reimplement this method.");

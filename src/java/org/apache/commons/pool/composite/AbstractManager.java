@@ -80,11 +80,14 @@ abstract class AbstractManager implements Manager, Serializable {
     public abstract Object nextFromPool() throws Exception;
 
     /**
-     * Return an object to the pool. Object will be {@link PoolableObjectFactory#passivateObject(Object) passivated}.
+     * Return an object to the pool.
+     * The Object's state will no longer be "active".
+     * The Object will be passes to a delegate to be made "idle".
      *
      * @param obj the object to return to the pool.
      */
     public void returnToPool(final Object obj) {
+        objectPool.getTracker().returned(obj);
         objectPool.getLender().repay(obj);
     }
 

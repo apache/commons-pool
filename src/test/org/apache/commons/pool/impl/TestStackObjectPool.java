@@ -51,6 +51,10 @@ public class TestStackObjectPool extends TestBaseObjectPool {
         return new StackObjectPool(factory);
     }
 
+    protected ObjectPool makeEmptyPoolWithActiveLimit(final PoolableObjectFactory factory, final int activeLimit) throws UnsupportedOperationException {
+        throw new UnsupportedOperationException("StackObjectPool doesn't support an active limit.");
+    }
+
     protected Object getNthObject(int n) {
         return String.valueOf(n);
     }

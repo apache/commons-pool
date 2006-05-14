@@ -57,7 +57,7 @@ public class TestWaitLimitManager extends TestActiveLimitManager {
     }
 
     protected CompositeObjectPool createPool(final PoolableObjectFactory pof, final Manager manager) {
-        return new CompositeObjectPoolFullSync(pof, manager, new FifoLender(), new SimpleTracker(), false, null);
+        return new CompositeObjectPool(pof, manager, new FifoLender(), new SimpleTracker(), false, null);
     }
 
     public void testMaxWaitMillis() throws Exception {

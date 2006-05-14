@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.Set;
+import java.util.HashSet;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -65,6 +67,12 @@ public class TestCompositeObjectPool extends TestObjectPool {
 
     protected ObjectPool makeEmptyPool(final PoolableObjectFactory factory) {
         return new CompositeObjectPool(factory, new GrowManager(), new FifoLender(), new SimpleTracker(), false);
+    }
+
+    protected ObjectPool makeEmptyPoolWithActiveLimit(final PoolableObjectFactory factory, final int activeLimit) throws UnsupportedOperationException {
+        final CompositeObjectPoolFactory copf = new CompositeObjectPoolFactory(factory);
+        copf.setMaxActive(activeLimit);
+        return copf.createPool();
     }
 
     public void testConstructors() {
@@ -269,12 +277,56 @@ public class TestCompositeObjectPool extends TestObjectPool {
         manager.setMaxWaitMillis(100);
         pool = new CompositeObjectPool(new IntegerFactory(), manager, new FifoLender(), new DebugTracker(), false);
 
+        assertEquals(0, pool.getNumActive());
+
+        final Integer zero = (Integer)pool.borrowObject();
+        assertEquals(1, pool.getNumActive());
+
+        // Test that the max wait
         try {
             pool.borrowObject();
-            fail("WaitLimitManager should fail with a normal CompositeObjectPool.");
-        } catch (AssertionError ae) {
+            fail("Should have thrown a NoSuchElementException");
+        } catch(NoSuchElementException nsee) {
             // expected
         }
+
+        // test that if an object is returned while waiting it works.
+        // What happens is:
+        // this thread locks pool.pool and starts Thread t.
+        // this thread will get wait for an object to become available and relase the lock on pool.pool
+        // Thread t will then be able to lock on pool.pool and return an object
+        // this thread will then be able to borrow an object and should reutrn.
+        final List actualOrder = new ArrayList();
+        final Runnable r = new Runnable() {
+            public void run() {
+                try {
+                    synchronized(pool.getPool()) {
+                        pool.returnObject(zero);
+                        actualOrder.add("returned");
+                    }
+                } catch (Exception e) {
+                    waitFailed = true;
+                }
+            }
+        };
+        final Thread t = new Thread(r);
+
+        synchronized (pool.getPool()) {
+            t.start();
+
+            actualOrder.add("waiting");
+            assertEquals(zero, pool.borrowObject());
+            actualOrder.add("borrowed");
+        }
+
+        assertEquals("Wait failed", false, waitFailed);
+
+        List expectedOrder = new ArrayList();
+        expectedOrder.add("waiting");
+        expectedOrder.add("returned");
+        expectedOrder.add("borrowed");
+
+        assertEquals(expectedOrder, actualOrder);
     }
     private boolean waitFailed = false;
 

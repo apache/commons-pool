@@ -218,8 +218,9 @@ class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
         }
     }
 
-    protected boolean addObjectToPool(final Object obj) {
+    private boolean addObjectToPool(final Object obj) {
         if (isOpen()) {
+            tracker.borrowed(obj); // pretend
             manager.returnToPool(obj);
             return true;
         }
@@ -252,10 +253,8 @@ class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
      * @throws Exception if there is an unexpected problem.
      * @see #borrowObject()
      */
-    protected Object borrowObjectFromPool() throws Exception {
-        final Object obj = manager.nextFromPool();
-        tracker.borrowed(obj);
-        return obj;
+    private Object borrowObjectFromPool() throws Exception {
+        return manager.nextFromPool();
     }
 
     /**
@@ -286,10 +285,9 @@ class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
         }
     }
 
-    protected boolean returnObjectToPool(final Object obj) {
+    private boolean returnObjectToPool(final Object obj) {
         // if the pool is closed, don't return objects
         if (isOpen()) {
-            tracker.returned(obj);
             manager.returnToPool(obj);
             return true;
         }

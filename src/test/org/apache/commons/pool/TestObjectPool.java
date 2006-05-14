@@ -20,6 +20,8 @@ import junit.framework.TestCase;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  * Abstract {@link TestCase} for {@link ObjectPool} implementations.
@@ -40,6 +42,13 @@ public abstract class TestObjectPool extends TestCase {
      * @throws UnsupportedOperationException if the pool being tested does not follow pool contracts.
      */
     protected abstract ObjectPool makeEmptyPool(PoolableObjectFactory factory) throws UnsupportedOperationException;
+
+    /**
+     * Create an <code>ObjectPool</code> with the specified factory and
+     * limit on the number of concurrently active objects.
+     * @throws UnsupportedOperationException if the pool being tested does not have a max active limit.
+     */
+    protected abstract ObjectPool makeEmptyPoolWithActiveLimit(PoolableObjectFactory factory, int activeLimit) throws UnsupportedOperationException;
 
     public void testClosedPoolBehavior() throws Exception {
         final ObjectPool pool;
@@ -378,5 +387,115 @@ public abstract class TestObjectPool extends TestCase {
     private static void clear(final MethodCallPoolableObjectFactory factory, final List expectedMethods) {
         factory.getMethodCalls().clear();
         expectedMethods.clear();
+    }
+
+    public void testMaxActiveLimit() throws Exception {
+        final int activeLimit = 15;
+        final MaxActiveLimitTesterFactory factory = new MaxActiveLimitTesterFactory();
+        final ObjectPool pool;
+        try {
+            pool = makeEmptyPoolWithActiveLimit(factory, activeLimit);
+        } catch (UnsupportedOperationException uoe) {
+            return; // test not supported
+        }
+
+        final ThreadGroup tg = new ThreadGroup("MaxActiveLimitTesters");
+        final Object lock = new Object();
+        final Runnable runnable = new MaxActiveLimitTester(pool, lock);
+        final Thread[] workers = new Thread[100];
+        synchronized (lock) {
+            for (int i=0; i < workers.length; i++) {
+                Thread t = new Thread(tg, runnable);
+                workers[i] = t;
+                t.start();
+            }
+        }
+        for (int i=0; i < workers.length; i++) {
+            workers[i].join();
+        }
+        assertEquals("Too many objects concurrently activated.", activeLimit, factory.getMaxActive());
+    }
+
+    private static class MaxActiveLimitTesterFactory extends BasePoolableObjectFactory {
+        private final Object lock = new Object();
+        private int count = 0;
+
+        private final Set activeSet = new HashSet();
+        private final Set passiveSet = new HashSet();
+        private int maxActive = 0;
+        private int maxPassive = 0;
+
+        public Object makeObject() throws Exception {
+            synchronized (lock) {
+                final Integer integer = new Integer(count++);
+                if (!activeSet.add(integer)) {
+                    throw new AssertionError("umm, sync issue!");
+                }
+                return integer;
+            }
+        }
+
+        public void activateObject(final Object obj) throws Exception {
+            synchronized (lock) {
+                if (!passiveSet.remove(obj)) {
+                    throw new AssertionError("Should never activate an object that isn't passive!");
+                }
+                activeSet.add(obj);
+                maxActive = Math.max(maxActive, activeSet.size());
+            }
+        }
+
+        public void passivateObject(Object obj) throws Exception {
+            synchronized (lock) {
+                if (!activeSet.remove(obj)) {
+                    throw new Error("Should never passivate an object that isn't active!");
+                }
+                passiveSet.add(obj);
+                maxPassive = Math.max(maxPassive, passiveSet.size());
+            }
+        }
+
+        public void destroyObject(Object obj) throws Exception {
+            synchronized (lock) {
+                activeSet.remove(obj);
+                passiveSet.remove(obj);
+            }
+        }
+
+        public int getCount() {
+            return count;
+        }
+
+        public int getMaxActive() {
+            return maxActive;
+        }
+
+        public int getMaxPassive() {
+            return maxPassive;
+        }
+    }
+
+    private static class MaxActiveLimitTester implements Runnable {
+        private final ObjectPool pool;
+        private final Object lock;
+
+        MaxActiveLimitTester(final ObjectPool pool, final Object lock) {
+            this.pool = pool;
+            this.lock = lock;
+        }
+
+        public void run() {
+            synchronized (lock) { // wait for it...
+            } // go!
+            final long end = System.currentTimeMillis() + (30 * 1000);
+            while (System.currentTimeMillis() < end) {
+                try {
+                    final Object o = pool.borrowObject();
+                    Thread.yield();
+                    pool.returnObject(o);
+                } catch (Exception e) {
+                }
+            }
+        }
     }
 }

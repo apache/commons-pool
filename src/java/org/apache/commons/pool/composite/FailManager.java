@@ -90,6 +90,7 @@ final class FailManager extends AbstractManager implements Serializable {
         }
 
         cause.set(null); // clear reference
+        objectPool.getTracker().borrowed(obj);
         return obj;
     }
 

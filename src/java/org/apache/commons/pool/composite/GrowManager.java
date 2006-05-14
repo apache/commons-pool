@@ -87,12 +87,12 @@ final class GrowManager extends AbstractManager implements Serializable {
         if (generator != null) {
             generator.cancel();
         }
+        objectPool.getTracker().borrowed(obj);
         return obj;
     }
 
     private class Generator extends TimerTask {
         private boolean returnToThread = true;
-        private volatile boolean done = false;
         private volatile Object obj;
         private Throwable throwable;
 
@@ -123,20 +123,18 @@ final class GrowManager extends AbstractManager implements Serializable {
                     return;
                 }
                 final List pool = objectPool.getPool();
+                final boolean passivate;
                 synchronized (pool) {
-                    done = true;
                     if (returnToThread) {
                         this.obj = obj;
                         pool.notifyAll();
+                        passivate = false;
                     } else {
-                        try {
-                            objectPool.getFactory().passivateObject(obj);
-                        } catch (Throwable t) {
-                            throwable = t;
-                            return;
-                        }
-                        objectPool.returnObjectToPoolManager(obj);
+                        passivate = true;
                     }
+                }
+                if (passivate) {
+                    passivateAndReturnToPool(obj);
                 }
             } finally {
                 if (keys != null) {
@@ -145,9 +143,28 @@ final class GrowManager extends AbstractManager implements Serializable {
             }
         }
 
+        private void passivateAndReturnToPool(final Object obj) {
+            final List pool = objectPool.getPool();
+            try {
+                objectPool.getFactory().passivateObject(obj);
+            } catch (Throwable t) {
+                throwable = t;
+                //return;
+            }
+            synchronized (pool) {
+                objectPool.getTracker().borrowed(obj); // pretend
+                objectPool.returnObjectToPoolManager(obj);
+            }
+        }
+
         public boolean cancel() {
             synchronized (objectPool.getPool()) {
                 returnToThread = false;
+                // If the originial thread borrowed from the pool before we could hand them an object.
+                if (obj != null) {
+                    passivateAndReturnToPool(obj);
+                    obj = null;
+                }
             }
             return super.cancel();
         }
@@ -163,6 +180,8 @@ final class GrowManager extends AbstractManager implements Serializable {
                     throw new Exception(throwable);
                 }
             }
+            final Object obj = this.obj;
+            this.obj = null;
             return obj;
         }
     }

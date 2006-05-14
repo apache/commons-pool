@@ -247,17 +247,8 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
         if (config == null) {
             throw new IllegalArgumentException("config must not be null.");
         }
-        if (needsFullSync(config)) {
-            return new CompositeObjectPoolFullSync(config.factory, getList(config), getManager(config), getLender(config),
-                    getTracker(config), config.validateOnReturn, config);
-        } else {
-            return new CompositeObjectPool(config.factory, getList(config), getManager(config), getLender(config),
-                    getTracker(config), config.validateOnReturn, config);
-        }
-    }
-
-    private static boolean needsFullSync(final FactoryConfig config) {
-        return config.maxActive > 0 && LimitPolicy.WAIT.equals(config.limitPolicy);
+        return new CompositeObjectPool(config.factory, getList(config), getManager(config), getLender(config),
+                getTracker(config), config.validateOnReturn, config);
     }
 
     /**
@@ -525,18 +516,20 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
     }
 
     /**
-     * Maximum number of objects associated with this pool. A non-positive value means there is no limit.
+     * Maximum number of active objects concurrently borrowed from the pool.
+     * A non-positive value means there is no limit.
      *
-     * @return if &gt; 0 the the maximum number of objects else no size limit.
+     * @return if &gt; 0 the the maximum number of concurrently active objects else no limit.
      */
     public int getMaxActive() {
         return maxActive;
     }
 
     /**
-     * Set the maximum number of objects associated with this pool. Any non-positive value means there is no limit.
+     * Set the maximum number of active objects concurrently borrowed from the pool.
+     * Any non-positive value means there is no limit.
      *
-     * @param maxActive the limit of active and idle objects in the pool or &lt;= 0 for no limit.
+     * @param maxActive the maximum number of active objects concurrently borrowed from the pool or &lt;= 0 for no limit.
      */
     public void setMaxActive(final int maxActive) {
         synchronized (lock){

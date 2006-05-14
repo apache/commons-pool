@@ -51,10 +51,7 @@ final class WaitLimitManager extends ActiveLimitManager implements Serializable 
      * @throws InterruptedException   when the {@link Thread} is interrupted.
      */
     public Object nextFromPool() throws NoSuchElementException, Exception, InterruptedException {
-        final Object poolLock = objectPool.getPool();
-        if (!Thread.holdsLock(poolLock)) {
-            throw new AssertionError("WaitLimitManager needs to be externally synchronized for proper behavior.");
-        }
+        final Object pool = objectPool.getPool();
         final long endTime = maxWaitMillis > 0 ? System.currentTimeMillis() + maxWaitMillis : Long.MAX_VALUE;
         while (maxWaitMillis <= 0 || endTime > System.currentTimeMillis()) {
             if (Thread.currentThread().isInterrupted()) {
@@ -63,12 +60,16 @@ final class WaitLimitManager extends ActiveLimitManager implements Serializable 
             if (objectPool.getNumActive() < getMaxActive()) {
                 return super.nextFromPool();
             }
-            // Don't wait if the pool was closed between the start of the while and here.
-            if (objectPool.isOpen()) {
-                final long waitTime = Math.max(1, endTime - System.currentTimeMillis());
-                poolLock.wait(maxWaitMillis > 0 ? waitTime : 0);
-            } else {
-                throw new IllegalStateException("Trying to aquire an object from a closed pool.");
+            synchronized (pool) {
+                // Don't wait if the pool was closed between the start of the while and here.
+                if (objectPool.isOpen()) {
+                    if (objectPool.getNumActive() >= getMaxActive()) {
+                        final long waitTime = Math.max(1, endTime - System.currentTimeMillis());
+                        pool.wait(maxWaitMillis > 0 ? waitTime : 0);
+                    }
+                } else {
+                    throw new IllegalStateException("Trying to aquire an object from a closed pool.");
+                }
             }
         }
         if (objectPool.isOpen()) {

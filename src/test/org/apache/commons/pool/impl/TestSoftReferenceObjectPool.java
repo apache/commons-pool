@@ -55,6 +55,10 @@ public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
         return new SoftReferenceObjectPool(factory);
     }
 
+    protected ObjectPool makeEmptyPoolWithActiveLimit(final PoolableObjectFactory factory, final int activeLimit) throws UnsupportedOperationException {
+        throw new UnsupportedOperationException("SoftReferenceObjectPool doesn't support an active limit.");
+    }
+
     protected Object getNthObject(int n) {
         return String.valueOf(n);
     }
