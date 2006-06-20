@@ -25,7 +25,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * This class consists exclusively of static methods that operate on or return keyedPool related interfaces.
+ * This class consists exclusively of static methods that operate on or return ObjectPool
+ * or KeyedObjectPool related interfaces.
  *
  * @author Sandy McArthur
  * @version $Revision$ $Date$
@@ -124,8 +125,8 @@ public final class PoolUtils {
      * The key is ignored.
      *
      * @param pool the {@link ObjectPool} to delegate to.
-     * @return a {@link KeyedObjectPool} that delegates to <code>keyedPool</code> ignoring the key.
-     * @throws IllegalArgumentException when <code>keyedPool</code> is <code>null</code>.
+     * @return a {@link KeyedObjectPool} that delegates to <code>pool</code> ignoring the key.
+     * @throws IllegalArgumentException when <code>pool</code> is <code>null</code>.
      * @since Pool 1.3
      */
     public static KeyedObjectPool adapt(final ObjectPool pool) throws IllegalArgumentException {
@@ -133,10 +134,10 @@ public final class PoolUtils {
     }
 
     /**
-     * Wraps an <code>ObjectPool</code> and dynamically checks the type of objects borrowed and returned to the keyedPool.
-     * If an object is passed to the keyedPool that isn't of type <code>type</code> a {@link ClassCastException} will be thrown.
+     * Wraps an <code>ObjectPool</code> and dynamically checks the type of objects borrowed and returned to the pool.
+     * If an object is passed to the pool that isn't of type <code>type</code> a {@link ClassCastException} will be thrown.
      *
-     * @param pool the keyedPool to enforce type safety on
+     * @param pool the pool to enforce type safety on
      * @return an <code>ObjectPool</code> that will only allow objects of <code>type</code>
      * @since Pool 1.3
      */
@@ -151,11 +152,11 @@ public final class PoolUtils {
     }
 
     /**
-     * Wraps an <code>KeyedObjectPool</code> and dynamically checks the type of objects borrowed and returned to the keyedPool.
+     * Wraps a <code>KeyedObjectPool</code> and dynamically checks the type of objects borrowed and returned to the keyedPool.
      * If an object is passed to the keyedPool that isn't of type <code>type</code> a {@link ClassCastException} will be thrown.
      *
      * @param keyedPool the keyedPool to enforce type safety on
-     * @return an <code>KeyedObjectPool</code> that will only allow objects of <code>type</code>
+     * @return a <code>KeyedObjectPool</code> that will only allow objects of <code>type</code>
      * @since Pool 1.3
      */
     public static KeyedObjectPool checkedPool(final KeyedObjectPool keyedPool, final Class type) {
@@ -169,15 +170,15 @@ public final class PoolUtils {
     }
 
     /**
-     * Periodically check the idle object count for the keyedPool. At most one idle object will be added per period.
+     * Periodically check the idle object count for the pool. At most one idle object will be added per period.
      * If there is an exception when calling {@link ObjectPool#addObject()} then no more checks will be performed.
      *
-     * @param pool the keyedPool to check periodically.
+     * @param pool the pool to check periodically.
      * @param minIdle if the {@link ObjectPool#getNumIdle()} is less than this then add an idle object.
-     * @param period the frequency to check the number of idle objects in a keyedPool, see
+     * @param period the frequency to check the number of idle objects in a pool, see
      *      {@link Timer#schedule(TimerTask, long, long)}.
      * @return the {@link TimerTask} that will periodically check the pools idle object count.
-     * @throws IllegalArgumentException when <code>keyedPool</code> is <code>null</code> or
+     * @throws IllegalArgumentException when <code>pool</code> is <code>null</code> or
      *      when <code>minIdle</code> is negative or when <code>period</code> isn't
      *      valid for {@link Timer#schedule(TimerTask, long, long)}.
      * @since Pool 1.3
@@ -256,17 +257,17 @@ public final class PoolUtils {
     }
 
     /**
-     * Call <code>addObject()</code> on <code>keyedPool</code> <code>count</code> number of times.
+     * Call <code>addObject()</code> on <code>pool</code> <code>count</code> number of times.
      *
-     * @param pool the keyedPool to prefill.
+     * @param pool the pool to prefill.
      * @param count the number of idle objects to add.
      * @throws Exception when {@link ObjectPool#addObject()} fails.
-     * @throws IllegalArgumentException when <code>keyedPool</code> is <code>null</code>.
+     * @throws IllegalArgumentException when <code>pool</code> is <code>null</code>.
      * @since Pool 1.3
      */
     public static void prefill(final ObjectPool pool, final int count) throws Exception, IllegalArgumentException {
         if (pool == null) {
-            throw new IllegalArgumentException("keyedPool must not be null.");
+            throw new IllegalArgumentException("pool must not be null.");
         }
         for (int i = 0; i < count; i++) {
             pool.addObject();
@@ -323,6 +324,13 @@ public final class PoolUtils {
     /**
      * Returns a synchronized (thread-safe) ObjectPool backed by the specified ObjectPool.
      *
+     * <p><b>Note:</b>
+     * This should not be used on pool implementations that already provide proper synchronization
+     * such as the pools provided in the Commons Pool library. Wrapping a pool that
+     * {@link #wait waits} for poolable objects to be returned before allowing another one to be
+     * borrowed with another layer of synchronization will cause a deadlock.
+     * </p>
+     *
      * @param pool the ObjectPool to be "wrapped" in a synchronized ObjectPool.
      * @return a synchronized view of the specified ObjectPool.
      * @since Pool 1.3
@@ -333,6 +341,13 @@ public final class PoolUtils {
 
     /**
      * Returns a synchronized (thread-safe) KeyedObjectPool backed by the specified KeyedObjectPool.
+     *
+     * <p><b>Note:</b>
+     * This should not be used on pool implementations that already provide proper synchronization
+     * such as the pools provided in the Commons Pool library. Wrapping a pool that
+     * {@link #wait waits} for poolable objects to be returned before allowing another one to be
+     * borrowed with another layer of synchronization will cause a deadlock.
+     * </p>
      *
      * @param keyedPool the KeyedObjectPool to be "wrapped" in a synchronized KeyedObjectPool.
      * @return a synchronized view of the specified KeyedObjectPool.
@@ -527,7 +542,7 @@ public final class PoolUtils {
 
         KeyedObjectPoolAdaptor(final ObjectPool pool) throws IllegalArgumentException {
             if (pool == null) {
-                throw new IllegalArgumentException("keyedPool must not be null.");
+                throw new IllegalArgumentException("pool must not be null.");
             }
             this.pool = pool;
         }
@@ -583,7 +598,7 @@ public final class PoolUtils {
         public String toString() {
             final StringBuffer sb = new StringBuffer();
             sb.append("KeyedObjectPoolAdaptor");
-            sb.append("{keyedPool=").append(pool);
+            sb.append("{pool=").append(pool);
             sb.append('}');
             return sb.toString();
         }
@@ -657,7 +672,7 @@ public final class PoolUtils {
             final StringBuffer sb = new StringBuffer();
             sb.append("CheckedObjectPool");
             sb.append("{type=").append(type);
-            sb.append(", keyedPool=").append(pool);
+            sb.append(", pool=").append(pool);
             sb.append('}');
             return sb.toString();
         }
@@ -755,7 +770,7 @@ public final class PoolUtils {
 
         ObjectPoolMinIdleTimerTask(final ObjectPool pool, final int minIdle) throws IllegalArgumentException {
             if (pool == null) {
-                throw new IllegalArgumentException("poll must not be null.");
+                throw new IllegalArgumentException("pool must not be null.");
             }
             this.pool = pool;
             this.minIdle = minIdle;
@@ -784,7 +799,7 @@ public final class PoolUtils {
             final StringBuffer sb = new StringBuffer();
             sb.append("ObjectPoolMinIdleTimerTask");
             sb.append("{minIdle=").append(minIdle);
-            sb.append(", keyedPool=").append(pool);
+            sb.append(", pool=").append(pool);
             sb.append('}');
             return sb.toString();
         }
@@ -793,13 +808,13 @@ public final class PoolUtils {
     private static class KeyedObjectPoolMinIdleTimerTask extends TimerTask {
         private final int minIdle;
         private final Object key;
-        private final KeyedObjectPool pool;
+        private final KeyedObjectPool keyedPool;
 
-        KeyedObjectPoolMinIdleTimerTask(final KeyedObjectPool pool, final Object key, final int minIdle) throws IllegalArgumentException {
-            if (pool == null) {
+        KeyedObjectPoolMinIdleTimerTask(final KeyedObjectPool keyedPool, final Object key, final int minIdle) throws IllegalArgumentException {
+            if (keyedPool == null) {
                 throw new IllegalArgumentException("keyedPool must not be null.");
             }
-            this.pool = pool;
+            this.keyedPool = keyedPool;
             this.key = key;
             this.minIdle = minIdle;
         }
@@ -807,8 +822,8 @@ public final class PoolUtils {
         public void run() {
             boolean success = false;
             try {
-                if (pool.getNumIdle(key) < minIdle) {
-                    pool.addObject(key);
+                if (keyedPool.getNumIdle(key) < minIdle) {
+                    keyedPool.addObject(key);
                 }
                 success = true;
 
@@ -828,7 +843,7 @@ public final class PoolUtils {
             sb.append("KeyedObjectPoolMinIdleTimerTask");
             sb.append("{minIdle=").append(minIdle);
             sb.append(", key=").append(key);
-            sb.append(", keyedPool=").append(pool);
+            sb.append(", keyedPool=").append(keyedPool);
             sb.append('}');
             return sb.toString();
         }
@@ -840,7 +855,7 @@ public final class PoolUtils {
 
         SynchronizedObjectPool(final ObjectPool pool) throws IllegalArgumentException {
             if (pool == null) {
-                throw new IllegalArgumentException("keyedPool must not be null.");
+                throw new IllegalArgumentException("pool must not be null.");
             }
             this.pool = pool;
             lock = new Object();
@@ -903,7 +918,7 @@ public final class PoolUtils {
         public String toString() {
             final StringBuffer sb = new StringBuffer();
             sb.append("SynchronizedObjectPool");
-            sb.append("{keyedPool=").append(pool);
+            sb.append("{pool=").append(pool);
             sb.append('}');
             return sb.toString();
         }
