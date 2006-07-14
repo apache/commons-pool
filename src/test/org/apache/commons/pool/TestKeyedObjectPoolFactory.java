@@ -24,8 +24,8 @@ import junit.framework.TestCase;
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  */
-public class TestKeyedObjectPoolFactory extends TestCase {
-    public TestKeyedObjectPoolFactory(final String name) {
+public abstract class TestKeyedObjectPoolFactory extends TestCase {
+    protected TestKeyedObjectPoolFactory(final String name) {
         super(name);
     }
 
@@ -39,9 +39,7 @@ public class TestKeyedObjectPoolFactory extends TestCase {
     /**
      * @throws UnsupportedOperationException when this is unsupported by this KeyedPoolableObjectFactory type.
      */
-    protected KeyedObjectPoolFactory makeFactory(KeyedPoolableObjectFactory objectFactory) throws UnsupportedOperationException{
-        throw new UnsupportedOperationException("Subclass needs to override makeFactory method.");
-    }
+    protected abstract KeyedObjectPoolFactory makeFactory(KeyedPoolableObjectFactory objectFactory) throws UnsupportedOperationException;
 
     protected static KeyedPoolableObjectFactory createObjectFactory() {
         return PoolUtils.adapt(new MethodCallPoolableObjectFactory());
