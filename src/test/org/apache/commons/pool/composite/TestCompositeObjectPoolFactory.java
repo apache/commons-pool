@@ -241,18 +241,6 @@ public class TestCompositeObjectPoolFactory extends TestObjectPoolFactory {
         }
     }
 
-    public void testTrackingPolicyNull() throws Exception {
-        final CompositeObjectPoolFactory copf = (CompositeObjectPoolFactory)makeFactory();
-        copf.setTrackingPolicy(TrackingPolicy.NULL);
-        final ObjectPool pool = copf.createPool();
-
-        assertTrue(pool.getNumActive() < 0);
-        Object a = pool.borrowObject();
-        assertTrue(pool.getNumActive() < 0);
-        pool.returnObject(a);
-        assertTrue(pool.getNumActive() < 0);
-    }
-
     public void testTrackingPolicySimple() throws Exception {
         final CompositeObjectPoolFactory copf = (CompositeObjectPoolFactory)makeFactory();
         copf.setTrackingPolicy(TrackingPolicy.SIMPLE);

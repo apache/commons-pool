@@ -55,7 +55,6 @@ public class TestAll extends TestCase {
         suite.addTest(TestWaitLimitManager.suite());
 
         // Tackers unit tests
-        suite.addTest(TestNullTracker.suite());
         suite.addTest(TestReferenceTracker.suite());
         suite.addTest(TestDebugTracker.suite());
         suite.addTest(TestSimpleTracker.suite());
