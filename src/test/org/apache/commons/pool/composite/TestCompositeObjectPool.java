@@ -326,22 +326,6 @@ public class TestCompositeObjectPool extends TestObjectPool {
     // Test Trackers --------------------------------------
 
     /**
-     * Make sure the {@link NullTracker} doesn't do anything and throws an {@link UnsupportedOperationException}.
-     */
-    public void testNullTracker() throws Exception {
-        pool = new CompositeObjectPool(new IntegerFactory(), new GrowManager(), new FifoLender(), new NullTracker(), false);
-        assertTrue("Expected negative value.", pool.getNumActive() < 0);
-
-        final Integer zero = (Integer)pool.borrowObject();
-
-        assertTrue("Expected negative value.", pool.getNumActive() < 0);
-
-        pool.returnObject(zero);
-
-        assertTrue("Expected negative value.", pool.getNumActive() < 0);
-    }
-
-    /**
      * Make sure {@link SimpleTracker} counts the number of borrowed and returned objects and that an
      * {@link IllegalStateException} is thrown when more objects are returned than were borrowed.
      */

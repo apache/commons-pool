@@ -352,9 +352,6 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
 
         final int maxActive = config.maxActive;
         if (maxActive > 0) {
-            if (TrackingPolicy.NULL.equals(config.trackingPolicy)) {
-                throw new IllegalStateException("Using the NULL tracker and limiting pool size is not valid.");
-            }
             final LimitPolicy limitPolicy = config.limitPolicy;
             if (LimitPolicy.FAIL.equals(limitPolicy)) {
                 manager = new FailLimitManager(manager);
@@ -385,8 +382,6 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
         final TrackingPolicy trackingPolicy = config.trackingPolicy;
         if (TrackingPolicy.SIMPLE.equals(trackingPolicy)) {
             tracker = new SimpleTracker();
-        } else if (TrackingPolicy.NULL.equals(trackingPolicy)) {
-            tracker = new NullTracker();
         } else if (TrackingPolicy.REFERENCE.equals(trackingPolicy)) {
             tracker = new ReferenceTracker();
         } else if (TrackingPolicy.DEBUG.equals(trackingPolicy)) {
