@@ -14,7 +14,7 @@
   ~ limitations under the License.
   -->
 
-<!-- $Id: $ -->
+<!-- $Id$ -->
 <html>
 <body>
 <p>
@@ -152,8 +152,7 @@
 <p>
     {@link org.apache.commons.pool.composite.Tracker}: a tracker's sole responsibility is keeping track of
     active objects borrowed from the pool. A tracker will never touch an object that is considered to be idle. The
-    {@link org.apache.commons.pool.composite.NullTracker} and
-    {@link org.apache.commons.pool.composite.SimpleTracker} classes are very simple. The
+    {@link org.apache.commons.pool.composite.SimpleTracker} classes is very simple. The
     {@link org.apache.commons.pool.composite.ReferenceTracker} is much more interesting. It can detect when a
     borrowed object is not returned to the pool (assuming the garbage collector does it's thing in a timely manner).
     Most of it's complexity comes from the need to carefully track borrowed objects without creating a strong reference
