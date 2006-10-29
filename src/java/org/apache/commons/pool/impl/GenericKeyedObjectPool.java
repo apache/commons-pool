@@ -1451,7 +1451,15 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         }
 
         public int compareTo(ObjectTimestampPair other) {
-            return (int) (this.tstamp - other.tstamp);
+            final long tstampdiff = this.tstamp - other.tstamp;
+            if (tstampdiff == 0) {
+                // make sure the natural ordering is consistent with equals
+                // see java.lang.Comparable Javadocs
+                return System.identityHashCode(this) - System.identityHashCode(other);
+            } else {
+                // handle int overflow
+                return (int)Math.min(Math.max(tstampdiff, Integer.MIN_VALUE), Integer.MAX_VALUE);
+            }
         }
     }
 
