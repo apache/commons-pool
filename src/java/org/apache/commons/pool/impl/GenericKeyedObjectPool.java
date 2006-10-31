@@ -429,7 +429,6 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         _testWhileIdle = testWhileIdle;
 
         _poolMap = new HashMap();
-        _activeMap = new HashMap();
 
         startEvictor(_timeBetweenEvictionRunsMillis);
     }
@@ -770,15 +769,15 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         long starttime = System.currentTimeMillis();
         boolean newlyCreated = false;
         for(;;) {
-            LinkedList pool = (LinkedList)(_poolMap.get(key));
+            ObjectQueue pool = (ObjectQueue)(_poolMap.get(key));
             if(null == pool) {
-                pool = new LinkedList();
+                pool = new ObjectQueue();
                 _poolMap.put(key,pool);
             }
             ObjectTimestampPair pair = null;
             // if there are any sleeping, just grab one of those
             try {
-                pair = (ObjectTimestampPair)(pool.removeFirst());
+                pair = (ObjectTimestampPair)(pool.queue.removeFirst());
                 if(null != pair) {
                     _totalIdle--;
                 }
@@ -794,8 +793,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
                 // check if we can create one
                 // (note we know that the num sleeping is 0, else we wouldn't be here)
-                int active = getActiveCount(key);
-                if ((_maxActive < 0 || active < _maxActive) &&
+                if ((_maxActive < 0 || pool.activeCount < _maxActive) &&
                     (_maxTotal < 0 || _totalActive + _totalIdle < _maxTotal)) {
                     Object obj = _factory.makeObject(key);
                     pair = new ObjectTimestampPair(obj);
@@ -837,7 +835,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 }
             }
             if (newlyCreated) {
-                incrementActiveCount(key);
+                pool.incrementActiveCount();
                 return pair.value;
             } else {
                 try {
@@ -867,7 +865,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                         throw new NoSuchElementException("Could not create a validated object");
                     } // else keep looping
                 } else {
-                    incrementActiveCount(key);
+                    pool.incrementActiveCount();
                     return pair.value;
                 }
 
@@ -879,9 +877,10 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * Clears the pool, removing all pooled instances.
      */
     public synchronized void clear() {
-        for(Iterator keyiter = _poolMap.keySet().iterator(); keyiter.hasNext(); ) {
-            Object key = keyiter.next();
-            final LinkedList list = (LinkedList)(_poolMap.get(key));
+        for(Iterator entries = _poolMap.entrySet().iterator(); entries.hasNext(); ) {
+            final Map.Entry entry = (Map.Entry)entries.next();
+            final Object key = entry.getKey();
+            final LinkedList list = ((ObjectQueue)(entry.getValue())).queue;
             for(Iterator it = list.iterator(); it.hasNext(); ) {
                 try {
                     _factory.destroyObject(key,((ObjectTimestampPair)(it.next())).value);
@@ -905,16 +904,15 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      */
     public synchronized void clearOldest() {
         // build sorted map of idle objects
-        TreeMap map = new TreeMap();
+        final Map map = new TreeMap();
         for (Iterator keyiter = _poolMap.keySet().iterator(); keyiter.hasNext();) {
-            Object key = keyiter.next();
-            LinkedList list = (LinkedList) _poolMap.get(key);
+            final Object key = keyiter.next();
+            final LinkedList list = ((ObjectQueue)_poolMap.get(key)).queue;
             for (Iterator it = list.iterator(); it.hasNext();) {
                 // each item into the map uses the objectimestamppair object
                 // as the key.  It then gets sorted based on the timstamp field
                 // each value in the map is the parent list it belongs in.
-                ObjectTimestampPair pair = (ObjectTimestampPair) it.next();
-                map.put(pair, key);
+                map.put(it.next(), key);
             }
         }
 
@@ -930,7 +928,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             // key references is the key of the list it belongs to.
             Object key = entry.getValue();
             ObjectTimestampPair pairTimeStamp = (ObjectTimestampPair) entry.getKey();
-            LinkedList list = (LinkedList) _poolMap.get(key);
+            final LinkedList list = ((ObjectQueue)(_poolMap.get(key))).queue;
             list.remove(pairTimeStamp);
 
             try {
@@ -954,11 +952,11 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @param key the key to clear
      */
     public synchronized void clear(Object key) {
-        LinkedList pool = (LinkedList)(_poolMap.remove(key));
+        final ObjectQueue pool = (ObjectQueue)(_poolMap.remove(key));
         if(null == pool) {
             return;
         } else {
-            for(Iterator it = pool.iterator(); it.hasNext(); ) {
+            for(Iterator it = pool.queue.iterator(); it.hasNext(); ) {
                 try {
                     _factory.destroyObject(key,((ObjectTimestampPair)(it.next())).value);
                 } catch(Exception e) {
@@ -997,7 +995,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @return the number of instances corresponding to the given <code>key</code> currently borrowed in this pool
      */
     public synchronized int getNumActive(Object key) {
-        return getActiveCount(key);
+        final ObjectQueue pool = (ObjectQueue)(_poolMap.get(key));
+        return pool != null ? pool.activeCount : 0;
     }
 
     /**
@@ -1007,11 +1006,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @return the number of instances corresponding to the given <code>key</code> currently idle in this pool
      */
     public synchronized int getNumIdle(Object key) {
-        try {
-            return((LinkedList)(_poolMap.get(key))).size();
-        } catch(Exception e) {
-            return 0;
-        }
+        final ObjectQueue pool = (ObjectQueue)(_poolMap.get(key));
+        return pool != null ? pool.queue.size() : 0;
     }
 
     public synchronized void returnObject(Object key, Object obj) throws Exception {
@@ -1044,19 +1040,19 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
         boolean shouldDestroy = false;
         // grab the pool (list) of objects associated with the given key
-        LinkedList pool = (LinkedList) (_poolMap.get(key));
+        ObjectQueue pool = (ObjectQueue) (_poolMap.get(key));
         // if it doesn't exist, create it
         if(null == pool) {
-            pool = new LinkedList();
+            pool = new ObjectQueue();
             _poolMap.put(key, pool);
         }
-        decrementActiveCount(key);
+        pool.decrementActiveCount();
         // if there's no space in the pool, flag the object for destruction
         // else if we passivated succesfully, return it to the pool
-        if(_maxIdle >= 0 && (pool.size() >= _maxIdle)) {
+        if(_maxIdle >= 0 && (pool.queue.size() >= _maxIdle)) {
             shouldDestroy = true;
         } else if(success) {
-            pool.addLast(new ObjectTimestampPair(obj));
+            pool.queue.addLast(new ObjectTimestampPair(obj));
             _totalIdle++;
         }
         notifyAll();
@@ -1076,7 +1072,12 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         } catch (Exception e) {
             // swallowed
         } finally {
-            decrementActiveCount(key);
+            ObjectQueue pool = (ObjectQueue) (_poolMap.get(key));
+            if(null == pool) {
+                pool = new ObjectQueue();
+                _poolMap.put(key, pool);
+            }
+            pool.decrementActiveCount();
             notifyAll(); // _totalActive has changed
         }
     }
@@ -1108,18 +1109,18 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
         boolean shouldDestroy = false;
         // grab the pool (list) of objects associated with the given key
-        LinkedList pool = (LinkedList) (_poolMap.get(key));
+        ObjectQueue pool = (ObjectQueue) (_poolMap.get(key));
         // if it doesn't exist, create it
         if(null == pool) {
-            pool = new LinkedList();
+            pool = new ObjectQueue();
             _poolMap.put(key, pool);
         }
         // if there's no space in the pool, flag the object for destruction
         // else if we passivated succesfully, return it to the pool
-        if(_maxIdle >= 0 && (pool.size() >= _maxIdle)) {
+        if(_maxIdle >= 0 && (pool.queue.size() >= _maxIdle)) {
             shouldDestroy = true;
         } else if(success) {
-            pool.addLast(new ObjectTimestampPair(obj));
+            pool.queue.addLast(new ObjectTimestampPair(obj));
             _totalIdle++;
         }
         notifyAll();
@@ -1141,9 +1142,9 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * will start a sustain cycle immediately.
      */
     public synchronized void preparePool(Object key, boolean populateImmediately) {
-        LinkedList pool = (LinkedList)(_poolMap.get(key));
+        ObjectQueue pool = (ObjectQueue)(_poolMap.get(key));
         if (null == pool) {
-            pool = new LinkedList();
+            pool = new ObjectQueue();
             _poolMap.put(key,pool);
         }
 
@@ -1211,7 +1212,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
                 // if we don't have a keyed object pool iterator
                 if (objIter == null) {
-                    final LinkedList list = (LinkedList)_poolMap.get(key);
+                    final LinkedList list = ((ObjectQueue)_poolMap.get(key)).queue;
                     if (_evictLastIndex < 0 || _evictLastIndex > list.size()) {
                         _evictLastIndex = list.size();
                     }
@@ -1257,7 +1258,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                             // {@link #getMinIdle <code>minIdle</code>} is > 0.
                             //
                             // Otherwise if it was the last object for that key, drop that pool
-                            if ((_minIdle == 0) && (((LinkedList)(_poolMap.get(key))).isEmpty())) {
+                            if ((_minIdle == 0) && (((ObjectQueue)(_poolMap.get(key))).queue.isEmpty())) {
                                 _poolMap.remove(key);
                             }
                         } catch(Exception e) {
@@ -1356,37 +1357,6 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         }
     }
 
-    private void incrementActiveCount(Object key) {
-        _totalActive++;
-        Integer active = (Integer)(_activeMap.get(key));
-        if(null == active) {
-            _activeMap.put(key,new Integer(1));
-        } else {
-            _activeMap.put(key,new Integer(active.intValue() + 1));
-        }
-    }
-
-    private void decrementActiveCount(Object key) {
-        _totalActive--;
-        Integer active = (Integer)(_activeMap.get(key));
-        if(null == active) {
-            // do nothing, either null or zero is OK
-        } else if(active.intValue() <= 1) {
-            _activeMap.remove(key);
-        } else {
-            _activeMap.put(key, new Integer(active.intValue() - 1));
-        }
-    }
-
-    private int getActiveCount(Object key) {
-        int active = 0;
-        Integer act = (Integer)(_activeMap.get(key));
-        if(null != act) {
-            active = act.intValue();
-        }
-        return active;
-    }
-
     /**
      * This returns the number of objects to create during the pool
      * sustain cycle. This will ensure that the minimum number of idle
@@ -1422,6 +1392,26 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
     //--- inner classes ----------------------------------------------
 
+    /**
+     * A "struct" that keeps additional information about the actual queue of pooled objects.
+     */
+    private class ObjectQueue {
+        private int activeCount = 0;
+        private final LinkedList queue = new LinkedList();
+
+        void incrementActiveCount() {
+            _totalActive++;
+            activeCount++;
+        }
+
+        void decrementActiveCount() {
+            _totalActive--;
+            if (activeCount > 0) {
+                activeCount--;
+            }
+        }
+    }
+    
     /**
      * A simple "struct" encapsulating an object instance and a timestamp.
      *
@@ -1644,11 +1634,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      */
     private long _minEvictableIdleTimeMillis = DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 
-    /** My hash of pools (CursorableLinkedLists). */
-    private HashMap _poolMap = null;
-
-    /** Count of active objects, per key. */
-    private HashMap _activeMap = null;
+    /** My hash of pools (ObjectQueue). */
+    private Map _poolMap = null;
 
     /** The total number of active instances. */
     private int _totalActive = 0;
