@@ -16,6 +16,12 @@
 
 package org.apache.commons.pool;
 
+import org.apache.commons.pool.impl.GenericKeyedObjectPool;
+import org.apache.commons.pool.impl.StackKeyedObjectPool;
+import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.commons.pool.impl.SoftReferenceObjectPool;
+import org.apache.commons.pool.impl.StackObjectPool;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -328,7 +334,7 @@ public final class PoolUtils {
      * This should not be used on pool implementations that already provide proper synchronization
      * such as the pools provided in the Commons Pool library. Wrapping a pool that
      * {@link #wait waits} for poolable objects to be returned before allowing another one to be
-     * borrowed with another layer of synchronization will cause a deadlock.
+     * borrowed with another layer of synchronization will cause liveliness issues or a deadlock.
      * </p>
      *
      * @param pool the ObjectPool to be "wrapped" in a synchronized ObjectPool.
@@ -336,6 +342,17 @@ public final class PoolUtils {
      * @since Pool 1.3
      */
     public static ObjectPool synchronizedPool(final ObjectPool pool) {
+        if (pool == null) {
+            throw new IllegalArgumentException("pool must not be null.");
+        }
+        assert !(pool instanceof GenericObjectPool)
+                : "GenericObjectPool is already thread-safe";
+        assert !(pool instanceof SoftReferenceObjectPool)
+                : "SoftReferenceObjectPool is already thread-safe";
+        assert !(pool instanceof StackObjectPool)
+                : "StackObjectPool is already thread-safe";
+        assert !"org.apache.commons.pool.composite.CompositeObjectPool".equals(pool.getClass().getName())
+                : "CompositeObjectPools are already thread-safe";
         return new SynchronizedObjectPool(pool);
     }
 
@@ -346,7 +363,7 @@ public final class PoolUtils {
      * This should not be used on pool implementations that already provide proper synchronization
      * such as the pools provided in the Commons Pool library. Wrapping a pool that
      * {@link #wait waits} for poolable objects to be returned before allowing another one to be
-     * borrowed with another layer of synchronization will cause a deadlock.
+     * borrowed with another layer of synchronization will cause liveliness issues or a deadlock.
      * </p>
      *
      * @param keyedPool the KeyedObjectPool to be "wrapped" in a synchronized KeyedObjectPool.
@@ -354,6 +371,15 @@ public final class PoolUtils {
      * @since Pool 1.3
      */
     public static KeyedObjectPool synchronizedPool(final KeyedObjectPool keyedPool) {
+        if (keyedPool == null) {
+            throw new IllegalArgumentException("keyedPool must not be null.");
+        }
+        assert !(keyedPool instanceof GenericKeyedObjectPool)
+                : "GenericKeyedObjectPool is already thread-safe";
+        assert !(keyedPool instanceof StackKeyedObjectPool)
+                : "StackKeyedObjectPool is already thread-safe";
+        assert !"org.apache.commons.pool.composite.CompositeKeyedObjectPool".equals(keyedPool.getClass().getName())
+                : "CompositeKeyedObjectPools are already thread-safe";
         return new SynchronizedKeyedObjectPool(keyedPool);
     }
 
