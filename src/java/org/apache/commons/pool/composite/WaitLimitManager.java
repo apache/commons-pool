@@ -29,7 +29,7 @@ import java.util.NoSuchElementException;
  * @see LimitPolicy#WAIT
  * @author Sandy McArthur
  * @version $Revision$ $Date$
- * @since #.#
+ * @since Pool 2.0
  */
 final class WaitLimitManager extends ActiveLimitManager implements Serializable {
 

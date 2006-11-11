@@ -24,7 +24,7 @@ import java.io.Serializable;
  * @see LimitPolicy
  * @author Sandy McArthur
  * @version $Revision$ $Date$
- * @since #.#
+ * @since Pool 2.0
  */
 abstract class ActiveLimitManager extends DelegateManager implements Serializable {
 

@@ -125,6 +125,7 @@ import org.apache.commons.pool.impl.GenericKeyedObjectPool.ObjectTimestampPair;
  * @author Dirk Verbeeck
  * @author Sandy McArthur
  * @version $Revision$ $Date$
+ * @since Pool 1.0
  */
 public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
@@ -503,6 +504,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * When less than 0, the {@link #borrowObject} method
      * may block indefinitely.
      *
+     * @return maximum number of milliseconds to block when borrowing an object.
      * @see #setMaxWait
      * @see #setWhenExhaustedAction
      * @see #WHEN_EXHAUSTED_BLOCK
@@ -521,6 +523,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * When less than 0, the {@link #borrowObject} method
      * may block indefinitely.
      *
+     * @param maxWait maximum number of milliseconds to block when borrowing an object.
      * @see #getMaxWait
      * @see #setWhenExhaustedAction
      * @see #WHEN_EXHAUSTED_BLOCK
@@ -584,6 +587,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * it will be dropped from the pool, and we will attempt
      * to borrow another.
      *
+     * @return <code>true</code> if objects are validated before being borrowed.
      * @see #setTestOnBorrow
      */
     public synchronized boolean getTestOnBorrow() {
@@ -598,6 +602,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * it will be dropped from the pool, and we will attempt
      * to borrow another.
      *
+     * @param testOnBorrow <code>true</code> if objects should be validated before being borrowed.
      * @see #getTestOnBorrow
      */
     public synchronized void setTestOnBorrow(boolean testOnBorrow) {
@@ -610,6 +615,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * before being returned to the pool within the
      * {@link #returnObject}.
      *
+     * @return <code>true</code> when objects will be validated after returned to {@link #returnObject}.
      * @see #setTestOnReturn
      */
     public synchronized boolean getTestOnReturn() {
@@ -622,6 +628,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * before being returned to the pool within the
      * {@link #returnObject}.
      *
+     * @param testOnReturn <code>true</code> so objects will be validated after returned to {@link #returnObject}.
      * @see #getTestOnReturn
      */
     public synchronized void setTestOnReturn(boolean testOnReturn) {
@@ -634,6 +641,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * When non-positive, no idle object evictor thread will be
      * run.
      *
+     * @return number of milliseconds to sleep between evictor runs.
      * @see #setTimeBetweenEvictionRunsMillis
      */
     public synchronized long getTimeBetweenEvictionRunsMillis() {
@@ -646,6 +654,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * When non-positive, no idle object evictor thread will be
      * run.
      *
+     * @param timeBetweenEvictionRunsMillis number of milliseconds to sleep between evictor runs.
      * @see #getTimeBetweenEvictionRunsMillis
      */
     public synchronized void setTimeBetweenEvictionRunsMillis(long timeBetweenEvictionRunsMillis) {
@@ -657,6 +666,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * Returns the max number of objects to examine during each run of the
      * idle object evictor thread (if any).
      *
+     * @return max number of objects to examine during each evictor run.
      * @see #setNumTestsPerEvictionRun
      * @see #setTimeBetweenEvictionRunsMillis
      */
@@ -672,6 +682,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * tests will be run.  I.e., when the value is <i>-n</i>, roughly one <i>n</i>th of the
      * idle objects will be tested per run.
      *
+     * @param numTestsPerEvictionRun max number of objects to examine during each evictor run.
      * @see #getNumTestsPerEvictionRun
      * @see #setTimeBetweenEvictionRunsMillis
      */
@@ -684,6 +695,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * before it is eligible for eviction by the idle object evictor
      * (if any).
      *
+     * @return minimum amount of time an object may sit idle in the pool before it is eligible for eviction.
      * @see #setMinEvictableIdleTimeMillis
      * @see #setTimeBetweenEvictionRunsMillis
      */
@@ -697,7 +709,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * (if any).
      * When non-positive, no objects will be evicted from the pool
      * due to idle time alone.
-     *
+     * @param minEvictableIdleTimeMillis minimum amount of time an object may sit idle in the pool before it is eligible for eviction.
      * @see #getMinEvictableIdleTimeMillis
      * @see #setTimeBetweenEvictionRunsMillis
      */
@@ -711,6 +723,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * (if any), with the extra condition that at least
      * "minIdle" amount of object remain in the pool.
      *
+     * @return minimum amount of time an object may sit idle in the pool before it is eligible for eviction.
      * @see #setSoftMinEvictableIdleTimeMillis
      */
     public synchronized long getSoftMinEvictableIdleTimeMillis() {
@@ -725,6 +738,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * When non-positive, no objects will be evicted from the pool
      * due to idle time alone.
      *
+     * @param softMinEvictableIdleTimeMillis minimum amount of time an object may sit idle in the pool before it is eligible for eviction.
      * @see #getSoftMinEvictableIdleTimeMillis
      */
     public synchronized void setSoftMinEvictableIdleTimeMillis(long softMinEvictableIdleTimeMillis) {
@@ -737,6 +751,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * by the idle object evictor (if any).  If an object
      * fails to validate, it will be dropped from the pool.
      *
+     * @return <code>true</code> when objects will be validated by the evictor.
      * @see #setTestWhileIdle
      * @see #setTimeBetweenEvictionRunsMillis
      */
@@ -750,6 +765,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * by the idle object evictor (if any).  If an object
      * fails to validate, it will be dropped from the pool.
      *
+     * @param testWhileIdle <code>true</code> so objects will be validated by the evictor.
      * @see #getTestWhileIdle
      * @see #setTimeBetweenEvictionRunsMillis
      */
@@ -759,6 +775,8 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
     /**
      * Sets my configuration.
+     *
+     * @param conf configuration to use.
      * @see GenericObjectPool.Config
      */
     public synchronized void setConfig(GenericObjectPool.Config conf) {
@@ -998,6 +1016,11 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         }
     }
 
+    /**
+     * Make one pass of the idle object evictor.
+     *
+     * @throws Exception if the pool is closed or eviction fails.
+     */
     public synchronized void evict() throws Exception {
         assertOpen();
         if(!_pool.isEmpty()) {
@@ -1058,6 +1081,8 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
     /**
      * Check to see if we are below our minimum number of objects
      * if so enough to bring us back to our minimum.
+     *
+     * @throws Exception when {@link #addObject()} fails.
      */
     private void ensureMinIdle() throws Exception {
         // this method isn't synchronized so the
@@ -1099,6 +1124,8 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * Start the eviction thread or service, or when
      * <i>delay</i> is non-positive, stop it
      * if it is already running.
+     *
+     * @param delay milliseconds between evictor runs.
      */
     protected synchronized void startEvictor(long delay) {
         if(null != _evictor) {
@@ -1161,17 +1188,53 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @see GenericObjectPool#setConfig
      */
     public static class Config {
+        /**
+         * @see GenericObjectPool#setMaxIdle
+         */
         public int maxIdle = GenericObjectPool.DEFAULT_MAX_IDLE;
+        /**
+         * @see GenericObjectPool#setMinIdle
+         */
         public int minIdle = GenericObjectPool.DEFAULT_MIN_IDLE;
+        /**
+         * @see GenericObjectPool#setMaxActive
+         */
         public int maxActive = GenericObjectPool.DEFAULT_MAX_ACTIVE;
+        /**
+         * @see GenericObjectPool#setMaxWait
+         */
         public long maxWait = GenericObjectPool.DEFAULT_MAX_WAIT;
+        /**
+         * @see GenericObjectPool#setWhenExhaustedAction
+         */
         public byte whenExhaustedAction = GenericObjectPool.DEFAULT_WHEN_EXHAUSTED_ACTION;
+        /**
+         * @see GenericObjectPool#setTestOnBorrow
+         */
         public boolean testOnBorrow = GenericObjectPool.DEFAULT_TEST_ON_BORROW;
+        /**
+         * @see GenericObjectPool#setTestOnReturn
+         */
         public boolean testOnReturn = GenericObjectPool.DEFAULT_TEST_ON_RETURN;
+        /**
+         * @see GenericObjectPool#setTestWhileIdle
+         */
         public boolean testWhileIdle = GenericObjectPool.DEFAULT_TEST_WHILE_IDLE;
+        /**
+         * @see GenericObjectPool#setTimeBetweenEvictionRunsMillis
+         */
         public long timeBetweenEvictionRunsMillis = GenericObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
+        /**
+         * @see GenericObjectPool#setNumTestsPerEvictionRun
+         */
         public int numTestsPerEvictionRun =  GenericObjectPool.DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
+        /**
+         * @see GenericObjectPool#setMinEvictableIdleTimeMillis
+         */
         public long minEvictableIdleTimeMillis = GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+        /**
+         * @see GenericObjectPool#setSoftMinEvictableIdleTimeMillis
+         */
         public long softMinEvictableIdleTimeMillis = GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
     }
 

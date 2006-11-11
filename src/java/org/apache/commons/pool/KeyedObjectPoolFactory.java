@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2004 The Apache Software Foundation.
+ * Copyright 1999-2004,2006 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,8 @@ package org.apache.commons.pool;
  * @see KeyedObjectPool
  *
  * @author Rodney Waldhoff
- * @version $Revision$ $Date$ 
+ * @version $Revision$ $Date$
+ * @since Pool 1.0
  */
 public interface KeyedObjectPoolFactory {
     /**

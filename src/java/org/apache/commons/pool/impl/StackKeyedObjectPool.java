@@ -42,6 +42,7 @@ import java.util.Stack;
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  * @see Stack
+ * @since Pool 1.0
  */
 public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
     /**

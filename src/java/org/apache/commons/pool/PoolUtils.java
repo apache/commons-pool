@@ -144,6 +144,7 @@ public final class PoolUtils {
      * If an object is passed to the pool that isn't of type <code>type</code> a {@link ClassCastException} will be thrown.
      *
      * @param pool the pool to enforce type safety on
+     * @param type the class type to enforce.
      * @return an <code>ObjectPool</code> that will only allow objects of <code>type</code>
      * @since Pool 1.3
      */
@@ -162,6 +163,7 @@ public final class PoolUtils {
      * If an object is passed to the keyedPool that isn't of type <code>type</code> a {@link ClassCastException} will be thrown.
      *
      * @param keyedPool the keyedPool to enforce type safety on
+     * @param type the class type to enforce.
      * @return a <code>KeyedObjectPool</code> that will only allow objects of <code>type</code>
      * @since Pool 1.3
      */
@@ -521,12 +523,20 @@ public final class PoolUtils {
             return keyedPool.borrowObject(key);
         }
 
-        public void returnObject(final Object obj) throws Exception {
-            keyedPool.returnObject(key, obj);
+        public void returnObject(final Object obj) {
+            try {
+                keyedPool.returnObject(key, obj);
+            } catch (Exception e) {
+                // swallowed as of Pool 2
+            }
         }
 
-        public void invalidateObject(final Object obj) throws Exception {
-            keyedPool.invalidateObject(key, obj);
+        public void invalidateObject(final Object obj) {
+            try {
+                keyedPool.invalidateObject(key, obj);
+            } catch (Exception e) {
+                // swallowed as of Pool 2
+            }
         }
 
         public void addObject() throws Exception, IllegalStateException {
@@ -577,12 +587,20 @@ public final class PoolUtils {
             return pool.borrowObject();
         }
 
-        public void returnObject(final Object key, final Object obj) throws Exception {
-            pool.returnObject(obj);
+        public void returnObject(final Object key, final Object obj) {
+            try {
+                pool.returnObject(obj);
+            } catch (Exception e) {
+                // swallowed as of Pool 2
+            }
         }
 
-        public void invalidateObject(final Object key, final Object obj) throws Exception {
-            pool.invalidateObject(obj);
+        public void invalidateObject(final Object key, final Object obj) {
+            try {
+                pool.invalidateObject(obj);
+            } catch (Exception e) {
+                // swallowed as of Pool 2
+            }
         }
 
         public void addObject(final Object key) throws Exception, IllegalStateException {
@@ -654,17 +672,25 @@ public final class PoolUtils {
             }
         }
 
-        public void returnObject(final Object obj) throws Exception {
+        public void returnObject(final Object obj) {
             if (type.isInstance(obj)) {
-                pool.returnObject(obj);
+                try {
+                    pool.returnObject(obj);
+                } catch (Exception e) {
+                    // swallowed as of Pool 2
+                }
             } else {
                 throw new ClassCastException("Returned object is not of type: " + type.getName() + " was: " + obj);
             }
         }
 
-        public void invalidateObject(final Object obj) throws Exception {
+        public void invalidateObject(final Object obj) {
             if (type.isInstance(obj)) {
-                pool.invalidateObject(obj);
+                try {
+                    pool.invalidateObject(obj);
+                } catch (Exception e) {
+                    // swallowed as of Pool 2
+                }
             } else {
                 throw new ClassCastException("Invalidated object is not of type: " + type.getName() + " was: " + obj);
             }
@@ -728,17 +754,25 @@ public final class PoolUtils {
             }
         }
 
-        public void returnObject(final Object key, final Object obj) throws Exception {
+        public void returnObject(final Object key, final Object obj) {
             if (type.isInstance(obj)) {
-                keyedPool.returnObject(key, obj);
+                try {
+                    keyedPool.returnObject(key, obj);
+                } catch (Exception e) {
+                    // swallowed as of Pool 2
+                }
             } else {
                 throw new ClassCastException("Returned object for key: " + key + " is not of type: " + type.getName() + " was: " + obj);
             }
         }
 
-        public void invalidateObject(final Object key, final Object obj) throws Exception {
+        public void invalidateObject(final Object key, final Object obj) {
             if (type.isInstance(obj)) {
-                keyedPool.invalidateObject(key, obj);
+                try {
+                    keyedPool.invalidateObject(key, obj);
+                } catch (Exception e) {
+                    // swallowed as of Pool 2
+                }
             } else {
                 throw new ClassCastException("Invalidated object for key: " + key + " is not of type: " + type.getName() + " was: " + obj);
             }
@@ -893,15 +927,23 @@ public final class PoolUtils {
             }
         }
 
-        public void returnObject(final Object obj) throws Exception {
+        public void returnObject(final Object obj) {
             synchronized (lock) {
-                pool.returnObject(obj);
+                try {
+                    pool.returnObject(obj);
+                } catch (Exception e) {
+                    // swallowed as of Pool 2
+                }
             }
         }
 
-        public void invalidateObject(final Object obj) throws Exception {
+        public void invalidateObject(final Object obj) {
             synchronized (lock) {
-                pool.invalidateObject(obj);
+                try {
+                    pool.invalidateObject(obj);
+                } catch (Exception e) {
+                    // swallowed as of Pool 2
+                }
             }
         }
 
@@ -968,15 +1010,23 @@ public final class PoolUtils {
             }
         }
 
-        public void returnObject(final Object key, final Object obj) throws Exception {
+        public void returnObject(final Object key, final Object obj) {
             synchronized (lock) {
-                keyedPool.returnObject(key, obj);
+                try {
+                    keyedPool.returnObject(key, obj);
+                } catch (Exception e) {
+                    // swallowed
+                }
             }
         }
 
-        public void invalidateObject(final Object key, final Object obj) throws Exception {
+        public void invalidateObject(final Object key, final Object obj) {
             synchronized (lock) {
-                keyedPool.invalidateObject(key, obj);
+                try {
+                    keyedPool.invalidateObject(key, obj);
+                } catch (Exception e) {
+                    // swallowed as of Pool 2
+                }
             }
         }
 

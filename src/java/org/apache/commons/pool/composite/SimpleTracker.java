@@ -26,7 +26,7 @@ import java.io.Serializable;
  * @see TrackingPolicy#SIMPLE
  * @author Sandy McArthur
  * @version $Revision$ $Date$
- * @since #.#
+ * @since Pool 2.0
  */
 final class SimpleTracker implements Tracker, Serializable {
 

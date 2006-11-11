@@ -29,7 +29,7 @@ import java.util.NoSuchElementException;
  * @see CompositeObjectPoolFactory#setLimitPolicy(LimitPolicy)
  * @see CompositeKeyedObjectPoolFactory#setLimitPolicy(LimitPolicy)
  * @author Sandy McArthur
- * @since #.#
+ * @since Pool 2.0
  * @version $Revision$ $Date$
  */
 /* XXX For Pool 3: public enum LimitPolicy {FAIL, WAIT} but keep existing Javadoc. */

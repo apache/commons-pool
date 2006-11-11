@@ -25,7 +25,7 @@ import java.util.NoSuchElementException;
  * Delegates all work to another manager. Subclasses should call <code>super.method(...)</code> to access the delegates.
  *
  * @author Sandy McArthur
- * @since #.#
+ * @since Pool 2.0
  * @version $Revision$ $Date$
  */
 abstract class DelegateManager extends AbstractManager implements Serializable {

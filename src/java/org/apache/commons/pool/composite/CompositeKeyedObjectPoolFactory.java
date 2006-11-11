@@ -39,7 +39,7 @@ import java.io.Serializable;
  * @see LimitPolicy
  * @see TrackingPolicy
  * @author Sandy McArthur
- * @since #.#
+ * @since Pool 2.0
  * @version $Revision$ $Date$
  */
 public final class CompositeKeyedObjectPoolFactory implements KeyedObjectPoolFactory, Cloneable, Serializable {

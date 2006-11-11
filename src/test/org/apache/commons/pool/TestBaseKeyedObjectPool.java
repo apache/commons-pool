@@ -89,12 +89,12 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
             return; // skip redundant tests
         }
         KeyedObjectPool pool = new BaseKeyedObjectPool() { 
-            public Object borrowObject(Object key) throws Exception {
+            public Object borrowObject(Object key) {
                 return null;
             }
-            public void returnObject(Object key, Object obj) throws Exception {                
+            public void returnObject(Object key, Object obj) {
             }
-            public void invalidateObject(Object key, Object obj) throws Exception {                
+            public void invalidateObject(Object key, Object obj) {
             }            
         };
         

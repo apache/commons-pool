@@ -37,7 +37,7 @@ import junit.framework.TestSuite;
  * Test {@link CompositeObjectPool} and it's components.
  *
  * @author Sandy McArthur
- * @since #.#
+ * @since Pool 2.0
  * @version $Revision$ $Date$
  */
 public class TestCompositeObjectPool extends TestObjectPool {

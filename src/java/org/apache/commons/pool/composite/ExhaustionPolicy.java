@@ -29,7 +29,7 @@ import java.util.NoSuchElementException;
  * @see CompositeObjectPoolFactory#setExhaustionPolicy(ExhaustionPolicy)
  * @see CompositeKeyedObjectPoolFactory#setExhaustionPolicy(ExhaustionPolicy)
  * @author Sandy McArthur
- * @since #.#
+ * @since Pool 2.0
  * @version $Revision$ $Date$
  */
 /* XXX For Pool 3: public enum ExhaustionPolicy {GROW, FAIL} but keep existing Javadoc. */

@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2004 The Apache Software Foundation.
+ * Copyright 1999-2004,2006 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,33 +27,71 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * @see StackKeyedObjectPoolFactory
  *
  * @author Rodney Waldhoff
- * @version $Revision$ $Date$ 
+ * @version $Revision$ $Date$
+ * @since Pool 1.0
  */
 public class StackObjectPoolFactory implements ObjectPoolFactory {
+    /**
+     * Create a new StackObjectPoolFactory.
+     * 
+     * @see StackObjectPool#StackObjectPool()
+     */
     public StackObjectPoolFactory() {
         this((PoolableObjectFactory)null,StackObjectPool.DEFAULT_MAX_SLEEPING,StackObjectPool.DEFAULT_INIT_SLEEPING_CAPACITY);
     }
 
+    /**
+     * Create a new StackObjectPoolFactory.
+     *
+     * @param maxIdle cap on the number of "sleeping" instances in the pool.
+     * @see StackObjectPool#StackObjectPool(int)
+     */
     public StackObjectPoolFactory(int maxIdle) {
         this((PoolableObjectFactory)null,maxIdle,StackObjectPool.DEFAULT_INIT_SLEEPING_CAPACITY);
     }
 
-    public StackObjectPoolFactory(int maxIdle, int init) {
-        this((PoolableObjectFactory)null,maxIdle,init);
+    /**
+     * Create a new StackObjectPoolFactory.
+     *
+     * @param maxIdle cap on the number of "sleeping" instances in the pool.
+     * @param initIdleCapacity - initial size of the pool (this specifies the size of the container, it does not cause the pool to be pre-populated.)
+     * @see StackObjectPool#StackObjectPool(int, int)
+     */
+    public StackObjectPoolFactory(int maxIdle, int initIdleCapacity) {
+        this((PoolableObjectFactory)null,maxIdle,initIdleCapacity);
     }
 
+    /**
+     * Create a new StackObjectPoolFactory.
+     *
+     * @param factory the PoolableObjectFactory used by created pools.
+     * @see StackObjectPool#StackObjectPool(PoolableObjectFactory)
+     */
     public StackObjectPoolFactory(PoolableObjectFactory factory) {
         this(factory,StackObjectPool.DEFAULT_MAX_SLEEPING,StackObjectPool.DEFAULT_INIT_SLEEPING_CAPACITY);
     }
 
+    /**
+     * Create a new StackObjectPoolFactory.
+     *
+     * @param factory the PoolableObjectFactory used by created pools.
+     * @param maxIdle cap on the number of "sleeping" instances in the pool.
+     */
     public StackObjectPoolFactory(PoolableObjectFactory factory, int maxIdle) {
         this(factory,maxIdle,StackObjectPool.DEFAULT_INIT_SLEEPING_CAPACITY);
     }
 
-    public StackObjectPoolFactory(PoolableObjectFactory factory, int maxIdle, int init) {
+    /**
+     * Create a new StackObjectPoolFactory.
+     *
+     * @param factory the PoolableObjectFactory used by created pools.
+     * @param maxIdle cap on the number of "sleeping" instances in the pool.
+     * @param initIdleCapacity - initial size of the pool (this specifies the size of the container, it does not cause the pool to be pre-populated.)
+     */
+    public StackObjectPoolFactory(PoolableObjectFactory factory, int maxIdle, int initIdleCapacity) {
         _factory = factory;
         _maxSleeping = maxIdle;
-        _initCapacity = init;
+        _initCapacity = initIdleCapacity;
     }
 
     public ObjectPool createPool() {

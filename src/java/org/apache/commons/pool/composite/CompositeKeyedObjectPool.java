@@ -39,7 +39,7 @@ import java.util.Map;
  *
  * @see CompositeObjectPoolFactory
  * @author Sandy McArthur
- * @since #.#
+ * @since Pool 2.0
  * @version $Revision$ $Date$
  */
 final class CompositeKeyedObjectPool implements KeyedObjectPool, Cloneable, Serializable {

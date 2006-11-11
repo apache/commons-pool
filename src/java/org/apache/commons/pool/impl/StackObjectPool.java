@@ -40,6 +40,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * @author Dirk Verbeeck
  * @author Sandy McArthur
  * @version $Revision$ $Date$
+ * @since Pool 1.0
  */
 public class StackObjectPool extends BaseObjectPool implements ObjectPool {
     /**

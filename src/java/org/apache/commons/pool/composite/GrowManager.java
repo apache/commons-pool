@@ -30,7 +30,7 @@ import java.util.Timer;
  * @see ExhaustionPolicy#GROW
  * @author Sandy McArthur
  * @version $Revision$ $Date$
- * @since #.#
+ * @since Pool 2.0
  */
 final class GrowManager extends AbstractManager implements Serializable {
 

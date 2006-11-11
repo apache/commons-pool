@@ -31,7 +31,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * @see TrackingPolicy
  * @author Sandy McArthur
  * @version $Revision$ $Date$
- * @since #.#
+ * @since Pool 2.0
  */
 interface Tracker {
 

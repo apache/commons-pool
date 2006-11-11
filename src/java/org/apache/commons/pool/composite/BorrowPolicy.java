@@ -28,7 +28,7 @@ import java.lang.ref.SoftReference;
  * @see CompositeObjectPoolFactory#setBorrowPolicy(BorrowPolicy)
  * @see CompositeKeyedObjectPoolFactory#setBorrowPolicy(BorrowPolicy)
  * @author Sandy McArthur
- * @since #.#
+ * @since Pool 2.0
  * @version $Revision$ $Date$
  */
 /* XXX For Pool 3: public enum BorrowPolicy {FIFO, LIFO, SOFT_FIFO, SOFT_LIFO, NULL} but keep existing Javadoc. */

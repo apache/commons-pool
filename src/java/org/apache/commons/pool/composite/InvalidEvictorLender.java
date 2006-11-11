@@ -26,7 +26,7 @@ import java.util.TimerTask;
  * {@link PoolableObjectFactory#validateObject(Object) validation}. 
  *
  * @author Sandy McArthur
- * @since #.#
+ * @since Pool 2.0
  * @version $Revision$ $Date$
  */
 final class InvalidEvictorLender extends EvictorLender implements Serializable {

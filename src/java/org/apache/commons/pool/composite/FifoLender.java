@@ -26,7 +26,7 @@ import java.util.List;
  * @see BorrowPolicy#FIFO
  * @author Sandy McArthur
  * @version $Revision$ $Date$
- * @since #.#
+ * @since Pool 2.0
  */
 final class FifoLender extends AbstractLender implements Serializable {
 

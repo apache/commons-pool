@@ -55,6 +55,7 @@ import java.util.NoSuchElementException;
  * @see ObjectPoolFactory
  * @see KeyedObjectPool
  * @see BaseObjectPool
+ * @since Pool 1.0
  */
 public interface ObjectPool {
     /**
@@ -92,6 +93,9 @@ public interface ObjectPool {
      * or sub-interface.
      *
      * @param obj a {@link #borrowObject borrowed} instance to be returned.
+     * @throws Exception <b>deprecated</b>: as of Pool 2.0 pool implementations should swallow
+     * exceptions that occur when a poolable object is returned. For future source compatability
+     * implementations of this method should not even declare that they throw any exception.
      */
     void returnObject(Object obj) throws Exception;
 
@@ -107,6 +111,9 @@ public interface ObjectPool {
      * </p>
      *
      * @param obj a {@link #borrowObject borrowed} instance to be disposed.
+     * @throws Exception <b>deprecated</b>: as of Pool 2.0 pool implementations should swallow
+     * exceptions that occur when a poolable object is returned. For future source compatability
+     * implementations of this method should not even declare that they throw any exception.
      */
     void invalidateObject(Object obj) throws Exception;
 

@@ -75,12 +75,12 @@ public class TestBaseObjectPool extends TestObjectPool {
             return; // skip redundant tests
         }
         ObjectPool pool = new BaseObjectPool() { 
-            public Object borrowObject() throws Exception {
+            public Object borrowObject() {
                 return null;
             }
-            public void returnObject(Object obj) throws Exception {                
+            public void returnObject(Object obj) {
             }
-            public void invalidateObject(Object obj) throws Exception {                
+            public void invalidateObject(Object obj) {
             }            
         };   
 
@@ -111,12 +111,12 @@ public class TestBaseObjectPool extends TestObjectPool {
 
     public void testClose() throws Exception {
         ObjectPool pool = new BaseObjectPool() {
-            public Object borrowObject() throws Exception {
+            public Object borrowObject() {
                 return null;
             }
-            public void returnObject(Object obj) throws Exception {
+            public void returnObject(Object obj) {
             }
-            public void invalidateObject(Object obj) throws Exception {
+            public void invalidateObject(Object obj) {
             }
         };
 

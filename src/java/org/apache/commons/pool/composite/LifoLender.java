@@ -26,7 +26,7 @@ import java.util.List;
  * @see BorrowPolicy#LIFO
  * @author Sandy McArthur
  * @version $Revision$ $Date$
- * @since #.#
+ * @since Pool 2.0
  */
 final class LifoLender extends AbstractLender implements Serializable {
 

@@ -134,7 +134,7 @@ import java.util.List;
  * @see TrackingPolicy
  * @author Sandy McArthur
  * @version $Revision$ $Date$
- * @since #.#
+ * @since Pool 2.0
  */
 public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Cloneable, Serializable {
 
@@ -254,7 +254,7 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
     /**
      * Choose a {@link List} implementation optimized for this pool's behavior.
      *
-     * @param config
+     * @param config the configuration to inspect to determine the optimized List type.
      * @return a {@link List} implementation optimized for this pool's behavior.
      */
     private static List getList(final FactoryConfig config) {
@@ -287,8 +287,8 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
     /**
      * Choose a {@link Lender} based on this factory's settings.
      *
+     * @param config the configuration to inspect to determine the optimized Lender type.
      * @return a new lender for an object pool.
-     * @param config
      */
     private static Lender getLender(final FactoryConfig config) {
         final BorrowPolicy borrowPolicy = config.borrowPolicy;
@@ -331,7 +331,7 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
     /**
      * Compose a {@link Manager} based on this factory's settings.
      *
-     * @param config
+     * @param config the configuration to inspect to determine the optimized Manager type.
      * @return a new manager for an object pool.
      */
     private static Manager getManager(final FactoryConfig config) {
@@ -374,7 +374,7 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
     /**
      * Choose a {@link Tracker} based on this factory's settings.
      *
-     * @param config
+     * @param config the configuration to inspect to determine the optimized Tracker type.
      * @return a new tracker for an object pool.
      */
     private static Tracker getTracker(final FactoryConfig config) {
@@ -749,6 +749,7 @@ public final class CompositeObjectPoolFactory implements ObjectPoolFactory, Clon
 
         /**
          * Convenience constructor. This <b>must</b> be called from a synchronized context to be thread-safe.
+         * @param copf the factor to read the config from.
          */
         FactoryConfig(final CompositeObjectPoolFactory copf) {
             this(copf.getFactory(), copf.getBorrowPolicy(), copf.getExhaustionPolicy(), copf.getMaxIdle(),

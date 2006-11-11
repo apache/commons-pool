@@ -61,6 +61,7 @@ import java.util.NoSuchElementException;
  * @see KeyedObjectPoolFactory
  * @see ObjectPool
  * @see BaseKeyedObjectPool
+ * @since Pool 1.0
  */
 public interface KeyedObjectPool {
     /**
@@ -101,6 +102,9 @@ public interface KeyedObjectPool {
      *
      * @param key the key used to obtain the object
      * @param obj a {@link #borrowObject borrowed} instance to be returned.
+     * @throws Exception <b>deprecated</b>: as of Pool 2.0 pool implementations should swallow
+     * exceptions that occur when a poolable object is returned. For future source compatability
+     * implementations of this method should not even declare that they throw any exception.
      */
     void returnObject(Object key, Object obj) throws Exception;
 
@@ -119,6 +123,9 @@ public interface KeyedObjectPool {
      *
      * @param key the key used to obtain the object
      * @param obj a {@link #borrowObject borrowed} instance to be returned.
+     * @throws Exception <b>deprecated</b>: as of Pool 2.0 pool implementations should swallow
+     * exceptions that occur when a poolable object is returned. For future source compatability
+     * implementations of this method should not even declare that they throw any exception.
      */
     void invalidateObject(Object key, Object obj) throws Exception;
 

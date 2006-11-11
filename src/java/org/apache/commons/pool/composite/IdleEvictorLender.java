@@ -23,7 +23,7 @@ import java.util.TimerTask;
  * A {@link Lender} that evicts objects that have been idle for a while.
  *
  * @author Sandy McArthur
- * @since #.#
+ * @since Pool 2.0
  * @version $Revision$ $Date$
  */
 final class IdleEvictorLender extends EvictorLender implements Serializable {
