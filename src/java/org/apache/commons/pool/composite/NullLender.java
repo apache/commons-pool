@@ -25,7 +25,7 @@ import java.util.ListIterator;
  *
  * @see BorrowPolicy#NULL
  * @author Sandy McArthur
- * @since #.#
+ * @since Pool 2.0
  * @version $Revision$ $Date$
  */
 final class NullLender extends AbstractLender implements Serializable {

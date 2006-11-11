@@ -28,7 +28,7 @@ import java.util.TimerTask;
  * A base {@link Manager} implementation that provides the common implementations of methods.
  *
  * @author Sandy McArthur
- * @since #.#
+ * @since Pool 2.0
  * @version $Revision$ $Date$
  */
 abstract class AbstractManager implements Manager, Serializable {

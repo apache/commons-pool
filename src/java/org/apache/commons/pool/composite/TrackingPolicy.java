@@ -26,7 +26,7 @@ import java.lang.ref.WeakReference;
  * @see CompositeObjectPoolFactory#setTrackingPolicy(TrackingPolicy)
  * @see CompositeKeyedObjectPoolFactory#setTrackingPolicy(TrackingPolicy)
  * @author Sandy McArthur
- * @since #.#
+ * @since Pool 2.0
  * @version $Revision$ $Date$
  */
 /* XXX For Pool 3: public enum TrackingPolicy {SIMPLE, REFERENCE, DEBUG} but keep existing Javadoc. */

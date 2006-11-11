@@ -27,7 +27,7 @@ import java.util.TimerTask;
  * Base class for a {@link Lender} that evicts objects from the idle object pool.
  *
  * @author Sandy McArthur
- * @since #.#
+ * @since Pool 2.0
  * @version $Revision$ $Date$
  */
 abstract class EvictorLender extends DelegateLender implements Serializable {

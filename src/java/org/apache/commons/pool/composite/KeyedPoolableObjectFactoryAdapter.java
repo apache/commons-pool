@@ -28,7 +28,7 @@ import java.io.Serializable;
  * {@link ThreadLocal} used to pass the key through the {@link ObjectPool} can be aquired.
  *
  * @author Sandy McArthur
- * @since #.#
+ * @since Pool 2.0
  * @version $Revision$ $Date$
  */
 final class KeyedPoolableObjectFactoryAdapter implements PoolableObjectFactory, Serializable {

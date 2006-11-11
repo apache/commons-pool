@@ -29,7 +29,7 @@ import java.util.logging.Logger;
  * @see TrackingPolicy#DEBUG
  * @author Sandy McArthur
  * @version $Revision$ $Date$
- * @since #.#
+ * @since Pool 2.0
  */
 final class DebugTracker extends ReferenceTracker implements Serializable {
 

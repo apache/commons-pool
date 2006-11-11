@@ -31,7 +31,7 @@ import java.util.ListIterator;
  * @see BorrowPolicy#SOFT_FIFO
  * @see BorrowPolicy#SOFT_LIFO
  * @author Sandy McArthur
- * @since #.#
+ * @since Pool 2.0
  * @version $Revision$ $Date$
  */
 final class SoftLender extends DelegateLender implements Serializable {

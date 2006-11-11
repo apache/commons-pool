@@ -29,7 +29,7 @@ import java.util.NoSuchElementException;
  * @see ExhaustionPolicy#FAIL
  * @author Sandy McArthur
  * @version $Revision$ $Date$
- * @since #.#
+ * @since Pool 2.0
  */
 final class FailManager extends AbstractManager implements Serializable {
 

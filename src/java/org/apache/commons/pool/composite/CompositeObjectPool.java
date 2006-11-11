@@ -47,7 +47,7 @@ import java.util.Timer;
  * @see CompositeObjectPoolFactory
  * @author Sandy McArthur
  * @version $Revision$ $Date$
- * @since #.#
+ * @since Pool 2.0
  */
 final class CompositeObjectPool implements ObjectPool, Cloneable, Serializable {
 

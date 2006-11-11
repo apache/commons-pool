@@ -27,7 +27,7 @@ import java.util.NoSuchElementException;
  * @see LimitPolicy#FAIL
  * @author Sandy McArthur
  * @version $Revision$ $Date$
- * @since #.#
+ * @since Pool 2.0
  */
 final class FailLimitManager extends ActiveLimitManager implements Serializable {
 

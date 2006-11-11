@@ -23,7 +23,7 @@ import java.util.ListIterator;
  * Delegates all work to another lender. Subclasses should call <code>super.method(...)</code> to access the delegates.
  *
  * @author Sandy McArthur
- * @since #.#
+ * @since Pool 2.0
  * @version $Revision$ $Date$
  */
 abstract class DelegateLender extends AbstractLender implements Serializable {

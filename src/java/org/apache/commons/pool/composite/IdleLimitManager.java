@@ -26,7 +26,7 @@ import java.util.ListIterator;
  *
  * @see CompositeObjectPoolFactory#setMaxIdle(int)
  * @author Sandy McArthur
- * @since #.#
+ * @since Pool 2.0
  * @version $Revision$ $Date$
  */
 final class IdleLimitManager extends DelegateManager implements Serializable {

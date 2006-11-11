@@ -30,7 +30,7 @@ import java.util.Map;
  * @see TrackingPolicy#REFERENCE
  * @author Sandy McArthur
  * @version $Revision$ $Date$
- * @since #.#
+ * @since Pool 2.0
  */
 class ReferenceTracker implements Tracker, Serializable {
 

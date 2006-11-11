@@ -36,6 +36,7 @@ import org.apache.commons.pool.PoolUtils;
  * @author Rodney Waldhoff
  * @author Sandy McArthur
  * @version $Revision$ $Date$
+ * @since Pool 1.0
  */
 public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPool {
     /**
@@ -65,6 +66,7 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
      * Create a <code>SoftReferenceObjectPool</code> with the specified factory and initial idle object count.
      *
      * @param factory object factory to use.
+     * @param initSize initial size to attempt to prefill the pool.
      * @throws Exception when there is a problem prefilling the pool.
      * @throws IllegalArgumentException when <code>factory</code> is <code>null</code>.
      * @deprecated because this is a SoftReference pool, prefilled idle obejects may be garbage collected before they are used.

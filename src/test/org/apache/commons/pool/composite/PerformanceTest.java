@@ -34,7 +34,7 @@ import java.util.LinkedList;
  * A collection of benchmarks to confirm and establish performance properties.
  *
  * @author Sandy McArthur
- * @since #.#
+ * @since Pool 2.0
  * @version $Revision$ $Date$
  */
 public class PerformanceTest {

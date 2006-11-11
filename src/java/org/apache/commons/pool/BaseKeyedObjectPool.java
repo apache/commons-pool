@@ -24,6 +24,7 @@ package org.apache.commons.pool;
  * @author Rodney Waldhoff
  * @author Sandy McArthur
  * @version $Revision$ $Date$
+ * @since Pool 1.0
  */
 public abstract class BaseKeyedObjectPool implements KeyedObjectPool {
     public abstract Object borrowObject(Object key) throws Exception;

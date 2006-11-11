@@ -25,7 +25,7 @@ import java.lang.ref.Reference;
  *
  * @author Sandy McArthur
  * @version $Revision$ $Date$
- * @since #.#
+ * @since Pool 2.0
  */
 interface Lender {
 
@@ -83,6 +83,8 @@ interface Lender {
     interface LenderReference {
         /**
          * Like {@link Reference#get}.
+         *
+         * @return the object this reference refered to.
          */
         public Object get();
     }
