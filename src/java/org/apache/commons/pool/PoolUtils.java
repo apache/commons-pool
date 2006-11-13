@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Collections;
 
 /**
  * This class consists exclusively of static methods that operate on or return ObjectPool
@@ -408,6 +409,136 @@ public final class PoolUtils {
     }
 
     /**
+     * Returns a pool that adaptively decreases it's size when idle objects are no longer needed.
+     * This is intended as an always thread-safe alternative to using an idle object evictor
+     * provided by many pool implementations. This is also an effective way to shrink FIFO ordered
+     * pools that experience load spikes.
+     *
+     * @param pool the ObjectPool to be decorated so it shrinks it's idle count when possible.
+     * @return a pool that adaptively decreases it's size when idle objects are no longer needed.
+     * @see #erodingPool(ObjectPool, float)
+     * @since Pool 2.0
+     */
+    public static ObjectPool erodingPool(final ObjectPool pool) {
+        return erodingPool(pool, 1f);
+    }
+
+    /**
+     * Returns a pool that adaptively decreases it's size when idle objects are no longer needed.
+     * This is intended as an always thread-safe alternative to using an idle object evictor
+     * provided by many pool implementations. This is also an effective way to shrink FIFO ordered
+     * pools that experience load spikes.
+     *
+     * <p>
+     * The factor parameter provides a mechanism to tweak the rate at which the pool tries to shrink
+     * it's size. Values between 0 and 1 cause the pool to try to shrink it's size more often.
+     * Values greater than 1 cause the pool to less frequently try to shrink it's size.
+     * </p>
+     *
+     * @param pool the ObjectPool to be decorated so it shrinks it's idle count when possible.
+     * @param factor a positive value to scale the rate at which the pool tries to reduce it's size.
+     * If 0 &lt; factor &lt; 1 then the pool shrinks more aggressively.
+     * If 1 &lt; factor then the pool shrinks less aggressively.
+     * @return a pool that adaptively decreases it's size when idle objects are no longer needed.
+     * @see #erodingPool(ObjectPool)
+     * @since Pool 2.0
+     */
+    public static ObjectPool erodingPool(final ObjectPool pool, final float factor) {
+        if (pool == null) {
+            throw new IllegalArgumentException("pool must not be null.");
+        }
+        if (factor <= 0f) {
+            throw new IllegalArgumentException("factor must be positive.");
+        }
+        return new ErodingObjectPool(pool, factor);
+    }
+
+    /**
+     * Returns a pool that adaptively decreases it's size when idle objects are no longer needed.
+     * This is intended as an always thread-safe alternative to using an idle object evictor
+     * provided by many pool implementations. This is also an effective way to shrink FIFO ordered
+     * pools that experience load spikes.
+     *
+     * @param keyedPool the KeyedObjectPool to be decorated so it shrinks it's idle count when
+     * possible.
+     * @return a pool that adaptively decreases it's size when idle objects are no longer needed.
+     * @see #erodingPool(KeyedObjectPool, float)
+     * @see #erodingPool(KeyedObjectPool, float, boolean)
+     * @since Pool 2.0
+     */
+    public static KeyedObjectPool erodingPool(final KeyedObjectPool keyedPool) {
+        return erodingPool(keyedPool, 1f);
+    }
+
+    /**
+     * Returns a pool that adaptively decreases it's size when idle objects are no longer needed.
+     * This is intended as an always thread-safe alternative to using an idle object evictor
+     * provided by many pool implementations. This is also an effective way to shrink FIFO ordered
+     * pools that experience load spikes.
+     *
+     * <p>
+     * The factor parameter provides a mechanism to tweak the rate at which the pool tries to shrink
+     * it's size. Values between 0 and 1 cause the pool to try to shrink it's size more often.
+     * Values greater than 1 cause the pool to less frequently try to shrink it's size.
+     * </p>
+     *
+     * @param keyedPool the KeyedObjectPool to be decorated so it shrinks it's idle count when
+     * possible.
+     * @param factor a positive value to scale the rate at which the pool tries to reduce it's size.
+     * If 0 &lt; factor &lt; 1 then the pool shrinks more aggressively.
+     * If 1 &lt; factor then the pool shrinks less aggressively.
+     * @return a pool that adaptively decreases it's size when idle objects are no longer needed.
+     * @see #erodingPool(KeyedObjectPool, float, boolean)
+     * @since Pool 2.0
+     */
+    public static KeyedObjectPool erodingPool(final KeyedObjectPool keyedPool, final float factor) {
+        return erodingPool(keyedPool, factor, false);
+    }
+
+    /**
+     * Returns a pool that adaptively decreases it's size when idle objects are no longer needed.
+     * This is intended as an always thread-safe alternative to using an idle object evictor
+     * provided by many pool implementations. This is also an effective way to shrink FIFO ordered
+     * pools that experience load spikes.
+     *
+     * <p>
+     * The factor parameter provides a mechanism to tweak the rate at which the pool tries to shrink
+     * it's size. Values between 0 and 1 cause the pool to try to shrink it's size more often.
+     * Values greater than 1 cause the pool to less frequently try to shrink it's size.
+     * </p>
+     *
+     * <p>
+     * The perKey parameter determines if the pool shrinks on a whole pool basis or a per key basis.
+     * When perKey is false, the keys do not have an effect on the rate at which the pool tries to
+     * shrink it's size. When perKey is true, each key is shrunk independently.
+     * </p>
+     *
+     * @param keyedPool the KeyedObjectPool to be decorated so it shrinks it's idle count when
+     * possible.
+     * @param factor a positive value to scale the rate at which the pool tries to reduce it's size.
+     * If 0 &lt; factor &lt; 1 then the pool shrinks more aggressively.
+     * If 1 &lt; factor then the pool shrinks less aggressively.
+     * @param perKey when true, each key is treated independently.
+     * @return a pool that adaptively decreases it's size when idle objects are no longer needed.
+     * @see #erodingPool(KeyedObjectPool)
+     * @see #erodingPool(KeyedObjectPool, float)
+     * @since Pool 2.0
+     */
+    public static KeyedObjectPool erodingPool(final KeyedObjectPool keyedPool, final float factor, final boolean perKey) {
+        if (keyedPool == null) {
+            throw new IllegalArgumentException("keyedPool must not be null.");
+        }
+        if (factor <= 0f) {
+            throw new IllegalArgumentException("factor must be positive.");
+        }
+        if (perKey) {
+            return new ErodingPerKeyKeyedObjectPool(keyedPool, factor);
+        } else {
+            return new ErodingKeyedObjectPool(keyedPool, factor);
+        }
+    }
+
+    /**
      * Get the <code>Timer</code> for checking keyedPool's idle count. Lazily create the {@link Timer} as needed.
      *
      * @return the {@link Timer} for checking keyedPool's idle count.
@@ -555,8 +686,12 @@ public final class PoolUtils {
             keyedPool.clear();
         }
 
-        public void close() throws Exception {
-            keyedPool.close();
+        public void close() {
+            try {
+                keyedPool.close();
+            } catch (Exception e) {
+                // swallowed as of Pool 2
+            }
         }
 
         public void setFactory(final PoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
@@ -631,8 +766,12 @@ public final class PoolUtils {
             pool.clear();
         }
 
-        public void close() throws Exception {
-            pool.close();
+        public void close() {
+            try {
+                pool.close();
+            } catch (Exception e) {
+                // swallowed as of Pool 2
+            }
         }
 
         public void setFactory(final KeyedPoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
@@ -712,8 +851,12 @@ public final class PoolUtils {
             pool.clear();
         }
 
-        public void close() throws Exception {
-            pool.close();
+        public void close() {
+            try {
+                pool.close();
+            } catch (Exception e) {
+                // swallowed as of Pool 2
+            }
         }
 
         public void setFactory(final PoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
@@ -806,8 +949,12 @@ public final class PoolUtils {
             keyedPool.clear(key);
         }
 
-        public void close() throws Exception {
-            keyedPool.close();
+        public void close() {
+            try {
+                keyedPool.close();
+            } catch (Exception e) {
+                // swallowed as of Pool 2
+            }
         }
 
         public void setFactory(final KeyedPoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
@@ -971,9 +1118,13 @@ public final class PoolUtils {
             }
         }
 
-        public void close() throws Exception {
-            synchronized (lock) {
-                pool.close();
+        public void close() {
+            try {
+                synchronized (lock) {
+                    pool.close();
+                }
+            } catch (Exception e) {
+                // swallowed as of Pool 2
             }
         }
 
@@ -1072,9 +1223,13 @@ public final class PoolUtils {
             }
         }
 
-        public void close() throws Exception {
-            synchronized (lock) {
-                keyedPool.close();
+        public void close() {
+            try {
+                synchronized (lock) {
+                    keyedPool.close();
+                }
+            } catch (Exception e) {
+                // swallowed as of Pool 2
             }
         }
 
@@ -1192,6 +1347,270 @@ public final class PoolUtils {
             sb.append("{keyedFactory=").append(keyedFactory);
             sb.append('}');
             return sb.toString();
+        }
+    }
+
+    /**
+     * Encapsulate the logic for when the next poolable object should be discarded.
+     */
+    private static class ErodingFactor {
+        private final float factor;
+        private transient volatile long nextShrink;
+        private transient volatile int idleHighWaterMark;
+
+        public ErodingFactor(final float factor) {
+            this.factor = factor;
+            nextShrink = System.currentTimeMillis() + (long)(900000 * factor); // now + 15 min * factor
+            idleHighWaterMark = 1;
+        }
+
+        public void update(final int numIdle) {
+            update(System.currentTimeMillis(), numIdle);
+        }
+
+        public void update(final long now, final int numIdle) {
+            final int idle = Math.max(0, numIdle);
+            idleHighWaterMark = Math.max(idle, idleHighWaterMark);
+            final float maxInterval = 15f;
+            final float minutes = maxInterval + ((1f-maxInterval)/idleHighWaterMark) * idle;
+            nextShrink = now + (long)(minutes * 60000f * factor);
+        }
+
+        public long getNextShrink() {
+            return nextShrink;
+        }
+
+        public String toString() {
+            return "ErodingFactor{" +
+                    "factor=" + factor +
+                    ", idleHighWaterMark=" + idleHighWaterMark +
+                    '}';
+        }
+    }
+    
+    private static class ErodingObjectPool implements ObjectPool {
+        private final ObjectPool pool;
+        private final ErodingFactor factor;
+
+        public ErodingObjectPool(final ObjectPool pool, final float factor) {
+            this.pool = pool;
+            this.factor = new ErodingFactor(factor);
+        }
+
+        public Object borrowObject() throws Exception, NoSuchElementException, IllegalStateException {
+            return pool.borrowObject();
+        }
+
+        public void returnObject(final Object obj) {
+            boolean discard = false;
+            final long now = System.currentTimeMillis();
+            synchronized (pool) {
+                if (factor.getNextShrink() < now) { // XXX: Pool 3: move test out of sync block
+                    final int numIdle = pool.getNumIdle();
+                    if (numIdle > 0) {
+                        discard = true;
+                    }
+
+                    factor.update(now, numIdle);
+                }
+            }
+            try {
+                if (discard) {
+                    pool.invalidateObject(obj);
+                } else {
+                    pool.returnObject(obj);
+                }
+            } catch (Exception e) {
+                // swallowed
+            }
+        }
+
+        public void invalidateObject(final Object obj) {
+            try {
+                pool.invalidateObject(obj);
+            } catch (Exception e) {
+                // swallowed
+            }
+        }
+
+        public void addObject() throws Exception, IllegalStateException, UnsupportedOperationException {
+            pool.addObject();
+        }
+
+        public int getNumIdle() throws UnsupportedOperationException {
+            return pool.getNumIdle();
+        }
+
+        public int getNumActive() throws UnsupportedOperationException {
+            return pool.getNumActive();
+        }
+
+        public void clear() throws Exception, UnsupportedOperationException {
+            pool.clear();
+        }
+
+        public void close() {
+            try {
+                pool.close();
+            } catch (Exception e) {
+                // swallowed
+            }
+        }
+
+        public void setFactory(final PoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
+            pool.setFactory(factory);
+        }
+
+        public String toString() {
+            return "ErodingObjectPool{" +
+                    "factor=" + factor +
+                    ", pool=" + pool +
+                    '}';
+        }
+    }
+
+    private static class ErodingKeyedObjectPool implements KeyedObjectPool {
+        private final KeyedObjectPool keyedPool;
+        private final ErodingFactor erodingFactor;
+
+        public ErodingKeyedObjectPool(final KeyedObjectPool keyedPool, final float factor) {
+            this(keyedPool, new ErodingFactor(factor));
+        }
+
+        protected ErodingKeyedObjectPool(final KeyedObjectPool keyedPool, final ErodingFactor erodingFactor) {
+            if (keyedPool == null) {
+                throw new IllegalArgumentException("keyedPool must not be null.");                
+            }
+            this.keyedPool = keyedPool;
+            this.erodingFactor = erodingFactor;
+        }
+
+        public Object borrowObject(final Object key) throws Exception, NoSuchElementException, IllegalStateException {
+            return keyedPool.borrowObject(key);
+        }
+
+        public void returnObject(final Object key, final Object obj) throws Exception {
+            boolean discard = false;
+            final long now = System.currentTimeMillis();
+            final ErodingFactor factor = getErodingFactor(key);
+            synchronized (keyedPool) {
+                if (factor.getNextShrink() < now) {
+                    final int numIdle = numIdle(key);
+                    if (numIdle > 0) {
+                        discard = true;
+                    }
+
+                    factor.update(now, numIdle);
+                }
+            }
+            try {
+                if (discard) {
+                    keyedPool.invalidateObject(key, obj);
+                } else {
+                    keyedPool.returnObject(key, obj);
+                }
+            } catch (Exception e) {
+                // swallowed
+            }
+        }
+
+        protected int numIdle(final Object key) {
+            return getKeyedPool().getNumIdle();
+        }
+
+        protected ErodingFactor getErodingFactor(final Object key) {
+            return erodingFactor;
+        }
+
+        public void invalidateObject(final Object key, final Object obj) {
+            try {
+                keyedPool.invalidateObject(key, obj);
+            } catch (Exception e) {
+                // swallowed
+            }
+        }
+
+        public void addObject(final Object key) throws Exception, IllegalStateException, UnsupportedOperationException {
+            keyedPool.addObject(key);
+        }
+
+        public int getNumIdle() throws UnsupportedOperationException {
+            return keyedPool.getNumIdle();
+        }
+
+        public int getNumIdle(final Object key) throws UnsupportedOperationException {
+            return keyedPool.getNumIdle(key);
+        }
+
+        public int getNumActive() throws UnsupportedOperationException {
+            return keyedPool.getNumActive();
+        }
+
+        public int getNumActive(final Object key) throws UnsupportedOperationException {
+            return keyedPool.getNumActive(key);
+        }
+
+        public void clear() throws Exception, UnsupportedOperationException {
+            keyedPool.clear();
+        }
+
+        public void clear(final Object key) throws Exception, UnsupportedOperationException {
+            keyedPool.clear(key);
+        }
+
+        public void close() {
+            try {
+                keyedPool.close();
+            } catch (Exception e) {
+                // swallowed
+            }
+        }
+
+        public void setFactory(final KeyedPoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
+            keyedPool.setFactory(factory);
+        }
+
+        protected KeyedObjectPool getKeyedPool() {
+            return keyedPool;
+        }
+
+        public String toString() {
+            return "ErodingKeyedObjectPool{" +
+                    "erodingFactor=" + erodingFactor +
+                    ", keyedPool=" + keyedPool +
+                    '}';
+        }
+    }
+
+    private static class ErodingPerKeyKeyedObjectPool extends ErodingKeyedObjectPool {
+        private final float factor;
+        private final Map factors = Collections.synchronizedMap(new HashMap());
+
+        public ErodingPerKeyKeyedObjectPool(final KeyedObjectPool keyedPool, final float factor) {
+            super(keyedPool, null);
+            this.factor = factor;
+        }
+
+        protected int numIdle(final Object key) {
+            return getKeyedPool().getNumIdle(key);
+        }
+
+        protected ErodingFactor getErodingFactor(final Object key) {
+            ErodingFactor factor = (ErodingFactor)factors.get(key);
+            // this may result in two ErodingFactors being created for a key
+            // since they are small and cheap this is okay.
+            if (factor == null) {
+                factor = new ErodingFactor(this.factor);
+                factors.put(key, factor);
+            }
+            return factor;
+        }
+
+        public String toString() {
+            return "ErodingPerKeyKeyedObjectPool{" +
+                    "factor=" + factor +
+                    ", keyedPool=" + getKeyedPool() +
+                    '}';
         }
     }
 }
