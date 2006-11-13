@@ -194,6 +194,7 @@ public class GenericKeyedObjectPoolFactory implements KeyedObjectPoolFactory {
      * @param numTestsPerEvictionRun the number of idle objects to examine per run of the evictor.
      * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligible for evcition.
      * @param testWhileIdle whether to validate objects in the idle object eviction thread.
+     * @since Pool 1.3
      * @see GenericKeyedObjectPool#GenericKeyedObjectPool(KeyedPoolableObjectFactory, int, byte, long, int, int, int, boolean, boolean, long, int, long, boolean)
      */
     public GenericKeyedObjectPoolFactory(KeyedPoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, int maxTotal, int minIdle, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle) {
