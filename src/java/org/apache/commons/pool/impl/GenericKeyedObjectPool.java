@@ -260,6 +260,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
     /**
      * The default minimum level of idle objects in the pool.
+     * @since Pool 1.3
      * @see #setMinIdle
      * @see #getMinIdle
      */
@@ -405,6 +406,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @param numTestsPerEvictionRun the number of idle objects to examine per run within the idle object eviction thread (if any) (see {@link #setNumTestsPerEvictionRun})
      * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligible for evcition (see {@link #setMinEvictableIdleTimeMillis})
      * @param testWhileIdle whether or not to validate objects in the idle object eviction thread, if any (see {@link #setTestWhileIdle})
+     * @since Pool 1.3
      */
     public GenericKeyedObjectPool(KeyedPoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, int maxTotal, int minIdle, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle) {
         _factory = factory;
@@ -577,6 +579,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     /**
      * Sets the minimum number of idle objects in pool to maintain
      * @param poolSize - The minimum size of the pool
+     * @since Pool 1.3
      * @see #getMinIdle
      */
     public synchronized void setMinIdle(int poolSize) {
@@ -586,6 +589,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     /**
      * Returns the minimum number of idle objects in pool to maintain.
      * @return the minimum number of idle objects in pool to maintain.
+     * @since Pool 1.3
      * @see #setMinIdle
      */
     public synchronized int getMinIdle() {
@@ -918,6 +922,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     /**
      * Method clears oldest 15% of objects in pool.  The method sorts the
      * objects into a TreeMap and then iterates the first 15% for removal
+     * @since Pool 1.3
      */
     public synchronized void clearOldest() {
         // build sorted map of idle objects
@@ -1157,6 +1162,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @param key - The key to register for pool control.
      * @param populateImmediately - If this is <code>true</code>, the pool
      * will start a sustain cycle immediately.
+     * @since Pool 1.3
      */
     public synchronized void preparePool(Object key, boolean populateImmediately) {
         ObjectQueue pool = (ObjectQueue)(_poolMap.get(key));

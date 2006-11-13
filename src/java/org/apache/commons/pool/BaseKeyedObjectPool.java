@@ -106,6 +106,7 @@ public abstract class BaseKeyedObjectPool implements KeyedObjectPool {
     /**
      * Has this pool instance been closed.
      * @return <code>true</code> when this pool has been closed.
+     * @since Pool 2.0
      */
     protected final boolean isClosed() {
         return closed;
@@ -115,6 +116,7 @@ public abstract class BaseKeyedObjectPool implements KeyedObjectPool {
      * Throws an <code>IllegalStateException</code> when this pool has been closed.
      * @throws IllegalStateException when this pool has been closed.
      * @see #isClosed()
+     * @since Pool 2.0
      */
     protected final void assertOpen() throws IllegalStateException {
         if(isClosed()) {
