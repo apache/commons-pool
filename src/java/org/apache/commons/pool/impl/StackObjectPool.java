@@ -148,6 +148,9 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
                 } else {
                     newlyCreated = true;
                     obj = _factory.makeObject();
+                  if (obj == null) {
+                    throw new NoSuchElementException("PoolableObjectFactory.makeObject() returned null.");
+                  }
                 }
             }
             if (!newlyCreated && null != _factory && null != obj) {
