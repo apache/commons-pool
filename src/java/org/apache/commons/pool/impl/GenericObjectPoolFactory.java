@@ -135,7 +135,7 @@ public class GenericObjectPoolFactory implements ObjectPoolFactory {
      * @param testOnReturn whether to validate objects after they are returned to the returnObject.
      * @param timeBetweenEvictionRunsMillis the number of milliseconds to sleep between examining idle objects for eviction.
      * @param numTestsPerEvictionRun the number of idle objects to examine per run within the idle object eviction thread.
-     * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligible for evcition.
+     * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligible for eviction.
      * @param testWhileIdle whether or not to validate objects in the idle object eviction thread.
      * @see GenericObjectPool#GenericObjectPool(PoolableObjectFactory, int, byte, long, int, boolean, boolean, long, int, long, boolean)
      */
@@ -156,7 +156,7 @@ public class GenericObjectPoolFactory implements ObjectPoolFactory {
      * @param testOnReturn whether to validate objects after they are returned to the returnObject.
      * @param timeBetweenEvictionRunsMillis the number of milliseconds to sleep between examining idle objects for eviction.
      * @param numTestsPerEvictionRun the number of idle objects to examine per run within the idle object eviction thread.
-     * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligible for evcition.
+     * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligible for eviction.
      * @param testWhileIdle whether or not to validate objects in the idle object eviction thread.
      * @see GenericObjectPool#GenericObjectPool(PoolableObjectFactory, int, byte, long, int, int, boolean, boolean, long, int, long, boolean)
      */
@@ -177,9 +177,9 @@ public class GenericObjectPoolFactory implements ObjectPoolFactory {
      * @param testOnReturn whether to validate objects after they are returned to the returnObject.
      * @param timeBetweenEvictionRunsMillis the number of milliseconds to sleep between examining idle objects for eviction.
      * @param numTestsPerEvictionRun the number of idle objects to examine per run within the idle object eviction thread.
-     * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligible for evcition.
+     * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligible for eviction.
      * @param testWhileIdle whether or not to validate objects in the idle object eviction thread.
-     * @param softMinEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligible for evcition with the extra condition that at least "minIdle" amount of object remain in the pool.
+     * @param softMinEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligible for eviction with the extra condition that at least "minIdle" amount of object remain in the pool.
      * @since Pool 1.3
      * @see GenericObjectPool#GenericObjectPool(PoolableObjectFactory, int, byte, long, int, int, boolean, boolean, long, int, long, boolean, long)
      */
