@@ -150,7 +150,7 @@ public class GenericKeyedObjectPoolFactory implements KeyedObjectPoolFactory {
      * @param testOnReturn whether to validate objects after they are returned to returnObject.
      * @param timeBetweenEvictionRunsMillis the number of milliseconds to sleep between examining idle objects for eviction.
      * @param numTestsPerEvictionRun the number of idle objects to examine per run of the evictor.
-     * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligible for evcition.
+     * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligible for eviction.
      * @param testWhileIdle whether to validate objects in the idle object eviction thread.
      * @see GenericKeyedObjectPool#GenericKeyedObjectPool(KeyedPoolableObjectFactory, int, byte, long, int, boolean, boolean, long, int, long, boolean)
      */
@@ -171,7 +171,7 @@ public class GenericKeyedObjectPoolFactory implements KeyedObjectPoolFactory {
      * @param testOnReturn whether to validate objects after they are returned to returnObject.
      * @param timeBetweenEvictionRunsMillis the number of milliseconds to sleep between examining idle objects for eviction.
      * @param numTestsPerEvictionRun the number of idle objects to examine per run of the evictor.
-     * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligible for evcition.
+     * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligible for eviction.
      * @param testWhileIdle whether to validate objects in the idle object eviction thread.
      * @see GenericKeyedObjectPool#GenericKeyedObjectPool(KeyedPoolableObjectFactory, int, byte, long, int, int, boolean, boolean, long, int, long, boolean)
      */
@@ -193,7 +193,7 @@ public class GenericKeyedObjectPoolFactory implements KeyedObjectPoolFactory {
      * @param testOnReturn whether to validate objects after they are returned to returnObject.
      * @param timeBetweenEvictionRunsMillis the number of milliseconds to sleep between examining idle objects for eviction.
      * @param numTestsPerEvictionRun the number of idle objects to examine per run of the evictor.
-     * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligible for evcition.
+     * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligible for eviction.
      * @param testWhileIdle whether to validate objects in the idle object eviction thread.
      * @since Pool 1.3
      * @see GenericKeyedObjectPool#GenericKeyedObjectPool(KeyedPoolableObjectFactory, int, byte, long, int, int, int, boolean, boolean, long, int, long, boolean)
