@@ -301,7 +301,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @param config a non-<tt>null</tt> {@link GenericObjectPool.Config} describing my configuration
      */
     public GenericObjectPool(PoolableObjectFactory factory, GenericObjectPool.Config config) {
-        this(factory,config.maxActive,config.whenExhaustedAction,config.maxWait,config.maxIdle,config.minIdle,config.testOnBorrow,config.testOnReturn,config.timeBetweenEvictionRunsMillis,config.numTestsPerEvictionRun,config.minEvictableIdleTimeMillis,config.testWhileIdle);
+        this(factory,config.maxActive,config.whenExhaustedAction,config.maxWait,config.maxIdle,config.minIdle,config.testOnBorrow,config.testOnReturn,config.timeBetweenEvictionRunsMillis,config.numTestsPerEvictionRun,config.minEvictableIdleTimeMillis,config.testWhileIdle,config.softMinEvictableIdleTimeMillis);
     }
 
     /**
@@ -803,6 +803,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         setNumTestsPerEvictionRun(conf.numTestsPerEvictionRun);
         setMinEvictableIdleTimeMillis(conf.minEvictableIdleTimeMillis);
         setTimeBetweenEvictionRunsMillis(conf.timeBetweenEvictionRunsMillis);
+        setSoftMinEvictableIdleTimeMillis(conf.softMinEvictableIdleTimeMillis);
         notifyAll();
     }
 
