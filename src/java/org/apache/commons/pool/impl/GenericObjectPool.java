@@ -115,6 +115,14 @@ import org.apache.commons.pool.impl.GenericKeyedObjectPool.ObjectTimestampPair;
  *   {@link PoolableObjectFactory#validateObject} method.  Objects
  *   that fail to validate will be dropped from the pool.
  *  </li>
+ *  <li>
+ *   {@link #setSoftMinEvictableIdleTimeMillis <i>softMinEvictableIdleTimeMillis</i>} 
+ *   specifies the minimum amount of time an object may sit idle in the pool
+ *   before it is eligible for eviction by the idle object evictor
+ *   (if any), with the extra condition that at least "minIdle" amount of object 
+ *   remain in the pool.  When non-positive, no objects will be evicted from the pool
+ *   due to idle time alone.
+ *  </li>
  * </ul>
  * <p>
  * GenericObjectPool is not usable without a {@link PoolableObjectFactory}.  A
