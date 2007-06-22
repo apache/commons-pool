@@ -30,7 +30,7 @@
         Edited all KeyedObjectPool related JavaDocs to have meaningful and correct content.
       </action>
       <action dev="sandymac" type="fix">
-        Implemented until tests to verify KeyedObjectPool implementations conformed to Pool 2 contracts.
+        Implemented unit tests to verify KeyedObjectPool implementations conformed to Pool 2 contracts.
         Updated GenericKeyedObjectPool and StackKeyedObjectPool to conformant behavior.
       </action>
       <action dev="sandymac" type="fix">
@@ -65,6 +65,9 @@
         <fixes issue="38669"/>
         <fixes issue="38746"/>
         <dueto name="Sandy McArthur"/>
+      </action>
+      <action dev="psteitz" type="fix" issue="POOL-102" due-to="John Sumsion">
+        Allowed blocked threads in GenericObjectPool borrowObject to be interrupted.
       </action>
     </release>
 

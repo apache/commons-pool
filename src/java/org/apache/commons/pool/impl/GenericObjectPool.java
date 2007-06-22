@@ -851,7 +851,8 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                                     }
                                 }
                             } catch(InterruptedException e) {
-                                // ignored
+                                Thread.currentThread().interrupt();
+                                throw e; 
                             }
                             if(_maxWait > 0 && ((System.currentTimeMillis() - starttime) >= _maxWait)) {
                                 throw new NoSuchElementException("Timeout waiting for idle object");
