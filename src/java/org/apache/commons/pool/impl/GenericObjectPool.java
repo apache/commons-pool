@@ -95,7 +95,7 @@ import org.apache.commons.pool.impl.GenericKeyedObjectPool.ObjectTimestampPair;
  * <p>
  * Optionally, one may configure the pool to examine and possibly evict objects as they
  * sit idle in the pool.  This is performed by an "idle object eviction" thread, which
- * runs asychronously.  The idle object eviction thread may be configured using the
+ * runs asynchronously.  The idle object eviction thread may be configured using the
  * following attributes:
  * <ul>
  *  <li>
@@ -958,6 +958,16 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         return _pool.size();
     }
 
+    /**
+     * {@inheritDoc}
+     * <p><strong>Note: </strong> There is no guard to prevent an object
+     * being returned to the pool multiple times. Clients are expected to
+     * discard references to returned objects and ensure that an object is not
+     * returned to the pool multiple times in sequence (i.e., without being
+     * borrowed again between returns). Violating this contract will result in
+     * the same object appearing multiple times in the pool and pool counters 
+     * (numActive, numIdle) returning incorrect values.</p>
+     */
     public synchronized void returnObject(Object obj) throws Exception {
         try {
             addObjectToPool(obj, true);
