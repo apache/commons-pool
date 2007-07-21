@@ -524,7 +524,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * {@link #setWhenExhaustedAction "when exhausted" action} is
      * {@link #WHEN_EXHAUSTED_BLOCK}.
      *
-     * When less than 0, the {@link #borrowObject} method
+     * When less than or equal to 0, the {@link #borrowObject} method
      * may block indefinitely.
      *
      * @return the maximum number of milliseconds borrowObject will block.
@@ -543,7 +543,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * {@link #setWhenExhaustedAction "when exhausted" action} is
      * {@link #WHEN_EXHAUSTED_BLOCK}.
      *
-     * When less than 0, the {@link #borrowObject} method
+     * When less than or equal to 0, the {@link #borrowObject} method
      * may block indefinitely.
      *
      * @param maxWait the maximum number of milliseconds borrowObject will block or negative for indefinitely.
@@ -1596,7 +1596,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * {@link #getWhenExhaustedAction "when exhausted" action} is
      * {@link #WHEN_EXHAUSTED_BLOCK}.
      *
-     * When less than 0, the {@link #borrowObject} method
+     * When less than or equal to 0, the {@link #borrowObject} method
      * may block indefinitely.
      *
      * @see #setMaxWait

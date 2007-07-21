@@ -511,7 +511,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * {@link #setWhenExhaustedAction "when exhausted" action} is
      * {@link #WHEN_EXHAUSTED_BLOCK}.
      *
-     * When less than 0, the {@link #borrowObject} method
+     * When less than or equal to 0, the {@link #borrowObject} method
      * may block indefinitely.
      *
      * @return maximum number of milliseconds to block when borrowing an object.
@@ -530,7 +530,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * {@link #setWhenExhaustedAction "when exhausted" action} is
      * {@link #WHEN_EXHAUSTED_BLOCK}.
      *
-     * When less than 0, the {@link #borrowObject} method
+     * When less than or equal to 0, the {@link #borrowObject} method
      * may block indefinitely.
      *
      * @param maxWait maximum number of milliseconds to block when borrowing an object.
@@ -1292,7 +1292,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * {@link #getWhenExhaustedAction "when exhausted" action} is
      * {@link #WHEN_EXHAUSTED_BLOCK}.
      *
-     * When less than 0, the {@link #borrowObject} method
+     * When less than or equal to 0, the {@link #borrowObject} method
      * may block indefinitely.
      *
      * @see #setMaxWait
