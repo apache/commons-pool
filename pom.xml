@@ -33,7 +33,7 @@
   <inceptionYear>2001</inceptionYear>
   <description>Commons Object Pooling Library</description>
 
-  <url>http://jakarta.apache.org/commons/pool/</url>
+  <url>http://commons.apache.org/pool/</url>
 
   <issueManagement>
     <system>jira</system>
@@ -41,9 +41,9 @@
   </issueManagement>
 
   <scm>
-    <connection>scm:svn:https://svn.apache.org/repos/asf/jakarta/commons/proper/pool/trunk</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/jakarta/commons/proper/pool/trunk</developerConnection>
-    <url>http://svn.apache.org/viewvc/jakarta/commons/proper/pool/trunk</url>
+    <connection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/pool/trunk</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/pool/trunk</developerConnection>
+    <url>http://svn.apache.org/viewvc/commons/proper/pool/trunk</url>
   </scm>
 
   <developers>
