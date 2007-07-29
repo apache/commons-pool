@@ -1,0 +1,191 @@
+<?xml version="1.0"?>
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.apache.commons</groupId>
+    <artifactId>commons-parent</artifactId>
+    <version>1</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>commons-pool</groupId>
+  <artifactId>commons-pool</artifactId>
+  <version>2.0-SNAPSHOT</version>
+  <name>Pool</name>
+
+  <inceptionYear>2001</inceptionYear>
+  <description>Commons Object Pooling Library</description>
+
+  <url>http://commons.apache.org/pool/</url>
+
+  <issueManagement>
+    <system>jira</system>
+    <url>http://issues.apache.org/jira/browse/POOL</url>
+  </issueManagement>
+
+  <scm>
+    <connection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/pool/trunk</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/pool/trunk</developerConnection>
+    <url>http://svn.apache.org/viewvc/commons/proper/pool/trunk</url>
+  </scm>
+
+  <developers>
+    <developer>
+      <name>Morgan Delagrange</name>
+      <id>morgand</id>
+      <email></email>
+      <organization></organization>
+    </developer>
+    <developer>
+      <name>Geir Magnusson</name>
+      <id>geirm</id>
+      <email></email>
+      <organization></organization>
+    </developer>
+    <developer>
+      <name>Craig McClanahan</name>
+      <id>craigmcc</id>
+      <email></email>
+      <organization></organization>
+    </developer>
+    <developer>
+      <name>Rodney Waldhoff</name>
+      <id>rwaldhoff</id>
+      <email></email>
+      <organization></organization>
+    </developer>
+    <developer>
+      <name>David Weinrich</name>
+      <id>dweinr1</id>
+      <email></email>
+      <organization></organization>
+    </developer>
+    <developer>
+      <name>Dirk Verbeeck</name>
+      <id>dirkv</id>
+      <email></email>
+      <organization></organization>
+    </developer>
+    <developer>
+      <name>Robert Burrell Donkin</name>
+      <id>rdonkin</id>
+      <email></email>
+      <organization>Apache Software Foundation</organization>
+    </developer>
+    <developer>
+      <name>Sandy McArthur</name>
+      <id>sandymac</id>
+      <email></email>
+      <organization>Apache Software Foundation</organization>
+    </developer>
+  </developers>
+  <contributors>
+    <contributor>
+      <name>Todd Carmichael</name>
+      <email>toddc@concur.com</email>
+    </contributor>
+  </contributors>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <sourceDirectory>src/java</sourceDirectory>
+    <testSourceDirectory>src/test</testSourceDirectory>
+    <resources>
+      <resource>
+        <directory>.</directory>
+        <targetPath>META-INF</targetPath>
+          <includes>
+            <include>NOTICE.txt</include>
+            <include>LICENSE.txt</include>
+          </includes>
+        </resource>
+      </resources>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+            <source>1.4</source>
+            <target>1.4</target>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <includes>
+        <include>org/apache/commons/pool/TestBaseObjectPool.java</include>
+        <include>org/apache/commons/pool/TestBaseKeyedObjectPool.java</include>
+        <include>org/apache/commons/pool/TestBasePoolableObjectFactory.java</include>
+        <include>org/apache/commons/pool/TestBaseKeyedPoolableObjectFactory.java</include>
+        <include>org/apache/commons/pool/TestPoolUtils.java</include>
+
+        <include>org/apache/commons/pool/impl/TestStackObjectPool.java</include>
+        <include>org/apache/commons/pool/impl/TestStackKeyedObjectPool.java</include>
+        <include>org/apache/commons/pool/impl/TestGenericObjectPool.java</include>
+        <include>org/apache/commons/pool/impl/TestGenericKeyedObjectPool.java</include>
+        <include>org/apache/commons/pool/impl/TestSoftReferenceObjectPool.java</include>
+        <!--<include>org/apache/commons/pool/impl/TestSoftRefOutOfMemory.java</include>-->
+        <include>org/apache/commons/pool/impl/TestGenericObjectPoolFactory.java</include>
+        <include>org/apache/commons/pool/impl/TestStackObjectPoolFactory.java</include>
+        <include>org/apache/commons/pool/impl/TestGenericKeyedObjectPoolFactory.java</include>
+        <include>org/apache/commons/pool/impl/TestStackKeyedObjectPoolFactory.java</include>
+
+        <include>org/apache/commons/pool/composite/TestFifoLender.java</include>
+        <include>org/apache/commons/pool/composite/TestIdleEvictorLender.java</include>
+        <include>org/apache/commons/pool/composite/TestInvalidEvictorLender.java</include>
+        <include>org/apache/commons/pool/composite/TestLifoLender.java</include>
+        <include>org/apache/commons/pool/composite/TestNullLender.java</include>
+        <include>org/apache/commons/pool/composite/TestSoftLender.java</include>
+
+        <include>org/apache/commons/pool/composite/TestFailManager.java</include>
+        <include>org/apache/commons/pool/composite/TestGrowManager.java</include>
+        <include>org/apache/commons/pool/composite/TestIdleLimitManager.java</include>
+        <include>org/apache/commons/pool/composite/TestFailLimitManager.java</include>
+        <include>org/apache/commons/pool/composite/TestWaitLimitManager.java</include>
+
+        <include>org/apache/commons/pool/composite/TestNullTracker.java</include>
+        <include>org/apache/commons/pool/composite/TestReferenceTracker.java</include>
+        <include>org/apache/commons/pool/composite/TestDebugTracker.java</include>
+        <include>org/apache/commons/pool/composite/TestSimpleTracker.java</include>
+        <include>org/apache/commons/pool/composite/TestCompositeObjectPool.java</include>
+        <include>org/apache/commons/pool/composite/TestCompositeKeyedObjectPool.java</include>
+        <include>org/apache/commons/pool/composite/TestCompositeKeyedObjectPool2.java</include>
+        <include>org/apache/commons/pool/composite/TestCompositeKeyedObjectPoolFactory.java</include>
+              </includes>
+              <!--
+              <excludes>
+                <exclude>org/apache/commons/pool/TestObjectPoolFactory.java</exclude>
+              </excludes>
+              -->
+          </configuration>
+        </plugin>
+      </plugins>
+    </build>
+
+</project>

@@ -1,135 +1,97 @@
 /*
- * $Id: GenericKeyedObjectPool.java,v 1.17 2003/04/24 18:07:09 rwaldhoff Exp $
- * $Revision: 1.17 $
- * $Date: 2003/04/24 18:07:09 $
- *
- * ====================================================================
- *
- * The Apache Software License, Version 1.1
- *
- * Copyright (c) 2001-2002 The Apache Software Foundation.  All rights
- * reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
- *
- * 3. The end-user documentation included with the redistribution, if
- *    any, must include the following acknowlegement:
- *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
- *    Alternately, this acknowlegement may appear in the software itself,
- *    if and wherever such third-party acknowlegements normally appear.
- *
- * 4. The names "The Jakarta Project", "Commons", and "Apache Software
- *    Foundation" must not be used to endorse or promote products derived
- *    from this software without prior written permission. For written
- *    permission, please contact apache@apache.org.
- *
- * 5. Products derived from this software may not be called "Apache"
- *    nor may "Apache" appear in their names without prior written
- *    permission of the Apache Group.
- *
- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
- * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
- * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- * ====================================================================
- *
- * This software consists of voluntary contributions made by many
- * individuals on behalf of the Apache Software Foundation.  For more
- * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
- *
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.apache.commons.pool.impl;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.ListIterator;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.LinkedList;
+import java.util.HashSet;
+import java.util.TimerTask;
 
-import org.apache.commons.collections.CursorableLinkedList;
 import org.apache.commons.pool.BaseKeyedObjectPool;
 import org.apache.commons.pool.KeyedObjectPool;
 import org.apache.commons.pool.KeyedPoolableObjectFactory;
 
 /**
- * A configurable {@link KeyedObjectPool} implementation.
+ * A configurable <code>KeyedObjectPool</code> implementation.
  * <p>
  * When coupled with the appropriate {@link KeyedPoolableObjectFactory},
- * <tt>GenericKeyedObjectPool</tt> provides robust pooling functionality for
+ * <code>GenericKeyedObjectPool</code> provides robust pooling functionality for
  * arbitrary objects.
- * <p>
- * A <tt>GenericKeyedObjectPool</tt> provides a number of configurable parameters:
+ * </p>
+ * <p>A <code>GenericKeyedObjectPool</code> provides a number of configurable parameters:</p>
  * <ul>
  *  <li>
- *    {@link #setMaxActive <i>maxActive</i>} controls the maximum number of objects (per key)
+ *    {@link #setMaxActive maxActive} controls the maximum number of objects
  *    that can be borrowed from the pool at one time.  When non-positive, there
  *    is no limit to the number of objects that may be active at one time.
- *    When {@link #setMaxActive <i>maxActive</i>} is exceeded, the pool is said to be exhausted.
+ *    When {@link #setMaxActive maxActive} is exceeded, the pool is said to be exhausted.
  *  </li>
  *  <li>
- *    {@link #setMaxIdle <i>maxIdle</i>} controls the maximum number of objects that can
- *    sit idle in the pool (per key) at any time.  When negative, there
+ *    {@link #setMaxIdle maxIdle} controls the maximum number of objects that can
+ *    sit idle in the pool at any time.  When negative, there
  *    is no limit to the number of objects that may be idle at one time.
  *  </li>
  *  <li>
- *    {@link #setWhenExhaustedAction <i>whenExhaustedAction</i>} specifies the
- *    behaviour of the {@link #borrowObject} method when the pool is exhausted:
+ *    {@link #setWhenExhaustedAction whenExhaustedAction} specifies the
+ *    behaviour of the {@link #borrowObject borrowObject} method when the pool is exhausted:
  *    <ul>
  *    <li>
- *      When {@link #setWhenExhaustedAction <i>whenExhaustedAction</i>} is
- *      {@link #WHEN_EXHAUSTED_FAIL}, {@link #borrowObject} will throw
+ *      When {@link #setWhenExhaustedAction whenExhaustedAction} is
+ *      {@link #WHEN_EXHAUSTED_FAIL}, {@link #borrowObject borrowObject} will throw
  *      a {@link NoSuchElementException}
  *    </li>
  *    <li>
- *      When {@link #setWhenExhaustedAction <i>whenExhaustedAction</i>} is
- *      {@link #WHEN_EXHAUSTED_GROW}, {@link #borrowObject} will create a new
- *      object and return it(essentially making {@link #setMaxActive <i>maxActive</i>}
+ *      When {@link #setWhenExhaustedAction whenExhaustedAction} is
+ *      {@link #WHEN_EXHAUSTED_GROW}, {@link #borrowObject borrowObject} will create a new
+ *      object and return it (essentially making {@link #setMaxActive maxActive}
  *      meaningless.)
  *    </li>
  *    <li>
- *      When {@link #setWhenExhaustedAction <i>whenExhaustedAction</i>}
- *      is {@link #WHEN_EXHAUSTED_BLOCK}, {@link #borrowObject} will block
- *      (invoke {@link Object#wait} until a new or idle object is available.
- *      If a positive {@link #setMaxWait <i>maxWait</i>}
- *      value is supplied, the {@link #borrowObject} will block for at
+ *      When {@link #setWhenExhaustedAction whenExhaustedAction}
+ *      is {@link #WHEN_EXHAUSTED_BLOCK}, {@link #borrowObject borrowObject} will block
+ *      (invoke {@link Object#wait wait} until a new or idle object is available.
+ *      If a positive {@link #setMaxWait maxWait}
+ *      value is supplied, the {@link #borrowObject borrowObject} will block for at
  *      most that many milliseconds, after which a {@link NoSuchElementException}
- *      will be thrown.  If {@link #setMaxWait <i>maxWait</i>} is non-positive,
- *      the {@link #borrowObject} method will block indefinitely.
+ *      will be thrown.  If {@link #setMaxWait maxWait} is non-positive,
+ *      the {@link #borrowObject borrowObject} method will block indefinitely.
  *    </li>
  *    </ul>
  *  </li>
  *  <li>
- *    When {@link #setTestOnBorrow <i>testOnBorrow</i>} is set, the pool will
+ *    When {@link #setTestOnBorrow testOnBorrow} is set, the pool will
  *    attempt to validate each object before it is returned from the
- *    {@link #borrowObject} method. (Using the provided factory's
- *    {@link org.apache.commons.pool.PoolableObjectFactory#validateObject} method.)  Objects that fail
+ *    {@link #borrowObject borrowObject} method. (Using the provided factory's
+ *    {@link KeyedPoolableObjectFactory#validateObject validateObject} method.)  Objects that fail
  *    to validate will be dropped from the pool, and a different object will
  *    be borrowed.
  *  </li>
  *  <li>
- *    When {@link #setTestOnReturn <i>testOnReturn</i>} is set, the pool will
+ *    When {@link #setTestOnReturn testOnReturn} is set, the pool will
  *    attempt to validate each object before it is returned to the pool in the
- *    {@link #returnObject} method. (Using the provided factory's
- *    {@link org.apache.commons.pool.PoolableObjectFactory#validateObject}
+ *    {@link #returnObject returnObject} method. (Using the provided factory's
+ *    {@link KeyedPoolableObjectFactory#validateObject validateObject}
  *    method.)  Objects that fail to validate will be dropped from the pool.
  *  </li>
  * </ul>
@@ -140,31 +102,34 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  * following attributes:
  * <ul>
  *  <li>
- *   {@link #setTimeBetweenEvictionRunsMillis <i>timeBetweenEvictionRunsMillis</i>}
+ *   {@link #setTimeBetweenEvictionRunsMillis timeBetweenEvictionRunsMillis}
  *   indicates how long the eviction thread should sleep before "runs" of examining
  *   idle objects.  When non-positive, no eviction thread will be launched.
  *  </li>
  *  <li>
- *   {@link #setMinEvictableIdleTimeMillis <i>minEvictableIdleTimeMillis</i>}
+ *   {@link #setMinEvictableIdleTimeMillis minEvictableIdleTimeMillis}
  *   specifies the minimum amount of time that an object may sit idle in the pool
- *   before it is eligable for eviction due to idle time.  When non-positive, no object
+ *   before it is eligible for eviction due to idle time.  When non-positive, no object
  *   will be dropped from the pool due to idle time alone.
  *  </li>
  *  <li>
- *   {@link #setTestWhileIdle <i>testWhileIdle</i>} indicates whether or not idle
+ *   {@link #setTestWhileIdle testWhileIdle} indicates whether or not idle
  *   objects should be validated using the factory's
- *   {@link org.apache.commons.pool.PoolableObjectFactory#validateObject} method.  Objects
+ *   {@link KeyedPoolableObjectFactory#validateObject validateObject} method.  Objects
  *   that fail to validate will be dropped from the pool.
  *  </li>
  * </ul>
  * <p>
  * GenericKeyedObjectPool is not usable without a {@link KeyedPoolableObjectFactory}.  A
  * non-<code>null</code> factory must be provided either as a constructor argument
- * or via a call to {@link #setFactory} before the pool is used.
+ * or via a call to {@link #setFactory setFactory} before the pool is used.
  * </p>
  * @see GenericObjectPool
  * @author Rodney Waldhoff
- * @version $Revision: 1.17 $ $Date: 2003/04/24 18:07:09 $
+ * @author Dirk Verbeeck
+ * @author Sandy McArthur
+ * @version $Revision$ $Date$
+ * @since Pool 1.0
  */
 public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
 
@@ -207,20 +172,25 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     public static final byte WHEN_EXHAUSTED_GROW   = 2;
 
     /**
-     * The default cap on the number of idle instances in the pool
-     * (per key).
+     * The default cap on the number of idle instances in the pool.
      * @see #getMaxIdle
      * @see #setMaxIdle
      */
     public static final int DEFAULT_MAX_IDLE  = 8;
 
     /**
-     * The default cap on the total number of active instances from the pool
-     * (per key).
+     * The default cap on the total number of active instances from the pool.
      * @see #getMaxActive
      * @see #setMaxActive
      */
     public static final int DEFAULT_MAX_ACTIVE  = 8;
+
+    /**
+     * The default cap on the the maximum number of objects that can exists at one time.
+     * @see #getMaxTotal
+     * @see #setMaxTotal
+     */
+    public static final int DEFAULT_MAX_TOTAL  = -1;
 
     /**
      * The default "when exhausted action" for the pool.
@@ -247,7 +217,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @see #getTestOnBorrow
      * @see #setTestOnBorrow
      */
-    public static final boolean DEFAULT_TEST_ON_BORROW = false;
+    public static final boolean DEFAULT_TEST_ON_BORROW = true;
 
     /**
      * The default "test on return" value.
@@ -289,57 +259,68 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      */
     public static final long DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS = 1000L * 60L * 30L;
 
+    /**
+     * The default minimum level of idle objects in the pool.
+     * @since Pool 1.3
+     * @see #setMinIdle
+     * @see #getMinIdle
+     */
+    public static final int DEFAULT_MIN_IDLE = 0;
+    
     //--- constructors -----------------------------------------------
 
     /**
-     * Create a new <tt>GenericKeyedObjectPool</tt>..
+     * Create a new <code>GenericKeyedObjectPool</code> with no factory.
+     *
+     * @see #GenericKeyedObjectPool(KeyedPoolableObjectFactory)
+     * @see #setFactory(KeyedPoolableObjectFactory)
      */
     public GenericKeyedObjectPool() {
         this(null,DEFAULT_MAX_ACTIVE,DEFAULT_WHEN_EXHAUSTED_ACTION,DEFAULT_MAX_WAIT,DEFAULT_MAX_IDLE,DEFAULT_TEST_ON_BORROW,DEFAULT_TEST_ON_RETURN,DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,DEFAULT_NUM_TESTS_PER_EVICTION_RUN,DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,DEFAULT_TEST_WHILE_IDLE);
     }
 
     /**
-     * Create a new <tt>GenericKeyedObjectPool</tt> using the specified values.
-     * @param factory the (possibly <tt>null</tt>)KeyedPoolableObjectFactory to use to create, validate and destroy objects
+     * Create a new <code>GenericKeyedObjectPool</code> using the specified values.
+     * @param factory the <code>KeyedPoolableObjectFactory</code> to use to create, validate, and destroy objects if not <code>null</code>
      */
     public GenericKeyedObjectPool(KeyedPoolableObjectFactory factory) {
         this(factory,DEFAULT_MAX_ACTIVE,DEFAULT_WHEN_EXHAUSTED_ACTION,DEFAULT_MAX_WAIT,DEFAULT_MAX_IDLE,DEFAULT_TEST_ON_BORROW,DEFAULT_TEST_ON_RETURN,DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,DEFAULT_NUM_TESTS_PER_EVICTION_RUN,DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,DEFAULT_TEST_WHILE_IDLE);
     }
 
     /**
-     * Create a new <tt>GenericKeyedObjectPool</tt> using the specified values.
-     * @param factory the (possibly <tt>null</tt>)KeyedPoolableObjectFactory to use to create, validate and destroy objects
-     * @param config a non-<tt>null</tt> {@link GenericKeyedObjectPool.Config} describing my configuration
+     * Create a new <code>GenericKeyedObjectPool</code> using the specified values.
+     * @param factory the <code>KeyedPoolableObjectFactory</code> to use to create, validate, and destroy objects if not <code>null</code>
+     * @param config a non-<code>null</code> {@link GenericKeyedObjectPool.Config} describing the configuration
      */
     public GenericKeyedObjectPool(KeyedPoolableObjectFactory factory, GenericKeyedObjectPool.Config config) {
-        this(factory,config.maxActive,config.whenExhaustedAction,config.maxWait,config.maxIdle,config.testOnBorrow,config.testOnReturn,config.timeBetweenEvictionRunsMillis,config.numTestsPerEvictionRun,config.minEvictableIdleTimeMillis,config.testWhileIdle);
+        this(factory,config.maxActive,config.whenExhaustedAction,config.maxWait,config.maxIdle,config.maxTotal,config.testOnBorrow,config.testOnReturn,config.timeBetweenEvictionRunsMillis,config.numTestsPerEvictionRun,config.minEvictableIdleTimeMillis,config.testWhileIdle);
     }
 
     /**
-     * Create a new <tt>GenericKeyedObjectPool</tt> using the specified values.
-     * @param factory the (possibly <tt>null</tt>)KeyedPoolableObjectFactory to use to create, validate and destroy objects
-     * @param maxActive the maximum number of objects that can be borrowed from me at one time (per key) (see {@link #setMaxActive})
+     * Create a new <code>GenericKeyedObjectPool</code> using the specified values.
+     * @param factory the <code>KeyedPoolableObjectFactory</code> to use to create, validate, and destroy objects if not <code>null</code>
+     * @param maxActive the maximum number of objects that can be borrowed from me at one time (see {@link #setMaxActive})
      */
     public GenericKeyedObjectPool(KeyedPoolableObjectFactory factory, int maxActive) {
         this(factory,maxActive,DEFAULT_WHEN_EXHAUSTED_ACTION,DEFAULT_MAX_WAIT,DEFAULT_MAX_IDLE,DEFAULT_TEST_ON_BORROW,DEFAULT_TEST_ON_RETURN,DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,DEFAULT_NUM_TESTS_PER_EVICTION_RUN,DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,DEFAULT_TEST_WHILE_IDLE);
     }
 
     /**
-     * Create a new <tt>GenericKeyedObjectPool</tt> using the specified values.
-     * @param factory the (possibly <tt>null</tt>)KeyedPoolableObjectFactory to use to create, validate and destroy objects
-     * @param maxActive the maximum number of objects that can be borrowed from me at one time (per key) (see {@link #setMaxActive})
+     * Create a new <code>GenericKeyedObjectPool</code> using the specified values.
+     * @param factory the <code>KeyedPoolableObjectFactory</code> to use to create, validate, and destroy objects if not <code>null</code>
+     * @param maxActive the maximum number of objects that can be borrowed from me at one time (see {@link #setMaxActive})
      * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #setWhenExhaustedAction})
-     * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted an and <i>whenExhaustedAction</i> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
+     * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted and <code>whenExhaustedAction</code> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
      */
     public GenericKeyedObjectPool(KeyedPoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait) {
         this(factory,maxActive,whenExhaustedAction,maxWait,DEFAULT_MAX_IDLE,DEFAULT_TEST_ON_BORROW,DEFAULT_TEST_ON_RETURN,DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,DEFAULT_NUM_TESTS_PER_EVICTION_RUN,DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,DEFAULT_TEST_WHILE_IDLE);
     }
 
     /**
-     * Create a new <tt>GenericKeyedObjectPool</tt> using the specified values.
-     * @param factory the (possibly <tt>null</tt>)KeyedPoolableObjectFactory to use to create, validate and destroy objects
-     * @param maxActive the maximum number of objects that can be borrowed from me at one time (per key) (see {@link #setMaxActive})
-     * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted an and <i>whenExhaustedAction</i> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
+     * Create a new <code>GenericKeyedObjectPool</code> using the specified values.
+     * @param factory the <code>KeyedPoolableObjectFactory</code> to use to create, validate, and destroy objects if not <code>null</code>
+     * @param maxActive the maximum number of objects that can be borrowed from me at one time (see {@link #setMaxActive})
+     * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted and <code>whenExhaustedAction</code> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
      * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #setWhenExhaustedAction})
      * @param testOnBorrow whether or not to validate objects before they are returned by the {@link #borrowObject} method (see {@link #setTestOnBorrow})
      * @param testOnReturn whether or not to validate objects after they are returned to the {@link #returnObject} method (see {@link #setTestOnReturn})
@@ -349,23 +330,23 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     }
 
     /**
-     * Create a new <tt>GenericKeyedObjectPool</tt> using the specified values.
-     * @param factory the (possibly <tt>null</tt>)KeyedPoolableObjectFactory to use to create, validate and destroy objects
-     * @param maxActive the maximum number of objects that can be borrowed from me at one time (per key) (see {@link #setMaxActive})
+     * Create a new <code>GenericKeyedObjectPool</code> using the specified values.
+     * @param factory the <code>KeyedPoolableObjectFactory</code> to use to create, validate, and destroy objects if not <code>null</code>
+     * @param maxActive the maximum number of objects that can be borrowed from me at one time (see {@link #setMaxActive})
      * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #setWhenExhaustedAction})
-     * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted an and <i>whenExhaustedAction</i> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
-     * @param maxIdle the maximum number of idle objects in my pool (per key) (see {@link #setMaxIdle})
+     * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted and <code>whenExhaustedAction</code> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
+     * @param maxIdle the maximum number of idle objects in my pool (see {@link #setMaxIdle})
      */
     public GenericKeyedObjectPool(KeyedPoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle) {
         this(factory,maxActive,whenExhaustedAction,maxWait,maxIdle,DEFAULT_TEST_ON_BORROW,DEFAULT_TEST_ON_RETURN,DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,DEFAULT_NUM_TESTS_PER_EVICTION_RUN,DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,DEFAULT_TEST_WHILE_IDLE);
     }
 
     /**
-     * Create a new <tt>GenericKeyedObjectPool</tt> using the specified values.
-     * @param factory the (possibly <tt>null</tt>)KeyedPoolableObjectFactory to use to create, validate and destroy objects
-     * @param maxActive the maximum number of objects that can be borrowed from me at one time (per key) (see {@link #setMaxActive})
+     * Create a new <code>GenericKeyedObjectPool</code> using the specified values.
+     * @param factory the <code>KeyedPoolableObjectFactory</code> to use to create, validate, and destroy objects if not <code>null</code>
+     * @param maxActive the maximum number of objects that can be borrowed from me at one time (see {@link #setMaxActive})
      * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #setWhenExhaustedAction})
-     * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted an and <i>whenExhaustedAction</i> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #getMaxWait})
+     * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted and <code>whenExhaustedAction</code> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #getMaxWait})
      * @param maxIdle the maximum number of idle objects in my pool (see {@link #setMaxIdle})
      * @param testOnBorrow whether or not to validate objects before they are returned by the {@link #borrowObject} method (see {@link #setTestOnBorrow})
      * @param testOnReturn whether or not to validate objects after they are returned to the {@link #returnObject} method (see {@link #setTestOnReturn})
@@ -375,20 +356,60 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     }
 
     /**
-     * Create a new <tt>GenericKeyedObjectPool</tt> using the specified values.
-     * @param factory the (possibly <tt>null</tt>)PoolableObjectFactory to use to create, validate and destroy objects
-     * @param maxActive the maximum number of objects that can be borrowed from me at one time (per key) (see {@link #setMaxActive})
+     * Create a new <code>GenericKeyedObjectPool</code> using the specified values.
+     * @param factory the <code>KeyedPoolableObjectFactory</code> to use to create, validate, and destroy objects if not <code>null</code>
+     * @param maxActive the maximum number of objects that can be borrowed from me at one time (see {@link #setMaxActive})
      * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #setWhenExhaustedAction})
-     * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted an and <i>whenExhaustedAction</i> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
+     * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted and <code>whenExhaustedAction</code> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
      * @param maxIdle the maximum number of idle objects in my pool (see {@link #setMaxIdle})
      * @param testOnBorrow whether or not to validate objects before they are returned by the {@link #borrowObject} method (see {@link #setTestOnBorrow})
      * @param testOnReturn whether or not to validate objects after they are returned to the {@link #returnObject} method (see {@link #setTestOnReturn})
      * @param timeBetweenEvictionRunsMillis the amount of time (in milliseconds) to sleep between examining idle objects for eviction (see {@link #setTimeBetweenEvictionRunsMillis})
      * @param numTestsPerEvictionRun the number of idle objects to examine per run within the idle object eviction thread (if any) (see {@link #setNumTestsPerEvictionRun})
-     * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligable for evcition (see {@link #setMinEvictableIdleTimeMillis})
+     * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligible for eviction (see {@link #setMinEvictableIdleTimeMillis})
      * @param testWhileIdle whether or not to validate objects in the idle object eviction thread, if any (see {@link #setTestWhileIdle})
      */
     public GenericKeyedObjectPool(KeyedPoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle) {
+        this(factory, maxActive, whenExhaustedAction, maxWait, maxIdle, GenericKeyedObjectPool.DEFAULT_MAX_TOTAL, testOnBorrow, testOnReturn, timeBetweenEvictionRunsMillis, numTestsPerEvictionRun, minEvictableIdleTimeMillis, testWhileIdle);
+    }
+
+    /**
+     * Create a new <code>GenericKeyedObjectPool</code> using the specified values.
+     * @param factory the <code>KeyedPoolableObjectFactory</code> to use to create, validate, and destroy objects if not <code>null</code>
+     * @param maxActive the maximum number of objects that can be borrowed from me at one time (see {@link #setMaxActive})
+     * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #setWhenExhaustedAction})
+     * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted and <code>whenExhaustedAction</code> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
+     * @param maxIdle the maximum number of idle objects in my pool (see {@link #setMaxIdle})
+     * @param maxTotal the maximum number of objects that can exists at one time (see {@link #setMaxTotal})
+     * @param testOnBorrow whether or not to validate objects before they are returned by the {@link #borrowObject} method (see {@link #setTestOnBorrow})
+     * @param testOnReturn whether or not to validate objects after they are returned to the {@link #returnObject} method (see {@link #setTestOnReturn})
+     * @param timeBetweenEvictionRunsMillis the amount of time (in milliseconds) to sleep between examining idle objects for eviction (see {@link #setTimeBetweenEvictionRunsMillis})
+     * @param numTestsPerEvictionRun the number of idle objects to examine per run within the idle object eviction thread (if any) (see {@link #setNumTestsPerEvictionRun})
+     * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligible for eviction (see {@link #setMinEvictableIdleTimeMillis})
+     * @param testWhileIdle whether or not to validate objects in the idle object eviction thread, if any (see {@link #setTestWhileIdle})
+     */
+    public GenericKeyedObjectPool(KeyedPoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, int maxTotal, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle) {
+        this(factory, maxActive, whenExhaustedAction, maxWait, maxIdle, maxTotal, GenericKeyedObjectPool.DEFAULT_MIN_IDLE, testOnBorrow, testOnReturn, timeBetweenEvictionRunsMillis, numTestsPerEvictionRun, minEvictableIdleTimeMillis, testWhileIdle);
+    }
+    
+    /**
+     * Create a new <code>GenericKeyedObjectPool</code> using the specified values.
+     * @param factory the <code>KeyedPoolableObjectFactory</code> to use to create, validate, and destroy objects if not <code>null</code>
+     * @param maxActive the maximum number of objects that can be borrowed from me at one time (see {@link #setMaxActive})
+     * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #setWhenExhaustedAction})
+     * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted and <code>whenExhaustedAction</code> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
+     * @param maxIdle the maximum number of idle objects in my pool (see {@link #setMaxIdle})
+     * @param maxTotal the maximum number of objects that can exists at one time (see {@link #setMaxTotal})
+     * @param minIdle the minimum number of idle objects to have in the pool at any one time (see {@link #setMinIdle})
+     * @param testOnBorrow whether or not to validate objects before they are returned by the {@link #borrowObject} method (see {@link #setTestOnBorrow})
+     * @param testOnReturn whether or not to validate objects after they are returned to the {@link #returnObject} method (see {@link #setTestOnReturn})
+     * @param timeBetweenEvictionRunsMillis the amount of time (in milliseconds) to sleep between examining idle objects for eviction (see {@link #setTimeBetweenEvictionRunsMillis})
+     * @param numTestsPerEvictionRun the number of idle objects to examine per run within the idle object eviction thread (if any) (see {@link #setNumTestsPerEvictionRun})
+     * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligible for eviction (see {@link #setMinEvictableIdleTimeMillis})
+     * @param testWhileIdle whether or not to validate objects in the idle object eviction thread, if any (see {@link #setTestWhileIdle})
+     * @since Pool 1.3
+     */
+    public GenericKeyedObjectPool(KeyedPoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, int maxTotal, int minIdle, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle) {
         _factory = factory;
         _maxActive = maxActive;
         switch(whenExhaustedAction) {
@@ -402,6 +423,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         }
         _maxWait = maxWait;
         _maxIdle = maxIdle;
+        _maxTotal = maxTotal;
+        _minIdle = minIdle;
         _testOnBorrow = testOnBorrow;
         _testOnReturn = testOnReturn;
         _timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
@@ -410,15 +433,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         _testWhileIdle = testWhileIdle;
 
         _poolMap = new HashMap();
-        _activeMap = new HashMap();
-        _poolList = new CursorableLinkedList();
 
-        if(_timeBetweenEvictionRunsMillis > 0) {
-            _evictor = new Evictor();
-            Thread t = new Thread(_evictor);
-            t.setDaemon(true);
-            t.start();
-        }
+        startEvictor(_timeBetweenEvictionRunsMillis);
     }
 
     //--- public methods ---------------------------------------------
@@ -426,25 +442,43 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     //--- configuration methods --------------------------------------
 
     /**
-     * Returns the cap on the total number of active instances from my pool.
-     * @return the cap on the total number of active instances from my pool.
+     * Returns the cap on the number of active instances from my pool.
+     * @return the cap on the number of active instances from my pool.
      * @see #setMaxActive
      */
-    public int getMaxActive() {
+    public synchronized int getMaxActive() {
         return _maxActive;
     }
 
     /**
-     * Sets the cap on the total number of active instances from my pool.
-     * @param maxActive The cap on the total number of active instances from my pool.
+     * Sets the cap on the number of active instances from my pool.
+     * @param maxActive The cap on the number of active instances from my pool.
      *                  Use a negative value for an infinite number of instances.
      * @see #getMaxActive
      */
-    public void setMaxActive(int maxActive) {
+    public synchronized void setMaxActive(int maxActive) {
         _maxActive = maxActive;
-        synchronized(this) {
-            notifyAll();
-        }
+        notifyAll();
+    }
+
+    /**
+     * Returns the cap on the total number of instances from my pool if non-positive.
+     * @return the cap on the total number of instances from my pool if non-positive.
+     * @see #setMaxTotal
+     */
+    public synchronized int getMaxTotal() {
+        return _maxTotal;
+    }
+
+    /**
+     * Sets the cap on the total number of instances from my pool if non-positive.
+     * @param maxTotal The cap on the total number of instances from my pool.
+     *                  Use a non-positive value for an infinite number of instances.
+     * @see #getMaxTotal
+     */
+    public synchronized void setMaxTotal(int maxTotal) {
+        _maxTotal = maxTotal;
+        notifyAll();
     }
 
     /**
@@ -455,7 +489,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @return one of {@link #WHEN_EXHAUSTED_BLOCK}, {@link #WHEN_EXHAUSTED_FAIL} or {@link #WHEN_EXHAUSTED_GROW}
      * @see #setWhenExhaustedAction
      */
-    public byte getWhenExhaustedAction() {
+    public synchronized byte getWhenExhaustedAction() {
         return _whenExhaustedAction;
     }
 
@@ -490,9 +524,10 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * {@link #setWhenExhaustedAction "when exhausted" action} is
      * {@link #WHEN_EXHAUSTED_BLOCK}.
      *
-     * When less than 0, the {@link #borrowObject} method
+     * When less than or equal to 0, the {@link #borrowObject} method
      * may block indefinitely.
      *
+     * @return the maximum number of milliseconds borrowObject will block.
      * @see #setMaxWait
      * @see #setWhenExhaustedAction
      * @see #WHEN_EXHAUSTED_BLOCK
@@ -508,9 +543,10 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * {@link #setWhenExhaustedAction "when exhausted" action} is
      * {@link #WHEN_EXHAUSTED_BLOCK}.
      *
-     * When less than 0, the {@link #borrowObject} method
+     * When less than or equal to 0, the {@link #borrowObject} method
      * may block indefinitely.
      *
+     * @param maxWait the maximum number of milliseconds borrowObject will block or negative for indefinitely.
      * @see #getMaxWait
      * @see #setWhenExhaustedAction
      * @see #WHEN_EXHAUSTED_BLOCK
@@ -524,7 +560,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @return the cap on the number of "idle" instances in the pool.
      * @see #setMaxIdle
      */
-    public int getMaxIdle() {
+    public synchronized int getMaxIdle() {
         return _maxIdle;
     }
 
@@ -534,63 +570,86 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      *                Use a negative value to indicate an unlimited number
      *                of idle instances.
      * @see #getMaxIdle
+     * @see #DEFAULT_MAX_IDLE
      */
-    public void setMaxIdle(int maxIdle) {
+    public synchronized void setMaxIdle(int maxIdle) {
         _maxIdle = maxIdle;
-        synchronized(this) {
-            notifyAll();
-        }
+        notifyAll();
     }
 
     /**
-     * When <tt>true</tt>, objects will be
+     * Sets the minimum number of idle objects in pool to maintain
+     * @param poolSize - The minimum size of the pool
+     * @since Pool 1.3
+     * @see #getMinIdle
+     */
+    public synchronized void setMinIdle(int poolSize) {
+        _minIdle = poolSize;
+    }
+
+    /**
+     * Returns the minimum number of idle objects in pool to maintain.
+     * @return the minimum number of idle objects in pool to maintain.
+     * @since Pool 1.3
+     * @see #setMinIdle
+     */
+    public synchronized int getMinIdle() {
+        return _minIdle;
+    }
+
+    /**
+     * When <code>true</code>, objects will be
      * {@link org.apache.commons.pool.PoolableObjectFactory#validateObject validated}
      * before being returned by the {@link #borrowObject}
      * method.  If the object fails to validate,
      * it will be dropped from the pool, and we will attempt
      * to borrow another.
      *
+     * @return <code>true</code> if objects are validated before being borrowed.
      * @see #setTestOnBorrow
      */
-    public boolean getTestOnBorrow() {
+    public synchronized boolean getTestOnBorrow() {
         return _testOnBorrow;
     }
 
     /**
-     * When <tt>true</tt>, objects will be
+     * When <code>true</code>, objects will be
      * {@link org.apache.commons.pool.PoolableObjectFactory#validateObject validated}
      * before being returned by the {@link #borrowObject}
      * method.  If the object fails to validate,
      * it will be dropped from the pool, and we will attempt
      * to borrow another.
      *
+     * @param testOnBorrow whether object should be validated before being returned by borrowObject.
      * @see #getTestOnBorrow
      */
-    public void setTestOnBorrow(boolean testOnBorrow) {
+    public synchronized void setTestOnBorrow(boolean testOnBorrow) {
         _testOnBorrow = testOnBorrow;
     }
 
     /**
-     * When <tt>true</tt>, objects will be
+     * When <code>true</code>, objects will be
      * {@link org.apache.commons.pool.PoolableObjectFactory#validateObject validated}
      * before being returned to the pool within the
      * {@link #returnObject}.
      *
+     * @return <code>true</code> when objects will be validated before being borrowed.
      * @see #setTestOnReturn
      */
-    public boolean getTestOnReturn() {
+    public synchronized boolean getTestOnReturn() {
         return _testOnReturn;
     }
 
     /**
-     * When <tt>true</tt>, objects will be
+     * When <code>true</code>, objects will be
      * {@link org.apache.commons.pool.PoolableObjectFactory#validateObject validated}
      * before being returned to the pool within the
      * {@link #returnObject}.
      *
+     * @param testOnReturn <code>true</code> so objects will be validated before being borrowed.
      * @see #getTestOnReturn
      */
-    public void setTestOnReturn(boolean testOnReturn) {
+    public synchronized void setTestOnReturn(boolean testOnReturn) {
         _testOnReturn = testOnReturn;
     }
 
@@ -600,6 +659,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * When non-positive, no idle object evictor thread will be
      * run.
      *
+     * @return milliseconds to sleep between evictor runs.
      * @see #setTimeBetweenEvictionRunsMillis
      */
     public synchronized long getTimeBetweenEvictionRunsMillis() {
@@ -612,32 +672,23 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * When non-positive, no idle object evictor thread will be
      * run.
      *
+     * @param timeBetweenEvictionRunsMillis milliseconds to sleep between evictor runs.
      * @see #getTimeBetweenEvictionRunsMillis
      */
     public synchronized void setTimeBetweenEvictionRunsMillis(long timeBetweenEvictionRunsMillis) {
-        if(_timeBetweenEvictionRunsMillis > 0 && timeBetweenEvictionRunsMillis <= 0) {
-            _evictor.cancel();
-            _evictor = null;
-            _timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
-        } else if(_timeBetweenEvictionRunsMillis <= 0 && timeBetweenEvictionRunsMillis > 0) {
-            _timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
-            _evictor = new Evictor();
-            Thread t = new Thread(_evictor);
-            t.setDaemon(true);
-            t.start();
-        } else {
-            _timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
-        }
+        _timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
+        startEvictor(_timeBetweenEvictionRunsMillis);
     }
 
     /**
      * Returns the number of objects to examine during each run of the
      * idle object evictor thread (if any).
      *
+     * @return number of objects to examine each eviction run.
      * @see #setNumTestsPerEvictionRun
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    public int getNumTestsPerEvictionRun() {
+    public synchronized int getNumTestsPerEvictionRun() {
         return _numTestsPerEvictionRun;
     }
 
@@ -645,22 +696,24 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * Sets the number of objects to examine during each run of the
      * idle object evictor thread (if any).
      * <p>
-     * When a negative value is supplied, <tt>ceil({@link #getNumIdle})/abs({@link #getNumTestsPerEvictionRun})</tt>
-     * tests will be run.  I.e., when the value is <i>-n</i>, roughly one <i>n</i>th of the
+     * When a negative value is supplied, <code>ceil({@link #getNumIdle})/abs({@link #getNumTestsPerEvictionRun})</code>
+     * tests will be run.  I.e., when the value is <code>-n</code>, roughly one <code>n</code>th of the
      * idle objects will be tested per run.
      *
+     * @param numTestsPerEvictionRun number of objects to examine each eviction run.
      * @see #getNumTestsPerEvictionRun
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    public void setNumTestsPerEvictionRun(int numTestsPerEvictionRun) {
+    public synchronized void setNumTestsPerEvictionRun(int numTestsPerEvictionRun) {
         _numTestsPerEvictionRun = numTestsPerEvictionRun;
     }
 
     /**
      * Returns the minimum amount of time an object may sit idle in the pool
-     * before it is eligable for eviction by the idle object evictor
+     * before it is eligible for eviction by the idle object evictor
      * (if any).
      *
+     * @return minimum amount of time an object may sit idle in the pool before it is eligible for eviction.
      * @see #setMinEvictableIdleTimeMillis
      * @see #setTimeBetweenEvictionRunsMillis
      */
@@ -670,11 +723,12 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
     /**
      * Sets the minimum amount of time an object may sit idle in the pool
-     * before it is eligable for eviction by the idle object evictor
+     * before it is eligible for eviction by the idle object evictor
      * (if any).
      * When non-positive, no objects will be evicted from the pool
      * due to idle time alone.
      *
+     * @param minEvictableIdleTimeMillis minimum amount of time an object may sit idle in the pool before it is eligible for eviction.
      * @see #getMinEvictableIdleTimeMillis
      * @see #setTimeBetweenEvictionRunsMillis
      */
@@ -683,38 +737,43 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     }
 
     /**
-     * When <tt>true</tt>, objects will be
+     * When <code>true</code>, objects will be
      * {@link org.apache.commons.pool.PoolableObjectFactory#validateObject validated}
      * by the idle object evictor (if any).  If an object
      * fails to validate, it will be dropped from the pool.
      *
+     * @return <code>true</code> when objects are validated when borrowed.
      * @see #setTestWhileIdle
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    public boolean getTestWhileIdle() {
+    public synchronized boolean getTestWhileIdle() {
         return _testWhileIdle;
     }
 
     /**
-     * When <tt>true</tt>, objects will be
+     * When <code>true</code>, objects will be
      * {@link org.apache.commons.pool.PoolableObjectFactory#validateObject validated}
      * by the idle object evictor (if any).  If an object
      * fails to validate, it will be dropped from the pool.
      *
+     * @param testWhileIdle <code>true</code> so objects are validated when borrowed.
      * @see #getTestWhileIdle
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    public void setTestWhileIdle(boolean testWhileIdle) {
+    public synchronized void setTestWhileIdle(boolean testWhileIdle) {
         _testWhileIdle = testWhileIdle;
     }
 
     /**
      * Sets my configuration.
+     * @param conf the new configuration to use.
      * @see GenericKeyedObjectPool.Config
      */
     public synchronized void setConfig(GenericKeyedObjectPool.Config conf) {
         setMaxIdle(conf.maxIdle);
         setMaxActive(conf.maxActive);
+        setMaxTotal(conf.maxTotal);
+        setMinIdle(conf.minIdle);
         setMaxWait(conf.maxWait);
         setWhenExhaustedAction(conf.whenExhaustedAction);
         setTestOnBorrow(conf.testOnBorrow);
@@ -728,19 +787,19 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     //-- ObjectPool methods ------------------------------------------
 
     public synchronized Object borrowObject(Object key) throws Exception {
+        assertOpen();
         long starttime = System.currentTimeMillis();
         boolean newlyCreated = false;
         for(;;) {
-            CursorableLinkedList pool = (CursorableLinkedList)(_poolMap.get(key));
+            ObjectQueue pool = (ObjectQueue)(_poolMap.get(key));
             if(null == pool) {
-                pool = new CursorableLinkedList();
+                pool = new ObjectQueue();
                 _poolMap.put(key,pool);
-                _poolList.add(key);
             }
             ObjectTimestampPair pair = null;
             // if there are any sleeping, just grab one of those
             try {
-                pair = (ObjectTimestampPair)(pool.removeFirst());
+                pair = (ObjectTimestampPair)(pool.queue.removeFirst());
                 if(null != pair) {
                     _totalIdle--;
                 }
@@ -748,10 +807,16 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             }
             // otherwise
             if(null == pair) {
+                // if there is a totalMaxActive and we are at the limit then
+                // we have to make room
+                if ((_maxTotal > 0) && (_totalActive + _totalIdle >= _maxTotal)) {
+                    clearOldest();
+                }
+
                 // check if we can create one
                 // (note we know that the num sleeping is 0, else we wouldn't be here)
-                int active = getActiveCount(key);
-                if(_maxActive <= 0 || active < _maxActive) {
+                if ((_maxActive < 0 || pool.activeCount < _maxActive) &&
+                    (_maxTotal < 0 || _totalActive + _totalIdle < _maxTotal)) {
                     Object obj = _factory.makeObject(key);
                     pair = new ObjectTimestampPair(obj);
                     newlyCreated = true;
@@ -769,7 +834,14 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                                 if(_maxWait <= 0) {
                                     wait();
                                 } else {
-                                    wait(_maxWait);
+                                    // this code may be executed again after a notify then continue cycle
+                                    // so, need to calculate the amount of time to wait
+                                    final long elapsed = (System.currentTimeMillis() - starttime);
+                                    final long waitTime = _maxWait - elapsed;
+                                    if (waitTime > 0)
+                                    {
+                                        wait(waitTime);
+                                    }
                                 }
                             } catch(InterruptedException e) {
                                 // ignored
@@ -784,23 +856,53 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                     }
                 }
             }
-            _factory.activateObject(key,pair.value);
-            if(_testOnBorrow && !_factory.validateObject(key,pair.value)) {
-                _factory.destroyObject(key,pair.value);
-                if(newlyCreated) {
-                    throw new NoSuchElementException("Could not create a validated object");
-                } // else keep looping
-            } else {
-                incrementActiveCount(key);
+            if (newlyCreated) {
+                pool.incrementActiveCount();
                 return pair.value;
+            } else {
+                try {
+                    _factory.activateObject(key, pair.value);
+                } catch (Exception e) {
+                    try {
+                        _factory.destroyObject(key,pair.value);
+                    } catch (Exception e2) {
+                        // swallowed
+                    }
+                    continue;
+                }
+
+                boolean invalid = true;
+                try {
+                    invalid = _testOnBorrow && !_factory.validateObject(key, pair.value);
+                } catch (Exception e) {
+                    // swallowed
+                }
+                if (invalid) {
+                    try {
+                        _factory.destroyObject(key,pair.value);
+                    } catch (Exception e) {
+                        // swallowed
+                    }
+                    if(newlyCreated) {
+                        throw new NoSuchElementException("Could not create a validated object");
+                    } // else keep looping
+                } else {
+                    pool.incrementActiveCount();
+                    return pair.value;
+                }
+
             }
         }
     }
 
+    /**
+     * Clears the pool, removing all pooled instances.
+     */
     public synchronized void clear() {
-        for(Iterator keyiter = _poolList.iterator(); keyiter.hasNext(); ) {
-            Object key = keyiter.next();
-            CursorableLinkedList list = (CursorableLinkedList)(_poolMap.get(key));
+        for(Iterator entries = _poolMap.entrySet().iterator(); entries.hasNext(); ) {
+            final Map.Entry entry = (Map.Entry)entries.next();
+            final Object key = entry.getKey();
+            final LinkedList list = ((ObjectQueue)(entry.getValue())).queue;
             for(Iterator it = list.iterator(); it.hasNext(); ) {
                 try {
                     _factory.destroyObject(key,((ObjectTimestampPair)(it.next())).value);
@@ -811,18 +913,73 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             }
         }
         _poolMap.clear();
-        _poolList.clear();
+        if (_recentlyEvictedKeys != null) {
+            _recentlyEvictedKeys.clear();
+        }
         _totalIdle = 0;
         notifyAll();
     }
 
+    /**
+     * Method clears oldest 15% of objects in pool.  The method sorts the
+     * objects into a TreeMap and then iterates the first 15% for removal
+     * @since Pool 1.3
+     */
+    public synchronized void clearOldest() {
+        // build sorted map of idle objects
+        final Map map = new TreeMap();
+        for (Iterator keyiter = _poolMap.keySet().iterator(); keyiter.hasNext();) {
+            final Object key = keyiter.next();
+            final LinkedList list = ((ObjectQueue)_poolMap.get(key)).queue;
+            for (Iterator it = list.iterator(); it.hasNext();) {
+                // each item into the map uses the objectimestamppair object
+                // as the key.  It then gets sorted based on the timstamp field
+                // each value in the map is the parent list it belongs in.
+                map.put(it.next(), key);
+            }
+        }
+
+        // Now iterate created map and kill the first 15% plus one to account for zero
+        Set setPairKeys = map.entrySet();
+        int itemsToRemove = ((int) (map.size() * 0.15)) + 1;
+
+        Iterator iter = setPairKeys.iterator();
+        while (iter.hasNext() && itemsToRemove > 0) {
+            Map.Entry entry = (Map.Entry) iter.next();
+            // kind of backwards on naming.  In the map, each key is the objecttimestamppair
+            // because it has the ordering with the timestamp value.  Each value that the
+            // key references is the key of the list it belongs to.
+            Object key = entry.getValue();
+            ObjectTimestampPair pairTimeStamp = (ObjectTimestampPair) entry.getKey();
+            final LinkedList list = ((ObjectQueue)(_poolMap.get(key))).queue;
+            list.remove(pairTimeStamp);
+
+            try {
+                _factory.destroyObject(key, pairTimeStamp.value);
+            } catch (Exception e) {
+                // ignore error, keep destroying the rest
+            }
+            // if that was the last object for that key, drop that pool
+            if (list.isEmpty()) {
+                _poolMap.remove(key);
+            }
+            _totalIdle--;
+            itemsToRemove--;
+        }
+        notifyAll();
+    }
+
+    /**
+     * Clears the specified pool, removing all pooled instances corresponding to the given <code>key</code>.
+     *
+     * @param key the key to clear
+     */
     public synchronized void clear(Object key) {
-        CursorableLinkedList pool = (CursorableLinkedList)(_poolMap.remove(key));
+        final ObjectQueue pool = (ObjectQueue)(_poolMap.remove(key));
         if(null == pool) {
             return;
         } else {
-            _poolList.remove(key);
-            for(Iterator it = pool.iterator(); it.hasNext(); ) {
+            for(Iterator it = pool.queue.iterator(); it.hasNext(); ) {
                 try {
                     _factory.destroyObject(key,((ObjectTimestampPair)(it.next())).value);
                 } catch(Exception e) {
@@ -835,31 +992,52 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         notifyAll();
     }
 
-    public int getNumActive() {
+    /**
+     * Returns the total number of instances current borrowed from this pool but not yet returned.
+     *
+     * @return the total number of instances currently borrowed from this pool
+     */
+    public synchronized int getNumActive() {
         return _totalActive;
     }
 
-    public int getNumIdle() {
+    /**
+     * Returns the total number of instances currently idle in this pool.
+     *
+     * @return the total number of instances currently idle in this pool
+     */
+    public synchronized int getNumIdle() {
         return _totalIdle;
     }
 
+    /**
+     * Returns the number of instances currently borrowed from but not yet returned
+     * to the pool corresponding to the given <code>key</code>.
+     *
+     * @param key the key to query
+     * @return the number of instances corresponding to the given <code>key</code> currently borrowed in this pool
+     */
     public synchronized int getNumActive(Object key) {
-        return getActiveCount(key);
+        final ObjectQueue pool = (ObjectQueue)(_poolMap.get(key));
+        return pool != null ? pool.activeCount : 0;
     }
 
+    /**
+     * Returns the number of instances corresponding to the given <code>key</code> currently idle in this pool.
+     *
+     * @param key the key to query
+     * @return the number of instances corresponding to the given <code>key</code> currently idle in this pool
+     */
     public synchronized int getNumIdle(Object key) {
-        try {
-            return((CursorableLinkedList)(_poolMap.get(key))).size();
-        } catch(Exception e) {
-            return 0;
-        }
+        final ObjectQueue pool = (ObjectQueue)(_poolMap.get(key));
+        return pool != null ? pool.queue.size() : 0;
     }
 
-    public void returnObject(Object key, Object obj) throws Exception {
+    public synchronized void returnObject(Object key, Object obj) throws Exception {
 
         // if we need to validate this object, do so
         boolean success = true; // whether or not this object passed validation
-        if((_testOnReturn && !_factory.validateObject(key, obj))) {
+        if(_testOnReturn && !_factory.validateObject(key, obj)) {
             success = false;
             try {
                 _factory.destroyObject(key, obj);
@@ -874,27 +1052,33 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             }
         }
 
-        boolean shouldDestroy = false;
-        synchronized(this) {
-            // grab the pool (list) of objects associated with the given key
-            CursorableLinkedList pool = (CursorableLinkedList) (_poolMap.get(key));
-            // if it doesn't exist, create it
-            if(null == pool) {
-                pool = new CursorableLinkedList();
-                _poolMap.put(key, pool);
-                _poolList.add(key);
+        if (isClosed()) {
+            try {
+                _factory.destroyObject(key, obj);
+            } catch(Exception e) {
+                // ignored
             }
-            decrementActiveCount(key);
-            // if there's no space in the pool, flag the object for destruction
-            // else if we passivated succesfully, return it to the pool
-            if(_maxIdle >= 0 && (pool.size() >= _maxIdle)) {
-                shouldDestroy = true;
-            } else if(success) {
-                pool.addFirst(new ObjectTimestampPair(obj));
-                _totalIdle++;
-            }
-            notifyAll();
+            return;
         }
+
+        boolean shouldDestroy = false;
+        // grab the pool (list) of objects associated with the given key
+        ObjectQueue pool = (ObjectQueue) (_poolMap.get(key));
+        // if it doesn't exist, create it
+        if(null == pool) {
+            pool = new ObjectQueue();
+            _poolMap.put(key, pool);
+        }
+        pool.decrementActiveCount();
+        // if there's no space in the pool, flag the object for destruction
+        // else if we passivated succesfully, return it to the pool
+        if(_maxIdle >= 0 && (pool.queue.size() >= _maxIdle)) {
+            shouldDestroy = true;
+        } else if(success) {
+            pool.queue.addLast(new ObjectTimestampPair(obj));
+            _totalIdle++;
+        }
+        notifyAll();
 
         if(shouldDestroy) {
             try {
@@ -906,39 +1090,112 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     }
 
     public synchronized void invalidateObject(Object key, Object obj) throws Exception {
-        decrementActiveCount(key);
-        _factory.destroyObject(key,obj);
-        notifyAll(); // _totalActive has changed
+        try {
+            _factory.destroyObject(key, obj);
+        } catch (Exception e) {
+            // swallowed
+        } finally {
+            ObjectQueue pool = (ObjectQueue) (_poolMap.get(key));
+            if(null == pool) {
+                pool = new ObjectQueue();
+                _poolMap.put(key, pool);
+            }
+            pool.decrementActiveCount();
+            notifyAll(); // _totalActive has changed
+        }
     }
 
-    public void addObject(Object key) throws Exception {
+    /**
+     * Create an object using the {@link KeyedPoolableObjectFactory#makeObject factory},
+     * passivate it, and then place it in the idle object pool.
+     * <code>addObject</code> is useful for "pre-loading" a pool with idle objects.
+     *
+     * @param key the key a new instance should be added to
+     * @throws Exception when {@link KeyedPoolableObjectFactory#makeObject} fails.
+     * @throws IllegalStateException when no {@link #setFactory factory} has been set or after {@link #close} has been called on this pool.
+     */
+    public synchronized void addObject(Object key) throws Exception {
+        assertOpen();
+        if (_factory == null) {
+            throw new IllegalStateException("Cannot add objects without a factory.");
+        }
         Object obj = _factory.makeObject(key);
-        synchronized(this) {
-            incrementActiveCount(key); // returnObject will decrement this
-            returnObject(key,obj);
+
+        // if we need to validate this object, do so
+        boolean success = true; // whether or not this object passed validation
+        if(_testOnReturn && !_factory.validateObject(key, obj)) {
+            success = false;
+            _factory.destroyObject(key, obj);
+        } else {
+            _factory.passivateObject(key, obj);
+        }
+
+        boolean shouldDestroy = false;
+        // grab the pool (list) of objects associated with the given key
+        ObjectQueue pool = (ObjectQueue) (_poolMap.get(key));
+        // if it doesn't exist, create it
+        if(null == pool) {
+            pool = new ObjectQueue();
+            _poolMap.put(key, pool);
+        }
+        // if there's no space in the pool, flag the object for destruction
+        // else if we passivated succesfully, return it to the pool
+        if(_maxIdle >= 0 && (pool.queue.size() >= _maxIdle)) {
+            shouldDestroy = true;
+        } else if(success) {
+            pool.queue.addLast(new ObjectTimestampPair(obj));
+            _totalIdle++;
+        }
+        notifyAll();
+
+        if(shouldDestroy) {
+            _factory.destroyObject(key, obj);
         }
     }
 
-    public synchronized void close() throws Exception {
-        clear();
-        _poolList = null;
-        _poolMap = null;
-        _activeMap = null;
-        if(null != _evictionCursor) {
-            _evictionCursor.close();
-            _evictionCursor = null;
+    /**
+     * Registers a key for pool control.
+     *
+     * If <code>populateImmediately</code> is <code>true</code>, the pool will immediately commence
+     * a sustain cycle. If <code>populateImmediately</code> is <code>false</code>, the pool will be
+     * populated when the next schedules sustain task is run.
+     *
+     * @param key - The key to register for pool control.
+     * @param populateImmediately - If this is <code>true</code>, the pool
+     * will start a sustain cycle immediately.
+     * @since Pool 1.3
+     */
+    public synchronized void preparePool(Object key, boolean populateImmediately) {
+        ObjectQueue pool = (ObjectQueue)(_poolMap.get(key));
+        if (null == pool) {
+            pool = new ObjectQueue();
+            _poolMap.put(key,pool);
         }
-        if(null != _evictionKeyCursor) {
-            _evictionKeyCursor.close();
-            _evictionKeyCursor = null;
-        }
-        if(null != _evictor) {
-            _evictor.cancel();
-            _evictor = null;
+
+        if (populateImmediately) {
+            try {
+                // Create the pooled objects
+                ensureMinIdle(key);
+            }
+            catch (Exception e) {
+                //Do nothing
+            }
         }
     }
 
-    synchronized public void setFactory(KeyedPoolableObjectFactory factory) throws IllegalStateException {
+    public void close() throws Exception {
+        super.close();
+        synchronized (this) {
+            clear();
+            if (null != _evictor) {
+                _evictor.cancel();
+                _evictor = null;
+            }
+        }
+    }
+
+    public synchronized void setFactory(KeyedPoolableObjectFactory factory) throws IllegalStateException {
+        assertOpen();
         if(0 < getNumActive()) {
             throw new IllegalStateException("Objects are already active");
         } else {
@@ -947,47 +1204,56 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         }
     }
 
-    synchronized public void evict() throws Exception {
+    /**
+     * Remove any idle object that meet the criteria for eviction.
+     *
+     * @throws Exception when there is a problem evicting idle objects.
+     */
+    public synchronized void evict() throws Exception {
         Object key = null;
+        if (_recentlyEvictedKeys == null) {
+            _recentlyEvictedKeys = new HashSet(_poolMap.size());
+        }
+        Set remainingKeys = new HashSet(_poolMap.keySet());
+        remainingKeys.removeAll(_recentlyEvictedKeys);
+        Iterator keyIter = remainingKeys.iterator();
+
+        ListIterator objIter = null;
+
         for(int i=0,m=getNumTests();i<m;i++) {
             if(_poolMap.size() > 0) {
-                // if we don't have a key cursor, then create one, and close any object cursor
-                if(null == _evictionKeyCursor) {
-                    _evictionKeyCursor = _poolList.cursor();
-                    key = null;
-                    if(null != _evictionCursor) {
-                        _evictionCursor.close();
-                        _evictionCursor = null;
+                // Find next idle object pool key to work on
+                if (key == null) {
+                    if (!keyIter.hasNext()) {
+                        _recentlyEvictedKeys.clear();
+                        remainingKeys = new HashSet(_poolMap.keySet());
+                        keyIter = remainingKeys.iterator();
                     }
-                }
-                // if we don't have an object cursor
-                if(null == _evictionCursor) {
-                    // if the _evictionKeyCursor has a next value, then use it
-                    if(_evictionKeyCursor.hasNext()) {
-                        key = _evictionKeyCursor.next();
-                        CursorableLinkedList pool = (CursorableLinkedList)(_poolMap.get(key));
-                        _evictionCursor = pool.cursor(pool.size());
-                    } else {
-                        // else close the key cursor and loop back around
-                        if(null != _evictionKeyCursor) {
-                            _evictionKeyCursor.close();
-                            _evictionKeyCursor = _poolList.cursor();
-                            if(null != _evictionCursor) {
-                                _evictionCursor.close();
-                                _evictionCursor = null;
-                            }
-                        }
-                        continue;
+                    if (!keyIter.hasNext()) {
+                        // done, there are no keyed pools
+                        return;
                     }
+                    key = keyIter.next();
                 }
+
+                // if we don't have a keyed object pool iterator
+                if (objIter == null) {
+                    final LinkedList list = ((ObjectQueue)_poolMap.get(key)).queue;
+                    if (_evictLastIndex < 0 || _evictLastIndex > list.size()) {
+                        _evictLastIndex = list.size();
+                    }
+                    objIter = list.listIterator(_evictLastIndex);
+                }
+
                 // if the _evictionCursor has a previous object, then test it
-                if(_evictionCursor.hasPrevious()) {
-                    ObjectTimestampPair pair = (ObjectTimestampPair)(_evictionCursor.previous());
+                if(objIter.hasPrevious()) {
+                    ObjectTimestampPair pair = (ObjectTimestampPair)(objIter.previous());
                     boolean removeObject=false;
                     if(_minEvictableIdleTimeMillis > 0 &&
                        System.currentTimeMillis() - pair.tstamp > _minEvictableIdleTimeMillis) {
                        removeObject=true;
-                    } else if(_testWhileIdle) {
+                    }
+                    if(_testWhileIdle && removeObject == false) {
                         boolean active = false;
                         try {
                             _factory.activateObject(key,pair.value);
@@ -1009,37 +1275,102 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                     }
                     if(removeObject) {
                         try {
-                            _evictionCursor.remove();
+                            objIter.remove();
                             _totalIdle--;
                             _factory.destroyObject(key,pair.value);
 
-                            // if that was the last object for that key, drop that pool
-                            if( ((CursorableLinkedList)(_poolMap.get(key))).isEmpty() ) {
+                            // Do not remove the key from the _poolList or _poolmap, even if the list
+                            // stored in the _poolMap for this key is empty when the
+                            // {@link #getMinIdle <code>minIdle</code>} is > 0.
+                            //
+                            // Otherwise if it was the last object for that key, drop that pool
+                            if ((_minIdle == 0) && (((ObjectQueue)(_poolMap.get(key))).queue.isEmpty())) {
                                 _poolMap.remove(key);
-                                _poolList.remove(key);
                             }
                         } catch(Exception e) {
                             ; // ignored
                         }
                     }
                 } else {
-                    // else the _evictionCursor is done, so close it and loop around
-                    if(_evictionCursor != null) {
-                        _evictionCursor.close();
-                        _evictionCursor = null;
-                    }
+                    // else done evicting keyed pool
+                    _recentlyEvictedKeys.add(key);
+                    _evictLastIndex = -1;
+                    objIter = null;
                 }
             }
         }
     }
 
-    //--- package and private methods -----------------------------------------
+    /**
+     * Iterates through all the known keys and creates any necessary objects to maintain
+     * the minimum level of pooled objects.
+     * @see #getMinIdle
+     * @see #setMinIdle
+     * @throws Exception If there was an error whilst creating the pooled objects.
+     */
+    private synchronized void ensureMinIdle() throws Exception {
+        Iterator iterator = _poolMap.keySet().iterator();
+
+        //Check if should sustain the pool
+        if (_minIdle > 0) {
+            // Loop through all elements in _poolList
+            // Find out the total number of max active and max idle for that class
+            // If the number is less than the minIdle, do creation loop to boost numbers
+            // Increment idle count + 1
+            while (iterator.hasNext()) {
+                //Get the next key to process
+                Object key = iterator.next();
+                ensureMinIdle(key);
+            }
+        }
+    }
+
+    /**
+     * Re-creates any needed objects to maintain the minimum levels of
+     * pooled objects for the specified key.
+     *
+     * This method uses {@link #calculateDefecit} to calculate the number
+     * of objects to be created. {@link #calculateDefecit} can be overridden to
+     * provide a different method of calculating the number of objects to be
+     * created.
+     * @param key The key to process
+     * @throws Exception If there was an error whilst creating the pooled objects
+     */
+    private synchronized void ensureMinIdle(Object key) throws Exception {
+        // Calculate current pool objects
+        int numberToCreate = calculateDefecit(key);
+
+        //Create required pool objects, if none to create, this loop will not be run.
+        for (int i = 0; i < numberToCreate; i++) {
+            addObject(key);
+        }
+    }
+
+    //--- non-public methods ----------------------------------------
+
+    /**
+     * Start the eviction thread or service, or when
+     * <code>delay</code> is non-positive, stop it
+     * if it is already running.
+     *
+     * @param delay milliseconds between evictor runs.
+     */
+    protected synchronized void startEvictor(long delay) {
+        if(null != _evictor) {
+            _evictor.cancel();
+            _evictor = null;
+        }
+        if(delay > 0) {
+            _evictor = new Evictor();
+            GenericObjectPool.EVICTION_TIMER.schedule(_evictor, delay, delay);
+        }
+    }
 
     synchronized String debugInfo() {
         StringBuffer buf = new StringBuffer();
         buf.append("Active: ").append(getNumActive()).append("\n");
         buf.append("Idle: ").append(getNumIdle()).append("\n");
-        Iterator it = _poolList.iterator();
+        Iterator it = _poolMap.keySet().iterator();
         while(it.hasNext()) {
             buf.append("\t").append(_poolMap.get(it.next())).append("\n");
         }
@@ -1054,49 +1385,74 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         }
     }
 
-    private void incrementActiveCount(Object key) {
-        _totalActive++;
-        Integer active = (Integer)(_activeMap.get(key));
-        if(null == active) {
-            _activeMap.put(key,new Integer(1));
-        } else {
-            _activeMap.put(key,new Integer(active.intValue() + 1));
-        }
-    }
+    /**
+     * This returns the number of objects to create during the pool
+     * sustain cycle. This will ensure that the minimum number of idle
+     * connections is maintained without going past the maxPool value.
+     * <p>
+     * This method has been left public so derived classes can override
+     * the way the defecit is calculated. ie... Increase/decrease the pool
+     * size at certain times of day to accomodate for usage patterns.
+     *
+     * @param key - The key of the pool to calculate the number of
+     *              objects to be re-created
+     * @return The number of objects to be created
+     */
+    private int calculateDefecit(Object key) {
+        int objectDefecit = 0;
 
-    private void decrementActiveCount(Object key) {
-        _totalActive--;
-        Integer active = (Integer)(_activeMap.get(key));
-        if(null == active) {
-            // do nothing, either null or zero is OK
-        } else if(active.intValue() <= 1) {
-            _activeMap.remove(key);
-        } else {
-            _activeMap.put(key, new Integer(active.intValue() - 1));
+        //Calculate no of objects needed to be created, in order to have
+        //the number of pooled objects < maxActive();
+        objectDefecit = getMinIdle() - getNumIdle(key);
+        if (getMaxActive() > 0) {
+            int growLimit = Math.max(0, getMaxActive() - getNumActive(key) - getNumIdle(key));
+            objectDefecit = Math.min(objectDefecit, growLimit);
         }
-    }
 
-    private int getActiveCount(Object key) {
-        int active = 0;
-        Integer act = (Integer)(_activeMap.get(key));
-        if(null != act) {
-            active = act.intValue();
+        // Take the maxTotal limit into account
+        if (getMaxTotal() > 0) {
+            int growLimit = Math.max(0, getMaxTotal() - getNumActive() - getNumIdle());
+            objectDefecit = Math.min(objectDefecit, growLimit);
         }
-        return active;
+
+        return objectDefecit;
     }
 
     //--- inner classes ----------------------------------------------
 
     /**
-     * A simple "struct" encapsulating an object instance and a timestamp.
+     * A "struct" that keeps additional information about the actual queue of pooled objects.
      */
-    class ObjectTimestampPair {
+    private class ObjectQueue {
+        private int activeCount = 0;
+        private final LinkedList queue = new LinkedList();
+
+        void incrementActiveCount() {
+            _totalActive++;
+            activeCount++;
+        }
+
+        void decrementActiveCount() {
+            _totalActive--;
+            if (activeCount > 0) {
+                activeCount--;
+            }
+        }
+    }
+    
+    /**
+     * A simple "struct" encapsulating an object instance and a timestamp.
+     *
+     * Implements Comparable, objects are sorted from old to new.
+     *
+     * This is also used by {@link GenericObjectPool}.
+     */
+    static class ObjectTimestampPair implements Comparable {
         Object value;
         long tstamp;
 
         ObjectTimestampPair(Object val) {
-            value = val;
-            tstamp = System.currentTimeMillis();
+            this(val, System.currentTimeMillis());
         }
 
         ObjectTimestampPair(Object val, long time) {
@@ -1107,84 +1463,132 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         public String toString() {
             return value + ";" + tstamp;
         }
+
+        public int compareTo(Object obj) {
+            return compareTo((ObjectTimestampPair) obj);
+        }
+
+        public int compareTo(ObjectTimestampPair other) {
+            final long tstampdiff = this.tstamp - other.tstamp;
+            if (tstampdiff == 0) {
+                // make sure the natural ordering is consistent with equals
+                // see java.lang.Comparable Javadocs
+                return System.identityHashCode(this) - System.identityHashCode(other);
+            } else {
+                // handle int overflow
+                return (int)Math.min(Math.max(tstampdiff, Integer.MIN_VALUE), Integer.MAX_VALUE);
+            }
+        }
     }
 
     /**
-     * The idle object evictor thread.
-     * @see #setTimeBetweenEvictionRunsMillis
+     * The idle object evictor {@link TimerTask}.
+     * @see GenericKeyedObjectPool#setTimeBetweenEvictionRunsMillis
      */
-    class Evictor implements Runnable {
-        protected boolean _cancelled = false;
-
-        void cancel() {
-            _cancelled = true;
-        }
-
+    private class Evictor extends TimerTask {
         public void run() {
-            while(!_cancelled) {
-                long sleeptime = 0L;
-                synchronized(GenericKeyedObjectPool.this) {
-                    sleeptime = _timeBetweenEvictionRunsMillis;
-                }
-                try {
-                    Thread.sleep(sleeptime);
-                } catch(Exception e) {
-                    ; // ignored
-                }
-                try {
-                    evict();
-                } catch(Exception e) {
-                    ; // ignored
-                }
+            //Evict from the pool
+            try {
+                evict();
+            } catch(Exception e) {
+                // ignored
             }
-            synchronized(GenericKeyedObjectPool.this) {
-                if(null != _evictionCursor) {
-                    _evictionCursor.close();
-                    _evictionCursor = null;
-                }
-                if(null != _evictionKeyCursor) {
-                    _evictionKeyCursor.close();
-                    _evictionKeyCursor = null;
-                }
+            //Re-create the connections.
+            try {
+                ensureMinIdle();
+            } catch (Exception e) {
+                // ignored
             }
         }
     }
 
     /**
      * A simple "struct" encapsulating the
-     * configuration information for a {@link GenericKeyedObjectPool}.
+     * configuration information for a <code>GenericKeyedObjectPool</code>.
      * @see GenericKeyedObjectPool#GenericKeyedObjectPool(KeyedPoolableObjectFactory,GenericKeyedObjectPool.Config)
      * @see GenericKeyedObjectPool#setConfig
      */
     public static class Config {
+        /**
+         * @see GenericKeyedObjectPool#setMaxIdle
+         */
         public int maxIdle = GenericKeyedObjectPool.DEFAULT_MAX_IDLE;
+        /**
+         * @see GenericKeyedObjectPool#setMaxActive
+         */
         public int maxActive = GenericKeyedObjectPool.DEFAULT_MAX_ACTIVE;
+        /**
+         * @see GenericKeyedObjectPool#setMaxTotal
+         */
+        public int maxTotal = GenericKeyedObjectPool.DEFAULT_MAX_TOTAL;
+        /**
+         * @see GenericKeyedObjectPool#setMinIdle
+         */
+        public int minIdle = GenericKeyedObjectPool.DEFAULT_MIN_IDLE;
+        /**
+         * @see GenericKeyedObjectPool#setMaxWait
+         */
         public long maxWait = GenericKeyedObjectPool.DEFAULT_MAX_WAIT;
+        /**
+         * @see GenericKeyedObjectPool#setWhenExhaustedAction
+         */
         public byte whenExhaustedAction = GenericKeyedObjectPool.DEFAULT_WHEN_EXHAUSTED_ACTION;
+        /**
+         * @see GenericKeyedObjectPool#setTestOnBorrow
+         */
         public boolean testOnBorrow = GenericKeyedObjectPool.DEFAULT_TEST_ON_BORROW;
+        /**
+         * @see GenericKeyedObjectPool#setTestOnReturn
+         */
         public boolean testOnReturn = GenericKeyedObjectPool.DEFAULT_TEST_ON_RETURN;
+        /**
+         * @see GenericKeyedObjectPool#setTestWhileIdle
+         */
         public boolean testWhileIdle = GenericKeyedObjectPool.DEFAULT_TEST_WHILE_IDLE;
+        /**
+         * @see GenericKeyedObjectPool#setTimeBetweenEvictionRunsMillis
+         */
         public long timeBetweenEvictionRunsMillis = GenericKeyedObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
+        /**
+         * @see GenericKeyedObjectPool#setNumTestsPerEvictionRun
+         */
         public int numTestsPerEvictionRun =  GenericKeyedObjectPool.DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
+        /**
+         * @see GenericKeyedObjectPool#setMinEvictableIdleTimeMillis
+         */
         public long minEvictableIdleTimeMillis = GenericKeyedObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
     }
 
     //--- protected attributes ---------------------------------------
 
     /**
-     * The cap on the number of idle instances in the pool (per key).
+     * The cap on the number of idle instances in the pool.
      * @see #setMaxIdle
      * @see #getMaxIdle
      */
     private int _maxIdle = DEFAULT_MAX_IDLE;
 
     /**
-     * The cap on the total number of active instances from the pool (per key).
+     * The minimum no of idle objects to keep in the pool.
+     * @see #setMinIdle
+     * @see #getMinIdle
+     */
+    private int _minIdle = DEFAULT_MIN_IDLE;
+
+    /**
+     * The cap on the number of active instances from the pool.
      * @see #setMaxActive
      * @see #getMaxActive
      */
     private int _maxActive = DEFAULT_MAX_ACTIVE;
 
+    /**
+     * The cap on the total number of instances from the pool if non-positive.
+     * @see #setMaxTotal
+     * @see #getMaxTotal
+     */
+    private int _maxTotal = DEFAULT_MAX_TOTAL;
+    
     /**
      * The maximum amount of time (in millis) the
      * {@link #borrowObject} method should block before throwing
@@ -1192,7 +1596,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * {@link #getWhenExhaustedAction "when exhausted" action} is
      * {@link #WHEN_EXHAUSTED_BLOCK}.
      *
-     * When less than 0, the {@link #borrowObject} method
+     * When less than or equal to 0, the {@link #borrowObject} method
      * may block indefinitely.
      *
      * @see #setMaxWait
@@ -1218,7 +1622,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     private byte _whenExhaustedAction = DEFAULT_WHEN_EXHAUSTED_ACTION;
 
     /**
-     * When <tt>true</tt>, objects will be
+     * When <code>true</code>, objects will be
      * {@link org.apache.commons.pool.PoolableObjectFactory#validateObject validated}
      * before being returned by the {@link #borrowObject}
      * method.  If the object fails to validate,
@@ -1231,7 +1635,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     private boolean _testOnBorrow = DEFAULT_TEST_ON_BORROW;
 
     /**
-     * When <tt>true</tt>, objects will be
+     * When <code>true</code>, objects will be
      * {@link org.apache.commons.pool.PoolableObjectFactory#validateObject validated}
      * before being returned to the pool within the
      * {@link #returnObject}.
@@ -1242,7 +1646,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     private boolean _testOnReturn = DEFAULT_TEST_ON_RETURN;
 
     /**
-     * When <tt>true</tt>, objects will be
+     * When <code>true</code>, objects will be
      * {@link org.apache.commons.pool.PoolableObjectFactory#validateObject validated}
      * by the idle object evictor (if any).  If an object
      * fails to validate, it will be dropped from the pool.
@@ -1269,8 +1673,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * The number of objects to examine during each run of the
      * idle object evictor thread (if any).
      * <p>
-     * When a negative value is supplied, <tt>ceil({@link #getNumIdle})/abs({@link #getNumTestsPerEvictionRun})</tt>
-     * tests will be run.  I.e., when the value is <i>-n</i>, roughly one <i>n</i>th of the
+     * When a negative value is supplied, <code>ceil({@link #getNumIdle})/abs({@link #getNumTestsPerEvictionRun})</code>
+     * tests will be run.  I.e., when the value is <code>-n</code>, roughly one <code>n</code>th of the
      * idle objects will be tested per run.
      *
      * @see #setNumTestsPerEvictionRun
@@ -1282,7 +1686,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
     /**
      * The minimum amount of time an object may sit idle in the pool
-     * before it is eligable for eviction by the idle object evictor
+     * before it is eligible for eviction by the idle object evictor
      * (if any).
      * When non-positive, no objects will be evicted from the pool
      * due to idle time alone.
@@ -1294,17 +1698,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      */
     private long _minEvictableIdleTimeMillis = DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 
-    /** My hash of pools (CursorableLinkedLists). */
-    private HashMap _poolMap = null;
-
-    /**
-     * A cursorable list of my pools.
-     * @see GenericKeyedObjectPool.Evictor#run
-     */
-    private CursorableLinkedList _poolList = null;
-
-    /** Count of active objects, per key. */
-    private HashMap _activeMap = null;
+    /** My hash of pools (ObjectQueue). */
+    private Map _poolMap = null;
 
     /** The total number of active instances. */
     private int _totalActive = 0;
@@ -1316,11 +1711,17 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     private KeyedPoolableObjectFactory _factory = null;
 
     /**
-     * My idle object eviction thread, if any.
+     * My idle object eviction {@link TimerTask}, if any.
      */
     private Evictor _evictor = null;
 
-    private CursorableLinkedList.Cursor _evictionCursor = null;
-    private CursorableLinkedList.Cursor _evictionKeyCursor = null;
+    /**
+     * Idle object pool keys that have been evicted recently.
+     */
+    private Set _recentlyEvictedKeys = null;
 
+    /**
+     * Position in the _pool where the _evictor last stopped.
+     */
+    private int _evictLastIndex = -1;
 }

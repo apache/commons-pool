@@ -1,62 +1,18 @@
 /*
- * $Id: TestStackKeyedObjectPool.java,v 1.9 2003/04/24 20:14:03 rwaldhoff Exp $
- * $Revision: 1.9 $
- * $Date: 2003/04/24 20:14:03 $
- *
- * ====================================================================
- *
- * The Apache Software License, Version 1.1
- *
- * Copyright (c) 2001-2002 The Apache Software Foundation.  All rights
- * reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
- *
- * 3. The end-user documentation included with the redistribution, if
- *    any, must include the following acknowlegement:
- *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
- *    Alternately, this acknowlegement may appear in the software itself,
- *    if and wherever such third-party acknowlegements normally appear.
- *
- * 4. The names "The Jakarta Project", "Commons", and "Apache Software
- *    Foundation" must not be used to endorse or promote products derived
- *    from this software without prior written permission. For written
- *    permission, please contact apache@apache.org.
- *
- * 5. Products derived from this software may not be called "Apache"
- *    nor may "Apache" appear in their names without prior written
- *    permission of the Apache Group.
- *
- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
- * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
- * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- * ====================================================================
- *
- * This software consists of voluntary contributions made by many
- * individuals on behalf of the Apache Software Foundation.  For more
- * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
- *
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.apache.commons.pool.impl;
@@ -71,12 +27,13 @@ import junit.framework.TestSuite;
 import org.apache.commons.pool.KeyedObjectPool;
 import org.apache.commons.pool.KeyedPoolableObjectFactory;
 import org.apache.commons.pool.TestKeyedObjectPool;
+import org.apache.commons.pool.TestBaseKeyedObjectPool;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision: 1.9 $ $Date: 2003/04/24 20:14:03 $
+ * @version $Revision$ $Date$
  */
-public class TestStackKeyedObjectPool extends TestKeyedObjectPool {
+public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
     public TestStackKeyedObjectPool(String testName) {
         super(testName);
     }
@@ -89,11 +46,15 @@ public class TestStackKeyedObjectPool extends TestKeyedObjectPool {
         StackKeyedObjectPool pool = new StackKeyedObjectPool(new SimpleFactory(),mincapacity);
         return pool;
     }
-    
+
+    protected KeyedObjectPool makeEmptyPool(KeyedPoolableObjectFactory factory) {
+        return new StackKeyedObjectPool(factory);
+    }
+
     protected Object getNthObject(Object key, int n) {
         return String.valueOf(key) + String.valueOf(n);
     }
-    
+
     protected Object makeKey(int n) {
         return String.valueOf(n);
     }
@@ -114,7 +75,7 @@ public class TestStackKeyedObjectPool extends TestKeyedObjectPool {
             );
     }
 
-    
+
     public void tearDown() throws Exception {
         super.tearDown();
         pool = null;
@@ -157,7 +118,7 @@ public class TestStackKeyedObjectPool extends TestKeyedObjectPool {
             assertEquals((i < 8 ? i+1 : 8),pool.getNumIdle(""));
         }
     }
-    
+
     public void testPoolWithNullFactory() throws Exception {
         KeyedObjectPool pool = new StackKeyedObjectPool(10);
         for(int i=0;i<10;i++) {
@@ -178,31 +139,37 @@ public class TestStackKeyedObjectPool extends TestKeyedObjectPool {
         }
         pool.invalidateObject("X",pool.borrowObject("X"));
         pool.invalidateObject("X",pool.borrowObject("X"));
-        pool.clear("X");        
-        pool.clear();        
+        pool.clear("X");
+        pool.clear();
     }
-    
+
     public void testVariousConstructors() throws Exception {
         {
             StackKeyedObjectPool pool = new StackKeyedObjectPool();
+            assertNotNull(pool);
         }
         {
             StackKeyedObjectPool pool = new StackKeyedObjectPool(10);
+            assertNotNull(pool);
         }
         {
             StackKeyedObjectPool pool = new StackKeyedObjectPool(10,5);
+            assertNotNull(pool);
         }
         {
             StackKeyedObjectPool pool = new StackKeyedObjectPool(null);
+            assertNotNull(pool);
         }
         {
             StackKeyedObjectPool pool = new StackKeyedObjectPool(null,10);
+            assertNotNull(pool);
         }
         {
             StackKeyedObjectPool pool = new StackKeyedObjectPool(null,10,5);
+            assertNotNull(pool);
         }
     }
-    
+
     public void testToString() throws Exception {
         StackKeyedObjectPool pool = new StackKeyedObjectPool(new SimpleFactory());
         assertNotNull(pool.toString());
@@ -211,7 +178,7 @@ public class TestStackKeyedObjectPool extends TestKeyedObjectPool {
         pool.returnObject("key",obj);
         assertNotNull(pool.toString());
     }
-        
+
     public void testBorrowFromEmptyPoolWithNullFactory() throws Exception {
         KeyedObjectPool pool = new StackKeyedObjectPool();
         try {
@@ -221,7 +188,7 @@ public class TestStackKeyedObjectPool extends TestKeyedObjectPool {
             // expected
         }
     }
-    
+
     public void testSetFactory() throws Exception {
         KeyedObjectPool pool = new StackKeyedObjectPool();
         try {
@@ -247,28 +214,27 @@ public class TestStackKeyedObjectPool extends TestKeyedObjectPool {
             fail("Expected IllegalStateException");
         } catch(IllegalStateException e) {
             // expected
-        }        
+        }
     }
-    
+
     public void testCanResetFactoryWithoutActiveObjects() throws Exception {
         KeyedObjectPool pool = new StackKeyedObjectPool();
         {
             pool.setFactory(new SimpleFactory());
-            Object obj = pool.borrowObject("x");        
+            Object obj = pool.borrowObject("x");
             assertNotNull(obj);
             pool.returnObject("x",obj);
         }
         {
             pool.setFactory(new SimpleFactory());
-            Object obj = pool.borrowObject("x");        
+            Object obj = pool.borrowObject("x");
             assertNotNull(obj);
             pool.returnObject("x",obj);
         }
     }
 
     public void testBorrowReturnWithSometimesInvalidObjects() throws Exception {
-        KeyedObjectPool pool = new StackKeyedObjectPool();
-        pool.setFactory(
+        KeyedObjectPool pool = new StackKeyedObjectPool(
             new KeyedPoolableObjectFactory() {
                 int counter = 0;
                 public Object makeObject(Object key) { return new Integer(counter++); }
@@ -281,7 +247,7 @@ public class TestStackKeyedObjectPool extends TestKeyedObjectPool {
                     }
                 }
                 public void activateObject(Object key, Object obj) { }
-                public void passivateObject(Object key, Object obj) { 
+                public void passivateObject(Object key, Object obj) {
                     if(obj instanceof Integer) {
                         if((((Integer)obj).intValue() % 3) == 0) {
                             throw new RuntimeException("Couldn't passivate");
@@ -300,23 +266,31 @@ public class TestStackKeyedObjectPool extends TestKeyedObjectPool {
         for(int i=0;i<10;i++) {
             pool.returnObject("key",obj[i]);
         }
-        assertEquals(3,pool.getNumIdle("key"));
+        assertEquals(6,pool.getNumIdle("key"));
     }
- 
+
     class SimpleFactory implements KeyedPoolableObjectFactory {
         HashMap map = new HashMap();
-        public Object makeObject(Object key) { 
+        public Object makeObject(Object key) {
             int counter = 0;
             Integer Counter = (Integer)(map.get(key));
             if(null != Counter) {
                 counter = Counter.intValue();
             }
-            map.put(key,new Integer(counter + 1));                       
-            return String.valueOf(key) + String.valueOf(counter); 
+            map.put(key,new Integer(counter + 1));
+            return String.valueOf(key) + String.valueOf(counter);
         }
         public void destroyObject(Object key, Object obj) { }
         public boolean validateObject(Object key, Object obj) { return true; }
         public void activateObject(Object key, Object obj) { }
         public void passivateObject(Object key, Object obj) { }
+    }
+
+    protected boolean isLifo() {
+        return true;
+    }
+
+    protected boolean isFifo() {
+        return false;
     }
 }

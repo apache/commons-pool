@@ -1,67 +1,25 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/impl/SoftReferenceObjectPool.java,v 1.9 2003/04/24 01:22:36 rwaldhoff Exp $
- * $Revision: 1.9 $
- * $Date: 2003/04/24 01:22:36 $
- *
- * ====================================================================
- *
- * The Apache Software License, Version 1.1
- *
- * Copyright (c) 2002 The Apache Software Foundation.  All rights
- * reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
- *
- * 3. The end-user documentation included with the redistribution, if
- *    any, must include the following acknowlegement:
- *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
- *    Alternately, this acknowlegement may appear in the software itself,
- *    if and wherever such third-party acknowlegements normally appear.
- *
- * 4. The names "The Jakarta Project", "Commons", and "Apache Software
- *    Foundation" must not be used to endorse or promote products derived
- *    from this software without prior written permission. For written
- *    permission, please contact apache@apache.org.
- *
- * 5. Products derived from this software may not be called "Apache"
- *    nor may "Apache" appear in their names without prior written
- *    permission of the Apache Group.
- *
- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
- * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
- * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- * ====================================================================
- *
- * This software consists of voluntary contributions made by many
- * individuals on behalf of the Apache Software Foundation.  For more
- * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
- *
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.apache.commons.pool.impl;
 
 import java.lang.ref.SoftReference;
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.Reference;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -70,65 +28,115 @@ import java.util.NoSuchElementException;
 import org.apache.commons.pool.BaseObjectPool;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
+import org.apache.commons.pool.PoolUtils;
 
 /**
  * A {@link java.lang.ref.SoftReference SoftReference} based
  * {@link ObjectPool}.
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.9 $ $Date: 2003/04/24 01:22:36 $
+ * @author Sandy McArthur
+ * @version $Revision$ $Date$
+ * @since Pool 1.0
  */
 public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPool {
+    /**
+     * Create a <code>SoftReferenceObjectPool</code> without a factory.
+     * {@link #setFactory(PoolableObjectFactory) setFactory} should be called
+     * before any attempts to use the pool are made.
+     * Generally speaking you should prefer the {@link #SoftReferenceObjectPool(PoolableObjectFactory)} constructor.
+     *
+     * @see #SoftReferenceObjectPool(PoolableObjectFactory)
+     */
     public SoftReferenceObjectPool() {
         _pool = new ArrayList();
         _factory = null;
     }
 
+    /**
+     * Create a <code>SoftReferenceObjectPool</code> with the specified factory.
+     *
+     * @param factory object factory to use.
+     */
     public SoftReferenceObjectPool(PoolableObjectFactory factory) {
         _pool = new ArrayList();
         _factory = factory;
     }
 
-    public SoftReferenceObjectPool(PoolableObjectFactory factory, int initSize) throws Exception {
-        _pool = new ArrayList();
-        _factory = factory;
-        if(null != _factory) {
-            for(int i=0;i<initSize;i++) {
-                Object obj = _factory.makeObject();
-                _factory.passivateObject(obj);
-                _pool.add(new SoftReference(obj));
-            }
+    /**
+     * Create a <code>SoftReferenceObjectPool</code> with the specified factory and initial idle object count.
+     *
+     * @param factory object factory to use.
+     * @param initSize initial size to attempt to prefill the pool.
+     * @throws Exception when there is a problem prefilling the pool.
+     * @throws IllegalArgumentException when <code>factory</code> is <code>null</code>.
+     * @deprecated because this is a SoftReference pool, prefilled idle obejects may be garbage collected before they are used.
+     *      To be removed in Pool 3.0.
+     */
+    public SoftReferenceObjectPool(PoolableObjectFactory factory, int initSize) throws Exception, IllegalArgumentException {
+        if (factory == null) {
+            throw new IllegalArgumentException("factory required to prefill the pool.");
         }
+        _pool = new ArrayList(initSize);
+        _factory = factory;
+        PoolUtils.prefill(this, initSize);
     }
 
-    public synchronized Object borrowObject() throws Exception {        
+    public synchronized Object borrowObject() throws Exception {
         assertOpen();
         Object obj = null;
+        boolean newlyCreated = false;
         while(null == obj) {
             if(_pool.isEmpty()) {
                 if(null == _factory) {
                     throw new NoSuchElementException();
                 } else {
+                    newlyCreated = true;
                     obj = _factory.makeObject();
                 }
             } else {
                 SoftReference ref = (SoftReference)(_pool.remove(_pool.size() - 1));
                 obj = ref.get();
+                ref.clear(); // prevent this ref from being enqueued with refQueue.
             }
-        }
-        if(null != _factory && null != obj) {
-            _factory.activateObject(obj);
+            if (!newlyCreated && null != _factory && null != obj) {
+                try {
+                    _factory.activateObject(obj);
+                } catch (Exception e) {
+                    try {
+                        _factory.destroyObject(obj);
+                    } catch (Exception e2) {
+                        // swallowed
+                    } finally {
+                        obj = null;
+                    }
+                }
+            }
+            if (!newlyCreated && null != _factory && null != obj) {
+                boolean validated = false;
+                try {
+                    validated = _factory.validateObject(obj);
+                } catch (Exception e) {
+                    // swallowed
+                }
+                if (!validated) {
+                    try {
+                        _factory.destroyObject(obj);
+                    } catch(Exception e) {
+                        // swallowed
+                    } finally {
+                        obj = null;
+                    }
+                }
+            }
         }
         _numActive++;
         return obj;
     }
 
-    public void returnObject(Object obj) throws Exception {
-        assertOpen();
-        boolean success = true;
-        if(!(_factory.validateObject(obj))) {
-            success = false;
-        } else {
+    public synchronized void returnObject(Object obj) throws Exception {
+        boolean success = !isClosed();
+        if (_factory != null) {
             try {
                 _factory.passivateObject(obj);
             } catch(Exception e) {
@@ -137,11 +145,50 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
         }
 
         boolean shouldDestroy = !success;
-        synchronized(this) {
-            _numActive--;
-            if(success) {
-                _pool.add(new SoftReference(obj));
+        _numActive--;
+        if(success) {
+            _pool.add(new SoftReference(obj, refQueue));
+        }
+        notifyAll(); // _numActive has changed
+
+        if (shouldDestroy && _factory != null) {
+            try {
+                _factory.destroyObject(obj);
+            } catch(Exception e) {
+                // ignored
             }
+        }
+    }
+
+    public synchronized void invalidateObject(Object obj) throws Exception {
+        _numActive--;
+        if (_factory != null) {
+            try {
+                _factory.destroyObject(obj);
+            } catch (Exception e) {
+                // swallowed
+            }
+        }
+        notifyAll(); // _numActive has changed
+    }
+
+    /**
+     * Create an object, and place it into the pool.
+     * addObject() is useful for "pre-loading" a pool with idle objects.
+     */
+    public synchronized void addObject() throws Exception {
+        assertOpen();
+        if (_factory == null) {
+            throw new IllegalStateException("Cannot add objects without a factory.");
+        }
+        Object obj = _factory.makeObject();
+
+        boolean success = true;
+        _factory.passivateObject(obj);
+
+        boolean shouldDestroy = !success;
+        if(success) {
+            _pool.add(new SoftReference(obj, refQueue));
             notifyAll(); // _numActive has changed
         }
 
@@ -152,39 +199,27 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
                 // ignored
             }
         }
-
-    }
-
-    public synchronized void invalidateObject(Object obj) throws Exception {
-        assertOpen();
-        _numActive--;
-        _factory.destroyObject(obj);
-        notifyAll(); // _numActive has changed
-    }
-
-    /**
-     * Create an object, and place it into the pool.
-     * addObject() is useful for "pre-loading" a pool with idle objects.
-     */
-    public void addObject() throws Exception {
-        Object obj = _factory.makeObject();
-        synchronized(this) {
-            _numActive++;   // A little slimy - must do this because returnObject decrements it.
-            this.returnObject(obj);
-        }
     }
 
     /** Returns an approximation not less than the of the number of idle instances in the pool. */
-    public int getNumIdle() {
+    public synchronized int getNumIdle() {
+        pruneClearedReferences();
         return _pool.size();
     }
 
-    public int getNumActive() {
+    /**
+     * Return the number of instances currently borrowed from this pool.
+     *
+     * @return the number of instances currently borrowed from this pool
+     */
+    public synchronized int getNumActive() {
         return _numActive;
     }
 
+    /**
+     * Clears any objects sitting idle in the pool.
+     */
     public synchronized void clear() {
-        assertOpen();
         if(null != _factory) {
             Iterator iter = _pool.iterator();
             while(iter.hasNext()) {
@@ -199,16 +234,24 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
             }
         }
         _pool.clear();
+        pruneClearedReferences();
     }
 
-    synchronized public void close() throws Exception {
-        clear();
-        _pool = null;
-        _factory = null;
+    public void close() throws Exception {
         super.close();
+        clear();
     }
 
-    synchronized public void setFactory(PoolableObjectFactory factory) throws IllegalStateException {
+    /**
+     * Sets the {@link PoolableObjectFactory factory} this pool uses
+     * to create new instances. Trying to change
+     * the <code>factory</code> while there are borrowed objects will
+     * throw an {@link IllegalStateException}.
+     *
+     * @param factory the {@link PoolableObjectFactory} used to create new instances.
+     * @throws IllegalStateException when the factory cannot be set at this time
+     */
+    public synchronized void setFactory(PoolableObjectFactory factory) throws IllegalStateException {
         assertOpen();
         if(0 < getNumActive()) {
             throw new IllegalStateException("Objects are already active");
@@ -218,11 +261,33 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
         }
     }
 
+    /**
+     * If any idle objects were garabage collected, remove their
+     * {@link Reference} wrappers from the idle object pool.
+     */
+    private void pruneClearedReferences() {
+        Reference ref;
+        while ((ref = refQueue.poll()) != null) {
+            try {
+                _pool.remove(ref);
+            } catch (UnsupportedOperationException uoe) {
+                // ignored
+            }
+        }
+    }
+
     /** My pool. */
     private List _pool = null;
 
     /** My {@link PoolableObjectFactory}. */
     private PoolableObjectFactory _factory = null;
+
+    /**
+     * Queue of broken references that might be able to be removed from <code>_pool</code>.
+     * This is used to help {@link #getNumIdle()} be more accurate with minimial
+     * performance overhead.
+     */
+    private final ReferenceQueue refQueue = new ReferenceQueue();
 
     /** Number of active objects. */
     private int _numActive = 0;

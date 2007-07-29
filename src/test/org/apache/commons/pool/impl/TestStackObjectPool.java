@@ -1,81 +1,41 @@
 /*
- * $Id: TestStackObjectPool.java,v 1.8 2003/03/07 20:28:36 rwaldhoff Exp $
- * $Revision: 1.8 $
- * $Date: 2003/03/07 20:28:36 $
- *
- * ====================================================================
- *
- * The Apache Software License, Version 1.1
- *
- * Copyright (c) 2001-2002 The Apache Software Foundation.  All rights
- * reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
- *
- * 3. The end-user documentation included with the redistribution, if
- *    any, must include the following acknowlegement:
- *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
- *    Alternately, this acknowlegement may appear in the software itself,
- *    if and wherever such third-party acknowlegements normally appear.
- *
- * 4. The names "The Jakarta Project", "Commons", and "Apache Software
- *    Foundation" must not be used to endorse or promote products derived
- *    from this software without prior written permission. For written
- *    permission, please contact apache@apache.org.
- *
- * 5. Products derived from this software may not be called "Apache"
- *    nor may "Apache" appear in their names without prior written
- *    permission of the Apache Group.
- *
- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
- * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
- * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- * ====================================================================
- *
- * This software consists of voluntary contributions made by many
- * individuals on behalf of the Apache Software Foundation.  For more
- * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
- *
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.apache.commons.pool.impl;
 
-import java.util.BitSet;
-import java.util.NoSuchElementException;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.TestObjectPool;
+import org.apache.commons.pool.TestBaseObjectPool;
+
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision: 1.8 $ $Date: 2003/03/07 20:28:36 $
+ * @author Dirk Verbeeck
+ * @author Sandy McArthur
+ * @version $Revision$ $Date$
  */
-public class TestStackObjectPool extends TestObjectPool {
+public class TestStackObjectPool extends TestBaseObjectPool {
     public TestStackObjectPool(String testName) {
         super(testName);
     }
@@ -87,7 +47,11 @@ public class TestStackObjectPool extends TestObjectPool {
     protected ObjectPool makeEmptyPool(int mincap) {
         return new StackObjectPool(new SimpleFactory());
     }
-    
+
+    protected ObjectPool makeEmptyPool(final PoolableObjectFactory factory) {
+        return new StackObjectPool(factory);
+    }
+
     protected Object getNthObject(int n) {
         return String.valueOf(n);
     }
@@ -184,14 +148,17 @@ public class TestStackObjectPool extends TestObjectPool {
         }
     }
 
-    public void testBorrowReturnWithSometimesInvalidObjects() throws Exception {
+
+    public void testBorrowWithSometimesInvalidObjects() throws Exception {
         ObjectPool pool = new StackObjectPool(20);
         pool.setFactory(
             new PoolableObjectFactory() {
+                // factory makes Integer objects
                 int counter = 0;
                 public Object makeObject() { return new Integer(counter++); }
                 public void destroyObject(Object obj) { }
                 public boolean validateObject(Object obj) {
+                    // only odd objects are valid
                     if(obj instanceof Integer) {
                         return ((((Integer)obj).intValue() % 2) == 1);
                     } else {
@@ -200,12 +167,9 @@ public class TestStackObjectPool extends TestObjectPool {
                 }
                 public void activateObject(Object obj) { }
                 public void passivateObject(Object obj) { 
-                    if(obj instanceof Integer) {
-                        if((((Integer)obj).intValue() % 3) == 0) {
-                            throw new RuntimeException("Couldn't passivate");
-                        }
-                    } else {
-                        throw new RuntimeException("Couldn't passivate");
+                    final Integer integer = (Integer)obj;
+                    if (integer.intValue() % 3 == 0) {
+                        throw new RuntimeException("Couldn't passivate: " + integer);
                     }
                 }
             }
@@ -214,35 +178,147 @@ public class TestStackObjectPool extends TestObjectPool {
         Object[] obj = new Object[10];
         for(int i=0;i<10;i++) {
             obj[i] = pool.borrowObject();
+            assertEquals("Each time we borrow, get one more active.", i+1, pool.getNumActive());
         }
         for(int i=0;i<10;i++) {
             pool.returnObject(obj[i]);
+            assertEquals("Each time we borrow, get one less active.", 9-i, pool.getNumActive());
         }
-        assertEquals(3,pool.getNumIdle());
+        assertEquals(6,pool.getNumIdle());
+    }
+    
+    public void testBorrowReturnWithSometimesInvalidObjects() throws Exception {
+        ObjectPool pool = new StackObjectPool(20);
+
+        class TestingPoolableObjectFactory implements PoolableObjectFactory {
+            // factory makes Integer objects
+            int counter = 0;
+            boolean reject = false;
+            public Object makeObject() { return new Integer(counter++); }
+            public void destroyObject(Object obj) { }
+            public boolean validateObject(Object obj) {
+                if (reject) {
+                    // only odd objects are valid
+                    if(obj instanceof Integer) {
+                        return ((((Integer)obj).intValue() % 2) == 1);
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return true;
+                }
+                    
+            }
+            public void activateObject(Object obj) { }
+            public void passivateObject(Object obj) { 
+                if(obj instanceof Integer) {
+                    if((((Integer)obj).intValue() % 3) == 0) {
+                        throw new RuntimeException("Couldn't passivate");
+                    }
+                } else {
+                    throw new RuntimeException("Couldn't passivate");
+                }
+            }
+        };
+        
+        TestingPoolableObjectFactory factory = new TestingPoolableObjectFactory();
+        
+        pool.setFactory(factory);
+
+        Object[] obj = new Object[10];
+        for(int i=0;i<10;i++) {
+            obj[i] = pool.borrowObject();
+            assertEquals("Each time we borrow, get one more active.", i+1, pool.getNumActive());
+            
+        }
+        
+        // now reject even numbers
+        factory.reject = true;
+
+        for(int i=0;i<10;i++) {
+            pool.returnObject(obj[i]);
+            assertEquals("Each time we borrow, get one less active.", 9-i, pool.getNumActive());
+        }
+        assertEquals(6,pool.getNumIdle());
     }
     
     public void testVariousConstructors() throws Exception {
         {
             StackObjectPool pool = new StackObjectPool();
+            assertNotNull(pool);
         }
         {
             StackObjectPool pool = new StackObjectPool(10);
+            assertNotNull(pool);
         }
         {
             StackObjectPool pool = new StackObjectPool(10,5);
+            assertNotNull(pool);
         }
         {
             StackObjectPool pool = new StackObjectPool(null);
+            assertNotNull(pool);
         }
         {
             StackObjectPool pool = new StackObjectPool(null,10);
+            assertNotNull(pool);
         }
         {
             StackObjectPool pool = new StackObjectPool(null,10,5);
+            assertNotNull(pool);
         }
     }
 
-        
+    private final List destroyed = new ArrayList();
+    public void testReturnObjectDiscardOrder() throws Exception {
+        // setup
+        // We need a factory that tracks what was discarded.
+        PoolableObjectFactory pof = new PoolableObjectFactory() {
+            int i = 0;
+            public Object makeObject() throws Exception {
+                return new Integer(i++);
+            }
+
+            public void destroyObject(Object obj) throws Exception {
+                destroyed.add(obj);
+            }
+
+            public boolean validateObject(Object obj) {
+                return obj instanceof Integer;
+            }
+
+            public void activateObject(Object obj) throws Exception {
+            }
+
+            public void passivateObject(Object obj) throws Exception {
+            }
+        };
+        ObjectPool pool = new StackObjectPool(pof, 3);
+
+        // borrow more objects than the pool can hold
+        Integer i0 = (Integer)pool.borrowObject();
+        Integer i1 = (Integer)pool.borrowObject();
+        Integer i2 = (Integer)pool.borrowObject();
+        Integer i3 = (Integer)pool.borrowObject();
+
+        // tests
+        // return as many as the pool will hold.
+        pool.returnObject(i0);
+        pool.returnObject(i1);
+        pool.returnObject(i2);
+
+        // the pool should now be full.
+        assertEquals("No returned objects should have been destroyed yet.",0, destroyed.size());
+
+        // cause the pool to discard a returned object.
+        pool.returnObject(i3);
+        assertEquals("One object should have been destroyed.", 1, destroyed.size());
+
+        // check to see what object was destroyed
+        Integer d = (Integer)destroyed.get(0);
+        assertEquals("Destoryed objects should have the stalest object.", i0, d);
+    }
+
     static class SimpleFactory implements PoolableObjectFactory {
         int counter = 0;
         public Object makeObject() { return String.valueOf(counter++); }
@@ -250,6 +326,14 @@ public class TestStackObjectPool extends TestObjectPool {
         public boolean validateObject(Object obj) { return true; }
         public void activateObject(Object obj) { }
         public void passivateObject(Object obj) { }
+    }
+
+    protected boolean isLifo() {
+        return true;
+    }
+
+    protected boolean isFifo() {
+        return false;
     }
 }
 

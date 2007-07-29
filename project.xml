@@ -1,54 +1,97 @@
 <?xml version="1.0"?>
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
 <project> 
   <pomVersion>3</pomVersion>
-  <name>commons-pool</name>
-  <id>commons-pool</id>
-  <currentVersion>2.0-dev</currentVersion>
+  
+  <name>Commons Pool</name>
+  <groupId>commons-pool</groupId>
+  <artifactId>commons-pool</artifactId>
+  <inceptionYear>2001</inceptionYear>
+  <currentVersion>2.0-SNAPSHOT</currentVersion>
+  <shortDescription>Commons Object Pooling Library</shortDescription>
+  <description>Commons Object Pooling Library</description>
+  <logo>/images/pool-logo-white.png</logo>
+  
+  <url>http://commons.apache.org/${pom.artifactId.substring(8)}/</url>
+  <package>org.apache.commons.${pom.artifactId.substring(8)}</package>
 
   <organization>
-    <name>Apache Software Foundation</name>
-    <url>http://jakarta.apache.org/commons</url>
-    <logo>http://jakarta.apache.org/images/jakarta-logo-blue.gif</logo>
+    <name>The Apache Software Foundation</name>
+    <url>http://commons.apache.org/</url>
+    <logo>http://commons.apache.org/images/logo.png</logo>
   </organization>
-  <!-- <logo>/images/logo.jpg</logo> -->
 
-  <inceptionYear>2001</inceptionYear>
-  <package>org.apache.commons.pool</package>
-
-  <!-- Gump integration -->
-  <gumpRepositoryId>jakarta</gumpRepositoryId>
-
-
-  <shortDescription>Commons Object Pooling Library</shortDescription>
-
-  <description>
-    Commons Object Pooling Library
-  </description>
-
-  <url>http://jakarta.apache.org/commons/pool/</url>
-  <issueTrackingUrl>http://issues.apache.org/bugzilla</issueTrackingUrl>
-  <siteAddress>jakarta.apache.org</siteAddress>
-  <siteDirectory>/www/jakarta.apache.org/commons/pool</siteDirectory>
-  <distributionDirectory>/www/jakarta.apache.org/builds/jakarta-commons/pool/</distributionDirectory>
+  <licenses>
+    <license>
+        <name>The Apache Software License, Version 2.0</name>
+        <url>/LICENSE.txt</url>
+        <distribution>repo</distribution>
+    </license>
+  </licenses>
+  
+  <gumpRepositoryId>commons</gumpRepositoryId>
+  <issueTrackingUrl>http://issues.apache.org/jira/</issueTrackingUrl>
+  <siteAddress>people.apache.org</siteAddress>
+  <siteDirectory>/www/commons.apache.org/${pom.artifactId.substring(8)}/</siteDirectory>
+  <distributionDirectory>/www/people.apache.org/builds/commons/${pom.artifactId.substring(8)}/</distributionDirectory>
+  
   <repository>
-    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-commons/pool</connection>
-    <url>http://cvs.apache.org/viewcvs/jakarta-commons/pool/</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/${pom.artifactId.substring(8)}/trunk</connection>
+    <url>http://svn.apache.org/repos/asf/commons/proper/${pom.artifactId.substring(8)}/trunk</url>
   </repository>
-
+  
   <mailingLists>
     <mailingList>
-      <name>Commons User List</name>
-      <subscribe>commons-user-subscribe@jakarta.apache.org</subscribe>
-      <unsubscribe>commons-user-unsubscribe@jakarta.apache.org</unsubscribe>
-      <archive>http://nagoya.apache.org/eyebrowse/SummarizeList?listName=commons-user@jakarta.apache.org</archive>
+      <name>Commons Dev List</name>
+      <subscribe>dev-subscribe@commons.apache.org</subscribe>
+      <unsubscribe>dev-unsubscribe@commons.apache.org</unsubscribe>
+      <archive>http://mail-archives.apache.org/mod_mbox/commons-dev/</archive>
     </mailingList>
     <mailingList>
-      <name>Commons Developer List</name>
-      <subscribe>commons-dev-subscribe@jakarta.apache.org</subscribe>
-      <unsubscribe>commons-dev-unsubscribe@jakarta.apache.org</unsubscribe>
-      <archive>http://nagoya.apache.org/eyebrowse/SummarizeList?listName=commons-dev@jakarta.apache.org</archive>
+      <name>Commons User List</name>
+      <subscribe>user-subscribe@commons.apache.org</subscribe>
+      <unsubscribe>user-unsubscribe@commons.apache.org</unsubscribe>
+      <archive>http://mail-archives.apache.org/mod_mbox/commons-user/</archive>
     </mailingList>
   </mailingLists>
+  
+  <versions>
+    <version>
+      <id>1.0</id>
+      <name>1.0</name>
+      <tag>POOL_1_0</tag>
+    </version>
+    <version>
+      <id>1.0.1</id>
+      <name>1.0.1</name>
+      <tag>POOL_1_0_1</tag>
+    </version>
+    <version>
+      <id>1.1</id>
+      <name>1.1</name>
+      <tag>POOL_1_1</tag>
+    </version>
+    <version>
+      <id>1.2</id>
+      <name>1.2</name>
+      <tag>POOL_1_2</tag>
+    </version>
+  </versions>
 
   <developers>
     <developer>
@@ -87,35 +130,207 @@
       <email></email>
       <organization></organization>
     </developer>
+    <developer>
+      <name>Robert Burrell Donkin</name>
+      <id>rdonkin</id>
+      <email></email>
+      <organization>Apache Software Foundation</organization>
+    </developer>
+    <developer>
+      <name>Sandy McArthur</name>
+      <id>sandymac</id>
+      <email></email>
+      <organization>Apache Software Foundation</organization>
+    </developer>
   </developers>
+  <contributors>
+    <contributor>
+      <name>Todd Carmichael</name>
+      <email>toddc@concur.com</email>
+    </contributor>
+  </contributors>
   
   <dependencies>
+
     <dependency>
-      <id>commons-collections</id>
-      <version>2.0</version>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <properties>
+          <comment>Only required to run unit tests</comment>
+          <scope>test</scope>
+      </properties>
     </dependency>
 
     <dependency>
-      <id>junit</id>
-      <version>3.7</version>
+      <groupId>maven</groupId>
+      <artifactId>maven-plugin-plugin</artifactId>
+      <version>1.7</version>
+      <url>http://maven.apache.org/maven-1.x/plugins/plugin/</url>
+      <type>plugin</type>
+      <properties>
+          <comment>
+              &lt;strong&gt;Site Only&lt;/strong&gt; - v1.7 (minimum)
+          </comment>
+      </properties>
     </dependency>
 
-    <!-- these two are required by maven -->
-    <dependency><id>xml-apis</id><version>2.0.2</version></dependency>
-    <dependency><id>xerces</id><version>2.0.2</version></dependency>
-    <!-- /these two are required by maven -->
+    <dependency>
+      <groupId>maven</groupId>
+      <artifactId>maven-scm-plugin</artifactId>
+      <version>1.5</version>
+      <url>http://maven.apache.org/maven-1.x/plugins/scm/</url>
+      <type>plugin</type>
+      <properties>
+          <comment>
+              &lt;strong&gt;Site Only&lt;/strong&gt; - v1.5 (minimum)
+          </comment>
+      </properties>
+    </dependency>
+
+    <dependency>
+      <groupId>maven</groupId>
+      <artifactId>maven-jdiff-plugin</artifactId>
+      <version>1.5</version>
+      <url>http://maven.apache.org/maven-1.x/plugins/jdiff/</url>
+      <type>plugin</type>
+      <properties>
+          <comment>
+              &lt;strong&gt;Site Only&lt;/strong&gt; - v1.5 (minimum)
+          </comment>
+      </properties>
+    </dependency>
+
+    <dependency>
+      <groupId>maven</groupId>
+      <artifactId>maven-changes-plugin</artifactId>
+      <version>1.6</version>
+      <url>http://maven.apache.org/maven-1.x/plugins/changes/</url>
+      <type>plugin</type>
+      <properties>
+          <comment>
+              &lt;strong&gt;Site Only&lt;/strong&gt; - v1.6 (minimum)
+          </comment>
+      </properties>
+    </dependency>
+
+    <dependency>
+      <groupId>maven</groupId>
+      <artifactId>maven-changelog-plugin</artifactId>
+      <version>1.9</version>
+      <url>http://maven.apache.org/maven-1.x/plugins/changelog/</url>
+      <type>plugin</type>
+      <properties>
+          <comment>
+              &lt;strong&gt;Site Only&lt;/strong&gt; - v1.9 (minimum)
+          </comment>
+      </properties>
+    </dependency>
+
+    <dependency>
+      <groupId>maven</groupId>
+      <artifactId>maven-file-activity-plugin</artifactId>
+      <version>1.6</version>
+      <url>http://maven.apache.org/maven-1.x/plugins/file-activity/</url>
+      <type>plugin</type>
+      <properties>
+          <comment>
+              &lt;strong&gt;Site Only&lt;/strong&gt; - v1.6 (minimum)
+          </comment>
+      </properties>
+    </dependency>
+
+    <dependency>
+      <groupId>maven</groupId>
+      <artifactId>maven-developer-activity-plugin</artifactId>
+      <version>1.5.1</version>
+      <url>http://maven.apache.org/maven-1.x/plugins/developer-activity/</url>
+      <type>plugin</type>
+      <properties>
+          <comment>
+              &lt;strong&gt;Site Only&lt;/strong&gt; - v1.5.2 (minimum)
+          </comment>
+      </properties>
+    </dependency>
 
   </dependencies>
 
   <build>
-    <nagEmailAddress>commons-dev@jakarta.apache.org</nagEmailAddress>
+    <nagEmailAddress>dev@commons.apache.org</nagEmailAddress>
     <sourceDirectory>src/java</sourceDirectory>
     <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
     <unitTest>
       <includes>
-        <include>org/apache/commons/pool/TestAll.java</include>
+        <include>org/apache/commons/pool/TestBaseObjectPool.java</include>
+        <include>org/apache/commons/pool/TestBaseKeyedObjectPool.java</include>
+        <include>org/apache/commons/pool/TestBasePoolableObjectFactory.java</include>
+        <include>org/apache/commons/pool/TestBaseKeyedPoolableObjectFactory.java</include>
+        <include>org/apache/commons/pool/TestPoolUtils.java</include>
+
+        <include>org/apache/commons/pool/impl/TestStackObjectPool.java</include>
+        <include>org/apache/commons/pool/impl/TestStackKeyedObjectPool.java</include>
+        <include>org/apache/commons/pool/impl/TestGenericObjectPool.java</include>
+        <include>org/apache/commons/pool/impl/TestGenericKeyedObjectPool.java</include>
+        <include>org/apache/commons/pool/impl/TestSoftReferenceObjectPool.java</include>
+        <!--<include>org/apache/commons/pool/impl/TestSoftRefOutOfMemory.java</include>-->
+        <include>org/apache/commons/pool/impl/TestGenericObjectPoolFactory.java</include>
+        <include>org/apache/commons/pool/impl/TestStackObjectPoolFactory.java</include>
+        <include>org/apache/commons/pool/impl/TestGenericKeyedObjectPoolFactory.java</include>
+        <include>org/apache/commons/pool/impl/TestStackKeyedObjectPoolFactory.java</include>
+
+        <include>org/apache/commons/pool/composite/TestFifoLender.java</include>
+        <include>org/apache/commons/pool/composite/TestIdleEvictorLender.java</include>
+        <include>org/apache/commons/pool/composite/TestInvalidEvictorLender.java</include>
+        <include>org/apache/commons/pool/composite/TestLifoLender.java</include>
+        <include>org/apache/commons/pool/composite/TestNullLender.java</include>
+        <include>org/apache/commons/pool/composite/TestSoftLender.java</include>
+
+        <include>org/apache/commons/pool/composite/TestFailManager.java</include>
+        <include>org/apache/commons/pool/composite/TestGrowManager.java</include>
+        <include>org/apache/commons/pool/composite/TestIdleLimitManager.java</include>
+        <include>org/apache/commons/pool/composite/TestFailLimitManager.java</include>
+        <include>org/apache/commons/pool/composite/TestWaitLimitManager.java</include>
+
+        <include>org/apache/commons/pool/composite/TestNullTracker.java</include>
+        <include>org/apache/commons/pool/composite/TestReferenceTracker.java</include>
+        <include>org/apache/commons/pool/composite/TestDebugTracker.java</include>
+        <include>org/apache/commons/pool/composite/TestSimpleTracker.java</include>
+        <include>org/apache/commons/pool/composite/TestCompositeObjectPool.java</include>
+        <include>org/apache/commons/pool/composite/TestCompositeKeyedObjectPool.java</include>
+        <include>org/apache/commons/pool/composite/TestCompositeKeyedObjectPool2.java</include>
+        <include>org/apache/commons/pool/composite/TestCompositeKeyedObjectPoolFactory.java</include>
       </includes>
+<!--
+      <excludes>
+        <exclude>org/apache/commons/pool/TestObjectPoolFactory.java</exclude>
+      </excludes>
+-->
     </unitTest>
+
+    <resources>
+      <resource>
+        <directory>${basedir}</directory>
+        <targetPath>META-INF</targetPath>
+        <includes>
+          <include>NOTICE.txt</include>
+        </includes>
+      </resource>
+    </resources>
   </build>
+  
+  <reports>
+    <report>maven-changelog-plugin</report>
+    <report>maven-changes-plugin</report>
+    <report>maven-developer-activity-plugin</report>
+    <report>maven-file-activity-plugin</report>
+    <report>maven-javadoc-plugin</report>
+    <report>maven-jdepend-plugin</report>
+    <report>maven-jdiff-plugin</report>
+    <report>maven-junit-report-plugin</report>
+    <report>maven-jxr-plugin</report>
+    <report>maven-license-plugin</report>
+    <report>maven-tasklist-plugin</report>
+  </reports>
+  
 </project>
 

@@ -1,28 +1,69 @@
 <?xml version="1.0"?>
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
 <document>
    <properties>
       <title>Downloads</title>
       <author email="commons-dev@jakarta.apache.org">Commons Documentation Team</author>
-      <author email="rwaldhoff@apache.org">Rodney Waldhoff</author>
-      <revision>$Id: downloads.xml,v 1.6 2003/08/11 11:45:04 dirkv Exp $</revision>
+      <revision>$Id$</revision>
    </properties>
 
    <body>
-      <section name="Releases">
+     <section name="Releases">
          <p>The following releases are available:</p>
          <ul>
-           <li><a href="http://jakarta.apache.org/builds/jakarta-commons/release/commons-pool/v1.0.1/">Release 1.0.1</a> - 12 August 2002</li>
-           <li><a href="http://jakarta.apache.org/builds/jakarta-commons/release/commons-pool/v1.0/">Release 1.0</a> - 4 May 2002</li>
+           <li>Release 1.3 - 3 April 2006 - <a href="release-notes-1.3.html">(release notes)</a></li>
+           <li>Release 1.2 - 7 June 2004 - <a href="release-notes-1.2.html">(release notes)</a></li>
+           <li>Release 1.1 - 20 October 2003 - <a href="release-notes-1.1.html">(release notes)</a></li>
+           <li>Release 1.0.1 - 12 August 2002</li>
+           <li>Release 1.0 - 4 May 2002</li>
          </ul>
+         <br/>
          <p>
-           <a href="http://cvs.apache.org/builds/jakarta-commons/nightly/commons-pool/">Nightly source and binary drops</a> are also available.
+            The latest release binary and source releases are always available on the
+            <a href="http://jakarta.apache.org/site/downloads/downloads_commons-pool.cgi">
+            Jakarta Commons Pool Downloads page</a>.
          </p>
          <p>
-            The CVS repository for <em>Pool</em> can be
-            <a href="http://cvs.apache.org/viewcvs/jakarta-commons/pool/">browsed online</a>
-            or
-            <a href="http://jakarta.apache.org/site/cvsindex.html">downloaded using a CVS client</a>.
+            Commons-pool 2.0 only depends at runtime on a Java 1.4 or better JVM.
+         </p>
+         <p>
+            Commons-pool 1.3 only depends at runtime on a Java 1.3 or better JVM.
+         </p>
+         <p>
+            Commons-pool 1.2 depends at runtime on
+            <a href="http://jakarta.apache.org/commons/collections/">commons-collections</a>.
+         </p>
+         <p>
+            Older releases are retained by the Apache Software Foundation but are 
+            moved into a
+            <a href="http://archive.apache.org/dist/jakarta/commons/pool/">
+            special archive area</a>.
+         </p>
+         <p>
+           <a href="http://people.apache.org/builds/jakarta-commons/nightly/commons-pool/">
+           Nightly source and binary drops</a> are also available.
+         </p>
+         <p>
+            Access to the source tree to see the latest and greatest code is possible
+            through <a href="cvs-usage.html">anonymous SVN access</a>.
          </p>
       </section>
+
    </body>
 </document>
+

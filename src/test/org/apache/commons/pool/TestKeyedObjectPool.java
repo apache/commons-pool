@@ -1,304 +1,462 @@
 /*
- * $Id: TestKeyedObjectPool.java,v 1.5 2003/04/24 18:07:10 rwaldhoff Exp $
- * $Revision: 1.5 $
- * $Date: 2003/04/24 18:07:10 $
- * ====================================================================
- *
- * The Apache Software License, Version 1.1
- *
- * Copyright (c) 2001-2002 The Apache Software Foundation.  All rights
- * reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
- *
- * 3. The end-user documentation included with the redistribution, if
- *    any, must include the following acknowlegement:
- *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
- *    Alternately, this acknowlegement may appear in the software itself,
- *    if and wherever such third-party acknowlegements normally appear.
- *
- * 4. The names "The Jakarta Project", "Commons", and "Apache Software
- *    Foundation" must not be used to endorse or promote products derived
- *    from this software without prior written permission. For written
- *    permission, please contact apache@apache.org.
- *
- * 5. Products derived from this software may not be called "Apache"
- *    nor may "Apache" appear in their names without prior written
- *    permission of the Apache Group.
- *
- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
- * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
- * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- * ====================================================================
- *
- * This software consists of voluntary contributions made by many
- * individuals on behalf of the Apache Software Foundation.  For more
- * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
- *
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
-
 package org.apache.commons.pool;
 
 import junit.framework.TestCase;
 
+import java.util.List;
+import java.util.ArrayList;
+
 /**
  * Abstract {@link TestCase} for {@link ObjectPool} implementations.
  * @author Rodney Waldhoff
- * @version $Revision: 1.5 $ $Date: 2003/04/24 18:07:10 $
+ * @author Sandy McArthur
+ * @version $Revision$ $Date$
  */
 public abstract class TestKeyedObjectPool extends TestCase {
     public TestKeyedObjectPool(String testName) {
         super(testName);
     }
 
-    /** 
-     * Create an {@link KeyedObjectPool} instance
-     * that can contain at least <i>mincapacity</i>
-     * idle and active objects, or
-     * throw {@link IllegalArgumentException}
-     * if such a pool cannot be created.
-     */
-    protected abstract KeyedObjectPool makeEmptyPool(int mincapacity);
-
     /**
-     * Return what we expect to be the n<sup>th</sup>
-     * object (zero indexed) created by the pool
-     * for the given key.
+     * Create an <code>KeyedObjectPool</code> with the specified factory.
+     * The pool should be in a default configuration and conform to the expected
+     * behaviors described in {@link KeyedObjectPool}.
+     * Generally speaking there should be no limits on the various object counts.
      */
-    protected abstract Object getNthObject(Object key, int n);
+    protected abstract KeyedObjectPool makeEmptyPool(KeyedPoolableObjectFactory factory);
 
-    protected abstract Object makeKey(int n);
+    protected final String KEY = "key";
 
-    public void setUp() throws Exception {
-    }
-    
-    public void tearDown() throws Exception {
-        _pool = null;
-    }
-    
-    public void testBaseBorrow() throws Exception {
+    public void testClosedPoolBehavior() throws Exception {
+        final KeyedObjectPool pool;
         try {
-            _pool = makeEmptyPool(3);
-        } catch(IllegalArgumentException e) {
-            return; // skip this test if unsupported
+            pool = makeEmptyPool(new BaseKeyedPoolableObjectFactory() {
+                public Object makeObject(final Object key) throws Exception {
+                    return new Object();
+                }
+            });
+        } catch(UnsupportedOperationException uoe) {
+            return; // test not supported
         }
-        Object keya = makeKey(0);
-        Object keyb = makeKey(1);
-        assertEquals("1",getNthObject(keya,0),_pool.borrowObject(keya));
-        assertEquals("2",getNthObject(keyb,0),_pool.borrowObject(keyb));
-        assertEquals("3",getNthObject(keyb,1),_pool.borrowObject(keyb));
-        assertEquals("4",getNthObject(keya,1),_pool.borrowObject(keya));
-        assertEquals("5",getNthObject(keyb,2),_pool.borrowObject(keyb));
-        assertEquals("6",getNthObject(keya,2),_pool.borrowObject(keya));
+
+        Object o1 = pool.borrowObject(KEY);
+        Object o2 = pool.borrowObject(KEY);
+
+        pool.close();
+
+        try {
+            pool.addObject(KEY);
+            fail("A closed pool must throw an IllegalStateException when addObject is called.");
+        } catch (IllegalStateException ise) {
+            // expected
+        }
+
+        try {
+            pool.borrowObject(KEY);
+            fail("A closed pool must throw an IllegalStateException when borrowObject is called.");
+        } catch (IllegalStateException ise) {
+            // expected
+        }
+
+        // The following should not throw exceptions just because the pool is closed.
+        assertEquals("A closed pool shouldn't have any idle objects.", 0, pool.getNumIdle(KEY));
+        assertEquals("A closed pool shouldn't have any idle objects.", 0, pool.getNumIdle());
+        pool.getNumActive();
+        pool.getNumActive(KEY);
+        pool.returnObject(KEY, o1);
+        assertEquals("returnObject should not add items back into the idle object pool for a closed pool.", 0, pool.getNumIdle(KEY));
+        assertEquals("returnObject should not add items back into the idle object pool for a closed pool.", 0, pool.getNumIdle());
+        pool.invalidateObject(KEY, o2);
+        pool.clear(KEY);
+        pool.clear();
+        pool.close();
     }
 
-    public void testBaseBorrowReturn() throws Exception {
+    private final Integer ZERO = new Integer(0);
+    private final Integer ONE = new Integer(1);
+
+    public void testKPOFAddObjectUsage() throws Exception {
+        final FailingKeyedPoolableObjectFactory factory = new FailingKeyedPoolableObjectFactory();
+        final KeyedObjectPool pool;
         try {
-            _pool = makeEmptyPool(3);
-        } catch(IllegalArgumentException e) {
-            return; // skip this test if unsupported
+            pool = makeEmptyPool(factory);
+        } catch(UnsupportedOperationException uoe) {
+            return; // test not supported
         }
-        Object keya = makeKey(0);
-        Object obj0 = _pool.borrowObject(keya);
-        assertEquals(getNthObject(keya,0),obj0);
-        Object obj1 = _pool.borrowObject(keya);
-        assertEquals(getNthObject(keya,1),obj1);
-        Object obj2 = _pool.borrowObject(keya);
-        assertEquals(getNthObject(keya,2),obj2);
-        _pool.returnObject(keya,obj2);
-        obj2 = _pool.borrowObject(keya);
-        assertEquals(getNthObject(keya,2),obj2);
-        _pool.returnObject(keya,obj1);
-        obj1 = _pool.borrowObject(keya);
-        assertEquals(getNthObject(keya,1),obj1);
-        _pool.returnObject(keya,obj0);
-        _pool.returnObject(keya,obj2);
-        obj2 = _pool.borrowObject(keya);
-        assertEquals(getNthObject(keya,2),obj2);
-        obj0 = _pool.borrowObject(keya);
-        assertEquals(getNthObject(keya,0),obj0);
+        final List expectedMethods = new ArrayList();
+
+        // addObject should make a new object, pasivate it and put it in the pool
+        pool.addObject(KEY);
+        expectedMethods.add(new MethodCall("makeObject", KEY).returned(ZERO));
+        expectedMethods.add(new MethodCall("passivateObject", KEY, ZERO));
+        assertEquals(expectedMethods, factory.getMethodCalls());
+
+        //// Test exception handling of addObject
+        reset(pool, factory, expectedMethods);
+
+        // makeObject Exceptions should be propagated to client code from addObject
+        factory.setMakeObjectFail(true);
+        try {
+            pool.addObject(KEY);
+            fail("Expected addObject to propagate makeObject exception.");
+        } catch (PrivateException pe) {
+            // expected
+        }
+        expectedMethods.add(new MethodCall("makeObject", KEY));
+        assertEquals(expectedMethods, factory.getMethodCalls());
+
+        clear(factory, expectedMethods);
+
+        // passivateObject Exceptions should be propagated to client code from addObject
+        factory.setMakeObjectFail(false);
+        factory.setPassivateObjectFail(true);
+        try {
+            pool.addObject(KEY);
+            fail("Expected addObject to propagate passivateObject exception.");
+        } catch (PrivateException pe) {
+            // expected
+        }
+        expectedMethods.add(new MethodCall("makeObject", KEY).returned(ONE));
+        expectedMethods.add(new MethodCall("passivateObject", KEY, ONE));
+        assertEquals(expectedMethods, factory.getMethodCalls());
     }
 
-    public void testBaseNumActiveNumIdle() throws Exception {
+    public void testKPOFBorrowObjectUsages() throws Exception {
+        final FailingKeyedPoolableObjectFactory factory = new FailingKeyedPoolableObjectFactory();
+        final KeyedObjectPool pool;
         try {
-            _pool = makeEmptyPool(3);
-        } catch(IllegalArgumentException e) {
-            return; // skip this test if unsupported
+            pool = makeEmptyPool(factory);
+        } catch(UnsupportedOperationException uoe) {
+            return; // test not supported
         }
-        Object keya = makeKey(0);
-        assertEquals(0,_pool.getNumActive(keya));
-        assertEquals(0,_pool.getNumIdle(keya));
-        Object obj0 = _pool.borrowObject(keya);
-        assertEquals(1,_pool.getNumActive(keya));
-        assertEquals(0,_pool.getNumIdle(keya));
-        Object obj1 = _pool.borrowObject(keya);
-        assertEquals(2,_pool.getNumActive(keya));
-        assertEquals(0,_pool.getNumIdle(keya));
-        _pool.returnObject(keya,obj1);
-        assertEquals(1,_pool.getNumActive(keya));
-        assertEquals(1,_pool.getNumIdle(keya));
-        _pool.returnObject(keya,obj0);
-        assertEquals(0,_pool.getNumActive(keya));
-        assertEquals(2,_pool.getNumIdle(keya));
-        
-        assertEquals(0,_pool.getNumActive("xyzzy12345"));
-        assertEquals(0,_pool.getNumIdle("xyzzy12345"));
+        final List expectedMethods = new ArrayList();
+        Object obj;
+
+        /// Test correct behavior code paths
+
+        // existing idle object should be activated and validated
+        pool.addObject(KEY);
+        clear(factory, expectedMethods);
+        obj = pool.borrowObject(KEY);
+        expectedMethods.add(new MethodCall("activateObject", KEY, ZERO));
+        expectedMethods.add(new MethodCall("validateObject", KEY, ZERO).returned(Boolean.TRUE));
+        assertEquals(expectedMethods, factory.getMethodCalls());
+        pool.returnObject(KEY, obj);
+
+        //// Test exception handling of borrowObject
+        reset(pool, factory, expectedMethods);
+
+        // makeObject Exceptions should be propagated to client code from borrowObject
+        factory.setMakeObjectFail(true);
+        try {
+            obj = pool.borrowObject(KEY);
+            fail("Expected borrowObject to propagate makeObject exception.");
+        } catch (PrivateException pe) {
+            // expected
+        }
+        expectedMethods.add(new MethodCall("makeObject", KEY));
+        assertEquals(expectedMethods, factory.getMethodCalls());
+
+
+        // when activateObject fails in borrowObject, a new object should be borrowed/created
+        reset(pool, factory, expectedMethods);
+        pool.addObject(KEY);
+        clear(factory, expectedMethods);
+
+        factory.setActivateObjectFail(true);
+        expectedMethods.add(new MethodCall("activateObject", KEY, obj));
+        obj = pool.borrowObject(KEY);
+        expectedMethods.add(new MethodCall("makeObject", KEY).returned(ONE));
+        TestObjectPool.removeDestroyObjectCall(factory.getMethodCalls()); // The exact timing of destroyObject is flexible here.
+        assertEquals(expectedMethods, factory.getMethodCalls());
+        pool.returnObject(KEY, obj);
+
+        // when validateObject fails in borrowObject, a new object should be borrowed/created
+        reset(pool, factory, expectedMethods);
+        pool.addObject(KEY);
+        clear(factory, expectedMethods);
+
+        factory.setValidateObjectFail(true);
+        expectedMethods.add(new MethodCall("activateObject", KEY, ZERO));
+        expectedMethods.add(new MethodCall("validateObject", KEY, ZERO));
+        obj = pool.borrowObject(KEY);
+        expectedMethods.add(new MethodCall("makeObject", KEY).returned(ONE));
+        TestObjectPool.removeDestroyObjectCall(factory.getMethodCalls()); // The exact timing of destroyObject is flexible here.
+        assertEquals(expectedMethods, factory.getMethodCalls());
+        pool.returnObject(KEY, obj);
     }
 
-    public void testBaseNumActiveNumIdle2() throws Exception {
+    public void testKPOFReturnObjectUsages() throws Exception {
+        final FailingKeyedPoolableObjectFactory factory = new FailingKeyedPoolableObjectFactory();
+        final KeyedObjectPool pool;
         try {
-            _pool = makeEmptyPool(6);
-        } catch(IllegalArgumentException e) {
-            return; // skip this test if unsupported
+            pool = makeEmptyPool(factory);
+        } catch(UnsupportedOperationException uoe) {
+            return; // test not supported
         }
-        Object keya = makeKey(0);
-        Object keyb = makeKey(1);
-        assertEquals(0,_pool.getNumActive());
-        assertEquals(0,_pool.getNumIdle());
-        assertEquals(0,_pool.getNumActive(keya));
-        assertEquals(0,_pool.getNumIdle(keya));
-        assertEquals(0,_pool.getNumActive(keyb));
-        assertEquals(0,_pool.getNumIdle(keyb));
+        final List expectedMethods = new ArrayList();
+        Object obj;
+        int idleCount;
 
-        Object objA0 = _pool.borrowObject(keya);
-        Object objB0 = _pool.borrowObject(keyb);
+        /// Test correct behavior code paths
+        obj = pool.borrowObject(KEY);
+        clear(factory, expectedMethods);
 
-        assertEquals(2,_pool.getNumActive());
-        assertEquals(0,_pool.getNumIdle());
-        assertEquals(1,_pool.getNumActive(keya));
-        assertEquals(0,_pool.getNumIdle(keya));
-        assertEquals(1,_pool.getNumActive(keyb));
-        assertEquals(0,_pool.getNumIdle(keyb));
+        // returned object should be passivated
+        pool.returnObject(KEY, obj);
+        expectedMethods.add(new MethodCall("passivateObject", KEY, obj));
+        assertEquals(expectedMethods, factory.getMethodCalls());
 
-        Object objA1 = _pool.borrowObject(keya);
-        Object objB1 = _pool.borrowObject(keyb);
+        //// Test exception handling of returnObject
+        reset(pool, factory, expectedMethods);
 
-        assertEquals(4,_pool.getNumActive());
-        assertEquals(0,_pool.getNumIdle());
-        assertEquals(2,_pool.getNumActive(keya));
-        assertEquals(0,_pool.getNumIdle(keya));
-        assertEquals(2,_pool.getNumActive(keyb));
-        assertEquals(0,_pool.getNumIdle(keyb));
+        // passivateObject should swallow exceptions and not add the object to the pool
+        idleCount = pool.getNumIdle();
+        obj = pool.borrowObject(KEY);
+        clear(factory, expectedMethods);
+        factory.setPassivateObjectFail(true);
+        pool.returnObject(KEY, obj);
+        expectedMethods.add(new MethodCall("passivateObject", KEY, obj));
+        TestObjectPool.removeDestroyObjectCall(factory.getMethodCalls()); // The exact timing of destroyObject is flexible here.
+        assertEquals(expectedMethods, factory.getMethodCalls());
+        assertEquals(idleCount, pool.getNumIdle());
 
-        _pool.returnObject(keya,objA0);
-        _pool.returnObject(keyb,objB0);
-
-        assertEquals(2,_pool.getNumActive());
-        assertEquals(2,_pool.getNumIdle());
-        assertEquals(1,_pool.getNumActive(keya));
-        assertEquals(1,_pool.getNumIdle(keya));
-        assertEquals(1,_pool.getNumActive(keyb));
-        assertEquals(1,_pool.getNumIdle(keyb));
-
-        _pool.returnObject(keya,objA1);
-        _pool.returnObject(keyb,objB1);
-
-        assertEquals(0,_pool.getNumActive());
-        assertEquals(4,_pool.getNumIdle());
-        assertEquals(0,_pool.getNumActive(keya));
-        assertEquals(2,_pool.getNumIdle(keya));
-        assertEquals(0,_pool.getNumActive(keyb));
-        assertEquals(2,_pool.getNumIdle(keyb));
+        // destroyObject should swallow exceptions too
+        reset(pool, factory, expectedMethods);
+        obj = pool.borrowObject(KEY);
+        clear(factory, expectedMethods);
+        factory.setPassivateObjectFail(true);
+        factory.setDestroyObjectFail(true);
+        pool.returnObject(KEY, obj);
     }
 
-    public void testBaseClear() throws Exception {
+    public void testKPOFInvalidateObjectUsages() throws Exception {
+        final FailingKeyedPoolableObjectFactory factory = new FailingKeyedPoolableObjectFactory();
+        final KeyedObjectPool pool;
         try {
-            _pool = makeEmptyPool(3);
-        } catch(IllegalArgumentException e) {
-            return; // skip this test if unsupported
+            pool = makeEmptyPool(factory);
+        } catch(UnsupportedOperationException uoe) {
+            return; // test not supported
         }
-        Object keya = makeKey(0);
-        assertEquals(0,_pool.getNumActive(keya));
-        assertEquals(0,_pool.getNumIdle(keya));
-        Object obj0 = _pool.borrowObject(keya);
-        Object obj1 = _pool.borrowObject(keya);
-        assertEquals(2,_pool.getNumActive(keya));
-        assertEquals(0,_pool.getNumIdle(keya));
-        _pool.returnObject(keya,obj1);
-        _pool.returnObject(keya,obj0);
-        assertEquals(0,_pool.getNumActive(keya));
-        assertEquals(2,_pool.getNumIdle(keya));
-        _pool.clear(keya);
-        assertEquals(0,_pool.getNumActive(keya));
-        assertEquals(0,_pool.getNumIdle(keya));
-        Object obj2 = _pool.borrowObject(keya);
-        assertEquals(getNthObject(keya,2),obj2);
+        final List expectedMethods = new ArrayList();
+        Object obj;
+
+        /// Test correct behavior code paths
+
+        obj = pool.borrowObject(KEY);
+        clear(factory, expectedMethods);
+
+        // invalidated object should be destroyed
+        pool.invalidateObject(KEY, obj);
+        expectedMethods.add(new MethodCall("destroyObject", KEY, obj));
+        assertEquals(expectedMethods, factory.getMethodCalls());
+
+        //// Test exception handling of invalidateObject
+        reset(pool, factory, expectedMethods);
+        obj = pool.borrowObject(KEY);
+        clear(factory, expectedMethods);
+        factory.setDestroyObjectFail(true);
+        pool.invalidateObject(KEY, obj);
+        Thread.sleep(250); // could be defered
+        TestObjectPool.removeDestroyObjectCall(factory.getMethodCalls());
+        assertEquals(expectedMethods, factory.getMethodCalls());
     }
 
-    public void testBaseInvalidateObject() throws Exception {
+    public void testKPOFClearUsages() throws Exception {
+        final FailingKeyedPoolableObjectFactory factory = new FailingKeyedPoolableObjectFactory();
+        final KeyedObjectPool pool;
         try {
-            _pool = makeEmptyPool(3);
-        } catch(IllegalArgumentException e) {
-            return; // skip this test if unsupported
+            pool = makeEmptyPool(factory);
+        } catch(UnsupportedOperationException uoe) {
+            return; // test not supported
         }
-        Object keya = makeKey(0);
-        assertEquals(0,_pool.getNumActive(keya));
-        assertEquals(0,_pool.getNumIdle(keya));
-        Object obj0 = _pool.borrowObject(keya);
-        Object obj1 = _pool.borrowObject(keya);
-        assertEquals(2,_pool.getNumActive(keya));
-        assertEquals(0,_pool.getNumIdle(keya));
-        _pool.invalidateObject(keya,obj0);
-        assertEquals(1,_pool.getNumActive(keya));
-        assertEquals(0,_pool.getNumIdle(keya));
-        _pool.invalidateObject(keya,obj1);
-        assertEquals(0,_pool.getNumActive(keya));
-        assertEquals(0,_pool.getNumIdle(keya));
+        final List expectedMethods = new ArrayList();
+
+        /// Test correct behavior code paths
+        PoolUtils.prefill(pool, KEY, 5);
+        pool.clear();
+
+        //// Test exception handling clear should swallow destory object failures
+        reset(pool, factory, expectedMethods);
+        factory.setDestroyObjectFail(true);
+        PoolUtils.prefill(pool, KEY, 5);
+        pool.clear();
     }
 
-    public void testBaseAddObject() throws Exception {
+    public void testKPOFCloseUsages() throws Exception {
+        final FailingKeyedPoolableObjectFactory factory = new FailingKeyedPoolableObjectFactory();
+        KeyedObjectPool pool;
         try {
-            _pool = makeEmptyPool(3);
-        } catch(IllegalArgumentException e) {
-            return; // skip this test if unsupported
+            pool = makeEmptyPool(factory);
+        } catch(UnsupportedOperationException uoe) {
+            return; // test not supported
         }
-        Object key = makeKey(0);
+        final List expectedMethods = new ArrayList();
+
+        /// Test correct behavior code paths
+        PoolUtils.prefill(pool, KEY, 5);
+        pool.close();
+
+
+        //// Test exception handling close should swallow failures
+        pool = makeEmptyPool(factory);
+        reset(pool, factory, expectedMethods);
+        factory.setDestroyObjectFail(true);
+        PoolUtils.prefill(pool, KEY, 5);
+        pool.close();
+    }
+
+    public void testToString() throws Exception {
+        final FailingKeyedPoolableObjectFactory factory = new FailingKeyedPoolableObjectFactory();
         try {
-            assertEquals(0,_pool.getNumIdle());
-            assertEquals(0,_pool.getNumActive());
-            assertEquals(0,_pool.getNumIdle(key));
-            assertEquals(0,_pool.getNumActive(key));
-            _pool.addObject(key);
-            assertEquals(1,_pool.getNumIdle());
-            assertEquals(0,_pool.getNumActive());
-            assertEquals(1,_pool.getNumIdle(key));
-            assertEquals(0,_pool.getNumActive(key));
-            Object obj = _pool.borrowObject(key);
-            assertEquals(getNthObject(key,0),obj);
-            assertEquals(0,_pool.getNumIdle());
-            assertEquals(1,_pool.getNumActive());
-            assertEquals(0,_pool.getNumIdle(key));
-            assertEquals(1,_pool.getNumActive(key));
-            _pool.returnObject(key,obj);
-            assertEquals(1,_pool.getNumIdle());
-            assertEquals(0,_pool.getNumActive());
-            assertEquals(1,_pool.getNumIdle(key));
-            assertEquals(0,_pool.getNumActive(key));
-        } catch(UnsupportedOperationException e) {
-            return; // skip this test if one of those calls is unsupported
+            makeEmptyPool(factory).toString();
+        } catch(UnsupportedOperationException uoe) {
+            return; // test not supported
         }
     }
 
-    private KeyedObjectPool _pool = null;
+    private void reset(final KeyedObjectPool pool, final FailingKeyedPoolableObjectFactory factory, final List expectedMethods) throws Exception {
+        pool.clear();
+        clear(factory, expectedMethods);
+        factory.reset();
+    }
+
+    private void clear(final FailingKeyedPoolableObjectFactory factory, final List expectedMethods) {
+        factory.getMethodCalls().clear();
+        expectedMethods.clear();
+    }
+
+    protected static class FailingKeyedPoolableObjectFactory implements KeyedPoolableObjectFactory {
+        private final List methodCalls = new ArrayList();
+        private int count = 0;
+        private boolean makeObjectFail;
+        private boolean activateObjectFail;
+        private boolean validateObjectFail;
+        private boolean passivateObjectFail;
+        private boolean destroyObjectFail;
+
+        public FailingKeyedPoolableObjectFactory() {
+        }
+
+        public void reset() {
+            count = 0;
+            getMethodCalls().clear();
+            setMakeObjectFail(false);
+            setActivateObjectFail(false);
+            setValidateObjectFail(false);
+            setPassivateObjectFail(false);
+            setDestroyObjectFail(false);
+        }
+
+        public List getMethodCalls() {
+            return methodCalls;
+        }
+
+        public int getCurrentCount() {
+            return count;
+        }
+
+        public void setCurrentCount(final int count) {
+            this.count = count;
+        }
+
+        public boolean isMakeObjectFail() {
+            return makeObjectFail;
+        }
+
+        public void setMakeObjectFail(boolean makeObjectFail) {
+            this.makeObjectFail = makeObjectFail;
+        }
+
+        public boolean isDestroyObjectFail() {
+            return destroyObjectFail;
+        }
+
+        public void setDestroyObjectFail(boolean destroyObjectFail) {
+            this.destroyObjectFail = destroyObjectFail;
+        }
+
+        public boolean isValidateObjectFail() {
+            return validateObjectFail;
+        }
+
+        public void setValidateObjectFail(boolean validateObjectFail) {
+            this.validateObjectFail = validateObjectFail;
+        }
+
+        public boolean isActivateObjectFail() {
+            return activateObjectFail;
+        }
+
+        public void setActivateObjectFail(boolean activateObjectFail) {
+            this.activateObjectFail = activateObjectFail;
+        }
+
+        public boolean isPassivateObjectFail() {
+            return passivateObjectFail;
+        }
+
+        public void setPassivateObjectFail(boolean passivateObjectFail) {
+            this.passivateObjectFail = passivateObjectFail;
+        }
+
+        public Object makeObject(final Object key) throws Exception {
+            final MethodCall call = new MethodCall("makeObject", key);
+            methodCalls.add(call);
+            int count = this.count++;
+            if (makeObjectFail) {
+                throw new PrivateException("makeObject");
+            }
+            final Integer obj = new Integer(count);
+            call.setReturned(obj);
+            return obj;
+        }
+
+        public void activateObject(final Object key, final Object obj) throws Exception {
+            methodCalls.add(new MethodCall("activateObject", key, obj));
+            if (activateObjectFail) {
+                throw new PrivateException("activateObject");
+            }
+        }
+
+        public boolean validateObject(final Object key, final Object obj) {
+            final MethodCall call = new MethodCall("validateObject", key, obj);
+            methodCalls.add(call);
+            if (validateObjectFail) {
+                throw new PrivateException("validateObject");
+            }
+            final boolean r = true;
+            call.returned(Boolean.valueOf(r));
+            return r;
+        }
+
+        public void passivateObject(final Object key, final Object obj) throws Exception {
+            methodCalls.add(new MethodCall("passivateObject", key, obj));
+            if (passivateObjectFail) {
+                throw new PrivateException("passivateObject");
+            }
+        }
+
+        public void destroyObject(final Object key, final Object obj) throws Exception {
+            methodCalls.add(new MethodCall("destroyObject", key, obj));
+            if (destroyObjectFail) {
+                throw new PrivateException("destroyObject");
+            }
+        }
+    }
 }

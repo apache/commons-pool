@@ -1,170 +1,163 @@
 /*
- * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons//pool/src/java/org/apache/commons/pool/ObjectPool.java,v 1.8 2003/04/24 01:22:36 rwaldhoff Exp $
- * $Revision: 1.8 $
- * $Date: 2003/04/24 01:22:36 $
- *
- * ====================================================================
- *
- * The Apache Software License, Version 1.1
- *
- * Copyright (c) 2001-2002 The Apache Software Foundation.  All rights
- * reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
- *
- * 3. The end-user documentation included with the redistribution, if
- *    any, must include the following acknowlegement:
- *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
- *    Alternately, this acknowlegement may appear in the software itself,
- *    if and wherever such third-party acknowlegements normally appear.
- *
- * 4. The names "The Jakarta Project", "Commons", and "Apache Software
- *    Foundation" must not be used to endorse or promote products derived
- *    from this software without prior written permission. For written
- *    permission, please contact apache@apache.org.
- *
- * 5. Products derived from this software may not be called "Apache"
- *    nor may "Apache" appear in their names without prior written
- *    permission of the Apache Group.
- *
- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
- * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
- * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- * ====================================================================
- *
- * This software consists of voluntary contributions made by many
- * individuals on behalf of the Apache Software Foundation.  For more
- * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
- *
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.apache.commons.pool;
+
+import java.util.NoSuchElementException;
 
 /**
  * A pooling interface.
  * <p>
  * <code>ObjectPool</code> defines a trivially simple pooling interface. The only 
- * required methods are {@link #borrowObject borrowObject} and {@link #returnObject returnObject}.
+ * required methods are {@link #borrowObject borrowObject}, {@link #returnObject returnObject}
+ * and {@link #invalidateObject invalidateObject}.
+ * </p>
  * <p>
  * Example of use:
- * <table border="1" cellspacing="0" cellpadding="3" align="center" bgcolor="#FFFFFF"><tr><td><pre>
- * Object obj = <font color="#0000CC">null</font>;
- * 
- * <font color="#0000CC">try</font> {
- *    obj = pool.borrowObject();
- *    <font color="#00CC00">//...use the object...</font>
- * } <font color="#0000CC">catch</font>(Exception e) {
- *    <font color="#00CC00">//...handle any exceptions...</font>
- * } <font color="#0000CC">finally</font> {
- *    <font color="#00CC00">// make sure the object is returned to the pool</font>
- *    <font color="#0000CC">if</font>(<font color="#0000CC">null</font> != obj) {
- *       pool.returnObject(obj);
+ * <pre style="border:solid thin; padding: 1ex;"
+ * > Object obj = <code style="color:#00C">null</code>;
+ *
+ * <code style="color:#00C">try</code> {
+ *     obj = pool.borrowObject();
+ *     <code style="color:#0C0">//...use the object...</code>
+ * } <code style="color:#00C">catch</code>(Exception e) {
+ *     <code style="color:#0C0">// invalidate the object</code>
+ *     pool.invalidateObject(obj);
+ *     <code style="color:#0C0">// do not return the object to the pool twice</code>
+ *     obj = <code style="color:#00C">null</code>;
+ * } <code style="color:#00C">finally</code> {
+ *     <code style="color:#0C0">// make sure the object is returned to the pool</code>
+ *     <code style="color:#00C">if</code>(<code style="color:#00C">null</code> != obj) {
+ *         pool.returnObject(obj);
  *    }
- * }</pre></td></tr></table>
- * See {@link org.apache.commons.pool.BaseObjectPool BaseObjectPool} for a simple base implementation.
+ * }</pre>
+ * </p>
+ *
+ * <p>See {@link BaseObjectPool} for a simple base implementation.</p>
  *
  * @author Rodney Waldhoff
- * @version $Revision: 1.8 $ $Date: 2003/04/24 01:22:36 $ 
- *
+ * @author Sandy McArthur
+ * @version $Revision$ $Date$
+ * @see PoolableObjectFactory
+ * @see ObjectPoolFactory
+ * @see KeyedObjectPool
+ * @see BaseObjectPool
+ * @since Pool 1.0
  */
 public interface ObjectPool {
     /**
-     * Obtain an instance from my pool.
-     * By contract, clients MUST return
-     * the borrowed instance using
-     * {@link #returnObject(java.lang.Object) returnObject}
-     * or a related method as defined in an implementation
-     * or sub-interface.
+     * Obtains an instance from this pool.
+     * <p>
+     * Instances returned from this method will have been either newly created with
+     * {@link PoolableObjectFactory#makeObject makeObject} or will be a previously idle object and
+     * have been activated with {@link PoolableObjectFactory#activateObject activateObject} and
+     * then validated with {@link PoolableObjectFactory#validateObject validateObject}.
+     * </p>
+     * <p>
+     * By contract, clients <strong>must</strong> return the borrowed instance using
+     * {@link #returnObject returnObject}, {@link #invalidateObject invalidateObject}, or a related method
+     * as defined in an implementation or sub-interface.
+     * </p>
      * <p>
      * The behaviour of this method when the pool has been exhausted
-     * is not specified (although it may be specified by implementations).
+     * is not strictly specified (although it may be specified by implementations).
+     * Older versions of this method would return <code>null</code> to indicate exhaustion,
+     * newer versions are encouraged to throw a {@link NoSuchElementException}.
+     * </p>
      *
-     * @return an instance from my pool.
+     * @return an instance from this pool.
+     * @throws IllegalStateException after {@link #close close} has been called on this pool.
+     * @throws Exception when {@link PoolableObjectFactory#makeObject makeObject} throws an exception.
+     * @throws NoSuchElementException when the pool is exhausted and cannot or will not return another instance.
      */
-    Object borrowObject() throws Exception;
+    Object borrowObject() throws Exception, NoSuchElementException, IllegalStateException;
 
     /**
-     * Return an instance to my pool.
-     * By contract, <i>obj</i> MUST have been obtained
+     * Return an instance to the pool.
+     * By contract, <code>obj</code> <strong>must</strong> have been obtained
      * using {@link #borrowObject() borrowObject}
      * or a related method as defined in an implementation
      * or sub-interface.
      *
      * @param obj a {@link #borrowObject borrowed} instance to be returned.
+     * @throws Exception <b>deprecated</b>: as of Pool 2.0 pool implementations should swallow
+     * exceptions that occur when a poolable object is returned. For future source compatability
+     * implementations of this method should not even declare that they throw any exception.
      */
     void returnObject(Object obj) throws Exception;
 
     /**
      * Invalidates an object from the pool
-     * By contract, <i>obj</i> MUST have been obtained
-     * using {@link #borrowObject() borrowObject}
+     * By contract, <code>obj</code> <strong>must</strong> have been obtained
+     * using {@link #borrowObject borrowObject}
      * or a related method as defined in an implementation
      * or sub-interface.
      * <p>
      * This method should be used when an object that has been borrowed
      * is determined (due to an exception or other problem) to be invalid.
-     * If the connection should be validated before or after borrowing,
-     * then the {@link PoolableObjectFactory#validateObject} method should be
-     * used instead.
+     * </p>
      *
-     * @param obj a {@link #borrowObject borrowed} instance to be returned.
+     * @param obj a {@link #borrowObject borrowed} instance to be disposed.
+     * @throws Exception <b>deprecated</b>: as of Pool 2.0 pool implementations should swallow
+     * exceptions that occur when a poolable object is returned. For future source compatability
+     * implementations of this method should not even declare that they throw any exception.
      */
     void invalidateObject(Object obj) throws Exception;
 
     /**
-     * Create an object using my {@link #setFactory factory} or other
-     * implementation dependent mechanism, and place it into the pool.
-     * addObject() is useful for "pre-loading" a pool with idle objects.
+     * Create an object using the {@link PoolableObjectFactory factory} or other
+     * implementation dependent mechanism, passivate it, and then place it in the idle object pool.
+     * <code>addObject</code> is useful for "pre-loading" a pool with idle objects.
      * (Optional operation).
+     *
+     * @throws Exception when {@link PoolableObjectFactory#makeObject} fails.
+     * @throws IllegalStateException after {@link #close} has been called on this pool.
+     * @throws UnsupportedOperationException when this pool cannot add new idle objects.
      */
-    void addObject() throws Exception;
+    void addObject() throws Exception, IllegalStateException, UnsupportedOperationException;
 
     /**
      * Return the number of instances
-     * currently idle in my pool (optional operation).  
+     * currently idle in this pool (optional operation).
      * This may be considered an approximation of the number
      * of objects that can be {@link #borrowObject borrowed}
      * without creating any new instances.
+     * Returns a negative value if this information is not available.
      *
-     * @return the number of instances currently idle in my pool
-     * @throws UnsupportedOperationException if this implementation does not support the operation
+     * @return the number of instances currently idle in this pool or a negative value if unsupported
+     * @throws UnsupportedOperationException <strong>deprecated</strong>: if this implementation does not support the operation
      */
     int getNumIdle() throws UnsupportedOperationException;
 
     /**
      * Return the number of instances
-     * currently borrowed from my pool 
+     * currently borrowed from this pool
      * (optional operation).
+     * Returns a negative value if this information is not available.
      *
-     * @return the number of instances currently borrowed in my pool
-     * @throws UnsupportedOperationException if this implementation does not support the operation
+     * @return the number of instances currently borrowed from this pool or a negative value if unsupported
+     * @throws UnsupportedOperationException <strong>deprecated</strong>: if this implementation does not support the operation
      */
     int getNumActive() throws UnsupportedOperationException;
 
     /**
      * Clears any objects sitting idle in the pool, releasing any
      * associated resources (optional operation).
+     * Idle objects cleared must be {@link PoolableObjectFactory#destroyObject(Object) destroyed}.
      *
      * @throws UnsupportedOperationException if this implementation does not support the operation
      */
@@ -172,14 +165,24 @@ public interface ObjectPool {
 
     /**
      * Close this pool, and free any resources associated with it.
+     * <p>
+     * Calling {@link #addObject} or {@link #borrowObject} after invoking
+     * this method on a pool will cause them to throw an
+     * {@link IllegalStateException}.
+     * </p>
+     *
+     * @throws Exception <strong>deprecated</strong>: implementations should silently fail if not all resources can be freed.
      */
     void close() throws Exception;
 
     /**
-     * Sets the {@link PoolableObjectFactory factory} I use
-     * to create new instances (optional operation).
-     * @param factory the {@link PoolableObjectFactory} I use to create new instances.
+     * Sets the {@link PoolableObjectFactory factory} this pool uses
+     * to create new instances (optional operation). Trying to change
+     * the <code>factory</code> after a pool has been used will frequently
+     * throw an {@link UnsupportedOperationException}. It is up to the pool
+     * implementation to determine when it is acceptable to call this method.
      *
+     * @param factory the {@link PoolableObjectFactory} used to create new instances.
      * @throws IllegalStateException when the factory cannot be set at this time
      * @throws UnsupportedOperationException if this implementation does not support the operation
      */

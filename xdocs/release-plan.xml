@@ -1,0 +1,136 @@
+<?xml version="1.0"?>
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<document>
+	<properties>
+		<title>Release Plan</title>
+		<author email="commons-dev@jakarta.apache.org">Commons Documentation Team</author>
+		<revision>$Id$</revision>
+	</properties>
+	<body>
+		<section name="Release Plan for Pool 1.2">
+<subsection name="Administrivia">
+<p>
+This document describes a plan for a 1.2 release of the
+Jakarta-Commons Pool component (for the remainder
+of this document, simply "Pool").  Per the
+<a href="http://jakarta.apache.org/site/decisions.html">
+Jakarta/ASF guidelines</a>, this
+document doesn't mean anything until accepted by the
+relevant committer community via a lazy majority vote
+(hereafter, simply "lazy majority").  Once accepted, it may
+be replaced by an alternative plan, again subject to lazy
+majority approval.
+</p>
+<p>
+Non-binding votes (votes cast by those outside the relevant
+committer community) are welcome, but only binding votes
+are significant for decision making purposes.
+</p>
+</subsection>
+
+<subsection name="Objective">
+<p>The objective of the 1.2 release of Pool is to
+provide a stable and robust release with the intention of 
+providing a stable foundation for the further evolution of 
+the Pool component.</p>
+</subsection>
+
+<subsection name="Release Manager">
+<p><ul><li>Dirk Verbeeck</li></ul></p>
+</subsection>
+
+<subsection name="Release Process">
+<p>The <a href="http://jakarta.apache.org/commons/releases/index.html">
+Jakarta Commons release process</a> will be followed.</p>
+</subsection>
+
+<subsection name="Timeline:">
+<p>
+(All days ending at 23:59:59 GMT in case of dispute.)
+<ul>
+<li><b>Preparation Period</b>:
+  17 May 2004 - 20 May 2004
+  <br/>
+  During this period, all issues preventing building a
+  release candidate should be a addressed. All other 
+  updates (documentation and website) are not blocking.
+</li>
+<br/>
+<li><b>Review Period</b>:
+  21 May 2004 - 28 May 2004
+  <br/>
+  During the Review Period specific design, functional and
+  contract changes to Pool will be considered on the
+  Jakarta-Commons mailing list, using the following
+  process:
+  <ol>
+  <li>Any developer or committer that would like to see
+      a specific change (or group of changes) enacted or
+      rolled back will suggest it on the Jakarta-Commons
+      mailing list (jakarta-commons@jakarta.apache.org).
+  </li>
+  <li>Any interested committer that opposes a given change
+      (or group of changes) is obligated to indicate this
+      disapproval on the list during the Review Period.
+  </li>
+  <li>We will seek, but not strictly require consensus on
+      each decision point.  If consensus cannot be reached,
+      any committer may call for a vote to resolve the
+      issue via a lazy majority vote.
+  </li>
+  </ol>
+  The Review Period may be extended by one week (at a time)
+  given lazy majority approval, in case issues still need
+  to be resolved.
+  <br/><br/>
+  To facilitate the review process Release Candidates 
+  (RC1, RC2, ...) will be provided at the start of the 
+  review period and when mayor issues are resolved.
+</li>
+<br/>
+<li><b>Implementation Period</b>:
+  29 May 2004 - 30 May 2004
+  <br/>
+  (assuming the Review Period is not extended)
+  <br/><br/>
+  During this period, any remaining implementation, testing
+  and documentation will be completed.  No new features
+  or "public" interface changes will be considered
+  in-scope at this time (short of a lazy-majority
+  approved revised release plan or any "showstopper"
+  defects).
+  <br/><br/>
+  At the end of the Implementation Period, a formal
+  release vote will be called, subject to lazy
+  approval.
+  <br/><br/>
+  A formal release vote may be called before the end 
+  of the implementation period, but after the end of 
+  the Review Period, if appropriate.
+  (As soon as all remaining issues are resolved)
+</li>
+<br/>
+<li><b>Release</b>:
+  31 May 2004
+</li>
+</ul>
+</p>
+</subsection>
+</section>
+</body>
+</document>
