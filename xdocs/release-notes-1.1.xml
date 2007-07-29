@@ -18,7 +18,7 @@
 <document>
    <properties>
       <title>Release notes for Commons-Pool 1.1</title>
-      <author email="commons-dev@jakarta.apache.org">Commons Documentation Team</author>
+      <author email="dev@commons.apache.org">Commons Documentation Team</author>
       <revision>$Id$</revision>
    </properties>
 
