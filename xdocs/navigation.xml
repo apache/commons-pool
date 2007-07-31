@@ -15,7 +15,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<!DOCTYPE org.apache.commons.menus SYSTEM 'http://jakarta.apache.org/commons/build/maven-build.dtd'>
+<!DOCTYPE org.apache.commons.menus SYSTEM 'http://commons.apache.org/build/maven-build.dtd'>
 <project name="Commons Pool">
     <title>Commons Pool</title>
     <organizationLogo href="/images/jakarta-logo-blue.gif">
@@ -23,14 +23,14 @@
   	</organizationLogo>
     <body>
 	    <links>
-	      <item name="Jakarta Commons"                   
-	            href="http://jakarta.apache.org/commons/"/>
+	      <item name="Apache Commons"                   
+	            href="http://commons.apache.org/"/>
 	    </links>
     
         <menu name="Commons&#xA0;Pool">
             <item name="Overview"                      href="/index.html" />
-            <item name="Javadoc (1.2 release)"         href="http://jakarta.apache.org/commons/pool/api-1.2/index.html"/>
-            <item name="Javadoc (1.3 release)"         href="http://jakarta.apache.org/commons/pool/api-1.3/index.html"/>
+            <item name="Javadoc (1.2 release)"         href="http://commons.apache.org/pool/api-1.2/index.html"/>
+            <item name="Javadoc (1.3 release)"         href="http://commons.apache.org/pool/api-1.3/index.html"/>
             <item name="Javadoc (2.0-SNAPSHOT)"        href="apidocs/index.html"/>
             <item name="Developers&#xA0;Guide"         href="/guide/index.html" collapse="true">
                 <item name="Class&#xA0;Diagrams"       href="/guide/classdiagrams.html"/>

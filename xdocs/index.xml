@@ -51,13 +51,13 @@
       <section name="Features">
         <p>
             The 
-            <a href="http://jakarta.apache.org/commons/pool/apidocs/org/apache/commons/pool/package-summary.html">org.apache.commons.pool</a> 
+            <a href="http://commons.apache.org/pool/apidocs/org/apache/commons/pool/package-summary.html">org.apache.commons.pool</a> 
             package defines a handful of pooling interfaces and some base classes 
             that may be useful when creating new pool implementations.
         </p>
         <subsection name="ObjectPool">
           <p>
-             <a href="http://jakarta.apache.org/commons/pool/apidocs/org/apache/commons/pool/ObjectPool.html"><code>ObjectPool</code></a>
+             <a href="http://commons.apache.org/pool/apidocs/org/apache/commons/pool/ObjectPool.html"><code>ObjectPool</code></a>
              defines a trivially simple pooling interface:
           </p>
 <source>
@@ -72,13 +72,13 @@ public interface ObjectPool {
             implementations interchangeably. 
           </p>           
           <p>
-             <a href="http://jakarta.apache.org/commons/pool/apidocs/org/apache/commons/pool/BaseObjectPool.html"><code>BaseObjectPool</code></a>
+             <a href="http://commons.apache.org/pool/apidocs/org/apache/commons/pool/BaseObjectPool.html"><code>BaseObjectPool</code></a>
              provides an abstract base implementation of <code>ObjectPool</code>. Clients are
              encouraged but not required to extend <code>BaseObjectPool</code> for new 
              <code>ObjectPool</code> implementations.
           </p>
           <p>
-             <a href="http://jakarta.apache.org/commons/pool/apidocs/org/apache/commons/pool/KeyedObjectPool.html"><code>KeyedObjectPool</code></a>
+             <a href="http://commons.apache.org/pool/apidocs/org/apache/commons/pool/KeyedObjectPool.html"><code>KeyedObjectPool</code></a>
              defines a similiar interface for pools composed of heterogenous objects:
           </p>
 <source>
@@ -92,7 +92,7 @@ public interface KeyedObjectPool {
           <p>
              The <i>Pool</i> package makes it possible separate the way in which instances
              are pooled from the way in which instances are created and destroyed. 
-             <a href="http://jakarta.apache.org/commons/pool/apidocs/org/apache/commons/pool/PoolableObjectFactory.html"><code>PoolableObjectFactory</code></a>
+             <a href="http://commons.apache.org/pool/apidocs/org/apache/commons/pool/PoolableObjectFactory.html"><code>PoolableObjectFactory</code></a>
              supports this by providing a generic inteface for the lifecycle of a pooled object:
           </p>
 <source>
@@ -111,12 +111,12 @@ public interface PoolableObjectFactory {
              from the kinds of objects that are pooled.  
           </p>           
           <p>
-             <a href="http://jakarta.apache.org/commons/pool/apidocs/org/apache/commons/pool/BasePoolableObjectFactory.html"><code>BasePoolableObjectFactory</code></a>
+             <a href="http://commons.apache.org/pool/apidocs/org/apache/commons/pool/BasePoolableObjectFactory.html"><code>BasePoolableObjectFactory</code></a>
              provides an abstract base implementation of <code>PoolableObjectFactory</code> that
              makes implementations a snap.
           </p>
           <p>
-             <a href="http://jakarta.apache.org/commons/pool/apidocs/org/apache/commons/pool/KeyedPoolableObjectFactory.html"><code>KeyedPoolableObjectFactory</code></a>
+             <a href="http://commons.apache.org/pool/apidocs/org/apache/commons/pool/KeyedPoolableObjectFactory.html"><code>KeyedPoolableObjectFactory</code></a>
              defines a similiar interface for <code>KeyedObjectPool</code>s:
           </p>
 <source>
@@ -129,41 +129,41 @@ public interface KeyedPoolableObjectFactory {
 }
 </source>           
           <p>
-             <a href="http://jakarta.apache.org/commons/pool/apidocs/org/apache/commons/pool/BaseKeyedPoolableObjectFactory.html"><code>BaseKeyedPoolableObjectFactory</code></a>
+             <a href="http://commons.apache.org/pool/apidocs/org/apache/commons/pool/BaseKeyedPoolableObjectFactory.html"><code>BaseKeyedPoolableObjectFactory</code></a>
              provides an abstract base implementation of <code>KeyedPoolableObjectFactory</code> that
              makes implementations a snap.
           </p>
         </subsection>
         <p>
             The 
-            <a href="http://jakarta.apache.org/commons/pool/apidocs/org/apache/commons/pool/impl/package-summary.html">org.apache.commons.pool.impl</a> 
+            <a href="http://commons.apache.org/pool/apidocs/org/apache/commons/pool/impl/package-summary.html">org.apache.commons.pool.impl</a> 
             package provides some <i>Pool</i> implementations.
         </p>
         <subsection name="StackObjectPool">
           <p>
-             <a href="http://jakarta.apache.org/commons/pool/apidocs/org/apache/commons/pool/impl/StackObjectPool.html"><code>StackObjectPool</code></a>
+             <a href="http://commons.apache.org/pool/apidocs/org/apache/commons/pool/impl/StackObjectPool.html"><code>StackObjectPool</code></a>
              will pool a finite number of "idle" instances, but will create new instances a needed in 
              order to support high demand.
           </p>
           <p>
-             <a href="http://jakarta.apache.org/commons/pool/apidocs/org/apache/commons/pool/impl/StackKeyedObjectPool.html"><code>StackKeyedObjectPool</code></a>
+             <a href="http://commons.apache.org/pool/apidocs/org/apache/commons/pool/impl/StackKeyedObjectPool.html"><code>StackKeyedObjectPool</code></a>
              offers the same behavior for keyed pools.
           </p>
         </subsection>
         <subsection name="GenericObjectPool">
           <p>
-             <a href="http://jakarta.apache.org/commons/pool/apidocs/org/apache/commons/pool/impl/GenericObjectPool.html"><code>GenericObjectPool</code></a>
+             <a href="http://commons.apache.org/pool/apidocs/org/apache/commons/pool/impl/GenericObjectPool.html"><code>GenericObjectPool</code></a>
              provides a wide variety of configuration options, including the ablity to cap the number of idle or
              active instances, to evict instances as they sit idle in the pool, etc.
           </p>
           <p>
-             <a href="http://jakarta.apache.org/commons/pool/apidocs/org/apache/commons/pool/impl/GenericKeyedObjectPool.html"><code>GenericKeyedObjectPool</code></a>
+             <a href="http://commons.apache.org/pool/apidocs/org/apache/commons/pool/impl/GenericKeyedObjectPool.html"><code>GenericKeyedObjectPool</code></a>
              offers the same behavior for keyed pools.
           </p>
         </subsection>
         <subsection name="SoftReferenceObjectPool">
           <p>
-             <a href="http://jakarta.apache.org/commons/pool/apidocs/org/apache/commons/pool/impl/SoftReferenceObjectPool.html"><code>SoftReferenceObjectPool</code></a>
+             <a href="http://commons.apache.org/pool/apidocs/org/apache/commons/pool/impl/SoftReferenceObjectPool.html"><code>SoftReferenceObjectPool</code></a>
              can grow as needed, but allows the garbage collector to evict idle instances from the pool as needed. 
           </p>
         </subsection>

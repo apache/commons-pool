@@ -39,7 +39,7 @@
       <property name="classpath" value="${cp}:${junit.jar}"/>
 
       <property name="name" value="commons-pool"/>
-      <property name="title" value="Jakarta Commons Object Pooling Package"/>
+      <property name="title" value="Apache Commons Object Pooling Package"/>
       <property name="version" value="Nightly-${DSTAMP}${TSTAMP}"/>
       <property name="package" value="org.apache.commons.pool.*"/>
 
