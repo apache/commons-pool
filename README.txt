@@ -1,2 +1,2 @@
-See http://jakarta.apache.org/commons/pool/ for additional and 
+See http://commons.apache.org/pool/ for additional and 
 up-to-date information on Commons Pool.

@@ -36,7 +36,7 @@
          <p>
             The latest release binary and source releases are always available on the
             <a href="http://jakarta.apache.org/site/downloads/downloads_commons-pool.cgi">
-            Jakarta Commons Pool Downloads page</a>.
+            Apache Commons Pool Downloads page</a>.
          </p>
          <p>
             Commons-pool 2.0 only depends at runtime on a Java 1.4 or better JVM.
@@ -46,7 +46,7 @@
          </p>
          <p>
             Commons-pool 1.2 depends at runtime on
-            <a href="http://jakarta.apache.org/commons/collections/">commons-collections</a>.
+            <a href="http://commons.apache.org/collections/">commons-collections</a>.
          </p>
          <p>
             Older releases are retained by the Apache Software Foundation but are 
