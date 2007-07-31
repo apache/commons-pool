@@ -13,8 +13,8 @@
     <description xml:lang="en">Commons Object Pooling Library</description>
     <repository>
       <SVNRepository>
-        <browse rdf:resource="http://svn.apache.org/repos/asf/jakarta/commons/proper/pool/trunk"/>
-        <location rdf:resource="http://svn.apache.org/repos/asf/jakarta/commons/proper/pool"/>
+        <browse rdf:resource="http://svn.apache.org/repos/asf/commons/proper/pool/trunk"/>
+        <location rdf:resource="http://svn.apache.org/repos/asf/commons/proper/pool"/>
       </SVNRepository>
     </repository>
     <release>
