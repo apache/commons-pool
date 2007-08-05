@@ -37,7 +37,7 @@
             </item>
             <item name="Examples"                      href="/examples.html"/>
             <item name="Downloads"                     href="/downloads.html"/>
-            <item name="Wiki"                          href="http://wiki.apache.org/jakarta-commons/Pool"/>
+            <item name="Wiki"                          href="http://wiki.apache.org/commons/Pool"/>
         </menu>
         
         &commons;
