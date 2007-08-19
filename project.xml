@@ -27,8 +27,8 @@
   <description>Commons Object Pooling Library</description>
   <logo>/images/pool-logo-white.png</logo>
   
-  <url>http://commons.apache.org/${pom.artifactId.substring(8)}/</url>
-  <package>org.apache.commons.${pom.artifactId.substring(8)}</package>
+  <url>http://commons.apache.org/pool/</url>
+  <package>org.apache.commons.pool</package>
 
   <organization>
     <name>The Apache Software Foundation</name>
@@ -47,12 +47,12 @@
   <gumpRepositoryId>commons</gumpRepositoryId>
   <issueTrackingUrl>http://issues.apache.org/jira/</issueTrackingUrl>
   <siteAddress>people.apache.org</siteAddress>
-  <siteDirectory>/www/commons.apache.org/${pom.artifactId.substring(8)}/</siteDirectory>
-  <distributionDirectory>/www/people.apache.org/builds/commons/${pom.artifactId.substring(8)}/</distributionDirectory>
+  <siteDirectory>/www/commons.apache.org/pool/</siteDirectory>
+  <distributionDirectory>/www/people.apache.org/builds/commons/pool/</distributionDirectory>
   
   <repository>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/${pom.artifactId.substring(8)}/trunk</connection>
-    <url>http://svn.apache.org/repos/asf/commons/proper/${pom.artifactId.substring(8)}/trunk</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/pool/trunk</connection>
+    <url>http://svn.apache.org/repos/asf/commons/proper/pool/trunk</url>
   </repository>
   
   <mailingLists>
