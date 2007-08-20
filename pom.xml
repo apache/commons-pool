@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
-    <version>1</version>
+    <version>4</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>commons-pool</groupId>
@@ -41,7 +41,7 @@
   </issueManagement>
 
   <scm>
-    <connection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/pool/trunk</connection>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/pool/trunk</connection>
     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/pool/trunk</developerConnection>
     <url>http://svn.apache.org/viewvc/commons/proper/pool/trunk</url>
   </scm>
@@ -92,6 +92,12 @@
     <developer>
       <name>Sandy McArthur</name>
       <id>sandymac</id>
+      <email></email>
+      <organization>Apache Software Foundation</organization>
+    </developer>
+    <developer>
+      <name>Phil Steitz</name>
+      <id>psteitz</id>
       <email></email>
       <organization>Apache Software Foundation</organization>
     </developer>
