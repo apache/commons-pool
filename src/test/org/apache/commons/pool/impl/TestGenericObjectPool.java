@@ -25,8 +25,11 @@ import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.TestObjectPool;
 import org.apache.commons.pool.PoolUtils;
 import org.apache.commons.pool.TestBaseObjectPool;
+import org.apache.commons.pool.VisitTracker;
+import org.apache.commons.pool.VisitTrackerFactory;
 
 import java.util.NoSuchElementException;
+import java.util.Random;
 
 /**
  * @author Rodney Waldhoff
@@ -47,6 +50,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
        GenericObjectPool pool = new GenericObjectPool(new SimpleFactory());
        pool.setMaxActive(mincap);
        pool.setMaxIdle(mincap);
+       pool.setLifo(false);
        return pool;
     }
 
@@ -122,13 +126,22 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.close();
     }
 
-    public void testEvict() throws Exception {
+    public void testEvictLIFO() throws Exception {
+        checkEvict(true);   
+    }
+    
+    public void testEvictFIFO() throws Exception {
+        checkEvict(false);
+    }
+    
+    public void checkEvict(boolean lifo) throws Exception {
         // yea this is hairy but it tests all the code paths in GOP.evict()
         final SimpleFactory factory = new SimpleFactory();
         final GenericObjectPool pool = new GenericObjectPool(factory);
         pool.setSoftMinEvictableIdleTimeMillis(10);
         pool.setMinIdle(2);
         pool.setTestWhileIdle(true);
+        pool.setLifo(lifo);
         PoolUtils.prefill(pool, 5);
         pool.evict();
         factory.setEvenValid(false);
@@ -145,6 +158,169 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         Thread.sleep(125);
         pool.evict();
         assertEquals(2, pool.getNumIdle());
+    }
+    
+    /**
+     * Test to make sure evictor visits least recently used objects first,
+     * regardless of FIFO/LIFO 
+     * 
+     * JIRA: POOL-86
+     */ 
+    public void testEvictionOrder() throws Exception {
+        checkEvictionOrder(false);
+        checkEvictionOrder(true);
+    }
+    
+    private void checkEvictionOrder(boolean lifo) throws Exception {
+        SimpleFactory factory = new SimpleFactory();
+        GenericObjectPool pool = new GenericObjectPool(factory);
+        pool.setNumTestsPerEvictionRun(2);
+        pool.setMinEvictableIdleTimeMillis(100);
+        pool.setLifo(lifo);
+        for (int i = 0; i < 5; i++) {
+            pool.addObject();
+            Thread.sleep(100);
+        }
+        // Order, oldest to youngest, is "0", "1", ...,"4"
+        pool.evict(); // Should evict "0" and "1"
+        Object obj = pool.borrowObject();
+        assertTrue("oldest not evicted", !obj.equals("0"));
+        assertTrue("second oldest not evicted", !obj.equals("1"));
+        // 2 should be next out for FIFO, 4 for LIFO
+        assertEquals("Wrong instance returned", lifo ? "4" : "2" , obj); 
+        
+        // Two eviction runs in sequence
+        factory = new SimpleFactory();
+        pool = new GenericObjectPool(factory);
+        pool.setNumTestsPerEvictionRun(2);
+        pool.setMinEvictableIdleTimeMillis(100);
+        pool.setLifo(lifo);
+        for (int i = 0; i < 5; i++) {
+            pool.addObject();
+            Thread.sleep(100);
+        }
+        pool.evict(); // Should evict "0" and "1"
+        pool.evict(); // Should evict "2" and "3"
+        obj = pool.borrowObject();
+        assertEquals("Wrong instance remaining in pool", "4", obj);     
+    }
+    
+    /**
+     * Verifies that the evictor visits objects in expected order
+     * and frequency. 
+     */
+    public void testEvictorVisiting() throws Exception {
+        checkEvictorVisiting(true);
+        checkEvictorVisiting(false);  
+    }
+    
+    private void checkEvictorVisiting(boolean lifo) throws Exception {
+        VisitTrackerFactory factory = new VisitTrackerFactory();
+        GenericObjectPool pool = new GenericObjectPool(factory);
+        pool.setNumTestsPerEvictionRun(2);
+        pool.setMinEvictableIdleTimeMillis(-1);
+        pool.setTestWhileIdle(true);
+        pool.setLifo(lifo);
+        pool.setTestOnReturn(false);
+        pool.setTestOnBorrow(false);
+        for (int i = 0; i < 8; i++) {
+            pool.addObject();
+        }
+        pool.evict(); // Visit oldest 2 - 0 and 1
+        Object obj = pool.borrowObject();
+        pool.returnObject(obj);
+        obj = pool.borrowObject();
+        pool.returnObject(obj);
+        //  borrow, return, borrow, return 
+        //  FIFO will move 0 and 1 to end
+        //  LIFO, 7 out, then in, then out, then in
+        pool.evict();  // Should visit 2 and 3 in either case
+        for (int i = 0; i < 8; i++) {
+            VisitTracker tracker = (VisitTracker) pool.borrowObject();    
+            if (tracker.getId() >= 4) {
+                assertEquals("Unexpected instance visited " + tracker.getId(),
+                        0, tracker.getValidateCount());
+            } else {
+                assertEquals("Instance " +  tracker.getId() + 
+                        " visited wrong number of times.",
+                        1, tracker.getValidateCount());
+            }
+        } 
+
+        factory = new VisitTrackerFactory();
+        pool = new GenericObjectPool(factory);
+        pool.setNumTestsPerEvictionRun(3);
+        pool.setMinEvictableIdleTimeMillis(-1);
+        pool.setTestWhileIdle(true);
+        pool.setLifo(lifo);
+        pool.setTestOnReturn(false);
+        pool.setTestOnBorrow(false);
+        for (int i = 0; i < 8; i++) {
+            pool.addObject();
+        }
+        pool.evict(); // 0, 1, 2
+        pool.evict(); // 3, 4, 5
+        obj = pool.borrowObject();
+        pool.returnObject(obj);
+        obj = pool.borrowObject();
+        pool.returnObject(obj);
+        obj = pool.borrowObject();
+        pool.returnObject(obj);
+        // borrow, return, borrow, return 
+        //  FIFO 3,4,5,6,7,0,1,2
+        //  LIFO 7,6,5,4,3,2,1,0
+        // In either case, pointer should be at 6
+        pool.evict();
+        // Should hit 6,7,0 - 0 for second time
+        for (int i = 0; i < 8; i++) {
+            VisitTracker tracker = (VisitTracker) pool.borrowObject();    
+            if (tracker.getId() != 0) {
+                assertEquals("Instance " +  tracker.getId() + 
+                        " visited wrong number of times.",
+                        1, tracker.getValidateCount());
+            } else {
+                assertEquals("Instance " +  tracker.getId() + 
+                        " visited wrong number of times.",
+                        2, tracker.getValidateCount());
+            }
+        } 
+        // Randomly generate a pools with random numTests
+        // and make sure evictor cycles through elements appropriately
+        int[] smallPrimes = {2, 3, 5, 7};
+        Random random = new Random();
+        random.setSeed(System.currentTimeMillis());
+        pool.setMaxIdle(-1);
+        for (int i = 0; i < 4; i++) {
+            pool.setNumTestsPerEvictionRun(smallPrimes[i]);
+            for (int j = 0; j < 5; j++) {
+                pool.clear();
+                int instanceCount = 10 + random.nextInt(20);
+                for (int k = 0; k < instanceCount; k++) {
+                    pool.addObject();
+                }
+
+                // Execute a random number of evictor runs
+                int runs = 10 + random.nextInt(50);
+                for (int k = 0; k < runs; k++) {
+                    pool.evict();
+                }
+
+                // Number of times evictor should have cycled through the pool
+                int cycleCount = (runs * pool.getNumTestsPerEvictionRun())
+                / instanceCount;
+
+                // Look at elements and make sure they are visited cycleCount
+                // or cycleCount + 1 times
+                VisitTracker tracker = null;
+                int visitCount = 0;
+                for (int k = 0; k < instanceCount; k++) {
+                    tracker = (VisitTracker) pool.borrowObject(); 
+                    visitCount = tracker.getValidateCount();                  
+                    assertTrue(visitCount >= cycleCount && 
+                            visitCount <= cycleCount + 1);
+                }
+            }
+        }
     }
 
     public void testExceptionOnPassivateDuringReturn() throws Exception {
@@ -820,12 +996,27 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     public void testFIFO() throws Exception {
+        pool.setLifo(false);
         pool.addObject(); // "0"
         pool.addObject(); // "1"
         pool.addObject(); // "2"
         assertEquals("Oldest", "0", pool.borrowObject());
         assertEquals("Middle", "1", pool.borrowObject());
         assertEquals("Youngest", "2", pool.borrowObject());
+        assertEquals("new-3", "3", pool.borrowObject());
+        pool.returnObject("r");
+        assertEquals("returned", "r", pool.borrowObject());
+        assertEquals("new-4", "4", pool.borrowObject());
+    }
+    
+    public void testLIFO() throws Exception {
+        pool.setLifo(true);
+        pool.addObject(); // "0"
+        pool.addObject(); // "1"
+        pool.addObject(); // "2"
+        assertEquals("Youngest", "2", pool.borrowObject());
+        assertEquals("Middle", "1", pool.borrowObject());
+        assertEquals("Oldest", "0", pool.borrowObject());
         assertEquals("new-3", "3", pool.borrowObject());
         pool.returnObject("r");
         assertEquals("returned", "r", pool.borrowObject());

@@ -19,13 +19,10 @@ package org.apache.commons.pool.impl;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.LinkedList;
-import java.util.HashSet;
 import java.util.TimerTask;
 
 import org.apache.commons.pool.BaseKeyedObjectPool;
@@ -98,7 +95,7 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  * <p>
  * Optionally, one may configure the pool to examine and possibly evict objects as they
  * sit idle in the pool.  This is performed by an "idle object eviction" thread, which
- * runs asychronously.  The idle object eviction thread may be configured using the
+ * runs asynchronously.  The idle object eviction thread may be configured using the
  * following attributes:
  * <ul>
  *  <li>
@@ -267,6 +264,16 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      */
     public static final int DEFAULT_MIN_IDLE = 0;
     
+    /**
+     * The default LIFO status. True means that borrowObject returns the
+     * most recently used ("last in") idle object in a pool (if there are
+     * idle instances available).  False means that pools behave as FIFO
+     * queues - objects are taken from idle object pools in the order that
+     * they are returned.
+     * @see #setLifo
+     */
+    public static final boolean DEFAULT_LIFO = true;
+    
     //--- constructors -----------------------------------------------
 
     /**
@@ -433,6 +440,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         _testWhileIdle = testWhileIdle;
 
         _poolMap = new HashMap();
+        _poolList = new CursorableLinkedList();
 
         startEvictor(_timeBetweenEvictionRunsMillis);
     }
@@ -783,6 +791,28 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         setMinEvictableIdleTimeMillis(conf.minEvictableIdleTimeMillis);
         setTimeBetweenEvictionRunsMillis(conf.timeBetweenEvictionRunsMillis);
     }
+    
+    /**
+     * Whether or not the idle object pools act as LIFO queues. True means
+     * that borrowObject returns the most recently used ("last in") idle object
+     * in a pool (if there are idle instances available).  False means that
+     * the pools behave as FIFO queues - objects are taken from idle object
+     * pools in the order that they are returned.
+     */
+     public synchronized boolean getLifo() {
+         return _lifo;
+     }
+
+     /**
+      * Sets the LIFO property of the pools. True means that borrowObject returns
+      * the most recently used ("last in") idle object in a pool (if there are
+      * idle instances available).  False means that the pools behave as FIFO
+      * queues - objects are taken from idle object pools in the order that
+      * they are returned.
+      */
+     public synchronized void setLifo(boolean lifo) {
+         this._lifo = lifo;
+     }
 
     //-- ObjectPool methods ------------------------------------------
 
@@ -795,6 +825,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             if(null == pool) {
                 pool = new ObjectQueue();
                 _poolMap.put(key,pool);
+                _poolList.add(key);
             }
             ObjectTimestampPair pair = null;
             // if there are any sleeping, just grab one of those
@@ -902,7 +933,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         for(Iterator entries = _poolMap.entrySet().iterator(); entries.hasNext(); ) {
             final Map.Entry entry = (Map.Entry)entries.next();
             final Object key = entry.getKey();
-            final LinkedList list = ((ObjectQueue)(entry.getValue())).queue;
+            final CursorableLinkedList list = ((ObjectQueue)(entry.getValue())).queue;
             for(Iterator it = list.iterator(); it.hasNext(); ) {
                 try {
                     _factory.destroyObject(key,((ObjectTimestampPair)(it.next())).value);
@@ -913,9 +944,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             }
         }
         _poolMap.clear();
-        if (_recentlyEvictedKeys != null) {
-            _recentlyEvictedKeys.clear();
-        }
+        _poolList.clear();
         _totalIdle = 0;
         notifyAll();
     }
@@ -930,7 +959,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         final Map map = new TreeMap();
         for (Iterator keyiter = _poolMap.keySet().iterator(); keyiter.hasNext();) {
             final Object key = keyiter.next();
-            final LinkedList list = ((ObjectQueue)_poolMap.get(key)).queue;
+            final CursorableLinkedList list = ((ObjectQueue)_poolMap.get(key)).queue;
             for (Iterator it = list.iterator(); it.hasNext();) {
                 // each item into the map uses the objectimestamppair object
                 // as the key.  It then gets sorted based on the timstamp field
@@ -951,7 +980,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             // key references is the key of the list it belongs to.
             Object key = entry.getValue();
             ObjectTimestampPair pairTimeStamp = (ObjectTimestampPair) entry.getKey();
-            final LinkedList list = ((ObjectQueue)(_poolMap.get(key))).queue;
+            final CursorableLinkedList list = 
+                ((ObjectQueue)(_poolMap.get(key))).queue;
             list.remove(pairTimeStamp);
 
             try {
@@ -962,6 +992,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             // if that was the last object for that key, drop that pool
             if (list.isEmpty()) {
                 _poolMap.remove(key);
+                _poolList.remove(key);
             }
             _totalIdle--;
             itemsToRemove--;
@@ -979,6 +1010,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         if(null == pool) {
             return;
         } else {
+            _poolList.remove(key);
             for(Iterator it = pool.queue.iterator(); it.hasNext(); ) {
                 try {
                     _factory.destroyObject(key,((ObjectTimestampPair)(it.next())).value);
@@ -989,6 +1021,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 _totalIdle--;
             }
         }
+        
         notifyAll();
     }
 
@@ -1068,14 +1101,21 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         if(null == pool) {
             pool = new ObjectQueue();
             _poolMap.put(key, pool);
+            _poolList.add(key);
         }
         pool.decrementActiveCount();
         // if there's no space in the pool, flag the object for destruction
-        // else if we passivated succesfully, return it to the pool
+        // else if we passivated successfully, return it to the pool
         if(_maxIdle >= 0 && (pool.queue.size() >= _maxIdle)) {
             shouldDestroy = true;
         } else if(success) {
-            pool.queue.addLast(new ObjectTimestampPair(obj));
+            // borrowObject always takes the first element from the queue,
+            // so for LIFO, push on top, FIFO add to end
+            if (_lifo) {
+                pool.queue.addFirst(new ObjectTimestampPair(obj)); 
+            } else {
+                pool.queue.addLast(new ObjectTimestampPair(obj));
+            }
             _totalIdle++;
         }
         notifyAll();
@@ -1099,6 +1139,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             if(null == pool) {
                 pool = new ObjectQueue();
                 _poolMap.put(key, pool);
+                _poolList.add(key);
             }
             pool.decrementActiveCount();
             notifyAll(); // _totalActive has changed
@@ -1137,13 +1178,20 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         if(null == pool) {
             pool = new ObjectQueue();
             _poolMap.put(key, pool);
+            _poolList.add(key);
         }
         // if there's no space in the pool, flag the object for destruction
         // else if we passivated succesfully, return it to the pool
         if(_maxIdle >= 0 && (pool.queue.size() >= _maxIdle)) {
             shouldDestroy = true;
         } else if(success) {
-            pool.queue.addLast(new ObjectTimestampPair(obj));
+            // borrowObject always takes the first element from the queue,
+            // so for LIFO, push on top, FIFO add to end
+            if (_lifo) {
+                pool.queue.addFirst(new ObjectTimestampPair(obj)); 
+            } else {
+                pool.queue.addLast(new ObjectTimestampPair(obj));
+            }
             _totalIdle++;
         }
         notifyAll();
@@ -1170,6 +1218,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         if (null == pool) {
             pool = new ObjectQueue();
             _poolMap.put(key,pool);
+            _poolList.add(key);
         }
 
         if (populateImmediately) {
@@ -1187,6 +1236,14 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         super.close();
         synchronized (this) {
             clear();
+            if(null != _evictionCursor) {
+                _evictionCursor.close();
+                _evictionCursor = null;
+            }
+            if(null != _evictionKeyCursor) {
+                _evictionKeyCursor.close();
+                _evictionKeyCursor = null;
+            }
             if (null != _evictor) {
                 _evictor.cancel();
                 _evictor = null;
@@ -1205,99 +1262,176 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     }
 
     /**
-     * Remove any idle object that meet the criteria for eviction.
+     * <p>Perform <code>numTests</code> idle object eviction tests, evicting
+     * examined objects that meet the criteria for eviction. If 
+     * <code>testWhileIdle</code> is true, examined objects are validated
+     * when visited (and removed if invalid); otherwise only objects that
+     * have been idle for more than <code>minEvicableIdletimeMillis</code>
+     * are removed.</p>
+     * 
+     * <p>Successive activations of this method examine objects in keyed pools
+     * in sequence, cycling through the keys and examining objects in
+     * oldest-to-youngest order within the keyed pools.</p>
      *
      * @throws Exception when there is a problem evicting idle objects.
      */
     public synchronized void evict() throws Exception {
+        // Initialize key to last key value
         Object key = null;
-        if (_recentlyEvictedKeys == null) {
-            _recentlyEvictedKeys = new HashSet(_poolMap.size());
+        if (_evictionKeyCursor != null && 
+                _evictionKeyCursor._lastReturned != null) {
+            key = _evictionKeyCursor._lastReturned.value();
         }
-        Set remainingKeys = new HashSet(_poolMap.keySet());
-        remainingKeys.removeAll(_recentlyEvictedKeys);
-        Iterator keyIter = remainingKeys.iterator();
+        
+        for (int i=0,m=getNumTests(); i<m; i++) {
+            // make sure pool map is not empty; otherwise do nothing
+            if (_poolMap == null || _poolMap.size() == 0) {
+                continue;
+            }
 
-        ListIterator objIter = null;
+            // if we don't have a key cursor, then create one
+            if (null == _evictionKeyCursor) {
+                resetEvictionKeyCursor();
+                key = null;
+            }
 
-        for(int i=0,m=getNumTests();i<m;i++) {
-            if(_poolMap.size() > 0) {
-                // Find next idle object pool key to work on
-                if (key == null) {
-                    if (!keyIter.hasNext()) {
-                        _recentlyEvictedKeys.clear();
-                        remainingKeys = new HashSet(_poolMap.keySet());
-                        keyIter = remainingKeys.iterator();
+            // if we don't have an object cursor, create one
+            if (null == _evictionCursor) {
+                // if the _evictionKeyCursor has a next value, use this key
+                if (_evictionKeyCursor.hasNext()) {
+                    key = _evictionKeyCursor.next();
+                    resetEvictionObjectCursor(key);
+                } else {
+                    // Reset the key cursor and try again
+                    resetEvictionKeyCursor();
+                    if (_evictionKeyCursor != null) {
+                        if (_evictionKeyCursor.hasNext()) {
+                            key = _evictionKeyCursor.next();
+                            resetEvictionObjectCursor(key);
+                        }
                     }
-                    if (!keyIter.hasNext()) {
-                        // done, there are no keyed pools
-                        return;
-                    }
-                    key = keyIter.next();
                 }
+            }  
 
-                // if we don't have a keyed object pool iterator
-                if (objIter == null) {
-                    final LinkedList list = ((ObjectQueue)_poolMap.get(key)).queue;
-                    if (_evictLastIndex < 0 || _evictLastIndex > list.size()) {
-                        _evictLastIndex = list.size();
+            if (_evictionCursor == null) {
+                continue; // should never happen; do nothing
+            }
+
+            // If eviction cursor is exhausted, try to move
+            // to the next key and reset
+            if((_lifo && !_evictionCursor.hasPrevious()) ||
+                    (!_lifo && !_evictionCursor.hasNext())) {
+                if (_evictionKeyCursor != null) {
+                    if (_evictionKeyCursor.hasNext()) {
+                        key = _evictionKeyCursor.next();
+                        resetEvictionObjectCursor(key);
+                    } else { // Need to reset Key cursor
+                        resetEvictionKeyCursor();
+                        if (_evictionKeyCursor != null) {
+                            if (_evictionKeyCursor.hasNext()) {
+                                key = _evictionKeyCursor.next();
+                                resetEvictionObjectCursor(key);
+                            }
+                        }
                     }
-                    objIter = list.listIterator(_evictLastIndex);
                 }
+            }
 
-                // if the _evictionCursor has a previous object, then test it
-                if(objIter.hasPrevious()) {
-                    ObjectTimestampPair pair = (ObjectTimestampPair)(objIter.previous());
-                    boolean removeObject=false;
-                    if(_minEvictableIdleTimeMillis > 0 &&
-                       System.currentTimeMillis() - pair.tstamp > _minEvictableIdleTimeMillis) {
-                       removeObject=true;
-                    }
-                    if(_testWhileIdle && removeObject == false) {
-                        boolean active = false;
+            if((_lifo && !_evictionCursor.hasPrevious()) ||
+                    (!_lifo && !_evictionCursor.hasNext())) {
+                continue; // reset failed, do nothing
+            }
+
+            // if LIFO and the _evictionCursor has a previous object, 
+            // or FIFO and _evictionCursor has a next object, test it
+            ObjectTimestampPair pair = _lifo ? 
+                    (ObjectTimestampPair) _evictionCursor.previous() : 
+                    (ObjectTimestampPair) _evictionCursor.next();
+            boolean removeObject=false;
+            if((_minEvictableIdleTimeMillis > 0) &&
+               (System.currentTimeMillis() - pair.tstamp > 
+               _minEvictableIdleTimeMillis)) {
+                removeObject=true;
+            }
+            if(_testWhileIdle && removeObject == false) {
+                boolean active = false;
+                try {
+                    _factory.activateObject(key,pair.value);
+                    active = true;
+                } catch(Exception e) {
+                    removeObject=true;
+                }
+                if(active) {
+                    if(!_factory.validateObject(key,pair.value)) {
+                        removeObject=true;
+                    } else {
                         try {
-                            _factory.activateObject(key,pair.value);
-                            active = true;
+                            _factory.passivateObject(key,pair.value);
                         } catch(Exception e) {
                             removeObject=true;
                         }
-                        if(active) {
-                            if(!_factory.validateObject(key,pair.value)) {
-                                removeObject=true;
-                            } else {
-                                try {
-                                    _factory.passivateObject(key,pair.value);
-                                } catch(Exception e) {
-                                    removeObject=true;
-                                }
-                            }
-                        }
                     }
-                    if(removeObject) {
-                        try {
-                            objIter.remove();
-                            _totalIdle--;
-                            _factory.destroyObject(key,pair.value);
-
-                            // Do not remove the key from the _poolList or _poolmap, even if the list
-                            // stored in the _poolMap for this key is empty when the
-                            // {@link #getMinIdle <code>minIdle</code>} is > 0.
-                            //
-                            // Otherwise if it was the last object for that key, drop that pool
-                            if ((_minIdle == 0) && (((ObjectQueue)(_poolMap.get(key))).queue.isEmpty())) {
-                                _poolMap.remove(key);
-                            }
-                        } catch(Exception e) {
-                            ; // ignored
-                        }
-                    }
-                } else {
-                    // else done evicting keyed pool
-                    _recentlyEvictedKeys.add(key);
-                    _evictLastIndex = -1;
-                    objIter = null;
                 }
             }
+            if(removeObject) {
+                try {
+                    _evictionCursor.remove();
+                    _totalIdle--;
+                    _factory.destroyObject(key, pair.value);
+                    // Do not remove the key from the _poolList or _poolmap,
+                    // even if the list stored in the _poolMap for this key is
+                    // empty when minIdle > 0.
+                    //
+                    // Otherwise if it was the last object for that key,
+                    // drop that pool
+                    if (_minIdle == 0) {
+                        ObjectQueue objectQueue = 
+                            (ObjectQueue)_poolMap.get(key);
+                        if (objectQueue != null && 
+                                objectQueue.queue.isEmpty()) {
+                            _poolMap.remove(key);
+                            _poolList.remove(key);  
+                        }
+                    }
+                } catch(Exception e) {
+                    ; // ignored
+                }
+            }
+        }
+    }
+    
+    /**
+     * Resets the eviction key cursor and closes any
+     * associated eviction object cursor
+     */
+    private void resetEvictionKeyCursor() {
+        if (_evictionKeyCursor != null) {
+            _evictionKeyCursor.close();
+        }
+        _evictionKeyCursor = _poolList.cursor();
+        if (null != _evictionCursor) {
+            _evictionCursor.close();
+            _evictionCursor = null;
+        }  
+    }
+    
+    /**
+     * Resets the eviction object cursor for the given key
+     * 
+     * @param key eviction key
+     */
+    private void resetEvictionObjectCursor(Object key) {
+        if (_evictionCursor != null) {
+            _evictionCursor.close();
+        }
+        if (_poolMap == null) { 
+            return;
+        }
+        ObjectQueue pool = (ObjectQueue) (_poolMap.get(key));
+        if (pool != null) {
+            CursorableLinkedList queue = 
+                (CursorableLinkedList)(pool.queue);
+            _evictionCursor = queue.cursor(_lifo ? queue.size() : 0);   
         }
     }
 
@@ -1425,7 +1559,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      */
     private class ObjectQueue {
         private int activeCount = 0;
-        private final LinkedList queue = new LinkedList();
+        private final CursorableLinkedList queue = new CursorableLinkedList();
 
         void incrementActiveCount() {
             _totalActive++;
@@ -1716,12 +1850,19 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     private Evictor _evictor = null;
 
     /**
-     * Idle object pool keys that have been evicted recently.
-     */
-    private Set _recentlyEvictedKeys = null;
-
-    /**
      * Position in the _pool where the _evictor last stopped.
      */
     private int _evictLastIndex = -1;
+    
+    /**
+     * A cursorable list of my pools.
+     * @see GenericKeyedObjectPool.Evictor#run
+     */
+    private CursorableLinkedList _poolList = null;
+    
+    private CursorableLinkedList.Cursor _evictionCursor = null;
+    private CursorableLinkedList.Cursor _evictionKeyCursor = null;
+    
+    /** Whether or not the pools behave as LIFO queues (last in first out) */
+    private boolean _lifo = DEFAULT_LIFO;
 }

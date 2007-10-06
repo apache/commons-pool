@@ -69,6 +69,20 @@
       <action dev="psteitz" type="fix" issue="POOL-102" due-to="John Sumsion">
         Allowed blocked threads in GenericObjectPool borrowObject to be interrupted.
       </action>
+      <action dev="psteitz" type="fix" issue="POOL-86">
+        Fixes to address idle object eviction and LIFO/FIFO behavior reported
+        in POOL-86.
+        <ul>
+          <li>Made LIFO/FIFO behavior configurable for GenericObjectPool and
+              GenericKeyedObjectPool, with default set back to LIFO
+              (reverting to 1.2 behavior)</li>
+          <li>Fixed GOP, GKOP evict method and added tests to ensure objects
+              are visited in oldest-to-youngest order</li>
+          <li>Changed backing store for GOP, GKOP pools back to Commons
+              Collections CursorableLinkedList (brought this class in,
+              repackaged with package scope).</li>
+        </ul>
+      </action>
     </release>
 
     <release version="1.3" date="2006-pending" description="1.x bugfix release">

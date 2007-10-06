@@ -205,6 +205,16 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @see #setWhenExhaustedAction
      */
     public static final byte DEFAULT_WHEN_EXHAUSTED_ACTION = WHEN_EXHAUSTED_BLOCK;
+    
+    /**
+     * The default LIFO status. True means that borrowObject returns the
+     * most recently used ("last in") idle object in the pool (if there are
+     * idle instances available).  False means that the pool behaves as a FIFO
+     * queue - objects are taken from the idle object pool in the order that
+     * they are returned to the pool.
+     * @see #setLifo
+     */
+    public static final boolean DEFAULT_LIFO = true;
 
     /**
      * The default maximum amount of time (in millis) the
@@ -440,7 +450,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         _softMinEvictableIdleTimeMillis = softMinEvictableIdleTimeMillis;
         _testWhileIdle = testWhileIdle;
 
-        _pool = new LinkedList();
+        _pool = new CursorableLinkedList();
         startEvictor(_timeBetweenEvictionRunsMillis);
     }
 
@@ -784,6 +794,28 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
     public synchronized void setTestWhileIdle(boolean testWhileIdle) {
         _testWhileIdle = testWhileIdle;
     }
+    
+    /**
+     * Whether or not the idle object pool acts as a LIFO queue. True means
+     * that borrowObject returns the most recently used ("last in") idle object
+     * in the pool (if there are idle instances available).  False means that
+     * the pool behaves as a FIFO queue - objects are taken from the idle object
+     * pool in the order that they are returned to the pool.
+     */
+     public synchronized boolean getLifo() {
+         return _lifo;
+     }
+
+     /**
+      * Sets the LIFO property of the pool. True means that borrowObject returns
+      * the most recently used ("last in") idle object in the pool (if there are
+      * idle instances available).  False means that the pool behaves as a FIFO
+      * queue - objects are taken from the idle object pool in the order that
+      * they are returned to the pool.
+      */
+     public synchronized void setLifo(boolean lifo) {
+         this._lifo = lifo;
+     }
 
     /**
      * Sets my configuration.
@@ -1000,7 +1032,13 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         if((_maxIdle >= 0) && (_pool.size() >= _maxIdle)) {
             shouldDestroy = true;
         } else if(success) {
-            _pool.addLast(new ObjectTimestampPair(obj));
+            // borrowObject always takes the first element from the queue,
+            // so for LIFO, push on top, FIFO add to end
+            if (_lifo) {
+                _pool.addFirst(new ObjectTimestampPair(obj));
+            } else {
+                _pool.addLast(new ObjectTimestampPair(obj));
+            }
         }
         notifyAll(); // _numActive has changed
 
@@ -1039,9 +1077,32 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
             _factory = factory;
         }
     }
+    /**
+     * <p>Perform <code>numTests</code> idle object eviction tests, evicting
+     * examined objects that meet the criteria for eviction. If 
+     * <code>testWhileIdle</code> is true, examined objects are validated
+     * when visited (and removed if invalid); otherwise only objects that
+     * have been idle for more than <code>minEvicableIdletimeMillis</code>
+     * are removed.</p>
+     * 
+     * <p>Successive activations of this method examine objects in keyed pools
+     * in sequence, cycling through the keys and examining objects in
+     * oldest-to-youngest order within the keyed pools.</p>
+     *
+     * @throws Exception when there is a problem evicting idle objects.
+     */
 
     /**
-     * Make one pass of the idle object evictor.
+     * <p>Perform <code>numTests</code> idle object eviction tests, evicting
+     * examined objects that meet the criteria for eviction. If 
+     * <code>testWhileIdle</code> is true, examined objects are validated
+     * when visited (and removed if invalid); otherwise only objects that
+     * have been idle for more than <code>minEvicableIdletimeMillis</code>
+     * are removed.</p>
+     * 
+     * <p>Successive activations of this method examine objects in 
+     * in sequence, cycling through the keys and examining objects in
+     * oldest-to-youngest order.</p>
      *
      * @throws Exception if the pool is closed or eviction fails.
      */
@@ -1049,17 +1110,19 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         assertOpen();
         if(!_pool.isEmpty()) {
             ListIterator iter;
-            if (evictLastIndex < 0) {
-                iter = _pool.listIterator(_pool.size());
-            } else {
-                iter = _pool.listIterator(evictLastIndex);
-            }
-            for(int i=0,m=getNumTests();i<m;i++) {
-                if(!iter.hasPrevious()) {
-                    iter = _pool.listIterator(_pool.size());
+            if (null == _evictionCursor) {
+                _evictionCursor = (_pool.cursor(_lifo ? _pool.size() : 0));
+            }  
+            for (int i=0,m=getNumTests();i<m;i++) {
+                if ((_lifo && !_evictionCursor.hasPrevious()) || 
+                        !_lifo && !_evictionCursor.hasNext()) {
+                    _evictionCursor.close();
+                    _evictionCursor = _pool.cursor(_lifo ? _pool.size() : 0);
                 }
                 boolean removeObject = false;
-                final ObjectTimestampPair pair = (ObjectTimestampPair)(iter.previous());
+                final ObjectTimestampPair pair = _lifo ? 
+                    (ObjectTimestampPair) _evictionCursor.previous() : 
+                    (ObjectTimestampPair) _evictionCursor.next();
                 final long idleTimeMilis = System.currentTimeMillis() - pair.tstamp;
                 if ((_minEvictableIdleTimeMillis > 0)
                         && (idleTimeMilis > _minEvictableIdleTimeMillis)) {
@@ -1091,14 +1154,13 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                 }
                 if(removeObject) {
                     try {
-                        iter.remove();
+                        _evictionCursor.remove();
                         _factory.destroyObject(pair.value);
                     } catch(Exception e) {
                         // ignored
                     }
                 }
             }
-            evictLastIndex = iter.previousIndex(); // resume from here
         } // if !empty
     }
 
@@ -1407,8 +1469,14 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      */
     private long _softMinEvictableIdleTimeMillis = DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 
+    /** Whether or not the pool behaves as a LIFO queue (last in first out) */
+    private boolean _lifo = DEFAULT_LIFO;
+    
     /** My pool. */
-    private LinkedList _pool = null;
+    private CursorableLinkedList _pool = null;
+    
+    /** Eviction cursor - keeps track of idle object evictor position */
+    private CursorableLinkedList.Cursor _evictionCursor = null;
 
     /** My {@link PoolableObjectFactory}. */
     private PoolableObjectFactory _factory = null;
@@ -1424,8 +1492,4 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      */
     private Evictor _evictor = null;
 
-    /**
-     * Position in the _pool where the _evictor last stopped.
-     */
-    private int evictLastIndex = -1;
 }
