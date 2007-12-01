@@ -1321,7 +1321,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         /**
          * @see GenericObjectPool#setSoftMinEvictableIdleTimeMillis
          */
-        public long softMinEvictableIdleTimeMillis = GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+        public long softMinEvictableIdleTimeMillis = GenericObjectPool.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
     }
 
     //--- private attributes ---------------------------------------
