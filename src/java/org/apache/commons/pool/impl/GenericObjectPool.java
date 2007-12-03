@@ -1077,20 +1077,6 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
             _factory = factory;
         }
     }
-    /**
-     * <p>Perform <code>numTests</code> idle object eviction tests, evicting
-     * examined objects that meet the criteria for eviction. If 
-     * <code>testWhileIdle</code> is true, examined objects are validated
-     * when visited (and removed if invalid); otherwise only objects that
-     * have been idle for more than <code>minEvicableIdletimeMillis</code>
-     * are removed.</p>
-     * 
-     * <p>Successive activations of this method examine objects in keyed pools
-     * in sequence, cycling through the keys and examining objects in
-     * oldest-to-youngest order within the keyed pools.</p>
-     *
-     * @throws Exception when there is a problem evicting idle objects.
-     */
 
     /**
      * <p>Perform <code>numTests</code> idle object eviction tests, evicting
@@ -1101,8 +1087,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * are removed.</p>
      * 
      * <p>Successive activations of this method examine objects in 
-     * in sequence, cycling through the keys and examining objects in
-     * oldest-to-youngest order.</p>
+     * in sequence, cycling through objects in oldest-to-youngest order.</p>
      *
      * @throws Exception if the pool is closed or eviction fails.
      */
