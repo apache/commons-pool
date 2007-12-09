@@ -17,11 +17,12 @@
 
 package org.apache.commons.pool;
 
-import org.apache.commons.pool.impl.GenericKeyedObjectPool;
-import org.apache.commons.pool.impl.StackKeyedObjectPool;
-import org.apache.commons.pool.impl.GenericObjectPool;
-import org.apache.commons.pool.impl.SoftReferenceObjectPool;
-import org.apache.commons.pool.impl.StackObjectPool;
+// used by assert code
+//import org.apache.commons.pool.impl.GenericKeyedObjectPool;
+//import org.apache.commons.pool.impl.StackKeyedObjectPool;
+//import org.apache.commons.pool.impl.GenericObjectPool;
+//import org.apache.commons.pool.impl.SoftReferenceObjectPool;
+//import org.apache.commons.pool.impl.StackObjectPool;
 
 import java.util.Collection;
 import java.util.HashMap;
