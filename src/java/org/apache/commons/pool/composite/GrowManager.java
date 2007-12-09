@@ -49,7 +49,7 @@ final class GrowManager extends AbstractManager implements Serializable {
      * @throws Exception when {@link PoolableObjectFactory#makeObject()} fails.
      */
     public Object nextFromPool() throws Exception {
-        assert Thread.holdsLock(objectPool.getPool());
+//        assert Thread.holdsLock(objectPool.getPool());
         Object obj = null;
 
         final long startActivateTime = System.currentTimeMillis();

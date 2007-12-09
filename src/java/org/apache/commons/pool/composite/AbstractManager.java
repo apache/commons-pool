@@ -86,7 +86,7 @@ abstract class AbstractManager implements Manager, Serializable {
      * @param obj the object to return to the pool.
      */
     public void returnToPool(final Object obj) {
-        assert Thread.holdsLock(objectPool.getPool());
+//        assert Thread.holdsLock(objectPool.getPool());
         objectPool.getLender().repay(obj);
     }
 
