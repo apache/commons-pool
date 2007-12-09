@@ -349,14 +349,14 @@ public final class PoolUtils {
         if (pool == null) {
             throw new IllegalArgumentException("pool must not be null.");
         }
-        assert !(pool instanceof GenericObjectPool)
-                : "GenericObjectPool is already thread-safe";
-        assert !(pool instanceof SoftReferenceObjectPool)
-                : "SoftReferenceObjectPool is already thread-safe";
-        assert !(pool instanceof StackObjectPool)
-                : "StackObjectPool is already thread-safe";
-        assert !"org.apache.commons.pool.composite.CompositeObjectPool".equals(pool.getClass().getName())
-                : "CompositeObjectPools are already thread-safe";
+//        assert !(pool instanceof GenericObjectPool)
+//                : "GenericObjectPool is already thread-safe";
+//        assert !(pool instanceof SoftReferenceObjectPool)
+//                : "SoftReferenceObjectPool is already thread-safe";
+//        assert !(pool instanceof StackObjectPool)
+//                : "StackObjectPool is already thread-safe";
+//        assert !"org.apache.commons.pool.composite.CompositeObjectPool".equals(pool.getClass().getName())
+//                : "CompositeObjectPools are already thread-safe";
         return new SynchronizedObjectPool(pool);
     }
 
@@ -378,12 +378,12 @@ public final class PoolUtils {
         if (keyedPool == null) {
             throw new IllegalArgumentException("keyedPool must not be null.");
         }
-        assert !(keyedPool instanceof GenericKeyedObjectPool)
-                : "GenericKeyedObjectPool is already thread-safe";
-        assert !(keyedPool instanceof StackKeyedObjectPool)
-                : "StackKeyedObjectPool is already thread-safe";
-        assert !"org.apache.commons.pool.composite.CompositeKeyedObjectPool".equals(keyedPool.getClass().getName())
-                : "CompositeKeyedObjectPools are already thread-safe";
+//        assert !(keyedPool instanceof GenericKeyedObjectPool)
+//                : "GenericKeyedObjectPool is already thread-safe";
+//        assert !(keyedPool instanceof StackKeyedObjectPool)
+//                : "StackKeyedObjectPool is already thread-safe";
+//        assert !"org.apache.commons.pool.composite.CompositeKeyedObjectPool".equals(keyedPool.getClass().getName())
+//                : "CompositeKeyedObjectPools are already thread-safe";
         return new SynchronizedKeyedObjectPool(keyedPool);
     }
 

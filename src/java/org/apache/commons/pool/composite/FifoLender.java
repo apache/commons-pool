@@ -35,7 +35,7 @@ final class FifoLender extends AbstractLender implements Serializable {
 
     public Object borrow() {
         final List pool = getObjectPool().getPool();
-        assert Thread.holdsLock(pool);
+//        assert Thread.holdsLock(pool);
         if (pool instanceof LinkedList) {
             return ((LinkedList)pool).removeFirst();
         } else {
