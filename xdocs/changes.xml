@@ -96,6 +96,13 @@
          environments, can lead to memory leads and/or prevent applications
          from shutting down or reloading cleanly.
       </action>
+      <action dev="psteitz" type="fix" issue="POOL-93"  
+      due-to="Mark Thomas">
+        Reduced synchronization in GenericObjectPool, GenericKeyedObjectPool.
+        Factory method activations within synchronized blocks were causing
+        performance problems in DBCP and other applications where factory
+        methods could block. Fixes both POOL-93 and POOL-108.
+      </action>
     </release>
 
     <release version="1.3" date="2006-pending" description="1.x bugfix release">
