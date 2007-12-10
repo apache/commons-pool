@@ -816,85 +816,91 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
     //-- ObjectPool methods ------------------------------------------
 
-    public synchronized Object borrowObject(Object key) throws Exception {
-        assertOpen();
+    public Object borrowObject(Object key) throws Exception {
         long starttime = System.currentTimeMillis();
         boolean newlyCreated = false;
         for(;;) {
-            ObjectQueue pool = (ObjectQueue)(_poolMap.get(key));
-            if(null == pool) {
-                pool = new ObjectQueue();
-                _poolMap.put(key,pool);
-                _poolList.add(key);
-            }
             ObjectTimestampPair pair = null;
-            // if there are any sleeping, just grab one of those
-            try {
-                pair = (ObjectTimestampPair)(pool.queue.removeFirst());
-                if(null != pair) {
-                    _totalIdle--;
+            ObjectQueue pool = null;
+            synchronized (this) {
+                assertOpen();
+                pool = (ObjectQueue)(_poolMap.get(key));
+                if(null == pool) {
+                    pool = new ObjectQueue();
+                    _poolMap.put(key,pool);
+                    _poolList.add(key);
                 }
-            } catch(NoSuchElementException e) { /* ignored */
-            }
-            // otherwise
-            if(null == pair) {
-                // if there is a totalMaxActive and we are at the limit then
-                // we have to make room
-                if ((_maxTotal > 0) && (_totalActive + _totalIdle >= _maxTotal)) {
-                    clearOldest();
+                // if there are any sleeping, just grab one of those
+                try {
+                    pair = (ObjectTimestampPair)(pool.queue.removeFirst());
+                    if(null != pair) {
+                        _totalIdle--;
+                    }
+                } catch(NoSuchElementException e) { /* ignored */
                 }
-
-                // check if we can create one
-                // (note we know that the num sleeping is 0, else we wouldn't be here)
-                if ((_maxActive < 0 || pool.activeCount < _maxActive) &&
-                    (_maxTotal < 0 || _totalActive + _totalIdle < _maxTotal)) {
-                    Object obj = _factory.makeObject(key);
-                    pair = new ObjectTimestampPair(obj);
-                    newlyCreated = true;
-                } else {
-                    // the pool is exhausted
-                    switch(_whenExhaustedAction) {
-                        case WHEN_EXHAUSTED_GROW:
-                            Object obj = _factory.makeObject(key);
-                            pair = new ObjectTimestampPair(obj);
-                            break;
-                        case WHEN_EXHAUSTED_FAIL:
-                            throw new NoSuchElementException();
-                        case WHEN_EXHAUSTED_BLOCK:
-                            try {
-                                if(_maxWait <= 0) {
-                                    wait();
-                                } else {
-                                    // this code may be executed again after a notify then continue cycle
-                                    // so, need to calculate the amount of time to wait
-                                    final long elapsed = (System.currentTimeMillis() - starttime);
-                                    final long waitTime = _maxWait - elapsed;
-                                    if (waitTime > 0)
-                                    {
-                                        wait(waitTime);
+                // otherwise
+                if(null == pair) {
+                    // if there is a totalMaxActive and we are at the limit then
+                    // we have to make room
+                    if ((_maxTotal > 0) && (_totalActive + _totalIdle >= _maxTotal)) {
+                        clearOldest();
+                    }
+    
+                    // check if we can create one
+                    // (note we know that the num sleeping is 0, else we wouldn't be here)
+                    if ((_maxActive < 0 || pool.activeCount < _maxActive) &&
+                        (_maxTotal < 0 || _totalActive + _totalIdle < _maxTotal)) {
+                        Object obj = _factory.makeObject(key);
+                        pair = new ObjectTimestampPair(obj);
+                        newlyCreated = true;
+                    } else {
+                        // the pool is exhausted
+                        switch(_whenExhaustedAction) {
+                            case WHEN_EXHAUSTED_GROW:
+                                Object obj = _factory.makeObject(key);
+                                pair = new ObjectTimestampPair(obj);
+                                break;
+                            case WHEN_EXHAUSTED_FAIL:
+                                throw new NoSuchElementException();
+                            case WHEN_EXHAUSTED_BLOCK:
+                                try {
+                                    if(_maxWait <= 0) {
+                                        wait();
+                                    } else {
+                                        // this code may be executed again after a notify then continue cycle
+                                        // so, need to calculate the amount of time to wait
+                                        final long elapsed = (System.currentTimeMillis() - starttime);
+                                        final long waitTime = _maxWait - elapsed;
+                                        if (waitTime > 0)
+                                        {
+                                            wait(waitTime);
+                                        }
                                     }
+                                } catch(InterruptedException e) {
+                                    // ignored
                                 }
-                            } catch(InterruptedException e) {
-                                // ignored
-                            }
-                            if(_maxWait > 0 && ((System.currentTimeMillis() - starttime) >= _maxWait)) {
-                                throw new NoSuchElementException("Timeout waiting for idle object");
-                            } else {
-                                continue; // keep looping
-                            }
-                        default:
-                            throw new IllegalArgumentException("whenExhaustedAction " + _whenExhaustedAction + " not recognized.");
+                                if(_maxWait > 0 && ((System.currentTimeMillis() - starttime) >= _maxWait)) {
+                                    throw new NoSuchElementException("Timeout waiting for idle object");
+                                } else {
+                                    continue; // keep looping
+                                }
+                            default:
+                                throw new IllegalArgumentException("whenExhaustedAction " + _whenExhaustedAction + " not recognized.");
+                        }
                     }
                 }
+                pool.incrementActiveCount();
             }
             if (newlyCreated) {
-                pool.incrementActiveCount();
                 return pair.value;
             } else {
                 try {
                     _factory.activateObject(key, pair.value);
                 } catch (Exception e) {
                     try {
+                        synchronized (this) {
+                            pool.decrementActiveCount();
+                        }
                         _factory.destroyObject(key,pair.value);
                     } catch (Exception e2) {
                         // swallowed
@@ -910,6 +916,9 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 }
                 if (invalid) {
                     try {
+                        synchronized (this) {
+                            pool.decrementActiveCount();
+                        }
                         _factory.destroyObject(key,pair.value);
                     } catch (Exception e) {
                         // swallowed
@@ -918,7 +927,6 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                         throw new NoSuchElementException("Could not create a validated object");
                     } // else keep looping
                 } else {
-                    pool.incrementActiveCount();
                     return pair.value;
                 }
 
@@ -1066,59 +1074,65 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         return pool != null ? pool.queue.size() : 0;
     }
 
-    public synchronized void returnObject(Object key, Object obj) throws Exception {
+    public void returnObject(Object key, Object obj) throws Exception {
+        try {
+            addObjectToPool(key, obj, true);
+        } catch (Exception e) {
+            if (_factory != null) {
+                try {
+                    _factory.destroyObject(key, obj);
+                } catch (Exception e2) {
+                    // swallowed
+                }
+            }
+        }
+    }
+
+    private void addObjectToPool(Object key, Object obj,
+            boolean decrementNumActive) throws Exception {
 
         // if we need to validate this object, do so
         boolean success = true; // whether or not this object passed validation
         if(_testOnReturn && !_factory.validateObject(key, obj)) {
             success = false;
-            try {
-                _factory.destroyObject(key, obj);
-            } catch(Exception e) {
-                // ignored
-            }
         } else {
-            try {
-                _factory.passivateObject(key, obj);
-            } catch(Exception e) {
-                success = false;
-            }
-        }
-
-        if (isClosed()) {
-            try {
-                _factory.destroyObject(key, obj);
-            } catch(Exception e) {
-                // ignored
-            }
-            return;
+            _factory.passivateObject(key, obj);
         }
 
         boolean shouldDestroy = false;
-        // grab the pool (list) of objects associated with the given key
-        ObjectQueue pool = (ObjectQueue) (_poolMap.get(key));
-        // if it doesn't exist, create it
-        if(null == pool) {
-            pool = new ObjectQueue();
-            _poolMap.put(key, pool);
-            _poolList.add(key);
-        }
-        pool.decrementActiveCount();
-        // if there's no space in the pool, flag the object for destruction
-        // else if we passivated successfully, return it to the pool
-        if(_maxIdle >= 0 && (pool.queue.size() >= _maxIdle)) {
-            shouldDestroy = true;
-        } else if(success) {
-            // borrowObject always takes the first element from the queue,
-            // so for LIFO, push on top, FIFO add to end
-            if (_lifo) {
-                pool.queue.addFirst(new ObjectTimestampPair(obj)); 
-            } else {
-                pool.queue.addLast(new ObjectTimestampPair(obj));
+        
+        synchronized (this) {
+            // grab the pool (list) of objects associated with the given key
+            ObjectQueue pool = (ObjectQueue) (_poolMap.get(key));
+            // if it doesn't exist, create it
+            if(null == pool) {
+                pool = new ObjectQueue();
+                _poolMap.put(key, pool);
+                _poolList.add(key);
             }
-            _totalIdle++;
+            if (decrementNumActive) {
+                pool.decrementActiveCount();
+            }
+            if (isClosed()) {
+                shouldDestroy = true;
+            } else {
+                // if there's no space in the pool, flag the object for destruction
+                // else if we passivated successfully, return it to the pool
+                if(_maxIdle >= 0 && (pool.queue.size() >= _maxIdle)) {
+                    shouldDestroy = true;
+                } else if(success) {
+                    // borrowObject always takes the first element from the queue,
+                    // so for LIFO, push on top, FIFO add to end
+                    if (_lifo) {
+                        pool.queue.addFirst(new ObjectTimestampPair(obj)); 
+                    } else {
+                        pool.queue.addLast(new ObjectTimestampPair(obj));
+                    }
+                    _totalIdle++;
+                }
+            }
+            notifyAll();
         }
-        notifyAll();
 
         if(shouldDestroy) {
             try {
@@ -1129,20 +1143,22 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         }
     }
 
-    public synchronized void invalidateObject(Object key, Object obj) throws Exception {
+    public void invalidateObject(Object key, Object obj) throws Exception {
         try {
             _factory.destroyObject(key, obj);
         } catch (Exception e) {
             // swallowed
         } finally {
-            ObjectQueue pool = (ObjectQueue) (_poolMap.get(key));
-            if(null == pool) {
-                pool = new ObjectQueue();
-                _poolMap.put(key, pool);
-                _poolList.add(key);
+            synchronized (this) {
+                ObjectQueue pool = (ObjectQueue) (_poolMap.get(key));
+                if(null == pool) {
+                    pool = new ObjectQueue();
+                    _poolMap.put(key, pool);
+                    _poolList.add(key);
+                }
+                pool.decrementActiveCount();
+                notifyAll(); // _totalActive has changed
             }
-            pool.decrementActiveCount();
-            notifyAll(); // _totalActive has changed
         }
     }
 
@@ -1155,49 +1171,24 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @throws Exception when {@link KeyedPoolableObjectFactory#makeObject} fails.
      * @throws IllegalStateException when no {@link #setFactory factory} has been set or after {@link #close} has been called on this pool.
      */
-    public synchronized void addObject(Object key) throws Exception {
+    public void addObject(Object key) throws Exception {
         assertOpen();
         if (_factory == null) {
             throw new IllegalStateException("Cannot add objects without a factory.");
         }
         Object obj = _factory.makeObject(key);
-
-        // if we need to validate this object, do so
-        boolean success = true; // whether or not this object passed validation
-        if(_testOnReturn && !_factory.validateObject(key, obj)) {
-            success = false;
-            _factory.destroyObject(key, obj);
-        } else {
-            _factory.passivateObject(key, obj);
-        }
-
-        boolean shouldDestroy = false;
-        // grab the pool (list) of objects associated with the given key
-        ObjectQueue pool = (ObjectQueue) (_poolMap.get(key));
-        // if it doesn't exist, create it
-        if(null == pool) {
-            pool = new ObjectQueue();
-            _poolMap.put(key, pool);
-            _poolList.add(key);
-        }
-        // if there's no space in the pool, flag the object for destruction
-        // else if we passivated succesfully, return it to the pool
-        if(_maxIdle >= 0 && (pool.queue.size() >= _maxIdle)) {
-            shouldDestroy = true;
-        } else if(success) {
-            // borrowObject always takes the first element from the queue,
-            // so for LIFO, push on top, FIFO add to end
-            if (_lifo) {
-                pool.queue.addFirst(new ObjectTimestampPair(obj)); 
-            } else {
-                pool.queue.addLast(new ObjectTimestampPair(obj));
+        synchronized (this) {
+            try {
+                assertOpen();
+                addObjectToPool(key, obj, false);
+            } catch (IllegalStateException ex) { // Pool closed
+                try {
+                    _factory.destroyObject(key, obj);
+                } catch (Exception ex2) {
+                    // swallow
+                }
+                throw ex;
             }
-            _totalIdle++;
-        }
-        notifyAll();
-
-        if(shouldDestroy) {
-            _factory.destroyObject(key, obj);
         }
     }
 

@@ -831,62 +831,64 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
     //-- ObjectPool methods ------------------------------------------
 
-    public synchronized Object borrowObject() throws Exception {
-        assertOpen();
+    public Object borrowObject() throws Exception {
         long starttime = System.currentTimeMillis();
         for(;;) {
             ObjectTimestampPair pair = null;
-
-            // if there are any sleeping, just grab one of those
-            try {
-                pair = (ObjectTimestampPair)(_pool.removeFirst());
-            } catch(NoSuchElementException e) {
-                ; /* ignored */
-            }
-
-            // otherwise
-            if(null == pair) {
-                // check if we can create one
-                // (note we know that the num sleeping is 0, else we wouldn't be here)
-                if(_maxActive < 0 || _numActive < _maxActive) {
-                    // allow new object to be created
-                } else {
-                    // the pool is exhausted
-                    switch(_whenExhaustedAction) {
-                        case WHEN_EXHAUSTED_GROW:
-                            // allow new object to be created
-                            break;
-                        case WHEN_EXHAUSTED_FAIL:
-                            throw new NoSuchElementException("Pool exhausted");
-                        case WHEN_EXHAUSTED_BLOCK:
-                            try {
-                                if(_maxWait <= 0) {
-                                    wait();
-                                } else {
-                                    // this code may be executed again after a notify then continue cycle
-                                    // so, need to calculate the amount of time to wait
-                                    final long elapsed = (System.currentTimeMillis() - starttime);
-                                    final long waitTime = _maxWait - elapsed;
-                                    if (waitTime > 0)
-                                    {
-                                        wait(waitTime);
+            
+            synchronized (this) {
+                assertOpen();
+                // if there are any sleeping, just grab one of those
+                try {
+                    pair = (ObjectTimestampPair)(_pool.removeFirst());
+                } catch(NoSuchElementException e) {
+                    ; /* ignored */
+                }
+    
+                // otherwise
+                if(null == pair) {
+                    // check if we can create one
+                    // (note we know that the num sleeping is 0, else we wouldn't be here)
+                    if(_maxActive < 0 || _numActive < _maxActive) {
+                        // allow new object to be created
+                    } else {
+                        // the pool is exhausted
+                        switch(_whenExhaustedAction) {
+                            case WHEN_EXHAUSTED_GROW:
+                                // allow new object to be created
+                                break;
+                            case WHEN_EXHAUSTED_FAIL:
+                                throw new NoSuchElementException("Pool exhausted");
+                            case WHEN_EXHAUSTED_BLOCK:
+                                try {
+                                    if(_maxWait <= 0) {
+                                        wait();
+                                    } else {
+                                        // this code may be executed again after a notify then continue cycle
+                                        // so, need to calculate the amount of time to wait
+                                        final long elapsed = (System.currentTimeMillis() - starttime);
+                                        final long waitTime = _maxWait - elapsed;
+                                        if (waitTime > 0)
+                                        {
+                                            wait(waitTime);
+                                        }
                                     }
+                                } catch(InterruptedException e) {
+                                    Thread.currentThread().interrupt();
+                                    throw e; 
                                 }
-                            } catch(InterruptedException e) {
-                                Thread.currentThread().interrupt();
-                                throw e; 
-                            }
-                            if(_maxWait > 0 && ((System.currentTimeMillis() - starttime) >= _maxWait)) {
-                                throw new NoSuchElementException("Timeout waiting for idle object");
-                            } else {
-                                continue; // keep looping
-                            }
-                        default:
-                            throw new IllegalArgumentException("WhenExhaustedAction property " + _whenExhaustedAction + " not recognized.");
+                                if(_maxWait > 0 && ((System.currentTimeMillis() - starttime) >= _maxWait)) {
+                                    throw new NoSuchElementException("Timeout waiting for idle object");
+                                } else {
+                                    continue; // keep looping
+                                }
+                            default:
+                                throw new IllegalArgumentException("WhenExhaustedAction property " + _whenExhaustedAction + " not recognized.");
+                        }
                     }
                 }
+                _numActive++;
             }
-            _numActive++;
 
             // create new object when needed
             boolean newlyCreated = false;
@@ -899,8 +901,10 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                 } finally {
                     if (!newlyCreated) {
                         // object cannot be created
-                        _numActive--;
-                        notifyAll();
+                        synchronized (this) {
+                            _numActive--;
+                            notifyAll();
+                        }
                     }
                 }
             }
@@ -915,8 +919,10 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
             }
             catch (Throwable e) {
                 // object cannot be activated or is invalid
-                _numActive--;
-                notifyAll();
+                synchronized (this) {
+                    _numActive--;
+                    notifyAll();
+                }
                 try {
                     _factory.destroyObject(pair.value);
                 }
@@ -933,7 +939,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         }
     }
 
-    public synchronized void invalidateObject(Object obj) throws Exception {
+    public void invalidateObject(Object obj) throws Exception {
         try {
             if (_factory != null) {
                 _factory.destroyObject(obj);
@@ -941,8 +947,10 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         } catch (Exception e) {
             // swallowed
         } finally {
-            _numActive--;
-            notifyAll(); // _numActive has changed
+            synchronized (this) {
+                _numActive--;
+                notifyAll(); // _numActive has changed
+            }
         }
     }
 
@@ -990,7 +998,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * the same object appearing multiple times in the pool and pool counters 
      * (numActive, numIdle) returning incorrect values.</p>
      */
-    public synchronized void returnObject(Object obj) throws Exception {
+    public void returnObject(Object obj) throws Exception {
         try {
             addObjectToPool(obj, true);
         } catch (Exception e) {
@@ -1005,35 +1013,39 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
     }
 
     private void addObjectToPool(Object obj, boolean decrementNumActive) throws Exception {
-        boolean success;
+        boolean success = true;
         if(_testOnReturn && !(_factory.validateObject(obj))) {
             success = false;
         } else {
-            success = false;
             _factory.passivateObject(obj);
-            success = !isClosed();
         }
 
-        boolean shouldDestroy = !success;
+        boolean shouldDestroy = false;
 
-        if (decrementNumActive) {
-            _numActive--;
-        }
-        if((_maxIdle >= 0) && (_pool.size() >= _maxIdle)) {
-            shouldDestroy = true;
-        } else if(success) {
-            // borrowObject always takes the first element from the queue,
-            // so for LIFO, push on top, FIFO add to end
-            if (_lifo) {
-                _pool.addFirst(new ObjectTimestampPair(obj));
-            } else {
-                _pool.addLast(new ObjectTimestampPair(obj));
+        synchronized (this) {
+            if (decrementNumActive) {
+                _numActive--;
             }
+            if (isClosed()) {
+                shouldDestroy = true;
+            } else {
+                if((_maxIdle >= 0) && (_pool.size() >= _maxIdle)) {
+                    shouldDestroy = true;
+                } else if(success) {
+                    // borrowObject always takes the first element from the queue,
+                    // so for LIFO, push on top, FIFO add to end
+                    if (_lifo) {
+                        _pool.addFirst(new ObjectTimestampPair(obj));
+                    } else {
+                        _pool.addLast(new ObjectTimestampPair(obj));
+                    }
+                }
+            }
+            notifyAll(); // _numActive has changed
         }
-        notifyAll(); // _numActive has changed
 
         if(shouldDestroy) {
-            try { // TODO: remove try/catch
+            try {
                 _factory.destroyObject(obj);
             } catch(Exception e) {
                 // ignored
@@ -1169,13 +1181,25 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * Create an object, and place it into the pool.
      * addObject() is useful for "pre-loading" a pool with idle objects.
      */
-    public synchronized void addObject() throws Exception {
+    public void addObject() throws Exception {
         assertOpen();
         if (_factory == null) {
             throw new IllegalStateException("Cannot add objects without a factory.");
         }
         Object obj = _factory.makeObject();
-        addObjectToPool(obj, false);
+        synchronized (this) {
+            try {
+                assertOpen();
+                addObjectToPool(obj, false);
+            } catch (IllegalStateException ex) { // Pool closed
+                try {
+                    _factory.destroyObject(obj);
+                } catch (Exception ex2) {
+                    // swallow
+                }
+                throw ex;
+            }
+        }
     }
 
     //--- non-public methods ----------------------------------------
