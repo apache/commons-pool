@@ -1244,10 +1244,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 _evictionKeyCursor.close();
                 _evictionKeyCursor = null;
             }
-            if (null != _evictor) {
-                _evictor.cancel();
-                _evictor = null;
-            }
+            startEvictor(-1L);
         }
     }
 
@@ -1491,12 +1488,12 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      */
     protected synchronized void startEvictor(long delay) {
         if(null != _evictor) {
-            _evictor.cancel();
+            EvictionTimer.cancel(_evictor);
             _evictor = null;
         }
         if(delay > 0) {
             _evictor = new Evictor();
-            GenericObjectPool.EVICTION_TIMER.schedule(_evictor, delay, delay);
+            EvictionTimer.schedule(_evictor, delay, delay);
         }
     }
 
@@ -1849,11 +1846,6 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      */
     private Evictor _evictor = null;
 
-    /**
-     * Position in the _pool where the _evictor last stopped.
-     */
-    private int _evictLastIndex = -1;
-    
     /**
      * A cursorable list of my pools.
      * @see GenericKeyedObjectPool.Evictor#run

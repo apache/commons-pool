@@ -88,6 +88,14 @@
         GenericObjectPool.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS (was
         being incorrectly defaulted to DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS).
       </action>
+      <action dev="psteitz" type="fix" issue="POOL-97" due-to="Mark Thomas">
+         Added a wrapper for the shared idle object eviction timer for all
+         pools. The wrapper class wraps the Timer and keeps track of how many
+         pools are using it. If no pools are using the timer, it is canceled.
+         This prevents a thread being left running which, in application server
+         environments, can lead to memory leads and/or prevent applications
+         from shutting down or reloading cleanly.
+      </action>
     </release>
 
     <release version="1.3" date="2006-pending" description="1.x bugfix release">

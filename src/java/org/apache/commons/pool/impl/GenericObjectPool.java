@@ -19,9 +19,6 @@ package org.apache.commons.pool.impl;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.LinkedList;
-import java.util.ListIterator;
-import java.util.Timer;
 import java.util.TimerTask;
 
 import org.apache.commons.pool.BaseObjectPool;
@@ -280,13 +277,6 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @see #setSoftMinEvictableIdleTimeMillis
      */
     public static final long DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS = -1;
-
-    //--- package constants -------------------------------------------
-
-    /**
-     * Idle object evition Timer. Shared between all {@link GenericObjectPool}s and {@link GenericKeyedObjectPool} s.
-     */
-    static final Timer EVICTION_TIMER = new Timer(true);
 
     //--- constructors -----------------------------------------------
 
@@ -1094,7 +1084,6 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
     public synchronized void evict() throws Exception {
         assertOpen();
         if(!_pool.isEmpty()) {
-            ListIterator iter;
             if (null == _evictionCursor) {
                 _evictionCursor = (_pool.cursor(_lifo ? _pool.size() : 0));
             }  
@@ -1200,12 +1189,12 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      */
     protected synchronized void startEvictor(long delay) {
         if(null != _evictor) {
-            _evictor.cancel();
+            EvictionTimer.cancel(_evictor);
             _evictor = null;
         }
         if(delay > 0) {
             _evictor = new Evictor();
-            EVICTION_TIMER.schedule(_evictor, delay, delay);
+            EvictionTimer.schedule(_evictor, delay, delay);
         }
     }
 
