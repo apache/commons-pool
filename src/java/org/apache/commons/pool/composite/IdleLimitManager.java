@@ -49,7 +49,7 @@ final class IdleLimitManager extends DelegateManager implements Serializable {
      * @param obj the object to return to the pool.
      */
     public void returnToPool(final Object obj) {
-//        assert Thread.holdsLock(objectPool.getPool());
+        assert Thread.holdsLock(objectPool.getPool());
         if (maxIdle > 0 && maxIdle <= objectPool.getNumIdle()) {
             // XXX Does this remove the most stale object in
             final ListIterator iter = objectPool.getLender().listIterator();

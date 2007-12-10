@@ -55,7 +55,7 @@ final class FailManager extends AbstractManager implements Serializable {
      * @throws Exception usually from {@link PoolableObjectFactory} methods.
      */
     public Object nextFromPool() throws Exception {
-//        assert Thread.holdsLock(objectPool.getPool());
+        assert Thread.holdsLock(objectPool.getPool());
         Object obj = null;
         // Drain until good or empty
         while (objectPool.getLender().size() > 0 && obj == null) {
