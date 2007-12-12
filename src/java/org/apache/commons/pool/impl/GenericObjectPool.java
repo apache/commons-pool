@@ -600,7 +600,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @return <code>true</code> if objects are validated before being borrowed.
      * @see #setTestOnBorrow
      */
-    public synchronized boolean getTestOnBorrow() {
+    public boolean getTestOnBorrow() {
         return _testOnBorrow;
     }
 
@@ -615,7 +615,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @param testOnBorrow <code>true</code> if objects should be validated before being borrowed.
      * @see #getTestOnBorrow
      */
-    public synchronized void setTestOnBorrow(boolean testOnBorrow) {
+    public void setTestOnBorrow(boolean testOnBorrow) {
         _testOnBorrow = testOnBorrow;
     }
 
@@ -628,7 +628,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @return <code>true</code> when objects will be validated after returned to {@link #returnObject}.
      * @see #setTestOnReturn
      */
-    public synchronized boolean getTestOnReturn() {
+    public boolean getTestOnReturn() {
         return _testOnReturn;
     }
 
@@ -641,7 +641,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @param testOnReturn <code>true</code> so objects will be validated after returned to {@link #returnObject}.
      * @see #getTestOnReturn
      */
-    public synchronized void setTestOnReturn(boolean testOnReturn) {
+    public void setTestOnReturn(boolean testOnReturn) {
         _testOnReturn = testOnReturn;
     }
 
@@ -1388,7 +1388,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @see #setTestOnBorrow
      * @see #getTestOnBorrow
      */
-    private boolean _testOnBorrow = DEFAULT_TEST_ON_BORROW;
+    private volatile boolean _testOnBorrow = DEFAULT_TEST_ON_BORROW;
 
     /**
      * When <tt>true</tt>, objects will be
@@ -1399,7 +1399,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @see #getTestOnReturn
      * @see #setTestOnReturn
      */
-    private boolean _testOnReturn = DEFAULT_TEST_ON_RETURN;
+    private volatile boolean _testOnReturn = DEFAULT_TEST_ON_RETURN;
 
     /**
      * When <tt>true</tt>, objects will be

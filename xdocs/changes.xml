@@ -103,6 +103,12 @@
         performance problems in DBCP and other applications where factory
         methods could block. Fixes both POOL-93 and POOL-108.
       </action>
+      <action dev="psteitz" type="fix" issue="POOL-113">
+        Made _testOnBorrow, _testOnReturn volatile and removed synchronization
+        in associated getters and setters in GenericObjectPool,
+        GenericKeyedObjectPool. Made getNumIdle synchronized in
+        StackKeyedObjectPool. 
+      </action>
     </release>
 
     <release version="1.3" date="2006-pending" description="1.x bugfix release">
