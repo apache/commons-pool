@@ -297,7 +297,7 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
      *
      * @return the total number of instances currently idle in this pool
      */
-    public int getNumIdle() {
+    public synchronized int getNumIdle() {
         return _totIdle;
     }
 
