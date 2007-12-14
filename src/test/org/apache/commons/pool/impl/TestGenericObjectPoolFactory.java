@@ -61,6 +61,7 @@ public class TestGenericObjectPoolFactory extends TestObjectPoolFactory {
         config.testOnBorrow = true;
         config.testOnReturn = false;
         config.testWhileIdle = true;
+        config.lifo = false;
         config.timeBetweenEvictionRunsMillis = 8;
         config.whenExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_GROW;
         factory = new GenericObjectPoolFactory(new MethodCallPoolableObjectFactory(), config);
@@ -75,6 +76,7 @@ public class TestGenericObjectPoolFactory extends TestObjectPoolFactory {
         assertEquals(true, pool.getTestOnBorrow());
         assertEquals(false, pool.getTestOnReturn());
         assertEquals(true, pool.getTestWhileIdle());
+        assertEquals(false, pool.getLifo());
         assertEquals(8, pool.getTimeBetweenEvictionRunsMillis());
         assertEquals(GenericObjectPool.WHEN_EXHAUSTED_GROW, pool.getWhenExhaustedAction());
         pool.borrowObject();
@@ -172,7 +174,7 @@ public class TestGenericObjectPoolFactory extends TestObjectPoolFactory {
         pool.close();
 
 
-        factory = new GenericObjectPoolFactory(new MethodCallPoolableObjectFactory(), 1, GenericObjectPool.WHEN_EXHAUSTED_GROW, 2, 3, 4, true, false, 5, 6, 7, true, 8);
+        factory = new GenericObjectPoolFactory(new MethodCallPoolableObjectFactory(), 1, GenericObjectPool.WHEN_EXHAUSTED_GROW, 2, 3, 4, true, false, 5, 6, 7, true, 8, false);
         pool = (GenericObjectPool)factory.createPool();
         assertEquals(1, pool.getMaxActive());
         assertEquals(2, pool.getMaxWait());
@@ -185,6 +187,7 @@ public class TestGenericObjectPoolFactory extends TestObjectPoolFactory {
         assertEquals(true, pool.getTestOnBorrow());
         assertEquals(false, pool.getTestOnReturn());
         assertEquals(true, pool.getTestWhileIdle());
+        assertEquals(false, pool.getLifo());
         assertEquals(GenericObjectPool.WHEN_EXHAUSTED_GROW, pool.getWhenExhaustedAction());
         pool.borrowObject();
         pool.close();

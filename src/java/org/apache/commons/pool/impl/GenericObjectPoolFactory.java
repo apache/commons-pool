@@ -184,6 +184,30 @@ public class GenericObjectPoolFactory implements ObjectPoolFactory {
      * @see GenericObjectPool#GenericObjectPool(PoolableObjectFactory, int, byte, long, int, int, boolean, boolean, long, int, long, boolean, long)
      */
     public GenericObjectPoolFactory(PoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, int minIdle, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle, long softMinEvictableIdleTimeMillis) {
+        this(factory,maxActive,whenExhaustedAction,maxWait,maxIdle,minIdle,testOnBorrow,testOnReturn,timeBetweenEvictionRunsMillis,numTestsPerEvictionRun,minEvictableIdleTimeMillis,testWhileIdle,softMinEvictableIdleTimeMillis, GenericObjectPool.DEFAULT_LIFO);
+    }
+    
+    /**
+     * Create a new GenericObjectPoolFactory.
+     *
+     * @param factory the PoolableObjectFactory used by created pools.
+     * @param maxActive maximum number of objects that can be borrowed from created pools at one time.
+     * @param whenExhaustedAction the action to take when the pool is exhausted.
+     * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted.
+     * @param maxIdle the maximum number of idle objects in my pool.
+     * @param minIdle the minimum number of idle objects in my pool.
+     * @param testOnBorrow whether to validate objects before they are returned by the borrowObject.
+     * @param testOnReturn whether to validate objects after they are returned to the returnObject.
+     * @param timeBetweenEvictionRunsMillis the number of milliseconds to sleep between examining idle objects for eviction.
+     * @param numTestsPerEvictionRun the number of idle objects to examine per run within the idle object eviction thread.
+     * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligible for eviction.
+     * @param testWhileIdle whether or not to validate objects in the idle object eviction thread.
+     * @param softMinEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligible for eviction with the extra condition that at least "minIdle" amount of object remain in the pool.
+     * @param lifo whether or not objects are returned in last-in-first-out order from the idle object pool.
+     * @since Pool 1.4
+     * @see GenericObjectPool#GenericObjectPool(PoolableObjectFactory, int, byte, long, int, int, boolean, boolean, long, int, long, boolean, long, boolean)
+     */
+    public GenericObjectPoolFactory(PoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, int minIdle, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle, long softMinEvictableIdleTimeMillis, boolean lifo) {
         _maxIdle = maxIdle;
         _minIdle = minIdle;
         _maxActive = maxActive;
@@ -196,11 +220,12 @@ public class GenericObjectPoolFactory implements ObjectPoolFactory {
         _numTestsPerEvictionRun = numTestsPerEvictionRun;
         _minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
         _softMinEvictableIdleTimeMillis = softMinEvictableIdleTimeMillis;
+        _lifo = lifo;
         _factory = factory;
     }
 
     public ObjectPool createPool() {
-        return new GenericObjectPool(_factory,_maxActive,_whenExhaustedAction,_maxWait,_maxIdle,_minIdle,_testOnBorrow,_testOnReturn,_timeBetweenEvictionRunsMillis,_numTestsPerEvictionRun,_minEvictableIdleTimeMillis,_testWhileIdle,_softMinEvictableIdleTimeMillis);
+        return new GenericObjectPool(_factory,_maxActive,_whenExhaustedAction,_maxWait,_maxIdle,_minIdle,_testOnBorrow,_testOnReturn,_timeBetweenEvictionRunsMillis,_numTestsPerEvictionRun,_minEvictableIdleTimeMillis,_testWhileIdle,_softMinEvictableIdleTimeMillis,_lifo);
     }
 
     protected int _maxIdle = GenericObjectPool.DEFAULT_MAX_IDLE;
@@ -215,6 +240,7 @@ public class GenericObjectPoolFactory implements ObjectPoolFactory {
     protected int _numTestsPerEvictionRun =  GenericObjectPool.DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
     protected long _minEvictableIdleTimeMillis = GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
     protected long _softMinEvictableIdleTimeMillis = GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+    protected boolean _lifo = GenericObjectPool.DEFAULT_LIFO;
     protected PoolableObjectFactory _factory = null;
 
 
