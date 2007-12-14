@@ -122,6 +122,19 @@ import org.apache.commons.pool.impl.GenericKeyedObjectPool.ObjectTimestampPair;
  *  </li>
  * </ul>
  * <p>
+ * <p>
+ * The pool can be configured to behave as a LIFO queue with respect to idle
+ * objects - always returning the most recently used object from the pool,
+ * or as a FIFO queue, where borrowObject always returns the oldest object
+ * in the idle object pool.
+ * <ul>
+ *  <li>
+ *   {@link #setLifo <i>Lifo</i>}
+ *   determines whether or not the pool returns idle objects in 
+ *   last-in-first-out order.
+ *  </li>
+ * </ul>
+ * <p>
  * GenericObjectPool is not usable without a {@link PoolableObjectFactory}.  A
  * non-<code>null</code> factory must be provided either as a constructor argument
  * or via a call to {@link #setFactory} before the pool is used.
@@ -210,6 +223,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * queue - objects are taken from the idle object pool in the order that
      * they are returned to the pool.
      * @see #setLifo
+     * @since 1.4
      */
     public static final boolean DEFAULT_LIFO = true;
 
@@ -791,6 +805,8 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * in the pool (if there are idle instances available).  False means that
      * the pool behaves as a FIFO queue - objects are taken from the idle object
      * pool in the order that they are returned to the pool.
+     * 
+     * @since 1.4
      */
      public synchronized boolean getLifo() {
          return _lifo;
@@ -802,6 +818,9 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
       * idle instances available).  False means that the pool behaves as a FIFO
       * queue - objects are taken from the idle object pool in the order that
       * they are returned to the pool.
+      * 
+      * @param lifo the new value for the LIFO property
+      * @since 1.4
       */
      public synchronized void setLifo(boolean lifo) {
          this._lifo = lifo;
