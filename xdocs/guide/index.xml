@@ -33,8 +33,12 @@
 <ul>
    <li>
        <a href="../apidocs/org/apache/commons/pool/impl/GenericObjectPool.html">GenericObjectPool</a>:
-       ObjectPool implementation with a FIFO (First In First Out) behavior. This queue like behavior 
-       makes sure each object is regularly used. (helps preventing time-outs)
+       ObjectPool implementation with configurable LIFO/FIFO behavior.
+       The default behavior is for the pool to act as a LIFO queue. What this
+       means is that when there are idle objects available in the pool, 
+       borrowObject returns the most recently returned ("last in") instance.
+       If the <code>lifo</code> the property of the pool false, instances are
+       returned in the oppposite order - first-in, first-out.
    </li>
    <li>
        <a href="../apidocs/org/apache/commons/pool/impl/StackObjectPool.html">StackObjectPool</a>:

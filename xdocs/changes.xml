@@ -22,49 +22,31 @@
   </properties>
   <body>
 
-    <release version="2.0" date="pending" description="Significant clean ups">
+    <release version="1.4-RC1" date="pending" description=
+"This is a maintenance release including numerous bug fixes. This release
+is source and binary compatible with version 1.3 of commons pool, but
+there are some behavior changes introduced to resolve bugs, remove ambiguity
+or improve robustness. Among these are the change in default behavior of
+GenericObjectPool and GenericKeyedObjectPool from FIFO back to LIFO queues
+(as in 1.2 and earlier). The LIFO/FIFO behavior is now configurable. Some of
+the extra synchronization included in version 1.3 was removed / refactored to
+improve performance. The javadoc has also been made more complete and explicit.">
       <action dev="sandymac" type="update">
-        Where there is no factory calling addObject is bogus so throw an IllegalStateExecption.
+        When no factory has been defined, addObject now throws 
+        IllegalStateExecption instead of NullPointerException.
       </action>
       <action dev="sandymac" type="fix">
-        Edited all KeyedObjectPool related JavaDocs to have meaningful and correct content.
-      </action>
-      <action dev="sandymac" type="fix">
-        Implemented unit tests to verify KeyedObjectPool implementations conformed to Pool 2 contracts.
-        Updated GenericKeyedObjectPool and StackKeyedObjectPool to conformant behavior.
-      </action>
-      <action dev="sandymac" type="fix">
-        Don't ignore maxTotal parameter in
+        Fixed constructor which was ignoring maxTotal parameter: 
         <code>GenericKeyedObjectPool(KeyedPoolableObjectFactory factory, int maxActive, byte whenExhaustedAction,
           long maxWait, int maxIdle, int maxTotal, boolean testOnBorrow, boolean testOnReturn,
           long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis,
           boolean testWhileIdle)</code>
       </action>
       <action dev="sandymac" type="fix">
-        Change StackKeyedObjectPool to discard stalest, not freshest, idle object when maxSleeping is reached.
-      </action>
-      <action dev="sandymac" type="fix">
-        Edited all ObjectPool related JavaDocs to have meaningful and correct content.
-      </action>
-      <action dev="sandymac" type="fix">
-        Implemented until tests to verify ObjectPool implementations conformed to Pool 2 contracts.
-        Updated GenericObjectPool, StackObjectPool, and SoftReferenceObjectPool to conformant behavior.
-      </action>
-      <action dev="sandymac" type="fix">
-        Fix JavaDocs to conform to Pool 2 contracts.
+        Changed StackKeyedObjectPool to discard stalest, not freshest, idle object when maxSleeping is reached.
       </action>
       <action dev="sandymac" type="update">
         Improved SoftReferenceObjectPool getNumIdle accuracy.
-      </action>
-      <action dev="rdonkin" type="update">
-        <description>Updates to javadoc contracts for 2.0.</description>
-        <fixes issue="38660"/>
-        <fixes issue="38664"/>
-        <fixes issue="38666"/>
-        <fixes issue="38667"/>
-        <fixes issue="38669"/>
-        <fixes issue="38746"/>
-        <dueto name="Sandy McArthur"/>
       </action>
       <action dev="psteitz" type="fix" issue="POOL-102" due-to="John Sumsion">
         Allowed blocked threads in GenericObjectPool borrowObject to be interrupted.
@@ -75,9 +57,9 @@
         <ul>
           <li>Made LIFO/FIFO behavior configurable for GenericObjectPool and
               GenericKeyedObjectPool, with default set back to LIFO
-              (reverting to 1.2 behavior)</li>
+              (reverting to 1.2 behavior).</li>
           <li>Fixed GOP, GKOP evict method and added tests to ensure objects
-              are visited in oldest-to-youngest order</li>
+              are visited in oldest-to-youngest order.</li>
           <li>Changed backing store for GOP, GKOP pools back to Commons
               Collections CursorableLinkedList (brought this class in,
               repackaged with package scope).</li>
@@ -111,7 +93,7 @@
       </action>
     </release>
 
-    <release version="1.3" date="2006-pending" description="1.x bugfix release">
+    <release version="1.3" date="2006-04-06" description="1.x bugfix release">
       <action type="fix">A large number of bug fixes. See release notes for changes.</action>
     </release>
 
