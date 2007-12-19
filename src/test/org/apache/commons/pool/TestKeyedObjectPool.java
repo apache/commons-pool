@@ -20,6 +20,9 @@ import junit.framework.TestCase;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
+
+import org.apache.commons.pool.impl.GenericKeyedObjectPool;
 
 /**
  * Abstract {@link TestCase} for {@link ObjectPool} implementations.
@@ -146,6 +149,10 @@ public abstract class TestKeyedObjectPool extends TestCase {
         }
         final List expectedMethods = new ArrayList();
         Object obj;
+        
+        if (pool instanceof GenericKeyedObjectPool) {
+            ((GenericKeyedObjectPool) pool).setTestOnBorrow(true);
+        }
 
         /// Test correct behavior code paths
 
@@ -180,11 +187,18 @@ public abstract class TestKeyedObjectPool extends TestCase {
 
         factory.setActivateObjectFail(true);
         expectedMethods.add(new MethodCall("activateObject", KEY, obj));
-        obj = pool.borrowObject(KEY);
+        try {
+            obj = pool.borrowObject(KEY); 
+            fail("Expecting NoSuchElementException");
+        } catch (NoSuchElementException e) {
+            //Activate should fail
+        }
+        // After idle object fails validation, new on is created and activation
+        // fails again for the new one.
         expectedMethods.add(new MethodCall("makeObject", KEY).returned(ONE));
+        expectedMethods.add(new MethodCall("activateObject", KEY, ONE));
         TestObjectPool.removeDestroyObjectCall(factory.getMethodCalls()); // The exact timing of destroyObject is flexible here.
         assertEquals(expectedMethods, factory.getMethodCalls());
-        pool.returnObject(KEY, obj);
 
         // when validateObject fails in borrowObject, a new object should be borrowed/created
         reset(pool, factory, expectedMethods);
@@ -192,13 +206,23 @@ public abstract class TestKeyedObjectPool extends TestCase {
         clear(factory, expectedMethods);
 
         factory.setValidateObjectFail(true);
+        // testOnBorrow is on, so this will throw when the newly created instance
+        // fails validation
+        try {
+            obj = pool.borrowObject(KEY);
+            fail("Expecting NoSuchElementException");
+        } catch (NoSuchElementException ex) {
+            // expected
+        }
+        // Activate, then validate for idle instance
         expectedMethods.add(new MethodCall("activateObject", KEY, ZERO));
         expectedMethods.add(new MethodCall("validateObject", KEY, ZERO));
-        obj = pool.borrowObject(KEY);
+        // Make new instance, activate succeeds, validate fails
         expectedMethods.add(new MethodCall("makeObject", KEY).returned(ONE));
-        TestObjectPool.removeDestroyObjectCall(factory.getMethodCalls()); // The exact timing of destroyObject is flexible here.
+        expectedMethods.add(new MethodCall("activateObject", KEY, ONE));
+        expectedMethods.add(new MethodCall("validateObject", KEY, ONE));
+        TestObjectPool.removeDestroyObjectCall(factory.getMethodCalls());
         assertEquals(expectedMethods, factory.getMethodCalls());
-        pool.returnObject(KEY, obj);
     }
 
     public void testKPOFReturnObjectUsages() throws Exception {

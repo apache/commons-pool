@@ -177,14 +177,33 @@ public class TestStackObjectPool extends TestBaseObjectPool {
 
         Object[] obj = new Object[10];
         for(int i=0;i<10;i++) {
-            obj[i] = pool.borrowObject();
+            Object object = null;
+            int k = 0;
+            while (object == null && k < 100) { // bound not really needed
+                try {
+                    k++;
+                    object = pool.borrowObject();
+                    obj[i] = object;
+                } catch (NoSuchElementException ex) {
+                    // Expected for evens, which fail validation
+                }
+            }
             assertEquals("Each time we borrow, get one more active.", i+1, pool.getNumActive());
         }
+        // 1,3,5,...,19 pass validation, get checked out
         for(int i=0;i<10;i++) {
             pool.returnObject(obj[i]);
             assertEquals("Each time we borrow, get one less active.", 9-i, pool.getNumActive());
         }
-        assertEquals(6,pool.getNumIdle());
+        // 3, 9, 15 fail passivation.  
+        assertEquals(7,pool.getNumIdle());
+        assertEquals(new Integer(19), (Integer) pool.borrowObject());
+        assertEquals(new Integer(17), (Integer) pool.borrowObject());
+        assertEquals(new Integer(13), (Integer) pool.borrowObject());
+        assertEquals(new Integer(11), (Integer) pool.borrowObject());
+        assertEquals(new Integer(7), (Integer) pool.borrowObject());
+        assertEquals(new Integer(5), (Integer) pool.borrowObject());
+        assertEquals(new Integer(1), (Integer) pool.borrowObject());     
     }
     
     public void testBorrowReturnWithSometimesInvalidObjects() throws Exception {

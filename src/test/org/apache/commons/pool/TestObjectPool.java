@@ -17,10 +17,12 @@
 package org.apache.commons.pool;
 
 import junit.framework.TestCase;
+import org.apache.commons.pool.impl.GenericObjectPool;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * Abstract {@link TestCase} for {@link ObjectPool} implementations.
@@ -154,6 +156,9 @@ public abstract class TestObjectPool extends TestCase {
         } catch (UnsupportedOperationException uoe) {
             return; // test not supported
         }
+        if (pool instanceof GenericObjectPool) {
+            ((GenericObjectPool) pool).setTestOnBorrow(true);
+        }
         final List expectedMethods = new ArrayList();
         Object obj;
 
@@ -190,11 +195,17 @@ public abstract class TestObjectPool extends TestCase {
 
         factory.setActivateObjectFail(true);
         expectedMethods.add(new MethodCall("activateObject", obj));
-        obj = pool.borrowObject();
+        try {
+            obj = pool.borrowObject();
+            fail("Expecting NoSuchElementException");
+        } catch (NoSuchElementException ex) {
+            // Expected - newly created object will also fail to activate
+        }
+        // Idle object fails activation, new one created, also fails
         expectedMethods.add(new MethodCall("makeObject").returned(ONE));
+        expectedMethods.add(new MethodCall("activateObject", ONE));
         removeDestroyObjectCall(factory.getMethodCalls()); // The exact timing of destroyObject is flexible here.
         assertEquals(expectedMethods, factory.getMethodCalls());
-        pool.returnObject(obj);
 
         // when validateObject fails in borrowObject, a new object should be borrowed/created
         reset(pool, factory, expectedMethods);
@@ -204,11 +215,19 @@ public abstract class TestObjectPool extends TestCase {
         factory.setValidateObjectFail(true);
         expectedMethods.add(new MethodCall("activateObject", ZERO));
         expectedMethods.add(new MethodCall("validateObject", ZERO));
-        obj = pool.borrowObject();
+        try {
+            obj = pool.borrowObject();
+        } catch (NoSuchElementException ex) {
+            // Expected - newly created object will also fail to validate
+        }
+        // Idle object is activated, but fails validation.
+        // New instance is created, activated and then fails validation
         expectedMethods.add(new MethodCall("makeObject").returned(ONE));
+        expectedMethods.add(new MethodCall("activateObject", ONE));
+        expectedMethods.add(new MethodCall("validateObject", ONE));
         removeDestroyObjectCall(factory.getMethodCalls()); // The exact timing of destroyObject is flexible here.
-        assertEquals(expectedMethods, factory.getMethodCalls());
-        pool.returnObject(obj);
+        // Second activate and validate are missing from expectedMethods
+        assertTrue(factory.getMethodCalls().containsAll(expectedMethods));
     }
 
     public void testPOFReturnObjectUsages() throws Exception {

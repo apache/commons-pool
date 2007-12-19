@@ -99,33 +99,24 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
                 obj = ref.get();
                 ref.clear(); // prevent this ref from being enqueued with refQueue.
             }
-            if (!newlyCreated && null != _factory && null != obj) {
+            if (null != _factory && null != obj) {
                 try {
                     _factory.activateObject(obj);
-                } catch (Exception e) {
+                    if (!_factory.validateObject(obj)) {
+                        throw new Exception("ValidateObject failed");
+                    }
+                } catch (Throwable t) {
                     try {
                         _factory.destroyObject(obj);
-                    } catch (Exception e2) {
+                    } catch (Throwable t2) {
                         // swallowed
                     } finally {
                         obj = null;
                     }
-                }
-            }
-            if (!newlyCreated && null != _factory && null != obj) {
-                boolean validated = false;
-                try {
-                    validated = _factory.validateObject(obj);
-                } catch (Exception e) {
-                    // swallowed
-                }
-                if (!validated) {
-                    try {
-                        _factory.destroyObject(obj);
-                    } catch(Exception e) {
-                        // swallowed
-                    } finally {
-                        obj = null;
+                    if (newlyCreated) {
+                        throw new NoSuchElementException(
+                            "Could not create a validated object, cause: " +
+                            t.getMessage());
                     }
                 }
             }
