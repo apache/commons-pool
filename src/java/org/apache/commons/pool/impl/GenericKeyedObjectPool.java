@@ -226,7 +226,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @see #getTestOnBorrow
      * @see #setTestOnBorrow
      */
-    public static final boolean DEFAULT_TEST_ON_BORROW = true;
+    public static final boolean DEFAULT_TEST_ON_BORROW = false;
 
     /**
      * The default "test on return" value.
@@ -926,45 +926,54 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 }
                 pool.incrementActiveCount();
             }
-            if (newlyCreated) {
-                return pair.value;
-            } else {
+            
+            // Activate.  If activate fails, decrement active count and destroy.
+            // If instance failing activation is new, throw NoSuchElementException;
+            // otherwise keep looping
+            try {
+                _factory.activateObject(key, pair.value);
+            } catch (Exception e) {
                 try {
-                    _factory.activateObject(key, pair.value);
-                } catch (Exception e) {
-                    try {
-                        synchronized (this) {
-                            pool.decrementActiveCount();
-                        }
-                        _factory.destroyObject(key,pair.value);
-                    } catch (Exception e2) {
-                        // swallowed
+                    synchronized (this) {
+                        pool.decrementActiveCount();
                     }
-                    continue;
+                    _factory.destroyObject(key,pair.value);
+                } catch (Exception e2) {
+                    // swallowed
                 }
+                if(newlyCreated) {
+                    throw new NoSuchElementException(
+                       "Could not create a validated object, cause: "
+                            + e.getMessage());
+                }
+                else {
+                    continue; // keep looping
+                }
+            }
 
-                boolean invalid = true;
+            // Validate.  If validation fails, decrement active count and
+            // destroy. If instance failing validation is new, throw
+            // NoSuchElementException; otherwise keep looping
+            boolean invalid = true;
+            try {
+                invalid = _testOnBorrow && !_factory.validateObject(key, pair.value);
+            } catch (Exception e) {
+                // swallowed
+            }
+            if (invalid) {
                 try {
-                    invalid = _testOnBorrow && !_factory.validateObject(key, pair.value);
+                    synchronized (this) {
+                        pool.decrementActiveCount();
+                    }
+                    _factory.destroyObject(key,pair.value);
                 } catch (Exception e) {
                     // swallowed
                 }
-                if (invalid) {
-                    try {
-                        synchronized (this) {
-                            pool.decrementActiveCount();
-                        }
-                        _factory.destroyObject(key,pair.value);
-                    } catch (Exception e) {
-                        // swallowed
-                    }
-                    if(newlyCreated) {
-                        throw new NoSuchElementException("Could not create a validated object");
-                    } // else keep looping
-                } else {
-                    return pair.value;
-                }
-
+                if(newlyCreated) {
+                    throw new NoSuchElementException("Could not create a validated object");
+                } // else keep looping
+            } else {
+                return pair.value;
             }
         }
     }

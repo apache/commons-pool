@@ -96,6 +96,12 @@ improve performance. The javadoc has also been made more complete and explicit."
         a Config instance as a parameter. The minIdle setting in the Config
         was being ignored by the constructor.
       </action>
+      <action def="psteitz" type="fix" issue="POOL-117">
+        Made behavior on instance validation failure consistent across pools,
+        eliminating possible infinite loops in StackObjectPool,
+        StackKeyedObjectPool, SoftReferenceObjectPool when factory fails to
+        create valid objects. 
+      </action>
     </release>
 
     <release version="1.3" date="2006-04-06" description="1.x bugfix release">

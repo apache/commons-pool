@@ -129,7 +129,7 @@ import org.apache.commons.pool.impl.GenericKeyedObjectPool.ObjectTimestampPair;
  * in the idle object pool.
  * <ul>
  *  <li>
- *   {@link #setLifo <i>Lifo</i>}
+ *   {@link #setLifo <i>lifo</i>}
  *   determines whether or not the pool returns idle objects in 
  *   last-in-first-out order.
  *  </li>
@@ -243,7 +243,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @see #getTestOnBorrow
      * @see #setTestOnBorrow
      */
-    public static final boolean DEFAULT_TEST_ON_BORROW = true;
+    public static final boolean DEFAULT_TEST_ON_BORROW = false;
 
     /**
      * The default "test on return" value.
@@ -940,7 +940,6 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                     Object obj = _factory.makeObject();
                     pair = new ObjectTimestampPair(obj);
                     newlyCreated = true;
-                    return pair.value;
                 } finally {
                     if (!newlyCreated) {
                         // object cannot be created

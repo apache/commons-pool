@@ -154,24 +154,25 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
                     newlyMade = true;
                 }
             }
-            if(!newlyMade && null != obj && null != _factory) {
+            if (null != _factory && null != obj) {
                 try {
                     _factory.activateObject(key, obj);
                     if (!_factory.validateObject(key, obj)) {
-                        try {
-                            _factory.destroyObject(key, obj);
-                        } catch (Exception e2) {
-                            // swallowed
-                        }
-                        obj = null;
+                        throw new Exception("ValidateObject failed");
                     }
-                } catch (Exception e) {
+                } catch (Throwable t) {
                     try {
-                        _factory.destroyObject(key, obj);
-                    } catch (Exception e2) {
+                        _factory.destroyObject(key,obj);
+                    } catch (Throwable t2) {
                         // swallowed
+                    } finally {
+                        obj = null;
+                    } 
+                    if (newlyMade) {
+                        throw new NoSuchElementException(
+                            "Could not create a validated object, cause: " +
+                            t.getMessage());
                     }
-                    obj = null;
                 }
             }
         } while (obj == null);
