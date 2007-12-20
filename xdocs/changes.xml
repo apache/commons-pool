@@ -109,6 +109,11 @@
         GenericKeyedObjectPool. Made getNumIdle synchronized in
         StackKeyedObjectPool. 
       </action>
+      <action dev="psteitz" type="fix" issue="POOL-116">
+        Fixed an error in the GenericKeyedObjectPool constructor that takes
+        a Config instance as a parameter. The minIdle setting in the Config
+        was being ignored by the constructor.
+      </action>
     </release>
 
     <release version="1.3" date="2006-pending" description="1.x bugfix release">
