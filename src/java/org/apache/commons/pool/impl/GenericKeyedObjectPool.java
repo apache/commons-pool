@@ -117,6 +117,18 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  *  </li>
  * </ul>
  * <p>
+ * The pools can be configured to behave as LIFO queues with respect to idle
+ * objects - always returning the most recently used object from the pool,
+ * or as FIFO queues, where borrowObject always returns the oldest object
+ * in the idle object pool.
+ * <ul>
+ *  <li>
+ *   {@link #setLifo <i>Lifo</i>}
+ *   determines whether or not the pools return idle objects in 
+ *   last-in-first-out order.
+ *  </li>
+ * </ul>
+ * <p>
  * GenericKeyedObjectPool is not usable without a {@link KeyedPoolableObjectFactory}.  A
  * non-<code>null</code> factory must be provided either as a constructor argument
  * or via a call to {@link #setFactory setFactory} before the pool is used.
@@ -417,8 +429,31 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @since Pool 1.3
      */
     public GenericKeyedObjectPool(KeyedPoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, int maxTotal, int minIdle, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle) {
+        this(factory, maxActive, whenExhaustedAction, maxWait, maxIdle, maxTotal, minIdle, testOnBorrow, testOnReturn, timeBetweenEvictionRunsMillis, numTestsPerEvictionRun, minEvictableIdleTimeMillis, testWhileIdle, DEFAULT_LIFO);
+    }
+    
+    /**
+     * Create a new <code>GenericKeyedObjectPool</code> using the specified values.
+     * @param factory the <code>KeyedPoolableObjectFactory</code> to use to create, validate, and destroy objects if not <code>null</code>
+     * @param maxActive the maximum number of objects that can be borrowed from me at one time (see {@link #setMaxActive})
+     * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #setWhenExhaustedAction})
+     * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted and <code>whenExhaustedAction</code> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
+     * @param maxIdle the maximum number of idle objects in my pool (see {@link #setMaxIdle})
+     * @param maxTotal the maximum number of objects that can exists at one time (see {@link #setMaxTotal})
+     * @param minIdle the minimum number of idle objects to have in the pool at any one time (see {@link #setMinIdle})
+     * @param testOnBorrow whether or not to validate objects before they are returned by the {@link #borrowObject} method (see {@link #setTestOnBorrow})
+     * @param testOnReturn whether or not to validate objects after they are returned to the {@link #returnObject} method (see {@link #setTestOnReturn})
+     * @param timeBetweenEvictionRunsMillis the amount of time (in milliseconds) to sleep between examining idle objects for eviction (see {@link #setTimeBetweenEvictionRunsMillis})
+     * @param numTestsPerEvictionRun the number of idle objects to examine per run within the idle object eviction thread (if any) (see {@link #setNumTestsPerEvictionRun})
+     * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before it is eligible for eviction (see {@link #setMinEvictableIdleTimeMillis})
+     * @param testWhileIdle whether or not to validate objects in the idle object eviction thread, if any (see {@link #setTestWhileIdle})
+     * @param lifo whether or not the pools behave as LIFO (last in first out) queues (see {@link #setLifo}) 
+     * @since Pool 1.4
+     */
+    public GenericKeyedObjectPool(KeyedPoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, int maxTotal, int minIdle, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle, boolean lifo) {
         _factory = factory;
         _maxActive = maxActive;
+        _lifo = lifo;
         switch(whenExhaustedAction) {
             case WHEN_EXHAUSTED_BLOCK:
             case WHEN_EXHAUSTED_FAIL:
@@ -1679,6 +1714,10 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
          * @see GenericKeyedObjectPool#setMinEvictableIdleTimeMillis
          */
         public long minEvictableIdleTimeMillis = GenericKeyedObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+        /**
+         * @see GenericKeyedObjectPool#setLifo
+         */
+        public boolean lifo = GenericKeyedObjectPool.DEFAULT_LIFO;
     }
 
     //--- protected attributes ---------------------------------------

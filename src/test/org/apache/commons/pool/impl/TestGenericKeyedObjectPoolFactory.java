@@ -63,6 +63,7 @@ public class TestGenericKeyedObjectPoolFactory extends TestKeyedObjectPoolFactor
         config.testWhileIdle = true;
         config.timeBetweenEvictionRunsMillis = 8;
         config.whenExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_GROW;
+        config.lifo = false;
         factory = new GenericKeyedObjectPoolFactory(createObjectFactory(), config);
         pool = (GenericKeyedObjectPool)factory.createPool();
         assertEquals(1, pool.getMaxActive());
@@ -74,6 +75,7 @@ public class TestGenericKeyedObjectPoolFactory extends TestKeyedObjectPoolFactor
         assertEquals(true, pool.getTestOnBorrow());
         assertEquals(false, pool.getTestOnReturn());
         assertEquals(true, pool.getTestWhileIdle());
+        assertEquals(false, pool.getLifo());
         assertEquals(8, pool.getTimeBetweenEvictionRunsMillis());
         assertEquals(GenericObjectPool.WHEN_EXHAUSTED_GROW, pool.getWhenExhaustedAction());
         pool.close();
