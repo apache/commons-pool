@@ -1201,10 +1201,6 @@ class CursorableLinkedList implements List, Serializable {
 
 }
 
-/**
- * @deprecated Use new version in list subpackage, which has been rewritten
- *  and now returns the cursor from the listIterator method. Will be removed in v4.0
- */
 class CursorableSubList extends CursorableLinkedList implements List {
 
     //--- constructors -----------------------------------------------
