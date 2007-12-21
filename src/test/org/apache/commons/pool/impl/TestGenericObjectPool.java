@@ -22,12 +22,10 @@ import junit.framework.TestSuite;
 import org.apache.commons.pool.BasePoolableObjectFactory;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
-import org.apache.commons.pool.TestObjectPool;
 import org.apache.commons.pool.PoolUtils;
 import org.apache.commons.pool.TestBaseObjectPool;
 import org.apache.commons.pool.VisitTracker;
 import org.apache.commons.pool.VisitTrackerFactory;
-import org.apache.commons.pool.impl.TestGenericKeyedObjectPool.TestThread;
 
 import java.util.NoSuchElementException;
 import java.util.Random;
