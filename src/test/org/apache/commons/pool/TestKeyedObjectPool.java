@@ -465,7 +465,7 @@ public abstract class TestKeyedObjectPool extends TestCase {
                 throw new PrivateException("validateObject");
             }
             final boolean r = true;
-            call.returned(Boolean.valueOf(r));
+            call.returned(new Boolean(r));
             return r;
         }
 
