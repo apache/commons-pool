@@ -961,15 +961,14 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
             }
             catch (Throwable e) {
                 // object cannot be activated or is invalid
+                try {
+                    _factory.destroyObject(pair.value);
+                } catch (Throwable e2) {
+                    // cannot destroy broken object
+                }
                 synchronized (this) {
                     _numActive--;
                     notifyAll();
-                }
-                try {
-                    _factory.destroyObject(pair.value);
-                }
-                catch (Throwable e2) {
-                    // cannot destroy broken object
                 }
                 if(newlyCreated) {
                     throw new NoSuchElementException("Could not create a validated object, cause: " + e.getMessage());
@@ -1062,12 +1061,11 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
             _factory.passivateObject(obj);
         }
 
-        boolean shouldDestroy = false;
+        boolean shouldDestroy = !success;
 
+        // Add instance to pool if there is room and it has passed validation
+        // (if testOnreturn is set)
         synchronized (this) {
-            if (decrementNumActive) {
-                _numActive--;
-            }
             if (isClosed()) {
                 shouldDestroy = true;
             } else {
@@ -1083,14 +1081,22 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                     }
                 }
             }
-            notifyAll(); // _numActive has changed
         }
 
+        // Destroy the instance if necessary 
         if(shouldDestroy) {
             try {
                 _factory.destroyObject(obj);
             } catch(Exception e) {
                 // ignored
+            }
+        }
+        
+        // Decrement active count *after* destroy if applicable
+        if (decrementNumActive) {
+            synchronized(this) {
+                _numActive--;
+                notifyAll();
             }
         }
     }
