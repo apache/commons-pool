@@ -36,6 +36,11 @@
         <ant:include name="*.jar"/>
       </ant:fileset>
     </ant:copy>
+    
+    <attainGoal name="announcement:generate" />
+    <ant:copy todir="${maven.dist.bin.assembly.dir}">
+      <ant:fileset file='${basedir}/RELEASE-NOTES.txt'/>
+    </ant:copy>
 
   </postGoal>
   
