@@ -37,35 +37,35 @@ public class TestBaseObjectPool extends TestObjectPool {
     
     protected ObjectPool makeEmptyPool(int mincapacity) {
         if (this.getClass() != TestBaseObjectPool.class) {
-            throw new AssertionError("Subclasses of TestBaseObjectPool must reimplement this method.");
+            fail("Subclasses of TestBaseObjectPool must reimplement this method.");
         }
         throw new UnsupportedOperationException("BaseObjectPool isn't a complete implementation.");
     }
 
     protected ObjectPool makeEmptyPool(final PoolableObjectFactory factory) {
         if (this.getClass() != TestBaseObjectPool.class) {
-            throw new AssertionError("Subclasses of TestBaseObjectPool must reimplement this method.");
+            fail("Subclasses of TestBaseObjectPool must reimplement this method.");
         }
         throw new UnsupportedOperationException("BaseObjectPool isn't a complete implementation.");
     }
 
     protected Object getNthObject(final int n) {
         if (this.getClass() != TestBaseObjectPool.class) {
-            throw new AssertionError("Subclasses of TestBaseObjectPool must reimplement this method.");
+            fail("Subclasses of TestBaseObjectPool must reimplement this method.");
         }
         throw new UnsupportedOperationException("BaseObjectPool isn't a complete implementation.");
     }
 
     protected boolean isLifo() {
         if (this.getClass() != TestBaseObjectPool.class) {
-            throw new AssertionError("Subclasses of TestBaseObjectPool must reimplement this method.");
+            fail("Subclasses of TestBaseObjectPool must reimplement this method.");
         }
         return false;
     }
 
     protected boolean isFifo() {
         if (this.getClass() != TestBaseObjectPool.class) {
-            throw new AssertionError("Subclasses of TestBaseObjectPool must reimplement this method.");
+            fail("Subclasses of TestBaseObjectPool must reimplement this method.");
         }
         return false;
     }
