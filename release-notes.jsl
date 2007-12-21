@@ -108,16 +108,6 @@ Changes in this version include:</j:whitespace>
       <!-- Nasty hack to detect a plugin until pom.type exists -->
       <u:available file="${basedir}/plugin.jelly">
         <j:whitespace trim="false"> 
-
-To automatically install the plugin, type the following on a single line:
-
-maven plugin:download 
-  -DgroupId=${pom.groupId} 
-  -DartifactId=${pom.artifactId}
-  -Dversion=${versionVariable}
-
-For a manual installation, you can download the plugin here:
-${distributionUrl}/${pom.artifactId}-${versionVariable}.jar
         </j:whitespace>
       </u:available>
       <j:whitespace trim="false"> 
@@ -158,5 +148,4 @@ o ${line}</j:whitespace>
   <jsl:template match="@*"/>
 
   <jsl:template match="text()"/>
-
 </jsl:stylesheet>
