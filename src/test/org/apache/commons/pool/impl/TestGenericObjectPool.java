@@ -27,6 +27,7 @@ import org.apache.commons.pool.PoolUtils;
 import org.apache.commons.pool.TestBaseObjectPool;
 import org.apache.commons.pool.VisitTracker;
 import org.apache.commons.pool.VisitTrackerFactory;
+import org.apache.commons.pool.impl.TestGenericKeyedObjectPool.TestThread;
 
 import java.util.NoSuchElementException;
 import java.util.Random;
@@ -907,17 +908,19 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertTrue("Should be 10 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 10);
     }
 
-    public void testThreaded1() throws Exception {
-        pool.setMaxActive(15);
-        pool.setMaxIdle(15);
-        pool.setMaxWait(1000L);
-        TestThread[] threads = new TestThread[20];
-        for(int i=0;i<20;i++) {
-            threads[i] = new TestThread(pool,100,50);
+    /**
+     * Kicks off <numThreads> test threads, each of which will go through
+     * <iterations> borrow-return cycles with random delay times <= delay
+     * in between.
+     */
+    public void runTestThreads(int numThreads, int iterations, int delay) {
+        TestThread[] threads = new TestThread[numThreads];
+        for(int i=0;i<numThreads;i++) {
+            threads[i] = new TestThread(pool,iterations,delay);
             Thread t = new Thread(threads[i]);
             t.start();
         }
-        for(int i=0;i<20;i++) {
+        for(int i=0;i<numThreads;i++) {
             while(!(threads[i]).complete()) {
                 try {
                     Thread.sleep(500L);
@@ -929,6 +932,33 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 fail();
             }
         }
+    }
+    
+    public void testThreaded1() throws Exception {
+        pool.setMaxActive(15);
+        pool.setMaxIdle(15);
+        pool.setMaxWait(1000L);
+        runTestThreads(20, 100, 50);
+    }
+    
+    /**
+     * Verifies that maxActive is not exceeded when factory destroyObject
+     * has high latency, testOnReturn is set and there is high incidence of
+     * validation failures. 
+     */
+    public void testMaxActiveInvariant() throws Exception {
+        int maxActive = 15;
+        SimpleFactory factory = new SimpleFactory();
+        factory.setEvenValid(false);     // Every other validation fails
+        factory.setDestroyLatency(100);  // Destroy takes 100 ms
+        factory.setMaxActive(maxActive); // (makes - destroys) bound
+        factory.setValidationEnabled(true);
+        pool = new GenericObjectPool(factory);
+        pool.setMaxActive(maxActive);
+        pool.setMaxIdle(-1);
+        pool.setTestOnReturn(true);
+        pool.setMaxWait(1000L);
+        runTestThreads(5, 10, 50);
     }
 
     class TestThread implements Runnable {
@@ -973,6 +1003,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 try {
                     obj = _pool.borrowObject();
                 } catch(Exception e) {
+                    e.printStackTrace();
                     _failed = true;
                     _complete = true;
                     break;
@@ -1084,11 +1115,27 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         public void setThrowExceptionOnPassivate(boolean bool) {
             exceptionOnPassivate = bool;
         }
-    
-        public Object makeObject() {
+        public void setMaxActive(int maxActive) {
+            this.maxActive = maxActive;
+        }
+        public void setDestroyLatency(long destroyLatency) {
+            this.destroyLatency = destroyLatency;
+        }
+        public Object makeObject() { 
+            synchronized(this) {
+                activeCount++;
+                if (activeCount > maxActive) {
+                    throw new IllegalStateException(
+                        "Too many active instances: " + activeCount);
+                }
+            }
             return String.valueOf(makeCounter++);
         }
         public void destroyObject(Object obj) {
+            doWait(destroyLatency);
+            synchronized(this) {
+                activeCount--;
+            }
         }
         public boolean validateObject(Object obj) {
             if (enableValidation) { 
@@ -1112,11 +1159,14 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
         int makeCounter = 0;
         int validateCounter = 0;
+        int activeCount = 0;
         boolean evenValid = true;
         boolean oddValid = true;
         boolean exceptionOnPassivate = false;
         boolean exceptionOnActivate = false;
         boolean enableValidation = true;
+        long destroyLatency = 0;
+        int maxActive = Integer.MAX_VALUE;
 
         public boolean isThrowExceptionOnActivate() {
             return exceptionOnActivate;
@@ -1133,8 +1183,15 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         public void setValidationEnabled(boolean b) {
             enableValidation = b;
         }
+        
+        private void doWait(long latency) {
+            try {
+                Thread.sleep(latency);
+            } catch (InterruptedException ex) {
+                // ignore
+            }
+        }
     }
-
     protected boolean isLifo() {
  
         return false;

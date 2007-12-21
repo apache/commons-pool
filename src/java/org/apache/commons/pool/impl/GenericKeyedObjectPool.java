@@ -934,10 +934,10 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 _factory.activateObject(key, pair.value);
             } catch (Exception e) {
                 try {
+                    _factory.destroyObject(key,pair.value);
                     synchronized (this) {
                         pool.decrementActiveCount();
                     }
-                    _factory.destroyObject(key,pair.value);
                 } catch (Exception e2) {
                     // swallowed
                 }
@@ -962,10 +962,10 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             }
             if (invalid) {
                 try {
+                    _factory.destroyObject(key,pair.value);
                     synchronized (this) {
                         pool.decrementActiveCount();
                     }
-                    _factory.destroyObject(key,pair.value);
                 } catch (Exception e) {
                     // swallowed
                 }
@@ -1143,19 +1143,19 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             _factory.passivateObject(key, obj);
         }
 
-        boolean shouldDestroy = false;
+        boolean shouldDestroy = !success;
+        ObjectQueue pool;
         
+        // Add instance to pool if there is room and it has passed validation
+        // (if testOnreturn is set)
         synchronized (this) {
             // grab the pool (list) of objects associated with the given key
-            ObjectQueue pool = (ObjectQueue) (_poolMap.get(key));
+            pool = (ObjectQueue) (_poolMap.get(key));
             // if it doesn't exist, create it
             if(null == pool) {
                 pool = new ObjectQueue();
                 _poolMap.put(key, pool);
                 _poolList.add(key);
-            }
-            if (decrementNumActive) {
-                pool.decrementActiveCount();
             }
             if (isClosed()) {
                 shouldDestroy = true;
@@ -1175,14 +1175,22 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                     _totalIdle++;
                 }
             }
-            notifyAll();
         }
 
+        // Destroy the instance if necessary 
         if(shouldDestroy) {
             try {
                 _factory.destroyObject(key, obj);
             } catch(Exception e) {
                 // ignored?
+            }
+        }
+        
+        // Decrement active count *after* destroy if applicable
+        if (decrementNumActive) {
+            synchronized(this) {
+                pool.decrementActiveCount();
+                notifyAll();
             }
         }
     }
