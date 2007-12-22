@@ -49,7 +49,6 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
        GenericObjectPool pool = new GenericObjectPool(new SimpleFactory());
        pool.setMaxActive(mincap);
        pool.setMaxIdle(mincap);
-       pool.setLifo(false);
        return pool;
     }
 
@@ -73,7 +72,6 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     public void testWhenExhaustedGrow() throws Exception {
-        GenericObjectPool pool = new GenericObjectPool(new SimpleFactory());
         pool.setMaxActive(1);
         pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_GROW);
         Object obj1 = pool.borrowObject();
@@ -86,7 +84,6 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     public void testWhenExhaustedFail() throws Exception {
-        GenericObjectPool pool = new GenericObjectPool(new SimpleFactory());
         pool.setMaxActive(1);
         pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_FAIL);
         Object obj1 = pool.borrowObject();
@@ -102,7 +99,6 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     public void testWhenExhaustedBlock() throws Exception {
-        GenericObjectPool pool = new GenericObjectPool(new SimpleFactory());
         pool.setMaxActive(1);
         pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_BLOCK);
         pool.setMaxWait(10L);
@@ -119,7 +115,6 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     public void testEvictWhileEmpty() throws Exception {
-        GenericObjectPool pool = new GenericObjectPool(new SimpleFactory(true,false));
         pool.evict();
         pool.evict();
         pool.close();
@@ -1074,7 +1069,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         op.close();
     }
     
-    private GenericObjectPool pool = null;
+    protected GenericObjectPool pool = null;
 
     private void assertConfiguration(GenericObjectPool.Config expected, GenericObjectPool actual) throws Exception {
         assertEquals("testOnBorrow",expected.testOnBorrow,actual.getTestOnBorrow());
@@ -1191,12 +1186,11 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
     }
     protected boolean isLifo() {
- 
-        return false;
+        return true;
     }
 
     protected boolean isFifo() {
-        return true;
+        return false;
     }
 }
 
