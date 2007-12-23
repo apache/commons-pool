@@ -182,10 +182,14 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
     public synchronized void returnObject(Object obj) throws Exception {
         boolean success = !isClosed();
         if(null != _factory) {
-            try {
-                _factory.passivateObject(obj);
-            } catch(Exception e) {
+            if(!_factory.validateObject(obj)) {
                 success = false;
+            } else {
+                try {
+                    _factory.passivateObject(obj);
+                } catch(Exception e) {
+                    success = false;
+                }
             }
         }
 
@@ -288,7 +292,11 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
         Object obj = _factory.makeObject();
 
         boolean success = true;
-        _factory.passivateObject(obj);
+        if(!_factory.validateObject(obj)) {
+            success = false;
+        } else {
+            _factory.passivateObject(obj);
+        }
 
         boolean shouldDestroy = !success;
 

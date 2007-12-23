@@ -142,7 +142,6 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
         Object obj = null;
         do {
             boolean newlyMade = false;
-            // TODO: Don't use exception, test size.
             if (!stack.empty()) {
                 obj = stack.pop();
                 _totIdle--;
@@ -184,7 +183,11 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
         decrementActiveCount(key);
         if (null != _factory) {
             try {
-                _factory.passivateObject(key, obj);
+                if (_factory.validateObject(key, obj)) {
+                    _factory.passivateObject(key, obj);
+                } else {
+                    return;
+                }
             } catch (Exception e) {
                 try {
                     _factory.destroyObject(key, obj);
@@ -260,7 +263,18 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
             throw new IllegalStateException("Cannot add objects without a factory.");
         }
         Object obj = _factory.makeObject(key);
-
+        try {
+            if (!_factory.validateObject(key, obj)) {
+               return;
+            }
+        } catch (Exception e) {
+            try {
+                _factory.destroyObject(key, obj);
+            } catch (Exception e2) {
+                // swallowed
+            }
+            return;
+        }
         _factory.passivateObject(key, obj);
 
         Stack stack = (Stack)_pools.get(key);
