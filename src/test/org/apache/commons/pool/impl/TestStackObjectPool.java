@@ -193,7 +193,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
         // 1,3,5,...,19 pass validation, get checked out
         for(int i=0;i<10;i++) {
             pool.returnObject(obj[i]);
-            assertEquals("Each time we borrow, get one less active.", 9-i, pool.getNumActive());
+            assertEquals("Each time we return, get one less active.", 9-i, pool.getNumActive());
         }
         // 3, 9, 15 fail passivation.  
         assertEquals(7,pool.getNumIdle());
@@ -256,9 +256,10 @@ public class TestStackObjectPool extends TestBaseObjectPool {
 
         for(int i=0;i<10;i++) {
             pool.returnObject(obj[i]);
-            assertEquals("Each time we borrow, get one less active.", 9-i, pool.getNumActive());
+            assertEquals("Each time we return, get one less active.", 9-i, pool.getNumActive());
         }
-        assertEquals(6,pool.getNumIdle());
+        // 0,2,4,6,8 fail validation, 3, 9 fail passivation - 3 left.
+        assertEquals(3,pool.getNumIdle());
     }
     
     public void testVariousConstructors() throws Exception {

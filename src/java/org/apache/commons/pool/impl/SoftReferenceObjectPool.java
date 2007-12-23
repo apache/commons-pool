@@ -128,10 +128,14 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
     public synchronized void returnObject(Object obj) throws Exception {
         boolean success = !isClosed();
         if (_factory != null) {
-            try {
-                _factory.passivateObject(obj);
-            } catch(Exception e) {
+            if(!_factory.validateObject(obj)) {
                 success = false;
+            } else {
+                try {
+                    _factory.passivateObject(obj);
+                } catch(Exception e) {
+                    success = false;
+                }
             }
         }
 
@@ -175,7 +179,11 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
         Object obj = _factory.makeObject();
 
         boolean success = true;
-        _factory.passivateObject(obj);
+        if(!_factory.validateObject(obj)) {
+            success = false;
+        } else {
+            _factory.passivateObject(obj);
+        }
 
         boolean shouldDestroy = !success;
         if(success) {
@@ -253,7 +261,7 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
     }
 
     /**
-     * If any idle objects were garabage collected, remove their
+     * If any idle objects were garbage collected, remove their
      * {@link Reference} wrappers from the idle object pool.
      */
     private void pruneClearedReferences() {
