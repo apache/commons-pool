@@ -11,7 +11,7 @@
          The <code>org.apache.commons.pool</code> package defines a simple 
          interface for a pool of object instances, and a handful of base 
          classes that may be useful when creating pool implementations.
-         The api supports pooling of unique objects which can be requested
+         The API supports pooling of unique objects which can be requested
          via a key as well as pools where all objects are equivalent.
       </p>
       <p>
@@ -26,11 +26,11 @@
          connection pool.
          {@link org.apache.commons.pool.impl.SoftReferenceObjectPool 
          SoftReferenceObjectPool} has no limit on the number of objects in the
-         pool, but garbage collector can remove idle objects from the pool as
-         needed.  There are also keyed versions of the first two.
+         pool, but the garbage collector can remove idle objects from the pool
+         as needed.  There are also keyed versions of the first two.
       </p>
       <p>
-         Here is a simple example of pooling <code>HashMap</code>'s.  First 
+         Here is a simple example of pooling <code>HashMap</code>'s. First 
          create an {@link org.apache.commons.pool.ObjectPoolFactory 
          ObjectPoolFactory}
       </p>
