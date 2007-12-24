@@ -422,7 +422,7 @@ public final class PoolUtils {
      * @param pool the ObjectPool to be decorated so it shrinks it's idle count when possible.
      * @return a pool that adaptively decreases it's size when idle objects are no longer needed.
      * @see #erodingPool(ObjectPool, float)
-     * @since Pool 2.0
+     * @since Pool 1.4
      */
     public static ObjectPool erodingPool(final ObjectPool pool) {
         return erodingPool(pool, 1f);
@@ -446,7 +446,7 @@ public final class PoolUtils {
      * If 1 &lt; factor then the pool shrinks less aggressively.
      * @return a pool that adaptively decreases it's size when idle objects are no longer needed.
      * @see #erodingPool(ObjectPool)
-     * @since Pool 2.0
+     * @since Pool 1.4
      */
     public static ObjectPool erodingPool(final ObjectPool pool, final float factor) {
         if (pool == null) {
@@ -469,7 +469,7 @@ public final class PoolUtils {
      * @return a pool that adaptively decreases it's size when idle objects are no longer needed.
      * @see #erodingPool(KeyedObjectPool, float)
      * @see #erodingPool(KeyedObjectPool, float, boolean)
-     * @since Pool 2.0
+     * @since Pool 1.4
      */
     public static KeyedObjectPool erodingPool(final KeyedObjectPool keyedPool) {
         return erodingPool(keyedPool, 1f);
@@ -494,7 +494,7 @@ public final class PoolUtils {
      * If 1 &lt; factor then the pool shrinks less aggressively.
      * @return a pool that adaptively decreases it's size when idle objects are no longer needed.
      * @see #erodingPool(KeyedObjectPool, float, boolean)
-     * @since Pool 2.0
+     * @since Pool 1.4
      */
     public static KeyedObjectPool erodingPool(final KeyedObjectPool keyedPool, final float factor) {
         return erodingPool(keyedPool, factor, false);
@@ -527,7 +527,7 @@ public final class PoolUtils {
      * @return a pool that adaptively decreases it's size when idle objects are no longer needed.
      * @see #erodingPool(KeyedObjectPool)
      * @see #erodingPool(KeyedObjectPool, float)
-     * @since Pool 2.0
+     * @since Pool 1.4
      */
     public static KeyedObjectPool erodingPool(final KeyedObjectPool keyedPool, final float factor, final boolean perKey) {
         if (keyedPool == null) {
