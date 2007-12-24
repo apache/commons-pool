@@ -165,6 +165,24 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
             assertEquals(99 - i,pool.getNumActive(""));
             assertEquals((i < 8 ? i+1 : 8),pool.getNumIdle(""));
         }
+        
+        for(int i=0;i<100;i++) {
+            active[i] = pool.borrowObject("a");
+        }
+        assertEquals(100,pool.getNumActive("a"));
+        assertEquals(0,pool.getNumIdle("a"));
+        for(int i=0;i<100;i++) {
+            pool.returnObject("a",active[i]);
+            assertEquals(99 - i,pool.getNumActive("a"));
+            assertEquals((i < 8 ? i+1 : 8),pool.getNumIdle("a"));
+        }
+        
+        // total number of idle instances is twice maxIdle
+        assertEquals(16, pool.getNumIdle());
+        // Each pool is at the sup
+        assertEquals(8, pool.getNumIdle(""));
+        assertEquals(8, pool.getNumIdle("a"));
+             
     }
 
     public void testMaxActive() throws Exception {
@@ -222,6 +240,17 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertNotNull(o4);
         assertEquals(0, pool.getNumIdle());
         assertEquals(0, pool.getNumIdle("b"));
+        
+        pool.setMaxTotal(4);
+        Object o5 = pool.borrowObject("b");
+        assertNotNull(o5);
+        
+        assertEquals(2, pool.getNumActive("a"));
+        assertEquals(2, pool.getNumActive("b"));
+        assertEquals(pool.getMaxTotal(),
+                pool.getNumActive("b") + pool.getNumActive("b"));
+        assertEquals(pool.getNumActive(),
+                pool.getMaxTotal());
     }
 
     public void testMaxTotalZero() throws Exception {
@@ -537,6 +566,8 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         String key = "A";
 
         pool.preparePool(key, true);
+        assertTrue("Should be 5 idle, found " + 
+                pool.getNumIdle(),pool.getNumIdle() == 5);
 
         try { Thread.sleep(150L); } catch(Exception e) { }
         assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
