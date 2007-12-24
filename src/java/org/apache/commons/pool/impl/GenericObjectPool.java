@@ -67,7 +67,7 @@ import org.apache.commons.pool.impl.GenericKeyedObjectPool.ObjectTimestampPair;
  *    <li>
  *      When {@link #setWhenExhaustedAction <i>whenExhaustedAction</i>}
  *      is {@link #WHEN_EXHAUSTED_BLOCK}, {@link #borrowObject} will block
- *      (invoke {@link Object#wait} until a new or idle object is available.
+ *      (invoke {@link Object#wait()} until a new or idle object is available.
  *      If a positive {@link #setMaxWait <i>maxWait</i>}
  *      value is supplied, the {@link #borrowObject} will block for at
  *      most that many milliseconds, after which a {@link NoSuchElementException}
