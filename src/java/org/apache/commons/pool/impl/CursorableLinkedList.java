@@ -276,7 +276,7 @@ class CursorableLinkedList implements List, Serializable {
      * is no longer necessary.
      *
      * @see #cursor(int)
-     * @see #listIterator
+     * @see #listIterator()
      * @see CursorableLinkedList.Cursor
      */
     public CursorableLinkedList.Cursor cursor() {
@@ -293,7 +293,7 @@ class CursorableLinkedList implements List, Serializable {
      * is not bothered by concurrent modifications to the
      * underlying list.
      *
-     * @see #cursor
+     * @see #cursor()
      * @see #listIterator(int)
      * @see CursorableLinkedList.Cursor
      * @throws IndexOutOfBoundsException if the index is out of range (index
@@ -483,7 +483,7 @@ class CursorableLinkedList implements List, Serializable {
 
     /**
      * Returns a fail-fast ListIterator.
-     * @see List#listIterator
+     * @see List#listIterator()
      */
     public ListIterator listIterator() {
         return listIterator(0);
@@ -646,7 +646,7 @@ class CursorableLinkedList implements List, Serializable {
 
     /**
      * Returns an array containing all of the elements in this list in proper
-     * sequence.  Obeys the general contract of the {@link Collection#toArray} method.
+     * sequence.  Obeys the general contract of the {@link Collection#toArray()} method.
      *
      * @return an array containing all of the elements in this list in proper
      *         sequence.
@@ -664,7 +664,7 @@ class CursorableLinkedList implements List, Serializable {
      * Returns an array containing all of the elements in this list in proper
      * sequence; the runtime type of the returned array is that of the
      * specified array. Obeys the general contract of the
-     * {@link Collection#toArray} method.
+     * {@link Collection#toArray()} method.
      *
      * @param a      the array into which the elements of this list are to
      *               be stored, if it is big enough; otherwise, a new array of the

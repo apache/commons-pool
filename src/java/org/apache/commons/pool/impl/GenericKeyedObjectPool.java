@@ -87,7 +87,7 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  *    <li>
  *      When {@link #setWhenExhaustedAction whenExhaustedAction}
  *      is {@link #WHEN_EXHAUSTED_BLOCK}, {@link #borrowObject borrowObject} will block
- *      (invoke {@link Object#wait wait} until a new or idle object is available.
+ *      (invoke {@link Object#wait() wait} until a new or idle object is available.
  *      If a positive {@link #setMaxWait maxWait}
  *      value is supplied, the {@link #borrowObject borrowObject} will block for at
  *      most that many milliseconds, after which a {@link NoSuchElementException}
@@ -809,7 +809,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * Sets the number of objects to examine during each run of the
      * idle object evictor thread (if any).
      * <p>
-     * When a negative value is supplied, <code>ceil({@link #getNumIdle})/abs({@link #getNumTestsPerEvictionRun})</code>
+     * When a negative value is supplied, <code>ceil({@link #getNumIdle()})/abs({@link #getNumTestsPerEvictionRun})</code>
      * tests will be run.  I.e., when the value is <code>-n</code>, roughly one <code>n</code>th of the
      * idle objects will be tested per run.
      *

@@ -337,7 +337,7 @@ public final class PoolUtils {
      * <p><b>Note:</b>
      * This should not be used on pool implementations that already provide proper synchronization
      * such as the pools provided in the Commons Pool library. Wrapping a pool that
-     * {@link #wait waits} for poolable objects to be returned before allowing another one to be
+     * {@link #wait() waits} for poolable objects to be returned before allowing another one to be
      * borrowed with another layer of synchronization will cause liveliness issues or a deadlock.
      * </p>
      *
@@ -368,7 +368,7 @@ public final class PoolUtils {
      * <p><b>Note:</b>
      * This should not be used on pool implementations that already provide proper synchronization
      * such as the pools provided in the Commons Pool library. Wrapping a pool that
-     * {@link #wait waits} for poolable objects to be returned before allowing another one to be
+     * {@link #wait() waits} for poolable objects to be returned before allowing another one to be
      * borrowed with another layer of synchronization will cause liveliness issues or a deadlock.
      * </p>
      *
