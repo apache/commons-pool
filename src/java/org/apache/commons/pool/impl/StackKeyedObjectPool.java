@@ -239,11 +239,7 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
     public synchronized void invalidateObject(Object key, Object obj) throws Exception {
         decrementActiveCount(key);
         if(null != _factory) {
-            try {
             _factory.destroyObject(key,obj);
-            } catch (Exception e) {
-                // swallowed
-            }
         }
         notifyAll(); // _totalActive has changed
     }

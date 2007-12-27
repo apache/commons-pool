@@ -332,7 +332,12 @@ public abstract class TestObjectPool extends TestCase {
         obj = pool.borrowObject();
         clear(factory, expectedMethods);
         factory.setDestroyObjectFail(true);
-        pool.invalidateObject(obj);
+        try {
+            pool.invalidateObject(obj);
+            fail("Expecting destroy exception to propagate");
+        } catch (PrivateException ex) {
+            // Expected
+        }
         Thread.sleep(250); // could be defered
         removeDestroyObjectCall(factory.getMethodCalls());
         assertEquals(expectedMethods, factory.getMethodCalls());
