@@ -273,14 +273,19 @@ public abstract class TestObjectPool extends TestCase {
 
         //// Test exception handling of returnObject
         reset(pool, factory, expectedMethods);
-
+        pool.addObject();
+        pool.addObject();
+        pool.addObject();
+        assertEquals(3, pool.getNumIdle());
         // passivateObject should swallow exceptions and not add the object to the pool
-        idleCount = pool.getNumIdle();
         obj = pool.borrowObject();
+        Object obj2 = pool.borrowObject();
+        assertEquals(1, pool.getNumIdle());
+        assertEquals(2, pool.getNumActive());
         clear(factory, expectedMethods);
         factory.setPassivateObjectFail(true);
         pool.returnObject(obj);
-       // StackObjectPool, SoftReferenceObjectPool also validate on return
+        // StackObjectPool, SoftReferenceObjectPool also validate on return
         if (pool instanceof StackObjectPool || 
                 pool instanceof SoftReferenceObjectPool) {
             expectedMethods.add(new MethodCall(
@@ -289,7 +294,8 @@ public abstract class TestObjectPool extends TestCase {
         expectedMethods.add(new MethodCall("passivateObject", obj));
         removeDestroyObjectCall(factory.getMethodCalls()); // The exact timing of destroyObject is flexible here.
         assertEquals(expectedMethods, factory.getMethodCalls());
-        assertEquals(idleCount, pool.getNumIdle());
+        assertEquals(1, pool.getNumIdle());   // Not returned
+        assertEquals(1, pool.getNumActive()); // But not in active count
 
         // destroyObject should swallow exceptions too
         reset(pool, factory, expectedMethods);

@@ -1082,6 +1082,13 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                 } catch (Exception e2) {
                     // swallowed
                 }
+                // TODO: Correctness here depends on control in addObjectToPool.
+                // These two methods should be refactored, removing the 
+                // "behavior flag",decrementNumActive, from addObjectToPool.
+                synchronized(this) {
+                    _numActive--;
+                    notifyAll();
+                }
             }
         }
     }
