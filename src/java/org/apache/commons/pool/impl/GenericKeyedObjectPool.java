@@ -1198,6 +1198,16 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 } catch (Exception e2) {
                     // swallowed
                 }
+                // TODO: Correctness here depends on control in addObjectToPool.
+                // These two methods should be refactored, removing the 
+                // "behavior flag",decrementNumActive, from addObjectToPool.
+                ObjectQueue pool = (ObjectQueue) (_poolMap.get(key));
+                if (pool != null) {
+                    synchronized(this) {
+                        pool.decrementActiveCount();
+                        notifyAll();
+                    }  
+                }
             }
         }
     }

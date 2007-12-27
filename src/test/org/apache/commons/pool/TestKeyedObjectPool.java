@@ -263,8 +263,14 @@ public abstract class TestKeyedObjectPool extends TestCase {
         reset(pool, factory, expectedMethods);
 
         // passivateObject should swallow exceptions and not add the object to the pool
-        idleCount = pool.getNumIdle();
+        pool.addObject(KEY);
+        pool.addObject(KEY);
+        pool.addObject(KEY);
+        assertEquals(3, pool.getNumIdle(KEY));
         obj = pool.borrowObject(KEY);
+        obj = pool.borrowObject(KEY);
+        assertEquals(1, pool.getNumIdle(KEY));
+        assertEquals(2, pool.getNumActive(KEY));
         clear(factory, expectedMethods);
         factory.setPassivateObjectFail(true);
         pool.returnObject(KEY, obj);
@@ -275,7 +281,8 @@ public abstract class TestKeyedObjectPool extends TestCase {
         expectedMethods.add(new MethodCall("passivateObject", KEY, obj));
         TestObjectPool.removeDestroyObjectCall(factory.getMethodCalls()); // The exact timing of destroyObject is flexible here.
         assertEquals(expectedMethods, factory.getMethodCalls());
-        assertEquals(idleCount, pool.getNumIdle());
+        assertEquals(1, pool.getNumIdle(KEY));   // Not added
+        assertEquals(1, pool.getNumActive(KEY)); // But not active
 
         // destroyObject should swallow exceptions too
         reset(pool, factory, expectedMethods);
