@@ -1278,8 +1278,6 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     public void invalidateObject(Object key, Object obj) throws Exception {
         try {
             _factory.destroyObject(key, obj);
-        } catch (Exception e) {
-            // swallowed
         } finally {
             synchronized (this) {
                 ObjectQueue pool = (ObjectQueue) (_poolMap.get(key));

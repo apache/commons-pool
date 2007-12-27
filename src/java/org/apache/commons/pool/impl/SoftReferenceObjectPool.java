@@ -158,11 +158,7 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
     public synchronized void invalidateObject(Object obj) throws Exception {
         _numActive--;
         if (_factory != null) {
-            try {
-                _factory.destroyObject(obj);
-            } catch (Exception e) {
-                // swallowed
-            }
+            _factory.destroyObject(obj);
         }
         notifyAll(); // _numActive has changed
     }

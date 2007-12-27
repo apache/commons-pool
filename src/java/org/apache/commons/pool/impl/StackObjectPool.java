@@ -219,11 +219,7 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
     public synchronized void invalidateObject(Object obj) throws Exception {
         _numActive--;
         if (null != _factory) {
-            try {
-                _factory.destroyObject(obj);
-            } catch (Exception e) {
-                // swallowed
-            }
+            _factory.destroyObject(obj);
         }
         notifyAll(); // _numActive has changed
     }

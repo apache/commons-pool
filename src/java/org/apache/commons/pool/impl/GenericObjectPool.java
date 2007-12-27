@@ -1018,8 +1018,6 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
             if (_factory != null) {
                 _factory.destroyObject(obj);
             }
-        } catch (Exception e) {
-            // swallowed
         } finally {
             synchronized (this) {
                 _numActive--;

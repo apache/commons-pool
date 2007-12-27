@@ -319,7 +319,12 @@ public abstract class TestKeyedObjectPool extends TestCase {
         obj = pool.borrowObject(KEY);
         clear(factory, expectedMethods);
         factory.setDestroyObjectFail(true);
-        pool.invalidateObject(KEY, obj);
+        try {
+            pool.invalidateObject(KEY, obj);
+            fail("Expecting destroy exception to propagate");
+        } catch (PrivateException ex) {
+            // Expected
+        }
         Thread.sleep(250); // could be defered
         TestObjectPool.removeDestroyObjectCall(factory.getMethodCalls());
         assertEquals(expectedMethods, factory.getMethodCalls());
