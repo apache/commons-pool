@@ -182,18 +182,14 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
     public synchronized void returnObject(Object key, Object obj) throws Exception {
         decrementActiveCount(key);
         if (null != _factory) {
-            try {
-                if (_factory.validateObject(key, obj)) {
+            if (_factory.validateObject(key, obj)) {
+                try {
                     _factory.passivateObject(key, obj);
-                } else {
+                } catch (Exception ex) {
+                    _factory.destroyObject(key, obj);
                     return;
                 }
-            } catch (Exception e) {
-                try {
-                    _factory.destroyObject(key, obj);
-                } catch (Exception e2) {
-                    // swallowed
-                }
+            } else {
                 return;
             }
         }

@@ -284,13 +284,19 @@ public abstract class TestKeyedObjectPool extends TestCase {
         assertEquals(1, pool.getNumIdle(KEY));   // Not added
         assertEquals(1, pool.getNumActive(KEY)); // But not active
 
-        // destroyObject should swallow exceptions too
         reset(pool, factory, expectedMethods);
         obj = pool.borrowObject(KEY);
         clear(factory, expectedMethods);
         factory.setPassivateObjectFail(true);
         factory.setDestroyObjectFail(true);
-        pool.returnObject(KEY, obj);
+        try {
+            pool.returnObject(KEY, obj);
+            if (!(pool instanceof GenericKeyedObjectPool)) { // ugh, 1.3-compat
+                fail("Expecting destroyObject exception to be propagated");
+            }
+        } catch (PrivateException ex) {
+            // Expected
+        }
     }
 
     public void testKPOFInvalidateObjectUsages() throws Exception {
