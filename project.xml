@@ -152,6 +152,12 @@
       <email></email>
       <organization>Apache Software Foundation</organization>
     </developer>
+    <developer>
+      <name>Phil Steitz</name>
+      <id>psteitz</id>
+      <email></email>
+      <organization>Apache Software Foundation</organization>
+    </developer>
   </developers>
   <contributors>
     <contributor>
