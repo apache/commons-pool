@@ -22,7 +22,7 @@
   </properties>
   <body>
 
-    <release version="1.4-RC1" date="pending" description=
+    <release version="1.4-RC2" date="pending" description=
 "This is a maintenance release including numerous bug fixes. This release
 is source and binary compatible with version 1.3 of commons pool, but
 there are some behavior changes introduced to resolve bugs, remove ambiguity
