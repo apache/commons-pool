@@ -53,7 +53,7 @@ class EvictionTimer {
      */
     static synchronized void schedule(TimerTask task, long delay, long period) {
         if (null == _timer) {
-            _timer = new Timer();
+            _timer = new Timer(true);
         }
         _usageCount++;
         _timer.schedule(task, delay, period);
