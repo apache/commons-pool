@@ -203,6 +203,17 @@
           </comment>
       </properties>
     </dependency>
+    
+     <dependency>
+      <groupId>maven</groupId>
+      <artifactId>maven-javadoc-plugin</artifactId>
+      <version>1.8</version>
+      <url>http://maven.apache.org/maven-1.x/plugins/javadoc/</url>
+      <type>plugin</type>
+      <properties>
+        <comment>&lt;b&gt;Site&lt;/b&gt; only</comment>
+      </properties>
+    </dependency>
 
   </dependencies>
 
@@ -265,14 +276,13 @@
   </build>
   
   <reports>
-    <report>maven-changes-plugin</report>
     <report>maven-javadoc-plugin</report>
+    <report>maven-changes-plugin</report>
     <report>maven-jdepend-plugin</report>
     <report>maven-jdiff-plugin</report>
     <report>maven-junit-report-plugin</report>
     <report>maven-jxr-plugin</report>
     <report>maven-license-plugin</report>
-    <report>maven-tasklist-plugin</report>
   </reports>
   
 </project>
