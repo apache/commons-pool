@@ -23,11 +23,7 @@
 
 <!--
  Customized version of maven annnouncement plugin style sheet to create
- release notes for commons-pool.  Customizations are:
- * Add a title
- * Display the description attribute in the release at the beginning
- * Add a heading to the project description and move the URL to follow
- * Get rid of "have fun" sig-like thingy
+ release notes for commons-pool.   
 -->
     
 <jsl:stylesheet
@@ -46,23 +42,21 @@
     <x:set var="description" select="string(@description)"/>
     <j:if test="${versionVariable.equals(version)}">
       <j:whitespace trim="false">
-Commons POOL Version ${version} 
-         RELEASE NOTES
-
+                         Commons POOL Version ${version} 
+                                 RELEASE NOTES
       </j:whitespace>
 
-      <j:useBean var="formatter" class="org.apache.maven.announcement.Formatter"/>
+<j:useBean var="formatter" class="org.apache.maven.announcement.Formatter"/>
 
-      <j:set var="header" trim="false" value="${description}"/>
+<j:set var="header" trim="false" value="${description}"/>
 
 <j:forEach var="line" items="${formatter.format(header,78)}">
-<j:whitespace trim="false">${line}
-</j:whitespace>
+<j:whitespace trim="false">
+${line}</j:whitespace>
 </j:forEach>
-For more information on Commons Pool, see
-${pom.url}
       <j:whitespace trim="false">
-Changes in this version include:</j:whitespace>
+      
+                             SUMMARY OF CHANGES</j:whitespace>
 
       <x:set var="actions" select="action[@type='add']" sort="@type" />
         <j:if test="${!empty(actions)}">
@@ -78,7 +72,7 @@ Changes in this version include:</j:whitespace>
         <j:if test="${!empty(actions)}">
 <j:whitespace trim="false">
 
-  Fixed bugs:
+BUG FIXES
 </j:whitespace>
         <j:forEach var="action" items="${actions}">
           <x:set var="item" select="."/><jsl:applyTemplates select="$action"/>
@@ -88,12 +82,15 @@ Changes in this version include:</j:whitespace>
         <j:if test="${!empty(actions)}">
 <j:whitespace trim="false">
 
-  Changes:
+BEHAVIOR CHANGES
 </j:whitespace>
         <j:forEach var="action" items="${actions}">
           <x:set var="item" select="."/><jsl:applyTemplates select="$action"/>
         </j:forEach>
       </j:if>
+
+For more information on Commons Pool, see
+${pom.url}
       <x:set var="actions" select="action[@type='remove']" sort="@type" />
         <j:if test="${!empty(actions)}">
 <j:whitespace trim="false">
@@ -104,17 +101,10 @@ Changes in this version include:</j:whitespace>
           <x:set var="item" select="."/><jsl:applyTemplates select="$action"/>
         </j:forEach>
       </j:if>
-
-      <!-- Nasty hack to detect a plugin until pom.type exists -->
-      <u:available file="${basedir}/plugin.jelly">
-        <j:whitespace trim="false"> 
-        </j:whitespace>
-      </u:available>
       <j:whitespace trim="false"> 
 
       </j:whitespace>
     </j:if>
-
   </jsl:template>
   
   <jsl:template match="action" trim="true">
@@ -144,8 +134,6 @@ o ${line}</j:whitespace>
       <j:set var="counter" value="${counter}X"/>
     </j:forEach>
   </jsl:template>
-
   <jsl:template match="@*"/>
-
   <jsl:template match="text()"/>
 </jsl:stylesheet>
