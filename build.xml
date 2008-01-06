@@ -36,7 +36,7 @@
       <property name="cp" value=""/>
 
       <!-- now combine the classpaths -->
-      <property name="classpath" value="${cp}:${junit.jar}"/>
+      <property name="classpath" value="${cp}"/>
 
       <property name="name" value="commons-pool"/>
       <property name="title" value="Apache Commons Object Pooling Package"/>
@@ -54,7 +54,6 @@
 
       <property name="test.entry" value="org.apache.commons.pool.TestAll"/>
       <property name="test.failonerror" value="true" /> 
-      <property name="test.runner" value="junit.textui.TestRunner" /> 
      
       <property name="javadoc.dir" value="${dist.dir}/docs/api"/>
       <property name="javadoc.bottom" value="&lt;small&gt;Copyright &amp;copy; 2001-2003 Apache Software Foundation. Documenation generated ${TODAY}&lt;/small&gt;."/>
@@ -133,14 +132,14 @@
 
    <target name="test" depends="compile-test" description="runs (junit) unit tests">
       <echo message="Because we need to sleep to test the eviction threads, this takes a little while (around 35 seconds)..."/>
-      <java classname="${test.runner}" fork="yes" failonerror="${test.failonerror}">
-        <arg value="${test.entry}"/> 
+      <junit printsummary="true" showoutput="true" fork="yes" haltonerror="${test.failonerror}">
         <classpath>
           <pathelement location="${build.classes.dir}" /> 
           <pathelement location="${build.test-classes.dir}" /> 
           <pathelement path="${classpath}" /> 
         </classpath>
-      </java>
+        <test name="${test.entry}"/>
+      </junit>
    </target>
 
    <target name="build-jar" depends="compile">
