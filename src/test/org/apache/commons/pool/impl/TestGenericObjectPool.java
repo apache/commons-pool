@@ -119,6 +119,30 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.evict();
         pool.close();
     }
+    
+    /**
+     * Tests addObject contention between ensureMinIdle triggered by
+     * the Evictor with minIdle > 0 and borrowObject. 
+     */
+    public void testEvictAddObjects() throws Exception {
+        SimpleFactory factory = new SimpleFactory();
+        factory.setMakeLatency(300);
+        factory.setMaxActive(2);
+        GenericObjectPool pool = new GenericObjectPool(factory);
+        pool.setMaxActive(2);
+        pool.setMinIdle(1);
+        Object obj = pool.borrowObject(); // numActive = 1, numIdle = 0
+        // Create a test thread that will run once and try a borrow after
+        // 150ms fixed delay
+        TestThread borrower = new TestThread(pool, 1, 150, false);
+        Thread borrowerThread = new Thread(borrower);
+        // Set evictor to run in 100 ms - will create idle instance
+        pool.setTimeBetweenEvictionRunsMillis(100);
+        borrowerThread.start();  // Off to the races
+        borrowerThread.join();
+        assertTrue(!borrower.failed());
+        pool.close();
+    }
 
     public void testEvictLIFO() throws Exception {
         checkEvict(true);   
@@ -961,6 +985,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         boolean _failed = false;
         int _iter = 100;
         int _delay = 50;
+        boolean _randomDelay = true;
 
         public TestThread(ObjectPool pool) {
             _pool = pool;
@@ -976,6 +1001,14 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             _iter = iter;
             _delay = delay;
         }
+        
+        public TestThread(ObjectPool pool, int iter, int delay,
+                boolean randomDelay) {
+            _pool = pool;
+            _iter = iter;
+            _delay = delay;
+            _randomDelay = randomDelay;
+        }
 
         public boolean complete() {
             return _complete;
@@ -987,8 +1020,10 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
         public void run() {
             for(int i=0;i<_iter;i++) {
+                long delay = 
+                    _randomDelay ? (long)_random.nextInt(_delay) : _delay;
                 try {
-                    Thread.sleep((long)_random.nextInt(_delay));
+                    Thread.sleep(delay);
                 } catch(Exception e) {
                     // ignored
                 }
@@ -1003,7 +1038,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 }
 
                 try {
-                    Thread.sleep((long)_random.nextInt(_delay));
+                    Thread.sleep(delay);
                 } catch(Exception e) {
                     // ignored
                 }
@@ -1114,6 +1149,9 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         public void setDestroyLatency(long destroyLatency) {
             this.destroyLatency = destroyLatency;
         }
+        public void setMakeLatency(long makeLatency) {
+            this.makeLatency = makeLatency;
+        }
         public Object makeObject() { 
             synchronized(this) {
                 activeCount++;
@@ -1122,10 +1160,15 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                         "Too many active instances: " + activeCount);
                 }
             }
+            if (makeLatency > 0) {
+                doWait(makeLatency);
+            }
             return String.valueOf(makeCounter++);
         }
         public void destroyObject(Object obj) {
-            doWait(destroyLatency);
+            if (destroyLatency > 0) {
+                doWait(destroyLatency);
+            }
             synchronized(this) {
                 activeCount--;
             }
@@ -1159,6 +1202,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         boolean exceptionOnActivate = false;
         boolean enableValidation = true;
         long destroyLatency = 0;
+        long makeLatency = 0;
         int maxActive = Integer.MAX_VALUE;
 
         public boolean isThrowExceptionOnActivate() {
