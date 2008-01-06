@@ -903,6 +903,9 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * in a pool (if there are idle instances available).  False means that
      * the pools behave as FIFO queues - objects are taken from idle object
      * pools in the order that they are returned.
+     * 
+     * @return <code>true</code> if the pools are configured to act as LIFO queues
+     * @since 1.4
      */
      public synchronized boolean getLifo() {
          return _lifo;
@@ -914,6 +917,9 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
       * idle instances available).  False means that the pools behave as FIFO
       * queues - objects are taken from idle object pools in the order that
       * they are returned.
+      * 
+      * @param lifo the new value for the lifo property
+      * @since 1.4
       */
      public synchronized void setLifo(boolean lifo) {
          this._lifo = lifo;
