@@ -62,8 +62,6 @@ class EvictionTimer {
     /**
      * Remove the specified eviction task from the timer.
      * @param task      Task to be scheduled
-     * @param delay     Delay in milliseconds before task is executed
-     * @param period    Time in milliseconds between executions
      */
     static synchronized void cancel(TimerTask task) {
         task.cancel();
