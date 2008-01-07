@@ -862,6 +862,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * the pool behaves as a FIFO queue - objects are taken from the idle object
      * pool in the order that they are returned to the pool.
      * 
+     * @return <code>true</true> if the pool is configured to act as a LIFO queue
      * @since 1.4
      */
      public synchronized boolean getLifo() {
@@ -1267,24 +1268,22 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * Create an object, and place it into the pool.
      * addObject() is useful for "pre-loading" a pool with idle objects.
      */
-    public void addObject() throws Exception {
+    public synchronized void addObject() throws Exception {
         assertOpen();
         if (_factory == null) {
             throw new IllegalStateException("Cannot add objects without a factory.");
         }
         Object obj = _factory.makeObject();
-        synchronized (this) {
+        try {
+            assertOpen();
+            addObjectToPool(obj, false);
+        } catch (IllegalStateException ex) { // Pool closed
             try {
-                assertOpen();
-                addObjectToPool(obj, false);
-            } catch (IllegalStateException ex) { // Pool closed
-                try {
-                    _factory.destroyObject(obj);
-                } catch (Exception ex2) {
-                    // swallow
-                }
-                throw ex;
+                _factory.destroyObject(obj);
+            } catch (Exception ex2) {
+                // swallow
             }
+            throw ex;
         }
     }
 
