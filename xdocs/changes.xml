@@ -22,7 +22,7 @@
   </properties>
   <body>
 
-    <release version="1.4-RC2" date="pending" description=
+    <release version="1.4" date="2008-01-15" description=
 "This is a maintenance release including numerous bug fixes. This release
 is source and binary compatible with version 1.3 of commons pool, but
 there are some behavior changes introduced to resolve bugs, remove ambiguity
@@ -32,7 +32,9 @@ GenericObjectPool and GenericKeyedObjectPool from FIFO back to LIFO queues
 the extra synchronization included in version 1.3 was removed / refactored to
 improve performance. The javadoc has also been made more complete and explicit.
 See the detailed list of changes below for specifics on fixed bugs and behavior
-changes in Commons Pool 1.4.">
+changes in Commons Pool 1.4. This version of Commons Pool depends only on
+JDK version 1.3 or higher. Classes implementing pools are all intended to be
+threadsafe.">
       <action dev="sandymac" type="fix">
         Fixed constructor which was ignoring maxTotal parameter: 
         <code>GenericKeyedObjectPool(KeyedPoolableObjectFactory factory, int maxActive, byte whenExhaustedAction,
@@ -70,7 +72,7 @@ changes in Commons Pool 1.4.">
          pools. The wrapper class wraps the Timer and keeps track of how many
          pools are using it. If no pools are using the timer, it is canceled.
          This prevents a thread being left running which, in application server
-         environments, can lead to memory leads and/or prevent applications
+         environments, can lead to memory leaks and/or prevent applications
          from shutting down or reloading cleanly.
       </action>
       <action dev="psteitz" type="fix" issue="POOL-93"  
