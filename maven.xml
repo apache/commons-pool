@@ -51,16 +51,9 @@
     <ant:copy todir="${maven.dist.src.assembly.dir}">
       <ant:fileset dir=".">
         <ant:include name="NOTICE.txt"/>
+        <ant:include name="pom.xml"/>
         <ant:include name="RELEASE-NOTES.txt"/>
         <ant:include name="release-notes.jsl"/>
-        <ant:include name="checkstyle.xml"/>
-      </ant:fileset>
-    </ant:copy>
-
-    <!-- Copy Jars -->
-    <ant:copy todir="${maven.dist.src.assembly.dir}">
-      <ant:fileset dir="${maven.build.dir}">
-        <ant:include name="*.jar"/>
       </ant:fileset>
     </ant:copy>
     
