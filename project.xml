@@ -22,7 +22,7 @@
   <groupId>commons-pool</groupId>
   <artifactId>commons-pool</artifactId>
   <inceptionYear>2001</inceptionYear>
-  <currentVersion>1.4</currentVersion>
+  <currentVersion>1.5-SNAPSHOT</currentVersion>
   <shortDescription>Commons Object Pooling Library</shortDescription>
   <description>Commons Object Pooling Library</description>
   <logo>/images/pool-logo-white.png</logo>
