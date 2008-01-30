@@ -17,12 +17,6 @@
 
 package org.apache.commons.pool;
 
-import org.apache.commons.pool.impl.GenericKeyedObjectPool;
-import org.apache.commons.pool.impl.StackKeyedObjectPool;
-import org.apache.commons.pool.impl.GenericObjectPool;
-import org.apache.commons.pool.impl.SoftReferenceObjectPool;
-import org.apache.commons.pool.impl.StackObjectPool;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -337,7 +331,7 @@ public final class PoolUtils {
      * <p><b>Note:</b>
      * This should not be used on pool implementations that already provide proper synchronization
      * such as the pools provided in the Commons Pool library. Wrapping a pool that
-     * {@link #wait waits} for poolable objects to be returned before allowing another one to be
+     * {@link #wait() waits} for poolable objects to be returned before allowing another one to be
      * borrowed with another layer of synchronization will cause liveliness issues or a deadlock.
      * </p>
      *
@@ -349,6 +343,7 @@ public final class PoolUtils {
         if (pool == null) {
             throw new IllegalArgumentException("pool must not be null.");
         }
+        /*
         assert !(pool instanceof GenericObjectPool)
                 : "GenericObjectPool is already thread-safe";
         assert !(pool instanceof SoftReferenceObjectPool)
@@ -357,6 +352,7 @@ public final class PoolUtils {
                 : "StackObjectPool is already thread-safe";
         assert !"org.apache.commons.pool.composite.CompositeObjectPool".equals(pool.getClass().getName())
                 : "CompositeObjectPools are already thread-safe";
+        */
         return new SynchronizedObjectPool(pool);
     }
 
@@ -366,7 +362,7 @@ public final class PoolUtils {
      * <p><b>Note:</b>
      * This should not be used on pool implementations that already provide proper synchronization
      * such as the pools provided in the Commons Pool library. Wrapping a pool that
-     * {@link #wait waits} for poolable objects to be returned before allowing another one to be
+     * {@link #wait() waits} for poolable objects to be returned before allowing another one to be
      * borrowed with another layer of synchronization will cause liveliness issues or a deadlock.
      * </p>
      *
@@ -378,12 +374,14 @@ public final class PoolUtils {
         if (keyedPool == null) {
             throw new IllegalArgumentException("keyedPool must not be null.");
         }
+        /*
         assert !(keyedPool instanceof GenericKeyedObjectPool)
                 : "GenericKeyedObjectPool is already thread-safe";
         assert !(keyedPool instanceof StackKeyedObjectPool)
                 : "StackKeyedObjectPool is already thread-safe";
         assert !"org.apache.commons.pool.composite.CompositeKeyedObjectPool".equals(keyedPool.getClass().getName())
                 : "CompositeKeyedObjectPools are already thread-safe";
+        */
         return new SynchronizedKeyedObjectPool(keyedPool);
     }
 
@@ -418,7 +416,7 @@ public final class PoolUtils {
      * @param pool the ObjectPool to be decorated so it shrinks it's idle count when possible.
      * @return a pool that adaptively decreases it's size when idle objects are no longer needed.
      * @see #erodingPool(ObjectPool, float)
-     * @since Pool 2.0
+     * @since Pool 1.4
      */
     public static ObjectPool erodingPool(final ObjectPool pool) {
         return erodingPool(pool, 1f);
@@ -442,7 +440,7 @@ public final class PoolUtils {
      * If 1 &lt; factor then the pool shrinks less aggressively.
      * @return a pool that adaptively decreases it's size when idle objects are no longer needed.
      * @see #erodingPool(ObjectPool)
-     * @since Pool 2.0
+     * @since Pool 1.4
      */
     public static ObjectPool erodingPool(final ObjectPool pool, final float factor) {
         if (pool == null) {
@@ -465,7 +463,7 @@ public final class PoolUtils {
      * @return a pool that adaptively decreases it's size when idle objects are no longer needed.
      * @see #erodingPool(KeyedObjectPool, float)
      * @see #erodingPool(KeyedObjectPool, float, boolean)
-     * @since Pool 2.0
+     * @since Pool 1.4
      */
     public static KeyedObjectPool erodingPool(final KeyedObjectPool keyedPool) {
         return erodingPool(keyedPool, 1f);
@@ -490,7 +488,7 @@ public final class PoolUtils {
      * If 1 &lt; factor then the pool shrinks less aggressively.
      * @return a pool that adaptively decreases it's size when idle objects are no longer needed.
      * @see #erodingPool(KeyedObjectPool, float, boolean)
-     * @since Pool 2.0
+     * @since Pool 1.4
      */
     public static KeyedObjectPool erodingPool(final KeyedObjectPool keyedPool, final float factor) {
         return erodingPool(keyedPool, factor, false);
@@ -523,7 +521,7 @@ public final class PoolUtils {
      * @return a pool that adaptively decreases it's size when idle objects are no longer needed.
      * @see #erodingPool(KeyedObjectPool)
      * @see #erodingPool(KeyedObjectPool, float)
-     * @since Pool 2.0
+     * @since Pool 1.4
      */
     public static KeyedObjectPool erodingPool(final KeyedObjectPool keyedPool, final float factor, final boolean perKey) {
         if (keyedPool == null) {

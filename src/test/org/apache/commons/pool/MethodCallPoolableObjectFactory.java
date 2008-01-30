@@ -134,7 +134,7 @@ public class MethodCallPoolableObjectFactory implements PoolableObjectFactory {
             throw new PrivateException("validateObject");
         }
         final boolean r = valid;
-        call.returned(Boolean.valueOf(r));
+        call.returned(new Boolean(r));
         return r;
     }
 

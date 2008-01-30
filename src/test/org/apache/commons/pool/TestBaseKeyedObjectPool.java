@@ -33,7 +33,7 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
 
     protected KeyedObjectPool makeEmptyPool(KeyedPoolableObjectFactory factory) {
         if (this.getClass() != TestBaseKeyedObjectPool.class) {
-            throw new AssertionError("Subclasses of TestBaseKeyedObjectPool must reimplement this method.");
+            fail("Subclasses of TestBaseKeyedObjectPool must reimplement this method.");
         }
         throw new UnsupportedOperationException("BaseKeyedObjectPool isn't a complete implementation.");
     }
@@ -47,7 +47,7 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
      */
     protected KeyedObjectPool makeEmptyPool(int mincapacity) {
         if (this.getClass() != TestBaseKeyedObjectPool.class) {
-            throw new AssertionError("Subclasses of TestBaseKeyedObjectPool must reimplement this method.");
+            fail("Subclasses of TestBaseKeyedObjectPool must reimplement this method.");
         }
         throw new UnsupportedOperationException("BaseKeyedObjectPool isn't a complete implementation.");
     }
@@ -59,14 +59,14 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
      */
     protected Object getNthObject(Object key, int n) {
         if (this.getClass() != TestBaseKeyedObjectPool.class) {
-            throw new AssertionError("Subclasses of TestBaseKeyedObjectPool must reimplement this method.");
+            fail("Subclasses of TestBaseKeyedObjectPool must reimplement this method.");
         }
         throw new UnsupportedOperationException("BaseKeyedObjectPool isn't a complete implementation.");
     }
 
     protected Object makeKey(int n) {
         if (this.getClass() != TestBaseKeyedObjectPool.class) {
-            throw new AssertionError("Subclasses of TestBaseKeyedObjectPool must reimplement this method.");
+            fail("Subclasses of TestBaseKeyedObjectPool must reimplement this method.");
         }
         throw new UnsupportedOperationException("BaseKeyedObjectPool isn't a complete implementation.");
     }
@@ -138,14 +138,14 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
 
     protected boolean isLifo() {
         if (getClass() != TestBaseKeyedObjectPool.class) {
-            throw new AssertionError("Subclasses of TestBaseKeyedObjectPool must reimplement this method.");
+            fail("Subclasses of TestBaseKeyedObjectPool must reimplement this method.");
         }
         return false;
     }
 
     protected boolean isFifo() {
         if (getClass() != TestBaseKeyedObjectPool.class) {
-            throw new AssertionError("Subclasses of TestBaseKeyedObjectPool must reimplement this method.");
+            fail("Subclasses of TestBaseKeyedObjectPool must reimplement this method.");
         }
         return false;
     }

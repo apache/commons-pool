@@ -165,6 +165,24 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
             assertEquals(99 - i,pool.getNumActive(""));
             assertEquals((i < 8 ? i+1 : 8),pool.getNumIdle(""));
         }
+        
+        for(int i=0;i<100;i++) {
+            active[i] = pool.borrowObject("a");
+        }
+        assertEquals(100,pool.getNumActive("a"));
+        assertEquals(0,pool.getNumIdle("a"));
+        for(int i=0;i<100;i++) {
+            pool.returnObject("a",active[i]);
+            assertEquals(99 - i,pool.getNumActive("a"));
+            assertEquals((i < 8 ? i+1 : 8),pool.getNumIdle("a"));
+        }
+        
+        // total number of idle instances is twice maxIdle
+        assertEquals(16, pool.getNumIdle());
+        // Each pool is at the sup
+        assertEquals(8, pool.getNumIdle(""));
+        assertEquals(8, pool.getNumIdle("a"));
+             
     }
 
     public void testMaxActive() throws Exception {
@@ -222,6 +240,17 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertNotNull(o4);
         assertEquals(0, pool.getNumIdle());
         assertEquals(0, pool.getNumIdle("b"));
+        
+        pool.setMaxTotal(4);
+        Object o5 = pool.borrowObject("b");
+        assertNotNull(o5);
+        
+        assertEquals(2, pool.getNumActive("a"));
+        assertEquals(2, pool.getNumActive("b"));
+        assertEquals(pool.getMaxTotal(),
+                pool.getNumActive("b") + pool.getNumActive("b"));
+        assertEquals(pool.getNumActive(),
+                pool.getMaxTotal());
     }
 
     public void testMaxTotalZero() throws Exception {
@@ -433,17 +462,19 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals("Should be zero idle, found " + pool.getNumIdle(),0,pool.getNumIdle());
     }
 
-    public void testThreaded1() throws Exception {
-        pool.setMaxActive(15);
-        pool.setMaxIdle(15);
-        pool.setMaxWait(1000L);
-        TestThread[] threads = new TestThread[20];
-        for(int i=0;i<20;i++) {
-            threads[i] = new TestThread(pool,100,50);
+    /**
+     * Kicks off <numThreads> test threads, each of which will go through
+     * <iterations> borrow-return cycles with random delay times <= delay
+     * in between.
+     */
+    public void runTestThreads(int numThreads, int iterations, int delay) {
+        TestThread[] threads = new TestThread[numThreads];
+        for(int i=0;i<numThreads;i++) {
+            threads[i] = new TestThread(pool,iterations,delay);
             Thread t = new Thread(threads[i]);
             t.start();
         }
-        for(int i=0;i<20;i++) {
+        for(int i=0;i<numThreads;i++) {
             while(!(threads[i]).complete()) {
                 try {
                     Thread.sleep(500L);
@@ -455,6 +486,33 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
                 fail();
             }
         }
+    }
+    
+    public void testThreaded1() throws Exception {
+        pool.setMaxActive(15);
+        pool.setMaxIdle(15);
+        pool.setMaxWait(1000L);
+        runTestThreads(20, 100, 50);
+    }
+    
+    /**
+     * Verifies that maxTotal is not exceeded when factory destroyObject
+     * has high latency, testOnReturn is set and there is high incidence of
+     * validation failures. 
+     */
+    public void testMaxTotalInvariant() throws Exception {
+        int maxTotal = 15;
+        SimpleFactory factory = new SimpleFactory();
+        factory.setEvenValid(false);     // Every other validation fails
+        factory.setDestroyLatency(100);  // Destroy takes 100 ms
+        factory.setMaxActive(maxTotal);  // (makes - destroys) bound
+        factory.setValidationEnabled(true);
+        pool = new GenericKeyedObjectPool(factory);
+        pool.setMaxTotal(maxTotal);
+        pool.setMaxIdle(-1);
+        pool.setTestOnReturn(true);
+        pool.setMaxWait(10000L);
+        runTestThreads(5, 10, 50);
     }
 
     public void testMinIdle() throws Exception {
@@ -508,6 +566,8 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         String key = "A";
 
         pool.preparePool(key, true);
+        assertTrue("Should be 5 idle, found " + 
+                pool.getNumIdle(),pool.getNumIdle() == 5);
 
         try { Thread.sleep(150L); } catch(Exception e) { }
         assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
@@ -1189,6 +1249,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
                 try {
                     obj = _pool.borrowObject(key);
                 } catch(Exception e) {
+                    e.printStackTrace();
                     _failed = true;
                     _complete = true;
                     break;
@@ -1202,6 +1263,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
                 try {
                     _pool.returnObject(key,obj);
                 } catch(Exception e) {
+                    e.printStackTrace();
                     _failed = true;
                     _complete = true;
                     break;
@@ -1218,13 +1280,63 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         public SimpleFactory(boolean valid) {
             this.valid = valid;
         }
-        public Object makeObject(Object key) { return String.valueOf(key) + String.valueOf(counter++); }
-        public void destroyObject(Object key, Object obj) { }
-        public boolean validateObject(Object key, Object obj) { return valid; }
+        public Object makeObject(Object key) {
+            synchronized(this) {
+                activeCount++;
+                if (activeCount > maxActive) {
+                    throw new IllegalStateException(
+                        "Too many active instances: " + activeCount);
+                }
+            }
+            return String.valueOf(key) + String.valueOf(counter++);
+        }
+        public void destroyObject(Object key, Object obj) {
+            doWait(destroyLatency);
+            synchronized(this) {
+                activeCount--;
+            }
+        }
+        public boolean validateObject(Object key, Object obj) {
+            if (enableValidation) { 
+                return validateCounter++%2 == 0 ? evenValid : oddValid; 
+            } else {
+                return valid;
+            }
+        }
         public void activateObject(Object key, Object obj) { }
         public void passivateObject(Object key, Object obj) { }
+        
+        public void setMaxActive(int maxActive) {
+            this.maxActive = maxActive;
+        }
+        public void setDestroyLatency(long destroyLatency) {
+            this.destroyLatency = destroyLatency;
+        }
+        public void setValidationEnabled(boolean b) {
+            enableValidation = b;
+        }
+        void setEvenValid(boolean valid) {
+            evenValid = valid;
+        }
+        
         int counter = 0;
         boolean valid;
+        
+        int activeCount = 0;
+        int validateCounter = 0;
+        boolean evenValid = true;
+        boolean oddValid = true;
+        boolean enableValidation = false;
+        long destroyLatency = 0;
+        int maxActive = Integer.MAX_VALUE;
+        
+        private void doWait(long latency) {
+            try {
+                Thread.sleep(latency);
+            } catch (InterruptedException ex) {
+                // ignore
+            }
+        }
     }
 
     protected boolean isLifo() {
