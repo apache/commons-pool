@@ -22,7 +22,7 @@
   <groupId>commons-pool</groupId>
   <artifactId>commons-pool</artifactId>
   <inceptionYear>2001</inceptionYear>
-  <currentVersion>2.0-SNAPSHOT</currentVersion>
+  <currentVersion>1.4</currentVersion>
   <shortDescription>Commons Object Pooling Library</shortDescription>
   <description>Commons Object Pooling Library</description>
   <logo>/images/pool-logo-white.png</logo>
@@ -91,6 +91,16 @@
       <name>1.2</name>
       <tag>POOL_1_2</tag>
     </version>
+    <version>
+      <id>1.3</id>
+      <name>1.3</name>
+      <tag>POOL_1_3</tag>
+    </version>
+    <version>
+      <id>1.4</id>
+      <name>1.4</name>
+      <tag>POOL_1_4</tag>
+    </version>
   </versions>
 
   <developers>
@@ -142,6 +152,12 @@
       <email></email>
       <organization>Apache Software Foundation</organization>
     </developer>
+    <developer>
+      <name>Phil Steitz</name>
+      <id>psteitz</id>
+      <email></email>
+      <organization>Apache Software Foundation</organization>
+    </developer>
   </developers>
   <contributors>
     <contributor>
@@ -155,36 +171,10 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <version>3.8.2</version>
       <properties>
           <comment>Only required to run unit tests</comment>
           <scope>test</scope>
-      </properties>
-    </dependency>
-
-    <dependency>
-      <groupId>maven</groupId>
-      <artifactId>maven-plugin-plugin</artifactId>
-      <version>1.7</version>
-      <url>http://maven.apache.org/maven-1.x/plugins/plugin/</url>
-      <type>plugin</type>
-      <properties>
-          <comment>
-              &lt;strong&gt;Site Only&lt;/strong&gt; - v1.7 (minimum)
-          </comment>
-      </properties>
-    </dependency>
-
-    <dependency>
-      <groupId>maven</groupId>
-      <artifactId>maven-scm-plugin</artifactId>
-      <version>1.5</version>
-      <url>http://maven.apache.org/maven-1.x/plugins/scm/</url>
-      <type>plugin</type>
-      <properties>
-          <comment>
-              &lt;strong&gt;Site Only&lt;/strong&gt; - v1.5 (minimum)
-          </comment>
       </properties>
     </dependency>
 
@@ -213,43 +203,15 @@
           </comment>
       </properties>
     </dependency>
-
-    <dependency>
+    
+     <dependency>
       <groupId>maven</groupId>
-      <artifactId>maven-changelog-plugin</artifactId>
-      <version>1.9</version>
-      <url>http://maven.apache.org/maven-1.x/plugins/changelog/</url>
+      <artifactId>maven-javadoc-plugin</artifactId>
+      <version>1.8</version>
+      <url>http://maven.apache.org/maven-1.x/plugins/javadoc/</url>
       <type>plugin</type>
       <properties>
-          <comment>
-              &lt;strong&gt;Site Only&lt;/strong&gt; - v1.9 (minimum)
-          </comment>
-      </properties>
-    </dependency>
-
-    <dependency>
-      <groupId>maven</groupId>
-      <artifactId>maven-file-activity-plugin</artifactId>
-      <version>1.6</version>
-      <url>http://maven.apache.org/maven-1.x/plugins/file-activity/</url>
-      <type>plugin</type>
-      <properties>
-          <comment>
-              &lt;strong&gt;Site Only&lt;/strong&gt; - v1.6 (minimum)
-          </comment>
-      </properties>
-    </dependency>
-
-    <dependency>
-      <groupId>maven</groupId>
-      <artifactId>maven-developer-activity-plugin</artifactId>
-      <version>1.5.1</version>
-      <url>http://maven.apache.org/maven-1.x/plugins/developer-activity/</url>
-      <type>plugin</type>
-      <properties>
-          <comment>
-              &lt;strong&gt;Site Only&lt;/strong&gt; - v1.5.2 (minimum)
-          </comment>
+        <comment>&lt;b&gt;Site&lt;/b&gt; only</comment>
       </properties>
     </dependency>
 
@@ -300,11 +262,6 @@
         <include>org/apache/commons/pool/composite/TestCompositeKeyedObjectPool2.java</include>
         <include>org/apache/commons/pool/composite/TestCompositeKeyedObjectPoolFactory.java</include>
       </includes>
-<!--
-      <excludes>
-        <exclude>org/apache/commons/pool/TestObjectPoolFactory.java</exclude>
-      </excludes>
--->
     </unitTest>
 
     <resources>
@@ -319,17 +276,13 @@
   </build>
   
   <reports>
-    <report>maven-changelog-plugin</report>
-    <report>maven-changes-plugin</report>
-    <report>maven-developer-activity-plugin</report>
-    <report>maven-file-activity-plugin</report>
     <report>maven-javadoc-plugin</report>
+    <report>maven-changes-plugin</report>
     <report>maven-jdepend-plugin</report>
     <report>maven-jdiff-plugin</report>
     <report>maven-junit-report-plugin</report>
     <report>maven-jxr-plugin</report>
     <report>maven-license-plugin</report>
-    <report>maven-tasklist-plugin</report>
   </reports>
   
 </project>

@@ -44,10 +44,6 @@
         <!-- ************************************************************** -->
         <!-- Checks that are different from the sun coding conventions ones -->
         <!-- ************************************************************** -->
-        <module name="Header">
-            <property name="headerFile" value="LICENSE-header.txt"/>
-            <property name="ignoreLines" value="2,3,4,10"/>
-        </module>
         <property name="tabWidth" value="4"/>
         <module name="LeftCurly">
           <property name="option" value="eol"/>

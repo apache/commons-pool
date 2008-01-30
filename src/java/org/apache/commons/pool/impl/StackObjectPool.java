@@ -146,40 +146,31 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
                 if(null == _factory) {
                     throw new NoSuchElementException();
                 } else {
-                    newlyCreated = true;
                     obj = _factory.makeObject();
+                    newlyCreated = true;
                   if (obj == null) {
                     throw new NoSuchElementException("PoolableObjectFactory.makeObject() returned null.");
                   }
                 }
             }
-            if (!newlyCreated && null != _factory && null != obj) {
+            if (null != _factory && null != obj) {
                 try {
                     _factory.activateObject(obj);
-                } catch (Exception e) {
-                    try {
-                        _factory.destroyObject(obj);
-                    } catch (Exception e2) {
-                        // swallowed
-                    } finally {
-                        obj = null;
+                    if (!_factory.validateObject(obj)) {
+                        throw new Exception("ValidateObject failed");
                     }
-                }
-            }
-            if (!newlyCreated && null != _factory && null != obj) {
-                boolean validated = false;
-                try {
-                    validated = _factory.validateObject(obj);
-                } catch (Exception e) {
-                    // swallowed
-                }
-                if (!validated) {
+                } catch (Throwable t) {
                     try {
                         _factory.destroyObject(obj);
-                    } catch(Exception e) {
+                    } catch (Throwable t2) {
                         // swallowed
                     } finally {
                         obj = null;
+                    } 
+                    if (newlyCreated) {
+                        throw new NoSuchElementException(
+                            "Could not create a validated object, cause: " +
+                            t.getMessage());
                     }
                 }
             }
@@ -191,10 +182,14 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
     public synchronized void returnObject(Object obj) throws Exception {
         boolean success = !isClosed();
         if(null != _factory) {
-            try {
-                _factory.passivateObject(obj);
-            } catch(Exception e) {
+            if(!_factory.validateObject(obj)) {
                 success = false;
+            } else {
+                try {
+                    _factory.passivateObject(obj);
+                } catch(Exception e) {
+                    success = false;
+                }
             }
         }
 
@@ -224,11 +219,7 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
     public synchronized void invalidateObject(Object obj) throws Exception {
         _numActive--;
         if (null != _factory) {
-            try {
-                _factory.destroyObject(obj);
-            } catch (Exception e) {
-                // swallowed
-            }
+            _factory.destroyObject(obj);
         }
         notifyAll(); // _numActive has changed
     }
@@ -297,7 +288,11 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
         Object obj = _factory.makeObject();
 
         boolean success = true;
-        _factory.passivateObject(obj);
+        if(!_factory.validateObject(obj)) {
+            success = false;
+        } else {
+            _factory.passivateObject(obj);
+        }
 
         boolean shouldDestroy = !success;
 

@@ -99,33 +99,24 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
                 obj = ref.get();
                 ref.clear(); // prevent this ref from being enqueued with refQueue.
             }
-            if (!newlyCreated && null != _factory && null != obj) {
+            if (null != _factory && null != obj) {
                 try {
                     _factory.activateObject(obj);
-                } catch (Exception e) {
+                    if (!_factory.validateObject(obj)) {
+                        throw new Exception("ValidateObject failed");
+                    }
+                } catch (Throwable t) {
                     try {
                         _factory.destroyObject(obj);
-                    } catch (Exception e2) {
+                    } catch (Throwable t2) {
                         // swallowed
                     } finally {
                         obj = null;
                     }
-                }
-            }
-            if (!newlyCreated && null != _factory && null != obj) {
-                boolean validated = false;
-                try {
-                    validated = _factory.validateObject(obj);
-                } catch (Exception e) {
-                    // swallowed
-                }
-                if (!validated) {
-                    try {
-                        _factory.destroyObject(obj);
-                    } catch(Exception e) {
-                        // swallowed
-                    } finally {
-                        obj = null;
+                    if (newlyCreated) {
+                        throw new NoSuchElementException(
+                            "Could not create a validated object, cause: " +
+                            t.getMessage());
                     }
                 }
             }
@@ -137,10 +128,14 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
     public synchronized void returnObject(Object obj) throws Exception {
         boolean success = !isClosed();
         if (_factory != null) {
-            try {
-                _factory.passivateObject(obj);
-            } catch(Exception e) {
+            if(!_factory.validateObject(obj)) {
                 success = false;
+            } else {
+                try {
+                    _factory.passivateObject(obj);
+                } catch(Exception e) {
+                    success = false;
+                }
             }
         }
 
@@ -163,11 +158,7 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
     public synchronized void invalidateObject(Object obj) throws Exception {
         _numActive--;
         if (_factory != null) {
-            try {
-                _factory.destroyObject(obj);
-            } catch (Exception e) {
-                // swallowed
-            }
+            _factory.destroyObject(obj);
         }
         notifyAll(); // _numActive has changed
     }
@@ -184,7 +175,11 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
         Object obj = _factory.makeObject();
 
         boolean success = true;
-        _factory.passivateObject(obj);
+        if(!_factory.validateObject(obj)) {
+            success = false;
+        } else {
+            _factory.passivateObject(obj);
+        }
 
         boolean shouldDestroy = !success;
         if(success) {
@@ -262,7 +257,7 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
     }
 
     /**
-     * If any idle objects were garabage collected, remove their
+     * If any idle objects were garbage collected, remove their
      * {@link Reference} wrappers from the idle object pool.
      */
     private void pruneClearedReferences() {

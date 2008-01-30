@@ -17,10 +17,14 @@
 package org.apache.commons.pool;
 
 import junit.framework.TestCase;
+import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.commons.pool.impl.StackObjectPool;
+import org.apache.commons.pool.impl.SoftReferenceObjectPool;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * Abstract {@link TestCase} for {@link ObjectPool} implementations.
@@ -113,6 +117,12 @@ public abstract class TestObjectPool extends TestCase {
         assertEquals(0, pool.getNumActive());
         assertEquals(1, pool.getNumIdle());
         expectedMethods.add(new MethodCall("makeObject").returned(ZERO));
+        // StackObjectPool, SoftReferenceObjectPool also validate on add
+        if (pool instanceof StackObjectPool || 
+                pool instanceof SoftReferenceObjectPool) {
+            expectedMethods.add(new MethodCall(
+                    "validateObject", ZERO).returned(Boolean.TRUE));
+        }
         expectedMethods.add(new MethodCall("passivateObject", ZERO));
         assertEquals(expectedMethods, factory.getMethodCalls());
 
@@ -142,6 +152,12 @@ public abstract class TestObjectPool extends TestCase {
             // expected
         }
         expectedMethods.add(new MethodCall("makeObject").returned(ONE));
+        // StackObjectPool, SofReferenceObjectPool also validate on add
+        if (pool instanceof StackObjectPool || 
+                pool instanceof SoftReferenceObjectPool) {
+            expectedMethods.add(new MethodCall(
+                    "validateObject", ONE).returned(Boolean.TRUE));
+        }
         expectedMethods.add(new MethodCall("passivateObject", ONE));
         assertEquals(expectedMethods, factory.getMethodCalls());
     }
@@ -153,6 +169,9 @@ public abstract class TestObjectPool extends TestCase {
             pool = makeEmptyPool(factory);
         } catch (UnsupportedOperationException uoe) {
             return; // test not supported
+        }
+        if (pool instanceof GenericObjectPool) {
+            ((GenericObjectPool) pool).setTestOnBorrow(true);
         }
         final List expectedMethods = new ArrayList();
         Object obj;
@@ -190,11 +209,17 @@ public abstract class TestObjectPool extends TestCase {
 
         factory.setActivateObjectFail(true);
         expectedMethods.add(new MethodCall("activateObject", obj));
-        obj = pool.borrowObject();
+        try {
+            obj = pool.borrowObject();
+            fail("Expecting NoSuchElementException");
+        } catch (NoSuchElementException ex) {
+            // Expected - newly created object will also fail to activate
+        }
+        // Idle object fails activation, new one created, also fails
         expectedMethods.add(new MethodCall("makeObject").returned(ONE));
+        expectedMethods.add(new MethodCall("activateObject", ONE));
         removeDestroyObjectCall(factory.getMethodCalls()); // The exact timing of destroyObject is flexible here.
         assertEquals(expectedMethods, factory.getMethodCalls());
-        pool.returnObject(obj);
 
         // when validateObject fails in borrowObject, a new object should be borrowed/created
         reset(pool, factory, expectedMethods);
@@ -204,11 +229,19 @@ public abstract class TestObjectPool extends TestCase {
         factory.setValidateObjectFail(true);
         expectedMethods.add(new MethodCall("activateObject", ZERO));
         expectedMethods.add(new MethodCall("validateObject", ZERO));
-        obj = pool.borrowObject();
+        try {
+            obj = pool.borrowObject();
+        } catch (NoSuchElementException ex) {
+            // Expected - newly created object will also fail to validate
+        }
+        // Idle object is activated, but fails validation.
+        // New instance is created, activated and then fails validation
         expectedMethods.add(new MethodCall("makeObject").returned(ONE));
+        expectedMethods.add(new MethodCall("activateObject", ONE));
+        expectedMethods.add(new MethodCall("validateObject", ONE));
         removeDestroyObjectCall(factory.getMethodCalls()); // The exact timing of destroyObject is flexible here.
-        assertEquals(expectedMethods, factory.getMethodCalls());
-        pool.returnObject(obj);
+        // Second activate and validate are missing from expectedMethods
+        assertTrue(factory.getMethodCalls().containsAll(expectedMethods));
     }
 
     public void testPOFReturnObjectUsages() throws Exception {
@@ -229,22 +262,40 @@ public abstract class TestObjectPool extends TestCase {
 
         // returned object should be passivated
         pool.returnObject(obj);
+        // StackObjectPool, SoftReferenceObjectPool also validate on return
+        if (pool instanceof StackObjectPool || 
+                pool instanceof SoftReferenceObjectPool) {
+            expectedMethods.add(new MethodCall(
+                    "validateObject", obj).returned(Boolean.TRUE));
+        }
         expectedMethods.add(new MethodCall("passivateObject", obj));
         assertEquals(expectedMethods, factory.getMethodCalls());
 
         //// Test exception handling of returnObject
         reset(pool, factory, expectedMethods);
-
+        pool.addObject();
+        pool.addObject();
+        pool.addObject();
+        assertEquals(3, pool.getNumIdle());
         // passivateObject should swallow exceptions and not add the object to the pool
-        idleCount = pool.getNumIdle();
         obj = pool.borrowObject();
+        Object obj2 = pool.borrowObject();
+        assertEquals(1, pool.getNumIdle());
+        assertEquals(2, pool.getNumActive());
         clear(factory, expectedMethods);
         factory.setPassivateObjectFail(true);
         pool.returnObject(obj);
+        // StackObjectPool, SoftReferenceObjectPool also validate on return
+        if (pool instanceof StackObjectPool || 
+                pool instanceof SoftReferenceObjectPool) {
+            expectedMethods.add(new MethodCall(
+                    "validateObject", obj).returned(Boolean.TRUE));
+        }
         expectedMethods.add(new MethodCall("passivateObject", obj));
         removeDestroyObjectCall(factory.getMethodCalls()); // The exact timing of destroyObject is flexible here.
         assertEquals(expectedMethods, factory.getMethodCalls());
-        assertEquals(idleCount, pool.getNumIdle());
+        assertEquals(1, pool.getNumIdle());   // Not returned
+        assertEquals(1, pool.getNumActive()); // But not in active count
 
         // destroyObject should swallow exceptions too
         reset(pool, factory, expectedMethods);
@@ -281,7 +332,12 @@ public abstract class TestObjectPool extends TestCase {
         obj = pool.borrowObject();
         clear(factory, expectedMethods);
         factory.setDestroyObjectFail(true);
-        pool.invalidateObject(obj);
+        try {
+            pool.invalidateObject(obj);
+            fail("Expecting destroy exception to propagate");
+        } catch (PrivateException ex) {
+            // Expected
+        }
         Thread.sleep(250); // could be defered
         removeDestroyObjectCall(factory.getMethodCalls());
         assertEquals(expectedMethods, factory.getMethodCalls());
