@@ -1681,7 +1681,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     /**
      * A "struct" that keeps additional information about the actual queue of pooled objects.
      */
-    private class ObjectQueue {
+    protected class ObjectQueue {
         private int activeCount = 0;
         private final CursorableLinkedList queue = new CursorableLinkedList();
 
