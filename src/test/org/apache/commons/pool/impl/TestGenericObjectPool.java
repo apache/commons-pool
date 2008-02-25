@@ -291,7 +291,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.evict();
         // Should hit 6,7,0 - 0 for second time
         for (int i = 0; i < 8; i++) {
-            VisitTracker tracker = (VisitTracker) pool.borrowObject();    
+            VisitTracker tracker = (VisitTracker) pool.borrowObject();
             if (tracker.getId() != 0) {
                 assertEquals("Instance " +  tracker.getId() + 
                         " visited wrong number of times.",
@@ -307,12 +307,19 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         int[] smallPrimes = {2, 3, 5, 7};
         Random random = new Random();
         random.setSeed(System.currentTimeMillis());
-        pool.setMaxIdle(-1);
         for (int i = 0; i < 4; i++) {
             pool.setNumTestsPerEvictionRun(smallPrimes[i]);
             for (int j = 0; j < 5; j++) {
-                pool.clear();
+                pool = new GenericObjectPool(factory);
+                pool.setNumTestsPerEvictionRun(3);
+                pool.setMinEvictableIdleTimeMillis(-1);
+                pool.setTestWhileIdle(true);
+                pool.setLifo(lifo);
+                pool.setTestOnReturn(false);
+                pool.setTestOnBorrow(false);
+                pool.setMaxIdle(-1);
                 int instanceCount = 10 + random.nextInt(20);
+                pool.setMaxActive(instanceCount);
                 for (int k = 0; k < instanceCount; k++) {
                     pool.addObject();
                 }
@@ -333,6 +340,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 int visitCount = 0;
                 for (int k = 0; k < instanceCount; k++) {
                     tracker = (VisitTracker) pool.borrowObject(); 
+                    assertTrue(pool.getNumActive() <= pool.getMaxActive());
                     visitCount = tracker.getValidateCount();                  
                     assertTrue(visitCount >= cycleCount && 
                             visitCount <= cycleCount + 1);
