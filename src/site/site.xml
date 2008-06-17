@@ -33,7 +33,7 @@
                 <item name="Sequence&#xA0;Diagrams"    href="/guide/sequencediagrams.html"/>
             </item>
             <item name="Examples"                      href="/examples.html"/>
-            <item name="Downloads"                     href="/download_pool.html"/>
+            <item name="Downloads"                     href="/download_pool.cgi"/>
             <item name="Wiki"                          href="http://wiki.apache.org/commons/Pool"/>
         </menu>
 
