@@ -202,6 +202,11 @@
             <tarLongFileMode>gnu</tarLongFileMode>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-build-plugin</artifactId>
+          <version>1.0</version>
+        </plugin>
       </plugins>
     </build>
 
