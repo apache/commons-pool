@@ -671,6 +671,13 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
     /**
      * Sets the cap on the number of "idle" instances in the pool.
+     * If maxIdle is set too low on heavily loaded systems it is possible you
+     * will see objects being destroyed and almost immediately new objects
+     * being created. This is a result of the active threads momentarily
+     * returning objects faster than they are requesting them them, causing the
+     * number of idle objects to rise above maxIdle. The best value for maxIdle
+     * for heavily loaded system will vary but the default is a good starting
+     * point.
      * @param maxIdle the maximum number of "idle" instances that can be held
      * in a given keyed pool. Use a negative value for no limit.
      * @see #getMaxIdle
