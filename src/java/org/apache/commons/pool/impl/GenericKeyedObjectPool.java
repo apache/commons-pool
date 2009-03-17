@@ -1018,11 +1018,12 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             } catch (Exception e) {
                 try {
                     _factory.destroyObject(key,pair.value);
+                } catch (Exception e2) {
+                    // swallowed
+                } finally {
                     synchronized (this) {
                         pool.decrementActiveCount();
                     }
-                } catch (Exception e2) {
-                    // swallowed
                 }
                 if(newlyCreated) {
                     throw new NoSuchElementException(
@@ -1046,11 +1047,12 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             if (invalid) {
                 try {
                     _factory.destroyObject(key,pair.value);
+                } catch (Exception e) {
+                    // swallowed
+                } finally {
                     synchronized (this) {
                         pool.decrementActiveCount();
                     }
-                } catch (Exception e) {
-                    // swallowed
                 }
                 if(newlyCreated) {
                     throw new NoSuchElementException("Could not create a validated object");
