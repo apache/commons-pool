@@ -358,6 +358,65 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertEquals(0,pool.getNumIdle());
         pool.close();
     }
+    
+    public void testExceptionOnDestroyDuringBorrow() throws Exception {
+        SimpleFactory factory = new SimpleFactory(); 
+        factory.setThrowExceptionOnDestroy(true);
+        GenericObjectPool pool = new GenericObjectPool(factory);
+        pool.setTestOnBorrow(true);
+        Object obj1 = pool.borrowObject();
+        factory.setValid(false); // Make validation fail on next borrow attempt
+        try {
+            Object obj2 = pool.borrowObject();
+            fail("Expecting NoSuchElementException");
+        } catch (NoSuchElementException ex) {
+            // expected
+        }
+        assertEquals(1, pool.getNumActive());
+        assertEquals(0, pool.getNumIdle());
+    }
+    
+    public void testExceptionOnDestroyDuringReturn() throws Exception {
+        SimpleFactory factory = new SimpleFactory(); 
+        factory.setThrowExceptionOnDestroy(true);
+        GenericObjectPool pool = new GenericObjectPool(factory);
+        pool.setTestOnReturn(true);
+        Object obj1 = pool.borrowObject();
+        Object obj2 = pool.borrowObject();
+        factory.setValid(false); // Make validation fail
+        pool.returnObject(obj1);
+        assertEquals(1, pool.getNumActive());
+        assertEquals(0, pool.getNumIdle());
+    }
+    
+    public void testExceptionOnActivateDuringBorrow() throws Exception {
+        SimpleFactory factory = new SimpleFactory(); 
+        GenericObjectPool pool = new GenericObjectPool(factory);
+        Object obj1 = pool.borrowObject();
+        Object obj2 = pool.borrowObject();
+        pool.returnObject(obj1);
+        pool.returnObject(obj2);
+        factory.setThrowExceptionOnActivate(true);
+        factory.setEvenValid(false);  
+        // Activation will now throw every other time
+        // First attempt throws, but loop continues and second succeeds
+        Object obj = pool.borrowObject();
+        assertEquals(1, pool.getNumActive());
+        assertEquals(0, pool.getNumIdle());
+        
+        pool.returnObject(obj);
+        factory.setValid(false);
+        // Validation will now fail on activation when borrowObject returns
+        // an idle instance, and then when attempting to create a new instance
+        try {
+            obj1 = pool.borrowObject();
+            fail("Expecting NoSuchElementException");
+        } catch (NoSuchElementException ex) {
+            // expected
+        }
+        assertEquals(0, pool.getNumActive());
+        assertEquals(0, pool.getNumIdle());
+    }
 
     public void testSetFactoryWithActiveObjects() throws Exception {
         GenericObjectPool pool = new GenericObjectPool();
@@ -1173,12 +1232,15 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             }
             return String.valueOf(makeCounter++);
         }
-        public void destroyObject(Object obj) {
+        public void destroyObject(Object obj) throws Exception {
             if (destroyLatency > 0) {
                 doWait(destroyLatency);
             }
             synchronized(this) {
                 activeCount--;
+            }
+            if (exceptionOnDestroy) {
+                throw new Exception();
             }
         }
         public boolean validateObject(Object obj) {
@@ -1208,6 +1270,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         boolean oddValid = true;
         boolean exceptionOnPassivate = false;
         boolean exceptionOnActivate = false;
+        boolean exceptionOnDestroy = false;
         boolean enableValidation = true;
         long destroyLatency = 0;
         long makeLatency = 0;
@@ -1219,6 +1282,10 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
         public void setThrowExceptionOnActivate(boolean b) {
             exceptionOnActivate = b;
+        }
+        
+        public void setThrowExceptionOnDestroy(boolean b) {
+            exceptionOnDestroy = b;
         }
 
         public boolean isValidationEnabled() {
