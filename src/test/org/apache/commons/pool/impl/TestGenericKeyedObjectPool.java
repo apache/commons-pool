@@ -1205,6 +1205,85 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals(whenExhaustedAction,pool.getWhenExhaustedAction());
         assertEquals(lifo, pool.getLifo());  
     }
+    
+    public void testExceptionOnPassivateDuringReturn() throws Exception {
+        SimpleFactory factory = new SimpleFactory();        
+        GenericKeyedObjectPool pool = new GenericKeyedObjectPool(factory);
+        Object obj = pool.borrowObject("one");
+        factory.setThrowExceptionOnPassivate(true);
+        pool.returnObject("one", obj);
+        assertEquals(0,pool.getNumIdle());
+        pool.close();
+    }
+    
+    public void testExceptionOnDestroyDuringBorrow() throws Exception {
+        SimpleFactory factory = new SimpleFactory(); 
+        factory.setThrowExceptionOnDestroy(true);
+        factory.setValidationEnabled(true);
+        GenericKeyedObjectPool pool = new GenericKeyedObjectPool(factory);
+        pool.setTestOnBorrow(true);
+        Object obj1 = pool.borrowObject("one");
+        factory.setValid(false); // Make validation fail on next borrow attempt
+        try {
+            Object obj2 = pool.borrowObject("one");
+            fail("Expecting NoSuchElementException");
+        } catch (NoSuchElementException ex) {
+            // expected
+        }
+        assertEquals(1, pool.getNumActive("one"));
+        assertEquals(0, pool.getNumIdle("one"));
+        assertEquals(1, pool.getNumActive());
+        assertEquals(0, pool.getNumIdle());
+    }
+    
+    public void testExceptionOnDestroyDuringReturn() throws Exception {
+        SimpleFactory factory = new SimpleFactory(); 
+        factory.setThrowExceptionOnDestroy(true);
+        factory.setValidationEnabled(true);
+        GenericKeyedObjectPool pool = new GenericKeyedObjectPool(factory);
+        pool.setTestOnReturn(true);
+        Object obj1 = pool.borrowObject("one");
+        Object obj2 = pool.borrowObject("one");
+        factory.setValid(false); // Make validation fail
+        pool.returnObject("one", obj1);
+        assertEquals(1, pool.getNumActive("one"));
+        assertEquals(0, pool.getNumIdle("one"));
+        assertEquals(1, pool.getNumActive());
+        assertEquals(0, pool.getNumIdle());
+    }
+    
+    public void testExceptionOnActivateDuringBorrow() throws Exception {
+        SimpleFactory factory = new SimpleFactory(); 
+        GenericKeyedObjectPool pool = new GenericKeyedObjectPool(factory);
+        Object obj1 = pool.borrowObject("one");
+        Object obj2 = pool.borrowObject("one");
+        pool.returnObject("one", obj1);
+        pool.returnObject("one", obj2);
+        factory.setThrowExceptionOnActivate(true);
+        factory.setEvenValid(false);  
+        // Activation will now throw every other time
+        // First attempt throws, but loop continues and second succeeds
+        Object obj = pool.borrowObject("one");
+        assertEquals(1, pool.getNumActive("one"));
+        assertEquals(0, pool.getNumIdle("one"));
+        assertEquals(1, pool.getNumActive());
+        assertEquals(0, pool.getNumIdle());
+        
+        pool.returnObject("one", obj);
+        factory.setValid(false);
+        // Validation will now fail on activation when borrowObject returns
+        // an idle instance, and then when attempting to create a new instance
+        try {
+            obj1 = pool.borrowObject("one");
+            fail("Expecting NoSuchElementException");
+        } catch (NoSuchElementException ex) {
+            // expected
+        }
+        assertEquals(0, pool.getNumActive("one"));
+        assertEquals(0, pool.getNumIdle("one"));
+        assertEquals(0, pool.getNumActive());
+        assertEquals(0, pool.getNumIdle());
+    }
 
     class TestThread implements Runnable {
         java.util.Random _random = new java.util.Random();
@@ -1290,10 +1369,13 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
             }
             return String.valueOf(key) + String.valueOf(counter++);
         }
-        public void destroyObject(Object key, Object obj) {
+        public void destroyObject(Object key, Object obj) throws Exception {
             doWait(destroyLatency);
             synchronized(this) {
                 activeCount--;
+            }
+            if (exceptionOnDestroy) {
+                throw new Exception();
             }
         }
         public boolean validateObject(Object key, Object obj) {
@@ -1303,8 +1385,18 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
                 return valid;
             }
         }
-        public void activateObject(Object key, Object obj) { }
-        public void passivateObject(Object key, Object obj) { }
+        public void activateObject(Object key, Object obj) throws Exception {
+            if (exceptionOnActivate) {
+                if (!(validateCounter++%2 == 0 ? evenValid : oddValid)) {
+                    throw new Exception();
+                }
+            }
+        }
+        public void passivateObject(Object key, Object obj) throws Exception {
+            if (exceptionOnPassivate) {
+                throw new Exception();
+            }
+        }
         
         public void setMaxActive(int maxActive) {
             this.maxActive = maxActive;
@@ -1318,6 +1410,22 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         void setEvenValid(boolean valid) {
             evenValid = valid;
         }
+        void setValid(boolean valid) {
+            evenValid = valid;
+            oddValid = valid;
+        }
+        
+        public void setThrowExceptionOnActivate(boolean b) {
+            exceptionOnActivate = b;
+        }
+        
+        public void setThrowExceptionOnDestroy(boolean b) {
+            exceptionOnDestroy = b;
+        }
+        
+        public void setThrowExceptionOnPassivate(boolean b) {
+            exceptionOnPassivate = b;
+        }
         
         int counter = 0;
         boolean valid;
@@ -1329,6 +1437,9 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         boolean enableValidation = false;
         long destroyLatency = 0;
         int maxActive = Integer.MAX_VALUE;
+        boolean exceptionOnPassivate = false;
+        boolean exceptionOnActivate = false;
+        boolean exceptionOnDestroy = false;
         
         private void doWait(long latency) {
             try {
