@@ -851,14 +851,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         try { Thread.sleep(600L); } catch(Exception e) { }
         assertEquals("Should be zero idle, found " + pool.getNumIdle(),0,pool.getNumIdle());
     }
-
-    /**
-     * This test has a number of problems.
-     * 1. without the wait code in the for loop the create time for each instance
-     * was usually the same due to clock presision.
-     * 2. It's very hard to follow.
-     */
-    public void DISABLEDtestEvictionSoftMinIdle() throws Exception {
+ 
+    public void testEvictionSoftMinIdle() throws Exception {
         GenericObjectPool pool = null;
         
         class TimeTest extends BasePoolableObjectFactory {
@@ -880,37 +874,29 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.setMaxActive(5);
         pool.setNumTestsPerEvictionRun(5);
         pool.setMinEvictableIdleTimeMillis(3000L);
-        pool.setTimeBetweenEvictionRunsMillis(250L);
-        pool.setTestWhileIdle(true);
         pool.setSoftMinEvictableIdleTimeMillis(1000L);
         pool.setMinIdle(2);
-        
+
         Object[] active = new Object[5];
         Long[] creationTime = new Long[5] ;
-        long lastCreationTime = System.currentTimeMillis();
         for(int i=0;i<5;i++) {
-            // make sure each instance has a different currentTimeMillis()
-            while (lastCreationTime == System.currentTimeMillis()) {
-                Thread.sleep(1);
-            }
             active[i] = pool.borrowObject();
             creationTime[i] = new Long(((TimeTest)active[i]).getCreateTime());
-            lastCreationTime = creationTime[i].longValue();
         }
         
         for(int i=0;i<5;i++) {
             pool.returnObject(active[i]);
         }
-        
-        try { Thread.sleep(1500L); } catch(Exception e) { }
-        assertTrue("Should be 2 OLD idle, found " + pool.getNumIdle(),pool.getNumIdle() == 2 &&
-                ((TimeTest)pool.borrowObject()).getCreateTime() == creationTime[3].longValue() &&
-                ((TimeTest)pool.borrowObject()).getCreateTime() == creationTime[4].longValue());
-        
-        try { Thread.sleep(2000L); } catch(Exception e) { }
-        assertTrue("Should be 2 NEW idle , found " + pool.getNumIdle(),pool.getNumIdle() == 2 &&
-                ((TimeTest)pool.borrowObject()).getCreateTime() != creationTime[0].longValue() &&
-                ((TimeTest)pool.borrowObject()).getCreateTime() != creationTime[1].longValue());
+
+        // Soft evict all but minIdle(2)
+        Thread.sleep(1500L);
+        pool.evict();
+        assertEquals("Idle count different than expected.", 2, pool.getNumIdle());
+
+        // Hard evict the rest.
+        Thread.sleep(2000L);
+        pool.evict();
+        assertEquals("Idle count different than expected.", 0, pool.getNumIdle());
     }
 
     public void testMinIdle() throws Exception {
