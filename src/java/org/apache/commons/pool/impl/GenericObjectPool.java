@@ -1348,10 +1348,10 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                 evict();
             } catch(Exception e) {
                 // ignored
-            } catch(Throwable t) {
+            } catch(OutOfMemoryError oome) {
                 // Log problem but give evictor thread a chance to continue in
                 // case error is recoverable
-                t.printStackTrace(System.err);
+                oome.printStackTrace(System.err);
             }
             try {
                 ensureMinIdle();

@@ -1759,10 +1759,10 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 evict();
             } catch(Exception e) {
                 // ignored
-            } catch(Throwable t) {
+            } catch(OutOfMemoryError oome) {
                 // Log problem but give evictor thread a chance to continue in
                 // case error is recoverable
-                t.printStackTrace(System.err);
+                oome.printStackTrace(System.err);
             }
             //Re-create the connections.
             try {
