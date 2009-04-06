@@ -961,14 +961,14 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                     // if there is a totalMaxActive and we are at the limit then
                     // we have to make room
                     if ((_maxTotal > 0)
-                            && (_totalActive + _totalIdle + _totalCreatingIdle >= _maxTotal)) {
+                            && (_totalActive + _totalIdle + _totalInternalProcessing >= _maxTotal)) {
                         clearOldest();
                     }
     
                     // check if we can create one
                     // (note we know that the num sleeping is 0, else we wouldn't be here)
-                    if ((_maxActive < 0 || pool.activeCount + pool.creatingIdleCount < _maxActive) &&
-                        (_maxTotal < 0 || _totalActive + _totalIdle + _totalCreatingIdle < _maxTotal)) {
+                    if ((_maxActive < 0 || pool.activeCount + pool.internalProcessingCount < _maxActive) &&
+                        (_maxTotal < 0 || _totalActive + _totalIdle + _totalInternalProcessing < _maxTotal)) {
                         Object obj = _factory.makeObject(key);
                         pair = new ObjectTimestampPair(obj);
                         newlyCreated = true;
@@ -1625,7 +1625,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 addObject(key);
             } finally {
                 synchronized (this) {
-                    pool.decrementCreatingIdleCount();
+                    pool.decrementInternalProcessingCount();
                     notifyAll();
                 }
             }
@@ -1678,32 +1678,35 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * <p>
      * This method has been left public so derived classes can override
      * the way the defecit is calculated. ie... Increase/decrease the pool
-     * size at certain times of day to accomodate for usage patterns.
+     * size at certain times of day to accommodate for usage patterns.
      *
      * @param key - The key of the pool to calculate the number of
      *              objects to be re-created
+     * @param incrementInternal - Should the count of objects currently under
+     *                            some form of internal processing be
+     *                            incremented?
      * @return The number of objects to be created
      */
     private synchronized int calculateDefecit(ObjectQueue pool,
-            boolean incrementCreate) {
+            boolean incrementInternal) {
         int objectDefecit = 0;
 
         //Calculate no of objects needed to be created, in order to have
         //the number of pooled objects < maxActive();
         objectDefecit = getMinIdle() - pool.queue.size();
         if (getMaxActive() > 0) {
-            int growLimit = Math.max(0, getMaxActive() - pool.activeCount - pool.queue.size() - pool.creatingIdleCount);
+            int growLimit = Math.max(0, getMaxActive() - pool.activeCount - pool.queue.size() - pool.internalProcessingCount);
             objectDefecit = Math.min(objectDefecit, growLimit);
         }
 
         // Take the maxTotal limit into account
         if (getMaxTotal() > 0) {
-            int growLimit = Math.max(0, getMaxTotal() - getNumActive() - getNumIdle() - _totalCreatingIdle);
+            int growLimit = Math.max(0, getMaxTotal() - getNumActive() - getNumIdle() - _totalInternalProcessing);
             objectDefecit = Math.min(objectDefecit, growLimit);
         }
 
-        if (incrementCreate && objectDefecit > 0) {
-            pool.incrementCreatingIdleCount();
+        if (incrementInternal && objectDefecit > 0) {
+            pool.incrementInternalProcessingCount();
         }
         return objectDefecit;
     }
@@ -1716,7 +1719,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     private class ObjectQueue {
         private int activeCount = 0;
         private final CursorableLinkedList queue = new CursorableLinkedList();
-        private int creatingIdleCount = 0;
+        private int internalProcessingCount = 0;
 
         void incrementActiveCount() {
             _totalActive++;
@@ -1730,14 +1733,14 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             }
         }
 
-        void incrementCreatingIdleCount() {
-            _totalCreatingIdle++;
-            creatingIdleCount++;
+        void incrementInternalProcessingCount() {
+            _totalInternalProcessing++;
+            internalProcessingCount++;
         }
 
-        void decrementCreatingIdleCount() {
-            _totalCreatingIdle--;
-            creatingIdleCount--;
+        void decrementInternalProcessingCount() {
+            _totalInternalProcessing--;
+            internalProcessingCount--;
         }
 }
     
@@ -2017,10 +2020,11 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     private int _totalIdle = 0;
 
     /**
-     * The total number of idle objects that are in the process of being created
-     * but have not yet been added to the pool.
+     * The number of objects subject to some form of internal processing
+     * (usually creation or destruction) that should be included in the total
+     * number of objects but are neither active nor idle.
      */
-    private int _totalCreatingIdle = 0;
+    private int _totalInternalProcessing = 0;
 
     /** My {@link KeyedPoolableObjectFactory}. */
     private KeyedPoolableObjectFactory _factory = null;
