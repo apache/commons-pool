@@ -933,7 +933,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                 if(null == pair) {
                     // check if we can create one
                     // (note we know that the num sleeping is 0, else we wouldn't be here)
-                    if(_maxActive < 0 || (_numActive + _numCreatingIdle) < _maxActive) {
+                    if(_maxActive < 0 || (_numActive + _numInternalProcessing) < _maxActive) {
                         // allow new object to be created
                     } else {
                         // the pool is exhausted
@@ -1262,22 +1262,22 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                 addObject();
             } finally {
                 synchronized (this) {
-                    _numCreatingIdle--;
+                    _numInternalProcessing--;
                     notifyAll();
                 }
             }
         }
     }
 
-    private synchronized int calculateDeficit(boolean incrementCreate) {
+    private synchronized int calculateDeficit(boolean incrementInternal) {
         int objectDeficit = getMinIdle() - getNumIdle();
         if (_maxActive > 0) {
             int growLimit = Math.max(0,
-                    getMaxActive() - getNumActive() - getNumIdle() - _numCreatingIdle);
+                    getMaxActive() - getNumActive() - getNumIdle() - _numInternalProcessing);
             objectDeficit = Math.min(objectDeficit, growLimit);
         }
-        if (incrementCreate && objectDeficit >0) {
-            _numCreatingIdle++;
+        if (incrementInternal && objectDeficit >0) {
+            _numInternalProcessing++;
         }
         return objectDeficit;
     }
@@ -1603,8 +1603,9 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
     private Evictor _evictor = null;
 
     /**
-     * The number of idle objects that are in the process of being created but
-     * have not yet been added to the pool.
+     * The number of objects subject to some form of internal processing
+     * (usually creation or destruction) that should be included in the total
+     * number of objects but are neither active nor idle.
      */
-    private int _numCreatingIdle = 0;
+    private int _numInternalProcessing = 0;
 }
