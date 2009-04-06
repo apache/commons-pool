@@ -1527,7 +1527,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                         }
                     }
                 } catch(Exception e) {
-                    ; // ignored
+                    // ignored
                 }
             }
         }
@@ -1562,8 +1562,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         }
         ObjectQueue pool = (ObjectQueue) (_poolMap.get(key));
         if (pool != null) {
-            CursorableLinkedList queue = 
-                (CursorableLinkedList)(pool.queue);
+            CursorableLinkedList queue = pool.queue;
             _evictionCursor = queue.cursor(_lifo ? queue.size() : 0);   
         }
     }
@@ -1648,7 +1647,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         if(_numTestsPerEvictionRun >= 0) {
             return _numTestsPerEvictionRun;
         } else {
-            return(int)(Math.ceil((double)_totalIdle/Math.abs((double)_numTestsPerEvictionRun)));
+            return(int)(Math.ceil(_totalIdle/Math.abs((double)_numTestsPerEvictionRun)));
         }
     }
 
