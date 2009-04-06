@@ -936,7 +936,6 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
     public Object borrowObject(Object key) throws Exception {
         long starttime = System.currentTimeMillis();
-        boolean newlyCreated = false;
         for(;;) {
             ObjectTimestampPair pair = null;
             ObjectQueue pool = null;
@@ -969,18 +968,15 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                     // (note we know that the num sleeping is 0, else we wouldn't be here)
                     if ((_maxActive < 0 || pool.activeCount + pool.internalProcessingCount < _maxActive) &&
                         (_maxTotal < 0 || _totalActive + _totalIdle + _totalInternalProcessing < _maxTotal)) {
-                        Object obj = _factory.makeObject(key);
-                        pair = new ObjectTimestampPair(obj);
-                        newlyCreated = true;
+                        // allow new object to be created
                     } else {
                         // the pool is exhausted
                         switch(_whenExhaustedAction) {
                             case WHEN_EXHAUSTED_GROW:
-                                Object obj = _factory.makeObject(key);
-                                pair = new ObjectTimestampPair(obj);
+                                // allow new object to be created
                                 break;
                             case WHEN_EXHAUSTED_FAIL:
-                                throw new NoSuchElementException();
+                                throw new NoSuchElementException("Pool exhausted");
                             case WHEN_EXHAUSTED_BLOCK:
                                 try {
                                     if(_maxWait <= 0) {
@@ -996,7 +992,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                                         }
                                     }
                                 } catch(InterruptedException e) {
-                                    // ignored
+                                    Thread.currentThread().interrupt();
+                                    throw e;
                                 }
                                 if(_maxWait > 0 && ((System.currentTimeMillis() - starttime) >= _maxWait)) {
                                     throw new NoSuchElementException("Timeout waiting for idle object");
@@ -1010,21 +1007,41 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 }
                 pool.incrementActiveCount();
             }
-            
-            // Activate.  If activate fails, decrement active count and destroy.
-            // If instance failing activation is new, throw NoSuchElementException;
-            // otherwise keep looping
+
+            boolean newlyCreated = false;
+            if (null == pair) {
+                try {
+                    Object obj = _factory.makeObject(key);
+                    pair = new ObjectTimestampPair(obj);
+                    newlyCreated = true;
+                } finally {
+                    if (!newlyCreated) {
+                        // object cannot be created
+                        synchronized (this) {
+                            pool.decrementActiveCount();
+                            notifyAll();
+                        }
+                    }
+                }
+            }
+
+            // activate & validate the object
             try {
                 _factory.activateObject(key, pair.value);
-            } catch (Exception e) {
+                if (_testOnBorrow && !_factory.validateObject(key, pair.value)) {
+                    throw new Exception("ValidateObject failed");
+                }
+                return pair.value;
+            } catch (Throwable e) {
+                // object cannot be activated or is invalid
                 try {
                     _factory.destroyObject(key,pair.value);
-                } catch (Exception e2) {
-                    // swallowed
-                } finally {
-                    synchronized (this) {
-                        pool.decrementActiveCount();
-                    }
+                } catch (Throwable e2) {
+                    // cannot destroy broken object
+                }
+                synchronized (this) {
+                    pool.decrementActiveCount();
+                    notifyAll();
                 }
                 if(newlyCreated) {
                     throw new NoSuchElementException(
@@ -1034,32 +1051,6 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 else {
                     continue; // keep looping
                 }
-            }
-
-            // Validate.  If validation fails, decrement active count and
-            // destroy. If instance failing validation is new, throw
-            // NoSuchElementException; otherwise keep looping
-            boolean invalid = true;
-            try {
-                invalid = _testOnBorrow && !_factory.validateObject(key, pair.value);
-            } catch (Exception e) {
-                // swallowed
-            }
-            if (invalid) {
-                try {
-                    _factory.destroyObject(key,pair.value);
-                } catch (Exception e) {
-                    // swallowed
-                } finally {
-                    synchronized (this) {
-                        pool.decrementActiveCount();
-                    }
-                }
-                if(newlyCreated) {
-                    throw new NoSuchElementException("Could not create a validated object");
-                } // else keep looping
-            } else {
-                return pair.value;
             }
         }
     }
