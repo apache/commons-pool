@@ -926,7 +926,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                 try {
                     pair = (ObjectTimestampPair)(_pool.removeFirst());
                 } catch(NoSuchElementException e) {
-                    ; /* ignored */
+                    /* ignored */
                 }
     
                 // otherwise
@@ -1332,7 +1332,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         if(_numTestsPerEvictionRun >= 0) {
             return Math.min(_numTestsPerEvictionRun, _pool.size());
         } else {
-            return(int)(Math.ceil((double)_pool.size()/Math.abs((double)_numTestsPerEvictionRun)));
+            return(int)(Math.ceil(_pool.size()/Math.abs((double)_numTestsPerEvictionRun)));
         }
     }
 
