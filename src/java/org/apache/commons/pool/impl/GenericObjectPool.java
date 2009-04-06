@@ -933,7 +933,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                 if(null == pair) {
                     // check if we can create one
                     // (note we know that the num sleeping is 0, else we wouldn't be here)
-                    if(_maxActive < 0 || _numActive < _maxActive) {
+                    if(_maxActive < 0 || (_numActive + _numCreatingIdle) < _maxActive) {
                         // allow new object to be created
                     } else {
                         // the pool is exhausted
@@ -1256,17 +1256,28 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         // as a loop limit and a second time inside the loop
         // to stop when another thread already returned the
         // needed objects
-        int objectDeficit = calculateDeficit();
-        for ( int j = 0 ; j < objectDeficit && calculateDeficit() > 0 ; j++ ) {
-            addObject();
+        int objectDeficit = calculateDeficit(false);
+        for ( int j = 0 ; j < objectDeficit && calculateDeficit(true) > 0 ; j++ ) {
+            try {
+                addObject();
+            } finally {
+                synchronized (this) {
+                    _numCreatingIdle--;
+                    notifyAll();
+                }
+            }
         }
     }
 
-    private synchronized int calculateDeficit() {
+    private synchronized int calculateDeficit(boolean incrementCreate) {
         int objectDeficit = getMinIdle() - getNumIdle();
         if (_maxActive > 0) {
-            int growLimit = Math.max(0, getMaxActive() - getNumActive() - getNumIdle());
+            int growLimit = Math.max(0,
+                    getMaxActive() - getNumActive() - getNumIdle() - _numCreatingIdle);
             objectDeficit = Math.min(objectDeficit, growLimit);
+        }
+        if (incrementCreate && objectDeficit >0) {
+            _numCreatingIdle++;
         }
         return objectDeficit;
     }
@@ -1275,7 +1286,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * Create an object, and place it into the pool.
      * addObject() is useful for "pre-loading" a pool with idle objects.
      */
-    public synchronized void addObject() throws Exception {
+    public void addObject() throws Exception {
         assertOpen();
         if (_factory == null) {
             throw new IllegalStateException("Cannot add objects without a factory.");
@@ -1591,4 +1602,9 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      */
     private Evictor _evictor = null;
 
+    /**
+     * The number of idle objects that are in the process of being created but
+     * have not yet been added to the pool.
+     */
+    private int _numCreatingIdle = 0;
 }
