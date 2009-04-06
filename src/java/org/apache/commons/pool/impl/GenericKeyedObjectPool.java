@@ -960,14 +960,15 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 if(null == pair) {
                     // if there is a totalMaxActive and we are at the limit then
                     // we have to make room
-                    if ((_maxTotal > 0) && (_totalActive + _totalIdle >= _maxTotal)) {
+                    if ((_maxTotal > 0)
+                            && (_totalActive + _totalIdle + _totalCreatingIdle >= _maxTotal)) {
                         clearOldest();
                     }
     
                     // check if we can create one
                     // (note we know that the num sleeping is 0, else we wouldn't be here)
-                    if ((_maxActive < 0 || pool.activeCount < _maxActive) &&
-                        (_maxTotal < 0 || _totalActive + _totalIdle < _maxTotal)) {
+                    if ((_maxActive < 0 || pool.activeCount + pool.creatingIdleCount < _maxActive) &&
+                        (_maxTotal < 0 || _totalActive + _totalIdle + _totalCreatingIdle < _maxTotal)) {
                         Object obj = _factory.makeObject(key);
                         pair = new ObjectTimestampPair(obj);
                         newlyCreated = true;
@@ -1322,18 +1323,16 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             throw new IllegalStateException("Cannot add objects without a factory.");
         }
         Object obj = _factory.makeObject(key);
-        synchronized (this) {
+        try {
+            assertOpen();
+            addObjectToPool(key, obj, false);
+        } catch (IllegalStateException ex) { // Pool closed
             try {
-                assertOpen();
-                addObjectToPool(key, obj, false);
-            } catch (IllegalStateException ex) { // Pool closed
-                try {
-                    _factory.destroyObject(key, obj);
-                } catch (Exception ex2) {
-                    // swallow
-                }
-                throw ex;
+                _factory.destroyObject(key, obj);
+            } catch (Exception ex2) {
+                // swallow
             }
+            throw ex;
         }
     }
 
@@ -1574,19 +1573,21 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @see #setMinIdle
      * @throws Exception If there was an error whilst creating the pooled objects.
      */
-    private synchronized void ensureMinIdle() throws Exception {
-        Iterator iterator = _poolMap.keySet().iterator();
-
+    private void ensureMinIdle() throws Exception {
         //Check if should sustain the pool
         if (_minIdle > 0) {
+            Object[] keysCopy;
+            synchronized(this) {
+                // Get the current set of keys
+                keysCopy = _poolMap.keySet().toArray();
+            }
+
             // Loop through all elements in _poolList
             // Find out the total number of max active and max idle for that class
             // If the number is less than the minIdle, do creation loop to boost numbers
-            // Increment idle count + 1
-            while (iterator.hasNext()) {
+            for (int i=0; i < keysCopy.length; i++) {
                 //Get the next key to process
-                Object key = iterator.next();
-                ensureMinIdle(key);
+                ensureMinIdle(keysCopy[i]);
             }
         }
     }
@@ -1602,13 +1603,32 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @param key The key to process
      * @throws Exception If there was an error whilst creating the pooled objects
      */
-    private synchronized void ensureMinIdle(Object key) throws Exception {
+    private void ensureMinIdle(Object key) throws Exception {
         // Calculate current pool objects
-        int numberToCreate = calculateDefecit(key);
+        ObjectQueue pool;
+        synchronized(this) {
+            pool = (ObjectQueue)(_poolMap.get(key));
+        }
+        if (pool == null) {
+            return;
+        }
 
-        //Create required pool objects, if none to create, this loop will not be run.
-        for (int i = 0; i < numberToCreate; i++) {
-            addObject(key);
+        // this method isn't synchronized so the
+        // calculateDeficit is done at the beginning
+        // as a loop limit and a second time inside the loop
+        // to stop when another thread already returned the
+        // needed objects
+        int objectDeficit = calculateDefecit(pool, false);
+        
+        for (int i = 0; i < objectDeficit && calculateDefecit(pool, true) > 0; i++) {
+            try {
+                addObject(key);
+            } finally {
+                synchronized (this) {
+                    pool.decrementCreatingIdleCount();
+                    notifyAll();
+                }
+            }
         }
     }
 
@@ -1664,23 +1684,27 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      *              objects to be re-created
      * @return The number of objects to be created
      */
-    private int calculateDefecit(Object key) {
+    private synchronized int calculateDefecit(ObjectQueue pool,
+            boolean incrementCreate) {
         int objectDefecit = 0;
 
         //Calculate no of objects needed to be created, in order to have
         //the number of pooled objects < maxActive();
-        objectDefecit = getMinIdle() - getNumIdle(key);
+        objectDefecit = getMinIdle() - pool.queue.size();
         if (getMaxActive() > 0) {
-            int growLimit = Math.max(0, getMaxActive() - getNumActive(key) - getNumIdle(key));
+            int growLimit = Math.max(0, getMaxActive() - pool.activeCount - pool.queue.size() - pool.creatingIdleCount);
             objectDefecit = Math.min(objectDefecit, growLimit);
         }
 
         // Take the maxTotal limit into account
         if (getMaxTotal() > 0) {
-            int growLimit = Math.max(0, getMaxTotal() - getNumActive() - getNumIdle());
+            int growLimit = Math.max(0, getMaxTotal() - getNumActive() - getNumIdle() - _totalCreatingIdle);
             objectDefecit = Math.min(objectDefecit, growLimit);
         }
 
+        if (incrementCreate && objectDefecit > 0) {
+            pool.incrementCreatingIdleCount();
+        }
         return objectDefecit;
     }
 
@@ -1692,6 +1716,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     private class ObjectQueue {
         private int activeCount = 0;
         private final CursorableLinkedList queue = new CursorableLinkedList();
+        private int creatingIdleCount = 0;
 
         void incrementActiveCount() {
             _totalActive++;
@@ -1704,7 +1729,17 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 activeCount--;
             }
         }
-    }
+
+        void incrementCreatingIdleCount() {
+            _totalCreatingIdle++;
+            creatingIdleCount++;
+        }
+
+        void decrementCreatingIdleCount() {
+            _totalCreatingIdle--;
+            creatingIdleCount--;
+        }
+}
     
     /**
      * A simple "struct" encapsulating an object instance and a timestamp.
@@ -1980,6 +2015,12 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
     /** The total number of idle instances. */
     private int _totalIdle = 0;
+
+    /**
+     * The total number of idle objects that are in the process of being created
+     * but have not yet been added to the pool.
+     */
+    private int _totalCreatingIdle = 0;
 
     /** My {@link KeyedPoolableObjectFactory}. */
     private KeyedPoolableObjectFactory _factory = null;
