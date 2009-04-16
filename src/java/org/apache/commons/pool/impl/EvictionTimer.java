@@ -37,16 +37,7 @@ import java.util.TimerTask;
 class EvictionTimer {
     private static Timer _timer;
     private static int _usageCount;
-    /*
-     * _timer is static so there may be one per class loader. Append a unique
-     * class loader name to the timer name. Don't use toString() since the class
-     * loader may have overridden that method.
-     */
-    private static final String TIMER_THREAD_NAME =
-        "Commons Pool Eviction Timer for " +
-        EvictionTimer.class.getClassLoader().getClass().getName() + "@" +
-        Integer.toHexString(EvictionTimer.class.getClassLoader().getClass().hashCode());
-
+    
     private EvictionTimer() {
         // Hide the default constuctor
     }
@@ -62,7 +53,7 @@ class EvictionTimer {
      */
     static synchronized void schedule(TimerTask task, long delay, long period) {
         if (null == _timer) {
-            _timer = new Timer(TIMER_THREAD_NAME, true);
+            _timer = new Timer(true);
         }
         _usageCount++;
         _timer.schedule(task, delay, period);
