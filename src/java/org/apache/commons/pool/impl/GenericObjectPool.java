@@ -17,7 +17,10 @@
 
 package org.apache.commons.pool.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.TimerTask;
 
@@ -168,6 +171,10 @@ import org.apache.commons.pool.impl.GenericKeyedObjectPool.ObjectTimestampPair;
  * GenericObjectPool is not usable without a {@link PoolableObjectFactory}.  A
  * non-<code>null</code> factory must be provided either as a constructor argument
  * or via a call to {@link #setFactory} before the pool is used.
+ * <p>
+ * Implementation note: To prevent possible deadlocks, care has been taken to
+ * ensure that no call to a factory method will occur within a synchronization
+ * block. See POOL-125 and DBCP-44 for more information.
  *
  * @see GenericKeyedObjectPool
  * @author Rodney Waldhoff
@@ -1037,17 +1044,34 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
     /**
      * Clears any objects sitting idle in the pool.
      */
-    public synchronized void clear() {
-        for(Iterator it = _pool.iterator(); it.hasNext(); ) {
+    public void clear() {
+        List toDestroy = new ArrayList();
+        
+        synchronized(this) {
+            toDestroy.addAll(_pool);
+            _numInternalProcessing = _numInternalProcessing + _pool._size;
+            _pool.clear();
+        }
+        destroy(toDestroy);
+    }
+
+    /*
+     * Private method to destroy all the objects in a collection. Assumes
+     * objects in the collection are instances of ObjectTimestampPair
+     */
+    private void destroy(Collection c) {
+        for (Iterator it = c.iterator(); it.hasNext();) {
             try {
                 _factory.destroyObject(((ObjectTimestampPair)(it.next())).value);
             } catch(Exception e) {
                 // ignore error, keep destroying the rest
+            } finally {
+                synchronized(this) {
+                    _numInternalProcessing--;
+                    notifyAll();
+                }
             }
-            it.remove();
         }
-        _pool.clear();
-        notifyAll(); // num sleeping has changed
     }
 
     /**
@@ -1164,14 +1188,20 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @param factory the {@link PoolableObjectFactory} used to create new instances.
      * @throws IllegalStateException when the factory cannot be set at this time
      */
-    public synchronized void setFactory(PoolableObjectFactory factory) throws IllegalStateException {
-        assertOpen();
-        if(0 < getNumActive()) {
-            throw new IllegalStateException("Objects are already active");
-        } else {
-            clear();
+    public void setFactory(PoolableObjectFactory factory) throws IllegalStateException {
+        List toDestroy = new ArrayList();
+        synchronized (this) {
+            assertOpen();
+            if(0 < getNumActive()) {
+                throw new IllegalStateException("Objects are already active");
+            } else {
+                toDestroy.addAll(_pool);
+                _numInternalProcessing = _numInternalProcessing + _pool._size;
+                _pool.clear();
+            }
             _factory = factory;
         }
+        destroy(toDestroy);
     }
 
     /**
@@ -1187,61 +1217,83 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      *
      * @throws Exception if the pool is closed or eviction fails.
      */
-    public synchronized void evict() throws Exception {
+    public void evict() throws Exception {
         assertOpen();
-        if(!_pool.isEmpty()) {
+        synchronized (this) {
+            if(_pool.isEmpty()) {
+                return;
+            }
             if (null == _evictionCursor) {
                 _evictionCursor = (_pool.cursor(_lifo ? _pool.size() : 0));
             }  
-            for (int i=0,m=getNumTests();i<m;i++) {
+        }
+
+        for (int i=0,m=getNumTests();i<m;i++) {
+            final ObjectTimestampPair pair;
+            synchronized (this) {
                 if ((_lifo && !_evictionCursor.hasPrevious()) || 
                         !_lifo && !_evictionCursor.hasNext()) {
                     _evictionCursor.close();
                     _evictionCursor = _pool.cursor(_lifo ? _pool.size() : 0);
                 }
-                boolean removeObject = false;
-                final ObjectTimestampPair pair = _lifo ? 
-                    (ObjectTimestampPair) _evictionCursor.previous() : 
-                    (ObjectTimestampPair) _evictionCursor.next();
-                final long idleTimeMilis = System.currentTimeMillis() - pair.tstamp;
-                if ((_minEvictableIdleTimeMillis > 0)
-                        && (idleTimeMilis > _minEvictableIdleTimeMillis)) {
-                    removeObject = true;
-                } else if ((_softMinEvictableIdleTimeMillis > 0)
-                        && (idleTimeMilis > _softMinEvictableIdleTimeMillis)
-                        && (getNumIdle() > getMinIdle())) {
-                    removeObject = true;
+                
+                pair = _lifo ? 
+                        (ObjectTimestampPair) _evictionCursor.previous() : 
+                        (ObjectTimestampPair) _evictionCursor.next();
+                
+                _evictionCursor.remove();
+                _numInternalProcessing++;
+            }
+                        
+            boolean removeObject = false;
+            final long idleTimeMilis = System.currentTimeMillis() - pair.tstamp;
+            if ((getMinEvictableIdleTimeMillis() > 0)
+                    && (idleTimeMilis > getMinEvictableIdleTimeMillis())) {
+                removeObject = true;
+            } else if ((getSoftMinEvictableIdleTimeMillis() > 0)
+                    && (idleTimeMilis > getSoftMinEvictableIdleTimeMillis())
+                    && ((getNumIdle() + 1)> getMinIdle())) { // +1 accounts for object we are processing
+                removeObject = true;
+            }
+            if(getTestWhileIdle() && !removeObject) {
+                boolean active = false;
+                try {
+                    _factory.activateObject(pair.value);
+                    active = true;
+                } catch(Exception e) {
+                    removeObject=true;
                 }
-                if(_testWhileIdle && !removeObject) {
-                    boolean active = false;
-                    try {
-                        _factory.activateObject(pair.value);
-                        active = true;
-                    } catch(Exception e) {
+                if(active) {
+                    if(!_factory.validateObject(pair.value)) {
                         removeObject=true;
-                    }
-                    if(active) {
-                        if(!_factory.validateObject(pair.value)) {
+                    } else {
+                        try {
+                            _factory.passivateObject(pair.value);
+                        } catch(Exception e) {
                             removeObject=true;
-                        } else {
-                            try {
-                                _factory.passivateObject(pair.value);
-                            } catch(Exception e) {
-                                removeObject=true;
-                            }
                         }
                     }
                 }
-                if(removeObject) {
-                    try {
-                        _evictionCursor.remove();
-                        _factory.destroyObject(pair.value);
-                    } catch(Exception e) {
-                        // ignored
-                    }
+            }
+            
+            if (removeObject) {
+                try {
+                    _factory.destroyObject(pair.value);
+                } catch(Exception e) {
+                    // ignored
                 }
             }
-        } // if !empty
+            synchronized (this) {
+                if(!removeObject) {
+                    _evictionCursor.add(pair);
+                    if (_lifo) {
+                        // Skip over the element we just added back 
+                        _evictionCursor.previous();
+                    }
+                }
+                _numInternalProcessing--;
+            }
+        }
     }
 
     /**
