@@ -254,7 +254,6 @@ public abstract class TestObjectPool extends TestCase {
         }
         final List expectedMethods = new ArrayList();
         Object obj;
-        int idleCount;
 
         /// Test correct behavior code paths
         obj = pool.borrowObject();

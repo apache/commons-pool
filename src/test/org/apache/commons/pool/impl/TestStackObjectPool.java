@@ -21,7 +21,6 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
-import org.apache.commons.pool.TestObjectPool;
 import org.apache.commons.pool.TestBaseObjectPool;
 
 import java.util.ArrayList;
@@ -238,7 +237,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
                     throw new RuntimeException("Couldn't passivate");
                 }
             }
-        };
+        }
         
         TestingPoolableObjectFactory factory = new TestingPoolableObjectFactory();
         

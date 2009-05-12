@@ -26,7 +26,6 @@ import junit.framework.TestSuite;
 
 import org.apache.commons.pool.KeyedObjectPool;
 import org.apache.commons.pool.KeyedPoolableObjectFactory;
-import org.apache.commons.pool.TestKeyedObjectPool;
 import org.apache.commons.pool.TestBaseKeyedObjectPool;
 
 /**

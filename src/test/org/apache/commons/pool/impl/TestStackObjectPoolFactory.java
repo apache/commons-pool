@@ -24,8 +24,6 @@ import org.apache.commons.pool.MethodCallPoolableObjectFactory;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import java.util.NoSuchElementException;
-
 /**
  * Tests for {@link StackObjectPoolFactory}.
  *

@@ -20,11 +20,8 @@ package org.apache.commons.pool.impl;
 import org.apache.commons.pool.TestKeyedObjectPoolFactory;
 import org.apache.commons.pool.KeyedObjectPoolFactory;
 import org.apache.commons.pool.KeyedPoolableObjectFactory;
-import org.apache.commons.pool.MethodCallPoolableObjectFactory;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
-import java.util.NoSuchElementException;
 
 /**
  * Tests for {@link GenericKeyedObjectPoolFactory}.
