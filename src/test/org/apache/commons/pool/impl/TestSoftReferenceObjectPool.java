@@ -22,7 +22,6 @@ import junit.framework.TestSuite;
 
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
-import org.apache.commons.pool.TestObjectPool;
 import org.apache.commons.pool.TestBaseObjectPool;
 
 /**

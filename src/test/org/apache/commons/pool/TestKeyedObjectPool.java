@@ -244,7 +244,6 @@ public abstract class TestKeyedObjectPool extends TestCase {
         }
         final List expectedMethods = new ArrayList();
         Object obj;
-        int idleCount;
 
         /// Test correct behavior code paths
         obj = pool.borrowObject(KEY);
