@@ -516,6 +516,84 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
     }
 
+    public void testMaxActiveUnderLoad() {
+        // Config
+        int numThreads = 199; // And main thread makes a round 200.
+        int numIter = 20;
+        int delay = 25;
+        int maxActive = 10;
+        
+        SimpleFactory factory = new SimpleFactory();
+        factory.setMaxActive(maxActive);
+        pool.setFactory(factory);
+        pool.setMaxActive(maxActive);
+        pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_BLOCK);
+        pool.setTimeBetweenEvictionRunsMillis(-1);
+        
+        // Start threads to borrow objects
+        TestThread[] threads = new TestThread[numThreads];
+        for(int i=0;i<numThreads;i++) {
+            // Factor of 2 on iterations so main thread does work whilst other
+            // threads are running. Factor of 2 on delay so average delay for
+            // other threads == actual delay for main thread
+            threads[i] = new TestThread(pool, numIter * 2, delay * 2);
+            Thread t = new Thread(threads[i]);
+            t.start();
+        }
+        // Give the threads a chance to start doing some work
+        try {
+            Thread.sleep(5000);
+        } catch(Exception e) {
+            // ignored
+        }
+        
+        for (int i = 0; i < numIter; i++) {
+            Object obj = null;
+            try {
+                try {
+                    Thread.sleep(delay);
+                } catch(Exception e) {
+                    // ignored
+                }
+                obj = pool.borrowObject();
+                // Under load, observed _numActive > _maxActive 
+                if (pool.getNumActive() > pool.getMaxActive()) {
+                    throw new IllegalStateException("Too many active objects");
+                }
+                try {
+                    Thread.sleep(delay);
+                } catch(Exception e) {
+                    // ignored
+                }
+            } catch (Exception e) {
+                // Shouldn't happen
+                e.printStackTrace();
+                fail("Exception on borrow");
+            } finally {
+                if (obj != null) {
+                    try {
+                        pool.returnObject(obj);
+                    } catch (Exception e) {
+                        // Ignore
+                    }
+                }
+            }
+        }
+
+        for(int i=0;i<numThreads;i++) {
+            while(!(threads[i]).complete()) {
+                try {
+                    Thread.sleep(500L);
+                } catch(Exception e) {
+                    // ignored
+                }
+            }
+            if(threads[i].failed()) {
+                fail();
+            }
+        }
+    }
+
     public void testInvalidWhenExhaustedAction() throws Exception {
         try {
             pool.setWhenExhaustedAction(Byte.MAX_VALUE);
@@ -1297,6 +1375,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     protected boolean isFifo() {
         return false;
     }
+    
 }
 
 
