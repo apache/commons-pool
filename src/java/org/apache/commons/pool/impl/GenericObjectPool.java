@@ -1149,6 +1149,8 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                     } else {
                         _pool.addLast(new ObjectTimestampPair(obj));
                     }
+                    _numActive--;
+                    notifyAll();
                 }
             }
         }
@@ -1160,15 +1162,15 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
             } catch(Exception e) {
                 // ignored
             }
-        }
-        
-        // Decrement active count *after* destroy if applicable
-        if (decrementNumActive) {
-            synchronized(this) {
-                _numActive--;
-                notifyAll();
+            // Decrement active count *after* destroy if applicable
+            if (decrementNumActive) {
+                synchronized(this) {
+                    _numActive--;
+                    notifyAll();
+                }
             }
         }
+        
     }
 
     public void close() throws Exception {
