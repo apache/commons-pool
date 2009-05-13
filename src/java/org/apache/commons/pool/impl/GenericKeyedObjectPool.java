@@ -1298,6 +1298,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                         pool.queue.addLast(new ObjectTimestampPair(obj));
                     }
                     _totalIdle++;
+                    pool.decrementActiveCount();
+                    notifyAll();
                 }
             }
         }
@@ -1309,13 +1311,12 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             } catch(Exception e) {
                 // ignored?
             }
-        }
-        
-        // Decrement active count *after* destroy if applicable
-        if (decrementNumActive) {
-            synchronized(this) {
-                pool.decrementActiveCount();
-                notifyAll();
+            // Decrement active count *after* destroy if applicable
+            if (decrementNumActive) {
+                synchronized(this) {
+                    pool.decrementActiveCount();
+                    notifyAll();
+                }
             }
         }
     }
