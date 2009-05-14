@@ -1298,7 +1298,9 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                         pool.queue.addLast(new ObjectTimestampPair(obj));
                     }
                     _totalIdle++;
-                    pool.decrementActiveCount();
+                    if (decrementNumActive) {
+                        pool.decrementActiveCount();
+                    }
                     notifyAll();
                 }
             }

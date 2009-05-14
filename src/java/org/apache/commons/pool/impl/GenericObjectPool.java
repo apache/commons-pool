@@ -1149,7 +1149,9 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                     } else {
                         _pool.addLast(new ObjectTimestampPair(obj));
                     }
-                    _numActive--;
+                    if (decrementNumActive) {
+                        _numActive--;
+                    }
                     notifyAll();
                 }
             }
