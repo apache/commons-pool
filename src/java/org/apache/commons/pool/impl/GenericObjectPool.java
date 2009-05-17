@@ -20,6 +20,7 @@ package org.apache.commons.pool.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.TimerTask;
@@ -539,7 +540,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      */
     public synchronized void setMaxActive(int maxActive) {
         _maxActive = maxActive;
-        notifyAll();
+        allocate();
     }
 
     /**
@@ -570,7 +571,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
             case WHEN_EXHAUSTED_FAIL:
             case WHEN_EXHAUSTED_GROW:
                 _whenExhaustedAction = whenExhaustedAction;
-                notifyAll();
+                allocate();
                 break;
             default:
                 throw new IllegalArgumentException("whenExhaustedAction " + whenExhaustedAction + " not recognized.");
@@ -614,7 +615,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      */
     public synchronized void setMaxWait(long maxWait) {
         _maxWait = maxWait;
-        notifyAll();
+        allocate();
     }
 
     /**
@@ -641,7 +642,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      */
     public synchronized void setMaxIdle(int maxIdle) {
         _maxIdle = maxIdle;
-        notifyAll();
+        allocate();
     }
 
     /**
@@ -658,7 +659,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      */
     public synchronized void setMinIdle(int minIdle) {
         _minIdle = minIdle;
-        notifyAll();
+        allocate();
     }
 
     /**
@@ -917,43 +918,42 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         setTimeBetweenEvictionRunsMillis(conf.timeBetweenEvictionRunsMillis);
         setSoftMinEvictableIdleTimeMillis(conf.softMinEvictableIdleTimeMillis);
         setLifo(conf.lifo);
-        notifyAll();
+        allocate();
     }
 
     //-- ObjectPool methods ------------------------------------------
 
     public Object borrowObject() throws Exception {
         long starttime = System.currentTimeMillis();
+        Latch latch = new Latch();
+        synchronized (this) {
+            _allocationQueue.add(latch);
+            allocate();
+        }
+
         for(;;) {
-            ObjectTimestampPair pair = null;
-            
             synchronized (this) {
                 assertOpen();
-                // if there are any sleeping, just grab one of those
-                try {
-                    pair = (ObjectTimestampPair)(_pool.removeFirst());
-                } catch(NoSuchElementException e) {
-                    /* ignored */
-                }
-    
-                // otherwise
-                if(null == pair) {
-                    // check if we can create one
-                    // (note we know that the num sleeping is 0, else we wouldn't be here)
-                    if(_maxActive < 0 || (_numActive + _numInternalProcessing) < _maxActive) {
-                        // allow new object to be created
-                    } else {
-                        // the pool is exhausted
-                        switch(_whenExhaustedAction) {
-                            case WHEN_EXHAUSTED_GROW:
-                                // allow new object to be created
-                                break;
-                            case WHEN_EXHAUSTED_FAIL:
-                                throw new NoSuchElementException("Pool exhausted");
-                            case WHEN_EXHAUSTED_BLOCK:
-                                try {
+            }
+                
+            // If no object was allocated from the pool above
+            if(latch._pair == null) {
+                // check if we were allowed to create one
+                if(latch._mayCreate) {
+                    // allow new object to be created
+                } else {
+                    // the pool is exhausted
+                    switch(_whenExhaustedAction) {
+                        case WHEN_EXHAUSTED_GROW:
+                            // allow new object to be created
+                            break;
+                        case WHEN_EXHAUSTED_FAIL:
+                            throw new NoSuchElementException("Pool exhausted");
+                        case WHEN_EXHAUSTED_BLOCK:
+                            try {
+                                synchronized (latch) {
                                     if(_maxWait <= 0) {
-                                        wait();
+                                        latch.wait();
                                     } else {
                                         // this code may be executed again after a notify then continue cycle
                                         // so, need to calculate the amount of time to wait
@@ -961,62 +961,66 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                                         final long waitTime = _maxWait - elapsed;
                                         if (waitTime > 0)
                                         {
-                                            wait(waitTime);
+                                            latch.wait(waitTime);
                                         }
                                     }
-                                } catch(InterruptedException e) {
-                                    Thread.currentThread().interrupt();
-                                    throw e; 
                                 }
-                                if(_maxWait > 0 && ((System.currentTimeMillis() - starttime) >= _maxWait)) {
-                                    throw new NoSuchElementException("Timeout waiting for idle object");
-                                } else {
-                                    continue; // keep looping
-                                }
-                            default:
-                                throw new IllegalArgumentException("WhenExhaustedAction property " + _whenExhaustedAction + " not recognized.");
-                        }
+                            } catch(InterruptedException e) {
+                                Thread.currentThread().interrupt();
+                                throw e; 
+                            }
+                            if(_maxWait > 0 && ((System.currentTimeMillis() - starttime) >= _maxWait)) {
+                                throw new NoSuchElementException("Timeout waiting for idle object");
+                            } else {
+                                continue; // keep looping
+                            }
+                        default:
+                            throw new IllegalArgumentException("WhenExhaustedAction property " + _whenExhaustedAction + " not recognized.");
                     }
                 }
-                _numActive++;
             }
 
-            // create new object when needed
             boolean newlyCreated = false;
-            if(null == pair) {
+            if(null == latch._pair) {
                 try {
                     Object obj = _factory.makeObject();
-                    pair = new ObjectTimestampPair(obj);
+                    latch._pair = new ObjectTimestampPair(obj);
                     newlyCreated = true;
                 } finally {
                     if (!newlyCreated) {
                         // object cannot be created
                         synchronized (this) {
-                            _numActive--;
-                            notifyAll();
+                            _numInternalProcessing--;
+                            // No need to reset latch - about to throw exception
+                            allocate();
                         }
                     }
                 }
             }
-
             // activate & validate the object
             try {
-                _factory.activateObject(pair.value);
-                if(_testOnBorrow && !_factory.validateObject(pair.value)) {
+                _factory.activateObject(latch._pair.value);
+                if(_testOnBorrow && !_factory.validateObject(latch._pair.value)) {
                     throw new Exception("ValidateObject failed");
                 }
-                return pair.value;
+                synchronized(this) {
+                    _numInternalProcessing--;
+                    _numActive++;
+                }
+                return latch._pair.value;
             }
             catch (Throwable e) {
                 // object cannot be activated or is invalid
                 try {
-                    _factory.destroyObject(pair.value);
+                    _factory.destroyObject(latch._pair.value);
                 } catch (Throwable e2) {
                     // cannot destroy broken object
                 }
                 synchronized (this) {
-                    _numActive--;
-                    notifyAll();
+                    _numInternalProcessing--;
+                    latch.reset();
+                    _allocationQueue.add(0, latch);
+                    allocate();
                 }
                 if(newlyCreated) {
                     throw new NoSuchElementException("Could not create a validated object, cause: " + e.getMessage());
@@ -1024,6 +1028,37 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                 else {
                     continue; // keep looping
                 }
+            }
+        }
+    }
+
+    private synchronized void allocate() {
+        // First use any objects in the pool to clear the queue
+        for (;;) {
+            if (isClosed()) return;
+            if (!_pool.isEmpty() && !_allocationQueue.isEmpty()) {
+                Latch latch = (Latch) _allocationQueue.removeFirst();
+                latch._pair = (ObjectTimestampPair) _pool.removeFirst();
+                _numInternalProcessing++;
+                synchronized (latch) {
+                    latch.notify();
+                }
+            } else {
+                break;
+            }
+        }
+        // Second utilise any spare capacity to create new objects
+        for(;;) {
+            if (isClosed()) return;
+            if((!_allocationQueue.isEmpty()) && (_maxActive < 0 || (_numActive + _numInternalProcessing) < _maxActive)) {
+                Latch latch = (Latch) _allocationQueue.removeFirst();
+                latch._mayCreate = true;
+                _numInternalProcessing++;
+                synchronized (latch) {
+                    latch.notify();
+                }
+            } else {
+                break;
             }
         }
     }
@@ -1036,7 +1071,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         } finally {
             synchronized (this) {
                 _numActive--;
-                notifyAll(); // _numActive has changed
+                allocate();
             }
         }
     }
@@ -1068,7 +1103,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
             } finally {
                 synchronized(this) {
                     _numInternalProcessing--;
-                    notifyAll();
+                    allocate();
                 }
             }
         }
@@ -1117,7 +1152,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                 // "behavior flag",decrementNumActive, from addObjectToPool.
                 synchronized(this) {
                     _numActive--;
-                    notifyAll();
+                    allocate();
                 }
             }
         }
@@ -1152,7 +1187,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                     if (decrementNumActive) {
                         _numActive--;
                     }
-                    notifyAll();
+                    allocate();
                 }
             }
         }
@@ -1168,7 +1203,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
             if (decrementNumActive) {
                 synchronized(this) {
                     _numActive--;
-                    notifyAll();
+                    allocate();
                 }
             }
         }
@@ -1319,7 +1354,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
             } finally {
                 synchronized (this) {
                     _numInternalProcessing--;
-                    notifyAll();
+                    allocate();
                 }
             }
         }
@@ -1489,6 +1524,26 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         public boolean lifo = GenericObjectPool.DEFAULT_LIFO;
     
     }
+
+    /**
+     * Latch used to control allocation order of objects to threads to ensure
+     * fairness. ie objects are allocated to threads in the order that threads
+     * request objects.
+     */
+    private static final class Latch {
+        ObjectTimestampPair _pair;
+        boolean _mayCreate = false;
+        
+        /**
+         * Reset the latch data. Used when an allocation fails and the latch
+         * needs to be re-added to the queue. 
+         */
+        private void reset() {
+            _pair = null;
+            _mayCreate = false;
+        }
+    }
+
 
     //--- private attributes ---------------------------------------
 
@@ -1664,4 +1719,12 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * number of objects but are neither active nor idle.
      */
     private int _numInternalProcessing = 0;
+
+    /**
+     * Used to track the order in which threads call {@link #borrowObject()} so
+     * that objects can be allocated in the order in which the threads requested
+     * them.
+     */
+    private LinkedList _allocationQueue = new LinkedList();
+
 }
