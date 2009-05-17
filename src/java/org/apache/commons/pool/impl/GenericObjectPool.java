@@ -1033,9 +1033,10 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
     }
 
     private synchronized void allocate() {
+        if (isClosed()) return;
+
         // First use any objects in the pool to clear the queue
         for (;;) {
-            if (isClosed()) return;
             if (!_pool.isEmpty() && !_allocationQueue.isEmpty()) {
                 Latch latch = (Latch) _allocationQueue.removeFirst();
                 latch._pair = (ObjectTimestampPair) _pool.removeFirst();
@@ -1047,9 +1048,9 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                 break;
             }
         }
+
         // Second utilise any spare capacity to create new objects
         for(;;) {
-            if (isClosed()) return;
             if((!_allocationQueue.isEmpty()) && (_maxActive < 0 || (_numActive + _numInternalProcessing) < _maxActive)) {
                 Latch latch = (Latch) _allocationQueue.removeFirst();
                 latch._mayCreate = true;
