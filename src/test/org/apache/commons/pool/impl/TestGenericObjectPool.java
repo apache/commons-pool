@@ -95,6 +95,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             // expected
         }
         pool.returnObject(obj1);
+        assertEquals(1, pool.getNumIdle());
         pool.close();
     }
 
