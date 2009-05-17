@@ -948,6 +948,9 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                             // allow new object to be created
                             break;
                         case WHEN_EXHAUSTED_FAIL:
+                            synchronized (this) {
+                                _allocationQueue.remove(latch);
+                            }
                             throw new NoSuchElementException("Pool exhausted");
                         case WHEN_EXHAUSTED_BLOCK:
                             try {
