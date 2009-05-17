@@ -1222,10 +1222,10 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         factory.setValidationEnabled(true);
         GenericKeyedObjectPool pool = new GenericKeyedObjectPool(factory);
         pool.setTestOnBorrow(true);
-        Object obj1 = pool.borrowObject("one");
+        pool.borrowObject("one");
         factory.setValid(false); // Make validation fail on next borrow attempt
         try {
-            Object obj2 = pool.borrowObject("one");
+            pool.borrowObject("one");
             fail("Expecting NoSuchElementException");
         } catch (NoSuchElementException ex) {
             // expected
@@ -1243,7 +1243,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         GenericKeyedObjectPool pool = new GenericKeyedObjectPool(factory);
         pool.setTestOnReturn(true);
         Object obj1 = pool.borrowObject("one");
-        Object obj2 = pool.borrowObject("one");
+        pool.borrowObject("one");
         factory.setValid(false); // Make validation fail
         pool.returnObject("one", obj1);
         assertEquals(1, pool.getNumActive("one"));
@@ -1320,7 +1320,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
             for(int i=0;i<_iter;i++) {
                 String key = String.valueOf(_random.nextInt(3));
                 try {
-                    Thread.sleep((long)_random.nextInt(_delay));
+                    Thread.sleep(_random.nextInt(_delay));
                 } catch(Exception e) {
                     // ignored
                 }
@@ -1335,7 +1335,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
                 }
 
                 try {
-                    Thread.sleep((long)_random.nextInt(_delay));
+                    Thread.sleep(_random.nextInt(_delay));
                 } catch(Exception e) {
                     // ignored
                 }

@@ -278,7 +278,7 @@ public abstract class TestObjectPool extends TestCase {
         assertEquals(3, pool.getNumIdle());
         // passivateObject should swallow exceptions and not add the object to the pool
         obj = pool.borrowObject();
-        Object obj2 = pool.borrowObject();
+        pool.borrowObject();
         assertEquals(1, pool.getNumIdle());
         assertEquals(2, pool.getNumActive());
         clear(factory, expectedMethods);

@@ -131,7 +131,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         GenericObjectPool pool = new GenericObjectPool(factory);
         pool.setMaxActive(2);
         pool.setMinIdle(1);
-        Object obj = pool.borrowObject(); // numActive = 1, numIdle = 0
+        pool.borrowObject(); // numActive = 1, numIdle = 0
         // Create a test thread that will run once and try a borrow after
         // 150ms fixed delay
         TestThread borrower = new TestThread(pool, 1, 150, false);
@@ -364,10 +364,10 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         factory.setThrowExceptionOnDestroy(true);
         GenericObjectPool pool = new GenericObjectPool(factory);
         pool.setTestOnBorrow(true);
-        Object obj1 = pool.borrowObject();
+        pool.borrowObject();
         factory.setValid(false); // Make validation fail on next borrow attempt
         try {
-            Object obj2 = pool.borrowObject();
+            pool.borrowObject();
             fail("Expecting NoSuchElementException");
         } catch (NoSuchElementException ex) {
             // expected
@@ -382,7 +382,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         GenericObjectPool pool = new GenericObjectPool(factory);
         pool.setTestOnReturn(true);
         Object obj1 = pool.borrowObject();
-        Object obj2 = pool.borrowObject();
+        pool.borrowObject();
         factory.setValid(false); // Make validation fail
         pool.returnObject(obj1);
         assertEquals(1, pool.getNumActive());
