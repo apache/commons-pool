@@ -1117,6 +1117,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         int _iter = 100;
         int _delay = 50;
         boolean _randomDelay = true;
+        Object _expectedObject = null;
 
         public TestThread(ObjectPool pool) {
             _pool = pool;
@@ -1139,6 +1140,10 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             _iter = iter;
             _delay = delay;
             _randomDelay = randomDelay;
+        }
+
+        public void setExpectedObject(Object obj) {
+            _expectedObject = obj;
         }
 
         public boolean complete() {
@@ -1168,6 +1173,12 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                     break;
                 }
 
+                if (_expectedObject != null && !_expectedObject.equals(obj)) {
+                    _failed = true;
+                    _complete = true;
+                    break;
+                }
+                
                 try {
                     Thread.sleep(delay);
                 } catch(Exception e) {
@@ -1375,7 +1386,54 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     protected boolean isFifo() {
         return false;
     }
-    
+
+    /*
+     * Note: This test relies on timing for correct execution. There *should* be
+     * enough margin for this to work correctly on most (all?) systems but be
+     * aware of this if you see a failure of this test.
+     */
+    public void testBorrowObjectFairness() {
+        // Config
+        int numThreads = 30;
+        int maxActive = 10;
+
+        SimpleFactory factory = new SimpleFactory();
+        factory.setMaxActive(maxActive);
+        pool.setFactory(factory);
+        pool.setMaxActive(maxActive);
+        pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_BLOCK);
+        pool.setTimeBetweenEvictionRunsMillis(-1);
+
+        // Start threads to borrow objects
+        TestThread[] threads = new TestThread[numThreads];
+        for(int i=0;i<numThreads;i++) {
+            threads[i] = new TestThread(pool, 1, 500, false);
+            threads[i].setExpectedObject(String.valueOf(i % maxActive));
+            Thread t = new Thread(threads[i]);
+            t.start();
+            // Short delay to ensure threads start in correct order
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                fail();
+                e.printStackTrace();
+            }
+        }
+
+        // Wait for threads to finish
+        for(int i=0;i<numThreads;i++) {
+            while(!(threads[i]).complete()) {
+                try {
+                    Thread.sleep(500L);
+                } catch(Exception e) {
+                    // ignored
+                }
+            }
+            if(threads[i].failed()) {
+                fail();
+            }
+        }
+    }
 }
 
 
