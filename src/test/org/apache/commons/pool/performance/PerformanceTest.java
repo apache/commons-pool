@@ -28,7 +28,6 @@ import org.apache.commons.pool.impl.GenericObjectPool;
 public class PerformanceTest {
     private int logLevel = 0;
     private int nrIterations = 5;
-    private int nrThreads = 100;
 
     private GenericObjectPool pool;
     private boolean start = false;
@@ -108,7 +107,6 @@ public class PerformanceTest {
 
     private void run(int nrIterations, int nrThreads, int maxActive, int maxIdle) {
         this.nrIterations = nrIterations;
-        this.nrThreads = nrThreads;
         init();
         
         SleepingObjectFactory factory = new SleepingObjectFactory();

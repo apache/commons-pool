@@ -280,13 +280,13 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
         }
         // 3, 9, 15 fail passivation.  
         assertEquals(7,pool.getNumIdle());
-        assertEquals(new Integer(19), (Integer) pool.borrowObject("key"));
-        assertEquals(new Integer(17), (Integer) pool.borrowObject("key"));
-        assertEquals(new Integer(13), (Integer) pool.borrowObject("key"));
-        assertEquals(new Integer(11), (Integer) pool.borrowObject("key"));
-        assertEquals(new Integer(7), (Integer) pool.borrowObject("key"));
-        assertEquals(new Integer(5), (Integer) pool.borrowObject("key"));
-        assertEquals(new Integer(1), (Integer) pool.borrowObject("key"));   
+        assertEquals(new Integer(19), pool.borrowObject("key"));
+        assertEquals(new Integer(17), pool.borrowObject("key"));
+        assertEquals(new Integer(13), pool.borrowObject("key"));
+        assertEquals(new Integer(11), pool.borrowObject("key"));
+        assertEquals(new Integer(7), pool.borrowObject("key"));
+        assertEquals(new Integer(5), pool.borrowObject("key"));
+        assertEquals(new Integer(1), pool.borrowObject("key"));   
     }
 
     class SimpleFactory implements KeyedPoolableObjectFactory {
