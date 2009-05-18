@@ -946,7 +946,16 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     public Object borrowObject(Object key) throws Exception {
         long starttime = System.currentTimeMillis();
         Latch latch = new Latch(key);
+        byte whenExhaustedAction;
+        long maxWait;
         synchronized (this) {
+            // Get local copy of current config. Can't sync when used later as
+            // it can result in a deadlock. Has the added advantage that config
+            // is consistent for entire method execution 
+            whenExhaustedAction = _whenExhaustedAction;
+            maxWait = _maxWait;
+            
+            // Add this request to the queue 
             _allocationQueue.add(latch);
             allocate();
         }
@@ -962,7 +971,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                     // allow new object to be created
                 } else {
                     // the pool is exhausted
-                    switch(_whenExhaustedAction) {
+                    switch(whenExhaustedAction) {
                         case WHEN_EXHAUSTED_GROW:
                         // allow new object to be created
                         break;
@@ -974,13 +983,13 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                         case WHEN_EXHAUSTED_BLOCK:
                             try {
                                 synchronized (latch) {
-                                    if(_maxWait <= 0) {
+                                    if(maxWait <= 0) {
                                         latch.wait();
                                     } else {
                                         // this code may be executed again after a notify then continue cycle
                                         // so, need to calculate the amount of time to wait
                                         final long elapsed = (System.currentTimeMillis() - starttime);
-                                        final long waitTime = _maxWait - elapsed;
+                                        final long waitTime = maxWait - elapsed;
                                         if (waitTime > 0)
                                         {
                                             latch.wait(waitTime);
@@ -991,13 +1000,13 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                                 Thread.currentThread().interrupt();
                                 throw e;
                                 }
-                            if(_maxWait > 0 && ((System.currentTimeMillis() - starttime) >= _maxWait)) {
+                            if(maxWait > 0 && ((System.currentTimeMillis() - starttime) >= maxWait)) {
                                 throw new NoSuchElementException("Timeout waiting for idle object");
                             } else {
                                 continue; // keep looping
                             }
                         default:
-                            throw new IllegalArgumentException("whenExhaustedAction " + _whenExhaustedAction + " not recognized.");
+                            throw new IllegalArgumentException("whenExhaustedAction " + whenExhaustedAction + " not recognized.");
                     }
                 }
             }
@@ -1501,9 +1510,18 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @throws Exception when there is a problem evicting idle objects.
      */
     public void evict() throws Exception {
-        // Initialize key to last key value
         Object key = null;
+        boolean testWhileIdle;
+        long minEvictableIdleTimeMillis;
+        
         synchronized (this) {
+            // Get local copy of current config. Can't sync when used later as
+            // it can result in a deadlock. Has the added advantage that config
+            // is consistent for entire method execution 
+            testWhileIdle = _testWhileIdle;
+            minEvictableIdleTimeMillis = _minEvictableIdleTimeMillis;
+            
+            // Initialize key to last key value
             if (_evictionKeyCursor != null && 
                     _evictionKeyCursor._lastReturned != null) {
                 key = _evictionKeyCursor._lastReturned.value();
@@ -1582,12 +1600,12 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             }
 
             boolean removeObject=false;
-            if((_minEvictableIdleTimeMillis > 0) &&
+            if((minEvictableIdleTimeMillis > 0) &&
                (System.currentTimeMillis() - pair.tstamp > 
-               _minEvictableIdleTimeMillis)) {
+               minEvictableIdleTimeMillis)) {
                 removeObject=true;
             }
-            if(_testWhileIdle && removeObject == false) {
+            if(testWhileIdle && removeObject == false) {
                 boolean active = false;
                 try {
                     _factory.activateObject(key,pair.value);
@@ -1778,7 +1796,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         return buf.toString();
     }
 
-    private int getNumTests() {
+    private synchronized int getNumTests() {
         if(_numTestsPerEvictionRun >= 0) {
             return _numTestsPerEvictionRun;
         } else {
@@ -1837,27 +1855,35 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         private int internalProcessingCount = 0;
 
         void incrementActiveCount() {
-            _totalActive++;
+            synchronized (GenericKeyedObjectPool.this) {
+                _totalActive++;
+            }
             activeCount++;
         }
 
         void decrementActiveCount() {
-            _totalActive--;
+            synchronized (GenericKeyedObjectPool.this) {
+                _totalActive--;
+            }
             if (activeCount > 0) {
                 activeCount--;
             }
         }
 
         void incrementInternalProcessingCount() {
-            _totalInternalProcessing++;
+            synchronized (GenericKeyedObjectPool.this) {
+                _totalInternalProcessing++;
+            }
             internalProcessingCount++;
         }
 
         void decrementInternalProcessingCount() {
-            _totalInternalProcessing--;
+            synchronized (GenericKeyedObjectPool.this) {
+                _totalInternalProcessing--;
+            }
             internalProcessingCount--;
         }
-}
+    }
     
     /**
      * A simple "struct" encapsulating an object instance and a timestamp.
