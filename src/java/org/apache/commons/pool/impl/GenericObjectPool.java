@@ -926,7 +926,16 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
     public Object borrowObject() throws Exception {
         long starttime = System.currentTimeMillis();
         Latch latch = new Latch();
+        byte whenExhaustedAction;
+        long maxWait;
         synchronized (this) {
+            // Get local copy of current config. Can't sync when used later as
+            // it can result in a deadlock. Has the added advantage that config
+            // is consistent for entire method execution 
+            whenExhaustedAction = _whenExhaustedAction;
+            maxWait = _maxWait;
+            
+            // Add this request to the queue 
             _allocationQueue.add(latch);
             allocate();
         }
@@ -943,7 +952,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                     // allow new object to be created
                 } else {
                     // the pool is exhausted
-                    switch(_whenExhaustedAction) {
+                    switch(whenExhaustedAction) {
                         case WHEN_EXHAUSTED_GROW:
                             // allow new object to be created
                             break;
@@ -955,13 +964,13 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                         case WHEN_EXHAUSTED_BLOCK:
                             try {
                                 synchronized (latch) {
-                                    if(_maxWait <= 0) {
+                                    if(maxWait <= 0) {
                                         latch.wait();
                                     } else {
                                         // this code may be executed again after a notify then continue cycle
                                         // so, need to calculate the amount of time to wait
                                         final long elapsed = (System.currentTimeMillis() - starttime);
-                                        final long waitTime = _maxWait - elapsed;
+                                        final long waitTime = maxWait - elapsed;
                                         if (waitTime > 0)
                                         {
                                             latch.wait(waitTime);
@@ -972,13 +981,13 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                                 Thread.currentThread().interrupt();
                                 throw e; 
                             }
-                            if(_maxWait > 0 && ((System.currentTimeMillis() - starttime) >= _maxWait)) {
+                            if(maxWait > 0 && ((System.currentTimeMillis() - starttime) >= maxWait)) {
                                 throw new NoSuchElementException("Timeout waiting for idle object");
                             } else {
                                 continue; // keep looping
                             }
                         default:
-                            throw new IllegalArgumentException("WhenExhaustedAction property " + _whenExhaustedAction + " not recognized.");
+                            throw new IllegalArgumentException("WhenExhaustedAction property " + whenExhaustedAction + " not recognized.");
                     }
                 }
             }
