@@ -41,11 +41,11 @@ import org.apache.commons.pool.impl.GenericKeyedObjectPool.ObjectTimestampPair;
  * <ul>
  *  <li>
  *    {@link #setMaxActive <i>maxActive</i>} controls the maximum number of
- *    objects that can be borrowed from the pool at one time.  When
- *    non-positive, there is no limit to the number of objects that may be
- *    active at one time. When {@link #setMaxActive <i>maxActive</i>} is
- *    exceeded, the pool is said to be exhausted. The default setting for this
- *    parameter is 8.
+ *    objects that can be allocated by the pool (checked out to clients, or
+ *    idle awaiting checkout) at a given time.  When non-positive, there is no
+ *    limit to the number of objects that can be managed by the pool at one time.
+ *    When {@link #setMaxActive <i>maxActive</i>} is reached, the pool is said
+ *    to be exhausted. The default setting for this parameter is 8.
  *  </li>
  *  <li>
  *    {@link #setMaxIdle <i>maxIdle</i>} controls the maximum number of objects
@@ -65,15 +65,15 @@ import org.apache.commons.pool.impl.GenericKeyedObjectPool.ObjectTimestampPair;
  *    <li>
  *      When {@link #setWhenExhaustedAction <i>whenExhaustedAction</i>} is
  *      {@link #WHEN_EXHAUSTED_GROW}, {@link #borrowObject} will create a new
- *      object and return it(essentially making {@link #setMaxActive <i>maxActive</i>}
+ *      object and return it (essentially making {@link #setMaxActive <i>maxActive</i>}
  *      meaningless.)
  *    </li>
  *    <li>
  *      When {@link #setWhenExhaustedAction <i>whenExhaustedAction</i>}
  *      is {@link #WHEN_EXHAUSTED_BLOCK}, {@link #borrowObject} will block
- *      (invoke {@link Object#wait()} until a new or idle object is available.
+ *      (invoke {@link Object#wait()}) until a new or idle object is available.
  *      If a positive {@link #setMaxWait <i>maxWait</i>}
- *      value is supplied, the {@link #borrowObject} will block for at
+ *      value is supplied, then {@link #borrowObject} will block for at
  *      most that many milliseconds, after which a {@link NoSuchElementException}
  *      will be thrown.  If {@link #setMaxWait <i>maxWait</i>} is non-positive,
  *      the {@link #borrowObject} method will block indefinitely.
@@ -140,10 +140,13 @@ import org.apache.commons.pool.impl.GenericKeyedObjectPool.ObjectTimestampPair;
  *   {@link #setSoftMinEvictableIdleTimeMillis <i>softMinEvictableIdleTimeMillis</i>} 
  *   specifies the minimum amount of time an object may sit idle in the pool
  *   before it is eligible for eviction by the idle object evictor
- *   (if any), with the extra condition that at least "minIdle" amount of object 
+ *   (if any), with the extra condition that at least "minIdle" object instances 
  *   remain in the pool.  When non-positive, no objects will be evicted from the pool
  *   due to idle time alone. This setting has no effect unless
- *   <code>timeBetweenEvictionRunsMillis > 0.</code>  The default setting for
+ *   <code>timeBetweenEvictionRunsMillis > 0.</code> and it is superceded by
+ *   {@link #setMinEvictableIdleTimeMillis <i>minEvictableIdleTimeMillis</i>} 
+ *   (that is, if <code>minEvictableIdleTimeMillis</code> is positive, then 
+ *   <code>softMinEvictableIdleTimeMillis</code> is ignored). The default setting for
  *   this parameter is -1 (disabled).
  *  </li>
  *  <li>
@@ -524,8 +527,12 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
     //--- configuration methods --------------------------------------
 
     /**
-     * Returns the cap on the total number of active instances from the pool.
-     * @return the cap on the total number of active instances from the pool.
+     * Returns the maximum number of objects that can be allocated by the pool
+     * (checked out to clients, or idle awaiting checkout) at a given time.
+     * When non-positive, there is no limit to the number of objects that can
+     * be managed by the pool at one time.
+     * 
+     * @return the cap on the total number of object instances managed by the pool.
      * @see #setMaxActive
      */
     public synchronized int getMaxActive() {
@@ -533,9 +540,13 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
     }
 
     /**
-     * Sets the cap on the total number of active instances from the pool.
-     * @param maxActive The cap on the total number of active instances from the pool.
-     * Use a negative value for no limit.
+     * Sets the cap on the number of objects that can be allocated by the pool
+     * (checked out to clients, or idle awaiting checkout) at a given time. Use
+     * a negative value for no limit.
+     * 
+     * @param maxActive The cap on the total number of object instances managed by the pool.
+     * Negative values mean that there is no limit to the number of objects allocated
+     * by the pool.
      * @see #getMaxActive
      */
     public synchronized void setMaxActive(int maxActive) {
@@ -830,7 +841,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * Sets the minimum amount of time an object may sit idle in the pool
      * before it is eligible for eviction by the idle object evictor
      * (if any), with the extra condition that at least
-     * "minIdle" amount of object remain in the pool.
+     * "minIdle" object instances remain in the pool.
      * When non-positive, no objects will be evicted from the pool
      * due to idle time alone.
      *
@@ -937,6 +948,9 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
             
             // Add this request to the queue 
             _allocationQueue.add(latch);
+            
+            // Work the allocation queue, allocating idle instances and
+            // instance creation permits in request arrival order
             allocate();
         }
 
@@ -1044,6 +1058,11 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         }
     }
 
+    /**
+     * Allocate available instances to latches in the allocation queue.  Then
+     * set _mayCreate to true for as many additional latches remaining in queue
+     * as _maxActive allows.
+     */
     private synchronized void allocate() {
         if (isClosed()) return;
 
@@ -1540,8 +1559,8 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
 
     /**
      * Latch used to control allocation order of objects to threads to ensure
-     * fairness. ie objects are allocated to threads in the order that threads
-     * request objects.
+     * fairness. That is, objects are allocated to threads in the order that
+     * threads request objects.
      */
     private static final class Latch {
         ObjectTimestampPair _pair;

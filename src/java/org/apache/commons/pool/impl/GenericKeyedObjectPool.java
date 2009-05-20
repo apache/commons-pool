@@ -50,10 +50,11 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  * <ul>
  *  <li>
  *    {@link #setMaxActive maxActive} controls the maximum number of objects
- *    (per key) that can be borrowed from the pool at one time.  When
- *    non-positive, there is no limit to the number of objects per key.
- *    When {@link #setMaxActive maxActive} is exceeded, the keyed pool is said
- *    to be exhausted.  The default setting for this parameter is 8.
+ *    (per key) that can allocated by the pool (checked out to client threads,
+ *    or idle in the pool) at one time.  When non-positive, there is no limit
+ *    to the number of objects per key. When {@link #setMaxActive maxActive} is
+ *    reached, the keyed pool is said to be exhausted.  The default setting for
+ *    this parameter is 8.
  *  </li>
  *  <li>
  *    {@link #setMaxTotal maxTotal} sets a global limit on the number of objects
@@ -546,8 +547,10 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     //--- configuration methods --------------------------------------
 
     /**
-     * Returns the cap on the number of active instances per key.
+     * Returns the cap on the number of object instances allocated by the pool
+     * (checked out or idle),  per key.
      * A negative value indicates no limit.
+     * 
      * @return the cap on the number of active instances per key.
      * @see #setMaxActive
      */
@@ -556,9 +559,10 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     }
 
     /**
-     * Sets the cap on the number of active instances per key.
-     * @param maxActive The cap on the number of active instances per key.
+     * Sets the cap on the number of object instances managed by the pool per key.
+     * @param maxActive The cap on the number of object instances per key.
      * Use a negative value for no limit.
+     * 
      * @see #getMaxActive
      */
     public synchronized void setMaxActive(int maxActive) {
@@ -957,6 +961,9 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             
             // Add this request to the queue 
             _allocationQueue.add(latch);
+            
+            // Work the allocation queue, allocating idle instances and
+            // instance creation permits in request arrival order
             allocate();
         }
         
@@ -1065,6 +1072,11 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         }
     }
 
+    /**
+     * Allocate available instances to latches in the allocation queue.  Then
+     * set _mayCreate to true for as many additional latches remaining in queue
+     * as _maxActive allows for each key.
+     */
     private synchronized void allocate() {
         if (isClosed()) return;
 
