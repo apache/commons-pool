@@ -960,9 +960,9 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
             }
                 
             // If no object was allocated from the pool above
-            if(latch._pair == null) {
+            if(latch.getPair() == null) {
                 // check if we were allowed to create one
-                if(latch._mayCreate) {
+                if(latch.mayCreate()) {
                     // allow new object to be created
                 } else {
                     // the pool is exhausted
@@ -1007,10 +1007,10 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
             }
 
             boolean newlyCreated = false;
-            if(null == latch._pair) {
+            if(null == latch.getPair()) {
                 try {
                     Object obj = _factory.makeObject();
-                    latch._pair = new ObjectTimestampPair(obj);
+                    latch.setPair(new ObjectTimestampPair(obj));
                     newlyCreated = true;
                 } finally {
                     if (!newlyCreated) {
@@ -1025,20 +1025,21 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
             }
             // activate & validate the object
             try {
-                _factory.activateObject(latch._pair.value);
-                if(_testOnBorrow && !_factory.validateObject(latch._pair.value)) {
+                _factory.activateObject(latch.getPair().value);
+                if(_testOnBorrow &&
+                        !_factory.validateObject(latch.getPair().value)) {
                     throw new Exception("ValidateObject failed");
                 }
                 synchronized(this) {
                     _numInternalProcessing--;
                     _numActive++;
                 }
-                return latch._pair.value;
+                return latch.getPair().value;
             }
             catch (Throwable e) {
                 // object cannot be activated or is invalid
                 try {
-                    _factory.destroyObject(latch._pair.value);
+                    _factory.destroyObject(latch.getPair().value);
                 } catch (Throwable e2) {
                     // cannot destroy broken object
                 }
@@ -1070,7 +1071,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         for (;;) {
             if (!_pool.isEmpty() && !_allocationQueue.isEmpty()) {
                 Latch latch = (Latch) _allocationQueue.removeFirst();
-                latch._pair = (ObjectTimestampPair) _pool.removeFirst();
+                latch.setPair((ObjectTimestampPair) _pool.removeFirst());
                 _numInternalProcessing++;
                 synchronized (latch) {
                     latch.notify();
@@ -1084,7 +1085,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         for(;;) {
             if((!_allocationQueue.isEmpty()) && (_maxActive < 0 || (_numActive + _numInternalProcessing) < _maxActive)) {
                 Latch latch = (Latch) _allocationQueue.removeFirst();
-                latch._mayCreate = true;
+                latch.setMayCreate(true);
                 _numInternalProcessing++;
                 synchronized (latch) {
                     latch.notify();
@@ -1563,14 +1564,28 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * threads request objects.
      */
     private static final class Latch {
-        ObjectTimestampPair _pair;
-        boolean _mayCreate = false;
+        private ObjectTimestampPair _pair;
+        private boolean _mayCreate = false;
         
+        private synchronized ObjectTimestampPair getPair() {
+            return _pair;
+        }
+        private synchronized void setPair(ObjectTimestampPair pair) {
+            _pair = pair;
+        }
+        
+        private synchronized boolean mayCreate() {
+            return _mayCreate;
+        }
+        private synchronized void setMayCreate(boolean mayCreate) {
+            _mayCreate = mayCreate;
+        }
+
         /**
          * Reset the latch data. Used when an allocation fails and the latch
          * needs to be re-added to the queue. 
          */
-        private void reset() {
+        private synchronized void reset() {
             _pair = null;
             _mayCreate = false;
         }
