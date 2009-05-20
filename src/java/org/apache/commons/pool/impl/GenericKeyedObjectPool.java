@@ -972,9 +972,9 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 assertOpen();
             }
             // If no object was allocated
-            if (null == latch._pair) {
+            if (null == latch.getPair()) {
                 // Check to see if we were allowed to create one
-                if (latch._mayCreate) {
+                if (latch.mayCreate()) {
                     // allow new object to be created
                 } else {
                     // the pool is exhausted
@@ -1019,16 +1019,16 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             }
 
             boolean newlyCreated = false;
-            if (null == latch._pair) {
+            if (null == latch.getPair()) {
                 try {
                     Object obj = _factory.makeObject(key);
-                    latch._pair = new ObjectTimestampPair(obj);
+                    latch.setPair(new ObjectTimestampPair(obj));
                     newlyCreated = true;
                 } finally {
                     if (!newlyCreated) {
                         // object cannot be created
                         synchronized (this) {
-                            latch._pool.decrementInternalProcessingCount();
+                            latch.getPool().decrementInternalProcessingCount();
                             // No need to reset latch - about to throw exception
                             allocate();
                         }
@@ -1038,24 +1038,24 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
             // activate & validate the object
             try {
-                _factory.activateObject(key, latch._pair.value);
-                if (_testOnBorrow && !_factory.validateObject(key, latch._pair.value)) {
+                _factory.activateObject(key, latch.getPair().value);
+                if (_testOnBorrow && !_factory.validateObject(key, latch.getPair().value)) {
                     throw new Exception("ValidateObject failed");
                 }
                 synchronized (this) {
-                    latch._pool.decrementInternalProcessingCount();
-                    latch._pool.incrementActiveCount();
+                    latch.getPool().decrementInternalProcessingCount();
+                    latch.getPool().incrementActiveCount();
                 }
-                return latch._pair.value;
+                return latch.getPair().value;
             } catch (Throwable e) {
                 // object cannot be activated or is invalid
                 try {
-                    _factory.destroyObject(key, latch._pair.value);
+                    _factory.destroyObject(key, latch.getPair().value);
                 } catch (Throwable e2) {
                     // cannot destroy broken object
                 }
                 synchronized (this) {
-                    latch._pool.decrementInternalProcessingCount();
+                    latch.getPool().decrementInternalProcessingCount();
                     latch.reset();
                     _allocationQueue.add(0, latch);
                     allocate();
@@ -1084,16 +1084,17 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             if (!_allocationQueue.isEmpty()) {
                 // First use any objects in the pool to clear the queue
                 Latch latch = (Latch) _allocationQueue.getFirst();
-                ObjectQueue pool = (ObjectQueue)(_poolMap.get(latch._key));
+                ObjectQueue pool = (ObjectQueue)(_poolMap.get(latch.getkey()));
                 if(null == pool) {
                     pool = new ObjectQueue();
-                    _poolMap.put(latch._key, pool);
-                    _poolList.add(latch._key);
+                    _poolMap.put(latch.getkey(), pool);
+                    _poolList.add(latch.getkey());
                 }
-                latch._pool = pool;
+                latch.setPool(pool);
                 if (!pool.queue.isEmpty()) {
                     _allocationQueue.removeFirst();
-                    latch._pair = (ObjectTimestampPair) pool.queue.removeFirst();
+                    latch.setPair(
+                            (ObjectTimestampPair) pool.queue.removeFirst());
                     pool.incrementInternalProcessingCount();
                     _totalIdle--;
                     synchronized (latch) {
@@ -1116,7 +1117,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                         (_maxTotal < 0 || _totalActive + _totalIdle + _totalInternalProcessing < _maxTotal)) {
                     // allow new object to be created
                     _allocationQueue.removeFirst();
-                    latch._mayCreate = true;
+                    latch.setMayCreate(true);
                     pool.incrementInternalProcessingCount();
                     synchronized (latch) {
                         latch.notify();
@@ -2030,20 +2031,45 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * request objects.
      */
     private static final class Latch {
-        Object _key;
-        ObjectQueue _pool;
-        ObjectTimestampPair _pair;
-        boolean _mayCreate = false;
+        private Object _key;
+        private ObjectQueue _pool;
+        private ObjectTimestampPair _pair;
+        private boolean _mayCreate = false;
 
         private Latch(Object key) {
             _key = key;
+        }
+
+        private synchronized Object getkey() {
+            return _key;
+        }
+        
+        private synchronized ObjectQueue getPool() {
+            return _pool;
+        }
+        private synchronized void setPool(ObjectQueue pool) {
+            _pool = pool;
+        }
+        
+        private synchronized ObjectTimestampPair getPair() {
+            return _pair;
+        }
+        private synchronized void setPair(ObjectTimestampPair pair) {
+            _pair = pair;
+        }
+        
+        private synchronized boolean mayCreate() {
+            return _mayCreate;
+        }
+        private synchronized void setMayCreate(boolean mayCreate) {
+            _mayCreate = mayCreate;
         }
 
         /**
          * Reset the latch data. Used when an allocation fails and the latch
          * needs to be re-added to the queue. 
          */
-        private void reset() {
+        private synchronized void reset() {
             _pair = null;
             _mayCreate = false;
         }
