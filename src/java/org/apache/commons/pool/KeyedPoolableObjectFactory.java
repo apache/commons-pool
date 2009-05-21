@@ -4,10 +4,10 @@
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- * 
+ * the License.  You may obtain a copy of the License a
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -59,13 +59,13 @@ package org.apache.commons.pool;
  * </p>
  * <p>
  * {@link KeyedPoolableObjectFactory} must be thread-safe. The only promise
- * an {@link KeyedObjectPool} makes is that the same instance of an object will not
+ * an {@link KeyedObjectPool} makes is that the same instance of an object will no
  * be passed to more than one method of a <code>KeyedPoolableObjectFactory</code>
  * at a time.
  * </p>
  *
  * @see KeyedObjectPool
- * 
+ *
  * @author Rodney Waldhoff
  * @author Sandy McArthur
  * @version $Revision$ $Date$
@@ -79,7 +79,7 @@ public interface KeyedPoolableObjectFactory {
      * {@link #activateObject activated}. They will not be
      * activated before being served by the pool.
      *
-     * @param key the key used when constructing the object
+     * @param key the key used when constructing the objec
      * @return an instance that can be served by the pool.
      * @throws Exception if there is a problem creating a new instance,
      *    this will be propagated to the code requesting an object.
@@ -95,7 +95,7 @@ public interface KeyedPoolableObjectFactory {
      * unexpected errors.
      * </p>
      * <p>
-     * Also, an implementation must take in to consideration that
+     * Also, an implementation must take in to consideration tha
      * instances lost to the garbage collector may never be destroyed.
      * </p>
      *
@@ -103,8 +103,8 @@ public interface KeyedPoolableObjectFactory {
      * @param obj the instance to be destroyed
      * @throws Exception should be avoided as it may be swallowed by
      *    the pool implementation.
-     * @see #validateObject
-     * @see KeyedObjectPool#invalidateObject
+     * @see #validateObjec
+     * @see KeyedObjectPool#invalidateObjec
      */
     void destroyObject(Object key, Object obj) throws Exception;
 
@@ -112,7 +112,7 @@ public interface KeyedPoolableObjectFactory {
      * Ensures that the instance is safe to be returned by the pool.
      * Returns <code>false</code> if <code>obj</code> should be destroyed.
      *
-     * @param key the key used when selecting the object
+     * @param key the key used when selecting the objec
      * @param obj the instance to be validated
      * @return <code>false</code> if <code>obj</code> is not valid and should
      *         be dropped from the pool, <code>true</code> otherwise.
@@ -122,22 +122,22 @@ public interface KeyedPoolableObjectFactory {
     /**
      * Reinitialize an instance to be returned by the pool.
      *
-     * @param key the key used when selecting the object
+     * @param key the key used when selecting the objec
      * @param obj the instance to be activated
      * @throws Exception if there is a problem activating <code>obj</code>,
      *    this exception may be swallowed by the pool.
-     * @see #destroyObject
+     * @see #destroyObjec
      */
     void activateObject(Object key, Object obj) throws Exception;
 
     /**
      * Uninitialize an instance to be returned to the idle object pool.
      *
-     * @param key the key used when selecting the object
+     * @param key the key used when selecting the objec
      * @param obj the instance to be passivated
      * @throws Exception if there is a problem passivating <code>obj</code>,
      *    this exception may be swallowed by the pool.
-     * @see #destroyObject
+     * @see #destroyObjec
      */
     void passivateObject(Object key, Object obj) throws Exception;
 }
