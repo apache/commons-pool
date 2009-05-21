@@ -4,10 +4,10 @@
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- * 
+ * the License.  You may obtain a copy of the License a
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,16 +32,16 @@ import java.util.TimerTask;
  * <p>
  * This class has package scope to prevent its inclusion in the pool public API.
  * The class declaration below should *not* be changed to public.
- * </p> 
+ * </p>
  */
 class EvictionTimer {
     private static Timer _timer;
     private static int _usageCount;
-    
+
     private EvictionTimer() {
         // Hide the default constuctor
     }
-    
+
     /**
      * Add the specified eviction task to the timer. Tasks that are added with a
      * call to this method *must* call {@link #cancel(TimerTask)} to cancel the
@@ -58,7 +58,7 @@ class EvictionTimer {
         _usageCount++;
         _timer.schedule(task, delay, period);
     }
-    
+
     /**
      * Remove the specified eviction task from the timer.
      * @param task      Task to be scheduled

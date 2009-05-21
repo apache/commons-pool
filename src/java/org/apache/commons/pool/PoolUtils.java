@@ -4,7 +4,7 @@
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * the License.  You may obtain a copy of the License a
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -183,7 +183,7 @@ public final class PoolUtils {
      *      {@link Timer#schedule(TimerTask, long, long)}.
      * @return the {@link TimerTask} that will periodically check the pools idle object count.
      * @throws IllegalArgumentException when <code>pool</code> is <code>null</code> or
-     *      when <code>minIdle</code> is negative or when <code>period</code> isn't
+     *      when <code>minIdle</code> is negative or when <code>period</code> isn'
      *      valid for {@link Timer#schedule(TimerTask, long, long)}.
      * @since Pool 1.3
      */
@@ -211,7 +211,7 @@ public final class PoolUtils {
      *      {@link Timer#schedule(TimerTask, long, long)}.
      * @return the {@link TimerTask} that will periodically check the pools idle object count.
      * @throws IllegalArgumentException when <code>keyedPool</code>, <code>key</code> is <code>null</code> or
-     *      when <code>minIdle</code> is negative or when <code>period</code> isn't
+     *      when <code>minIdle</code> is negative or when <code>period</code> isn'
      *      valid for {@link Timer#schedule(TimerTask, long, long)}.
      * @since Pool 1.3
      */
@@ -241,7 +241,7 @@ public final class PoolUtils {
      *      {@link Timer#schedule(TimerTask, long, long)}.
      * @return a {@link Map} of key and {@link TimerTask} pairs that will periodically check the pools idle object count.
      * @throws IllegalArgumentException when <code>keyedPool</code>, <code>keys</code>, or any of the values in the
-     *      collection is <code>null</code> or when <code>minIdle</code> is negative or when <code>period</code> isn't
+     *      collection is <code>null</code> or when <code>minIdle</code> is negative or when <code>period</code> isn'
      *      valid for {@link Timer#schedule(TimerTask, long, long)}.
      * @see #checkMinIdle(KeyedObjectPool, Object, int, long)
      * @since Pool 1.3
@@ -330,7 +330,7 @@ public final class PoolUtils {
      *
      * <p><b>Note:</b>
      * This should not be used on pool implementations that already provide proper synchronization
-     * such as the pools provided in the Commons Pool library. Wrapping a pool that
+     * such as the pools provided in the Commons Pool library. Wrapping a pool tha
      * {@link #wait() waits} for poolable objects to be returned before allowing another one to be
      * borrowed with another layer of synchronization will cause liveliness issues or a deadlock.
      * </p>
@@ -361,7 +361,7 @@ public final class PoolUtils {
      *
      * <p><b>Note:</b>
      * This should not be used on pool implementations that already provide proper synchronization
-     * such as the pools provided in the Commons Pool library. Wrapping a pool that
+     * such as the pools provided in the Commons Pool library. Wrapping a pool tha
      * {@link #wait() waits} for poolable objects to be returned before allowing another one to be
      * borrowed with another layer of synchronization will cause liveliness issues or a deadlock.
      * </p>
@@ -1386,7 +1386,7 @@ public final class PoolUtils {
                     '}';
         }
     }
-    
+
     private static class ErodingObjectPool implements ObjectPool {
         private final ObjectPool pool;
         private final ErodingFactor factor;
@@ -1478,7 +1478,7 @@ public final class PoolUtils {
 
         protected ErodingKeyedObjectPool(final KeyedObjectPool keyedPool, final ErodingFactor erodingFactor) {
             if (keyedPool == null) {
-                throw new IllegalArgumentException("keyedPool must not be null.");                
+                throw new IllegalArgumentException("keyedPool must not be null.");
             }
             this.keyedPool = keyedPool;
             this.erodingFactor = erodingFactor;

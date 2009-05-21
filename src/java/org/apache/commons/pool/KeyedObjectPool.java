@@ -4,10 +4,10 @@
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- * 
+ * the License.  You may obtain a copy of the License a
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -47,7 +47,7 @@ import java.util.NoSuchElementException;
  * }</pre>
  * </p>
  * <p>
- * {@link KeyedObjectPool} implementations <i>may</i> choose to store at most
+ * {@link KeyedObjectPool} implementations <i>may</i> choose to store at mos
  * one instance per key value, or may choose to maintain a pool of instances
  * for each key (essentially creating a {@link java.util.Map Map} of
  * {@link ObjectPool pools}).
@@ -84,7 +84,7 @@ public interface KeyedObjectPool {
      * Older versions of this method would return <code>null</code> to indicate exhaustion,
      * newer versions are encouraged to throw a {@link NoSuchElementException}.
      *
-     * @param key the key used to obtain the object
+     * @param key the key used to obtain the objec
      * @return an instance from this pool.
      * @throws IllegalStateException after {@link #close close} has been called on this pool
      * @throws Exception when {@link KeyedPoolableObjectFactory#makeObject makeObject} throws an exception
@@ -97,11 +97,11 @@ public interface KeyedObjectPool {
      * By contract, <code>obj</code> <strong>must</strong> have been obtained
      * using {@link #borrowObject borrowObject}
      * or a related method as defined in an implementation
-     * or sub-interface 
+     * or sub-interface
      * using a <code>key</code> that is equivalent to the one used to
      * borrow the instance in the first place.
      *
-     * @param key the key used to obtain the object
+     * @param key the key used to obtain the objec
      * @param obj a {@link #borrowObject borrowed} instance to be returned.
      * @throws Exception <b>deprecated</b>: as of Pool 2.0 pool implementations should swallow
      * exceptions that occur when a poolable object is returned. For future source compatability
@@ -114,7 +114,7 @@ public interface KeyedObjectPool {
      * By contract, <code>obj</code> <strong>must</strong> have been obtained
      * using {@link #borrowObject borrowObject}
      * or a related method as defined in an implementation
-     * or sub-interface 
+     * or sub-interface
      * using a <code>key</code> that is equivalent to the one used to
      * borrow the <code>Object</code> in the first place.
      * <p>
@@ -122,7 +122,7 @@ public interface KeyedObjectPool {
      * is determined (due to an exception or other problem) to be invalid.
      * </p>
      *
-     * @param key the key used to obtain the object
+     * @param key the key used to obtain the objec
      * @param obj a {@link #borrowObject borrowed} instance to be returned.
      * @throws Exception <b>deprecated</b>: as of Pool 2.0 pool implementations should swallow
      * exceptions that occur when a poolable object is returned. For future source compatability
@@ -180,7 +180,7 @@ public interface KeyedObjectPool {
 
     /**
      * Returns the total number of instances
-     * current borrowed from this pool but not
+     * current borrowed from this pool but no
      * yet returned (optional operation).
      * Returns a negative value if this information is not available.
      *
