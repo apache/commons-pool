@@ -19,12 +19,12 @@
 <project name="Commons Pool">
     <title>Commons Pool</title>
     <organizationLogo href="http://commons.apache.org/images/logo.png">
-   		Commons
-  	</organizationLogo>
+        Commons
+    </organizationLogo>
     <body>
-	    <links>
-	      <item name="Commons" href="http://commons.apache.org/"/>
-	    </links>
+        <links>
+          <item name="Commons" href="http://commons.apache.org/"/>
+        </links>
     
         <menu name="Commons&#xA0;Pool">
             <item name="Overview"                      href="/index.html" />
