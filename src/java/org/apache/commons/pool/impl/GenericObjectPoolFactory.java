@@ -4,10 +4,10 @@
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License a
- *
+ * the License.  You may obtain a copy of the License at
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -142,7 +142,7 @@ public class GenericObjectPoolFactory implements ObjectPoolFactory {
     public GenericObjectPoolFactory(PoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle) {
         this(factory,maxActive,whenExhaustedAction,maxWait,maxIdle,GenericObjectPool.DEFAULT_MIN_IDLE,testOnBorrow,testOnReturn,timeBetweenEvictionRunsMillis,numTestsPerEvictionRun,minEvictableIdleTimeMillis,testWhileIdle, GenericObjectPool.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS);
     }
-
+    
     /**
      * Create a new GenericObjectPoolFactory.
      *
@@ -186,7 +186,7 @@ public class GenericObjectPoolFactory implements ObjectPoolFactory {
     public GenericObjectPoolFactory(PoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, int minIdle, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle, long softMinEvictableIdleTimeMillis) {
         this(factory,maxActive,whenExhaustedAction,maxWait,maxIdle,minIdle,testOnBorrow,testOnReturn,timeBetweenEvictionRunsMillis,numTestsPerEvictionRun,minEvictableIdleTimeMillis,testWhileIdle,softMinEvictableIdleTimeMillis, GenericObjectPool.DEFAULT_LIFO);
     }
-
+    
     /**
      * Create a new GenericObjectPoolFactory.
      *
