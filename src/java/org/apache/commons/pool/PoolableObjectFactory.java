@@ -4,10 +4,10 @@
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License a
- *
+ * the License.  You may obtain a copy of the License at
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -59,7 +59,7 @@ package org.apache.commons.pool;
  * </p>
  * <p>
  * {@link PoolableObjectFactory} must be thread-safe. The only promise
- * an {@link ObjectPool} makes is that the same instance of an object will no
+ * an {@link ObjectPool} makes is that the same instance of an object will not
  * be passed to more than one method of a <code>PoolableObjectFactory</code>
  * at a time.
  * </p>
@@ -94,15 +94,15 @@ public interface PoolableObjectFactory {
    * unexpected errors.
    * </p>
    * <p>
-   * Also, an implementation must take in to consideration tha
+   * Also, an implementation must take in to consideration that
    * instances lost to the garbage collector may never be destroyed.
    * </p>
    *
    * @param obj the instance to be destroyed
    * @throws Exception should be avoided as it may be swallowed by
    *    the pool implementation.
-   * @see #validateObjec
-   * @see ObjectPool#invalidateObjec
+   * @see #validateObject
+   * @see ObjectPool#invalidateObject
    */
   void destroyObject(Object obj) throws Exception;
 
@@ -122,7 +122,7 @@ public interface PoolableObjectFactory {
    * @param obj the instance to be activated
    * @throws Exception if there is a problem activating <code>obj</code>,
    *    this exception may be swallowed by the pool.
-   * @see #destroyObjec
+   * @see #destroyObject
    */
   void activateObject(Object obj) throws Exception;
 
@@ -132,7 +132,7 @@ public interface PoolableObjectFactory {
    * @param obj the instance to be passivated
    * @throws Exception if there is a problem passivating <code>obj</code>,
    *    this exception may be swallowed by the pool.
-   * @see #destroyObjec
+   * @see #destroyObject
    */
   void passivateObject(Object obj) throws Exception;
 }

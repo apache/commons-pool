@@ -4,7 +4,7 @@
  this work for additional information regarding copyright ownership.
  The ASF licenses this file to You under the Apache License, Version 2.0
  (the "License"); you may not use this file except in compliance with
- the License.  You may obtain a copy of the License a
+ the License.  You may obtain a copy of the License at
 
       http://www.apache.org/licenses/LICENSE-2.0
 
@@ -24,51 +24,51 @@
          Generic Object pooling API with several implementations.
       </p>
       <p>
-         The <code>org.apache.commons.pool</code> package defines a simple
-         interface for a pool of object instances, and a handful of base
+         The <code>org.apache.commons.pool</code> package defines a simple 
+         interface for a pool of object instances, and a handful of base 
          classes that may be useful when creating pool implementations.
          The API supports pooling of unique objects which can be requested
          via a key as well as pools where all objects are equivalent.
       </p>
       <p>
          The <code>org.apache.commons.pool.impl</code> package contains
-         several pool implementations.
+         several pool implementations.  
          {@link org.apache.commons.pool.impl.StackObjectPool StackObjectPool}
          is useful for supporting reuse of a limited number of instances while
          allowing new instances to be created as needed to support high demand.
-         {@link org.apache.commons.pool.impl.GenericObjectPool
-         GenericObjectPool} has many configuration options and can suppor
+         {@link org.apache.commons.pool.impl.GenericObjectPool 
+         GenericObjectPool} has many configuration options and can support
          a limited set of objects such as would be useful in a database
          connection pool.
-         {@link org.apache.commons.pool.impl.SoftReferenceObjectPool
+         {@link org.apache.commons.pool.impl.SoftReferenceObjectPool 
          SoftReferenceObjectPool} has no limit on the number of objects in the
          pool, but the garbage collector can remove idle objects from the pool
          as needed.  There are also keyed versions of the first two.
       </p>
       <p>
-         Here is a simple example of pooling <code>HashMap</code>'s. Firs
-         create an {@link org.apache.commons.pool.ObjectPoolFactory
+         Here is a simple example of pooling <code>HashMap</code>'s. First 
+         create an {@link org.apache.commons.pool.ObjectPoolFactory 
          ObjectPoolFactory}
       </p>
 <pre>
-    public class HashMapFactory
+    public class HashMapFactory 
         extends {@link org.apache.commons.pool.BasePoolableObjectFactory BasePoolableObjectFactory}
     {
         /**
          * Creates an instance that can be returned by the pool.
          * @return an instance that can be returned by the pool.
          */
-        public Object makeObject()
+        public Object makeObject() 
             throws Exception
         {
             return new HashMap();
         }
-
+        
         /**
          * Uninitialize an instance to be returned to the pool.
          * @param obj the instance to be passivated
          */
-        public void passivateObject(Object obj)
+        public void passivateObject(Object obj) 
             throws Exception
         {
             Map map = (Map)obj;
@@ -113,8 +113,8 @@
 </pre>
 
 <p>
-The above example shows how one would use an
-{@link org.apache.commons.pool.ObjectPool ObjectPool}.  The other supplied
+The above example shows how one would use an 
+{@link org.apache.commons.pool.ObjectPool ObjectPool}.  The other supplied 
 implementations or another special purpose pool would be used similarly.
 </p>
    </body>

@@ -4,10 +4,10 @@
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License a
- *
+ * the License.  You may obtain a copy of the License at
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -166,7 +166,7 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
                         // swallowed
                     } finally {
                         obj = null;
-                    }
+                    } 
                     if (newlyCreated) {
                         throw new NoSuchElementException(
                             "Could not create a validated object, cause: " +
@@ -200,7 +200,7 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
             Object toBeDestroyed = null;
             if(_pool.size() >= _maxSleeping) {
                 shouldDestroy = true;
-                toBeDestroyed = _pool.remove(0); // remove the stalest objec
+                toBeDestroyed = _pool.remove(0); // remove the stalest object
             }
             _pool.push(obj);
             obj = toBeDestroyed; // swap returned obj with the stalest one so it can be destroyed
@@ -253,7 +253,7 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
                 try {
                     _factory.destroyObject(it.next());
                 } catch(Exception e) {
-                    // ignore error, keep destroying the res
+                    // ignore error, keep destroying the rest
                 }
             }
         }
@@ -300,7 +300,7 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
             Object toBeDestroyed = null;
             if(_pool.size() >= _maxSleeping) {
                 shouldDestroy = true;
-                toBeDestroyed = _pool.remove(0); // remove the stalest objec
+                toBeDestroyed = _pool.remove(0); // remove the stalest object
             }
             _pool.push(obj);
             obj = toBeDestroyed; // swap returned obj with the stalest one so it can be destroyed
@@ -340,7 +340,7 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
 
     /**
      * The default initial size of the pool
-     * (this specifies the size of the container, it does no
+     * (this specifies the size of the container, it does not
      * cause the pool to be pre-populated.)
      */
     protected static final int DEFAULT_INIT_SLEEPING_CAPACITY = 4;
