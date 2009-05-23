@@ -28,13 +28,42 @@ package org.apache.commons.pool;
  * @since Pool 1.0
  */
 public abstract class BaseObjectPool implements ObjectPool {
+    /**
+     * Obtains an instance from the pool.
+     * 
+     * @return an instance from the pool
+     * @throws Exception if an instance cannot be obtained from the pool
+     */
     public abstract Object borrowObject() throws Exception;
+    
+    /**
+     * Returns an instance to the pool.
+     * 
+     * @param obj instance to return to the pool
+     */
     public abstract void returnObject(Object obj) throws Exception;
+    
+    /**
+     * Invalidates an object from the pool.
+     * By contract, <code>obj</code> <strong>must</strong> have been obtained
+     * using {@link #borrowObject borrowObject}
+     * or a related method as defined in an implementation
+     * or sub-interface.
+     * <p>
+     * This method should be used when an object that has been borrowed
+     * is determined (due to an exception or other problem) to be invalid.
+     * </p>
+     *
+     * @param obj a {@link #borrowObject borrowed} instance to be disposed.
+     * @throws Exception 
+     */
     public abstract void invalidateObject(Object obj) throws Exception;
 
     /**
      * Not supported in this base implementation.
      * @return a negative value.
+     * 
+     * @throws UnsupportedOperationException
      */
     public int getNumIdle() throws UnsupportedOperationException {
         return -1;
@@ -43,6 +72,8 @@ public abstract class BaseObjectPool implements ObjectPool {
     /**
      * Not supported in this base implementation.
      * @return a negative value.
+     * 
+     * @throws UnsupportedOperationException
      */
     public int getNumActive() throws UnsupportedOperationException {
         return -1;
@@ -50,6 +81,8 @@ public abstract class BaseObjectPool implements ObjectPool {
 
     /**
      * Not supported in this base implementation.
+     * 
+     * @throws UnsupportedOperationException
      */
     public void clear() throws Exception, UnsupportedOperationException {
         throw new UnsupportedOperationException();
@@ -59,6 +92,8 @@ public abstract class BaseObjectPool implements ObjectPool {
      * Not supported in this base implementation.
      * Always throws an {@link UnsupportedOperationException},
      * subclasses should override this behavior.
+     * 
+     * @throws UnsupportedOperationException
      */
     public void addObject() throws Exception, UnsupportedOperationException {
         throw new UnsupportedOperationException();
@@ -76,6 +111,9 @@ public abstract class BaseObjectPool implements ObjectPool {
      * Not supported in this base implementation.
      * Always throws an {@link UnsupportedOperationException},
      * subclasses should override this behavior.
+     * 
+     * @throws UnsupportedOperationException
+     * @throws IllegalStateException
      */
     public void setFactory(PoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
         throw new UnsupportedOperationException();
@@ -95,10 +133,11 @@ public abstract class BaseObjectPool implements ObjectPool {
      * @see #isClosed()
      */
     protected final void assertOpen() throws IllegalStateException {
-        if(isClosed()) {
+        if (isClosed()) {
             throw new IllegalStateException("Pool not open");
         }
     }
 
+    /** Whether or not the pool is closed */
     private volatile boolean closed = false;
 }
