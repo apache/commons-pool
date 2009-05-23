@@ -94,14 +94,12 @@ public interface ObjectPool {
      * or sub-interface.
      *
      * @param obj a {@link #borrowObject borrowed} instance to be returned.
-     * @throws Exception <b>deprecated</b>: as of Pool 2.0 pool implementations should swallow
-     * exceptions that occur when a poolable object is returned. For future source compatability
-     * implementations of this method should not even declare that they throw any exception.
+     * @throws Exception 
      */
     void returnObject(Object obj) throws Exception;
 
     /**
-     * Invalidates an object from the pool
+     * Invalidates an object from the pool.
      * By contract, <code>obj</code> <strong>must</strong> have been obtained
      * using {@link #borrowObject borrowObject}
      * or a related method as defined in an implementation
@@ -112,9 +110,7 @@ public interface ObjectPool {
      * </p>
      *
      * @param obj a {@link #borrowObject borrowed} instance to be disposed.
-     * @throws Exception <b>deprecated</b>: as of Pool 2.0 pool implementations should swallow
-     * exceptions that occur when a poolable object is returned. For future source compatability
-     * implementations of this method should not even declare that they throw any exception.
+     * @throws Exception
      */
     void invalidateObject(Object obj) throws Exception;
 
