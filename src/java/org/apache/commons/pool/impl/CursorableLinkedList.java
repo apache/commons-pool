@@ -37,10 +37,10 @@ import java.lang.ref.WeakReference;
  * to prevent its inclusion in the pool public API. The class declaration below
  * should *not* be changed to public.
  * </p>
- * 
+ *
  * A doubly-linked list implementation of the {@link List} interface,
  * supporting a {@link ListIterator} that allows concurrent modifications
- * to the underlying list. 
+ * to the underlying list.
  * <p>
  *
  * Implements all of the optional {@link List} operations, the
@@ -51,15 +51,15 @@ import java.lang.ref.WeakReference;
  * <b>Note that this implementation is not synchronized.</b>
  *
  * @see java.util.LinkedList
- * 
+ *
  * @version $Revision: 480452 $ $Date: 2006-11-29 00:45:14 -0700 (Wed, 29 Nov 2006) $
- * 
+ *
  * @author Rodney Waldhoff
  * @author Janek Bogucki
  * @author Simon Kitching
  */
 class CursorableLinkedList implements List, Serializable {
-    /** Ensure serialization compatibility */    
+    /** Ensure serialization compatibility */
     private static final long serialVersionUID = 8836393098519411393L;
 
     //--- public methods ---------------------------------------------
@@ -84,11 +84,11 @@ class CursorableLinkedList implements List, Serializable {
      * @param element element to be inserted.
      *
      * @throws ClassCastException if the class of the specified element
-     * 		  prevents it from being added to this list.
+     *         prevents it from being added to this list.
      * @throws IllegalArgumentException if some aspect of the specified
-     *		     element prevents it from being added to this list.
+     *         element prevents it from being added to this list.
      * @throws IndexOutOfBoundsException if the index is out of range
-     *		     (index &lt; 0 || index &gt; size()).
+     *         (index &lt; 0 || index &gt; size()).
      */
     public void add(int index, Object element) {
         if(index == _size) {
@@ -115,7 +115,7 @@ class CursorableLinkedList implements List, Serializable {
      * @return <tt>true</tt> if this list changed as a result of the call.
      *
      * @throws ClassCastException if the class of an element in the specified
-     * 	     collection prevents it from being added to this list.
+     *       collection prevents it from being added to this list.
      * @throws IllegalArgumentException if some aspect of an element in the
      *         specified collection prevents it from being added to this
      *         list.
@@ -143,18 +143,18 @@ class CursorableLinkedList implements List, Serializable {
      * collection is this list, and it's nonempty.)
      *
      * @param index index at which to insert first element from the specified
-     *	            collection.
+     *              collection.
      * @param c elements to be inserted into this list.
      * @return <tt>true</tt> if this list changed as a result of the call.
      *
      * @throws ClassCastException if the class of one of elements of the
-     * 		   specified collection prevents it from being added to this
-     * 		   list.
+     *         specified collection prevents it from being added to this
+     *         list.
      * @throws IllegalArgumentException if some aspect of one of elements of
      *         the specified collection prevents it from being added to
      *         this list.
      * @throws IndexOutOfBoundsException if the index is out of range (index
-     *	      &lt; 0 || index &gt; size()).
+     *         &lt; 0 || index &gt; size()).
      */
     public boolean addAll(int index, Collection c) {
         if(c.isEmpty()) {
@@ -228,7 +228,7 @@ class CursorableLinkedList implements List, Serializable {
      */
     public boolean contains(Object o) {
         for(Listable elt = _head.next(), past = null; null != elt && past != _head.prev(); elt = (past = elt).next()) {
-            if((null == o && null == elt.value()) || 
+            if((null == o && null == elt.value()) ||
                (o != null && o.equals(elt.value()))) {
                 return true;
             }
@@ -271,8 +271,8 @@ class CursorableLinkedList implements List, Serializable {
      * {@link ListIterator#nextIndex} and {@link ListIterator#previousIndex}
      * methods (they throw {@link UnsupportedOperationException} when invoked.
      * <p>
-     * Historical Note: In previous versions of this class, the object 
-     * returned from this method was required to be explicitly closed. This 
+     * Historical Note: In previous versions of this class, the object
+     * returned from this method was required to be explicitly closed. This
      * is no longer necessary.
      *
      * @see #cursor(int)
@@ -297,7 +297,7 @@ class CursorableLinkedList implements List, Serializable {
      * @see #listIterator(int)
      * @see CursorableLinkedList.Cursor
      * @throws IndexOutOfBoundsException if the index is out of range (index
-     *	        &lt; 0 || index &gt; size()).
+     *          &lt; 0 || index &gt; size()).
      */
     public CursorableLinkedList.Cursor cursor(int i) {
         return new Cursor(i);
@@ -339,7 +339,7 @@ class CursorableLinkedList implements List, Serializable {
      * @return the element at the specified position in this list.
      *
      * @throws IndexOutOfBoundsException if the index is out of range (index
-     * 		  &lt; 0 || index &gt;= size()).
+     *         &lt; 0 || index &gt;= size()).
      */
     public Object get(int index) {
         return getListableAt(index).value();
@@ -456,7 +456,7 @@ class CursorableLinkedList implements List, Serializable {
      *
      * @param o element to search for.
      * @return the index in this list of the last occurrence of the specified
-     * 	       element, or -1 if this list does not contain this element.
+     *         element, or -1 if this list does not contain this element.
      */
     public int lastIndexOf(Object o) {
         int ndx = _size-1;
@@ -623,11 +623,11 @@ class CursorableLinkedList implements List, Serializable {
      * @return the element previously at the specified position.
      *
      * @throws ClassCastException if the class of the specified element
-     * 		  prevents it from being added to this list.
+     *         prevents it from being added to this list.
      * @throws IllegalArgumentException if some aspect of the specified
-     *	        element prevents it from being added to this list.
+     *         element prevents it from being added to this list.
      * @throws IndexOutOfBoundsException if the index is out of range
-     *		     (index &lt; 0 || index &gt;= size()).
+     *         (index &lt; 0 || index &gt;= size()).
      */
     public Object set(int index, Object element) {
         Listable elt = getListableAt(index);
@@ -727,7 +727,7 @@ class CursorableLinkedList implements List, Serializable {
      * list, after the specified <i>before</i> element, and before the
      * specified <i>after</i> element
      *
-     * @return the newly created 
+     * @return the newly created
      * {@link org.apache.commons.collections.CursorableLinkedList.Listable}
      */
     protected Listable insertListable(Listable before, Listable after, Object value) {
@@ -750,8 +750,8 @@ class CursorableLinkedList implements List, Serializable {
     }
 
     /**
-     * Removes the given 
-     * {@link org.apache.commons.collections.CursorableLinkedList.Listable} 
+     * Removes the given
+     * {@link org.apache.commons.collections.CursorableLinkedList.Listable}
      * from my list.
      */
     protected void removeListable(Listable elt) {
@@ -773,8 +773,8 @@ class CursorableLinkedList implements List, Serializable {
     }
 
     /**
-     * Returns the 
-     * {@link org.apache.commons.collections.CursorableLinkedList.Listable} 
+     * Returns the
+     * {@link org.apache.commons.collections.CursorableLinkedList.Listable}
      * at the specified index.
      *
      * @throws IndexOutOfBoundsException if index is less than zero or
@@ -812,7 +812,7 @@ class CursorableLinkedList implements List, Serializable {
                 it.remove();
             }
         }
-        
+
         _cursors.add( new WeakReference(cur) );
     }
 
@@ -825,11 +825,11 @@ class CursorableLinkedList implements List, Serializable {
             WeakReference ref = (WeakReference) it.next();
             Cursor cursor = (Cursor) ref.get();
             if (cursor == null) {
-                // some other unrelated cursor object has been 
+                // some other unrelated cursor object has been
                 // garbage-collected; let's take the opportunity to
                 // clean up the cursors list anyway..
                 it.remove();
-                
+
             } else if (cursor == cur) {
                 ref.clear();
                 it.remove();
@@ -943,8 +943,8 @@ class CursorableLinkedList implements List, Serializable {
      * <tt>_head.next().prev()</tt> and <tt>_head.prev().next()</tt> to be
      * non-null, as when I am a sublist for some larger list.
      * Use <tt>== _head.next()</tt> and <tt>== _head.prev()</tt> to determine
-     * if a given 
-     * {@link org.apache.commons.collections.CursorableLinkedList.Listable} 
+     * if a given
+     * {@link org.apache.commons.collections.CursorableLinkedList.Listable}
      * is the first or last element in the list.
      */
     protected transient Listable _head = new Listable(null,null,null);

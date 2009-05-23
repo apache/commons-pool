@@ -24,24 +24,24 @@
          Object pooling API.
       </p>
       <p>
-         The <code>org.apache.commons.pool</code> package defines a simple 
-         interface for a pool of object instances, and a handful of base 
+         The <code>org.apache.commons.pool</code> package defines a simple
+         interface for a pool of object instances, and a handful of base
          classes that may be useful when creating pool implementations.
       </p>
       <p>
          The <code>pool</code> package itself doesn't define a specific object
          pooling implementation, but rather a contract that implementations may
-         support in order to be fully interchangeable.         
+         support in order to be fully interchangeable.
       </p>
       <p>
          The <code>pool</code> package separates the way in which instances are
-         pooled from the way in which they are created, resulting in a pair of 
+         pooled from the way in which they are created, resulting in a pair of
          interfaces:
       </p>
       <dl>
         <dt>{@link org.apache.commons.pool.ObjectPool ObjectPool}</dt>
         <dd>
-          defines a simple object pooling interface, with methods for 
+          defines a simple object pooling interface, with methods for
           borrowing instances from and returning them to the pool.
         </dd>
         <dt>{@link org.apache.commons.pool.PoolableObjectFactory PoolableObjectFactory}</dt>
@@ -50,7 +50,7 @@
           By associating a factory with a pool, the pool can create new object
           instances as needed.
         </dd>
-      </dl>        
+      </dl>
       <p>
         {@link org.apache.commons.pool.ObjectPoolFactory ObjectPoolFactory}
         defines a simple factory for <code>ObjectPool</code>s, which may be
@@ -58,11 +58,11 @@
       </p>
       <p>
          The <code>pool</code> package also provides a keyed pool interface,
-         which pools instances of multiple types, accessed according to an 
+         which pools instances of multiple types, accessed according to an
          arbitrary key. See
          {@link org.apache.commons.pool.KeyedObjectPool KeyedObjectPool},
          {@link org.apache.commons.pool.KeyedPoolableObjectFactory KeyedPoolableObjectFactory},
-         and 
+         and
          {@link org.apache.commons.pool.KeyedObjectPoolFactory KeyedObjectPoolFactory}.
       </p>
    </body>

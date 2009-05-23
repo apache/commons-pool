@@ -1386,7 +1386,7 @@ public final class PoolUtils {
                     '}';
         }
     }
-    
+
     private static class ErodingObjectPool implements ObjectPool {
         private final ObjectPool pool;
         private final ErodingFactor factor;
@@ -1478,7 +1478,7 @@ public final class PoolUtils {
 
         protected ErodingKeyedObjectPool(final KeyedObjectPool keyedPool, final ErodingFactor erodingFactor) {
             if (keyedPool == null) {
-                throw new IllegalArgumentException("keyedPool must not be null.");                
+                throw new IllegalArgumentException("keyedPool must not be null.");
             }
             this.keyedPool = keyedPool;
             this.erodingFactor = erodingFactor;
