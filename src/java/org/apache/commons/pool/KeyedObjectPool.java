@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -97,7 +97,7 @@ public interface KeyedObjectPool {
      * By contract, <code>obj</code> <strong>must</strong> have been obtained
      * using {@link #borrowObject borrowObject}
      * or a related method as defined in an implementation
-     * or sub-interface 
+     * or sub-interface
      * using a <code>key</code> that is equivalent to the one used to
      * borrow the instance in the first place.
      *
@@ -114,7 +114,7 @@ public interface KeyedObjectPool {
      * By contract, <code>obj</code> <strong>must</strong> have been obtained
      * using {@link #borrowObject borrowObject}
      * or a related method as defined in an implementation
-     * or sub-interface 
+     * or sub-interface
      * using a <code>key</code> that is equivalent to the one used to
      * borrow the <code>Object</code> in the first place.
      * <p>
