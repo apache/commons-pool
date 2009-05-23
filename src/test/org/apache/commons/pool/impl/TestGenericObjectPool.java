@@ -1227,15 +1227,15 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
     public void testAddObject() throws Exception {
         assertEquals("should be zero idle", 0, pool.getNumIdle());
-    	pool.addObject();
-		assertEquals("should be one idle", 1, pool.getNumIdle());
-		assertEquals("should be zero active", 0, pool.getNumActive());
-		Object obj = pool.borrowObject();
-		assertEquals("should be zero idle", 0, pool.getNumIdle());
-		assertEquals("should be one active", 1, pool.getNumActive());
-		pool.returnObject(obj);
-		assertEquals("should be one idle", 1, pool.getNumIdle());
-		assertEquals("should be zero active", 0, pool.getNumActive());
+        pool.addObject();
+        assertEquals("should be one idle", 1, pool.getNumIdle());
+        assertEquals("should be zero active", 0, pool.getNumActive());
+        Object obj = pool.borrowObject();
+        assertEquals("should be zero idle", 0, pool.getNumIdle());
+        assertEquals("should be one active", 1, pool.getNumActive());
+        pool.returnObject(obj);
+        assertEquals("should be one idle", 1, pool.getNumIdle());
+        assertEquals("should be zero active", 0, pool.getNumActive());
 
         ObjectPool op = new GenericObjectPool();
         try {
@@ -1436,5 +1436,3 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
     }
 }
-
-

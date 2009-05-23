@@ -30,33 +30,33 @@ public class SleepingObjectFactory implements PoolableObjectFactory {
     private int counter = 0;
     private boolean debug = false;
 
-	public Object makeObject() throws Exception {
+    public Object makeObject() throws Exception {
         Object obj = new Integer(counter++);
         debug("makeObject", obj);
         sleep(500);
-		return obj;
-	}
+        return obj;
+    }
 
-	public void destroyObject(Object obj) throws Exception {
+    public void destroyObject(Object obj) throws Exception {
         debug("destroyObject", obj);
         sleep(250);
-	}
+    }
 
-	public boolean validateObject(Object obj) {
+    public boolean validateObject(Object obj) {
         debug("validateObject", obj);
         sleep(30);
-		return true;
-	}
+        return true;
+    }
 
-	public void activateObject(Object obj) throws Exception {
+    public void activateObject(Object obj) throws Exception {
         debug("activateObject", obj);
         sleep(10);
-	}
+    }
 
-	public void passivateObject(Object obj) throws Exception {
+    public void passivateObject(Object obj) throws Exception {
         debug("passivateObject", obj);
         sleep(10);
-	}
+    }
     
     private void debug(String method, Object obj) {
         if (debug) {
