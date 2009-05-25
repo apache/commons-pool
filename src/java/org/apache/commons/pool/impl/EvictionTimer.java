@@ -35,9 +35,14 @@ import java.util.TimerTask;
  * </p>
  */
 class EvictionTimer {
+    
+    /** Timer instance */
     private static Timer _timer;
+    
+    /** Static usage count tracker */
     private static int _usageCount;
 
+    /** Prevent instantiation */
     private EvictionTimer() {
         // Hide the default constuctor
     }
