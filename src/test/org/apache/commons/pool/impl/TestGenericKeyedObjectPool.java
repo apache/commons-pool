@@ -1458,6 +1458,14 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         return false;
     }
 
+    public void testWhenExhaustedGrow() throws Exception {
+        pool.setMaxActive(1);
+        pool.setMaxTotal(1);
+        pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_GROW);
+        for (int i = 0; i < 10; i++) {
+            pool.borrowObject("a");
+        }
+    } 
 }
 
 

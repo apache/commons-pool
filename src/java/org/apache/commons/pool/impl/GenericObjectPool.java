@@ -969,6 +969,10 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                     switch(whenExhaustedAction) {
                         case WHEN_EXHAUSTED_GROW:
                             // allow new object to be created
+                            synchronized (this) {
+                                _allocationQueue.remove(latch);
+                                _numInternalProcessing++;
+                            }
                             break;
                         case WHEN_EXHAUSTED_FAIL:
                             synchronized (this) {
