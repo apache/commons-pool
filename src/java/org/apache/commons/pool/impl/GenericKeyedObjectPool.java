@@ -2308,7 +2308,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
         /**
          * Gets the ObjectTimestampPair allocated to this latch.
-         * Returns null of this latch does not have an instance allocated to it. 
+         * Returns null if this latch does not have an instance allocated to it. 
          * @return the associated ObjectTimestampPair
          */
         private synchronized ObjectTimestampPair getPair() {
