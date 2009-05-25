@@ -214,6 +214,8 @@
           <configuration>
             <xmlPath>${basedir}/xdocs/changes.xml</xmlPath>
             <issueLinkTemplate>%URL%/%ISSUE%</issueLinkTemplate>
+            <template>pool-release-notes.vm</template>
+            <templateDirectory>src/template</templateDirectory>
           </configuration>
           <reportSets>
             <reportSet>
