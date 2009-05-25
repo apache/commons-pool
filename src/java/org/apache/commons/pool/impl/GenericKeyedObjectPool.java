@@ -1104,7 +1104,11 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                     // the pool is exhausted
                     switch(whenExhaustedAction) {
                         case WHEN_EXHAUSTED_GROW:
-                        // allow new object to be created
+                            // allow new object to be created
+                            synchronized (this) {
+                                _allocationQueue.remove(latch);
+                                latch.getPool().incrementInternalProcessingCount();
+                            }
                         break;
                         case WHEN_EXHAUSTED_FAIL:
                             synchronized (this) {
