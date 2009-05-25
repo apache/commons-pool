@@ -1051,7 +1051,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * are no more idle instances available.</p>
      * 
      * <p>If there are no idle instances available in the pool associated with the given key, behavior
-     * deponds on the {@link #getMaxActive() maxActive}, {@link #getMaxTotal() maxTotal}, and (if applicable)
+     * depends on the {@link #getMaxActive() maxActive}, {@link #getMaxTotal() maxTotal}, and (if applicable)
      * {@link #getWhenExhaustedAction() whenExhaustedAction} and {@link #getMaxWait() maxWait} properties. If the
      * number of instances checked out from the pool under the given key is less than <code>maxActive</code> and
      * the total number of instances in circulation (under all keys) is less than <code>maxTotal</code>, a new instance
