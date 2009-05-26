@@ -313,7 +313,7 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
      *
      * @return the total number of instances currently borrowed from this pool
      */
-    public int getNumActive() {
+    public synchronized int getNumActive() {
         return _totActive;
     }
 
