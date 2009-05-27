@@ -29,6 +29,9 @@ to resolving some important concurrency-related bugs (POOL-135, POOL-125, POOL-2
 POOL-107) this release implements a fairness algorithm to ensure that threads waiting
 for available object instances from GenericObjectPools and GenericKeyedObjectPools are served
 in request arrival order.">
+    <action dev="markt" type="fix" issue="POOL-139" due-to="Sebastian Bazley">
+      StackKeyedObjectPool.getNumActive() needs to be synchronized.
+    </action>
     <action dev="markt" type="fix" issue="POOL-137" due-to="Sebastian Bazley">
       Inconsistent synchronization in GenericObjectPool; constant fields should be final.
     </action>
