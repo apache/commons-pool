@@ -765,6 +765,84 @@ public class TestPoolUtils extends TestCase {
         expectedMethods.add("invalidateObject");
         assertEquals(expectedMethods, calledMethods);
     }
+    
+    public void testErodingPerKeyKeyedObjectPool() throws Exception {
+        try {
+            PoolUtils.erodingPool((KeyedObjectPool)null, 1, true);
+            fail("PoolUtils.erodingPool(KeyedObjectPool) must not allow a null pool.");
+        } catch(IllegalArgumentException iae) {
+            // expected
+        }
+
+        try {
+            PoolUtils.erodingPool((KeyedObjectPool)null, 0, true);
+            fail("PoolUtils.erodingPool(ObjectPool, float) must not allow a non-positive factor.");
+        } catch(IllegalArgumentException iae) {
+            // expected
+        }
+
+        try {
+            PoolUtils.erodingPool((KeyedObjectPool)null, 1f, true);
+            fail("PoolUtils.erodingPool(KeyedObjectPool, float, boolean) must not allow a null pool.");
+        } catch(IllegalArgumentException iae) {
+            // expected
+        }
+
+        final List calledMethods = new ArrayList();
+        final InvocationHandler handler = new MethodCallLogger(calledMethods) {
+            public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
+                Object o = super.invoke(proxy, method, args);
+                if (o instanceof Integer) {
+                    // so getNumActive/getNumIdle are not zero.
+                    o = new Integer(1);
+                }
+                return o;
+            }
+        };
+
+        // If the logic behind PoolUtils.erodingPool changes then this will need to be tweaked.
+        float factor = 0.01f; // about ~9 seconds until first discard
+        final KeyedObjectPool pool = PoolUtils.erodingPool((KeyedObjectPool)createProxy(KeyedObjectPool.class, handler), factor, true);
+
+        final List expectedMethods = new ArrayList();
+        assertEquals(expectedMethods, calledMethods);
+
+        final Object key = "key";
+
+        Object o = pool.borrowObject(key);
+        expectedMethods.add("borrowObject");
+
+        assertEquals(expectedMethods, calledMethods);
+
+        pool.returnObject(key, o);
+        expectedMethods.add("returnObject");
+        assertEquals(expectedMethods, calledMethods);
+
+        for (int i=0; i < 5; i ++) {
+            o = pool.borrowObject(key);
+            expectedMethods.add("borrowObject");
+
+            Thread.sleep(50);
+
+            pool.returnObject(key, o);
+            expectedMethods.add("returnObject");
+
+            assertEquals(expectedMethods, calledMethods);
+
+            expectedMethods.clear();
+            calledMethods.clear();
+        }
+
+        Thread.sleep(10000); // 10 seconds
+
+
+        o = pool.borrowObject(key);
+        expectedMethods.add("borrowObject");
+        pool.returnObject(key, o);
+        expectedMethods.add("getNumIdle");
+        expectedMethods.add("invalidateObject");
+        assertEquals(expectedMethods, calledMethods);
+    }
 
     private static List invokeEveryMethod(ObjectPool op) throws Exception {
         op.addObject();
