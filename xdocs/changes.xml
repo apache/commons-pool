@@ -69,10 +69,10 @@ JDK version 1.3 or higher. Classes implementing pools are all intended to be
 threadsafe.">
       <action dev="sandymac" type="fix">
         Fixed constructor which was ignoring maxTotal parameter: 
-        <code>GenericKeyedObjectPool(KeyedPoolableObjectFactory factory, int maxActive, byte whenExhaustedAction,
+          GenericKeyedObjectPool(KeyedPoolableObjectFactory factory, int maxActive, byte whenExhaustedAction,
           long maxWait, int maxIdle, int maxTotal, boolean testOnBorrow, boolean testOnReturn,
           long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis,
-          boolean testWhileIdle)</code>
+          boolean testWhileIdle)
       </action>
       <action dev="sandymac" type="fix">
         Changed StackKeyedObjectPool to discard stalest, not freshest, idle object when maxSleeping is reached.
@@ -82,17 +82,11 @@ threadsafe.">
       </action>
       <action dev="psteitz" type="fix" issue="POOL-86">
         Fixes to address idle object eviction and LIFO/FIFO behavior reported
-        in POOL-86.
-        <ul>
-          <li>Made LIFO/FIFO behavior configurable for GenericObjectPool and
-              GenericKeyedObjectPool, with default set back to LIFO
-              (reverting to 1.2 behavior).</li>
-          <li>Fixed GOP, GKOP evict method and added tests to ensure objects
-              are visited in oldest-to-youngest order.</li>
-          <li>Changed backing store for GOP, GKOP pools back to Commons
-              Collections CursorableLinkedList (brought this class in,
-              repackaged with package scope).</li>
-        </ul>
+        in POOL-86. Made LIFO/FIFO behavior configurable for GenericObjectPool and
+        GenericKeyedObjectPool, with default set back to LIFO (reverting to 1.2 behavior).
+        Fixed GOP, GKOP evict method and added tests to ensure objects are visited in
+        oldest-to-youngest order. Changed backing store for GOP, GKOP pools back to Commons
+        Collections CursorableLinkedList (brought this class in, repackaged with package scope).
       </action>
       <action dev="psteitz" type="fix" issue="POOL-110" due-to="Alexander Pogrebnyak">
         Changed the default setting for Config.softMinEvictableIdleTimeMillis to
@@ -175,16 +169,14 @@ threadsafe.">
 
     <release version="1.2" date="2004-06-07" description="bugfixes">
       <action dev="dirkv" type="fix">
-        <description>GenericKeyedObjectPoolFactory Config Constructor is incorrect</description>
-        <fixes issue="24864"/>
+           GenericKeyedObjectPoolFactory Config Constructor is incorrect
       </action>
       <action dev="dirkv" type="fix">
-        <description>Not possible to extend GenericObjectPool.returnObject() without affecting addObject()</description>
-        <fixes issue="28638"/>
+        Not possible to extend GenericObjectPool.returnObject() without affecting addObject()
       </action>
     </release>
 
-    <release version="1.1" date="2003-10-20">
+    <release version="1.1" date="2003-10-20" description="bugfixes">
       <action type="fix">A lot of corner cases were fixed</action>
       <action type="fix">Performance improvement by optimizing pool synchronization, the critical code paths were optimized by reducing pool synchronization but we also added more synchronization where needed</action>
       <action type="fix">New minIdle feature: the minimum number of objects allowed in the pool before the evictor thread (if active) spawns new objects. (Note no objects are created when: numActive + numIdle >= maxActive)</action>
