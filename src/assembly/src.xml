@@ -24,15 +24,15 @@
     <fileSets>
         <fileSet>
             <includes>
-                <include>build.properties.sample</include>
                 <include>build.xml</include>
                 <include>checkstyle.xml</include>
                 <include>LICENSE.txt</include>
-                <include>LICENSE-header.txt</include>
+                <include>license-header.txt</include>
                 <include>NOTICE.txt</include>
                 <include>pom.xml</include>
                 <include>README.txt</include>
                 <include>RELEASE-NOTES.txt</include>
+                <include>findbugs-exclude-filter.xml</include>
             </includes>
         </fileSet>
         <fileSet>
