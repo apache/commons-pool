@@ -395,17 +395,17 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
             pool.returnObject("",active[i]);
         }
 
-        try { Thread.sleep(1000L); } catch(Exception e) { }
+        try { Thread.sleep(1000L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 500 idle, found " + pool.getNumIdle(""),pool.getNumIdle("") < 500);
-        try { Thread.sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 400 idle, found " + pool.getNumIdle(""),pool.getNumIdle("") < 400);
-        try { Thread.sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 300 idle, found " + pool.getNumIdle(""),pool.getNumIdle("") < 300);
-        try { Thread.sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 200 idle, found " + pool.getNumIdle(""),pool.getNumIdle("") < 200);
-        try { Thread.sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 100 idle, found " + pool.getNumIdle(""),pool.getNumIdle("") < 100);
-        try { Thread.sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(InterruptedException e) { }
         assertEquals("Should be zero idle, found " + pool.getNumIdle(""),0,pool.getNumIdle(""));
 
         for(int i=0;i<500;i++) {
@@ -415,17 +415,17 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
             pool.returnObject("",active[i]);
         }
 
-        try { Thread.sleep(1000L); } catch(Exception e) { }
+        try { Thread.sleep(1000L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 500 idle, found " + pool.getNumIdle(""),pool.getNumIdle("") < 500);
-        try { Thread.sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 400 idle, found " + pool.getNumIdle(""),pool.getNumIdle("") < 400);
-        try { Thread.sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 300 idle, found " + pool.getNumIdle(""),pool.getNumIdle("") < 300);
-        try { Thread.sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 200 idle, found " + pool.getNumIdle(""),pool.getNumIdle("") < 200);
-        try { Thread.sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 100 idle, found " + pool.getNumIdle(""),pool.getNumIdle("") < 100);
-        try { Thread.sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(InterruptedException e) { }
         assertEquals("Should be zero idle, found " + pool.getNumIdle(""),0,pool.getNumIdle(""));
     }
 
@@ -447,27 +447,27 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
             pool.returnObject("2",active2[i]);
         }
 
-        try { Thread.sleep(1000L); } catch(Exception e) { }
+        try { Thread.sleep(1000L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 1000 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 1000);
-        try { Thread.sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 900 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 900);
-        try { Thread.sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 800 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 800);
-        try { Thread.sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 700 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 700);
-        try { Thread.sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 600 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 600);
-        try { Thread.sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 500 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 500);
-        try { Thread.sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 400 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 400);
-        try { Thread.sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 300 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 300);
-        try { Thread.sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 200 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 200);
-        try { Thread.sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 100 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 100);
-        try { Thread.sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(InterruptedException e) { }
         assertEquals("Should be zero idle, found " + pool.getNumIdle(),0,pool.getNumIdle());
     }
 
@@ -487,7 +487,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
             while(!(threads[i]).complete()) {
                 try {
                     Thread.sleep(500L);
-                } catch(Exception e) {
+                } catch(InterruptedException e) {
                     // ignored
                 }
             }
@@ -539,27 +539,27 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
 
         pool.preparePool(key, true);
 
-        try { Thread.sleep(150L); } catch(Exception e) { }
+        try { Thread.sleep(150L); } catch(InterruptedException e) { }
         assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
 
         Object[] active = new Object[5];
         active[0] = pool.borrowObject(key);
 
-        try { Thread.sleep(150L); } catch(Exception e) { }
+        try { Thread.sleep(150L); } catch(InterruptedException e) { }
         assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
 
         for(int i=1 ; i<5 ; i++) {
             active[i] = pool.borrowObject(key);
         }
 
-        try { Thread.sleep(150L); } catch(Exception e) { }
+        try { Thread.sleep(150L); } catch(InterruptedException e) { }
         assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
 
         for(int i=0 ; i<5 ; i++) {
             pool.returnObject(key, active[i]);
         }
 
-        try { Thread.sleep(150L); } catch(Exception e) { }
+        try { Thread.sleep(150L); } catch(InterruptedException e) { }
         assertTrue("Should be 10 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 10);
     }
 
@@ -578,40 +578,40 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertTrue("Should be 5 idle, found " + 
                 pool.getNumIdle(),pool.getNumIdle() == 5);
 
-        try { Thread.sleep(150L); } catch(Exception e) { }
+        try { Thread.sleep(150L); } catch(InterruptedException e) { }
         assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
 
         Object[] active = new Object[10];
 
-        try { Thread.sleep(150L); } catch(Exception e) { }
+        try { Thread.sleep(150L); } catch(InterruptedException e) { }
         assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
 
         for(int i=0 ; i<5 ; i++) {
             active[i] = pool.borrowObject(key);
         }
 
-        try { Thread.sleep(150L); } catch(Exception e) { }
+        try { Thread.sleep(150L); } catch(InterruptedException e) { }
         assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
 
         for(int i=0 ; i<5 ; i++) {
             pool.returnObject(key, active[i]);
         }
 
-        try { Thread.sleep(150L); } catch(Exception e) { }
+        try { Thread.sleep(150L); } catch(InterruptedException e) { }
         assertTrue("Should be 10 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 10);
 
         for(int i=0 ; i<10 ; i++) {
             active[i] = pool.borrowObject(key);
         }
 
-        try { Thread.sleep(150L); } catch(Exception e) { }
+        try { Thread.sleep(150L); } catch(InterruptedException e) { }
         assertTrue("Should be 0 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 0);
 
         for(int i=0 ; i<10 ; i++) {
             pool.returnObject(key, active[i]);
         }
 
-        try { Thread.sleep(150L); } catch(Exception e) { }
+        try { Thread.sleep(150L); } catch(InterruptedException e) { }
         assertTrue("Should be 10 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 10);
     }
 
@@ -632,7 +632,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
 
         assertTrue("Should be 0 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 0);
 
-        try { Thread.sleep(1500L); } catch(Exception e) { }
+        try { Thread.sleep(1500L); } catch(InterruptedException e) { }
         assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
     }
 
@@ -649,13 +649,13 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         //Generate a random key
         String key = "A";
 
-        try { Thread.sleep(150L); } catch(Exception e) { }
+        try { Thread.sleep(150L); } catch(InterruptedException e) { }
         assertTrue("Should be 0 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 0);
 
         Object active = pool.borrowObject(key);
         assertNotNull(active);
 
-        try { Thread.sleep(150L); } catch(Exception e) { }
+        try { Thread.sleep(150L); } catch(InterruptedException e) { }
         assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
     }
 
@@ -1294,13 +1294,13 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals(0, pool.getNumIdle());
     }
 
-    class TestThread implements Runnable {
-        java.util.Random _random = new java.util.Random();
-        KeyedObjectPool _pool = null;
-        boolean _complete = false;
-        boolean _failed = false;
-        int _iter = 100;
-        int _delay = 50;
+    static class TestThread implements Runnable {
+        private final java.util.Random _random = new java.util.Random();
+        private KeyedObjectPool _pool = null;
+        private volatile boolean _complete = false;
+        private volatile boolean _failed = false;
+        private int _iter = 100;
+        private int _delay = 50;
 
         public TestThread(KeyedObjectPool pool) {
             _pool = pool;
@@ -1330,7 +1330,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
                 String key = String.valueOf(_random.nextInt(3));
                 try {
                     Thread.sleep(_random.nextInt(_delay));
-                } catch(Exception e) {
+                } catch(InterruptedException e) {
                     // ignored
                 }
                 Object obj = null;
@@ -1345,7 +1345,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
 
                 try {
                     Thread.sleep(_random.nextInt(_delay));
-                } catch(Exception e) {
+                } catch(InterruptedException e) {
                     // ignored
                 }
                 try {
