@@ -1417,7 +1417,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             t.start();
             // Short delay to ensure threads start in correct order
             try {
-                Thread.sleep(10);
+                Thread.sleep(20);
             } catch (InterruptedException e) {
                 fail(e.toString());
             }
