@@ -544,7 +544,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         // Give the threads a chance to start doing some work
         try {
             Thread.sleep(5000);
-        } catch(Exception e) {
+        } catch(InterruptedException e) {
             // ignored
         }
         
@@ -553,7 +553,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             try {
                 try {
                     Thread.sleep(delay);
-                } catch(Exception e) {
+                } catch(InterruptedException e) {
                     // ignored
                 }
                 obj = pool.borrowObject();
@@ -563,7 +563,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 }
                 try {
                     Thread.sleep(delay);
-                } catch(Exception e) {
+                } catch(InterruptedException e) {
                     // ignored
                 }
             } catch (Exception e) {
@@ -585,12 +585,12 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             while(!(threads[i]).complete()) {
                 try {
                     Thread.sleep(500L);
-                } catch(Exception e) {
+                } catch(InterruptedException e) {
                     // ignored
                 }
             }
             if(threads[i].failed()) {
-                fail();
+                fail("Thread "+i+" failed: "+threads[i]._error.toString());
             }
         }
     }
@@ -845,7 +845,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             pool.setTimeBetweenEvictionRunsMillis(50L);
             
             // wait a second (well, .2 seconds)
-            try { Thread.sleep(200L); } catch(Exception e) { }
+            try { Thread.sleep(200L); } catch(InterruptedException e) { }
             
             // assert that the evictor has cleared out the pool
             assertEquals("Should have 0 idle",0,pool.getNumIdle());
@@ -871,13 +871,13 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             pool.returnObject(active[i]);
         }
 
-        try { Thread.sleep(100L); } catch(Exception e) { }
+        try { Thread.sleep(100L); } catch(InterruptedException e) { }
         assertTrue("Should at most 6 idle, found " + pool.getNumIdle(),pool.getNumIdle() <= 6);
-        try { Thread.sleep(100L); } catch(Exception e) { }
+        try { Thread.sleep(100L); } catch(InterruptedException e) { }
         assertTrue("Should at most 3 idle, found " + pool.getNumIdle(),pool.getNumIdle() <= 3);
-        try { Thread.sleep(100L); } catch(Exception e) { }
+        try { Thread.sleep(100L); } catch(InterruptedException e) { }
         assertTrue("Should be at most 2 idle, found " + pool.getNumIdle(),pool.getNumIdle() <= 2);
-        try { Thread.sleep(100L); } catch(Exception e) { }
+        try { Thread.sleep(100L); } catch(InterruptedException e) { }
         assertEquals("Should be zero idle, found " + pool.getNumIdle(),0,pool.getNumIdle());
     }
 
@@ -897,17 +897,17 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             pool.returnObject(active[i]);
         }
 
-        try { Thread.sleep(1000L); } catch(Exception e) { }
+        try { Thread.sleep(1000L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 500 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 500);
-        try { Thread.sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 400 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 400);
-        try { Thread.sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 300 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 300);
-        try { Thread.sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 200 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 200);
-        try { Thread.sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 100 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 100);
-        try { Thread.sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(InterruptedException e) { }
         assertEquals("Should be zero idle, found " + pool.getNumIdle(),0,pool.getNumIdle());
 
         for(int i=0;i<500;i++) {
@@ -917,17 +917,17 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             pool.returnObject(active[i]);
         }
 
-        try { Thread.sleep(1000L); } catch(Exception e) { }
+        try { Thread.sleep(1000L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 500 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 500);
-        try { Thread.sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 400 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 400);
-        try { Thread.sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 300 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 300);
-        try { Thread.sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 200 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 200);
-        try { Thread.sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 100 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 100);
-        try { Thread.sleep(600L); } catch(Exception e) { }
+        try { Thread.sleep(600L); } catch(InterruptedException e) { }
         assertEquals("Should be zero idle, found " + pool.getNumIdle(),0,pool.getNumIdle());
     }
  
@@ -987,27 +987,27 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.setTimeBetweenEvictionRunsMillis(100L);
         pool.setTestWhileIdle(true);
 
-        try { Thread.sleep(150L); } catch(Exception e) { }
+        try { Thread.sleep(150L); } catch(InterruptedException e) { }
         assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
 
         Object[] active = new Object[5];
         active[0] = pool.borrowObject();
 
-        try { Thread.sleep(150L); } catch(Exception e) { }
+        try { Thread.sleep(150L); } catch(InterruptedException e) { }
         assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
 
         for(int i=1 ; i<5 ; i++) {
             active[i] = pool.borrowObject();
         }
 
-        try { Thread.sleep(150L); } catch(Exception e) { }
+        try { Thread.sleep(150L); } catch(InterruptedException e) { }
         assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
 
         for(int i=0 ; i<5 ; i++) {
             pool.returnObject(active[i]);
         }
 
-        try { Thread.sleep(150L); } catch(Exception e) { }
+        try { Thread.sleep(150L); } catch(InterruptedException e) { }
         assertTrue("Should be 10 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 10);
     }
 
@@ -1020,40 +1020,40 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.setTimeBetweenEvictionRunsMillis(100L);
         pool.setTestWhileIdle(true);
 
-        try { Thread.sleep(150L); } catch(Exception e) { }
+        try { Thread.sleep(150L); } catch(InterruptedException e) { }
         assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
 
         Object[] active = new Object[10];
 
-        try { Thread.sleep(150L); } catch(Exception e) { }
+        try { Thread.sleep(150L); } catch(InterruptedException e) { }
         assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
 
         for(int i=0 ; i<5 ; i++) {
             active[i] = pool.borrowObject();
         }
 
-        try { Thread.sleep(150L); } catch(Exception e) { }
+        try { Thread.sleep(150L); } catch(InterruptedException e) { }
         assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
 
         for(int i=0 ; i<5 ; i++) {
             pool.returnObject(active[i]);
         }
 
-        try { Thread.sleep(150L); } catch(Exception e) { }
+        try { Thread.sleep(150L); } catch(InterruptedException e) { }
         assertTrue("Should be 10 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 10);
 
         for(int i=0 ; i<10 ; i++) {
             active[i] = pool.borrowObject();
         }
 
-        try { Thread.sleep(150L); } catch(Exception e) { }
+        try { Thread.sleep(150L); } catch(InterruptedException e) { }
         assertTrue("Should be 0 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 0);
 
         for(int i=0 ; i<10 ; i++) {
             pool.returnObject(active[i]);
         }
 
-        try { Thread.sleep(150L); } catch(Exception e) { }
+        try { Thread.sleep(150L); } catch(InterruptedException e) { }
         assertTrue("Should be 10 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 10);
     }
 
@@ -1073,12 +1073,12 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             while(!(threads[i]).complete()) {
                 try {
                     Thread.sleep(500L);
-                } catch(Exception e) {
+                } catch(InterruptedException e) {
                     // ignored
                 }
             }
             if(threads[i].failed()) {
-                fail();
+                fail("Thread "+i+" failed: "+threads[i]._error.toString());
             }
         }
     }
@@ -1111,14 +1111,15 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     class TestThread implements Runnable {
-        java.util.Random _random = new java.util.Random();
-        ObjectPool _pool = null;
-        boolean _complete = false;
-        boolean _failed = false;
-        int _iter = 100;
-        int _delay = 50;
-        boolean _randomDelay = true;
-        Object _expectedObject = null;
+        private final java.util.Random _random = new java.util.Random();
+        private ObjectPool _pool = null;
+        private volatile boolean _complete = false;
+        private volatile boolean _failed = false;
+        private int _iter = 100;
+        private int _delay = 50;
+        private boolean _randomDelay = true;
+        private Object _expectedObject = null;
+        private volatile Throwable _error;
 
         public TestThread(ObjectPool pool) {
             _pool = pool;
@@ -1161,20 +1162,21 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                     _randomDelay ? (long)_random.nextInt(_delay) : _delay;
                 try {
                     Thread.sleep(delay);
-                } catch(Exception e) {
+                } catch(InterruptedException e) {
                     // ignored
                 }
                 Object obj = null;
                 try {
                     obj = _pool.borrowObject();
                 } catch(Exception e) {
-                    e.printStackTrace();
+                    _error = e;
                     _failed = true;
                     _complete = true;
                     break;
                 }
 
                 if (_expectedObject != null && !_expectedObject.equals(obj)) {
+                    _error = new Throwable("Expected: "+_expectedObject+ " found: "+obj);
                     _failed = true;
                     _complete = true;
                     break;
@@ -1182,12 +1184,13 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 
                 try {
                     Thread.sleep(delay);
-                } catch(Exception e) {
+                } catch(InterruptedException e) {
                     // ignored
                 }
                 try {
                     _pool.returnObject(obj);
                 } catch(Exception e) {
+                    _error = e;
                     _failed = true;
                     _complete = true;
                     break;
@@ -1416,8 +1419,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
-                fail();
-                e.printStackTrace();
+                fail(e.toString());
             }
         }
 
@@ -1426,12 +1428,12 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             while(!(threads[i]).complete()) {
                 try {
                     Thread.sleep(500L);
-                } catch(Exception e) {
+                } catch(InterruptedException e) {
                     // ignored
                 }
             }
             if(threads[i].failed()) {
-                fail();
+                fail("Thread "+i+" failed: "+threads[i]._error.toString());
             }
         }
     }
