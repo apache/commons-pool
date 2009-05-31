@@ -2279,7 +2279,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     private static final class Latch {
         
         /** key of associated pool */
-        private Object _key;
+        private final Object _key;
         
         /** keyed pool associated with this latch */
         private ObjectQueue _pool;
