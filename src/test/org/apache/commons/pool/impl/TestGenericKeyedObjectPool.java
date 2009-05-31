@@ -899,7 +899,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         pool.setMaxIdle(-1);
         for (int i = 0; i < smallPrimes.length; i++) {
             pool.setNumTestsPerEvictionRun(smallPrimes[i]);
-            for (int j = 0; j < 5; j++) { // TODO why 5?
+            for (int j = 0; j < 5; j++) {// Try the tests a few times
                 pool.clear();
                 int zeroLength = 10 + random.nextInt(20);
                 for (int k = 0; k < zeroLength; k++) {
@@ -1481,13 +1481,13 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     private String formatSettings(String s1, int i1, String s2, int i2, String s3, int i3,
             String s4, int i4, String s5, int i5, String s6, int i6, String s7, int i7){
         StringBuffer sb = new StringBuffer();
-        sb.append(s1).append(' ').append(i1).append(' ');
-        sb.append(s2).append(' ').append(i2).append(' ');
-        sb.append(s3).append(' ').append(i3).append(' ');
-        sb.append(s4).append(' ').append(i4).append(' ');
-        sb.append(s5).append(' ').append(i5).append(' ');
-        sb.append(s6).append(' ').append(i6).append(' ');
-        sb.append(s7).append(' ').append(i7).append(' ');
+        sb.append(s1).append('=').append(i1).append(' ');
+        sb.append(s2).append('=').append(i2).append(' ');
+        sb.append(s3).append('=').append(i3).append(' ');
+        sb.append(s4).append('=').append(i4).append(' ');
+        sb.append(s5).append('=').append(i5).append(' ');
+        sb.append(s6).append('=').append(i6).append(' ');
+        sb.append(s7).append('=').append(i7).append(' ');
         return sb.toString();
     }
     
