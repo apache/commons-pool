@@ -25,6 +25,8 @@ import org.apache.commons.pool.TestBaseKeyedObjectPool;
 import org.apache.commons.pool.VisitTracker;
 import org.apache.commons.pool.VisitTrackerFactory;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Random;
@@ -79,9 +81,9 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     }
 
     private GenericKeyedObjectPool pool = null;
-    private Integer zero = new Integer(0);
-    private Integer one = new Integer(1);
-    private Integer two = new Integer(2);
+    private final Integer zero = new Integer(0);
+    private final Integer one = new Integer(1);
+    private final Integer two = new Integer(2);
 
     public void setUp() throws Exception {
         super.setUp();
@@ -492,7 +494,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
                 }
             }
             if(threads[i].failed()) {
-                fail();
+                fail("Thread failed: "+i+"\n"+getExceptionTrace(threads[i]._exception));
             }
         }
     }
@@ -895,9 +897,9 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         Random random = new Random();
         random.setSeed(System.currentTimeMillis());
         pool.setMaxIdle(-1);
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < smallPrimes.length; i++) {
             pool.setNumTestsPerEvictionRun(smallPrimes[i]);
-            for (int j = 0; j < 5; j++) {
+            for (int j = 0; j < 5; j++) { // TODO why 5?
                 pool.clear();
                 int zeroLength = 10 + random.nextInt(20);
                 for (int k = 0; k < zeroLength; k++) {
@@ -932,21 +934,21 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
                 for (int k = 0; k < zeroLength; k++) {
                     tracker = (VisitTracker) pool.borrowObject(zero); 
                     visitCount = tracker.getValidateCount();                  
-                    assertTrue(visitCount >= cycleCount && 
-                            visitCount <= cycleCount + 1);
+                    assertTrue(formatSettings("i",i,"j",j,"k",k,"visitCount",visitCount,"cycleCount",cycleCount,"totalInstances",totalInstances,"Length",zeroLength),
+                            visitCount >= cycleCount && visitCount <= cycleCount + 1);
                 }
                 for (int k = 0; k < oneLength; k++) {
                     tracker = (VisitTracker) pool.borrowObject(one); 
                     visitCount = tracker.getValidateCount();
-                    assertTrue(visitCount >= cycleCount && 
-                            visitCount <= cycleCount + 1);
+                    assertTrue(formatSettings("i",i,"j",j,"k",k,"visitCount",visitCount,"cycleCount",cycleCount,"totalInstances",totalInstances,"Length",oneLength),
+                            visitCount >= cycleCount && visitCount <= cycleCount + 1);
                 }
                 for (int k = 0; k < twoLength; k++) {
                     tracker = (VisitTracker) pool.borrowObject(two); 
                     visitCount = tracker.getValidateCount();
-                    assertTrue(visitCount >= cycleCount && 
-                            visitCount <= cycleCount + 1);
-                } 
+                    assertTrue(formatSettings("i",i,"j",j,"k",k,"visitCount",visitCount,"cycleCount",cycleCount,"totalInstances",totalInstances,"Length",twoLength),
+                            visitCount >= cycleCount && visitCount <= cycleCount + 1);
+                }
             }
         }
     }
@@ -1283,7 +1285,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         // Validation will now fail on activation when borrowObject returns
         // an idle instance, and then when attempting to create a new instance
         try {
-            obj1 = pool.borrowObject("one");
+            pool.borrowObject("one");
             fail("Expecting NoSuchElementException");
         } catch (NoSuchElementException ex) {
             // expected
@@ -1299,6 +1301,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         private KeyedObjectPool _pool = null;
         private volatile boolean _complete = false;
         private volatile boolean _failed = false;
+        private volatile Exception _exception;
         private int _iter = 100;
         private int _delay = 50;
 
@@ -1337,6 +1340,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
                 try {
                     obj = _pool.borrowObject(key);
                 } catch(Exception e) {
+                    _exception = e;
                     e.printStackTrace();
                     _failed = true;
                     _complete = true;
@@ -1351,6 +1355,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
                 try {
                     _pool.returnObject(key,obj);
                 } catch(Exception e) {
+                    _exception = e;
                     e.printStackTrace();
                     _failed = true;
                     _complete = true;
@@ -1467,6 +1472,25 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         return false;
     }
 
+    private String getExceptionTrace(Throwable t){
+        StringWriter sw = new StringWriter();
+        t.printStackTrace(new PrintWriter(sw));
+        return sw.toString();
+    }
+    
+    private String formatSettings(String s1, int i1, String s2, int i2, String s3, int i3,
+            String s4, int i4, String s5, int i5, String s6, int i6, String s7, int i7){
+        StringBuffer sb = new StringBuffer();
+        sb.append(s1).append(' ').append(i1).append(' ');
+        sb.append(s2).append(' ').append(i2).append(' ');
+        sb.append(s3).append(' ').append(i3).append(' ');
+        sb.append(s4).append(' ').append(i4).append(' ');
+        sb.append(s5).append(' ').append(i5).append(' ');
+        sb.append(s6).append(' ').append(i6).append(' ');
+        sb.append(s7).append(' ').append(i7).append(' ');
+        return sb.toString();
+    }
+    
 }
 
 
