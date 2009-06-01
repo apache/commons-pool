@@ -934,19 +934,25 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
                 for (int k = 0; k < zeroLength; k++) {
                     tracker = (VisitTracker) pool.borrowObject(zero); 
                     visitCount = tracker.getValidateCount();                  
-                    assertTrue(formatSettings("lifo",lifo,"i",i,"j",j,"k",k,"visitCount",visitCount,"cycleCount",cycleCount,"totalInstances",totalInstances,"zeroLength",zeroLength),
+                    assertTrue(formatSettings("runs", runs, "lifo", lifo, "i", i, "j", j,
+                            "k", k, "visitCount", visitCount, "cycleCount", cycleCount,
+                            "totalInstances", totalInstances, "zeroLength", zeroLength),
                             visitCount >= cycleCount && visitCount <= cycleCount + 1);
                 }
                 for (int k = 0; k < oneLength; k++) {
                     tracker = (VisitTracker) pool.borrowObject(one); 
                     visitCount = tracker.getValidateCount();
-                    assertTrue(formatSettings("lifo",lifo,"i",i,"j",j,"k",k,"visitCount",visitCount,"cycleCount",cycleCount,"totalInstances",totalInstances,"oneLength",oneLength),
+                    assertTrue(formatSettings("runs", runs, "lifo", lifo, "i", i, "j", j,
+                            "k", k, "visitCount", visitCount, "cycleCount", cycleCount,
+                            "totalInstances", totalInstances, "oneLength", oneLength),
                             visitCount >= cycleCount && visitCount <= cycleCount + 1);
                 }
                 for (int k = 0; k < twoLength; k++) {
                     tracker = (VisitTracker) pool.borrowObject(two); 
                     visitCount = tracker.getValidateCount();
-                    assertTrue(formatSettings("lifo",lifo,"i",i,"j",j,"k",k,"visitCount",visitCount,"cycleCount",cycleCount,"totalInstances",totalInstances,"twoLength",twoLength),
+                    assertTrue(formatSettings("runs", runs, "lifo", lifo, "i", i, "j", j,
+                            "k", k, "visitCount", visitCount, "cycleCount", cycleCount,
+                            "totalInstances", totalInstances, "twoLength", twoLength),
                             visitCount >= cycleCount && visitCount <= cycleCount + 1);
                 }
             }
@@ -1478,9 +1484,10 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         return sw.toString();
     }
     
-    private String formatSettings(String s0, boolean b0, String s1, int i1, String s2, int i2, String s3, int i3,
+    private String formatSettings(String s, int i, String s0, boolean b0, String s1, int i1, String s2, int i2, String s3, int i3,
             String s4, int i4, String s5, int i5, String s6, int i6, String s7, int i7){
         StringBuffer sb = new StringBuffer();
+        sb.append(s).append('=').append(i).append(' ');
         sb.append(s0).append('=').append(b0).append(' ');
         sb.append(s1).append('=').append(i1).append(' ');
         sb.append(s2).append('=').append(i2).append(' ');
