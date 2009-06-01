@@ -449,7 +449,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
             pool.returnObject("2",active2[i]);
         }
 
-        try { Thread.sleep(1000L); } catch(InterruptedException e) { }
+        try { Thread.sleep(1100L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 1000 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 1000);
         try { Thread.sleep(600L); } catch(InterruptedException e) { }
         assertTrue("Should be less than 900 idle, found " + pool.getNumIdle(),pool.getNumIdle() < 900);
@@ -949,11 +949,17 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
                                 "totalInstances", totalInstances, zeroLength, oneLength, twoLength));
                     }
                 }
+                int visits[] = new int[twoLength];
                 for (int k = 0; k < twoLength; k++) {
                     tracker = (VisitTracker) pool.borrowObject(two); 
                     visitCount = tracker.getValidateCount();
+                    visits[k] = visitCount;
                     if (visitCount < cycleCount || visitCount > cycleCount + 1){
-                        fail(formatSettings("TWO", "runs", runs, "lifo", lifo, "i", i, "j", j,
+                        StringBuffer sb = new StringBuffer("Visits:");
+                        for (int l = 0; l <= k; l++){
+                            sb.append(visits[l]).append(' ');
+                        }
+                        fail(formatSettings("TWO "+sb.toString(), "runs", runs, "lifo", lifo, "i", i, "j", j,
                                 "k", k, "visitCount", visitCount, "cycleCount", cycleCount,
                                 "totalInstances", totalInstances, zeroLength, oneLength, twoLength));
                     }
