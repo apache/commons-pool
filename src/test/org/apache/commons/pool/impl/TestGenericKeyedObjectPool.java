@@ -933,27 +933,30 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
                 int visitCount = 0;
                 for (int k = 0; k < zeroLength; k++) {
                     tracker = (VisitTracker) pool.borrowObject(zero); 
-                    visitCount = tracker.getValidateCount();                  
-                    assertTrue(formatSettings("runs", runs, "lifo", lifo, "i", i, "j", j,
-                            "k", k, "visitCount", visitCount, "cycleCount", cycleCount,
-                            "totalInstances", totalInstances, "zeroLength", zeroLength),
-                            visitCount >= cycleCount && visitCount <= cycleCount + 1);
+                    visitCount = tracker.getValidateCount();
+                    if (visitCount < cycleCount || visitCount > cycleCount + 1){
+                        fail(formatSettings("ZERO", "runs", runs, "lifo", lifo, "i", i, "j", j,
+                                "k", k, "visitCount", visitCount, "cycleCount", cycleCount,
+                                "totalInstances", totalInstances, zeroLength, oneLength, twoLength));
+                    }
                 }
                 for (int k = 0; k < oneLength; k++) {
                     tracker = (VisitTracker) pool.borrowObject(one); 
                     visitCount = tracker.getValidateCount();
-                    assertTrue(formatSettings("runs", runs, "lifo", lifo, "i", i, "j", j,
-                            "k", k, "visitCount", visitCount, "cycleCount", cycleCount,
-                            "totalInstances", totalInstances, "oneLength", oneLength),
-                            visitCount >= cycleCount && visitCount <= cycleCount + 1);
+                    if (visitCount < cycleCount || visitCount > cycleCount + 1){
+                        fail(formatSettings("ONE", "runs", runs, "lifo", lifo, "i", i, "j", j,
+                                "k", k, "visitCount", visitCount, "cycleCount", cycleCount,
+                                "totalInstances", totalInstances, zeroLength, oneLength, twoLength));
+                    }
                 }
                 for (int k = 0; k < twoLength; k++) {
                     tracker = (VisitTracker) pool.borrowObject(two); 
                     visitCount = tracker.getValidateCount();
-                    assertTrue(formatSettings("runs", runs, "lifo", lifo, "i", i, "j", j,
-                            "k", k, "visitCount", visitCount, "cycleCount", cycleCount,
-                            "totalInstances", totalInstances, "twoLength", twoLength),
-                            visitCount >= cycleCount && visitCount <= cycleCount + 1);
+                    if (visitCount < cycleCount || visitCount > cycleCount + 1){
+                        fail(formatSettings("TWO", "runs", runs, "lifo", lifo, "i", i, "j", j,
+                                "k", k, "visitCount", visitCount, "cycleCount", cycleCount,
+                                "totalInstances", totalInstances, zeroLength, oneLength, twoLength));
+                    }
                 }
             }
         }
@@ -1484,9 +1487,10 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         return sw.toString();
     }
     
-    private String formatSettings(String s, int i, String s0, boolean b0, String s1, int i1, String s2, int i2, String s3, int i3,
-            String s4, int i4, String s5, int i5, String s6, int i6, String s7, int i7){
-        StringBuffer sb = new StringBuffer();
+    private String formatSettings(String title, String s, int i, String s0, boolean b0, String s1, int i1, String s2, int i2, String s3, int i3,
+            String s4, int i4, String s5, int i5, String s6, int i6, int zeroLength, int oneLength, int twoLength){
+        StringBuffer sb = new StringBuffer(80);
+        sb.append(title).append(' ');
         sb.append(s).append('=').append(i).append(' ');
         sb.append(s0).append('=').append(b0).append(' ');
         sb.append(s1).append('=').append(i1).append(' ');
@@ -1495,7 +1499,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         sb.append(s4).append('=').append(i4).append(' ');
         sb.append(s5).append('=').append(i5).append(' ');
         sb.append(s6).append('=').append(i6).append(' ');
-        sb.append(s7).append('=').append(i7).append(' ');
+        sb.append("Lengths=").append(zeroLength).append(',').append(oneLength).append(',').append(twoLength).append(' ');
         return sb.toString();
     }
     
