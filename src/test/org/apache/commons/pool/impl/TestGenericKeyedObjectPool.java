@@ -1313,20 +1313,22 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
 
     static class TestThread implements Runnable {
         private final java.util.Random _random = new java.util.Random();
-        private KeyedObjectPool _pool = null;
+        
+        // Thread config items
+        private final KeyedObjectPool _pool;
+        private final int _iter;
+        private final int _delay;
+
         private volatile boolean _complete = false;
         private volatile boolean _failed = false;
         private volatile Exception _exception;
-        private int _iter = 100;
-        private int _delay = 50;
 
         public TestThread(KeyedObjectPool pool) {
-            _pool = pool;
+            this(pool, 100, 50);
         }
 
         public TestThread(KeyedObjectPool pool, int iter) {
-            _pool = pool;
-            _iter = iter;
+            this(pool, iter, 50);
         }
 
         public TestThread(KeyedObjectPool pool, int iter, int delay) {
@@ -1356,7 +1358,6 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
                     obj = _pool.borrowObject(key);
                 } catch(Exception e) {
                     _exception = e;
-                    e.printStackTrace();
                     _failed = true;
                     _complete = true;
                     break;
@@ -1371,7 +1372,6 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
                     _pool.returnObject(key,obj);
                 } catch(Exception e) {
                     _exception = e;
-                    e.printStackTrace();
                     _failed = true;
                     _complete = true;
                     break;
