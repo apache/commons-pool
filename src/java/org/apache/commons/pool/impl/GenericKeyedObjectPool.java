@@ -1293,7 +1293,6 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             }
         }
         destroy(toDestroy);
-        _poolMap.clear();
     }
 
     /**
@@ -1404,7 +1403,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                     }
                 }
             }
-            c.clear();
+
         }
     }
 
