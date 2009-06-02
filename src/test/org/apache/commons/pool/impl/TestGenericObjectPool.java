@@ -1110,41 +1110,43 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         runTestThreads(5, 10, 50);
     }
 
-    class TestThread implements Runnable {
+    static class TestThread implements Runnable {
         private final java.util.Random _random = new java.util.Random();
-        private ObjectPool _pool = null;
+        
+        // Thread config items
+        private final ObjectPool _pool;
+        private final int _iter;
+        private final int _delay;
+        private final boolean _randomDelay;
+        private final Object _expectedObject;
+        
         private volatile boolean _complete = false;
         private volatile boolean _failed = false;
-        private int _iter = 100;
-        private int _delay = 50;
-        private boolean _randomDelay = true;
-        private Object _expectedObject = null;
         private volatile Throwable _error;
 
         public TestThread(ObjectPool pool) {
-            _pool = pool;
+            this(pool, 100, 50, true, null);
         }
 
         public TestThread(ObjectPool pool, int iter) {
-            _pool = pool;
-            _iter = iter;
+            this(pool, iter, 50, true, null);
         }
 
         public TestThread(ObjectPool pool, int iter, int delay) {
-            _pool = pool;
-            _iter = iter;
-            _delay = delay;
+            this(pool, iter, delay, true, null);
         }
         
         public TestThread(ObjectPool pool, int iter, int delay,
                 boolean randomDelay) {
+            this(pool, iter, delay, true, null);
+        }
+
+        public TestThread(ObjectPool pool, int iter, int delay,
+                boolean randomDelay, Object obj) {
             _pool = pool;
             _iter = iter;
             _delay = delay;
             _randomDelay = randomDelay;
-        }
-
-        public void setExpectedObject(Object obj) {
             _expectedObject = obj;
         }
 
@@ -1411,8 +1413,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         // Start threads to borrow objects
         TestThread[] threads = new TestThread[numThreads];
         for(int i=0;i<numThreads;i++) {
-            threads[i] = new TestThread(pool, 1, 500, false);
-            threads[i].setExpectedObject(String.valueOf(i % maxActive));
+            threads[i] = new TestThread(pool, 1, 500, false, String.valueOf(i % maxActive));
             Thread t = new Thread(threads[i]);
             t.start();
             // Short delay to ensure threads start in correct order
