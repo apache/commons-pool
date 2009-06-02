@@ -1709,7 +1709,6 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                             _totalInternalProcessing + pool.queue.size();
                     }
                 }
-                destroy(toDestroy);
                 _factory = factory;
             }
         }
