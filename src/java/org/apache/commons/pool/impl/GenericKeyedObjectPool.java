@@ -1291,9 +1291,6 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 _totalInternalProcessing =
                     _totalInternalProcessing + pool.queue.size();
             }
-            // Reset the eviction cursors as clearing the objects will have
-            // invalidated the current cursors
-            resetEvictionKeyCursor();
         }
         destroy(toDestroy);
     }
@@ -1355,9 +1352,6 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 itemsToRemove--;
             }
 
-            // Reset the eviction cursors as clearing the objects will have
-            // invalidated the current cursors
-            resetEvictionKeyCursor();
         }
         destroy(toDestroy);
     }
@@ -1382,10 +1376,6 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             _totalInternalProcessing =
                 _totalInternalProcessing + pool.queue.size();
             toDestroy.put(key, pool.queue);
-            
-            // Reset the eviction cursors as clearing the objects may have
-            // invalidated the current cursors
-            resetEvictionKeyCursor();
         }
         destroy(toDestroy);
     }
@@ -1395,11 +1385,6 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * ObjectTimestampPair.value
      * 
      * @param m Map containing keyed pools to clear
-
-     * Implementation note: This is called just outside a sync block where
-     * objects are removed from the pool for destruction. This process is likely
-     * to invalidate any eviction cursors. Therefore, the last call inside the
-     * sync block should be to resetEvictionKeyCursor().
      */
     private void destroy(Map m) {
         for (Iterator keys = m.keySet().iterator(); keys.hasNext();) {
@@ -1725,7 +1710,6 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                     }
                 }
                 _factory = factory;
-                resetEvictionKeyCursor();
             }
         }
         destroy(toDestroy);
