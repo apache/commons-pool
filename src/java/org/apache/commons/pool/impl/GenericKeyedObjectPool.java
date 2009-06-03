@@ -1284,12 +1284,17 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             for (Iterator it = _poolMap.keySet().iterator(); it.hasNext();) {
                 Object key = it.next();
                 ObjectQueue pool = (ObjectQueue)_poolMap.get(key);
-                toDestroy.put(key, pool.queue);
+                // Copy objects to new list so pool.queue can be cleared inside
+                // the sync
+                List objects = new ArrayList();
+                objects.addAll(pool.queue);
+                toDestroy.put(key, objects);
                 it.remove();
                 _poolList.remove(key);
                 _totalIdle = _totalIdle - pool.queue.size();
                 _totalInternalProcessing =
                     _totalInternalProcessing + pool.queue.size();
+                pool.queue.clear();
             }
         }
         destroy(toDestroy);
@@ -1372,10 +1377,15 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             } else {
                 _poolList.remove(key);
             }
+            // Copy objects to new list so pool.queue can be cleared inside
+            // the sync
+            List objects = new ArrayList();
+            objects.addAll(pool.queue);
+            toDestroy.put(key, objects);
             _totalIdle = _totalIdle - pool.queue.size();
             _totalInternalProcessing =
                 _totalInternalProcessing + pool.queue.size();
-            toDestroy.put(key, pool.queue);
+            pool.queue.clear();
         }
         destroy(toDestroy);
     }
@@ -1701,12 +1711,17 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                     Object key = it.next();
                     ObjectQueue pool = (ObjectQueue)_poolMap.get(key);
                     if (pool != null) {
-                        toDestroy.put(key, pool.queue);
+                        // Copy objects to new list so pool.queue can be cleared
+                        // inside the sync
+                        List objects = new ArrayList();
+                        objects.addAll(pool.queue);
+                        toDestroy.put(key, objects);
                         it.remove();
                         _poolList.remove(key);
                         _totalIdle = _totalIdle - pool.queue.size();
                         _totalInternalProcessing =
                             _totalInternalProcessing + pool.queue.size();
+                        pool.queue.clear();
                     }
                 }
                 _factory = factory;
