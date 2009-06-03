@@ -92,6 +92,8 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
 
     public void tearDown() throws Exception {
         super.tearDown();
+        pool.clear();
+        assertEquals("NumIdle should be zero after clearing the pool",0,pool.getNumIdle());
         pool.close();
         pool = null;
     }
@@ -901,6 +903,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
             pool.setNumTestsPerEvictionRun(smallPrimes[i]);
             for (int j = 0; j < 5; j++) {// Try the tests a few times
                 pool.clear();
+                assertEquals("NumIdle should be zero after clearing the pool",0,pool.getNumIdle());
                 int zeroLength = 10 + random.nextInt(20);
                 for (int k = 0; k < zeroLength; k++) {
                     pool.addObject(zero);

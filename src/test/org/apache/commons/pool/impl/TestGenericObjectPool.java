@@ -67,6 +67,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
     public void tearDown() throws Exception {
         super.tearDown();
+        pool.clear();
+        assertEquals("NumIdle should be zero after clearing the pool",0,pool.getNumIdle());
         pool.close();
         pool = null;
     }
