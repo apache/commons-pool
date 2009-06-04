@@ -131,7 +131,7 @@
    </target>
 
    <target name="test" depends="compile-test" description="runs (junit) unit tests">
-      <echo message="Because we need to sleep to test the eviction threads, this takes a little while (around 35 seconds)..."/>
+      <echo message="Because we need to sleep to test the eviction threads, this takes a little while (around 2 minutes)..."/>
       <junit printsummary="true" showoutput="true" fork="yes" haltonerror="${test.failonerror}">
         <classpath>
           <pathelement location="${build.classes.dir}" /> 
