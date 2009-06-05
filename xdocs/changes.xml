@@ -22,7 +22,7 @@
   </properties>
   <body>
 
-  <release version="1.5" date="2009-06-09" description=
+  <release version="1.5-SNAPSHOT" date="2009-06-09" description=
 "This is a maintenance release including several important bug fixes. This release
 is source and binary compatible with versions 1.3 and 1.4 of commons pool. In addition
 to resolving some important concurrency-related bugs (POOL-135, POOL-125, POOL-29
