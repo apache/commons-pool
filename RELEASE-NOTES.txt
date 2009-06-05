@@ -1,0 +1,31 @@
+                        
+
+              commons-pool-1.5 RELEASE NOTES
+
+This is a maintenance release including several important bug fixes. 
+This release is source and binary compatible with versions 1.3 and 1.4 of commons pool. In addition to resolving
+some important concurrency-related bugs (POOL-135, POOL-125, POOL-29 POOL-107) this release implements a fairness 
+algorithm to ensure that threads waiting for available object instances from GenericObjectPools and 
+GenericKeyedObjectPools are served in request arrival order.
+
+Changes in this version include:
+
+
+Fixed Bugs:
+o  POOL-139:  StackKeyedObjectPool.getNumActive() needs to be synchronized. Thanks to Sebastian Bazley. 
+o  POOL-137:  Inconsistent synchronization in GenericObjectPool; constant fields should be final. Thanks to Sebastian Bazley. 
+o  POOL-75:  GenericObjectPool not FIFO with respect to borrowing threads. Thanks to Takayuki Kaneko and Gordon Mohr. 
+o  POOL-135:  _numActive > _maxActive under load 
+o  POOL-125:  Insufficient control over concurrent access to pooled objects by Evictor, client threads. 
+o  POOL-107:  Number of connections created has crossed more than maxActive. 
+o  POOL-122:  java.util.Timer in EvictionTimer does not recover from OutOfMemoryError in Evictor. 
+o  POOL-133:  Failed object creation may result in invalid active count in GKOP. 
+
+
+ 
+For complete information on commons-pool, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the commons-pool website:
+
+http://commons.apache.org/pool/
+
+
