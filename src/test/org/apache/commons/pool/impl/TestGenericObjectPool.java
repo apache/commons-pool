@@ -506,6 +506,25 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             // expected
         }
     }
+    
+    public void testTimeoutNoLeak() throws Exception {
+        pool.setMaxActive(2);
+        pool.setMaxWait(10);
+        pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_BLOCK);
+        Object obj = pool.borrowObject();
+        Object obj2 = pool.borrowObject();
+        try {
+            pool.borrowObject();
+            fail("Expecting NoSuchElementException");
+        } catch (NoSuchElementException ex) {
+            //xpected
+        }
+        pool.returnObject(obj2);
+        pool.returnObject(obj);
+        
+        obj = pool.borrowObject();
+        obj2 = pool.borrowObject();
+    }
 
     public void testMaxActiveZero() throws Exception {
         pool.setMaxActive(0);
