@@ -22,6 +22,8 @@
   </properties>
   <body>
 
+  <release version="1.5.2" date="TBD">
+  </release>
   <release version="1.5.1" date="2009-06-16" description=
 "This is a patch release containing a fix for POOL-144, a regression introduced
 in version 1.5.">
