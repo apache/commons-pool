@@ -905,7 +905,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     }
 
     /**
-     * Returns the number of objects to examine during each run of the
+     * Returns the max number of objects to examine during each run of the
      * idle object evictor thread (if any).
      *
      * @return number of objects to examine each eviction run.
@@ -917,7 +917,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     }
 
     /**
-     * Sets the number of objects to examine during each run of the
+     * Sets the max number of objects to examine during each run of the
      * idle object evictor thread (if any).
      * <p>
      * When a negative value is supplied, 
@@ -2051,7 +2051,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
     private synchronized int getNumTests() {
         if (_numTestsPerEvictionRun >= 0) {
-            return _numTestsPerEvictionRun;
+            return Math.min(_numTestsPerEvictionRun, _totalIdle);
         } else {
             return(int)(Math.ceil(_totalIdle/Math.abs((double)_numTestsPerEvictionRun)));
         }
