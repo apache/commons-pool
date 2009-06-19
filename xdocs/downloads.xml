@@ -26,14 +26,11 @@
      <section name="Releases">
          <p>
             The latest release binary and source releases are always available on the
-            <a href="http://commons.apache.org/downloads/download_pool.cgi">
+            <a href="http://commons.apache.org/pool/download_pool.cgi">
             Apache Commons Pool Downloads page</a>.
          </p>
          <p>
-            Commons-pool 1.4 only depends at runtime on a Java 1.3  or better JVM.
-         </p>
-         <p>
-            Commons-pool 1.3 only depends at runtime on a Java 1.3 or better JVM.
+            Versions 1.3-1.5.1 depend at runtime only on a Java 1.3 or better JVM.
          </p>
          <p>
             Commons-pool 1.2 depends at runtime on
