@@ -1095,17 +1095,22 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                         case WHEN_EXHAUSTED_BLOCK:
                             try {
                                 synchronized (latch) {
-                                    if(maxWait <= 0) {
-                                        latch.wait();
-                                    } else {
-                                        // this code may be executed again after a notify then continue cycle
-                                        // so, need to calculate the amount of time to wait
-                                        final long elapsed = (System.currentTimeMillis() - starttime);
-                                        final long waitTime = maxWait - elapsed;
-                                        if (waitTime > 0)
-                                        {
-                                            latch.wait(waitTime);
+                                    // Before we wait, make sure another thread didn't allocate us an object
+                                    if (latch.getPair() == null) {
+                                        if(maxWait <= 0) {
+                                            latch.wait();
+                                        } else {
+                                            // this code may be executed again after a notify then continue cycle
+                                            // so, need to calculate the amount of time to wait
+                                            final long elapsed = (System.currentTimeMillis() - starttime);
+                                            final long waitTime = maxWait - elapsed;
+                                            if (waitTime > 0)
+                                            {
+                                                latch.wait(waitTime);
+                                            }
                                         }
+                                    } else {
+                                        break;
                                     }
                                 }
                             } catch(InterruptedException e) {
