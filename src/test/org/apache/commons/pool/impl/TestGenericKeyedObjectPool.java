@@ -1325,14 +1325,16 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         long start = System.currentTimeMillis();
         // Needs to be in a separate thread as this will block
         Runnable simple = new SimpleTestThread(pool, "one");
-        (new Thread(simple)).run();
+        (new Thread(simple)).start();
         // This should be almost instant. If it isn't it means this thread got
         // stuck behind the thread created above which is bad.
+        // Give other thread a chance to start
+        Thread.sleep(1000);
         pool.borrowObject("two");
         long end = System.currentTimeMillis();
-        // If it fails it will be more than 5000ms
+        // If it fails it will be more than 4000ms (5000 less the 1000 sleep)
         // If it passes it should be almost instant
-        // Use 4000ms as the threshold - should avoid timing issues on most
+        // Use 3000ms as the threshold - should avoid timing issues on most
         // (all? platforms)
         assertTrue ((end-start) < 4000);
         
