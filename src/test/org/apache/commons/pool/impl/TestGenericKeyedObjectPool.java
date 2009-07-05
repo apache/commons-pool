@@ -1313,7 +1313,53 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals(0, pool.getNumActive());
         assertEquals(0, pool.getNumIdle());
     }
+    
+    public void testBlockedKeyDoesNotBlockPool() throws Exception {
+        SimpleFactory factory = new SimpleFactory();
+        GenericKeyedObjectPool pool = new GenericKeyedObjectPool(factory);
+        pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_BLOCK);
+        pool.setMaxWait(5000);
+        pool.setMaxActive(1);
+        pool.setMaxTotal(-1);
+        pool.borrowObject("one");
+        // Needs to be in a separate thread as this will block
+        pool.borrowObject("one");
+        // This should be almost instant. If it isn't it means this thread got
+        // stuck behind the thread created above which is bad.
+        long start = System.currentTimeMillis();
+        pool.borrowObject("two");
+        long end = System.currentTimeMillis();
+        // If it fails it will be more than 5000ms
+        // If it passes it should be almost instance
+        // Use 4000ms as the threshold - should avoid timing issues on most
+        // (all? platforms)
+        assertTrue ((end-start) < 4000);
+        
+    }
 
+    /*
+     * Very simple test thread that just tries to borrow an object from
+     * the provided pool with the specified key and returns it
+     */
+    static class SimpleTestThread implements Runnable {
+        private final KeyedObjectPool _pool;
+        private final String _key;
+        
+        public SimpleTestThread(KeyedObjectPool pool, String key) {
+            _pool = pool;
+            _key = key;
+        }
+
+        public void run() {
+            try {
+                Object obj = _pool.borrowObject(_key);
+                _pool.returnObject(_key, obj);
+            } catch (Exception e) {
+                // Ignore
+            }
+        }
+    }
+    
     static class TestThread implements Runnable {
         private final java.util.Random _random = new java.util.Random();
         
