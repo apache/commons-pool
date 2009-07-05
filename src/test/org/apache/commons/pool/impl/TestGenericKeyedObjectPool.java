@@ -1322,11 +1322,12 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         pool.setMaxActive(1);
         pool.setMaxTotal(-1);
         pool.borrowObject("one");
+        long start = System.currentTimeMillis();
         // Needs to be in a separate thread as this will block
-        pool.borrowObject("one");
+        Runnable simple = new SimpleTestThread(pool, "one");
+        (new Thread(simple)).run();
         // This should be almost instant. If it isn't it means this thread got
         // stuck behind the thread created above which is bad.
-        long start = System.currentTimeMillis();
         pool.borrowObject("two");
         long end = System.currentTimeMillis();
         // If it fails it will be more than 5000ms
