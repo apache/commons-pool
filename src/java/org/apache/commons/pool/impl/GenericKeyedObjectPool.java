@@ -1235,53 +1235,59 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         synchronized (this) {
             if (isClosed()) return;
             
-            for (;;) {
-                if (!_allocationQueue.isEmpty()) {
-                    // First use any objects in the pool to clear the queue
-                    Latch latch = (Latch) _allocationQueue.getFirst();
-                    ObjectQueue pool = (ObjectQueue)(_poolMap.get(latch.getkey()));
-                    if (null == pool) {
-                        pool = new ObjectQueue();
-                        _poolMap.put(latch.getkey(), pool);
-                        _poolList.add(latch.getkey());
-                    }
-                    latch.setPool(pool);
-                    if (!pool.queue.isEmpty()) {
-                        _allocationQueue.removeFirst();
-                        latch.setPair(
-                                (ObjectTimestampPair) pool.queue.removeFirst());
-                        pool.incrementInternalProcessingCount();
-                        _totalIdle--;
-                        synchronized (latch) {
-                            latch.notify();
-                        }
-                        // Next item in queue
-                        continue;
-                    }
-    
-                    // If there is a totalMaxActive and we are at the limit then
-                    // we have to make room
-                    if ((_maxTotal > 0) &&
-                            (_totalActive + _totalIdle + _totalInternalProcessing >= _maxTotal)) {
-                        clearOldest = true;
-                        break;
-                    }
-    
-                    // Second utilise any spare capacity to create new objects
-                    if ((_maxActive < 0 || pool.activeCount + pool.internalProcessingCount < _maxActive) &&
-                            (_maxTotal < 0 || _totalActive + _totalIdle + _totalInternalProcessing < _maxTotal)) {
-                        // allow new object to be created
-                        _allocationQueue.removeFirst();
-                        latch.setMayCreate(true);
-                        pool.incrementInternalProcessingCount();
-                        synchronized (latch) {
-                            latch.notify();
-                        }
-                        // Next item in queue
-                        continue;
-                    }
+            Iterator allocationQueueIter = _allocationQueue.iterator();
+            
+            while (allocationQueueIter.hasNext()) {
+                // First use any objects in the pool to clear the queue
+                Latch latch = (Latch) allocationQueueIter.next();
+                ObjectQueue pool = (ObjectQueue)(_poolMap.get(latch.getkey()));
+                if (null == pool) {
+                    pool = new ObjectQueue();
+                    _poolMap.put(latch.getkey(), pool);
+                    _poolList.add(latch.getkey());
                 }
-                break;
+                latch.setPool(pool);
+                if (!pool.queue.isEmpty()) {
+                    allocationQueueIter.remove();
+                    latch.setPair(
+                            (ObjectTimestampPair) pool.queue.removeFirst());
+                    pool.incrementInternalProcessingCount();
+                    _totalIdle--;
+                    synchronized (latch) {
+                        latch.notify();
+                    }
+                    // Next item in queue
+                    continue;
+                }
+
+                // If there is a totalMaxActive and we are at the limit then
+                // we have to make room
+                if ((_maxTotal > 0) &&
+                        (_totalActive + _totalIdle + _totalInternalProcessing >= _maxTotal)) {
+                    clearOldest = true;
+                    break;
+                }
+
+                // Second utilise any spare capacity to create new objects
+                if ((_maxActive < 0 || pool.activeCount + pool.internalProcessingCount < _maxActive) &&
+                        (_maxTotal < 0 || _totalActive + _totalIdle + _totalInternalProcessing < _maxTotal)) {
+                    // allow new object to be created
+                    allocationQueueIter.remove();
+                    latch.setMayCreate(true);
+                    pool.incrementInternalProcessingCount();
+                    synchronized (latch) {
+                        latch.notify();
+                    }
+                    // Next item in queue
+                    continue;
+                }
+
+                // If there is no per-key limit and we reach this point we
+                // must have allocated all the objects we possibly can and there
+                // is no point looking at the rest of the allocation queue
+                if (_maxActive < 0) {
+                    break;
+                }
             }
         }
         
