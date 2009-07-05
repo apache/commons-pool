@@ -1330,7 +1330,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         pool.borrowObject("two");
         long end = System.currentTimeMillis();
         // If it fails it will be more than 5000ms
-        // If it passes it should be almost instance
+        // If it passes it should be almost instant
         // Use 4000ms as the threshold - should avoid timing issues on most
         // (all? platforms)
         assertTrue ((end-start) < 4000);
