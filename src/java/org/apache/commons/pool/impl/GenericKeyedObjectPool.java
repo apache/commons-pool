@@ -2334,8 +2334,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
     /**
      * Latch used to control allocation order of objects to threads to ensure
-     * fairness. That is, objects are allocated to threads in the order that threads
-     * request objects.
+     * fairness. That is, for each key, objects are allocated to threads in the order
+     * that threads request objects.
      * 
      * @since 1.5
      */
