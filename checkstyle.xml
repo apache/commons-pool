@@ -48,6 +48,7 @@
      <!-- Require method javadocs, allow undeclared RTE -->
     <module name="JavadocMethod">
       <property name="allowUndeclaredRTE" value="true"/>
+      <property name="allowMissingThrowsTags" value="true"/>
     </module>
         
     <!-- Require field javadoc -->
@@ -79,9 +80,8 @@
 
   <!-- Setup special comments to suppress specific checks from source files -->
   <module name="SuppressionCommentFilter">
-    <property name="offCommentFormat" value="CHECKSTYLE\: stop JavadocMethodCheck"/>
-    <property name="onCommentFormat"  value="CHECKSTYLE\: resume JavadocMethodCheck"/>
-    <property name="checkFormat"      value="JavadocMethodCheck"/>
+    <property name="offCommentFormat" value="CHECKSTYLE\: stop all checks"/>
+    <property name="onCommentFormat"  value="CHECKSTYLE\: resume checking"/>
   </module>
 
 </module>
