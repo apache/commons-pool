@@ -2071,7 +2071,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     /** 
      * Returns the number of tests to be performed in an Evictor run,
      * based on the current values of <code>_numTestsPerEvictionRun</code>
-     * and _totalIdle.
+     * and <code>_totalIdle</code>.
      * 
      * @see #setNumTestsPerEvictionRun
      * @return the number of tests for the Evictor to run
