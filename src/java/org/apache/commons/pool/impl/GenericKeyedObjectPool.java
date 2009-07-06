@@ -923,10 +923,12 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * When a negative value is supplied, 
      * <code>ceil({@link #getNumIdle()})/abs({@link #getNumTestsPerEvictionRun})</code>
      * tests will be run.  I.e., when the value is <code>-n</code>, roughly one <code>n</code>th of the
-     * idle objects will be tested per run.
+     * idle objects will be tested per run.  When the value is positive, the number of tests
+     * actually performed in each run will be the minimum of this value and the number of instances
+     * idle in the pools.
      *
      * @param numTestsPerEvictionRun number of objects to examine each eviction run.
-     * @see #getNumTestsPerEvictionRun
+     * @see #setNumTestsPerEvictionRun
      * @see #setTimeBetweenEvictionRunsMillis
      */
     public synchronized void setNumTestsPerEvictionRun(int numTestsPerEvictionRun) {
@@ -2049,6 +2051,12 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         }
     }
 
+    /**
+     * Returns pool info including {@link #getNumActive()}, {@link #getNumIdle()}
+     * and currently defined keys.
+     * 
+     * @return string containing debug information
+     */
     synchronized String debugInfo() {
         StringBuffer buf = new StringBuffer();
         buf.append("Active: ").append(getNumActive()).append("\n");
@@ -2060,6 +2068,14 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         return buf.toString();
     }
 
+    /** 
+     * Returns the number of tests to be performed in an Evictor run,
+     * based on the current values of <code>_numTestsPerEvictionRun</code>
+     * and _totalIdle.
+     * 
+     * @see #setNumTestsPerEvictionRun
+     * @return the number of tests for the Evictor to run
+     */
     private synchronized int getNumTests() {
         if (_numTestsPerEvictionRun >= 0) {
             return Math.min(_numTestsPerEvictionRun, _totalIdle);
@@ -2231,6 +2247,10 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @see GenericKeyedObjectPool#setTimeBetweenEvictionRunsMillis
      */
     private class Evictor extends TimerTask {
+        /**
+         * Run pool maintenance.  Evict objects qualifying for eviction and then
+         * invoke {@link GenericKeyedObjectPool#ensureMinIdle()}.
+         */
         public void run() {
             //Evict from the pool
             try {

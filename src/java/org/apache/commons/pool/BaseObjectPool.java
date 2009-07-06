@@ -112,6 +112,7 @@ public abstract class BaseObjectPool implements ObjectPool {
      * Always throws an {@link UnsupportedOperationException},
      * subclasses should override this behavior.
      * 
+     * @param factory the PoolableObjectFactory
      * @throws UnsupportedOperationException
      * @throws IllegalStateException
      */
