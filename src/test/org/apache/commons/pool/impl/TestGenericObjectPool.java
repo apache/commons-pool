@@ -1159,7 +1159,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         
         public TestThread(ObjectPool pool, int iter, int delay,
                 boolean randomDelay) {
-            this(pool, iter, delay, true, null);
+            this(pool, iter, delay, randomDelay, null);
         }
 
         public TestThread(ObjectPool pool, int iter, int delay,
