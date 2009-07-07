@@ -2063,7 +2063,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         buf.append("Idle: ").append(getNumIdle()).append("\n");
         Iterator it = _poolMap.keySet().iterator();
         while (it.hasNext()) {
-            buf.append("\t").append(_poolMap.get(it.next())).append("\n");
+            Object key = it.next();
+            buf.append("\t").append(key).append(" ").append(_poolMap.get(key)).append("\n");
         }
         return buf.toString();
     }
