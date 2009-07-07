@@ -21,6 +21,7 @@ package org.apache.commons.pool;
  * A base implementation of <code>KeyedPoolableObjectFactory</code>.
  * <p>
  * All operations defined here are essentially no-op's.
+ * </p>
  *
  * @see KeyedPoolableObjectFactory
  *
@@ -29,28 +30,63 @@ package org.apache.commons.pool;
  * @since Pool 1.0
  */
 public abstract class BaseKeyedPoolableObjectFactory implements KeyedPoolableObjectFactory {
+    /**
+     * Create an instance that can be served by the pool.
+     *
+     * @param key the key used when constructing the object
+     * @return an instance that can be served by the pool
+     */
     public abstract Object makeObject(Object key)
         throws Exception;
 
-    /** No-op. */
+    /**
+     * Destroy an instance no longer needed by the pool.
+     * <p>
+     * The default implementation is a no-op.
+     * </p>
+     *
+     * @param key the key used when selecting the instance
+     * @param obj the instance to be destroyed
+     */
     public void destroyObject(Object key, Object obj)
         throws Exception {
     }
 
     /**
-     * This implementation always returns <tt>true</tt>.
-     * @return <tt>true</tt>
-     */
+     * Ensures that the instance is safe to be returned by the pool.
+     * <p>
+     * The default implementation always returns <tt>true</tt>.
+     * </p>
+     *
+     * @param key the key used when selecting the object
+     * @param obj the instance to be validated
+     * @return always <code>true</code> in the default implementation
+     */ 
     public boolean validateObject(Object key, Object obj) {
         return true;
     }
 
-    /** No-op. */
+    /**
+     * Reinitialize an instance to be returned by the pool.
+     * <p>
+     * The default implementation is a no-op.
+     * </p>
+     *
+     * @param key the key used when selecting the object
+     * @param obj the instance to be activated
+     */
     public void activateObject(Object key, Object obj)
         throws Exception {
     }
 
-    /** No-op. */
+    /**
+     * Uninitialize an instance to be returned to the idle object pool.
+     * <p>
+     * The default implementation is a no-op.
+     * </p>
+     *
+     * @param key the key used when selecting the object
+     */
     public void passivateObject(Object key, Object obj)
         throws Exception {
     }
