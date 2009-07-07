@@ -86,6 +86,7 @@ public abstract class BaseKeyedPoolableObjectFactory implements KeyedPoolableObj
      * </p>
      *
      * @param key the key used when selecting the object
+     * @param obj the instance to be passivated
      */
     public void passivateObject(Object key, Object obj)
         throws Exception {

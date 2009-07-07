@@ -1305,9 +1305,20 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             clearOldest();
         }
     }
-
+    
     /**
-     * Clears the pool, removing all pooled instances.
+     * Clears any objects sitting idle in the pool by removing them from the
+     * idle instance pool and then invoking the configured 
+     * {@link KeyedPoolableObjectFactory#destroyObject(Object, Object)} method on
+     * each idle instance.
+     *  
+     * <p> Implementation notes:
+     * <ul><li>This method does not destroy or effect in any way instances that are
+     * checked out when it is invoked.</li>
+     * <li>Invoking this method does not prevent objects being
+     * returned to the idle instance pool, even during its execution. It locks
+     * the pool only during instance removal. Additional instances may be returned
+     * while removed items are being destroyed.</li></ul></p>
      */
     public void clear() {
         Map toDestroy = new HashMap();
