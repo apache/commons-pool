@@ -74,10 +74,6 @@ package org.apache.commons.pool;
 public interface KeyedPoolableObjectFactory {
     /**
      * Create an instance that can be served by the pool.
-     * Instances returned from this method should be in the
-     * same state as if they had been
-     * {@link #activateObject activated}. They will not be
-     * activated before being served by the pool.
      *
      * @param key the key used when constructing the object
      * @return an instance that can be served by the pool.
