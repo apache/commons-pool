@@ -861,7 +861,9 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * <p>
      * When a negative value is supplied, <tt>ceil({@link #getNumIdle})/abs({@link #getNumTestsPerEvictionRun})</tt>
      * tests will be run.  That is, when the value is <i>-n</i>, roughly one <i>n</i>th of the
-     * idle objects will be tested per run.
+     * idle objects will be tested per run. When the value is positive, the number of tests
+     * actually performed in each run will be the minimum of this value and the number of instances
+     * idle in the pool.
      *
      * @param numTestsPerEvictionRun max number of objects to examine during each evictor run.
      * @see #getNumTestsPerEvictionRun
@@ -1250,7 +1252,18 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
     }
 
     /**
-     * Clears any objects sitting idle in the pool.
+     * Clears any objects sitting idle in the pool by removing them from the
+     * idle instance pool and then invoking the configured 
+     * {@link PoolableObjectFactory#destroyObject(Object)} method on each idle
+     * instance. 
+     * 
+     * <p> Implementation notes:
+     * <ul><li>This method does not destroy or effect in any way instances that are
+     * checked out of the pool when it is invoked.</li>
+     * <li>Invoking this method does not prevent objects being
+     * returned to the idle instance pool, even during its execution. It locks
+     * the pool only during instance removal. Additional instances may be returned
+     * while removed items are being destroyed.</li></ul></p>
      */
     public void clear() {
         List toDestroy = new ArrayList();
@@ -1632,6 +1645,12 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         }
     }
 
+    /**
+     * Returns pool info including {@link #getNumActive()}, {@link #getNumIdle()}
+     * and a list of objects idle in the pool with their idle times.
+     * 
+     * @return string containing debug information
+     */
     synchronized String debugInfo() {
         StringBuffer buf = new StringBuffer();
         buf.append("Active: ").append(getNumActive()).append("\n");
@@ -1646,6 +1665,14 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         return buf.toString();
     }
 
+    /** 
+     * Returns the number of tests to be performed in an Evictor run,
+     * based on the current value of <code>numTestsPerEvictionRun</code>
+     * and the number of idle instances in the pool.
+     * 
+     * @see #setNumTestsPerEvictionRun
+     * @return the number of tests for the Evictor to run
+     */
     private int getNumTests() {
         if(_numTestsPerEvictionRun >= 0) {
             return Math.min(_numTestsPerEvictionRun, _pool.size());
@@ -1661,6 +1688,10 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @see GenericObjectPool#setTimeBetweenEvictionRunsMillis
      */
     private class Evictor extends TimerTask {
+        /**
+         * Run pool maintenance.  Evict objects qualifying for eviction and then
+         * invoke {@link GenericObjectPool#ensureMinIdle()}.
+         */
         public void run() {
             try {
                 evict();
