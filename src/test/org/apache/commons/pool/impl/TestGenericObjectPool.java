@@ -1434,12 +1434,12 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         // Start threads to borrow objects
         TestThread[] threads = new TestThread[numThreads];
         for(int i=0;i<numThreads;i++) {
-            threads[i] = new TestThread(pool, 1, 500, false, String.valueOf(i % maxActive));
+            threads[i] = new TestThread(pool, 1, 2000, false, String.valueOf(i % maxActive));
             Thread t = new Thread(threads[i]);
             t.start();
             // Short delay to ensure threads start in correct order
             try {
-                Thread.sleep(20);
+                Thread.sleep(50);
             } catch (InterruptedException e) {
                 fail(e.toString());
             }
