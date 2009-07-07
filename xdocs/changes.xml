@@ -22,7 +22,15 @@
   </properties>
   <body>
 
-  <release version="1.5.2" date="TBD">
+  <release version="1.5.2" date="2009-07-11" description=
+"This is a patch release containing a fixes for POOL-146 and POOL-147, regressions
+introduced in version 1.5.">
+    <action dev="markt" type="fix" issue="POOL-146">
+      Handle the case where one key has reached maxActive but other keys have not.
+      Prior to the fix for this issue, threads waiting on objects from keyed pools
+      still having instances available could be blocked by a thread requesting an
+      instance from an exhausted pool.
+    </action>
     <action dev="markt" type="fix" issue="POOL-147" due-to="Giambattista Bloisi">
       Fix case where a thread could end up waiting indefinitely even if objects
       were available.
