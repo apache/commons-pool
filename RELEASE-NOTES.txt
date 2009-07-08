@@ -2,7 +2,7 @@
 
               commons-pool-1.5.2 RELEASE NOTES
 
-This is a patch release containing a fixes for POOL-146 and POOL-147, regressions introduced in version 1.5.
+This is a patch release containing fixes for POOL-146 and POOL-147, regressions introduced in version 1.5.
 
 Changes in this version include:
 
