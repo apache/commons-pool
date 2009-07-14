@@ -37,6 +37,10 @@ introduced in version 1.5.">
       Fix case where a thread could end up waiting indefinitely even if objects
       were available.
     </action>
+    <action dev="markt" type="fix" issue="POOL-145">
+      Ensure that the GenericKeyedObjectPool idle object evictor does not visit the
+      same instance more than once per eviction run.
+    </action>
   </release>
   <release version="1.5.1" date="2009-06-16" description=
 "This is a patch release containing a fix for POOL-144, a regression introduced
