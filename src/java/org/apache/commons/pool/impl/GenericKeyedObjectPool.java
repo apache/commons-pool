@@ -2006,8 +2006,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * Re-creates any needed objects to maintain the minimum levels of
      * pooled objects for the specified key.
      *
-     * This method uses {@link #calculateDefecit} to calculate the number
-     * of objects to be created. {@link #calculateDefecit} can be overridden to
+     * This method uses {@link #calculateDeficit} to calculate the number
+     * of objects to be created. {@link #calculateDeficit} can be overridden to
      * provide a different method of calculating the number of objects to be
      * created.
      * @param key The key to process
