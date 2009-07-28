@@ -2028,9 +2028,9 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
         // as a loop limit and a second time inside the loop
         // to stop when another thread already returned the
         // needed objects
-        int objectDeficit = calculateDefecit(pool, false);
+        int objectDeficit = calculateDeficit(pool, false);
 
-        for (int i = 0; i < objectDeficit && calculateDefecit(pool, true) > 0; i++) {
+        for (int i = 0; i < objectDeficit && calculateDeficit(pool, true) > 0; i++) {
             try {
                 addObject(key);
             } finally {
@@ -2107,7 +2107,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      *                            incremented?
      * @return The number of objects to be created
      */
-    private synchronized int calculateDefecit(ObjectQueue pool,
+    private synchronized int calculateDeficit(ObjectQueue pool,
             boolean incrementInternal) {
         int objectDefecit = 0;
 
