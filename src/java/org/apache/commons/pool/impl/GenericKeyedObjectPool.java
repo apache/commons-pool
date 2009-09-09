@@ -1108,9 +1108,9 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                         case WHEN_EXHAUSTED_GROW:
                             // allow new object to be created
                             synchronized (this) {
-                                // Make sure allocate hasn't already assigned an object
-                                // in a different thread
-                                if (latch.getPair() == null) {
+                                // Make sure another thread didn't allocate us an object
+                                // or permit a new object to be created
+                                if (latch.getPair() == null && !latch.mayCreate()) {
                                     _allocationQueue.remove(latch);
                                     latch.getPool().incrementInternalProcessingCount();
                                 }
@@ -1119,8 +1119,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                         case WHEN_EXHAUSTED_FAIL:
                             synchronized (this) {
                                 // Make sure allocate hasn't already assigned an object
-                                // in a different thread
-                                if (latch.getPair() != null) {
+                                // in a different thread or permitted a new object to be created
+                                if (latch.getPair() != null || latch.mayCreate()) {
                                     break;
                                 }
                                 _allocationQueue.remove(latch);
@@ -1130,7 +1130,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                             try {
                                 synchronized (latch) {
                                     // Before we wait, make sure another thread didn't allocate us an object
-                                    if (latch.getPair() == null) {
+                                    // or permit a new object to be created
+                                    if (latch.getPair() == null && !latch.mayCreate()) {
                                         if (maxWait <= 0) {
                                             latch.wait();
                                         } else {
@@ -1154,8 +1155,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                             if (maxWait > 0 && ((System.currentTimeMillis() - starttime) >= maxWait)) {
                                 synchronized (this) {
                                     // Make sure allocate hasn't already assigned an object
-                                    // in a different thread
-                                    if (latch.getPair() == null) {
+                                    // in a different thread or permitted a new object to be created
+                                    if (latch.getPair() == null && !latch.mayCreate()) {
                                         _allocationQueue.remove(latch);
                                     } else {
                                         break;
