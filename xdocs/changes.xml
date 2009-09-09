@@ -22,7 +22,14 @@
   </properties>
   <body>
 
-  <release version="1.5.3" date="TBD">
+  <release version="1.5.3" date="TBD" description=
+"This is a patch release containing a fix for POOL-149, a regression
+introduced in version 1.5.">
+    <action dev="markt" type="fix" issue="POOL-149" due-to="Shuyang Zhou">
+      Fix case where a thread could end up waiting indefinitely even if objects
+      were available. Also fixes a couple of leaks in the internal processing
+      object count that could lead to pool exhaustion.
+    </action>
   </release>
   <release version="1.5.2" date="2009-07-12" description=
 "This is a patch release containing fixes for POOL-146 and POOL-147, regressions
