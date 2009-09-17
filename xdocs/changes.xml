@@ -22,7 +22,7 @@
   </properties>
   <body>
 
-  <release version="1.5.3" date="TBD" description=
+  <release version="1.5.3" date="2009-09-21" description=
 "This is a patch release containing a fix for POOL-149, a regression
 introduced in version 1.5.">
     <action dev="markt" type="fix" issue="POOL-149" due-to="Shuyang Zhou">
