@@ -1,19 +1,16 @@
                         
 
-              commons-pool-1.5.2 RELEASE NOTES
+              commons-pool-1.5.3 RELEASE NOTES
 
-This is a patch release containing fixes for POOL-146 and POOL-147, regressions introduced in version 1.5.
+This is a patch release containing a fix for POOL-149, a regression introduced in version 1.5.
 
 Changes in this version include:
 
 
 Fixed Bugs:
-o  POOL-146:  Handle the case where one key has reached maxActive but other keys have not.
-      Prior to the fix for this issue, threads waiting on objects from keyed pools
-      still having instances available could be blocked by a thread requesting an
-      instance from an exhausted pool. 
-o  POOL-147:  Fix case where a thread could end up waiting indefinitely even if objects
-      were available. Thanks to Giambattista Bloisi. 
+o  POOL-149:  Fix case where a thread could end up waiting indefinitely even if objects
+      were available. Also fixes a couple of leaks in the internal processing
+      object count that could lead to pool exhaustion. Thanks to Shuyang Zhou. 
 
 
  
