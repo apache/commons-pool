@@ -1211,8 +1211,10 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 }
                 synchronized (this) {
                     latch.getPool().decrementInternalProcessingCount();
-                    latch.reset();
-                    _allocationQueue.add(0, latch);
+                    if (!newlyCreated) {
+                        latch.reset();
+                        _allocationQueue.add(0, latch);
+                    }
                     allocate();
                 }
                 if (newlyCreated) {

@@ -1181,8 +1181,10 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                 }
                 synchronized (this) {
                     _numInternalProcessing--;
-                    latch.reset();
-                    _allocationQueue.add(0, latch);
+                    if (!newlyCreated) {
+                        latch.reset();
+                        _allocationQueue.add(0, latch);
+                    }
                     allocate();
                 }
                 if(newlyCreated) {
