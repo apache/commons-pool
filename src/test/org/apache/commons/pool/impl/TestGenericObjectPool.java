@@ -1458,4 +1458,51 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             }
         }
     }
+    
+    /**
+     * On first borrow, first object fails validation, second object is OK.
+     * Subsequent borrows are OK. This was POOL-152.
+     */
+    public void testBrokenFactoryShouldNotBlockPool() {
+        int maxActive = 1;
+        
+        SimpleFactory factory = new SimpleFactory();
+        factory.setMaxActive(maxActive);
+        pool.setFactory(factory);
+        pool.setMaxActive(maxActive);
+        pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_BLOCK);
+        pool.setTestOnBorrow(true);
+        
+        // First borrow object will need to create a new object which will fail
+        // validation.
+        Object obj = null;
+        Exception ex = null;
+        factory.setValid(false);
+        try {
+            obj = pool.borrowObject();
+        } catch (Exception e) {
+            ex = e;
+        }
+        // Failure expected
+        assertNotNull(ex);
+        assertTrue(ex instanceof NoSuchElementException);
+        assertNull(obj);
+
+        // Configure factory to create valid objects so subsequent borrows work
+        factory.setValid(true);
+        
+        // Subsequent borrows should be OK
+        try {
+            obj = pool.borrowObject();
+        } catch (Exception e1) {
+            fail();
+        }
+        assertNotNull(obj);
+        try {
+            pool.returnObject(obj);
+        } catch (Exception e) {
+            fail();
+        }
+        
+    }
 }
