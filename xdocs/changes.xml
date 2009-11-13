@@ -18,10 +18,11 @@
 <document>
   <properties>
     <title>Commons Pool Changes</title>
-    <author email="sandymac@apache.org">Sandy McArthur</author>
   </properties>
   <body>
-  <release version="1.5.4" date="TBD" description="">
+  <release version="1.5.4" date="TBD" description=
+ "This is a patch release containing a fix for POOL-152, a regression
+introduced in version 1.5.">
     <action dev="markt" type="fix" issue="POOL-152" due-to="Bushov Alexander">
       GenericObjectPool can block forever in borrowObject when the pool is exhausted and a newly created
       object fails validation. When borrowing an object if a new object is created but validate fails,
