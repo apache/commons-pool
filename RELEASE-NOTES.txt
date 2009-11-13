@@ -1,16 +1,16 @@
                         
 
-              commons-pool-1.5.3 RELEASE NOTES
+              commons-pool-1.5.4 RELEASE NOTES
 
-This is a patch release containing a fix for POOL-149, a regression introduced in version 1.5.
+This is a patch release containing a fix for POOL-152, a regression introduced in version 1.5.
 
 Changes in this version include:
 
 
 Fixed Bugs:
-o  POOL-149:  Fix case where a thread could end up waiting indefinitely even if objects
-      were available. Also fixes a couple of leaks in the internal processing
-      object count that could lead to pool exhaustion. Thanks to Shuyang Zhou. 
+o  POOL-152:  GenericObjectPool can block forever in borrowObject when the pool is exhausted and a newly created
+      object fails validation. When borrowing an object if a new object is created but validate fails,
+      the latch should not be returned to the queue as an exception will be thrown. Thanks to Bushov Alexander. 
 
 
  
