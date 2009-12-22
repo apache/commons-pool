@@ -1711,11 +1711,12 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     }
 
     /**
-     * Closes the keyed object pool.  Once the pool is closed, {@link #borrowObject(Object)}
+     * <p>Closes the keyed object pool.  Once the pool is closed, {@link #borrowObject(Object)}
      * will fail with IllegalStateException, but {@link #returnObject(Object, Object)} and
-     * {@link #invalidateObject(Object, Object)} will continue to work. This method does not
-     * {@link #clear()} the pool. The method is idempotent - that is, it is OK to call it on a closed
-     * pool. 
+     * {@link #invalidateObject(Object, Object)} will continue to work, with returned objects
+     * destroyed on return.</p>
+     * 
+     * <p>Destroys idle instances in the pool by invoking {@link #clear()}.</p> 
      * 
      * @throws Exception
      */

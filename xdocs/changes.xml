@@ -21,6 +21,10 @@
   </properties>
   <body>
   <release version="1.5.5" date="TBD" description="TBD">
+    <action dev="psteitz" type="fix" issue="POOL-154" due-to="Glen Mazza">
+      Documentation for the close method in GenericObjectPool and GenericKeyedObjectPool
+      incorrectly states that this method does not clear the pool.
+    </action>
   </release>
   <release version="1.5.4" date="2009-11-20" description=
  "This is a patch release containing a fix for POOL-152, a regression
