@@ -1424,11 +1424,12 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
     }
 
     /**
-     * Closes the pool.  Once the pool is closed, {@link #borrowObject()}
+     * <p>Closes the pool.  Once the pool is closed, {@link #borrowObject()}
      * will fail with IllegalStateException, but {@link #returnObject(Object)} and
-     * {@link #invalidateObject(Object)} will continue to work. This method does not
-     * {@link #clear()} the pool. The method is idempotent - that is, it is OK to call it on a closed
-     * pool. 
+     * {@link #invalidateObject(Object)} will continue to work, with returned objects
+     * destroyed on return.</p>
+     * 
+     * <p>Destroys idle instances in the pool by invoking {@link #clear()}.</p> 
      * 
      * @throws Exception
      */
