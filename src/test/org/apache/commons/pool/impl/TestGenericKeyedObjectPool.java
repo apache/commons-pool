@@ -1380,10 +1380,18 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
             }
         }
         if (DISPLAY_THREAD_DETAILS || wtt.length/2 != failed){
+            System.out.println(
+                    "MaxWait: "+maxWait
+                    +" HoldTime: "+holdTime
+                    +" KeyCount: "+keyCount
+                    +" MaxActive: "+threadsPerKey
+                    +" Threads: "+wtt.length
+                    +" Failed: "+failed
+                    );
             for(int i=0; i < wtt.length; i++){
                 WaitingTestThread wt = wtt[i];
-                System.out.println(""
-                        + " Preborrow: "+(wt.preborrow-origin)
+                System.out.println(
+                        "Preborrow: "+(wt.preborrow-origin)
                         + " Postborrow: "+(wt.postborrow != 0 ? wt.postborrow-origin : -1)
                         + " BorrowTime: "+(wt.postborrow != 0 ? wt.postborrow-wt.preborrow : -1)
                         + " PostReturn: "+(wt.postreturn != 0 ? wt.postreturn-origin : -1)
