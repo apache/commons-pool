@@ -1339,6 +1339,8 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         
     }
 
+    private static final boolean DISPLAY_THREAD_DETAILS=
+        Boolean.valueOf(System.getProperty("TestGenericKeyedObjectPool.display.thread.details", "false")).booleanValue();
     /*
      * Test multi-threaded pool access.
      * Multiple keys, multiple threads, but maxActive only allows half the threads to succeed.
@@ -1373,7 +1375,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
                 failed++;
             }
         }
-        if (wtt.length/2 != failed){
+        if (DISPLAY_THREAD_DETAILS || wtt.length/2 != failed){
             for(int i=0; i < wtt.length; i++){
                 WaitingTestThread wt = wtt[i];
                 System.out.println(""
