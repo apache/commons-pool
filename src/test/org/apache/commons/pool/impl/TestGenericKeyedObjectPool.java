@@ -1354,7 +1354,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
      * Let's see if the this fails on Continuum too!
      */
     public void testMaxWaitMultiThreaded() throws Exception {
-        final long maxWait = 200; // wait for connection
+        final long maxWait = 500; // wait for connection
         final long holdTime = 2 * maxWait; // how long to hold connection
         final int keyCount = 4; // number of different keys
         final int threadsPerKey = 5; // number of threads to grab the key initially
