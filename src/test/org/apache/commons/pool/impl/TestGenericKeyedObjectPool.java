@@ -1357,7 +1357,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         final long maxWait = 200; // wait for connection
         final long holdTime = 2 * maxWait; // how long to hold connection
         final int keyCount = 4; // number of different keys
-        final int threadsPerKey = 5; // number of threads to grab the key initiallu
+        final int threadsPerKey = 5; // number of threads to grab the key initially
         SimpleFactory factory = new SimpleFactory();
         GenericKeyedObjectPool pool = new GenericKeyedObjectPool(factory);
         pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_BLOCK);
@@ -1395,6 +1395,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         }
         assertEquals("Expected half the threads to fail",wtt.length/2,failed);
     }
+
     /*
      * Very simple test thread that just tries to borrow an object from
      * the provided pool with the specified key and returns it
