@@ -1341,6 +1341,10 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
 
     private static final boolean DISPLAY_THREAD_DETAILS=
         Boolean.valueOf(System.getProperty("TestGenericKeyedObjectPool.display.thread.details", "false")).booleanValue();
+    // To pass this to a Maven test, use:
+    // mvn test -DargLine="-DTestGenericKeyedObjectPool.display.thread.details=true"
+    // @see http://jira.codehaus.org/browse/SUREFIRE-121
+
     /*
      * Test multi-threaded pool access.
      * Multiple keys, multiple threads, but maxActive only allows half the threads to succeed.
@@ -1385,6 +1389,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
                         + " PostReturn: "+(wt.postreturn != 0 ? wt.postreturn-origin : -1)
                         + " Ended: "+(wt.ended-origin)
                         + " Key: "+(wt._key)
+                        + " ObjId: "+wt.objectId
                         );
             }            
         }
@@ -1427,6 +1432,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         private long postborrow; //  borrow returned
         private long postreturn; // after object was returned
         private long ended;
+        private String objectId;
 
         public WaitingTestThread(KeyedObjectPool pool, String key, long pause) {
             _pool = pool;
@@ -1439,6 +1445,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
             try {
                 preborrow = System.currentTimeMillis();
                 Object obj = _pool.borrowObject(_key);
+                objectId=obj.toString();
                 postborrow = System.currentTimeMillis();
                 Thread.sleep(_pause);
                 _pool.returnObject(_key, obj);
