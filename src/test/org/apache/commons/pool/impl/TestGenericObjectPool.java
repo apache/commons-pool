@@ -1508,7 +1508,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
     /*
      * Very simple test thread that just tries to borrow an object from
-     * the provided pool with the specified key and returns it after a wait
+     * the provided pool returns it after a wait
      */
     static class WaitingTestThread extends Thread {
         private final GenericObjectPool _pool;
