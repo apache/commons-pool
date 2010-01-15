@@ -1559,7 +1559,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
      * Let's see if the this fails on Continuum too!
      */
     public void testMaxWaitMultiThreaded() throws Exception {
-        final long maxWait = 200; // wait for connection
+        final long maxWait = 500; // wait for connection
         final long holdTime = 2 * maxWait; // how long to hold connection
         final int threads = 10; // number of threads to grab the object initially
         SimpleFactory factory = new SimpleFactory();
