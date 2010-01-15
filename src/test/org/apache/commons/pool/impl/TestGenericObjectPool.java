@@ -1505,4 +1505,97 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
         
     }
+
+    /*
+     * Very simple test thread that just tries to borrow an object from
+     * the provided pool with the specified key and returns it after a wait
+     */
+    static class WaitingTestThread extends Thread {
+        private final GenericObjectPool _pool;
+        private final long _pause;
+        private Throwable _thrown;
+        
+        private long preborrow; // just before borrow
+        private long postborrow; //  borrow returned
+        private long postreturn; // after object was returned
+        private long ended;
+        private String objectId;
+
+        public WaitingTestThread(GenericObjectPool pool, long pause) {
+            _pool = pool;
+            _pause = pause;
+            _thrown = null;
+        }
+
+        public void run() {
+            try {
+                preborrow = System.currentTimeMillis();
+                Object obj = _pool.borrowObject();
+                objectId=obj.toString();
+                postborrow = System.currentTimeMillis();
+                Thread.sleep(_pause);
+                _pool.returnObject(obj);
+                postreturn = System.currentTimeMillis();
+            } catch (Exception e) {
+                _thrown = e;
+            } finally{
+                ended = System.currentTimeMillis();
+            }
+        }
+    }
+
+    private static final boolean DISPLAY_THREAD_DETAILS=
+        Boolean.valueOf(System.getProperty("TestGenericObjectPool.display.thread.details", "false")).booleanValue();
+    // To pass this to a Maven test, use:
+    // mvn test -DargLine="-DTestGenericObjectPool.display.thread.details=true"
+    // @see http://jira.codehaus.org/browse/SUREFIRE-121
+
+    /*
+     * Test multi-threaded pool access.
+     * Multiple threads, but maxActive only allows half the threads to succeed.
+     * 
+     * This test was prompted by Continuum build failures in the Commons DBCP test case:
+     * TestPerUserPoolDataSource.testMultipleThreads2()
+     * Let's see if the this fails on Continuum too!
+     */
+    public void testMaxWaitMultiThreaded() throws Exception {
+        final long maxWait = 200; // wait for connection
+        final long holdTime = 2 * maxWait; // how long to hold connection
+        final int threads = 10; // number of threads to grab the object initially
+        SimpleFactory factory = new SimpleFactory();
+        GenericObjectPool pool = new GenericObjectPool(factory);
+        pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_BLOCK);
+        pool.setMaxWait(maxWait);
+        pool.setMaxActive(threads);
+        // Create enough threads so half the threads will have to wait
+        WaitingTestThread wtt[] = new WaitingTestThread[threads * 2];
+        for(int i=0; i < wtt.length; i++){
+            wtt[i] = new WaitingTestThread(pool,holdTime);
+        }
+        long origin = System.currentTimeMillis()-1000;
+        for(int i=0; i < wtt.length; i++){
+            wtt[i].start();
+        }
+        int failed = 0;
+        for(int i=0; i < wtt.length; i++){
+            wtt[i].join();
+            if (wtt[i]._thrown != null){
+                failed++;
+            }
+        }
+        if (DISPLAY_THREAD_DETAILS || wtt.length/2 != failed){
+            for(int i=0; i < wtt.length; i++){
+                WaitingTestThread wt = wtt[i];
+                System.out.println(""
+                        + " Preborrow: "+(wt.preborrow-origin)
+                        + " Postborrow: "+(wt.postborrow != 0 ? wt.postborrow-origin : -1)
+                        + " BorrowTime: "+(wt.postborrow != 0 ? wt.postborrow-wt.preborrow : -1)
+                        + " PostReturn: "+(wt.postreturn != 0 ? wt.postreturn-origin : -1)
+                        + " Ended: "+(wt.ended-origin)
+                        + " ObjId: "+wt.objectId
+                        );
+            }            
+        }
+        assertEquals("Expected half the threads to fail",wtt.length/2,failed);
+    }
 }
