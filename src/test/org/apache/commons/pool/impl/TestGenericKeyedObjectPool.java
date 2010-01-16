@@ -1335,7 +1335,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         // If it passes it should be almost instant
         // Use 3000ms as the threshold - should avoid timing issues on most
         // (all? platforms)
-        assertTrue ((end-start) < 4000);
+        assertTrue ("Elapsed time: "+(end-start)+" should be less than 4000",(end-start) < 4000);
         
     }
 
