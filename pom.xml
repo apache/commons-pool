@@ -157,47 +157,25 @@
           <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
               <includes>
-        <include>org/apache/commons/pool/TestBaseObjectPool.java</include>
-        <include>org/apache/commons/pool/TestBaseKeyedObjectPool.java</include>
-        <include>org/apache/commons/pool/TestBasePoolableObjectFactory.java</include>
-        <include>org/apache/commons/pool/TestBaseKeyedPoolableObjectFactory.java</include>
-        <include>org/apache/commons/pool/TestPoolUtils.java</include>
-
-        <include>org/apache/commons/pool/impl/TestStackObjectPool.java</include>
-        <include>org/apache/commons/pool/impl/TestStackKeyedObjectPool.java</include>
-        <include>org/apache/commons/pool/impl/TestGenericObjectPool.java</include>
-        <include>org/apache/commons/pool/impl/TestGenericKeyedObjectPool.java</include>
-        <include>org/apache/commons/pool/impl/TestSoftReferenceObjectPool.java</include>
-        <!--<include>org/apache/commons/pool/impl/TestSoftRefOutOfMemory.java</include>-->
-        <include>org/apache/commons/pool/impl/TestGenericObjectPoolFactory.java</include>
-        <include>org/apache/commons/pool/impl/TestStackObjectPoolFactory.java</include>
-        <include>org/apache/commons/pool/impl/TestGenericKeyedObjectPoolFactory.java</include>
-        <include>org/apache/commons/pool/impl/TestStackKeyedObjectPoolFactory.java</include>
-
-        <include>org/apache/commons/pool/composite/TestFifoLender.java</include>
-        <include>org/apache/commons/pool/composite/TestIdleEvictorLender.java</include>
-        <include>org/apache/commons/pool/composite/TestInvalidEvictorLender.java</include>
-        <include>org/apache/commons/pool/composite/TestLifoLender.java</include>
-        <include>org/apache/commons/pool/composite/TestNullLender.java</include>
-        <include>org/apache/commons/pool/composite/TestSoftLender.java</include>
-
-        <include>org/apache/commons/pool/composite/TestFailManager.java</include>
-        <include>org/apache/commons/pool/composite/TestGrowManager.java</include>
-        <include>org/apache/commons/pool/composite/TestIdleLimitManager.java</include>
-        <include>org/apache/commons/pool/composite/TestFailLimitManager.java</include>
-        <include>org/apache/commons/pool/composite/TestWaitLimitManager.java</include>
-
-        <include>org/apache/commons/pool/composite/TestNullTracker.java</include>
-        <include>org/apache/commons/pool/composite/TestReferenceTracker.java</include>
-        <include>org/apache/commons/pool/composite/TestDebugTracker.java</include>
-        <include>org/apache/commons/pool/composite/TestSimpleTracker.java</include>
-        <include>org/apache/commons/pool/composite/TestCompositeObjectPool.java</include>
-        <include>org/apache/commons/pool/composite/TestCompositeKeyedObjectPool.java</include>
-        <include>org/apache/commons/pool/composite/TestCompositeKeyedObjectPool2.java</include>
-        <include>org/apache/commons/pool/composite/TestCompositeKeyedObjectPoolFactory.java</include>
-        </includes>  
-       </configuration>
-        </plugin>
+		        <include>org/apache/commons/pool/TestBaseObjectPool.java</include>
+		        <include>org/apache/commons/pool/TestBaseKeyedObjectPool.java</include>
+		        <include>org/apache/commons/pool/TestBasePoolableObjectFactory.java</include>
+		        <include>org/apache/commons/pool/TestBaseKeyedPoolableObjectFactory.java</include>
+		        <include>org/apache/commons/pool/TestPoolUtils.java</include>
+		
+		        <include>org/apache/commons/pool/impl/TestStackObjectPool.java</include>
+		        <include>org/apache/commons/pool/impl/TestStackKeyedObjectPool.java</include>
+		        <include>org/apache/commons/pool/impl/TestGenericObjectPool.java</include>
+		        <include>org/apache/commons/pool/impl/TestGenericKeyedObjectPool.java</include>
+		        <include>org/apache/commons/pool/impl/TestSoftReferenceObjectPool.java</include>
+		        <!--<include>org/apache/commons/pool/impl/TestSoftRefOutOfMemory.java</include>-->
+		        <include>org/apache/commons/pool/impl/TestGenericObjectPoolFactory.java</include>
+		        <include>org/apache/commons/pool/impl/TestStackObjectPoolFactory.java</include>
+		        <include>org/apache/commons/pool/impl/TestGenericKeyedObjectPoolFactory.java</include>
+		        <include>org/apache/commons/pool/impl/TestStackKeyedObjectPoolFactory.java</include>
+		      </includes>
+            </configuration>
+          </plugin>
         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
           <configuration>
