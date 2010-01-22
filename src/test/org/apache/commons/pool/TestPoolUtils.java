@@ -17,26 +17,24 @@
 
 package org.apache.commons.pool;
 
-import junit.framework.TestCase;
-import junit.framework.AssertionFailedError;
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
-import java.lang.reflect.Proxy;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.util.List;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.TimerTask;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Iterator;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TimerTask;
 
-import org.apache.commons.pool.impl.GenericObjectPool;
+import junit.framework.AssertionFailedError;
+import junit.framework.TestCase;
+
 import org.apache.commons.pool.impl.GenericKeyedObjectPool;
+import org.apache.commons.pool.impl.GenericObjectPool;
 
 /**
  * Unit tests for {@link PoolUtils}.
@@ -54,10 +52,6 @@ public class TestPoolUtils extends TestCase {
 
     /** Sleep time to let the minIdle tests run CHECK_COUNT times. */
     private static final int CHECK_SLEEP_PERIOD = CHECK_PERIOD * (CHECK_COUNT - 1) + CHECK_PERIOD / 2;
-
-    public static Test suite() {
-        return new TestSuite(TestPoolUtils.class);
-    }
 
     public void testJavaBeanInstantiation() {
         new PoolUtils();

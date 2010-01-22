@@ -17,14 +17,14 @@
 
 package org.apache.commons.pool.impl;
 
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import org.apache.commons.pool.BasePoolableObjectFactory;
-import org.apache.commons.pool.PoolableObjectFactory;
-
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import junit.framework.TestCase;
+
+import org.apache.commons.pool.BasePoolableObjectFactory;
+import org.apache.commons.pool.PoolableObjectFactory;
 
 /**
  * @author Dirk Verbeeck
@@ -36,10 +36,6 @@ public class TestSoftRefOutOfMemory extends TestCase {
 
     public TestSoftRefOutOfMemory(String testName) {
         super(testName);
-    }
-
-    public static TestSuite suite() {
-        return new TestSuite(TestSoftRefOutOfMemory.class);
     }
 
     public void tearDown() throws Exception {

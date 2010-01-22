@@ -17,11 +17,9 @@
 
 package org.apache.commons.pool.impl;
 
-import org.apache.commons.pool.TestKeyedObjectPoolFactory;
 import org.apache.commons.pool.KeyedObjectPoolFactory;
 import org.apache.commons.pool.KeyedPoolableObjectFactory;
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import org.apache.commons.pool.TestKeyedObjectPoolFactory;
 
 /**
  * Tests for {@link GenericKeyedObjectPoolFactory}.
@@ -32,10 +30,6 @@ import junit.framework.TestSuite;
 public class TestGenericKeyedObjectPoolFactory extends TestKeyedObjectPoolFactory {
     public TestGenericKeyedObjectPoolFactory(final String name) {
         super(name);
-    }
-
-    public static Test suite() {
-        return new TestSuite(TestGenericKeyedObjectPoolFactory.class);
     }
 
     protected KeyedObjectPoolFactory makeFactory(final KeyedPoolableObjectFactory objectFactory) {

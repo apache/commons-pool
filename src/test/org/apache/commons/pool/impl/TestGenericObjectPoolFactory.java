@@ -17,14 +17,12 @@
 
 package org.apache.commons.pool.impl;
 
-import org.apache.commons.pool.TestObjectPoolFactory;
+import java.util.NoSuchElementException;
+
+import org.apache.commons.pool.MethodCallPoolableObjectFactory;
 import org.apache.commons.pool.ObjectPoolFactory;
 import org.apache.commons.pool.PoolableObjectFactory;
-import org.apache.commons.pool.MethodCallPoolableObjectFactory;
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
-import java.util.NoSuchElementException;
+import org.apache.commons.pool.TestObjectPoolFactory;
 
 /**
  * Tests for {@link GenericObjectPoolFactory}.
@@ -35,10 +33,6 @@ import java.util.NoSuchElementException;
 public class TestGenericObjectPoolFactory extends TestObjectPoolFactory {
     public TestGenericObjectPoolFactory(final String name) {
         super(name);
-    }
-
-    public static Test suite() {
-        return new TestSuite(TestGenericObjectPoolFactory.class);
     }
 
     protected ObjectPoolFactory makeFactory(final PoolableObjectFactory objectFactory) throws UnsupportedOperationException {

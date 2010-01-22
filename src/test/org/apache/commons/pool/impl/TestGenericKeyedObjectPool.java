@@ -17,19 +17,17 @@
 
 package org.apache.commons.pool.impl;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import org.apache.commons.pool.KeyedObjectPool;
-import org.apache.commons.pool.KeyedPoolableObjectFactory;
-import org.apache.commons.pool.TestBaseKeyedObjectPool;
-import org.apache.commons.pool.VisitTracker;
-import org.apache.commons.pool.VisitTrackerFactory;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Random;
+
+import org.apache.commons.pool.KeyedObjectPool;
+import org.apache.commons.pool.KeyedPoolableObjectFactory;
+import org.apache.commons.pool.TestBaseKeyedObjectPool;
+import org.apache.commons.pool.VisitTracker;
+import org.apache.commons.pool.VisitTrackerFactory;
 
 /**
  * @author Rodney Waldhoff
@@ -38,10 +36,6 @@ import java.util.Random;
 public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     public TestGenericKeyedObjectPool(String testName) {
         super(testName);
-    }
-
-    public static Test suite() {
-        return new TestSuite(TestGenericKeyedObjectPool.class);
     }
 
     protected KeyedObjectPool makeEmptyPool(int mincapacity) {

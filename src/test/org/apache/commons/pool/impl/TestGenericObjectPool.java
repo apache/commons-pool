@@ -17,18 +17,16 @@
 
 package org.apache.commons.pool.impl;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import java.util.NoSuchElementException;
+import java.util.Random;
+
 import org.apache.commons.pool.BasePoolableObjectFactory;
 import org.apache.commons.pool.ObjectPool;
-import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.PoolUtils;
+import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.TestBaseObjectPool;
 import org.apache.commons.pool.VisitTracker;
 import org.apache.commons.pool.VisitTrackerFactory;
-
-import java.util.NoSuchElementException;
-import java.util.Random;
 
 /**
  * @author Rodney Waldhoff
@@ -39,10 +37,6 @@ import java.util.Random;
 public class TestGenericObjectPool extends TestBaseObjectPool {
     public TestGenericObjectPool(String testName) {
         super(testName);
-    }
-
-    public static Test suite() {
-        return new TestSuite(TestGenericObjectPool.class);
     }
 
     protected ObjectPool makeEmptyPool(int mincap) {

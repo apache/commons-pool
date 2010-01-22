@@ -17,9 +17,6 @@
 
 package org.apache.commons.pool.impl;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.TestBaseObjectPool;
@@ -32,10 +29,6 @@ import org.apache.commons.pool.TestBaseObjectPool;
 public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
     public TestSoftReferenceObjectPool(String testName) {
         super(testName);
-    }
-
-    public static Test suite() {
-        return new TestSuite(TestSoftReferenceObjectPool.class);
     }
 
     protected ObjectPool makeEmptyPool(int cap) {

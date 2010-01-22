@@ -17,16 +17,14 @@
 
 package org.apache.commons.pool.impl;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import org.apache.commons.pool.ObjectPool;
-import org.apache.commons.pool.PoolableObjectFactory;
-import org.apache.commons.pool.TestBaseObjectPool;
-
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+
+import org.apache.commons.pool.ObjectPool;
+import org.apache.commons.pool.PoolableObjectFactory;
+import org.apache.commons.pool.TestBaseObjectPool;
 
 /**
  * @author Rodney Waldhoff
@@ -37,10 +35,6 @@ import java.util.NoSuchElementException;
 public class TestStackObjectPool extends TestBaseObjectPool {
     public TestStackObjectPool(String testName) {
         super(testName);
-    }
-
-    public static Test suite() {
-        return new TestSuite(TestStackObjectPool.class);
     }
 
     protected ObjectPool makeEmptyPool(int mincap) {

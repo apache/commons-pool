@@ -16,9 +16,7 @@
  */
 package org.apache.commons.pool;
 
-import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 /**
  * @author Rodney Waldhoff
@@ -29,11 +27,6 @@ public class TestBasePoolableObjectFactory extends TestCase {
         super(testName);
     }
 
-    public static Test suite() {
-        return new TestSuite(TestBasePoolableObjectFactory.class);
-    }
-    
-    // tests
     public void testDefaultMethods() throws Exception {
         PoolableObjectFactory factory = new BasePoolableObjectFactory() { 
             public Object makeObject() throws Exception {
