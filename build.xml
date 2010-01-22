@@ -52,7 +52,6 @@
       <property name="dist.dir" value="${basedir}/dist"/>
       <property name="dist.jar" value="${dist.dir}/${name}.jar"/>
 
-      <property name="test.entry" value="org.apache.commons.pool.TestAll"/>
       <property name="test.failonerror" value="true" /> 
      
       <property name="javadoc.dir" value="${dist.dir}/docs/api"/>
@@ -138,7 +137,19 @@
           <pathelement location="${build.test-classes.dir}" /> 
           <pathelement path="${classpath}" /> 
         </classpath>
-        <test name="${test.entry}"/>
+        <!-- If test.entry is defined, run a single test, otherwise run all valid tests -->
+        <test name="${test.entry}" if="test.entry"/>
+        <batchtest todir="${build.dir}/ant-reports" unless="test.entry">
+          <fileset dir="${src.test.dir}">
+            <include name="**/Test*.java"/>
+            <exclude name="org/apache/commons/pool/impl/TestSoftRefOutOfMemory.java"/>
+          	<!-- abstract classes -->
+          	<exclude name="**/TestObjectPool.java"/>
+            <exclude name="**/TestObjectPoolFactory.java"/>
+            <exclude name="**/TestKeyedObjectPool.java"/>
+            <exclude name="**/TestKeyedObjectPoolFactory.java"/>
+          </fileset>
+        </batchtest>
       </junit>
    </target>
 

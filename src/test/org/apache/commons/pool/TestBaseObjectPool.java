@@ -16,8 +16,6 @@
  */
 package org.apache.commons.pool;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
 
 /**
  * @author Rodney Waldhoff
@@ -31,10 +29,6 @@ public class TestBaseObjectPool extends TestObjectPool {
         super(testName);
     }
 
-    public static Test suite() {
-        return new TestSuite(TestBaseObjectPool.class);
-    }
-    
     protected ObjectPool makeEmptyPool(int mincapacity) {
         if (this.getClass() != TestBaseObjectPool.class) {
             fail("Subclasses of TestBaseObjectPool must reimplement this method.");

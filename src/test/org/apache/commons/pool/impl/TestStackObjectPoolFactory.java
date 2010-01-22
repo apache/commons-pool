@@ -17,12 +17,10 @@
 
 package org.apache.commons.pool.impl;
 
-import org.apache.commons.pool.TestObjectPoolFactory;
+import org.apache.commons.pool.MethodCallPoolableObjectFactory;
 import org.apache.commons.pool.ObjectPoolFactory;
 import org.apache.commons.pool.PoolableObjectFactory;
-import org.apache.commons.pool.MethodCallPoolableObjectFactory;
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import org.apache.commons.pool.TestObjectPoolFactory;
 
 /**
  * Tests for {@link StackObjectPoolFactory}.
@@ -33,10 +31,6 @@ import junit.framework.TestSuite;
 public class TestStackObjectPoolFactory extends TestObjectPoolFactory {
     public TestStackObjectPoolFactory(final String name) {
         super(name);
-    }
-
-    public static Test suite() {
-        return new TestSuite(TestStackObjectPoolFactory.class);
     }
 
     protected ObjectPoolFactory makeFactory(final PoolableObjectFactory objectFactory) throws UnsupportedOperationException {

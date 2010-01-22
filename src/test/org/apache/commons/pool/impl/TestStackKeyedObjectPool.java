@@ -21,9 +21,6 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import org.apache.commons.pool.KeyedObjectPool;
 import org.apache.commons.pool.KeyedPoolableObjectFactory;
 import org.apache.commons.pool.TestBaseKeyedObjectPool;
@@ -35,10 +32,6 @@ import org.apache.commons.pool.TestBaseKeyedObjectPool;
 public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
     public TestStackKeyedObjectPool(String testName) {
         super(testName);
-    }
-
-    public static Test suite() {
-        return new TestSuite(TestStackKeyedObjectPool.class);
     }
 
     protected KeyedObjectPool makeEmptyPool(int mincapacity) {

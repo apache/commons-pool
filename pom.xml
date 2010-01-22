@@ -157,23 +157,13 @@
           <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
               <includes>
-		        <include>org/apache/commons/pool/TestBaseObjectPool.java</include>
-		        <include>org/apache/commons/pool/TestBaseKeyedObjectPool.java</include>
-		        <include>org/apache/commons/pool/TestBasePoolableObjectFactory.java</include>
-		        <include>org/apache/commons/pool/TestBaseKeyedPoolableObjectFactory.java</include>
-		        <include>org/apache/commons/pool/TestPoolUtils.java</include>
-		
-		        <include>org/apache/commons/pool/impl/TestStackObjectPool.java</include>
-		        <include>org/apache/commons/pool/impl/TestStackKeyedObjectPool.java</include>
-		        <include>org/apache/commons/pool/impl/TestGenericObjectPool.java</include>
-		        <include>org/apache/commons/pool/impl/TestGenericKeyedObjectPool.java</include>
-		        <include>org/apache/commons/pool/impl/TestSoftReferenceObjectPool.java</include>
-		        <!--<include>org/apache/commons/pool/impl/TestSoftRefOutOfMemory.java</include>-->
-		        <include>org/apache/commons/pool/impl/TestGenericObjectPoolFactory.java</include>
-		        <include>org/apache/commons/pool/impl/TestStackObjectPoolFactory.java</include>
-		        <include>org/apache/commons/pool/impl/TestGenericKeyedObjectPoolFactory.java</include>
-		        <include>org/apache/commons/pool/impl/TestStackKeyedObjectPoolFactory.java</include>
+		        <include>**/Test*.java</include>
 		      </includes>
+              <excludes>
+                <!-- nested classes are not handled properly by Surefire -->
+                <exclude>**/Test*$*.java</exclude>
+		        <exclude>org/apache/commons/pool/impl/TestSoftRefOutOfMemory.java</exclude>
+              </excludes>
             </configuration>
           </plugin>
         <plugin>

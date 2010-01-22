@@ -16,8 +16,6 @@
  */
 package org.apache.commons.pool;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
 
 /**
  * @author Rodney Waldhoff
@@ -71,11 +69,6 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
         throw new UnsupportedOperationException("BaseKeyedObjectPool isn't a complete implementation.");
     }
 
-    public static Test suite() {
-        return new TestSuite(TestBaseKeyedObjectPool.class);
-    }
-
-    // tests
     public void setUp() throws Exception {
         super.setUp();
     }
