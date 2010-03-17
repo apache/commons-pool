@@ -1117,6 +1117,16 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                                     }
                                 }
                             } catch(InterruptedException e) {
+                                synchronized(this) {
+                                    // Make sure allocate hasn't already assigned an object
+                                    // in a different thread or permitted a new object to be created
+                                    if (latch.getPair() == null && !latch.mayCreate()) {
+                                        // Remove latch from the allocation queue
+                                        _allocationQueue.remove(latch);
+                                    } else {
+                                        break;
+                                    }
+                                }
                                 Thread.currentThread().interrupt();
                                 throw e;
                             }

@@ -1149,9 +1149,18 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                                     }
                                 }
                             } catch(InterruptedException e) {
+                                synchronized (this) {
+                                    // Make sure allocate hasn't already assigned an object
+                                    // in a different thread or permitted a new object to be created
+                                    if (latch.getPair() == null && !latch.mayCreate()) {
+                                        _allocationQueue.remove(latch);
+                                    } else {
+                                        break;
+                                    }
+                                }
                                 Thread.currentThread().interrupt();
                                 throw e;
-                                }
+                            }
                             if (maxWait > 0 && ((System.currentTimeMillis() - starttime) >= maxWait)) {
                                 synchronized (this) {
                                     // Make sure allocate hasn't already assigned an object

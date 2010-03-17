@@ -110,6 +110,46 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.close();
     }
 
+    public void testWhenExhaustedBlockInterupt() throws Exception {
+        pool.setMaxActive(1);
+        pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_BLOCK);
+        pool.setMaxWait(0);
+        Object obj1 = pool.borrowObject();
+        
+        // Make sure on object was obtained
+        assertNotNull(obj1);
+        
+        // Create a separate thread to try and borrow another object
+        WaitingTestThread wtt = new WaitingTestThread(pool, 200);
+        wtt.start();
+        // Give wtt time to start
+        Thread.sleep(200);
+        wtt.interrupt();
+
+        // Give interupt time to take effect
+        Thread.sleep(200);
+        
+        // Check thread was interrupted
+        assertTrue(wtt._thrown instanceof InterruptedException);
+
+        // Return object to the pool
+        pool.returnObject(obj1);
+        
+        // Bug POOL-162 - check there is now an object in the pool
+        pool.setMaxWait(10L);
+        Object obj2 = null;
+        try {
+             obj2 = pool.borrowObject();
+            assertNotNull(obj2);
+        } catch(NoSuchElementException e) {
+            // Not expected
+            fail("NoSuchElementException not expected");
+        }
+        pool.returnObject(obj2);
+        pool.close();
+        
+    }
+
     public void testEvictWhileEmpty() throws Exception {
         pool.evict();
         pool.evict();
