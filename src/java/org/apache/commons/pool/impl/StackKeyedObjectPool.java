@@ -20,6 +20,7 @@ package org.apache.commons.pool.impl;
 import org.apache.commons.pool.BaseKeyedObjectPool;
 import org.apache.commons.pool.KeyedObjectPool;
 import org.apache.commons.pool.KeyedPoolableObjectFactory;
+import org.apache.commons.pool.PoolUtils;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -160,9 +161,11 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
                         throw new Exception("ValidateObject failed");
                     }
                 } catch (Throwable t) {
+                    PoolUtils.checkRethrow(t);
                     try {
                         _factory.destroyObject(key,obj);
                     } catch (Throwable t2) {
+                        PoolUtils.checkRethrow(t2);
                         // swallowed
                     } finally {
                         obj = null;

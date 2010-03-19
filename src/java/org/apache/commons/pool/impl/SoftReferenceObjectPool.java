@@ -106,10 +106,12 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
                         throw new Exception("ValidateObject failed");
                     }
                 } catch (Throwable t) {
+                    PoolUtils.checkRethrow(t);
                     try {
                         _factory.destroyObject(obj);
                     } catch (Throwable t2) {
-                        // swallowed
+                        PoolUtils.checkRethrow(t2);
+                        // Swallowed
                     } finally {
                         obj = null;
                     }

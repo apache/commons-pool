@@ -32,6 +32,7 @@ import java.util.TimerTask;
 import org.apache.commons.pool.BaseKeyedObjectPool;
 import org.apache.commons.pool.KeyedObjectPool;
 import org.apache.commons.pool.KeyedPoolableObjectFactory;
+import org.apache.commons.pool.PoolUtils;
 
 /**
  * A configurable <code>KeyedObjectPool</code> implementation.
@@ -1212,10 +1213,12 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 }
                 return latch.getPair().value;
             } catch (Throwable e) {
+                PoolUtils.checkRethrow(e);
                 // object cannot be activated or is invalid
                 try {
                     _factory.destroyObject(key, latch.getPair().value);
                 } catch (Throwable e2) {
+                    PoolUtils.checkRethrow(e2);
                     // cannot destroy broken object
                 }
                 synchronized (this) {

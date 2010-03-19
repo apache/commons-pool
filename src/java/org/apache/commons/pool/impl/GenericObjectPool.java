@@ -27,6 +27,7 @@ import java.util.TimerTask;
 
 import org.apache.commons.pool.BaseObjectPool;
 import org.apache.commons.pool.ObjectPool;
+import org.apache.commons.pool.PoolUtils;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericKeyedObjectPool.ObjectTimestampPair;
 
@@ -1183,10 +1184,12 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                 return latch.getPair().value;
             }
             catch (Throwable e) {
+                PoolUtils.checkRethrow(e);
                 // object cannot be activated or is invalid
                 try {
                     _factory.destroyObject(latch.getPair().value);
                 } catch (Throwable e2) {
+                    PoolUtils.checkRethrow(e2);
                     // cannot destroy broken object
                 }
                 synchronized (this) {
