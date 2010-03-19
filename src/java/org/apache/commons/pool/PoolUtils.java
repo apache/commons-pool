@@ -51,6 +51,24 @@ public final class PoolUtils {
     }
 
     /**
+     * Should the supplied Throwable be re-thrown (eg if it is an instance of
+     * one of the Throwables that should never be swallowed). Used by the pool
+     * error handling for operations that throw exceptions that normally need to
+     * be ignored.
+     * @param t The Throwable to check
+     * @since Pool 1.5.5
+     */
+    public static void checkRethrow(Throwable t) {
+        if (t instanceof ThreadDeath) {
+            throw (ThreadDeath) t;
+        }
+        if (t instanceof VirtualMachineError) {
+            throw (VirtualMachineError) t;
+        }
+        // All other instances of Throwable will be silently swallowed
+    }
+
+    /**
      * Adapt a <code>KeyedPoolableObjectFactory</code> instance to work where a <code>PoolableObjectFactory</code> is
      * needed. This method is the equivalent of calling
      * {@link #adapt(KeyedPoolableObjectFactory, Object) PoolUtils.adapt(aKeyedPoolableObjectFactory, new Object())}.

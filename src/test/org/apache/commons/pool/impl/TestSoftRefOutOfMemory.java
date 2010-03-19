@@ -172,7 +172,28 @@ public class TestSoftRefOutOfMemory extends TestCase {
             }
         });
 
-        pool.returnObject(pool.borrowObject());
+        try {
+            pool.borrowObject();
+            fail("Expected out of memory.");
+        }
+        catch (OutOfMemoryError ex) {
+            // expected
+        }
+        pool.close();
+        
+        pool = new SoftReferenceObjectPool(new BasePoolableObjectFactory() {
+            public Object makeObject() throws Exception {
+                return new Object();
+            }
+
+            public boolean validateObject(Object obj) {
+                throw new IllegalAccessError();
+            }
+
+            public void destroyObject(Object obj) throws Exception {
+                throw new OutOfMemoryError();
+            }
+        });
 
         try {
             pool.borrowObject();
@@ -182,6 +203,7 @@ public class TestSoftRefOutOfMemory extends TestCase {
             // expected
         }
         pool.close();
+
     }
 
 

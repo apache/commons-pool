@@ -23,6 +23,7 @@ import java.util.Stack;
 
 import org.apache.commons.pool.BaseObjectPool;
 import org.apache.commons.pool.ObjectPool;
+import org.apache.commons.pool.PoolUtils;
 import org.apache.commons.pool.PoolableObjectFactory;
 
 /**
@@ -160,9 +161,11 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
                         throw new Exception("ValidateObject failed");
                     }
                 } catch (Throwable t) {
+                    PoolUtils.checkRethrow(t);
                     try {
                         _factory.destroyObject(obj);
                     } catch (Throwable t2) {
+                        PoolUtils.checkRethrow(t2);
                         // swallowed
                     } finally {
                         obj = null;
