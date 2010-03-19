@@ -56,6 +56,8 @@ public final class PoolUtils {
      * error handling for operations that throw exceptions that normally need to
      * be ignored.
      * @param t The Throwable to check
+     * @throws ThreadDeath if that is passed in
+     * @throws VirtualMachineError if that is passed in
      * @since Pool 1.5.5
      */
     public static void checkRethrow(Throwable t) {
