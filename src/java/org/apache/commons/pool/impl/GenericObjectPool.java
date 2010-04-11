@@ -1289,19 +1289,22 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
             _numInternalProcessing = _numInternalProcessing + _pool._size;
             _pool.clear();
         }
-        destroy(toDestroy);
+        destroy(toDestroy, _factory);
     }
 
     /**
-     * Private method to destroy all the objects in a collection. Assumes
-     * objects in the collection are instances of ObjectTimestampPair
+     * Private method to destroy all the objects in a collection using the 
+     * supplied object factory.  Assumes that objects in the collection are
+     * instances of ObjectTimestampPair and that the object instances that
+     * they wrap were created by the factory.
      * 
      * @param c Collection of objects to destroy
+     * @param factory PoolableConnectionFactory used to destroy the objects
      */
-    private void destroy(Collection c) {
+    private void destroy(Collection c, PoolableObjectFactory factory) {
         for (Iterator it = c.iterator(); it.hasNext();) {
             try {
-                _factory.destroyObject(((ObjectTimestampPair)(it.next())).value);
+                factory.destroyObject(((ObjectTimestampPair)(it.next())).value);
             } catch(Exception e) {
                 // ignore error, keep destroying the rest
             } finally {
@@ -1458,13 +1461,17 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * Sets the {@link PoolableObjectFactory factory} this pool uses
      * to create new instances. Trying to change
      * the <code>factory</code> while there are borrowed objects will
-     * throw an {@link IllegalStateException}.
+     * throw an {@link IllegalStateException}.  If there are instances idle
+     * in the pool when this method is invoked, these will be destroyed
+     * using the original factory.
      *
      * @param factory the {@link PoolableObjectFactory} used to create new instances.
      * @throws IllegalStateException when the factory cannot be set at this time
+     * @deprecated to be removed in version 2.0
      */
     public void setFactory(PoolableObjectFactory factory) throws IllegalStateException {
         List toDestroy = new ArrayList();
+        final PoolableObjectFactory oldFactory = _factory;
         synchronized (this) {
             assertOpen();
             if(0 < getNumActive()) {
@@ -1476,7 +1483,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
             }
             _factory = factory;
         }
-        destroy(toDestroy);
+        destroy(toDestroy, oldFactory); 
     }
 
     /**
