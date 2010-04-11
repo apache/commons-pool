@@ -1354,7 +1354,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 pool.queue.clear();
             }
         }
-        destroy(toDestroy);
+        destroy(toDestroy, _factory);
     }
 
     /**
@@ -1415,7 +1415,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             }
 
         }
-        destroy(toDestroy);
+        destroy(toDestroy, _factory);
     }
 
     /**
@@ -1444,22 +1444,23 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 _totalInternalProcessing + pool.queue.size();
             pool.queue.clear();
         }
-        destroy(toDestroy);
+        destroy(toDestroy, _factory);
     }
 
     /**
      * Assuming Map<Object,Collection<ObjectTimestampPair>>, destroy all
-     * ObjectTimestampPair.value
+     * ObjectTimestampPair.value using the supplied factory.
      * 
      * @param m Map containing keyed pools to clear
+     * @param factory KeyedPoolableObjectFactory used to destroy the objects
      */
-    private void destroy(Map m) {
+    private void destroy(Map m, KeyedPoolableObjectFactory factory) {
         for (Iterator keys = m.keySet().iterator(); keys.hasNext();) {
             Object key = keys.next();
             Collection c = (Collection) m.get(key);
             for (Iterator it = c.iterator(); it.hasNext();) {
                 try {
-                    _factory.destroyObject(
+                    factory.destroyObject(
                             key,((ObjectTimestampPair)(it.next())).value);
                 } catch(Exception e) {
                     // ignore error, keep destroying the rest
@@ -1753,13 +1754,15 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * 
      * <p>If this method is called when objects are checked out of any of the keyed pools,
      * an IllegalStateException is thrown.  Calling this method also has the side effect of
-     * destroying any idle instances in existing keyed pools.</p>
+     * destroying any idle instances in existing keyed pools, using the original factory.</p>
      * 
      * @param factory KeyedPoolableObjectFactory to use when creating keyed object pool instances
      * @throws IllegalStateException if there are active (checked out) instances associated with this keyed object pool
+     * @deprecated to be removed in version 2.0
      */
     public void setFactory(KeyedPoolableObjectFactory factory) throws IllegalStateException {
         Map toDestroy = new HashMap();
+        final KeyedPoolableObjectFactory oldFactory = _factory;
         synchronized (this) {
             assertOpen();
             if (0 < getNumActive()) {
@@ -1785,7 +1788,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 _factory = factory;
             }
         }
-        destroy(toDestroy);
+        destroy(toDestroy, oldFactory);
     }
 
     /**

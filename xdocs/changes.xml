@@ -21,6 +21,19 @@
   </properties>
   <body>
   <release version="1.5.5" date="TBD" description="TBD">
+    <action dev="psteitz" type="fix" issue="POOL-157" due-to="David Hu">
+      GenericObjectPool and GenericKeyedObjectPool setFactory methods destroy idle instances
+      in the pool by contract. Prior to the fix for this issue, newly set factories were being
+      used to destroy idle instances, rather than the factories used to create them.  The 
+      setFactory methods have also been deprecated, to be removed in version 2.0.
+    </action>
+    <action dev="sebb" type="update" issue="POOL-156">
+      ObjectPool classes can ignore Throwable. Added consistent handling for Throwables
+      that are normally swallowed including always re-throwing certain Throwables (e.g. ThreadDeath).
+    </action>
+    <action dev="markt" type="fix" issue="POOL-162">
+      When waiting threads are interrupted, GOP, GKOP may leak capacity.
+    </action>
     <action dev="psteitz" type="fix" issue="POOL-154" due-to="Glen Mazza">
       Documentation for the close method in GenericObjectPool and GenericKeyedObjectPool
       incorrectly states that this method does not clear the pool.
