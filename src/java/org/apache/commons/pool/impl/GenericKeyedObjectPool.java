@@ -2309,6 +2309,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @see GenericKeyedObjectPool#setConfig
      */
     public static class Config {
+        //CHECKSTYLE: stop VisibilityModifier
         /**
          * @see GenericKeyedObjectPool#setMaxIdle
          */
@@ -2361,6 +2362,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
          * @see GenericKeyedObjectPool#setLifo
          */
         public boolean lifo = GenericKeyedObjectPool.DEFAULT_LIFO;
+        //CHECKSTYLE: resume VisibilityModifier
     }
 
     /**

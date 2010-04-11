@@ -1742,6 +1742,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @see GenericObjectPool#setConfig
      */
     public static class Config {
+        //CHECKSTYLE: stop VisibilityModifier
         /**
          * @see GenericObjectPool#setMaxIdle
          */
@@ -1794,7 +1795,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
          * @see GenericObjectPool#setLifo
          */
         public boolean lifo = GenericObjectPool.DEFAULT_LIFO;
-
+        //CHECKSTYLE: resume VisibilityModifier
     }
 
     /**

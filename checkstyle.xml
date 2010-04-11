@@ -83,5 +83,10 @@
     <property name="offCommentFormat" value="CHECKSTYLE\: stop all checks"/>
     <property name="onCommentFormat"  value="CHECKSTYLE\: resume checking"/>
   </module>
+  <module name="SuppressionCommentFilter">
+    <property name="offCommentFormat" value="CHECKSTYLE\: stop VisibilityModifier"/>
+    <property name="onCommentFormat"  value="CHECKSTYLE\: resume VisibilityModifier"/>
+    <property name="checkFormat"      value="VisibilityModifier"/>
+  </module>
 
 </module>
