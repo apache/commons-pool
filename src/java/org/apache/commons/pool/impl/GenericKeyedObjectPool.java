@@ -2209,10 +2209,16 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      */
     static class ObjectTimestampPair implements Comparable {
         
-        /** Object instance */
+        /** 
+         * Object instance 
+         * @deprecated this field will be made private and final in version 2.0
+         */
         Object value;
         
-        /** timestamp */
+        /**
+         * timestamp
+         * @deprecated this field will be made private and final in version 2.0
+         */
         long tstamp;
 
         /**
