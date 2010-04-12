@@ -570,11 +570,27 @@ public final class PoolUtils {
         return MIN_IDLE_TIMER;
     }
 
+    /**
+     * Adaptor class that wraps and converts a KeyedPoolableObjectFactory with a fixed
+     * key to a PoolableObjectFactory.
+     */
     private static class PoolableObjectFactoryAdaptor implements PoolableObjectFactory {
+        /** Fixed key */
         private final Object key;
+        
+        /** Wrapped factory */
         private final KeyedPoolableObjectFactory keyedFactory;
 
-        PoolableObjectFactoryAdaptor(final KeyedPoolableObjectFactory keyedFactory, final Object key) throws IllegalArgumentException {
+        /**
+         * Create a PoolableObjectFactoryAdaptor wrapping the provided KeyedPoolableObjectFactory with the 
+         * given fixed key.
+         * 
+         * @param keyedFactory KeyedPoolableObjectFactory that will manage objects
+         * @param key fixed key
+         * @throws IllegalArgumentException if either of the parameters is null
+         */
+        PoolableObjectFactoryAdaptor(final KeyedPoolableObjectFactory keyedFactory, final Object key)
+        throws IllegalArgumentException {
             if (keyedFactory == null) {
                 throw new IllegalArgumentException("keyedFactory must not be null.");
             }
@@ -585,26 +601,55 @@ public final class PoolUtils {
             this.key = key;
         }
 
+        /**
+         * Create an object instance using the configured factory and key.
+         * 
+         * @return new object instance
+         */
         public Object makeObject() throws Exception {
             return keyedFactory.makeObject(key);
         }
 
+        /**
+         * Destroy the object, passing the fixed key to the factory.
+         * 
+         * @param obj object to destroy
+         */
         public void destroyObject(final Object obj) throws Exception {
             keyedFactory.destroyObject(key, obj);
         }
 
+        /**
+         * Validate the object, passing the fixed key to the factory.
+         * 
+         * @param obj object to validate
+         * @return true if validation is successful
+         */
         public boolean validateObject(final Object obj) {
             return keyedFactory.validateObject(key, obj);
         }
 
+        /**
+         * Activate the object, passing the fixed key to the factory.
+         * 
+         * @param obj object to activate
+         */
         public void activateObject(final Object obj) throws Exception {
             keyedFactory.activateObject(key, obj);
         }
 
+        /**
+         * Passivate the object, passing the fixed key to the factory.
+         * 
+         * @param obj object to passivate
+         */
         public void passivateObject(final Object obj) throws Exception {
             keyedFactory.passivateObject(key, obj);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public String toString() {
             final StringBuffer sb = new StringBuffer();
             sb.append("PoolableObjectFactoryAdaptor");
@@ -615,9 +660,22 @@ public final class PoolUtils {
         }
     }
 
+    /**
+     * Adaptor class that turns a PoolableObjectFactory into a KeyedPoolableObjectFactory by
+     * ignoring keys.
+     */
     private static class KeyedPoolableObjectFactoryAdaptor implements KeyedPoolableObjectFactory {
+        
+        /** Underlying PoolableObjectFactory */
         private final PoolableObjectFactory factory;
 
+        /**
+         * Create a new KeyedPoolableObjectFactoryAdaptor using the given PoolableObjectFactory to
+         * manage objects.
+         * 
+         * @param factory wrapped PoolableObjectFactory 
+         * @throws IllegalArgumentException if the factory is null
+         */
         KeyedPoolableObjectFactoryAdaptor(final PoolableObjectFactory factory) throws IllegalArgumentException {
             if (factory == null) {
                 throw new IllegalArgumentException("factory must not be null.");
@@ -625,26 +683,60 @@ public final class PoolUtils {
             this.factory = factory;
         }
 
+        /**
+         * Create a new object instance, ignoring the key
+         * 
+         * @param key ignored
+         * @return newly created object instance
+         */
         public Object makeObject(final Object key) throws Exception {
             return factory.makeObject();
         }
 
+        /**
+         * Destroy the object, ignoring the key.
+         * 
+         * @param key ignored
+         * @param obj instance to destroy
+         */
         public void destroyObject(final Object key, final Object obj) throws Exception {
             factory.destroyObject(obj);
         }
 
+        /**
+         * Validate the object, ignoring the key
+         * 
+         * @param key ignored
+         * @param obj object to validate
+         * @return true if validation is successful
+         */
         public boolean validateObject(final Object key, final Object obj) {
             return factory.validateObject(obj);
         }
 
+        /**
+         * Activate the object, ignoring the key.
+         * 
+         * @param key ignored
+         * @param obj object to be activated
+         */
         public void activateObject(final Object key, final Object obj) throws Exception {
             factory.activateObject(obj);
         }
 
+        /**
+         * Passivate the object, ignoring the key.
+         * 
+         * @param key ignored
+         * @param obj object to passivate
+         */
         public void passivateObject(final Object key, final Object obj) throws Exception {
             factory.passivateObject(obj);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public String toString() {
             final StringBuffer sb = new StringBuffer();
             sb.append("KeyedPoolableObjectFactoryAdaptor");
@@ -654,10 +746,25 @@ public final class PoolUtils {
         }
     }
 
+    /**
+     * Adapts a KeyedObjectPool to make it an ObjectPool by fixing restricting to
+     * a fixed key.
+     */
     private static class ObjectPoolAdaptor implements ObjectPool {
+        
+        /** Fixed key */
         private final Object key;
+        
+        /** Underlying KeyedObjectPool */
         private final KeyedObjectPool keyedPool;
 
+        /**
+         * Create a new ObjectPoolAdaptor using the provided KeyedObjectPool and fixed key.
+         * 
+         * @param keyedPool underlying KeyedObjectPool
+         * @param key fixed key
+         * @throws IllegalArgumentException if either of the parameters is null
+         */
         ObjectPoolAdaptor(final KeyedObjectPool keyedPool, final Object key) throws IllegalArgumentException {
             if (keyedPool == null) {
                 throw new IllegalArgumentException("keyedPool must not be null.");
@@ -669,10 +776,16 @@ public final class PoolUtils {
             this.key = key;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public Object borrowObject() throws Exception, NoSuchElementException, IllegalStateException {
             return keyedPool.borrowObject(key);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public void returnObject(final Object obj) {
             try {
                 keyedPool.returnObject(key, obj);
@@ -681,6 +794,9 @@ public final class PoolUtils {
             }
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public void invalidateObject(final Object obj) {
             try {
                 keyedPool.invalidateObject(key, obj);
@@ -689,22 +805,37 @@ public final class PoolUtils {
             }
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public void addObject() throws Exception, IllegalStateException {
             keyedPool.addObject(key);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public int getNumIdle() throws UnsupportedOperationException {
             return keyedPool.getNumIdle(key);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public int getNumActive() throws UnsupportedOperationException {
             return keyedPool.getNumActive(key);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public void clear() throws Exception, UnsupportedOperationException {
             keyedPool.clear();
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public void close() {
             try {
                 keyedPool.close();
@@ -713,10 +844,19 @@ public final class PoolUtils {
             }
         }
 
+        /**
+         * Sets the PoolableObjectFactory for the pool.
+         * 
+         * @param factory new PoolableObjectFactory 
+         * @deprecated to be removed in version 2.0
+         */
         public void setFactory(final PoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
             keyedPool.setFactory(adapt(factory));
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public String toString() {
             final StringBuffer sb = new StringBuffer();
             sb.append("ObjectPoolAdaptor");
