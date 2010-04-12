@@ -2208,7 +2208,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * This is also used by {@link GenericObjectPool}.
      */
     static class ObjectTimestampPair implements Comparable {
-        
+        //CHECKSTYLE: stop VisibilityModifier
         /** 
          * Object instance 
          * @deprecated this field will be made private and final in version 2.0
@@ -2220,6 +2220,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
          * @deprecated this field will be made private and final in version 2.0
          */
         long tstamp;
+        //CHECKSTYLE: resume VisibilityModifier
 
         /**
          * Create a new ObjectTimestampPair using the given object and the current system time.
