@@ -198,7 +198,7 @@
           <artifactId>maven-changes-plugin</artifactId>
           <version>2.0</version>
           <configuration>
-            <xmlPath>${basedir}/xdocs/changes.xml</xmlPath>
+            <xmlPath>${basedir}/src/changes/changes.xml</xmlPath>
             <issueLinkTemplate>%URL%/%ISSUE%</issueLinkTemplate>
             <template>pool-release-notes.vm</template>
             <templateDirectory>src/template</templateDirectory>
