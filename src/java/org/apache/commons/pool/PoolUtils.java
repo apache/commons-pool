@@ -1018,10 +1018,29 @@ public final class PoolUtils {
         }
     }
 
+    /**
+     * An object pool that performs type checking on objects passed
+     * to pool methods.
+     *
+     */
     private static class CheckedObjectPool implements ObjectPool {
+        /** 
+         * Type of objects allowed in the pool. This should be a subtype of the return type of
+         * the underlying pool's associated object factory.
+         */
         private final Class type;
+       
+        /** Underlying object pool */
         private final ObjectPool pool;
 
+        /**
+         * Create a CheckedObjectPool accepting objects of the given type using
+         * the given pool.
+         * 
+         * @param pool underlying object pool
+         * @param type expected pooled object type
+         * @throws IllegalArgumentException if either parameter is null
+         */
         CheckedObjectPool(final ObjectPool pool, final Class type) {
             if (pool == null) {
                 throw new IllegalArgumentException("pool must not be null.");
@@ -1033,6 +1052,12 @@ public final class PoolUtils {
             this.type = type;
         }
 
+        /**
+         * Borrow an object from the pool, checking its type.
+         * 
+         * @return a type-checked object from the pool
+         * @throws ClassCastException if the object returned by the pool is not of the expected type
+         */
         public Object borrowObject() throws Exception, NoSuchElementException, IllegalStateException {
             final Object obj = pool.borrowObject();
             if (type.isInstance(obj)) {
@@ -1042,6 +1067,12 @@ public final class PoolUtils {
             }
         }
 
+        /**
+         * Return an object to the pool, verifying that it is of the correct type.
+         * 
+         * @param obj object to return
+         * @throws ClassCastException if obj is not of the expected type
+         */
         public void returnObject(final Object obj) {
             if (type.isInstance(obj)) {
                 try {
@@ -1054,6 +1085,12 @@ public final class PoolUtils {
             }
         }
 
+        /**
+         * Invalidates an object from the pool, verifying that it is of the expected type.
+         * 
+         * @param obj object to invalidate
+         * @throws ClassCastException if obj is not of the expected type
+         */
         public void invalidateObject(final Object obj) {
             if (type.isInstance(obj)) {
                 try {
@@ -1066,22 +1103,37 @@ public final class PoolUtils {
             }
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public void addObject() throws Exception, IllegalStateException, UnsupportedOperationException {
             pool.addObject();
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public int getNumIdle() throws UnsupportedOperationException {
             return pool.getNumIdle();
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public int getNumActive() throws UnsupportedOperationException {
             return pool.getNumActive();
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public void clear() throws Exception, UnsupportedOperationException {
             pool.clear();
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public void close() {
             try {
                 pool.close();
@@ -1090,10 +1142,19 @@ public final class PoolUtils {
             }
         }
 
+        /**
+         * Sets the object factory associated with the pool
+         * 
+         * @param factory object factory
+         * @deprecated to be removed in version 2.0
+         */
         public void setFactory(final PoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
             pool.setFactory(factory);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public String toString() {
             final StringBuffer sb = new StringBuffer();
             sb.append("CheckedObjectPool");
@@ -1104,10 +1165,28 @@ public final class PoolUtils {
         }
     }
 
+    /**
+     * A keyed object pool that performs type checking on objects passed
+     * to pool methods.
+     *
+     */
     private static class CheckedKeyedObjectPool implements KeyedObjectPool {
+        /** 
+         * Expected type of objects managed by the pool.  This should be
+         * a subtype of the return type of the object factory used by the pool.
+         */
         private final Class type;
+        
+        /** Underlying pool */
         private final KeyedObjectPool keyedPool;
 
+        /**
+         * Create a new CheckedKeyedObjectPool from the given pool with given expected object type.
+         * 
+         * @param keyedPool underlying pool
+         * @param type expected object type
+         * @throws IllegalArgumentException if either parameter is null
+         */
         CheckedKeyedObjectPool(final KeyedObjectPool keyedPool, final Class type) {
             if (keyedPool == null) {
                 throw new IllegalArgumentException("keyedPool must not be null.");
@@ -1119,6 +1198,13 @@ public final class PoolUtils {
             this.type = type;
         }
 
+        /**
+         * Borrow an object from the pool, verifying correct return type.
+         * 
+         * @param key pool key
+         * @return type-checked object from the pool under the given key
+         * @throws ClassCastException if the object returned by the pool is not of the expected type
+         */
         public Object borrowObject(final Object key) throws Exception, NoSuchElementException, IllegalStateException {
             Object obj = keyedPool.borrowObject(key);
             if (type.isInstance(obj)) {
@@ -1128,6 +1214,13 @@ public final class PoolUtils {
             }
         }
 
+        /**
+         * Return an object to the pool, checking its type.
+         * 
+         * @param key the associated key (not type-checked)
+         * @param obj the object to return (type-checked)
+         * @throws ClassCastException if obj is not of the expected type
+         */
         public void returnObject(final Object key, final Object obj) {
             if (type.isInstance(obj)) {
                 try {
@@ -1140,6 +1233,13 @@ public final class PoolUtils {
             }
         }
 
+        /**
+         * Invalidate an object to the pool, checking its type.
+         * 
+         * @param key the associated key (not type-checked)
+         * @param obj the object to return (type-checked)
+         * @throws ClassCastException if obj is not of the expected type
+         */
         public void invalidateObject(final Object key, final Object obj) {
             if (type.isInstance(obj)) {
                 try {
@@ -1152,34 +1252,58 @@ public final class PoolUtils {
             }
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public void addObject(final Object key) throws Exception, IllegalStateException, UnsupportedOperationException {
             keyedPool.addObject(key);
         }
-
+        
+        /**
+         * {@inheritDoc}
+         */
         public int getNumIdle(final Object key) throws UnsupportedOperationException {
             return keyedPool.getNumIdle(key);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public int getNumActive(final Object key) throws UnsupportedOperationException {
             return keyedPool.getNumActive(key);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public int getNumIdle() throws UnsupportedOperationException {
             return keyedPool.getNumIdle();
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public int getNumActive() throws UnsupportedOperationException {
             return keyedPool.getNumActive();
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public void clear() throws Exception, UnsupportedOperationException {
             keyedPool.clear();
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public void clear(final Object key) throws Exception, UnsupportedOperationException {
             keyedPool.clear(key);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public void close() {
             try {
                 keyedPool.close();
@@ -1188,10 +1312,19 @@ public final class PoolUtils {
             }
         }
 
+        /**
+         * Sets the object factory associated with the pool
+         * 
+         * @param factory object factory
+         * @deprecated to be removed in version 2.0
+         */
         public void setFactory(final KeyedPoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
             keyedPool.setFactory(factory);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public String toString() {
             final StringBuffer sb = new StringBuffer();
             sb.append("CheckedKeyedObjectPool");
