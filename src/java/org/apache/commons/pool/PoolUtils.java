@@ -1335,10 +1335,27 @@ public final class PoolUtils {
         }
     }
 
+    /**
+     * Timer task that adds objects to the pool until the number of idle
+     * instances reaches the configured minIdle.  Note that this is not the
+     * same as the pool's minIdle setting.
+     * 
+     */
     private static class ObjectPoolMinIdleTimerTask extends TimerTask {
+        
+        /** Minimum number of idle instances.  Not the same as pool.getMinIdle(). */
         private final int minIdle;
+        
+        /** Object pool */
         private final ObjectPool pool;
 
+        /**
+         * Create a new ObjectPoolMinIdleTimerTask for the given pool with the given minIdle setting.
+         * 
+         * @param pool object pool
+         * @param minIdle number of idle instances to maintain
+         * @throws IllegalArgumentException if the pool is null
+         */
         ObjectPoolMinIdleTimerTask(final ObjectPool pool, final int minIdle) throws IllegalArgumentException {
             if (pool == null) {
                 throw new IllegalArgumentException("pool must not be null.");
@@ -1347,6 +1364,9 @@ public final class PoolUtils {
             this.minIdle = minIdle;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public void run() {
             boolean success = false;
             try {
@@ -1366,6 +1386,9 @@ public final class PoolUtils {
             }
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public String toString() {
             final StringBuffer sb = new StringBuffer();
             sb.append("ObjectPoolMinIdleTimerTask");

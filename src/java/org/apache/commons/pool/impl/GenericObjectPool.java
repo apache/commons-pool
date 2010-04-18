@@ -1808,7 +1808,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         /** object timestamp pair allocated to this latch */
         private ObjectTimestampPair _pair;
         
-        /** Wheter or not this latch may create an object instance */
+        /** Whether or not this latch may create an object instance */
         private boolean _mayCreate = false;
 
         /**
