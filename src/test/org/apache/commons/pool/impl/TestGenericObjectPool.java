@@ -1332,26 +1332,26 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             evenValid = evalid;
             oddValid = ovalid;
         }
-        void setValid(boolean valid) {
+        public synchronized void setValid(boolean valid) {
             setEvenValid(valid);
             setOddValid(valid);            
         }
-        void setEvenValid(boolean valid) {
+        public synchronized void setEvenValid(boolean valid) {
             evenValid = valid;
         }
-        void setOddValid(boolean valid) {
+        public synchronized void setOddValid(boolean valid) {
             oddValid = valid;
         }
-        public void setThrowExceptionOnPassivate(boolean bool) {
+        public synchronized void setThrowExceptionOnPassivate(boolean bool) {
             exceptionOnPassivate = bool;
         }
-        public void setMaxActive(int maxActive) {
+        public synchronized void setMaxActive(int maxActive) {
             this.maxActive = maxActive;
         }
-        public void setDestroyLatency(long destroyLatency) {
+        public synchronized void setDestroyLatency(long destroyLatency) {
             this.destroyLatency = destroyLatency;
         }
-        public void setMakeLatency(long makeLatency) {
+        public synchronized void setMakeLatency(long makeLatency) {
             this.makeLatency = makeLatency;
         }
         public Object makeObject() { 
@@ -1365,36 +1365,70 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             if (makeLatency > 0) {
                 doWait(makeLatency);
             }
-            return String.valueOf(makeCounter++);
+            int counter;
+            synchronized(this) {
+                counter = makeCounter++;
+            }
+            return String.valueOf(counter);
         }
         public void destroyObject(Object obj) throws Exception {
-            if (destroyLatency > 0) {
+            boolean wait;
+            boolean hurl;
+            synchronized(this) {
+                wait = destroyLatency > 0;
+                hurl = exceptionOnDestroy;
+            }
+            if (wait) {
                 doWait(destroyLatency);
             }
             synchronized(this) {
                 activeCount--;
             }
-            if (exceptionOnDestroy) {
+            if (hurl) {
                 throw new Exception();
             }
         }
         public boolean validateObject(Object obj) {
-            if (enableValidation) { 
-                return validateCounter++%2 == 0 ? evenValid : oddValid; 
+            boolean validate;
+            boolean evenTest;
+            boolean oddTest;
+            int counter;
+            synchronized(this) {
+                validate = enableValidation;
+                evenTest = evenValid;
+                oddTest = oddValid;
+                counter = validateCounter++;
+            }
+            if (validate) { 
+                return counter%2 == 0 ? evenTest : oddTest; 
             }
             else {
                 return true;
             }
         }
         public void activateObject(Object obj) throws Exception {
-            if (exceptionOnActivate) {
-                if (!(validateCounter++%2 == 0 ? evenValid : oddValid)) {
+            boolean hurl;
+            boolean evenTest;
+            boolean oddTest;
+            int counter;
+            synchronized(this) {
+                hurl = exceptionOnActivate;
+                evenTest = evenValid;
+                oddTest = oddValid;
+                counter = validateCounter++;
+            }
+            if (hurl) {
+                if (!(counter%2 == 0 ? evenTest : oddTest)) {
                     throw new Exception();
                 }
             }
         }
         public void passivateObject(Object obj) throws Exception {
-            if(exceptionOnPassivate) {
+            boolean hurl;
+            synchronized(this) {
+                hurl = exceptionOnPassivate;
+            }
+            if (hurl) {
                 throw new Exception();
             }
         }
@@ -1411,23 +1445,23 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         long makeLatency = 0;
         int maxActive = Integer.MAX_VALUE;
 
-        public boolean isThrowExceptionOnActivate() {
+        public synchronized boolean isThrowExceptionOnActivate() {
             return exceptionOnActivate;
         }
 
-        public void setThrowExceptionOnActivate(boolean b) {
+        public synchronized void setThrowExceptionOnActivate(boolean b) {
             exceptionOnActivate = b;
         }
         
-        public void setThrowExceptionOnDestroy(boolean b) {
+        public synchronized void setThrowExceptionOnDestroy(boolean b) {
             exceptionOnDestroy = b;
         }
 
-        public boolean isValidationEnabled() {
+        public synchronized boolean isValidationEnabled() {
             return enableValidation;
         }
 
-        public void setValidationEnabled(boolean b) {
+        public synchronized void setValidationEnabled(boolean b) {
             enableValidation = b;
         }
         
