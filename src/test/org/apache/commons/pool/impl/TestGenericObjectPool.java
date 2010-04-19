@@ -1354,32 +1354,37 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         public synchronized void setMakeLatency(long makeLatency) {
             this.makeLatency = makeLatency;
         }
+        public synchronized void setValidateLatency(long validateLatency) {
+            this.validateLatency = validateLatency;
+        }
         public Object makeObject() { 
+            final long waitLatency;
             synchronized(this) {
                 activeCount++;
                 if (activeCount > maxActive) {
                     throw new IllegalStateException(
                         "Too many active instances: " + activeCount);
                 }
+                waitLatency = makeLatency;
             }
-            if (makeLatency > 0) {
-                doWait(makeLatency);
+            if (waitLatency > 0) {
+                doWait(waitLatency);
             }
-            int counter;
+            final int counter;
             synchronized(this) {
                 counter = makeCounter++;
             }
             return String.valueOf(counter);
         }
         public void destroyObject(Object obj) throws Exception {
-            boolean wait;
-            boolean hurl;
+            final long waitLatency;
+            final boolean hurl;
             synchronized(this) {
-                wait = destroyLatency > 0;
+                waitLatency = destroyLatency;
                 hurl = exceptionOnDestroy;
             }
-            if (wait) {
-                doWait(destroyLatency);
+            if (waitLatency > 0) {
+                doWait(waitLatency);
             }
             synchronized(this) {
                 activeCount--;
@@ -1389,15 +1394,20 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             }
         }
         public boolean validateObject(Object obj) {
-            boolean validate;
-            boolean evenTest;
-            boolean oddTest;
-            int counter;
+            final boolean validate;
+            final boolean evenTest;
+            final boolean oddTest;
+            final long waitLatency;
+            final int counter;
             synchronized(this) {
                 validate = enableValidation;
                 evenTest = evenValid;
                 oddTest = oddValid;
                 counter = validateCounter++;
+                waitLatency = validateLatency;
+            }
+            if (waitLatency > 0) {
+                doWait(waitLatency);
             }
             if (validate) { 
                 return counter%2 == 0 ? evenTest : oddTest; 
@@ -1407,10 +1417,10 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             }
         }
         public void activateObject(Object obj) throws Exception {
-            boolean hurl;
-            boolean evenTest;
-            boolean oddTest;
-            int counter;
+            final boolean hurl;
+            final boolean evenTest;
+            final boolean oddTest;
+            final int counter;
             synchronized(this) {
                 hurl = exceptionOnActivate;
                 evenTest = evenValid;
@@ -1424,7 +1434,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             }
         }
         public void passivateObject(Object obj) throws Exception {
-            boolean hurl;
+            final boolean hurl;
             synchronized(this) {
                 hurl = exceptionOnPassivate;
             }
@@ -1443,6 +1453,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         boolean enableValidation = true;
         long destroyLatency = 0;
         long makeLatency = 0;
+        long validateLatency = 0;
         int maxActive = Integer.MAX_VALUE;
 
         public synchronized boolean isThrowExceptionOnActivate() {
@@ -1463,6 +1474,10 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
         public synchronized void setValidationEnabled(boolean b) {
             enableValidation = b;
+        }
+        
+        public synchronized int getMakeCounter() {
+            return makeCounter;
         }
         
         private void doWait(long latency) {
@@ -1672,5 +1687,30 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             }            
         }
         assertEquals("Expected half the threads to fail",wtt.length/2,failed);
+    }
+    
+    /**
+     * Test the following scenario:
+     *   Thread 1 borrows an instance
+     *   Thread 2 starts to borrow another instance before thread 1 returns its instance
+     *   Thread 1 returns its instance while thread 2 is validating its newly created instance
+     * The test verifies that the instance created by Thread 2 is not leaked.
+     */
+    public void testMakeConcurrentWithReturn() throws Exception {
+        SimpleFactory factory = new SimpleFactory();
+        GenericObjectPool pool = new GenericObjectPool(factory); 
+        pool.setTestOnBorrow(true);
+        factory.setValid(true);
+        // Borrow and return an instance, with a short wait
+        WaitingTestThread thread1 = new WaitingTestThread(pool, 200);
+        thread1.start();
+        Thread.sleep(50); // wait for validation to succeed
+        // Slow down validation and borrow an instance
+        factory.setValidateLatency(400);
+        Object instance = pool.borrowObject();
+        // Now make sure that we have not leaked an instance
+        assertEquals(factory.getMakeCounter(), pool.getNumIdle() + 1); 
+        pool.returnObject(instance);
+        assertEquals(factory.getMakeCounter(), pool.getNumIdle());
     }
 }
