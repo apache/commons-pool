@@ -40,7 +40,7 @@ public final class PoolUtils {
      * Timer used to periodically check pools idle object count.
      * Because a {@link Timer} creates a {@link Thread} this is lazily instantiated.
      */
-    private static Timer MIN_IDLE_TIMER;
+    private static Timer MIN_IDLE_TIMER; //@GuardedBy("this")
 
     /**
      * PoolUtils instances should NOT be constructed in standard programming.
