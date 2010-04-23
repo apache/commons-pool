@@ -2034,6 +2034,6 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * that objects can be allocated in the order in which the threads requested
      * them.
      */
-    private LinkedList _allocationQueue = new LinkedList();
+    private final LinkedList _allocationQueue = new LinkedList();
 
 }
