@@ -21,6 +21,9 @@
   </properties>
   <body>
   <release version="1.5.5" date="TBD" description="TBD">
+    <action dev="sebb" type="update" issue="POOL-166">
+      GenericKeyedObjectPool.destroy could use entrySet() rather than keySet() followed by get()
+    </action>
     <action dev="psteitz" type="fix" issue="POOL-157" due-to="David Hu">
       GenericObjectPool and GenericKeyedObjectPool setFactory methods destroy idle instances
       in the pool by contract. Prior to the fix for this issue, newly set factories were being
