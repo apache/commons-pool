@@ -28,6 +28,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TimerTask;
+import java.util.Map.Entry;
 
 import org.apache.commons.pool.BaseKeyedObjectPool;
 import org.apache.commons.pool.KeyedObjectPool;
@@ -1455,9 +1456,10 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @param factory KeyedPoolableObjectFactory used to destroy the objects
      */
     private void destroy(Map m, KeyedPoolableObjectFactory factory) {
-        for (Iterator keys = m.keySet().iterator(); keys.hasNext();) {
-            Object key = keys.next();
-            Collection c = (Collection) m.get(key);
+        for (Iterator entries = m.entrySet().iterator(); entries.hasNext();) {
+            Map.Entry entry = (Entry) entries.next();
+            Object key = entry.getKey();
+            Collection c = (Collection) entry.getValue();
             for (Iterator it = c.iterator(); it.hasNext();) {
                 try {
                     factory.destroyObject(
