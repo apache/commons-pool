@@ -157,12 +157,12 @@
           <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
               <includes>
-		        <include>**/Test*.java</include>
-		      </includes>
+                <include>**/Test*.java</include>
+              </includes>
               <excludes>
                 <!-- nested classes are not handled properly by Surefire -->
                 <exclude>**/Test*$*.java</exclude>
-		        <exclude>org/apache/commons/pool/impl/TestSoftRefOutOfMemory.java</exclude>
+                <exclude>org/apache/commons/pool/impl/TestSoftRefOutOfMemory.java</exclude>
               </excludes>
             </configuration>
           </plugin>
