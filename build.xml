@@ -143,8 +143,8 @@
           <fileset dir="${src.test.dir}">
             <include name="**/Test*.java"/>
             <exclude name="org/apache/commons/pool/impl/TestSoftRefOutOfMemory.java"/>
-          	<!-- abstract classes -->
-          	<exclude name="**/TestObjectPool.java"/>
+            <!-- abstract classes -->
+            <exclude name="**/TestObjectPool.java"/>
             <exclude name="**/TestObjectPoolFactory.java"/>
             <exclude name="**/TestKeyedObjectPool.java"/>
             <exclude name="**/TestKeyedObjectPoolFactory.java"/>
