@@ -128,11 +128,10 @@ import org.apache.commons.pool.PoolUtils;
  * as they sit idle in the pool and to ensure that a minimum number of idle
  * objects is maintained for each key. This is performed by an
  * "idle object eviction" thread, which runs asynchronously. Caution should be
- * used when configuring this optional feature. Eviction runs require an
- * exclusive synchronization lock on the pool, so if they run too frequently
- * and / or incur excessive latency when creating, destroying or validating
- * object instances, performance issues may result.  The idle object eviction
- * thread may be configured using the following attributes:
+ * used when configuring this optional feature. Eviction runs contend with client
+ * threads for access to objects in the pool, so if they run too frequently
+ * performance issues may result.  The idle object eviction thread may be
+ * configured using the following attributes:
  * <ul>
  *  <li>
  *   {@link #setTimeBetweenEvictionRunsMillis timeBetweenEvictionRunsMillis}
