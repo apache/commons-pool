@@ -98,7 +98,7 @@ class EvictionTimer {
 
     private static class PrivilegedSetTccl implements PrivilegedAction {
 
-        private ClassLoader cl;
+        private final ClassLoader cl;
 
         PrivilegedSetTccl(ClassLoader cl) {
             this.cl = cl;
