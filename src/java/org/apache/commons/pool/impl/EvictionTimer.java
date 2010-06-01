@@ -17,6 +17,8 @@
 
 package org.apache.commons.pool.impl;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -58,7 +60,17 @@ class EvictionTimer {
      */
     static synchronized void schedule(TimerTask task, long delay, long period) {
         if (null == _timer) {
-            _timer = new Timer(true);
+            // Force the new Timer thread to be created with a context class
+            // loader set to the class loader that loaded this library
+            ClassLoader ccl = (ClassLoader) AccessController.doPrivileged(
+                    new PrivilegedGetTccl());
+            try {
+                AccessController.doPrivileged(new PrivilegedSetTccl(
+                        EvictionTimer.class.getClassLoader()));
+                _timer = new Timer(true);
+            } finally {
+                AccessController.doPrivileged(new PrivilegedSetTccl(ccl));
+            }
         }
         _usageCount++;
         _timer.schedule(task, delay, period);
@@ -76,4 +88,26 @@ class EvictionTimer {
             _timer = null;
         }
     }
+    
+    private static class PrivilegedGetTccl implements PrivilegedAction {
+
+        public Object run() {
+            return Thread.currentThread().getContextClassLoader();
+        }
+    }
+
+    private static class PrivilegedSetTccl implements PrivilegedAction {
+
+        private ClassLoader cl;
+
+        PrivilegedSetTccl(ClassLoader cl) {
+            this.cl = cl;
+        }
+
+        public Object run() {
+            Thread.currentThread().setContextClassLoader(cl);
+            return null;
+        }
+    }
+
 }
