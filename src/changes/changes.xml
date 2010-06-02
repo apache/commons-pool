@@ -21,6 +21,10 @@
   </properties>
   <body>
   <release version="1.5.5" date="TBD" description="TBD">
+    <action dev="markt" issue="POOL-161">
+      Made the default context class loader for the eviction thread the same loader that loads
+      the library to prevent memory leaks in multiple class loader environments.
+    </action>
     <action dev="sebb" type="update" issue="POOL-166">
       GenericKeyedObjectPool.destroy could use entrySet() rather than keySet() followed by get()
     </action>
