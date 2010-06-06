@@ -2484,7 +2484,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @see #setMinIdle
      * @see #getMinIdle
      */
-    private int _minIdle = DEFAULT_MIN_IDLE;
+    private volatile int _minIdle = DEFAULT_MIN_IDLE;
 
     /**
      * The cap on the number of active instances from the pool.
