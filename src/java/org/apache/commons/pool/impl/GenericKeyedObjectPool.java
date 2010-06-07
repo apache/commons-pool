@@ -805,7 +805,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @see #getMinIdle
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    public synchronized void setMinIdle(int poolSize) {
+    public void setMinIdle(int poolSize) {
         _minIdle = poolSize;
     }
 
@@ -819,7 +819,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @since Pool 1.3
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    public synchronized int getMinIdle() {
+    public int getMinIdle() {
         return _minIdle;
     }
 
