@@ -1247,11 +1247,10 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
     }
 
     /**
-     * <p>Invalidates the given object instance.  Decrements the active count
-     * and destroys the instance.</p>
+     * {@inheritDoc}
+     * <p>Activation of this method decrements the active count and attempts to destroy the instance.</p>
      * 
-     * @param obj instance to invalidate
-     * @throws Exception if an exception occurs destroying the object
+     * @throws Exception if the configured {@link PoolableObjectFactory} throws an exception destroying obj
      */
     public void invalidateObject(Object obj) throws Exception {
         try {
@@ -1278,7 +1277,8 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * <li>Invoking this method does not prevent objects being
      * returned to the idle instance pool, even during its execution. It locks
      * the pool only during instance removal. Additional instances may be returned
-     * while removed items are being destroyed.</li></ul></p>
+     * while removed items are being destroyed.</li>
+     * <li>Exceptions encountered destroying idle instances are swallowed.</li></ul></p>
      */
     public void clear() {
         List toDestroy = new ArrayList();
