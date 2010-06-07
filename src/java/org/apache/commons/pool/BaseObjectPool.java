@@ -44,15 +44,13 @@ public abstract class BaseObjectPool implements ObjectPool {
     public abstract void returnObject(Object obj) throws Exception;
     
     /**
-     * Invalidates an object from the pool.
-     * By contract, <code>obj</code> <strong>must</strong> have been obtained
-     * using {@link #borrowObject borrowObject}
-     * or a related method as defined in an implementation
-     * or sub-interface.
-     * <p>
-     * This method should be used when an object that has been borrowed
-     * is determined (due to an exception or other problem) to be invalid.
-     * </p>
+     * <p>Invalidates an object from the pool.</p>
+     * 
+     * <p>By contract, <code>obj</code> <strong>must</strong> have been obtained
+     * using {@link #borrowObject borrowObject}.<p>
+     * 
+     * <p>This method should be used when an object that has been borrowed
+     * is determined (due to an exception or other problem) to be invalid.</p>
      *
      * @param obj a {@link #borrowObject borrowed} instance to be disposed.
      * @throws Exception 

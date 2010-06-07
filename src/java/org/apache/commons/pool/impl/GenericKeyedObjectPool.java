@@ -34,6 +34,7 @@ import org.apache.commons.pool.BaseKeyedObjectPool;
 import org.apache.commons.pool.KeyedObjectPool;
 import org.apache.commons.pool.KeyedPoolableObjectFactory;
 import org.apache.commons.pool.PoolUtils;
+import org.apache.commons.pool.PoolableObjectFactory;
 
 /**
  * A configurable <code>KeyedObjectPool</code> implementation.
@@ -1323,7 +1324,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     
     /**
      * Clears any objects sitting idle in the pool by removing them from the
-     * idle instance pool and then invoking the configured 
+     * idle instance pool and then invoking the configured PoolableObjectFactory's
      * {@link KeyedPoolableObjectFactory#destroyObject(Object, Object)} method on
      * each idle instance.
      *  
@@ -1333,7 +1334,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * <li>Invoking this method does not prevent objects being
      * returned to the idle instance pool, even during its execution. It locks
      * the pool only during instance removal. Additional instances may be returned
-     * while removed items are being destroyed.</li></ul></p>
+     * while removed items are being destroyed.</li>
+     * <li>Exceptions encountered destroying idle instances are swallowed.</li></ul></p>
      */
     public void clear() {
         Map toDestroy = new HashMap();
@@ -1640,8 +1642,9 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     }
 
     /**
-     * <p>Invalidates the object instance associated with the given key.  Decrements the active count
-     * associated with the given keyed pool and destroys the instance.</p>
+     * {@inheritDoc}
+     * <p>Activation of this method decrements the active count associated with the given keyed pool 
+     * and attempts to destroy <code>obj.</code></p>
      * 
      * @param key pool key
      * @param obj instance to invalidate
