@@ -108,17 +108,15 @@ public interface KeyedObjectPool {
     void returnObject(Object key, Object obj) throws Exception;
 
     /**
-     * Invalidates an object from the pool
-     * By contract, <code>obj</code> <strong>must</strong> have been obtained
-     * using {@link #borrowObject borrowObject}
-     * or a related method as defined in an implementation
-     * or sub-interface
-     * using a <code>key</code> that is equivalent to the one used to
-     * borrow the <code>Object</code> in the first place.
-     * <p>
-     * This method should be used when an object that has been borrowed
-     * is determined (due to an exception or other problem) to be invalid.
-     * </p>
+     * <p>Invalidates an object from the pool.</p>
+     * 
+     * <p>By contract, <code>obj</code> <strong>must</strong> have been obtained
+     * using {@link #borrowObject borrowObject} or a related method as defined
+     * in an implementation or sub-interface using a <code>key</code> that is
+     * equivalent to the one used to borrow the <code>Object</code> in the first place.</p>
+     *
+     * <p>This method should be used when an object that has been borrowed
+     * is determined (due to an exception or other problem) to be invalid.</p>
      *
      * @param key the key used to obtain the object
      * @param obj a {@link #borrowObject borrowed} instance to be returned.
