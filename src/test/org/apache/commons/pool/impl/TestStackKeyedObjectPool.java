@@ -110,6 +110,24 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
             assertEquals((i < 8 ? i+1 : 8),pool.getNumIdle(""));
         }
     }
+    
+    /**
+     * Verifies maxSleeping contract: When returnObject triggers maxSleeping exceeded,
+     * the bottom (oldest) instance in the pool is destroyed to make room for the newly
+     * returning instance, which is pushed onto the idle object stack.
+     */
+    public void testRemoveOldest() throws Exception {
+        pool._maxSleeping = 2;
+        Object obj0 = pool.borrowObject("");
+        Object obj1 = pool.borrowObject("");
+        Object obj2 = pool.borrowObject("");
+        pool.returnObject("", obj0); // Push 0 onto bottom of stack
+        pool.returnObject("", obj1); // Push 1
+        pool.returnObject("", obj2); // maxSleeping exceeded -> 0 destroyed, 2 pushed
+        assertEquals("2", pool.borrowObject("")); // 2 was pushed on top
+        assertEquals("1", pool.borrowObject("")); // 1 still there
+        assertEquals("3", pool.borrowObject("")); // New instance created (0 is gone)
+    }
 
     public void testPoolWithNullFactory() throws Exception {
         KeyedObjectPool pool = new StackKeyedObjectPool(10);
