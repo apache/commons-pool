@@ -132,6 +132,13 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
         _activeCount = new HashMap();
     }
 
+    /**
+     * Borrows an object with the given key.  If there are no idle instances under the
+     * given key, a new one is created.
+     * 
+     * @param key the pool key
+     * @return keyed poolable object instance
+     */
     public synchronized Object borrowObject(Object key) throws Exception {
         assertOpen();
         Stack stack = (Stack)(_pools.get(key));
@@ -182,6 +189,15 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
         return obj;
     }
 
+    /**
+     * Returns <code>obj</code> to the pool under <code>key</code>.  If adding the
+     * returning instance to the pool results in {@link #_maxSleeping maxSleeping}
+     * exceeded for the given key, the oldest instance in the idle object pool
+     * is destroyed to make room for the returning instance.
+     * 
+     * @param key the pool key
+     * @param obj returning instance
+     */
     public synchronized void returnObject(Object key, Object obj) throws Exception {
         decrementActiveCount(key);
         if (null != _factory) {
@@ -235,6 +251,9 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
         _totIdle++;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized void invalidateObject(Object key, Object obj) throws Exception {
         decrementActiveCount(key);
         if(null != _factory) {
@@ -370,6 +389,12 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
         destroyStack(key,stack);
     }
 
+    /**
+     * Destroys all instances in the stack and clears the stack.
+     * 
+     * @param key key passed to factory when destroying instances
+     * @param stack stack to destroy
+     */
     private synchronized void destroyStack(Object key, Stack stack) {
         if(null == stack) {
             return;
@@ -390,6 +415,12 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
         }
     }
 
+    /**
+     * Returns a string representation of this StackKeyedObjectPool, including
+     * the number of pools, the keys and the size of each keyed pool.
+     * 
+     * @return Keys and pool sizes
+     */
     public synchronized String toString() {
         StringBuffer buf = new StringBuffer();
         buf.append(getClass().getName());
@@ -436,6 +467,12 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
         }
     }
 
+    /**
+     * Returns the active instance count for the given key.
+     * 
+     * @param key pool key
+     * @return active count
+     */
     private int getActiveCount(Object key) {
         try {
             return ((Integer)_activeCount.get(key)).intValue();
@@ -446,6 +483,12 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
         }
     }
 
+    /**
+     * Increment the active count for the given key. Also
+     * increments the total active count.
+     * 
+     * @param key pool key
+     */
     private void incrementActiveCount(Object key) {
         _totActive++;
         Integer old = (Integer)(_activeCount.get(key));
@@ -456,6 +499,12 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
         }
     }
 
+    /**
+     * Decrements the active count for the given key.
+     * Also decrements the total active count.
+     * 
+     * @param key pool key
+     */
     private void decrementActiveCount(Object key) {
         _totActive--;
         Integer active = (Integer)(_activeCount.get(key));
