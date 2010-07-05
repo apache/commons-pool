@@ -36,6 +36,7 @@ public class StackObjectPoolFactory implements ObjectPoolFactory {
      * Create a new StackObjectPoolFactory.
      *
      * @see StackObjectPool#StackObjectPool()
+     * @deprecated to be removed in pool 2.0 - use {@link #StackObjectPoolFactory(PoolableObjectFactory)}
      */
     public StackObjectPoolFactory() {
         this((PoolableObjectFactory)null,StackObjectPool.DEFAULT_MAX_SLEEPING,StackObjectPool.DEFAULT_INIT_SLEEPING_CAPACITY);
@@ -46,6 +47,7 @@ public class StackObjectPoolFactory implements ObjectPoolFactory {
      *
      * @param maxIdle cap on the number of "sleeping" instances in the pool.
      * @see StackObjectPool#StackObjectPool(int)
+     * @deprecated to be removed in pool 2.0 - use {@link #StackObjectPoolFactory(PoolableObjectFactory, int)}
      */
     public StackObjectPoolFactory(int maxIdle) {
         this((PoolableObjectFactory)null,maxIdle,StackObjectPool.DEFAULT_INIT_SLEEPING_CAPACITY);
@@ -55,8 +57,10 @@ public class StackObjectPoolFactory implements ObjectPoolFactory {
      * Create a new StackObjectPoolFactory.
      *
      * @param maxIdle cap on the number of "sleeping" instances in the pool.
-     * @param initIdleCapacity - initial size of the pool (this specifies the size of the container, it does not cause the pool to be pre-populated.)
+     * @param initIdleCapacity - initial size of the pool (this specifies the size of the container,
+     * it does not cause the pool to be pre-populated.)
      * @see StackObjectPool#StackObjectPool(int, int)
+     * @deprecated to be removed in pool 2.0 - use {@link #StackObjectPoolFactory(PoolableObjectFactory, int, int)}
      */
     public StackObjectPoolFactory(int maxIdle, int initIdleCapacity) {
         this((PoolableObjectFactory)null,maxIdle,initIdleCapacity);
@@ -87,7 +91,8 @@ public class StackObjectPoolFactory implements ObjectPoolFactory {
      *
      * @param factory the PoolableObjectFactory used by created pools.
      * @param maxIdle cap on the number of "sleeping" instances in the pool.
-     * @param initIdleCapacity - initial size of the pool (this specifies the size of the container, it does not cause the pool to be pre-populated.)
+     * @param initIdleCapacity - initial size of the pool (this specifies the size of the container,
+     * it does not cause the pool to be pre-populated.)
      */
     public StackObjectPoolFactory(PoolableObjectFactory factory, int maxIdle, int initIdleCapacity) {
         _factory = factory;
@@ -95,12 +100,61 @@ public class StackObjectPoolFactory implements ObjectPoolFactory {
         _initCapacity = initIdleCapacity;
     }
 
+    /**
+     * Create a StackObjectPool.
+     * 
+     * @return a new StackObjectPool with the configured factory, maxIdle and initial capacity settings
+     */
     public ObjectPool createPool() {
         return new StackObjectPool(_factory,_maxSleeping,_initCapacity);
     }
 
+    /**
+     * The PoolableObjectFactory used by created pools.
+     * @deprecated to be made private in pool 2.0
+     */
     protected PoolableObjectFactory _factory = null;
+    
+    /**
+     * The maximum number of idle instances in created pools.
+     * @deprecated to be made private in pool 2.0
+     */
     protected int _maxSleeping = StackObjectPool.DEFAULT_MAX_SLEEPING;
+    
+    /**
+     * The initial size of created pools.
+     * @deprecated to be made private in pool 2.0
+     */
     protected int _initCapacity = StackObjectPool.DEFAULT_INIT_SLEEPING_CAPACITY;
+
+    /**
+     * Returns the factory used by created pools.
+     * 
+     * @return the PoolableObjectFactory used by created pools
+     * @since 1.5.5
+     */
+    public PoolableObjectFactory getFactory() {
+        return _factory;
+    }
+
+    /**
+     * Returns the maxIdle setting for created pools.
+     * 
+     * @return the maximum number of idle instances in created pools
+     * @since 1.5.5
+     */
+    public int getMaxSleeping() {
+        return _maxSleeping;
+    }
+
+    /**
+     * Returns the initial capacity of created pools.
+     * 
+     * @return size of created containers (created pools are not pre-populated)
+     * @since 1.5.5
+     */
+    public int getInitCapacity() {
+        return _initCapacity;
+    }
 
 }
