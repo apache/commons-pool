@@ -113,6 +113,7 @@ public abstract class BaseObjectPool implements ObjectPool {
      * @param factory the PoolableObjectFactory
      * @throws UnsupportedOperationException
      * @throws IllegalStateException
+     * @deprecated to be removed in pool 2.0
      */
     public void setFactory(PoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
         throw new UnsupportedOperationException();
