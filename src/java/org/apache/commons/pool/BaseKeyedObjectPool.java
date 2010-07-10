@@ -114,6 +114,7 @@ public abstract class BaseKeyedObjectPool implements KeyedObjectPool {
      * Not supported in this base implementation.
      * Always throws an {@link UnsupportedOperationException},
      * subclasses should override this behavior.
+     * @deprecated to be removed in pool 2.0
      */
     public void setFactory(KeyedPoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
         throw new UnsupportedOperationException();
