@@ -30,28 +30,44 @@ package org.apache.commons.pool;
  * @since Pool 1.0
  */
 public abstract class BasePoolableObjectFactory implements PoolableObjectFactory {
-    public abstract Object makeObject()
-        throws Exception;
+    
+    /**
+     * {@inheritDoc}
+     */
+    public abstract Object makeObject() throws Exception;
 
-    /** No-op. */
+    /**
+     *  No-op.
+     *  
+     *  @param obj ignored
+     */
     public void destroyObject(Object obj)
         throws Exception  {
     }
 
     /**
      * This implementation always returns <tt>true</tt>.
+     * 
+     * @param obj ignored
      * @return <tt>true</tt>
      */
     public boolean validateObject(Object obj) {
         return true;
     }
 
-    /** No-op. */
-    public void activateObject(Object obj)
-        throws Exception {
+    /**
+     *  No-op.
+     *  
+     *  @param obj ignored
+     */
+    public void activateObject(Object obj) throws Exception {
     }
 
-    /** No-op. */
+    /**
+     *  No-op.
+     *  
+     * @param obj ignored
+     */
     public void passivateObject(Object obj)
         throws Exception {
     }

@@ -26,7 +26,7 @@ import java.util.TimerTask;
  * <p>
  * Provides a shared idle object eviction timer for all pools. This class wraps
  * the standard {@link Timer} and keeps track of how many pools are using it.
- * If no pools are using the timer, it is cancelled. This prevents a thread
+ * If no pools are using the timer, it is canceled. This prevents a thread
  * being left running which, in application server environments, can lead to
  * memory leads and/or prevent applications from shutting down or reloading
  * cleanly.
@@ -89,21 +89,38 @@ class EvictionTimer {
         }
     }
     
+    /** 
+     * {@link PrivilegedAction} used to get the ContextClassLoader
+     */
     private static class PrivilegedGetTccl implements PrivilegedAction {
 
+        /** 
+         * {@inheritDoc}
+         */
         public Object run() {
             return Thread.currentThread().getContextClassLoader();
         }
     }
 
+    /** 
+     * {@link PrivilegedAction} used to set the ContextClassLoader
+     */
     private static class PrivilegedSetTccl implements PrivilegedAction {
 
+        /** ClassLoader */
         private final ClassLoader cl;
 
+        /**
+         * Create a new PrivilegedSetTccl using the given classloader
+         * @param cl ClassLoader to use
+         */
         PrivilegedSetTccl(ClassLoader cl) {
             this.cl = cl;
         }
 
+        /** 
+         * {@inheritDoc}
+         */
         public Object run() {
             Thread.currentThread().setContextClassLoader(cl);
             return null;
