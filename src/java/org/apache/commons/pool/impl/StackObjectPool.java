@@ -434,7 +434,7 @@ public class StackObjectPool extends BaseObjectPool implements ObjectPool {
      * @return the factory
      * @since 1.5.5
      */
-    public PoolableObjectFactory getFactory() {
+    public synchronized PoolableObjectFactory getFactory() {
         return _factory;
     }
 
