@@ -65,7 +65,7 @@
     <!-- Require hash code override when equals is -->
     <module name="EqualsHashCode"/>
     
-    <!-- Disallow unecessary instantiantion of Boolean, String -->
+    <!-- Disallow unnecessary instantiation of Boolean, String -->
     <module name="IllegalInstantiation">
       <property name="classes" value="java.lang.Boolean, java.lang.String"/>
     </module>
