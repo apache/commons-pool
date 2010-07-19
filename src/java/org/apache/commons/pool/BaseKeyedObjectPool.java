@@ -28,7 +28,15 @@ package org.apache.commons.pool;
  * @since Pool 1.0
  */
 public abstract class BaseKeyedObjectPool implements KeyedObjectPool {
+    
+    /**
+     * {@inheritDoc}
+     */
     public abstract Object borrowObject(Object key) throws Exception;
+    
+    /**
+     * {@inheritDoc}
+     */
     public abstract void returnObject(Object key, Object obj) throws Exception;
     
     /**
@@ -51,6 +59,8 @@ public abstract class BaseKeyedObjectPool implements KeyedObjectPool {
      * Not supported in this base implementation.
      * Always throws an {@link UnsupportedOperationException},
      * subclasses should override this behavior.
+     * @param key ignored
+     * @throws UnsupportedOperationException
      */
     public void addObject(Object key) throws Exception, UnsupportedOperationException {
         throw new UnsupportedOperationException();
@@ -59,6 +69,7 @@ public abstract class BaseKeyedObjectPool implements KeyedObjectPool {
     /**
      * Not supported in this base implementation.
      * @return a negative value.
+     * @param key ignored
      */
     public int getNumIdle(Object key) throws UnsupportedOperationException {
         return -1;
@@ -67,6 +78,7 @@ public abstract class BaseKeyedObjectPool implements KeyedObjectPool {
     /**
      * Not supported in this base implementation.
      * @return a negative value.
+     * @param key ignored
      */
     public int getNumActive(Object key) throws UnsupportedOperationException {
         return -1;
@@ -90,6 +102,7 @@ public abstract class BaseKeyedObjectPool implements KeyedObjectPool {
 
     /**
      * Not supported in this base implementation.
+     * @throws UnsupportedOpereationException
      */
     public void clear() throws Exception, UnsupportedOperationException {
         throw new UnsupportedOperationException();
@@ -97,6 +110,8 @@ public abstract class BaseKeyedObjectPool implements KeyedObjectPool {
 
     /**
      * Not supported in this base implementation.
+     * @param key ignored
+     * @throws UnsupportedOperationException
      */
     public void clear(Object key) throws Exception, UnsupportedOperationException {
         throw new UnsupportedOperationException();
@@ -114,6 +129,7 @@ public abstract class BaseKeyedObjectPool implements KeyedObjectPool {
      * Not supported in this base implementation.
      * Always throws an {@link UnsupportedOperationException},
      * subclasses should override this behavior.
+     * @param factory the new KeyedPoolableObjectFactory
      * @deprecated to be removed in pool 2.0
      */
     public void setFactory(KeyedPoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
@@ -141,5 +157,6 @@ public abstract class BaseKeyedObjectPool implements KeyedObjectPool {
         }
     }
 
+    /** Whether or not the pool is close */
     private volatile boolean closed = false;
 }
