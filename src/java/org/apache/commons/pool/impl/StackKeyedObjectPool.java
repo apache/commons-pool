@@ -24,6 +24,7 @@ import org.apache.commons.pool.PoolUtils;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Stack;
 
@@ -455,8 +456,9 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
      * Trying to change the <code>factory</code> after a pool has been used will frequently
      * throw an {@link UnsupportedOperationException}.
      *
-     * @param factory the {@link KeyedPoolableObjectFactory} used to create new instances.
+     * @param factory the {@link KeyedPoolableObjectFactory} used to manage object instances
      * @throws IllegalStateException when the factory cannot be set at this time
+     * @deprecated to be removed in pool 2.0
      */
     public synchronized void setFactory(KeyedPoolableObjectFactory factory) throws IllegalStateException {
         if(0 < getNumActive()) {
@@ -465,6 +467,14 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
             clear();
             _factory = factory;
         }
+    }
+    
+    /**
+     * @return the {@link KeyedPoolableObjectFactory} used by this pool to manage object instances.
+     * @since 1.5.5
+     */
+    public synchronized KeyedPoolableObjectFactory getFactory() {
+        return _factory;
     }
 
     /**
@@ -517,6 +527,54 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
         }
     }
 
+    
+    /**
+     * @return map of keyed pools
+     * @since 1.5.5
+     */
+    public Map getPools() {
+        return _pools;
+    }
+
+    /**
+     * @return the cap on the number of "sleeping" instances in <code>each</code> pool.
+     * @since 1.5.5
+     */
+    public int getMaxSleeping() {
+        return _maxSleeping;
+    }
+
+    /**
+     * @return the initial capacity of each pool.
+     * @since 1.5.5
+     */
+    public int getInitSleepingCapacity() {
+        return _initSleepingCapacity;
+    }
+
+    /**
+     * @return the _totActive
+     */
+    public int getTotActive() {
+        return _totActive;
+    }
+
+    /**
+     * @return the _totIdle
+     */
+    public int getTotIdle() {
+        return _totIdle;
+    }
+
+    /**
+     * @return the _activeCount
+     * @since 1.5.5
+     */
+    public Map getActiveCount() {
+        return _activeCount;
+    }
+
+
     /** The default cap on the number of "sleeping" instances in the pool. */
     protected static final int DEFAULT_MAX_SLEEPING  = 8;
 
@@ -527,25 +585,46 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
      */
     protected static final int DEFAULT_INIT_SLEEPING_CAPACITY = 4;
 
-    /** My named-set of pools. */
+    /**
+     *  My named-set of pools.
+     *  @deprecated to be removed in pool 2.0.  Use {@link #getPools()}
+     */
     protected HashMap _pools = null;
 
-    /** My {@link KeyedPoolableObjectFactory}. */
+    /**
+     * My {@link KeyedPoolableObjectFactory}.
+     * @deprecated to be removed in pool 2.0.  Use {@link #getFactory()}
+     */
     protected KeyedPoolableObjectFactory _factory = null;
 
-    /** The cap on the number of "sleeping" instances in <code>each</code> pool. */
+    /**
+     *  The cap on the number of "sleeping" instances in <code>each</code> pool.
+     *  @deprecated to be removed in pool 2.0.  Use {@link #getMaxSleeping()}
+     */
     protected int _maxSleeping = DEFAULT_MAX_SLEEPING;
 
-    /** The initial capacity of each pool. */
+    /**
+     * The initial capacity of each pool.
+     * @deprecated to be removed in pool 2.0.  Use {@link #getInitSleepingCapacity()}.
+     */
     protected int _initSleepingCapacity = DEFAULT_INIT_SLEEPING_CAPACITY;
 
-    /** Total number of object borrowed and not yet retuened for all pools */
+    /**
+     * Total number of object borrowed and not yet returned for all pools.
+     * @deprecated to be removed in pool 2.0.  Use {@link #getTotActive()}.
+     */
     protected int _totActive = 0;
 
-    /** Total number of objects "sleeping" for all pools */
+    /**
+     * Total number of objects "sleeping" for all pools
+     * @deprecated to be removed in pool 2.0.  Use {@link #getTotIdle()}.
+     */
     protected int _totIdle = 0;
 
-    /** Number of active objects borrowed and not yet returned by pool */
+    /**
+     * Number of active objects borrowed and not yet returned by pool
+     * @deprecated to be removed in pool 2.0.  Use {@link #getActiveCount()}.
+     */
     protected HashMap _activeCount = null;
 
 }
