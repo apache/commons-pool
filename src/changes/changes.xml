@@ -20,7 +20,9 @@
     <title>Commons Pool Changes</title>
   </properties>
   <body>
-  <release version="1.5.5" date="TBD" description="TBD">
+  <release version="1.5.5" date="TBD" description=
+     "This is a patch release, including bugfixes, documentation improvements and some deprecations
+      in preparation for pool 2.0.">
     <action dev="psteitz" type="update" issue="POOL-169">
       In preparation for pool 2.0, deprecated direct access to protected fields
       and setFactory methods.  In pool 2.0, pool object factories will be immutable.

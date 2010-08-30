@@ -1,18 +1,30 @@
                         
 
-              commons-pool-1.5.4 RELEASE NOTES
+              commons-pool-1.5.5 RELEASE NOTES
 
-This is a patch release containing a fix for POOL-152, a regression introduced in version 1.5.
+This is a patch release, including bugfixes, documentation improvements and some deprecations
+in preparation for pool 2.0.
 
 Changes in this version include:
 
-
 Fixed Bugs:
-o  POOL-152:  GenericObjectPool can block forever in borrowObject when the pool is exhausted and a newly created
-      object fails validation. When borrowing an object if a new object is created but validate fails,
-      the latch should not be returned to the queue as an exception will be thrown. Thanks to Bushov Alexander. 
+o  POOL-158:  Made GenericKeyedObjectPool._minIdle volatile. 
+o  POOL-161:  Made the default context class loader for the eviction thread the same loader that loads
+      the library to prevent memory leaks in multiple class loader environments. 
+o  POOL-157:  GenericObjectPool and GenericKeyedObjectPool setFactory methods destroy idle instances
+      in the pool by contract. Prior to the fix for this issue, newly set factories were being
+      used to destroy idle instances, rather than the factories used to create them.  The 
+      setFactory methods have also been deprecated, to be removed in version 2.0. Thanks to David Hu. 
+o  POOL-162:  When waiting threads are interrupted, GOP, GKOP may leak capacity. 
+o  POOL-154:  Documentation for the close method in GenericObjectPool and GenericKeyedObjectPool
+      incorrectly states that this method does not clear the pool. Thanks to Glen Mazza. 
 
-
+Changes:
+o  POOL-169:  In preparation for pool 2.0, deprecated direct access to protected fields
+      and setFactory methods.  In pool 2.0, pool object factories will be immutable. 
+o  POOL-166:  GenericKeyedObjectPool.destroy could use entrySet() rather than keySet() followed by get() 
+o  POOL-156:  ObjectPool classes can ignore Throwable. Added consistent handling for Throwables
+      that are normally swallowed including always re-throwing certain Throwables (e.g. ThreadDeath). 
  
 For complete information on commons-pool, including instructions on how to submit bug reports,
 patches, or suggestions for improvement, see the commons-pool website:
