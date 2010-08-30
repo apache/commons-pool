@@ -21,6 +21,10 @@
   </properties>
   <body>
   <release version="1.5.5" date="TBD" description="TBD">
+    <action dev="psteitz" type="update" issue="POOL-169">
+      In preparation for pool 2.0, deprecated direct access to protected fields
+      and setFactory methods.  In pool 2.0, pool object factories will be immutable.
+    </action>
     <action dev="psteitz" type="fix" issue="POOL-158">
       Made GenericKeyedObjectPool._minIdle volatile.
     </action>
