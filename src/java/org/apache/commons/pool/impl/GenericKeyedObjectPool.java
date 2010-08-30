@@ -2282,6 +2282,20 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 return (int)Math.min(Math.max(tstampdiff, Integer.MIN_VALUE), Integer.MAX_VALUE);
             }
         }
+
+        /**
+         * @return the value
+         */
+        public Object getValue() {
+            return value;
+        }
+
+        /**
+         * @return the tstamp
+         */
+        public long getTstamp() {
+            return tstamp;
+        }
     }
 
     /**
