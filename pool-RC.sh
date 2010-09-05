@@ -23,8 +23,9 @@
 # -----------------------------------------------------------------------------
 # Set script variables
 version=1.5.5
+rc=2
 repo_path=~/.m2/repository/commons-pool/commons-pool/${version}
-release_path=~/pool-release
+release_path=~/pool-${version}-rc${rc}
 #
 # Delete any locally installed artifacts from previous runs
 rm -rf ${repo_path}
@@ -34,7 +35,7 @@ echo "Cleaned local release directory"
 mvn clean
 #
 # Generate the release artifacts and install them locally
-mvn assembly:assembly
+mvn site
 mvn -Prc -DcreateChecksum=true install
 #
 # Copy the zips/tarballs and release notes to the release directory
@@ -61,5 +62,11 @@ rm ${release_path}/maven/*.zip
 rm ${release_path}/maven/*.zip*
 rm ${release_path}/maven/*.gz
 rm ${release_path}/maven/*.gz*
+#
+# Create combined tarball
+cd ${release_path}
+cd ..
+tar -czf ${release_path}.tgz pool-${version}-rc${rc}
+
 echo "Release candidate complete"
 
