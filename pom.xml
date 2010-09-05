@@ -22,12 +22,12 @@
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
-    <version>15</version>
+    <version>17</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>commons-pool</groupId>
   <artifactId>commons-pool</artifactId>
-  <version>1.5.5-SNAPSHOT</version>
+  <version>1.5.5</version>
   <name>Commons Pool</name>
 
   <inceptionYear>2001</inceptionYear>
@@ -186,6 +186,23 @@
                 <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                 <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
               </manifest>
+              <manifestEntries>
+                <Implementation-Vendor-Id>org.apache</Implementation-Vendor-Id>
+              </manifestEntries>
+            </archive>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <configuration>
+            <archive>
+              <manifest>
+                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              </manifest>
+              <manifestEntries>
+                <Implementation-Vendor-Id>org.apache</Implementation-Vendor-Id>
+              </manifestEntries>
             </archive>
           </configuration>
         </plugin>
