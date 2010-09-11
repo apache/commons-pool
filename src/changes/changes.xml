@@ -20,7 +20,7 @@
     <title>Commons Pool Changes</title>
   </properties>
   <body>
-  <release version="1.5.5" date="TBD" description=
+  <release version="1.5.5" date="2010-09-10" description=
      "This is a patch release, including bugfixes, documentation improvements and some deprecations
       in preparation for pool 2.0.">
     <action dev="psteitz" type="update" issue="POOL-169">
