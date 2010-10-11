@@ -32,6 +32,14 @@
       <property name="user-propfile" value="${user.home}/build.properties"/>
       <property file="${user-propfile}"/>
 
+      <!-- Repository base path -->
+      <property name="repository" value="${user.home}/.m2/repository"/>
+
+      <!-- The directories corresponding to your necessary dependencies -->
+      <property name="junit.version" value="4.8.1"/>
+      <property name="junit.home" value="${repository}/junit/junit/${junit.version}"/>
+      <property name="junit.jar" value="${junit.home}/junit-${junit.version}.jar"/>
+
       <!-- command line classpath, if any -->
       <property name="cp" value=""/>
 
@@ -125,6 +133,7 @@
           <pathelement location="${build.classes.dir}" /> 
           <pathelement location="${build.test-classes.dir}" /> 
           <pathelement path="${classpath}" /> 
+          <pathelement location="${junit.jar}"/>
         </classpath>
       </javac>
    </target>
