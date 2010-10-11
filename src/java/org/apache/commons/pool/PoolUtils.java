@@ -281,7 +281,7 @@ public final class PoolUtils {
     }
 
     /**
-     * Call <code>addObject()</code> on <code>pool</code> <code>count</code> number of times.
+     * Calls {@link ObjectPool#addObject()} on <code>pool</code> <code>count</code> number of times.
      *
      * @param pool the pool to prefill.
      * @param count the number of idle objects to add.
@@ -299,7 +299,7 @@ public final class PoolUtils {
     }
 
     /**
-     * Call <code>addObject(Object)</code> on <code>keyedPool</code> with <code>key</code> <code>count</code>
+     * Calls {@link ObjectPool#addObject()} on <code>keyedPool</code> with <code>key</code> <code>count</code>
      * number of times.
      *
      * @param keyedPool the keyedPool to prefill.
@@ -322,7 +322,7 @@ public final class PoolUtils {
     }
 
     /**
-     * Call <code>addObject(Object)</code> on <code>keyedPool</code> with each key in <code>keys</code> for
+     * Calls {@link ObjectPool#addObject()} on <code>keyedPool</code> with each key in <code>keys</code> for
      * <code>count</code> number of times. This has the same effect as calling
      * {@link #prefill(KeyedObjectPool, Object, int)} for each key in the <code>keys</code> collection.
      *
