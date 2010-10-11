@@ -28,7 +28,7 @@ public class TestBaseKeyedPoolableObjectFactory extends TestCase {
     }
 
     public void testDefaultMethods() throws Exception {
-        KeyedPoolableObjectFactory factory = new BaseKeyedPoolableObjectFactory() { 
+        KeyedPoolableObjectFactory<Object,Object> factory = new BaseKeyedPoolableObjectFactory<Object,Object>() { 
             public Object makeObject(Object key) throws Exception {
                 return null;
             }

@@ -32,14 +32,14 @@ public class TestGenericKeyedObjectPoolFactory extends TestKeyedObjectPoolFactor
         super(name);
     }
 
-    protected KeyedObjectPoolFactory makeFactory(final KeyedPoolableObjectFactory objectFactory) {
-        return new GenericKeyedObjectPoolFactory(objectFactory);
+    protected KeyedObjectPoolFactory<Object,Object> makeFactory(final KeyedPoolableObjectFactory<Object,Object> objectFactory) {
+        return new GenericKeyedObjectPoolFactory<Object,Object>(objectFactory);
     }
 
     public void testConstructors() throws Exception {
-        GenericKeyedObjectPoolFactory factory = new GenericKeyedObjectPoolFactory(createObjectFactory());
+        GenericKeyedObjectPoolFactory<Object,Object> factory = new GenericKeyedObjectPoolFactory<Object,Object>(createObjectFactory());
         factory.createPool().close();
-        GenericKeyedObjectPool pool;
+        GenericKeyedObjectPool<Object,Object> pool;
 
 
         final GenericKeyedObjectPool.Config config = new GenericKeyedObjectPool.Config();
@@ -55,8 +55,8 @@ public class TestGenericKeyedObjectPoolFactory extends TestKeyedObjectPoolFactor
         config.timeBetweenEvictionRunsMillis = 8;
         config.whenExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_GROW;
         config.lifo = false;
-        factory = new GenericKeyedObjectPoolFactory(createObjectFactory(), config);
-        pool = (GenericKeyedObjectPool)factory.createPool();
+        factory = new GenericKeyedObjectPoolFactory<Object,Object>(createObjectFactory(), config);
+        pool = (GenericKeyedObjectPool<Object,Object>)factory.createPool();
         assertEquals(1, pool.getMaxActive());
         assertEquals(2, pool.getMaxIdle());
         assertEquals(3, pool.getMaxWait());
@@ -72,22 +72,22 @@ public class TestGenericKeyedObjectPoolFactory extends TestKeyedObjectPoolFactor
         pool.close();
 
 
-        factory = new GenericKeyedObjectPoolFactory(createObjectFactory(), 1);
-        pool = (GenericKeyedObjectPool)factory.createPool();
+        factory = new GenericKeyedObjectPoolFactory<Object,Object>(createObjectFactory(), 1);
+        pool = (GenericKeyedObjectPool<Object,Object>)factory.createPool();
         assertEquals(1, pool.getMaxActive());
         pool.close();
 
 
-        factory = new GenericKeyedObjectPoolFactory(createObjectFactory(), 1, GenericKeyedObjectPool.WHEN_EXHAUSTED_BLOCK, 125);
-        pool = (GenericKeyedObjectPool)factory.createPool();
+        factory = new GenericKeyedObjectPoolFactory<Object,Object>(createObjectFactory(), 1, GenericKeyedObjectPool.WHEN_EXHAUSTED_BLOCK, 125);
+        pool = (GenericKeyedObjectPool<Object,Object>)factory.createPool();
         assertEquals(1, pool.getMaxActive());
         assertEquals(GenericKeyedObjectPool.WHEN_EXHAUSTED_BLOCK, pool.getWhenExhaustedAction());
         assertEquals(125, pool.getMaxWait());
         pool.close();
 
 
-        factory = new GenericKeyedObjectPoolFactory(createObjectFactory(), 1, GenericKeyedObjectPool.WHEN_EXHAUSTED_GROW, 2, true, false);
-        pool = (GenericKeyedObjectPool)factory.createPool();
+        factory = new GenericKeyedObjectPoolFactory<Object,Object>(createObjectFactory(), 1, GenericKeyedObjectPool.WHEN_EXHAUSTED_GROW, 2, true, false);
+        pool = (GenericKeyedObjectPool<Object,Object>)factory.createPool();
         assertEquals(1, pool.getMaxActive());
         assertEquals(2, pool.getMaxWait());
         assertEquals(true, pool.getTestOnBorrow());
@@ -96,8 +96,8 @@ public class TestGenericKeyedObjectPoolFactory extends TestKeyedObjectPoolFactor
         pool.close();
 
 
-        factory = new GenericKeyedObjectPoolFactory(createObjectFactory(), 1, GenericKeyedObjectPool.WHEN_EXHAUSTED_GROW, 2, 3);
-        pool = (GenericKeyedObjectPool)factory.createPool();
+        factory = new GenericKeyedObjectPoolFactory<Object,Object>(createObjectFactory(), 1, GenericKeyedObjectPool.WHEN_EXHAUSTED_GROW, 2, 3);
+        pool = (GenericKeyedObjectPool<Object,Object>)factory.createPool();
         assertEquals(1, pool.getMaxActive());
         assertEquals(2, pool.getMaxWait());
         assertEquals(3, pool.getMaxIdle());
@@ -105,8 +105,8 @@ public class TestGenericKeyedObjectPoolFactory extends TestKeyedObjectPoolFactor
         pool.close();
 
 
-        factory = new GenericKeyedObjectPoolFactory(createObjectFactory(), 1, GenericKeyedObjectPool.WHEN_EXHAUSTED_GROW, 2, 3, 4);
-        pool = (GenericKeyedObjectPool)factory.createPool();
+        factory = new GenericKeyedObjectPoolFactory<Object,Object>(createObjectFactory(), 1, GenericKeyedObjectPool.WHEN_EXHAUSTED_GROW, 2, 3, 4);
+        pool = (GenericKeyedObjectPool<Object,Object>)factory.createPool();
         assertEquals(1, pool.getMaxActive());
         assertEquals(2, pool.getMaxWait());
         assertEquals(3, pool.getMaxIdle());
@@ -115,8 +115,8 @@ public class TestGenericKeyedObjectPoolFactory extends TestKeyedObjectPoolFactor
         pool.close();
 
 
-        factory = new GenericKeyedObjectPoolFactory(createObjectFactory(), 1, GenericKeyedObjectPool.WHEN_EXHAUSTED_GROW, 2, 3, true, false);
-        pool = (GenericKeyedObjectPool)factory.createPool();
+        factory = new GenericKeyedObjectPoolFactory<Object,Object>(createObjectFactory(), 1, GenericKeyedObjectPool.WHEN_EXHAUSTED_GROW, 2, 3, true, false);
+        pool = (GenericKeyedObjectPool<Object,Object>)factory.createPool();
         assertEquals(1, pool.getMaxActive());
         assertEquals(2, pool.getMaxWait());
         assertEquals(3, pool.getMaxIdle());
@@ -126,8 +126,8 @@ public class TestGenericKeyedObjectPoolFactory extends TestKeyedObjectPoolFactor
         pool.close();
 
 
-        factory = new GenericKeyedObjectPoolFactory(createObjectFactory(), 1, GenericKeyedObjectPool.WHEN_EXHAUSTED_GROW, 2, 3, true, false, 4, 5, 6, false);
-        pool = (GenericKeyedObjectPool)factory.createPool();
+        factory = new GenericKeyedObjectPoolFactory<Object,Object>(createObjectFactory(), 1, GenericKeyedObjectPool.WHEN_EXHAUSTED_GROW, 2, 3, true, false, 4, 5, 6, false);
+        pool = (GenericKeyedObjectPool<Object,Object>)factory.createPool();
         assertEquals(1, pool.getMaxActive());
         assertEquals(2, pool.getMaxWait());
         assertEquals(3, pool.getMaxIdle());
@@ -141,8 +141,8 @@ public class TestGenericKeyedObjectPoolFactory extends TestKeyedObjectPoolFactor
         pool.close();
 
 
-        factory = new GenericKeyedObjectPoolFactory(createObjectFactory(), 1, GenericKeyedObjectPool.WHEN_EXHAUSTED_GROW, 2, 3, 4, true, false, 5, 6, 7, true);
-        pool = (GenericKeyedObjectPool)factory.createPool();
+        factory = new GenericKeyedObjectPoolFactory<Object,Object>(createObjectFactory(), 1, GenericKeyedObjectPool.WHEN_EXHAUSTED_GROW, 2, 3, 4, true, false, 5, 6, 7, true);
+        pool = (GenericKeyedObjectPool<Object,Object>)factory.createPool();
         assertEquals(1, pool.getMaxActive());
         assertEquals(2, pool.getMaxWait());
         assertEquals(3, pool.getMaxIdle());

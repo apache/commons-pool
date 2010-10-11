@@ -31,9 +31,9 @@ public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
         super(testName);
     }
 
-    protected ObjectPool makeEmptyPool(int cap) {
-        return new SoftReferenceObjectPool(
-            new PoolableObjectFactory()  {
+    protected ObjectPool<Object> makeEmptyPool(int cap) {
+        return new SoftReferenceObjectPool<Object>(
+            new PoolableObjectFactory<Object>()  {
                 int counter = 0;
                 public Object makeObject() { return String.valueOf(counter++); }
                 public void destroyObject(Object obj) { }
@@ -44,8 +44,8 @@ public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
             );
     }
 
-    protected ObjectPool makeEmptyPool(final PoolableObjectFactory factory) {
-        return new SoftReferenceObjectPool(factory);
+    protected ObjectPool<Object> makeEmptyPool(final PoolableObjectFactory<Object> factory) {
+        return new SoftReferenceObjectPool<Object>(factory);
     }
 
     protected Object getNthObject(int n) {

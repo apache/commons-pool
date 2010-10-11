@@ -25,40 +25,40 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * @author Dirk Verbeeck
  * @version $Revision$ $Date$ 
  */
-public class SleepingObjectFactory implements PoolableObjectFactory {
+public class SleepingObjectFactory implements PoolableObjectFactory<Integer> {
 
     private int counter = 0;
     private boolean debug = false;
 
-    public Object makeObject() throws Exception {
-        Object obj = new Integer(counter++);
+    public Integer makeObject() throws Exception {
+        Integer obj = new Integer(counter++);
         debug("makeObject", obj);
         sleep(500);
         return obj;
     }
 
-    public void destroyObject(Object obj) throws Exception {
+    public void destroyObject(Integer obj) throws Exception {
         debug("destroyObject", obj);
         sleep(250);
     }
 
-    public boolean validateObject(Object obj) {
+    public boolean validateObject(Integer obj) {
         debug("validateObject", obj);
         sleep(30);
         return true;
     }
 
-    public void activateObject(Object obj) throws Exception {
+    public void activateObject(Integer obj) throws Exception {
         debug("activateObject", obj);
         sleep(10);
     }
 
-    public void passivateObject(Object obj) throws Exception {
+    public void passivateObject(Integer obj) throws Exception {
         debug("passivateObject", obj);
         sleep(10);
     }
     
-    private void debug(String method, Object obj) {
+    private void debug(String method, Integer obj) {
         if (debug) {
             String thread = "thread" + Thread.currentThread().getName();
             System.out.println(thread + ": " + method + " " + obj);

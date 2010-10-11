@@ -62,7 +62,7 @@ class EvictionTimer {
         if (null == _timer) {
             // Force the new Timer thread to be created with a context class
             // loader set to the class loader that loaded this library
-            ClassLoader ccl = (ClassLoader) AccessController.doPrivileged(
+            ClassLoader ccl = AccessController.doPrivileged(
                     new PrivilegedGetTccl());
             try {
                 AccessController.doPrivileged(new PrivilegedSetTccl(
@@ -92,12 +92,12 @@ class EvictionTimer {
     /** 
      * {@link PrivilegedAction} used to get the ContextClassLoader
      */
-    private static class PrivilegedGetTccl implements PrivilegedAction {
+    private static class PrivilegedGetTccl implements PrivilegedAction<ClassLoader> {
 
         /** 
          * {@inheritDoc}
          */
-        public Object run() {
+        public ClassLoader run() {
             return Thread.currentThread().getContextClassLoader();
         }
     }
@@ -105,7 +105,7 @@ class EvictionTimer {
     /** 
      * {@link PrivilegedAction} used to set the ContextClassLoader
      */
-    private static class PrivilegedSetTccl implements PrivilegedAction {
+    private static class PrivilegedSetTccl implements PrivilegedAction<Void> {
 
         /** ClassLoader */
         private final ClassLoader cl;
@@ -121,7 +121,7 @@ class EvictionTimer {
         /** 
          * {@inheritDoc}
          */
-        public Object run() {
+        public Void run() {
             Thread.currentThread().setContextClassLoader(cl);
             return null;
         }
