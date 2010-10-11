@@ -29,14 +29,14 @@ package org.apache.commons.pool;
  * @version $Revision$ $Date$
  * @since Pool 1.0
  */
-public abstract class BaseKeyedPoolableObjectFactory implements KeyedPoolableObjectFactory {
+public abstract class BaseKeyedPoolableObjectFactory<K,V> implements KeyedPoolableObjectFactory<K,V> {
     /**
      * Create an instance that can be served by the pool.
      *
      * @param key the key used when constructing the object
      * @return an instance that can be served by the pool
      */
-    public abstract Object makeObject(Object key)
+    public abstract V makeObject(K key)
         throws Exception;
 
     /**
@@ -48,7 +48,7 @@ public abstract class BaseKeyedPoolableObjectFactory implements KeyedPoolableObj
      * @param key the key used when selecting the instance
      * @param obj the instance to be destroyed
      */
-    public void destroyObject(Object key, Object obj)
+    public void destroyObject(K key, V obj)
         throws Exception {
     }
 
@@ -62,7 +62,7 @@ public abstract class BaseKeyedPoolableObjectFactory implements KeyedPoolableObj
      * @param obj the instance to be validated
      * @return always <code>true</code> in the default implementation
      */ 
-    public boolean validateObject(Object key, Object obj) {
+    public boolean validateObject(K key, V obj) {
         return true;
     }
 
@@ -75,7 +75,7 @@ public abstract class BaseKeyedPoolableObjectFactory implements KeyedPoolableObj
      * @param key the key used when selecting the object
      * @param obj the instance to be activated
      */
-    public void activateObject(Object key, Object obj)
+    public void activateObject(K key, V obj)
         throws Exception {
     }
 
@@ -88,7 +88,7 @@ public abstract class BaseKeyedPoolableObjectFactory implements KeyedPoolableObj
      * @param key the key used when selecting the object
      * @param obj the instance to be passivated
      */
-    public void passivateObject(Object key, Object obj)
+    public void passivateObject(K key, V obj)
         throws Exception {
     }
 }

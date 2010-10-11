@@ -28,7 +28,7 @@ public class TestBasePoolableObjectFactory extends TestCase {
     }
 
     public void testDefaultMethods() throws Exception {
-        PoolableObjectFactory factory = new BasePoolableObjectFactory() { 
+        PoolableObjectFactory<Object> factory = new BasePoolableObjectFactory<Object>() { 
             public Object makeObject() throws Exception {
                 return null;
             }

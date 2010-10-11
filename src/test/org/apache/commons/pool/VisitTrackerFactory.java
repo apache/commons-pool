@@ -22,41 +22,41 @@ package org.apache.commons.pool;
  * test Evictor runs.
  *
  */
-public class VisitTrackerFactory implements PoolableObjectFactory, 
-    KeyedPoolableObjectFactory {
+public class VisitTrackerFactory<K> implements PoolableObjectFactory<VisitTracker<K>>, 
+    KeyedPoolableObjectFactory<K,VisitTracker<K>> {
     private int nextId = 0;
     public VisitTrackerFactory() {
         super();
     }
-    public Object makeObject() {
-        return new VisitTracker(nextId++);
+    public VisitTracker<K> makeObject() {
+        return new VisitTracker<K>(nextId++);
     }
-    public Object makeObject(Object key) {
-        return new VisitTracker(nextId++, key);
+    public VisitTracker<K> makeObject(K key) {
+        return new VisitTracker<K>(nextId++, key);
     }
-    public void destroyObject(Object obj) {
-        ((VisitTracker) obj).destroy();
+    public void destroyObject(VisitTracker<K> obj) {
+        obj.destroy();
     }
-    public void destroyObject(Object key, Object obj) {
-        ((VisitTracker) obj).destroy();
+    public void destroyObject(K key, VisitTracker<K> obj) {
+        obj.destroy();
     }
-    public boolean validateObject(Object obj) {
-        return ((VisitTracker) obj).validate();
+    public boolean validateObject(VisitTracker<K> obj) {
+        return obj.validate();
     }
-    public boolean validateObject(Object key, Object obj) {
-        return ((VisitTracker) obj).validate();
+    public boolean validateObject(K key, VisitTracker<K> obj) {
+        return obj.validate();
     }
-    public void activateObject(Object obj) throws Exception {
-        ((VisitTracker) obj).activate();
+    public void activateObject(VisitTracker<K> obj) throws Exception {
+        obj.activate();
     }
-    public void activateObject(Object key, Object obj) throws Exception {
-        ((VisitTracker) obj).activate();
+    public void activateObject(K key, VisitTracker<K> obj) throws Exception {
+        obj.activate();
     }
-    public void passivateObject(Object obj) throws Exception {
-        ((VisitTracker) obj).passivate();
+    public void passivateObject(VisitTracker<K> obj) throws Exception {
+        obj.passivate();
     }
-    public void passivateObject(Object key, Object obj) throws Exception {
-        ((VisitTracker) obj).passivate();
+    public void passivateObject(K key, VisitTracker<K> obj) throws Exception {
+        obj.passivate();
     }
     public void resetId() {
         nextId = 0;

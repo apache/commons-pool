@@ -47,7 +47,7 @@ import java.util.Stack;
  * @see Stack
  * @since Pool 1.0
  */
-public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedObjectPool {
+public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
     /**
      * Create a new pool using no factory.
      * Clients must first set the {@link #setFactory factory} or
@@ -58,7 +58,7 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
      * @see #setFactory(KeyedPoolableObjectFactory)
      */
     public StackKeyedObjectPool() {
-        this((KeyedPoolableObjectFactory)null,DEFAULT_MAX_SLEEPING,DEFAULT_INIT_SLEEPING_CAPACITY);
+        this((KeyedPoolableObjectFactory<K,V>)null,DEFAULT_MAX_SLEEPING,DEFAULT_INIT_SLEEPING_CAPACITY);
     }
 
     /**
@@ -72,7 +72,7 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
      * @see #setFactory(KeyedPoolableObjectFactory)
      */
     public StackKeyedObjectPool(int max) {
-        this((KeyedPoolableObjectFactory)null,max,DEFAULT_INIT_SLEEPING_CAPACITY);
+        this((KeyedPoolableObjectFactory<K,V>)null,max,DEFAULT_INIT_SLEEPING_CAPACITY);
     }
 
     /**
@@ -88,7 +88,7 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
      * @see #setFactory(KeyedPoolableObjectFactory)
      */
     public StackKeyedObjectPool(int max, int init) {
-        this((KeyedPoolableObjectFactory)null,max,init);
+        this((KeyedPoolableObjectFactory<K,V>)null,max,init);
     }
 
     /**
@@ -97,7 +97,7 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
      *
      * @param factory the {@link KeyedPoolableObjectFactory} used to populate the pool
      */
-    public StackKeyedObjectPool(KeyedPoolableObjectFactory factory) {
+    public StackKeyedObjectPool(KeyedPoolableObjectFactory<K,V> factory) {
         this(factory,DEFAULT_MAX_SLEEPING);
     }
 
@@ -109,7 +109,7 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
      * @param factory the {@link KeyedPoolableObjectFactory} used to populate the pool
      * @param max cap on the number of "sleeping" instances in the pool
      */
-    public StackKeyedObjectPool(KeyedPoolableObjectFactory factory, int max) {
+    public StackKeyedObjectPool(KeyedPoolableObjectFactory<K,V> factory, int max) {
         this(factory,max,DEFAULT_INIT_SLEEPING_CAPACITY);
     }
 
@@ -125,12 +125,12 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
      * @param init initial size of the pool (this specifies the size of the container,
      *             it does not cause the pool to be pre-populated.)
      */
-    public StackKeyedObjectPool(KeyedPoolableObjectFactory factory, int max, int init) {
+    public StackKeyedObjectPool(KeyedPoolableObjectFactory<K,V> factory, int max, int init) {
         _factory = factory;
         _maxSleeping = (max < 0 ? DEFAULT_MAX_SLEEPING : max);
         _initSleepingCapacity = (init < 1 ? DEFAULT_INIT_SLEEPING_CAPACITY : init);
-        _pools = new HashMap();
-        _activeCount = new HashMap();
+        _pools = new HashMap<K,Stack<V>>();
+        _activeCount = new HashMap<K,Integer>();
     }
 
     /**
@@ -140,15 +140,15 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
      * @param key the pool key
      * @return keyed poolable object instance
      */
-    public synchronized Object borrowObject(Object key) throws Exception {
+    public synchronized V borrowObject(K key) throws Exception {
         assertOpen();
-        Stack stack = (Stack)(_pools.get(key));
+        Stack<V> stack = _pools.get(key);
         if(null == stack) {
-            stack = new Stack();
+            stack = new Stack<V>();
             stack.ensureCapacity( _initSleepingCapacity > _maxSleeping ? _maxSleeping : _initSleepingCapacity);
             _pools.put(key,stack);
         }
-        Object obj = null;
+        V obj = null;
         do {
             boolean newlyMade = false;
             if (!stack.empty()) {
@@ -199,7 +199,7 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
      * @param key the pool key
      * @param obj returning instance
      */
-    public synchronized void returnObject(Object key, Object obj) throws Exception {
+    public synchronized void returnObject(K key, V obj) throws Exception {
         decrementActiveCount(key);
         if (null != _factory) {
             if (_factory.validateObject(key, obj)) {
@@ -225,15 +225,15 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
             return;
         }
 
-        Stack stack = (Stack)_pools.get(key);
+        Stack<V> stack = _pools.get(key);
         if(null == stack) {
-            stack = new Stack();
+            stack = new Stack<V>();
             stack.ensureCapacity( _initSleepingCapacity > _maxSleeping ? _maxSleeping : _initSleepingCapacity);
             _pools.put(key,stack);
         }
         final int stackSize = stack.size();
         if (stackSize >= _maxSleeping) {
-            final Object staleObj;
+            final V staleObj;
             if (stackSize > 0) {
                 staleObj = stack.remove(0);
                 _totIdle--;
@@ -255,7 +255,7 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
     /**
      * {@inheritDoc}
      */
-    public synchronized void invalidateObject(Object key, Object obj) throws Exception {
+    public synchronized void invalidateObject(K key, V obj) throws Exception {
         decrementActiveCount(key);
         if(null != _factory) {
             _factory.destroyObject(key,obj);
@@ -272,12 +272,12 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
      * @throws Exception when {@link KeyedPoolableObjectFactory#makeObject} fails.
      * @throws IllegalStateException when no {@link #setFactory factory} has been set or after {@link #close} has been called on this pool.
      */
-    public synchronized void addObject(Object key) throws Exception {
+    public synchronized void addObject(K key) throws Exception {
         assertOpen();
         if (_factory == null) {
             throw new IllegalStateException("Cannot add objects without a factory.");
         }
-        Object obj = _factory.makeObject(key);
+        V obj = _factory.makeObject(key);
         try {
             if (!_factory.validateObject(key, obj)) {
                return;
@@ -292,16 +292,16 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
         }
         _factory.passivateObject(key, obj);
 
-        Stack stack = (Stack)_pools.get(key);
+        Stack<V> stack = _pools.get(key);
         if(null == stack) {
-            stack = new Stack();
+            stack = new Stack<V>();
             stack.ensureCapacity( _initSleepingCapacity > _maxSleeping ? _maxSleeping : _initSleepingCapacity);
             _pools.put(key,stack);
         }
 
         final int stackSize = stack.size();
         if (stackSize >= _maxSleeping) {
-            final Object staleObj;
+            final V staleObj;
             if (stackSize > 0) {
                 staleObj = stack.remove(0);
                 _totIdle--;
@@ -347,7 +347,7 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
      * @param key the key to query
      * @return the number of instances corresponding to the given <code>key</code> currently borrowed in this pool
      */
-    public synchronized int getNumActive(Object key) {
+    public synchronized int getNumActive(K key) {
         return getActiveCount(key);
     }
 
@@ -357,9 +357,9 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
      * @param key the key to query
      * @return the number of instances corresponding to the given <code>key</code> currently idle in this pool
      */
-    public synchronized int getNumIdle(Object key) {
+    public synchronized int getNumIdle(K key) {
         try {
-            return((Stack)(_pools.get(key))).size();
+            return _pools.get(key).size();
         } catch(Exception e) {
             return 0;
         }
@@ -369,10 +369,10 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
      * Clears the pool, removing all pooled instances.
      */
     public synchronized void clear() {
-        Iterator it = _pools.keySet().iterator();
+        Iterator<K> it = _pools.keySet().iterator();
         while(it.hasNext()) {
-            Object key = it.next();
-            Stack stack = (Stack)(_pools.get(key));
+            K key = it.next();
+            Stack<V> stack = _pools.get(key);
             destroyStack(key,stack);
         }
         _totIdle = 0;
@@ -385,8 +385,8 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
      *
      * @param key the key to clear
      */
-    public synchronized void clear(Object key) {
-        Stack stack = (Stack)(_pools.remove(key));
+    public synchronized void clear(K key) {
+        Stack<V> stack = _pools.remove(key);
         destroyStack(key,stack);
     }
 
@@ -396,12 +396,12 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
      * @param key key passed to factory when destroying instances
      * @param stack stack to destroy
      */
-    private synchronized void destroyStack(Object key, Stack stack) {
+    private synchronized void destroyStack(K key, Stack<V> stack) {
         if(null == stack) {
             return;
         } else {
             if(null != _factory) {
-                Iterator it = stack.iterator();
+                Iterator<V> it = stack.iterator();
                 while(it.hasNext()) {
                     try {
                         _factory.destroyObject(key,it.next());
@@ -426,11 +426,11 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
         StringBuffer buf = new StringBuffer();
         buf.append(getClass().getName());
         buf.append(" contains ").append(_pools.size()).append(" distinct pools: ");
-        Iterator it = _pools.keySet().iterator();
+        Iterator<K> it = _pools.keySet().iterator();
         while(it.hasNext()) {
             Object key = it.next();
             buf.append(" |").append(key).append("|=");
-            Stack s = (Stack)(_pools.get(key));
+            Stack<V> s = _pools.get(key);
             buf.append(s.size());
         }
         return buf.toString();
@@ -460,7 +460,7 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
      * @throws IllegalStateException when the factory cannot be set at this time
      * @deprecated to be removed in pool 2.0
      */
-    public synchronized void setFactory(KeyedPoolableObjectFactory factory) throws IllegalStateException {
+    public synchronized void setFactory(KeyedPoolableObjectFactory<K,V> factory) throws IllegalStateException {
         if(0 < getNumActive()) {
             throw new IllegalStateException("Objects are already active");
         } else {
@@ -473,7 +473,7 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
      * @return the {@link KeyedPoolableObjectFactory} used by this pool to manage object instances.
      * @since 1.5.5
      */
-    public synchronized KeyedPoolableObjectFactory getFactory() {
+    public synchronized KeyedPoolableObjectFactory<K,V> getFactory() {
         return _factory;
     }
 
@@ -483,9 +483,9 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
      * @param key pool key
      * @return active count
      */
-    private int getActiveCount(Object key) {
+    private int getActiveCount(K key) {
         try {
-            return ((Integer)_activeCount.get(key)).intValue();
+            return _activeCount.get(key);
         } catch(NoSuchElementException e) {
             return 0;
         } catch(NullPointerException e) {
@@ -499,9 +499,9 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
      * 
      * @param key pool key
      */
-    private void incrementActiveCount(Object key) {
+    private void incrementActiveCount(K key) {
         _totActive++;
-        Integer old = (Integer)(_activeCount.get(key));
+        Integer old = _activeCount.get(key);
         if(null == old) {
             _activeCount.put(key,new Integer(1));
         } else {
@@ -515,9 +515,9 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
      * 
      * @param key pool key
      */
-    private void decrementActiveCount(Object key) {
+    private void decrementActiveCount(K key) {
         _totActive--;
-        Integer active = (Integer)(_activeCount.get(key));
+        Integer active = _activeCount.get(key);
         if(null == active) {
             // do nothing, either null or zero is OK
         } else if(active.intValue() <= 1) {
@@ -532,7 +532,7 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
      * @return map of keyed pools
      * @since 1.5.5
      */
-    public Map getPools() {
+    public Map<K,Stack<V>> getPools() {
         return _pools;
     }
 
@@ -570,7 +570,7 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
      * @return the _activeCount
      * @since 1.5.5
      */
-    public Map getActiveCount() {
+    public Map<K,Integer> getActiveCount() {
         return _activeCount;
     }
 
@@ -589,13 +589,13 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
      *  My named-set of pools.
      *  @deprecated to be removed in pool 2.0.  Use {@link #getPools()}
      */
-    protected HashMap _pools = null;
+    protected HashMap<K,Stack<V>> _pools = null;
 
     /**
      * My {@link KeyedPoolableObjectFactory}.
      * @deprecated to be removed in pool 2.0.  Use {@link #getFactory()}
      */
-    protected KeyedPoolableObjectFactory _factory = null;
+    protected KeyedPoolableObjectFactory<K,V> _factory = null;
 
     /**
      *  The cap on the number of "sleeping" instances in <code>each</code> pool.
@@ -625,6 +625,6 @@ public class StackKeyedObjectPool extends BaseKeyedObjectPool implements KeyedOb
      * Number of active objects borrowed and not yet returned by pool
      * @deprecated to be removed in pool 2.0.  Use {@link #getActiveCount()}.
      */
-    protected HashMap _activeCount = null;
+    protected HashMap<K,Integer> _activeCount = null;
 
 }

@@ -101,6 +101,12 @@
       <email></email>
       <organization>Apache Software Foundation</organization>
     </developer>
+    <developer>
+      <name>Simone Tripodi</name>
+      <id>simonetripodi</id>
+      <email></email>
+      <organization>Apache Software Foundation</organization>
+    </developer>
   </developers>
   <contributors>
     <contributor>

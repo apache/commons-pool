@@ -29,7 +29,7 @@ import java.util.Arrays;
  */
 public class MethodCall {
     private final String name;
-    private final List params;
+    private final List<Object> params;
     private Object returned;
 
     public MethodCall(final String name) {
@@ -44,7 +44,7 @@ public class MethodCall {
         this(name, Arrays.asList(new Object[] {param1, param2}));
     }
 
-    public MethodCall(final String name, final List params) {
+    public MethodCall(final String name, final List<Object> params) {
         if (name == null) {
             throw new IllegalArgumentException("name must not be null.");
         }
@@ -60,7 +60,7 @@ public class MethodCall {
         return name;
     }
 
-    public List getParams() {
+    public List<Object> getParams() {
         return params;
     }
 

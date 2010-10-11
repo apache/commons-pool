@@ -23,20 +23,20 @@ package org.apache.commons.pool;
  * @version $Revision$ $Date$ 
  */
 public class TestBaseObjectPool extends TestObjectPool {
-    private ObjectPool _pool = null;
+    private ObjectPool<Object> _pool = null;
 
     public TestBaseObjectPool(String testName) {
         super(testName);
     }
 
-    protected ObjectPool makeEmptyPool(int mincapacity) {
+    protected ObjectPool<Object> makeEmptyPool(int mincapacity) {
         if (this.getClass() != TestBaseObjectPool.class) {
             fail("Subclasses of TestBaseObjectPool must reimplement this method.");
         }
         throw new UnsupportedOperationException("BaseObjectPool isn't a complete implementation.");
     }
 
-    protected ObjectPool makeEmptyPool(final PoolableObjectFactory factory) {
+    protected ObjectPool<Object> makeEmptyPool(final PoolableObjectFactory<Object> factory) {
         if (this.getClass() != TestBaseObjectPool.class) {
             fail("Subclasses of TestBaseObjectPool must reimplement this method.");
         }
@@ -69,7 +69,7 @@ public class TestBaseObjectPool extends TestObjectPool {
         if (!getClass().equals(TestBaseObjectPool.class)) {
             return; // skip redundant tests
         }
-        ObjectPool pool = new BaseObjectPool() { 
+        ObjectPool<Object> pool = new BaseObjectPool<Object>() { 
             public Object borrowObject() {
                 return null;
             }
@@ -105,7 +105,7 @@ public class TestBaseObjectPool extends TestObjectPool {
     }
 
     public void testClose() throws Exception {
-        ObjectPool pool = new BaseObjectPool() {
+        ObjectPool<Object> pool = new BaseObjectPool<Object>() {
             public Object borrowObject() {
                 return null;
             }

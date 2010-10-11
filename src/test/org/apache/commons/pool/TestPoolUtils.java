@@ -59,7 +59,7 @@ public class TestPoolUtils extends TestCase {
 
     public void testAdaptKeyedPoolableObjectFactory() throws Exception {
         try {
-            PoolUtils.adapt((KeyedPoolableObjectFactory)null);
+            PoolUtils.adapt((KeyedPoolableObjectFactory<Object,Object>)null);
             fail("PoolUtils.adapt(KeyedPoolableObjectFactory) must not allow null factory.");
         } catch (IllegalArgumentException iae) {
             // expected
@@ -68,47 +68,47 @@ public class TestPoolUtils extends TestCase {
 
     public void testAdaptKeyedPoolableObjectFactoryKey() throws Exception {
         try {
-            PoolUtils.adapt((KeyedPoolableObjectFactory)null, new Object());
+            PoolUtils.adapt((KeyedPoolableObjectFactory<Object,Object>)null, new Object());
             fail("PoolUtils.adapt(KeyedPoolableObjectFactory, key) must not allow null factory.");
         } catch (IllegalArgumentException iae) {
             // expected
         }
         try {
-            PoolUtils.adapt((KeyedPoolableObjectFactory)createProxy(KeyedPoolableObjectFactory.class, (List)null), null);
+            PoolUtils.adapt((KeyedPoolableObjectFactory<Object,Object>)createProxy(KeyedPoolableObjectFactory.class, (List<String>)null), null);
             fail("PoolUtils.adapt(KeyedPoolableObjectFactory, key) must not allow null key.");
         } catch (IllegalArgumentException iae) {
             // expected
         }
 
-        final List calledMethods = new ArrayList();
-        final KeyedPoolableObjectFactory kpof =
-                (KeyedPoolableObjectFactory)createProxy(KeyedPoolableObjectFactory.class, calledMethods);
+        final List<String> calledMethods = new ArrayList<String>();
+        final KeyedPoolableObjectFactory<Object,Object> kpof =
+                (KeyedPoolableObjectFactory<Object,Object>)createProxy(KeyedPoolableObjectFactory.class, calledMethods);
 
-        final PoolableObjectFactory pof = PoolUtils.adapt(kpof);
-        final List expectedMethods = invokeEveryMethod(pof);
+        final PoolableObjectFactory<Object> pof = PoolUtils.adapt(kpof);
+        final List<String> expectedMethods = invokeEveryMethod(pof);
         assertEquals(expectedMethods, calledMethods);
     }
 
     public void testAdaptPoolableObjectFactory() throws Exception {
         try {
-            PoolUtils.adapt((PoolableObjectFactory)null);
+            PoolUtils.adapt((PoolableObjectFactory<Object>)null);
             fail("PoolUtils.adapt(PoolableObjectFactory) must not allow null factory.");
         } catch (IllegalArgumentException iae) {
             // expected
         }
 
-        final List calledMethods = new ArrayList();
-        final PoolableObjectFactory pof =
-                (PoolableObjectFactory)createProxy(PoolableObjectFactory.class, calledMethods);
+        final List<String> calledMethods = new ArrayList<String>();
+        final PoolableObjectFactory<Object> pof =
+                (PoolableObjectFactory<Object>)createProxy(PoolableObjectFactory.class, calledMethods);
 
-        final KeyedPoolableObjectFactory kpof = PoolUtils.adapt(pof);
-        final List expectedMethods = invokeEveryMethod(kpof);
+        final KeyedPoolableObjectFactory<Object,Object> kpof = PoolUtils.adapt(pof);
+        final List<String> expectedMethods = invokeEveryMethod(kpof);
         assertEquals(expectedMethods, calledMethods);
     }
 
     public void testAdaptKeyedObjectPool() throws Exception {
         try {
-            PoolUtils.adapt((KeyedObjectPool)null);
+            PoolUtils.adapt((KeyedObjectPool<Object,Object>)null);
             fail("PoolUtils.adapt(KeyedObjectPool) must not allow a null pool.");
         } catch(IllegalArgumentException iae) {
             // expected
@@ -117,64 +117,64 @@ public class TestPoolUtils extends TestCase {
 
     public void testAdaptKeyedObjectPoolKey() throws Exception {
         try {
-            PoolUtils.adapt((KeyedObjectPool)null, new Object());
+            PoolUtils.adapt((KeyedObjectPool<Object,Object>)null, new Object());
             fail("PoolUtils.adapt(KeyedObjectPool, key) must not allow a null pool.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
         try {
-            PoolUtils.adapt((KeyedObjectPool)createProxy(KeyedObjectPool.class, (List)null), null);
+            PoolUtils.adapt((KeyedObjectPool<Object,Object>)createProxy(KeyedObjectPool.class, (List<String>)null), null);
             fail("PoolUtils.adapt(KeyedObjectPool, key) must not allow a null key.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
-        final List calledMethods = new ArrayList();
-        final KeyedObjectPool kop = (KeyedObjectPool)createProxy(KeyedObjectPool.class, calledMethods);
+        final List<String> calledMethods = new ArrayList<String>();
+        final KeyedObjectPool<Object,Object> kop = (KeyedObjectPool<Object,Object>)createProxy(KeyedObjectPool.class, calledMethods);
 
-        final ObjectPool op = PoolUtils.adapt(kop, new Object());
-        final List expectedMethods = invokeEveryMethod(op);
+        final ObjectPool<Object> op = PoolUtils.adapt(kop, new Object());
+        final List<String> expectedMethods = invokeEveryMethod(op);
         assertEquals(expectedMethods, calledMethods);
     }
 
     public void testAdaptObjectPool() throws Exception {
         try {
-            PoolUtils.adapt((ObjectPool)null);
+            PoolUtils.adapt((ObjectPool<Object>)null);
             fail("PoolUtils.adapt(ObjectPool) must not allow a null pool.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
-        final List calledMethods = new ArrayList();
-        final ObjectPool op = (ObjectPool)createProxy(ObjectPool.class, calledMethods);
+        final List<String> calledMethods = new ArrayList<String>();
+        final ObjectPool<Object> op = (ObjectPool<Object>)createProxy(ObjectPool.class, calledMethods);
 
-        final KeyedObjectPool kop = PoolUtils.adapt(op);
-        final List expectedMethods = invokeEveryMethod(kop);
+        final KeyedObjectPool<Object,Object> kop = PoolUtils.adapt(op);
+        final List<String> expectedMethods = invokeEveryMethod(kop);
         assertEquals(expectedMethods, calledMethods);
     }
 
     public void testCheckedPoolObjectPool() throws Exception {
         try {
-            PoolUtils.checkedPool((ObjectPool)null, Object.class);
+            PoolUtils.checkedPool((ObjectPool<Object>)null, Object.class);
             fail("PoolUtils.checkedPool(ObjectPool, Class) must not allow a null pool.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
         try {
-            PoolUtils.checkedPool((ObjectPool)createProxy(ObjectPool.class, (List)null), null);
+            PoolUtils.checkedPool((ObjectPool<Object>)createProxy(ObjectPool.class, (List<String>)null), null);
             fail("PoolUtils.checkedPool(ObjectPool, Class) must not allow a null type.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
-        final List calledMethods = new ArrayList();
-        ObjectPool op = (ObjectPool)createProxy(ObjectPool.class, calledMethods);
+        final List<String> calledMethods = new ArrayList<String>();
+        ObjectPool<Object> op = (ObjectPool<Object>)createProxy(ObjectPool.class, calledMethods);
 
-        ObjectPool cop = PoolUtils.checkedPool(op, Object.class);
-        final List expectedMethods = invokeEveryMethod(cop);
+        ObjectPool<Object> cop = PoolUtils.checkedPool(op, Object.class);
+        final List<String> expectedMethods = invokeEveryMethod(cop);
         assertEquals(expectedMethods, calledMethods);
 
-        op = new BaseObjectPool() {
+        op = new BaseObjectPool<Object>() {
             public Object borrowObject() throws Exception {
                 return new Integer(0);
             }
@@ -205,27 +205,27 @@ public class TestPoolUtils extends TestCase {
 
     public void testCheckedPoolKeyedObjectPool() throws Exception {
         try {
-            PoolUtils.checkedPool((KeyedObjectPool)null, Object.class);
+            PoolUtils.checkedPool((KeyedObjectPool<Object,Object>)null, Object.class);
             fail("PoolUtils.checkedPool(KeyedObjectPool, Class) must not allow a null pool.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
         try {
-            PoolUtils.checkedPool((KeyedObjectPool)createProxy(KeyedObjectPool.class, (List)null), null);
+            PoolUtils.checkedPool((KeyedObjectPool<Object,Object>)createProxy(KeyedObjectPool.class, (List)null), null);
             fail("PoolUtils.checkedPool(KeyedObjectPool, Class) must not allow a null type.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
-        final List calledMethods = new ArrayList();
-        KeyedObjectPool op = (KeyedObjectPool)createProxy(KeyedObjectPool.class, calledMethods);
+        final List<String> calledMethods = new ArrayList<String>();
+        KeyedObjectPool<Object,Object> op = (KeyedObjectPool<Object,Object>)createProxy(KeyedObjectPool.class, calledMethods);
 
-        KeyedObjectPool cop = PoolUtils.checkedPool(op, Object.class);
-        final List expectedMethods = invokeEveryMethod(cop);
+        KeyedObjectPool<Object,Object> cop = PoolUtils.checkedPool(op, Object.class);
+        final List<String> expectedMethods = invokeEveryMethod(cop);
         assertEquals(expectedMethods, calledMethods);
 
 
-        op = new BaseKeyedObjectPool() {
+        op = new BaseKeyedObjectPool<Object,Object>() {
             public Object borrowObject(Object key) {
                 return new Integer(0);
             }
@@ -264,24 +264,24 @@ public class TestPoolUtils extends TestCase {
             // expected
         }
         try {
-            final ObjectPool pool = (ObjectPool)createProxy(ObjectPool.class, (List)null);
+            final ObjectPool<Object> pool = (ObjectPool<Object>)createProxy(ObjectPool.class, (List<String>)null);
             PoolUtils.checkMinIdle(pool, -1, 1);
             fail("PoolUtils.checkMinIdle(ObjectPool,,) must not accept negative min idle values.");
         } catch (IllegalArgumentException iae) {
             // expected
         }
 
-        final List calledMethods = new ArrayList();
+        final List<String> calledMethods = new ArrayList<String>();
 
         // Test that the minIdle check doesn't add too many idle objects
-        final PoolableObjectFactory pof = (PoolableObjectFactory)createProxy(PoolableObjectFactory.class, calledMethods);
-        final ObjectPool op = new GenericObjectPool(pof);
+        final PoolableObjectFactory<Object> pof = (PoolableObjectFactory<Object>)createProxy(PoolableObjectFactory.class, calledMethods);
+        final ObjectPool<Object> op = new GenericObjectPool<Object>(pof);
         PoolUtils.checkMinIdle(op, 2, 100);
         Thread.sleep(400);
         assertEquals(2, op.getNumIdle());
         op.close();
         int makeObjectCount = 0;
-        final Iterator iter = calledMethods.iterator();
+        final Iterator<String> iter = calledMethods.iterator();
         while (iter.hasNext()) {
             final String methodName = (String)iter.next();
             if ("makeObject".equals(methodName)) {
@@ -297,14 +297,14 @@ public class TestPoolUtils extends TestCase {
             afe = null;
             try {
                 calledMethods.clear();
-                final ObjectPool pool = (ObjectPool)createProxy(ObjectPool.class, calledMethods);
+                final ObjectPool<Object> pool = (ObjectPool<Object>)createProxy(ObjectPool.class, calledMethods);
                 final TimerTask task = PoolUtils.checkMinIdle(pool, 1, CHECK_PERIOD); // checks minIdle immediately
 
                 Thread.sleep(CHECK_SLEEP_PERIOD); // will check CHECK_COUNT more times.
                 task.cancel();
                 task.toString();
 
-                final List expectedMethods = new ArrayList();
+                final List<String> expectedMethods = new ArrayList<String>();
                 for (int i=0; i < CHECK_COUNT; i++) {
                     expectedMethods.add("getNumIdle");
                     expectedMethods.add("addObject");
@@ -328,35 +328,35 @@ public class TestPoolUtils extends TestCase {
             // expected
         }
         try {
-            final KeyedObjectPool pool = (KeyedObjectPool)createProxy(KeyedObjectPool.class, (List)null);
+            final KeyedObjectPool<Object,Object> pool = (KeyedObjectPool<Object,Object>)createProxy(KeyedObjectPool.class, (List)null);
             PoolUtils.checkMinIdle(pool, (Object)null, 1, 1);
             fail("PoolUtils.checkMinIdle(KeyedObjectPool,Object,int,long) must not accept null keys.");
         } catch (IllegalArgumentException iae) {
             // expected
         }
         try {
-            final KeyedObjectPool pool = (KeyedObjectPool)createProxy(KeyedObjectPool.class, (List)null);
+            final KeyedObjectPool<Object,Object> pool = (KeyedObjectPool<Object,Object>)createProxy(KeyedObjectPool.class, (List)null);
             PoolUtils.checkMinIdle(pool, new Object(), -1, 1);
             fail("PoolUtils.checkMinIdle(KeyedObjectPool,Object,int,long) must not accept negative min idle values.");
         } catch (IllegalArgumentException iae) {
             // expected
         }
 
-        final List calledMethods = new ArrayList();
+        final List<String> calledMethods = new ArrayList<String>();
         final Object key = new Object();
 
         // Test that the minIdle check doesn't add too many idle objects
-        final KeyedPoolableObjectFactory kpof = (KeyedPoolableObjectFactory)createProxy(KeyedPoolableObjectFactory.class, calledMethods);
-        final KeyedObjectPool kop = new GenericKeyedObjectPool(kpof);
+        final KeyedPoolableObjectFactory<Object,Object> kpof = (KeyedPoolableObjectFactory<Object,Object>)createProxy(KeyedPoolableObjectFactory.class, calledMethods);
+        final KeyedObjectPool<Object,Object> kop = new GenericKeyedObjectPool<Object,Object>(kpof);
         PoolUtils.checkMinIdle(kop, key, 2, 100);
         Thread.sleep(400);
         assertEquals(2, kop.getNumIdle(key));
         assertEquals(2, kop.getNumIdle());
         kop.close();
         int makeObjectCount = 0;
-        final Iterator iter = calledMethods.iterator();
+        final Iterator<String> iter = calledMethods.iterator();
         while (iter.hasNext()) {
-            final String methodName = (String)iter.next();
+            final String methodName = iter.next();
             if ("makeObject".equals(methodName)) {
                 makeObjectCount++;
             }
@@ -370,14 +370,14 @@ public class TestPoolUtils extends TestCase {
             afe = null;
             try {
                 calledMethods.clear();
-                final KeyedObjectPool pool = (KeyedObjectPool)createProxy(KeyedObjectPool.class, calledMethods);
+                final KeyedObjectPool<Object,Object> pool = (KeyedObjectPool<Object,Object>)createProxy(KeyedObjectPool.class, calledMethods);
                 final TimerTask task = PoolUtils.checkMinIdle(pool, key, 1, CHECK_PERIOD); // checks minIdle immediately
 
                 Thread.sleep(CHECK_SLEEP_PERIOD); // will check CHECK_COUNT more times.
                 task.cancel();
                 task.toString();
 
-                final List expectedMethods = new ArrayList();
+                final List<String> expectedMethods = new ArrayList<String>();
                 for (int i=0; i < CHECK_COUNT; i++) {
                     expectedMethods.add("getNumIdle");
                     expectedMethods.add("addObject");
@@ -395,8 +395,8 @@ public class TestPoolUtils extends TestCase {
 
     public void testCheckMinIdleKeyedObjectPoolKeys() throws Exception {
         try {
-            final KeyedObjectPool pool = (KeyedObjectPool)createProxy(KeyedObjectPool.class, (List)null);
-            PoolUtils.checkMinIdle(pool, null, 1, 1);
+            final KeyedObjectPool<Object,Object> pool = (KeyedObjectPool<Object,Object>)createProxy(KeyedObjectPool.class, (List)null);
+            PoolUtils.checkMinIdle(pool, (Object)null, 1, 1);
             fail("PoolUtils.checkMinIdle(KeyedObjectPool,Collection,int,long) must not accept null keys.");
         } catch (IllegalArgumentException iae) {
             // expected
@@ -408,21 +408,21 @@ public class TestPoolUtils extends TestCase {
         do {
             afe = null;
             try {
-                final List calledMethods = new ArrayList();
-                final KeyedObjectPool pool = (KeyedObjectPool)createProxy(KeyedObjectPool.class, calledMethods);
-                final Collection keys = new ArrayList(2);
+                final List<String> calledMethods = new ArrayList<String>();
+                final KeyedObjectPool<String,Object> pool = (KeyedObjectPool<String,Object>)createProxy(KeyedObjectPool.class, calledMethods);
+                final Collection<String> keys = new ArrayList<String>(2);
                 keys.add("one");
                 keys.add("two");
-                final Map tasks = PoolUtils.checkMinIdle(pool, keys, 1, CHECK_PERIOD); // checks minIdle immediately
+                final Map<String,TimerTask> tasks = PoolUtils.checkMinIdle(pool, keys, 1, CHECK_PERIOD); // checks minIdle immediately
 
                 Thread.sleep(CHECK_SLEEP_PERIOD); // will check CHECK_COUNT more times.
-                final Iterator iter = tasks.values().iterator();
+                final Iterator<TimerTask> iter = tasks.values().iterator();
                 while (iter.hasNext()) {
                     final TimerTask task = (TimerTask)iter.next();
                     task.cancel();
                 }
 
-                final List expectedMethods = new ArrayList();
+                final List<String> expectedMethods = new ArrayList<String>();
                 for (int i=0; i < CHECK_COUNT * keys.size(); i++) {
                     expectedMethods.add("getNumIdle");
                     expectedMethods.add("addObject");
@@ -445,11 +445,11 @@ public class TestPoolUtils extends TestCase {
             // expected
         }
 
-        final List calledMethods = new ArrayList();
-        final ObjectPool pool = (ObjectPool)createProxy(ObjectPool.class, calledMethods);
+        final List<String> calledMethods = new ArrayList<String>();
+        final ObjectPool<Object> pool = (ObjectPool<Object>)createProxy(ObjectPool.class, calledMethods);
 
         PoolUtils.prefill(pool, 0);
-        final List expectedMethods = new ArrayList();
+        final List<String> expectedMethods = new ArrayList<String>();
         assertEquals(expectedMethods, calledMethods);
 
         calledMethods.clear();
@@ -468,18 +468,18 @@ public class TestPoolUtils extends TestCase {
             // expected
         }
         try {
-            final KeyedObjectPool pool = (KeyedObjectPool)createProxy(KeyedObjectPool.class, (List)null);
+            final KeyedObjectPool<Object,Object> pool = (KeyedObjectPool<Object,Object>)createProxy(KeyedObjectPool.class, (List)null);
             PoolUtils.prefill(pool, (Object)null, 1);
             fail("PoolUtils.prefill(KeyedObjectPool,Object,int) must not accept null key.");
         } catch (IllegalArgumentException iae) {
             // expected
         }
 
-        final List calledMethods = new ArrayList();
-        final KeyedObjectPool pool = (KeyedObjectPool)createProxy(KeyedObjectPool.class, calledMethods);
+        final List<String> calledMethods = new ArrayList<String>();
+        final KeyedObjectPool<Object,Object> pool = (KeyedObjectPool<Object,Object>)createProxy(KeyedObjectPool.class, calledMethods);
 
         PoolUtils.prefill(pool, new Object(), 0);
-        final List expectedMethods = new ArrayList();
+        final List<String> expectedMethods = new ArrayList<String>();
         assertEquals(expectedMethods, calledMethods);
 
         calledMethods.clear();
@@ -492,19 +492,19 @@ public class TestPoolUtils extends TestCase {
 
     public void testPrefillKeyedObjectPoolCollection() throws Exception {
         try {
-            final KeyedObjectPool pool = (KeyedObjectPool)createProxy(KeyedObjectPool.class, (List)null);
+            final KeyedObjectPool<Object,Object> pool = (KeyedObjectPool<Object,Object>)createProxy(KeyedObjectPool.class, (List)null);
             PoolUtils.prefill(pool, null, 1);
             fail("PoolUtils.prefill(KeyedObjectPool,Collection,int) must not accept null keys.");
         } catch (IllegalArgumentException iae) {
             // expected
         }
 
-        final List calledMethods = new ArrayList();
-        final KeyedObjectPool pool = (KeyedObjectPool)createProxy(KeyedObjectPool.class, calledMethods);
+        final List<String> calledMethods = new ArrayList<String>();
+        final KeyedObjectPool<Object,Object> pool = (KeyedObjectPool<Object,Object>)createProxy(KeyedObjectPool.class, calledMethods);
 
-        final Set keys = new HashSet();
+        final Set<Object> keys = new HashSet<Object>();
         PoolUtils.prefill(pool, keys, 0);
-        final List expectedMethods = new ArrayList();
+        final List<String> expectedMethods = new ArrayList<String>();
         assertEquals(expectedMethods, calledMethods);
 
         calledMethods.clear();
@@ -520,17 +520,17 @@ public class TestPoolUtils extends TestCase {
 
     public void testSynchronizedPoolObjectPool() throws Exception {
         try {
-            PoolUtils.synchronizedPool((ObjectPool)null);
+            PoolUtils.synchronizedPool((ObjectPool<Object>)null);
             fail("PoolUtils.synchronizedPool(ObjectPool) must not allow a null pool.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
-        final List calledMethods = new ArrayList();
-        final ObjectPool op = (ObjectPool)createProxy(ObjectPool.class, calledMethods);
+        final List<String> calledMethods = new ArrayList<String>();
+        final ObjectPool<Object> op = (ObjectPool<Object>)createProxy(ObjectPool.class, calledMethods);
 
-        final ObjectPool sop = PoolUtils.synchronizedPool(op);
-        final List expectedMethods = invokeEveryMethod(sop);
+        final ObjectPool<Object> sop = PoolUtils.synchronizedPool(op);
+        final List<String> expectedMethods = invokeEveryMethod(sop);
         assertEquals(expectedMethods, calledMethods);
 
         // TODO: Anyone feel motivated to construct a test that verifies proper synchronization?
@@ -538,17 +538,17 @@ public class TestPoolUtils extends TestCase {
 
     public void testSynchronizedPoolKeyedObjectPool() throws Exception {
         try {
-            PoolUtils.synchronizedPool((KeyedObjectPool)null);
+            PoolUtils.synchronizedPool((KeyedObjectPool<Object,Object>)null);
             fail("PoolUtils.synchronizedPool(KeyedObjectPool) must not allow a null pool.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
-        final List calledMethods = new ArrayList();
-        final KeyedObjectPool kop = (KeyedObjectPool)createProxy(KeyedObjectPool.class, calledMethods);
+        final List<String> calledMethods = new ArrayList<String>();
+        final KeyedObjectPool<Object,Object> kop = (KeyedObjectPool<Object,Object>)createProxy(KeyedObjectPool.class, calledMethods);
 
-        final KeyedObjectPool skop = PoolUtils.synchronizedPool(kop);
-        final List expectedMethods = invokeEveryMethod(skop);
+        final KeyedObjectPool<Object,Object> skop = PoolUtils.synchronizedPool(kop);
+        final List<String> expectedMethods = invokeEveryMethod(skop);
         assertEquals(expectedMethods, calledMethods);
 
         // TODO: Anyone feel motivated to construct a test that verifies proper synchronization?
@@ -562,12 +562,12 @@ public class TestPoolUtils extends TestCase {
             // expected
         }
 
-        final List calledMethods = new ArrayList();
-        final PoolableObjectFactory pof =
-                (PoolableObjectFactory)createProxy(PoolableObjectFactory.class, calledMethods);
+        final List<String> calledMethods = new ArrayList<String>();
+        final PoolableObjectFactory<Object> pof =
+                (PoolableObjectFactory<Object>)createProxy(PoolableObjectFactory.class, calledMethods);
 
-        final PoolableObjectFactory spof = PoolUtils.synchronizedPoolableFactory(pof);
-        final List expectedMethods = invokeEveryMethod(spof);
+        final PoolableObjectFactory<Object> spof = PoolUtils.synchronizedPoolableFactory(pof);
+        final List<String> expectedMethods = invokeEveryMethod(spof);
         assertEquals(expectedMethods, calledMethods);
 
         // TODO: Anyone feel motivated to construct a test that verifies proper synchronization?
@@ -575,18 +575,18 @@ public class TestPoolUtils extends TestCase {
 
     public void testSynchronizedPoolableFactoryKeyedPoolableObjectFactory() throws Exception {
         try {
-            PoolUtils.synchronizedPoolableFactory((KeyedPoolableObjectFactory)null);
+            PoolUtils.synchronizedPoolableFactory((KeyedPoolableObjectFactory<Object,Object>)null);
             fail("PoolUtils.synchronizedPoolableFactory(KeyedPoolableObjectFactory) must not allow a null factory.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
-        final List calledMethods = new ArrayList();
-        final KeyedPoolableObjectFactory kpof =
-                (KeyedPoolableObjectFactory)createProxy(KeyedPoolableObjectFactory.class, calledMethods);
+        final List<String> calledMethods = new ArrayList<String>();
+        final KeyedPoolableObjectFactory<Object,Object> kpof =
+                (KeyedPoolableObjectFactory<Object,Object>)createProxy(KeyedPoolableObjectFactory.class, calledMethods);
 
-        final KeyedPoolableObjectFactory skpof = PoolUtils.synchronizedPoolableFactory(kpof);
-        final List expectedMethods = invokeEveryMethod(skpof);
+        final KeyedPoolableObjectFactory<Object,Object> skpof = PoolUtils.synchronizedPoolableFactory(kpof);
+        final List<String> expectedMethods = invokeEveryMethod(skpof);
         assertEquals(expectedMethods, calledMethods);
 
         // TODO: Anyone feel motivated to construct a test that verifies proper synchronization?
@@ -594,27 +594,27 @@ public class TestPoolUtils extends TestCase {
 
     public void testErodingPoolObjectPool() throws Exception {
         try {
-            PoolUtils.erodingPool((ObjectPool)null);
+            PoolUtils.erodingPool((ObjectPool<Object>)null);
             fail("PoolUtils.erodingPool(ObjectPool) must not allow a null pool.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
         try {
-            PoolUtils.erodingPool((ObjectPool)null, 1f);
+            PoolUtils.erodingPool((ObjectPool<Object>)null, 1f);
             fail("PoolUtils.erodingPool(ObjectPool, float) must not allow a null pool.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
         try {
-            PoolUtils.erodingPool((ObjectPool)null, 0);
+            PoolUtils.erodingPool((ObjectPool<Object>)null, 0);
             fail("PoolUtils.erodingPool(ObjectPool, float) must not allow a non-positive factor.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
-        final List calledMethods = new ArrayList();
+        final List<String> calledMethods = new ArrayList<String>();
         final InvocationHandler handler = new MethodCallLogger(calledMethods) {
             public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
                 Object o = super.invoke(proxy, method, args);
@@ -628,9 +628,9 @@ public class TestPoolUtils extends TestCase {
 
         // If the logic behind PoolUtils.erodingPool changes then this will need to be tweaked.
         float factor = 0.01f; // about ~9 seconds until first discard
-        final ObjectPool pool = PoolUtils.erodingPool((ObjectPool)createProxy(ObjectPool.class, handler), factor);
+        final ObjectPool<Object> pool = PoolUtils.erodingPool((ObjectPool<Object>)createProxy(ObjectPool.class, handler), factor);
 
-        final List expectedMethods = new ArrayList();
+        final List<String> expectedMethods = new ArrayList<String>();
         assertEquals(expectedMethods, calledMethods);
 
         Object o = pool.borrowObject();
@@ -670,41 +670,41 @@ public class TestPoolUtils extends TestCase {
 
     public void testErodingPoolKeyedObjectPool() throws Exception {
         try {
-            PoolUtils.erodingPool((KeyedObjectPool)null);
+            PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null);
             fail("PoolUtils.erodingPool(KeyedObjectPool) must not allow a null pool.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
         try {
-            PoolUtils.erodingPool((KeyedObjectPool)null, 1f);
+            PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null, 1f);
             fail("PoolUtils.erodingPool(KeyedObjectPool, float) must not allow a null pool.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
         try {
-            PoolUtils.erodingPool((KeyedObjectPool)null, 0);
+            PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null, 0);
             fail("PoolUtils.erodingPool(ObjectPool, float) must not allow a non-positive factor.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
         try {
-            PoolUtils.erodingPool((KeyedObjectPool)null, 1f, true);
+            PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null, 1f, true);
             fail("PoolUtils.erodingPool(KeyedObjectPool, float, boolean) must not allow a null pool.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
         try {
-            PoolUtils.erodingPool((KeyedObjectPool)null, 0, false);
+            PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null, 0, false);
             fail("PoolUtils.erodingPool(ObjectPool, float, boolean) must not allow a non-positive factor.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
-        final List calledMethods = new ArrayList();
+        final List<String> calledMethods = new ArrayList<String>();
         final InvocationHandler handler = new MethodCallLogger(calledMethods) {
             public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
                 Object o = super.invoke(proxy, method, args);
@@ -718,9 +718,9 @@ public class TestPoolUtils extends TestCase {
 
         // If the logic behind PoolUtils.erodingPool changes then this will need to be tweaked.
         float factor = 0.01f; // about ~9 seconds until first discard
-        final KeyedObjectPool pool = PoolUtils.erodingPool((KeyedObjectPool)createProxy(KeyedObjectPool.class, handler), factor);
+        final KeyedObjectPool<Object,Object> pool = PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)createProxy(KeyedObjectPool.class, handler), factor);
 
-        final List expectedMethods = new ArrayList();
+        final List<String> expectedMethods = new ArrayList<String>();
         assertEquals(expectedMethods, calledMethods);
 
         final Object key = "key";
@@ -762,27 +762,27 @@ public class TestPoolUtils extends TestCase {
     
     public void testErodingPerKeyKeyedObjectPool() throws Exception {
         try {
-            PoolUtils.erodingPool((KeyedObjectPool)null, 1, true);
+            PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null, 1, true);
             fail("PoolUtils.erodingPool(KeyedObjectPool) must not allow a null pool.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
         try {
-            PoolUtils.erodingPool((KeyedObjectPool)null, 0, true);
+            PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null, 0, true);
             fail("PoolUtils.erodingPool(ObjectPool, float) must not allow a non-positive factor.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
         try {
-            PoolUtils.erodingPool((KeyedObjectPool)null, 1f, true);
+            PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null, 1f, true);
             fail("PoolUtils.erodingPool(KeyedObjectPool, float, boolean) must not allow a null pool.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
-        final List calledMethods = new ArrayList();
+        final List<String> calledMethods = new ArrayList<String>();
         final InvocationHandler handler = new MethodCallLogger(calledMethods) {
             public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
                 Object o = super.invoke(proxy, method, args);
@@ -796,9 +796,9 @@ public class TestPoolUtils extends TestCase {
 
         // If the logic behind PoolUtils.erodingPool changes then this will need to be tweaked.
         float factor = 0.01f; // about ~9 seconds until first discard
-        final KeyedObjectPool pool = PoolUtils.erodingPool((KeyedObjectPool)createProxy(KeyedObjectPool.class, handler), factor, true);
+        final KeyedObjectPool<Object,Object> pool = PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)createProxy(KeyedObjectPool.class, handler), factor, true);
 
-        final List expectedMethods = new ArrayList();
+        final List<String> expectedMethods = new ArrayList<String>();
         assertEquals(expectedMethods, calledMethods);
 
         final Object key = "key";
@@ -838,7 +838,7 @@ public class TestPoolUtils extends TestCase {
         assertEquals(expectedMethods, calledMethods);
     }
 
-    private static List invokeEveryMethod(ObjectPool op) throws Exception {
+    private static List<String> invokeEveryMethod(ObjectPool<Object> op) throws Exception {
         op.addObject();
         op.borrowObject();
         op.clear();
@@ -847,10 +847,10 @@ public class TestPoolUtils extends TestCase {
         op.getNumIdle();
         op.invalidateObject(new Object());
         op.returnObject(new Object());
-        op.setFactory((PoolableObjectFactory)createProxy(PoolableObjectFactory.class, (List)null));
+        op.setFactory((PoolableObjectFactory<Object>)createProxy(PoolableObjectFactory.class, (List)null));
         op.toString();
 
-        final List expectedMethods = Arrays.asList(new String[] {
+        final List<String> expectedMethods = Arrays.asList(new String[] {
                 "addObject", "borrowObject", "clear", "close",
                 "getNumActive", "getNumIdle", "invalidateObject",
                 "returnObject", "setFactory", "toString"
@@ -858,7 +858,7 @@ public class TestPoolUtils extends TestCase {
         return expectedMethods;
     }
 
-    private static List invokeEveryMethod(KeyedObjectPool kop) throws Exception {
+    private static List<String> invokeEveryMethod(KeyedObjectPool<Object,Object> kop) throws Exception {
         kop.addObject(null);
         kop.borrowObject(null);
         kop.clear();
@@ -870,10 +870,10 @@ public class TestPoolUtils extends TestCase {
         kop.getNumIdle(null);
         kop.invalidateObject(null, new Object());
         kop.returnObject(null, new Object());
-        kop.setFactory((KeyedPoolableObjectFactory)createProxy(KeyedPoolableObjectFactory.class, (List)null));
+        kop.setFactory((KeyedPoolableObjectFactory<Object,Object>)createProxy(KeyedPoolableObjectFactory.class, (List<String>)null));
         kop.toString();
 
-        final List expectedMethods = Arrays.asList(new String[] {
+        final List<String> expectedMethods = Arrays.asList(new String[] {
                 "addObject", "borrowObject", "clear", "clear", "close",
                 "getNumActive", "getNumActive", "getNumIdle", "getNumIdle", "invalidateObject",
                 "returnObject", "setFactory", "toString"
@@ -881,7 +881,7 @@ public class TestPoolUtils extends TestCase {
         return expectedMethods;
     }
 
-    private static List invokeEveryMethod(PoolableObjectFactory pof) throws Exception {
+    private static <T> List<String> invokeEveryMethod(PoolableObjectFactory<T> pof) throws Exception {
         pof.activateObject(null);
         pof.destroyObject(null);
         pof.makeObject();
@@ -889,14 +889,14 @@ public class TestPoolUtils extends TestCase {
         pof.validateObject(null);
         pof.toString();
 
-        final List expectedMethods = Arrays.asList(new String[] {
+        final List<String> expectedMethods = Arrays.asList(new String[] {
                 "activateObject", "destroyObject", "makeObject",
                 "passivateObject", "validateObject", "toString",
         });
         return expectedMethods;
     }
 
-    private static List invokeEveryMethod(KeyedPoolableObjectFactory kpof) throws Exception {
+    private static <K,V> List<String> invokeEveryMethod(KeyedPoolableObjectFactory<K,V> kpof) throws Exception {
         kpof.activateObject(null, null);
         kpof.destroyObject(null, null);
         kpof.makeObject(null);
@@ -904,25 +904,25 @@ public class TestPoolUtils extends TestCase {
         kpof.validateObject(null, null);
         kpof.toString();
 
-        final List expectedMethods = Arrays.asList(new String[] {
+        final List<String> expectedMethods = Arrays.asList(new String[] {
                 "activateObject", "destroyObject", "makeObject",
                 "passivateObject", "validateObject", "toString",
         });
         return expectedMethods;
     }
 
-    private static Object createProxy(final Class clazz, final List logger) {
+    private static <T> T createProxy(final Class<T> clazz, final List<String> logger) {
         return createProxy(clazz, new MethodCallLogger(logger));
     }
 
-    private static Object createProxy(final Class clazz, final InvocationHandler handler) {
-        return Proxy.newProxyInstance(clazz.getClassLoader(), new Class[] { clazz }, handler);
+    private static <T> T createProxy(final Class<T> clazz, final InvocationHandler handler) {
+        return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class[] { clazz }, handler);
     }
 
     private static class MethodCallLogger implements InvocationHandler {
-        private final List calledMethods;
+        private final List<String> calledMethods;
 
-        MethodCallLogger(final List calledMethods) {
+        MethodCallLogger(final List<String> calledMethods) {
             this.calledMethods = calledMethods;
         }
 

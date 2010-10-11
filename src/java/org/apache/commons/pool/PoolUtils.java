@@ -81,7 +81,7 @@ public final class PoolUtils {
      * @see #adapt(KeyedPoolableObjectFactory, Object)
      * @since Pool 1.3
      */
-    public static PoolableObjectFactory adapt(final KeyedPoolableObjectFactory keyedFactory) throws IllegalArgumentException {
+    public static <V> PoolableObjectFactory<V> adapt(final KeyedPoolableObjectFactory<Object,V> keyedFactory) throws IllegalArgumentException {
         return adapt(keyedFactory, new Object());
     }
 
@@ -96,8 +96,8 @@ public final class PoolUtils {
      * @see #adapt(KeyedPoolableObjectFactory)
      * @since Pool 1.3
      */
-    public static PoolableObjectFactory adapt(final KeyedPoolableObjectFactory keyedFactory, final Object key) throws IllegalArgumentException {
-        return new PoolableObjectFactoryAdaptor(keyedFactory, key);
+    public static <K,V> PoolableObjectFactory<V> adapt(final KeyedPoolableObjectFactory<K,V>  keyedFactory, final K key) throws IllegalArgumentException {
+        return new PoolableObjectFactoryAdaptor<K,V>(keyedFactory, key);
     }
 
     /**
@@ -109,8 +109,8 @@ public final class PoolUtils {
      * @throws IllegalArgumentException when <code>factory</code> is <code>null</code>.
      * @since Pool 1.3
      */
-    public static KeyedPoolableObjectFactory adapt(final PoolableObjectFactory factory) throws IllegalArgumentException {
-        return new KeyedPoolableObjectFactoryAdaptor(factory);
+    public static <V> KeyedPoolableObjectFactory<Object,V> adapt(final PoolableObjectFactory<V> factory) throws IllegalArgumentException {
+        return new KeyedPoolableObjectFactoryAdaptor<Object,V>(factory);
     }
 
     /**
@@ -123,7 +123,7 @@ public final class PoolUtils {
      * @see #adapt(KeyedObjectPool, Object)
      * @since Pool 1.3
      */
-    public static ObjectPool adapt(final KeyedObjectPool keyedPool) throws IllegalArgumentException {
+    public static <V> ObjectPool<V> adapt(final KeyedObjectPool<Object,V> keyedPool) throws IllegalArgumentException {
         return adapt(keyedPool, new Object());
     }
 
@@ -138,8 +138,8 @@ public final class PoolUtils {
      * @see #adapt(KeyedObjectPool)
      * @since Pool 1.3
      */
-    public static ObjectPool adapt(final KeyedObjectPool keyedPool, final Object key) throws IllegalArgumentException {
-        return new ObjectPoolAdaptor(keyedPool, key);
+    public static <K,V> ObjectPool<V> adapt(final KeyedObjectPool<K,V> keyedPool, final K key) throws IllegalArgumentException {
+        return new ObjectPoolAdaptor<K,V>(keyedPool, key);
     }
 
     /**
@@ -151,8 +151,8 @@ public final class PoolUtils {
      * @throws IllegalArgumentException when <code>pool</code> is <code>null</code>.
      * @since Pool 1.3
      */
-    public static KeyedObjectPool adapt(final ObjectPool pool) throws IllegalArgumentException {
-        return new KeyedObjectPoolAdaptor(pool);
+    public static <K,V> KeyedObjectPool<K,V> adapt(final ObjectPool<V> pool) throws IllegalArgumentException {
+        return new KeyedObjectPoolAdaptor<K,V>(pool);
     }
 
     /**
@@ -164,7 +164,7 @@ public final class PoolUtils {
      * @return an <code>ObjectPool</code> that will only allow objects of <code>type</code>
      * @since Pool 1.3
      */
-    public static ObjectPool checkedPool(final ObjectPool pool, final Class type) {
+    public static ObjectPool<Object> checkedPool(final ObjectPool<? super Object> pool, final Class<?> type) {
         if (pool == null) {
             throw new IllegalArgumentException("pool must not be null.");
         }
@@ -183,7 +183,7 @@ public final class PoolUtils {
      * @return a <code>KeyedObjectPool</code> that will only allow objects of <code>type</code>
      * @since Pool 1.3
      */
-    public static KeyedObjectPool checkedPool(final KeyedObjectPool keyedPool, final Class type) {
+    public static KeyedObjectPool<Object,Object> checkedPool(final KeyedObjectPool<? super Object,? super Object> keyedPool, final Class<?> type) {
         if (keyedPool == null) {
             throw new IllegalArgumentException("keyedPool must not be null.");
         }
@@ -207,14 +207,14 @@ public final class PoolUtils {
      *      valid for {@link Timer#schedule(TimerTask, long, long)}.
      * @since Pool 1.3
      */
-    public static TimerTask checkMinIdle(final ObjectPool pool, final int minIdle, final long period) throws IllegalArgumentException {
+    public static <T> TimerTask checkMinIdle(final ObjectPool<T> pool, final int minIdle, final long period) throws IllegalArgumentException {
         if (pool == null) {
             throw new IllegalArgumentException("keyedPool must not be null.");
         }
         if (minIdle < 0) {
             throw new IllegalArgumentException("minIdle must be non-negative.");
         }
-        final TimerTask task = new ObjectPoolMinIdleTimerTask(pool, minIdle);
+        final TimerTask task = new ObjectPoolMinIdleTimerTask<T>(pool, minIdle);
         getMinIdleTimer().schedule(task, 0L, period);
         return task;
     }
@@ -235,7 +235,7 @@ public final class PoolUtils {
      *      valid for {@link Timer#schedule(TimerTask, long, long)}.
      * @since Pool 1.3
      */
-    public static TimerTask checkMinIdle(final KeyedObjectPool keyedPool, final Object key, final int minIdle, final long period) throws IllegalArgumentException {
+    public static <K,V> TimerTask checkMinIdle(final KeyedObjectPool<K,V> keyedPool, final K key, final int minIdle, final long period) throws IllegalArgumentException {
         if (keyedPool == null) {
             throw new IllegalArgumentException("keyedPool must not be null.");
         }
@@ -245,7 +245,7 @@ public final class PoolUtils {
         if (minIdle < 0) {
             throw new IllegalArgumentException("minIdle must be non-negative.");
         }
-        final TimerTask task = new KeyedObjectPoolMinIdleTimerTask(keyedPool, key, minIdle);
+        final TimerTask task = new KeyedObjectPoolMinIdleTimerTask<K,V>(keyedPool, key, minIdle);
         getMinIdleTimer().schedule(task, 0L, period);
         return task;
     }
@@ -266,14 +266,14 @@ public final class PoolUtils {
      * @see #checkMinIdle(KeyedObjectPool, Object, int, long)
      * @since Pool 1.3
      */
-    public static Map checkMinIdle(final KeyedObjectPool keyedPool, final Collection keys, final int minIdle, final long period) throws IllegalArgumentException {
+    public static <K,V> Map<K,TimerTask> checkMinIdle(final KeyedObjectPool<K,V> keyedPool, final Collection<K> keys, final int minIdle, final long period) throws IllegalArgumentException {
         if (keys == null) {
             throw new IllegalArgumentException("keys must not be null.");
         }
-        final Map tasks = new HashMap(keys.size());
-        final Iterator iter = keys.iterator();
+        final Map<K,TimerTask> tasks = new HashMap<K,TimerTask>(keys.size());
+        final Iterator<K> iter = keys.iterator();
         while (iter.hasNext()) {
-            final Object key = iter.next();
+            final K key = iter.next();
             final TimerTask task = checkMinIdle(keyedPool, key, minIdle, period);
             tasks.put(key, task);
         }
@@ -289,7 +289,7 @@ public final class PoolUtils {
      * @throws IllegalArgumentException when <code>pool</code> is <code>null</code>.
      * @since Pool 1.3
      */
-    public static void prefill(final ObjectPool pool, final int count) throws Exception, IllegalArgumentException {
+    public static <T> void prefill(final ObjectPool<T> pool, final int count) throws Exception, IllegalArgumentException {
         if (pool == null) {
             throw new IllegalArgumentException("pool must not be null.");
         }
@@ -309,7 +309,7 @@ public final class PoolUtils {
      * @throws IllegalArgumentException when <code>keyedPool</code> or <code>key</code> is <code>null</code>.
      * @since Pool 1.3
      */
-    public static void prefill(final KeyedObjectPool keyedPool, final Object key, final int count) throws Exception, IllegalArgumentException {
+    public static <K,V> void prefill(final KeyedObjectPool<K,V> keyedPool, final K key, final int count) throws Exception, IllegalArgumentException {
         if (keyedPool == null) {
             throw new IllegalArgumentException("keyedPool must not be null.");
         }
@@ -335,11 +335,11 @@ public final class PoolUtils {
      * @see #prefill(KeyedObjectPool, Object, int)
      * @since Pool 1.3
      */
-    public static void prefill(final KeyedObjectPool keyedPool, final Collection keys, final int count) throws Exception, IllegalArgumentException {
+    public static <K,V> void prefill(final KeyedObjectPool<K,V> keyedPool, final Collection<K> keys, final int count) throws Exception, IllegalArgumentException {
         if (keys == null) {
             throw new IllegalArgumentException("keys must not be null.");
         }
-        final Iterator iter = keys.iterator();
+        final Iterator<K> iter = keys.iterator();
         while (iter.hasNext()) {
             prefill(keyedPool, iter.next(), count);
         }
@@ -359,7 +359,7 @@ public final class PoolUtils {
      * @return a synchronized view of the specified ObjectPool.
      * @since Pool 1.3
      */
-    public static ObjectPool synchronizedPool(final ObjectPool pool) {
+    public static <T> ObjectPool<T> synchronizedPool(final ObjectPool<T> pool) {
         if (pool == null) {
             throw new IllegalArgumentException("pool must not be null.");
         }
@@ -373,7 +373,7 @@ public final class PoolUtils {
         assert !"org.apache.commons.pool.composite.CompositeObjectPool".equals(pool.getClass().getName())
                 : "CompositeObjectPools are already thread-safe";
         */
-        return new SynchronizedObjectPool(pool);
+        return new SynchronizedObjectPool<T>(pool);
     }
 
     /**
@@ -390,7 +390,7 @@ public final class PoolUtils {
      * @return a synchronized view of the specified KeyedObjectPool.
      * @since Pool 1.3
      */
-    public static KeyedObjectPool synchronizedPool(final KeyedObjectPool keyedPool) {
+    public static <K,V> KeyedObjectPool<K,V> synchronizedPool(final KeyedObjectPool<K,V> keyedPool) {
         if (keyedPool == null) {
             throw new IllegalArgumentException("keyedPool must not be null.");
         }
@@ -402,7 +402,7 @@ public final class PoolUtils {
         assert !"org.apache.commons.pool.composite.CompositeKeyedObjectPool".equals(keyedPool.getClass().getName())
                 : "CompositeKeyedObjectPools are already thread-safe";
         */
-        return new SynchronizedKeyedObjectPool(keyedPool);
+        return new SynchronizedKeyedObjectPool<K,V>(keyedPool);
     }
 
     /**
@@ -412,8 +412,8 @@ public final class PoolUtils {
      * @return a synchronized view of the specified PoolableObjectFactory.
      * @since Pool 1.3
      */
-    public static PoolableObjectFactory synchronizedPoolableFactory(final PoolableObjectFactory factory) {
-        return new SynchronizedPoolableObjectFactory(factory);
+    public static <T> PoolableObjectFactory<T> synchronizedPoolableFactory(final PoolableObjectFactory<T> factory) {
+        return new SynchronizedPoolableObjectFactory<T>(factory);
     }
 
     /**
@@ -423,8 +423,8 @@ public final class PoolUtils {
      * @return a synchronized view of the specified KeyedPoolableObjectFactory.
      * @since Pool 1.3
      */
-    public static KeyedPoolableObjectFactory synchronizedPoolableFactory(final KeyedPoolableObjectFactory keyedFactory) {
-        return new SynchronizedKeyedPoolableObjectFactory(keyedFactory);
+    public static <K,V> KeyedPoolableObjectFactory<K,V> synchronizedPoolableFactory(final KeyedPoolableObjectFactory<K,V> keyedFactory) {
+        return new SynchronizedKeyedPoolableObjectFactory<K,V>(keyedFactory);
     }
 
     /**
@@ -438,7 +438,7 @@ public final class PoolUtils {
      * @see #erodingPool(ObjectPool, float)
      * @since Pool 1.4
      */
-    public static ObjectPool erodingPool(final ObjectPool pool) {
+    public static <T> ObjectPool<T> erodingPool(final ObjectPool<T> pool) {
         return erodingPool(pool, 1f);
     }
 
@@ -462,14 +462,14 @@ public final class PoolUtils {
      * @see #erodingPool(ObjectPool)
      * @since Pool 1.4
      */
-    public static ObjectPool erodingPool(final ObjectPool pool, final float factor) {
+    public static <T> ObjectPool<T> erodingPool(final ObjectPool<T> pool, final float factor) {
         if (pool == null) {
             throw new IllegalArgumentException("pool must not be null.");
         }
         if (factor <= 0f) {
             throw new IllegalArgumentException("factor must be positive.");
         }
-        return new ErodingObjectPool(pool, factor);
+        return new ErodingObjectPool<T>(pool, factor);
     }
 
     /**
@@ -485,7 +485,7 @@ public final class PoolUtils {
      * @see #erodingPool(KeyedObjectPool, float, boolean)
      * @since Pool 1.4
      */
-    public static KeyedObjectPool erodingPool(final KeyedObjectPool keyedPool) {
+    public static <K,V> KeyedObjectPool<K,V> erodingPool(final KeyedObjectPool<K,V> keyedPool) {
         return erodingPool(keyedPool, 1f);
     }
 
@@ -510,7 +510,7 @@ public final class PoolUtils {
      * @see #erodingPool(KeyedObjectPool, float, boolean)
      * @since Pool 1.4
      */
-    public static KeyedObjectPool erodingPool(final KeyedObjectPool keyedPool, final float factor) {
+    public static <K,V> KeyedObjectPool<K,V> erodingPool(final KeyedObjectPool<K,V> keyedPool, final float factor) {
         return erodingPool(keyedPool, factor, false);
     }
 
@@ -543,7 +543,7 @@ public final class PoolUtils {
      * @see #erodingPool(KeyedObjectPool, float)
      * @since Pool 1.4
      */
-    public static KeyedObjectPool erodingPool(final KeyedObjectPool keyedPool, final float factor, final boolean perKey) {
+    public static <K,V> KeyedObjectPool<K,V> erodingPool(final KeyedObjectPool<K,V> keyedPool, final float factor, final boolean perKey) {
         if (keyedPool == null) {
             throw new IllegalArgumentException("keyedPool must not be null.");
         }
@@ -551,9 +551,9 @@ public final class PoolUtils {
             throw new IllegalArgumentException("factor must be positive.");
         }
         if (perKey) {
-            return new ErodingPerKeyKeyedObjectPool(keyedPool, factor);
+            return new ErodingPerKeyKeyedObjectPool<K,V>(keyedPool, factor);
         } else {
-            return new ErodingKeyedObjectPool(keyedPool, factor);
+            return new ErodingKeyedObjectPool<K,V>(keyedPool, factor);
         }
     }
 
@@ -574,12 +574,12 @@ public final class PoolUtils {
      * Adaptor class that wraps and converts a KeyedPoolableObjectFactory with a fixed
      * key to a PoolableObjectFactory.
      */
-    private static class PoolableObjectFactoryAdaptor implements PoolableObjectFactory {
+    private static class PoolableObjectFactoryAdaptor<K,V> implements PoolableObjectFactory<V> {
         /** Fixed key */
-        private final Object key;
+        private final K key;
         
         /** Wrapped factory */
-        private final KeyedPoolableObjectFactory keyedFactory;
+        private final KeyedPoolableObjectFactory<K,V> keyedFactory;
 
         /**
          * Create a PoolableObjectFactoryAdaptor wrapping the provided KeyedPoolableObjectFactory with the 
@@ -589,7 +589,7 @@ public final class PoolUtils {
          * @param key fixed key
          * @throws IllegalArgumentException if either of the parameters is null
          */
-        PoolableObjectFactoryAdaptor(final KeyedPoolableObjectFactory keyedFactory, final Object key)
+        PoolableObjectFactoryAdaptor(final KeyedPoolableObjectFactory<K,V> keyedFactory, final K key)
         throws IllegalArgumentException {
             if (keyedFactory == null) {
                 throw new IllegalArgumentException("keyedFactory must not be null.");
@@ -606,7 +606,7 @@ public final class PoolUtils {
          * 
          * @return new object instance
          */
-        public Object makeObject() throws Exception {
+        public V makeObject() throws Exception {
             return keyedFactory.makeObject(key);
         }
 
@@ -615,7 +615,7 @@ public final class PoolUtils {
          * 
          * @param obj object to destroy
          */
-        public void destroyObject(final Object obj) throws Exception {
+        public void destroyObject(final V obj) throws Exception {
             keyedFactory.destroyObject(key, obj);
         }
 
@@ -625,7 +625,7 @@ public final class PoolUtils {
          * @param obj object to validate
          * @return true if validation is successful
          */
-        public boolean validateObject(final Object obj) {
+        public boolean validateObject(final V obj) {
             return keyedFactory.validateObject(key, obj);
         }
 
@@ -634,7 +634,7 @@ public final class PoolUtils {
          * 
          * @param obj object to activate
          */
-        public void activateObject(final Object obj) throws Exception {
+        public void activateObject(final V obj) throws Exception {
             keyedFactory.activateObject(key, obj);
         }
 
@@ -643,7 +643,7 @@ public final class PoolUtils {
          * 
          * @param obj object to passivate
          */
-        public void passivateObject(final Object obj) throws Exception {
+        public void passivateObject(final V obj) throws Exception {
             keyedFactory.passivateObject(key, obj);
         }
 
@@ -664,10 +664,10 @@ public final class PoolUtils {
      * Adaptor class that turns a PoolableObjectFactory into a KeyedPoolableObjectFactory by
      * ignoring keys.
      */
-    private static class KeyedPoolableObjectFactoryAdaptor implements KeyedPoolableObjectFactory {
+    private static class KeyedPoolableObjectFactoryAdaptor<K,V> implements KeyedPoolableObjectFactory<K,V> {
         
         /** Underlying PoolableObjectFactory */
-        private final PoolableObjectFactory factory;
+        private final PoolableObjectFactory<V> factory;
 
         /**
          * Create a new KeyedPoolableObjectFactoryAdaptor using the given PoolableObjectFactory to
@@ -676,7 +676,7 @@ public final class PoolUtils {
          * @param factory wrapped PoolableObjectFactory 
          * @throws IllegalArgumentException if the factory is null
          */
-        KeyedPoolableObjectFactoryAdaptor(final PoolableObjectFactory factory) throws IllegalArgumentException {
+        KeyedPoolableObjectFactoryAdaptor(final PoolableObjectFactory<V> factory) throws IllegalArgumentException {
             if (factory == null) {
                 throw new IllegalArgumentException("factory must not be null.");
             }
@@ -689,7 +689,7 @@ public final class PoolUtils {
          * @param key ignored
          * @return newly created object instance
          */
-        public Object makeObject(final Object key) throws Exception {
+        public V makeObject(final K key) throws Exception {
             return factory.makeObject();
         }
 
@@ -699,7 +699,7 @@ public final class PoolUtils {
          * @param key ignored
          * @param obj instance to destroy
          */
-        public void destroyObject(final Object key, final Object obj) throws Exception {
+        public void destroyObject(final K key, final V obj) throws Exception {
             factory.destroyObject(obj);
         }
 
@@ -710,7 +710,7 @@ public final class PoolUtils {
          * @param obj object to validate
          * @return true if validation is successful
          */
-        public boolean validateObject(final Object key, final Object obj) {
+        public boolean validateObject(final K key, final V obj) {
             return factory.validateObject(obj);
         }
 
@@ -720,7 +720,7 @@ public final class PoolUtils {
          * @param key ignored
          * @param obj object to be activated
          */
-        public void activateObject(final Object key, final Object obj) throws Exception {
+        public void activateObject(final K key, final V obj) throws Exception {
             factory.activateObject(obj);
         }
 
@@ -730,7 +730,7 @@ public final class PoolUtils {
          * @param key ignored
          * @param obj object to passivate
          */
-        public void passivateObject(final Object key, final Object obj) throws Exception {
+        public void passivateObject(final K key, final V obj) throws Exception {
             factory.passivateObject(obj);
         }
 
@@ -750,13 +750,13 @@ public final class PoolUtils {
      * Adapts a KeyedObjectPool to make it an ObjectPool by fixing restricting to
      * a fixed key.
      */
-    private static class ObjectPoolAdaptor implements ObjectPool {
+    private static class ObjectPoolAdaptor<K,V> implements ObjectPool<V> {
         
         /** Fixed key */
-        private final Object key;
+        private final K key;
         
         /** Underlying KeyedObjectPool */
-        private final KeyedObjectPool keyedPool;
+        private final KeyedObjectPool<K,V> keyedPool;
 
         /**
          * Create a new ObjectPoolAdaptor using the provided KeyedObjectPool and fixed key.
@@ -765,7 +765,7 @@ public final class PoolUtils {
          * @param key fixed key
          * @throws IllegalArgumentException if either of the parameters is null
          */
-        ObjectPoolAdaptor(final KeyedObjectPool keyedPool, final Object key) throws IllegalArgumentException {
+        ObjectPoolAdaptor(final KeyedObjectPool<K,V> keyedPool, final K key) throws IllegalArgumentException {
             if (keyedPool == null) {
                 throw new IllegalArgumentException("keyedPool must not be null.");
             }
@@ -779,14 +779,14 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        public Object borrowObject() throws Exception, NoSuchElementException, IllegalStateException {
+        public V borrowObject() throws Exception, NoSuchElementException, IllegalStateException {
             return keyedPool.borrowObject(key);
         }
 
         /**
          * {@inheritDoc}
          */
-        public void returnObject(final Object obj) {
+        public void returnObject(final V obj) {
             try {
                 keyedPool.returnObject(key, obj);
             } catch (Exception e) {
@@ -797,7 +797,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        public void invalidateObject(final Object obj) {
+        public void invalidateObject(final V obj) {
             try {
                 keyedPool.invalidateObject(key, obj);
             } catch (Exception e) {
@@ -850,8 +850,8 @@ public final class PoolUtils {
          * @param factory new PoolableObjectFactory 
          * @deprecated to be removed in version 2.0
          */
-        public void setFactory(final PoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
-            keyedPool.setFactory(adapt(factory));
+        public void setFactory(final PoolableObjectFactory<V> factory) throws IllegalStateException, UnsupportedOperationException {
+            keyedPool.setFactory((KeyedPoolableObjectFactory<K, V>) adapt(factory));
         }
 
         /**
@@ -870,10 +870,10 @@ public final class PoolUtils {
     /**
      * Adapts an ObjectPool to implement KeyedObjectPool by ignoring key arguments.
      */
-    private static class KeyedObjectPoolAdaptor implements KeyedObjectPool {
+    private static class KeyedObjectPoolAdaptor<K,V> implements KeyedObjectPool<K,V> {
        
         /** Underlying pool */
-        private final ObjectPool pool;
+        private final ObjectPool<V> pool;
 
         /**
          * Create a new KeyedObjectPoolAdaptor wrapping the given ObjectPool
@@ -881,7 +881,7 @@ public final class PoolUtils {
          * @param pool underlying object pool
          * @throws IllegalArgumentException if pool is null
          */
-        KeyedObjectPoolAdaptor(final ObjectPool pool) throws IllegalArgumentException {
+        KeyedObjectPoolAdaptor(final ObjectPool<V> pool) throws IllegalArgumentException {
             if (pool == null) {
                 throw new IllegalArgumentException("pool must not be null.");
             }
@@ -894,7 +894,7 @@ public final class PoolUtils {
          * @param key ignored
          * @return newly created object instance
          */
-        public Object borrowObject(final Object key) throws Exception, NoSuchElementException, IllegalStateException {
+        public V borrowObject(final K key) throws Exception, NoSuchElementException, IllegalStateException {
             return pool.borrowObject();
         }
 
@@ -904,7 +904,7 @@ public final class PoolUtils {
          * @param key ignored
          * @param obj object to return
          */
-        public void returnObject(final Object key, final Object obj) {
+        public void returnObject(final K key, final V obj) {
             try {
                 pool.returnObject(obj);
             } catch (Exception e) {
@@ -918,7 +918,7 @@ public final class PoolUtils {
          * @param obj object to invalidate
          * @param key ignored
          */
-        public void invalidateObject(final Object key, final Object obj) {
+        public void invalidateObject(final K key, final V obj) {
             try {
                 pool.invalidateObject(obj);
             } catch (Exception e) {
@@ -981,7 +981,7 @@ public final class PoolUtils {
          * 
          * @param key ignored.
          */
-        public void clear(final Object key) throws Exception, UnsupportedOperationException {
+        public void clear(final K key) throws Exception, UnsupportedOperationException {
             pool.clear();
         }
 
@@ -1002,8 +1002,8 @@ public final class PoolUtils {
          * @param factory new factory to use managing object instances
          * @deprecated to be removed in version 2.0
          */
-        public void setFactory(final KeyedPoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
-            pool.setFactory(adapt(factory));
+        public void setFactory(final KeyedPoolableObjectFactory<K,V> factory) throws IllegalStateException, UnsupportedOperationException {
+            pool.setFactory(adapt((KeyedPoolableObjectFactory<Object, V>) factory));
         }
 
         /**
@@ -1023,15 +1023,15 @@ public final class PoolUtils {
      * to pool methods.
      *
      */
-    private static class CheckedObjectPool implements ObjectPool {
+    private static class CheckedObjectPool implements ObjectPool<Object> {
         /** 
          * Type of objects allowed in the pool. This should be a subtype of the return type of
          * the underlying pool's associated object factory.
          */
-        private final Class type;
+        private final Class<?> type;
        
         /** Underlying object pool */
-        private final ObjectPool pool;
+        private final ObjectPool<? super Object> pool;
 
         /**
          * Create a CheckedObjectPool accepting objects of the given type using
@@ -1041,7 +1041,7 @@ public final class PoolUtils {
          * @param type expected pooled object type
          * @throws IllegalArgumentException if either parameter is null
          */
-        CheckedObjectPool(final ObjectPool pool, final Class type) {
+        CheckedObjectPool(final ObjectPool<? super Object> pool, final Class<?> type) {
             if (pool == null) {
                 throw new IllegalArgumentException("pool must not be null.");
             }
@@ -1170,15 +1170,15 @@ public final class PoolUtils {
      * to pool methods.
      *
      */
-    private static class CheckedKeyedObjectPool implements KeyedObjectPool {
+    private static class CheckedKeyedObjectPool implements KeyedObjectPool<Object,Object> {
         /** 
          * Expected type of objects managed by the pool.  This should be
          * a subtype of the return type of the object factory used by the pool.
          */
-        private final Class type;
+        private final Class<?> type;
         
         /** Underlying pool */
-        private final KeyedObjectPool keyedPool;
+        private final KeyedObjectPool<? super Object,? super Object> keyedPool;
 
         /**
          * Create a new CheckedKeyedObjectPool from the given pool with given expected object type.
@@ -1187,7 +1187,7 @@ public final class PoolUtils {
          * @param type expected object type
          * @throws IllegalArgumentException if either parameter is null
          */
-        CheckedKeyedObjectPool(final KeyedObjectPool keyedPool, final Class type) {
+        CheckedKeyedObjectPool(final KeyedObjectPool<? super Object,? super Object> keyedPool, final Class<?> type) {
             if (keyedPool == null) {
                 throw new IllegalArgumentException("keyedPool must not be null.");
             }
@@ -1341,13 +1341,13 @@ public final class PoolUtils {
      * same as the pool's minIdle setting.
      * 
      */
-    private static class ObjectPoolMinIdleTimerTask extends TimerTask {
+    private static class ObjectPoolMinIdleTimerTask<T> extends TimerTask {
         
         /** Minimum number of idle instances.  Not the same as pool.getMinIdle(). */
         private final int minIdle;
         
         /** Object pool */
-        private final ObjectPool pool;
+        private final ObjectPool<T> pool;
 
         /**
          * Create a new ObjectPoolMinIdleTimerTask for the given pool with the given minIdle setting.
@@ -1356,7 +1356,7 @@ public final class PoolUtils {
          * @param minIdle number of idle instances to maintain
          * @throws IllegalArgumentException if the pool is null
          */
-        ObjectPoolMinIdleTimerTask(final ObjectPool pool, final int minIdle) throws IllegalArgumentException {
+        ObjectPoolMinIdleTimerTask(final ObjectPool<T> pool, final int minIdle) throws IllegalArgumentException {
             if (pool == null) {
                 throw new IllegalArgumentException("pool must not be null.");
             }
@@ -1405,15 +1405,15 @@ public final class PoolUtils {
      * same as the pool's minIdle setting.
      * 
      */
-    private static class KeyedObjectPoolMinIdleTimerTask extends TimerTask {
+    private static class KeyedObjectPoolMinIdleTimerTask<K,V> extends TimerTask {
         /** Minimum number of idle instances.  Not the same as pool.getMinIdle(). */
         private final int minIdle;
         
         /** Key to ensure minIdle for */
-        private final Object key;
+        private final K key;
         
         /** Keyed object pool */
-        private final KeyedObjectPool keyedPool;
+        private final KeyedObjectPool<K,V> keyedPool;
 
         /**
          * Create a new KeyedObjecPoolMinIdleTimerTask.
@@ -1423,7 +1423,7 @@ public final class PoolUtils {
          * @param minIdle minimum number of idle instances 
          * @throws IllegalArgumentException if the key is null
          */
-        KeyedObjectPoolMinIdleTimerTask(final KeyedObjectPool keyedPool, final Object key, final int minIdle) throws IllegalArgumentException {
+        KeyedObjectPoolMinIdleTimerTask(final KeyedObjectPool<K,V> keyedPool, final K key, final int minIdle) throws IllegalArgumentException {
             if (keyedPool == null) {
                 throw new IllegalArgumentException("keyedPool must not be null.");
             }
@@ -1478,13 +1478,13 @@ public final class PoolUtils {
      * borrowed with another layer of synchronization will cause liveliness issues or a deadlock.
      * </p>
      */
-    private static class SynchronizedObjectPool implements ObjectPool {
+    private static class SynchronizedObjectPool<T> implements ObjectPool<T> {
         
         /** Object whose monitor is used to synchronize methods on the wrapped pool. */
         private final Object lock;
         
         /** the underlying object pool */
-        private final ObjectPool pool;
+        private final ObjectPool<T> pool;
 
         /**
          * Create a new SynchronizedObjectPool wrapping the given pool.
@@ -1492,7 +1492,7 @@ public final class PoolUtils {
          * @param pool the ObjectPool to be "wrapped" in a synchronized ObjectPool.
          * @throws IllegalArgumentException if the pool is null
          */
-        SynchronizedObjectPool(final ObjectPool pool) throws IllegalArgumentException {
+        SynchronizedObjectPool(final ObjectPool<T> pool) throws IllegalArgumentException {
             if (pool == null) {
                 throw new IllegalArgumentException("pool must not be null.");
             }
@@ -1503,7 +1503,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        public Object borrowObject() throws Exception, NoSuchElementException, IllegalStateException {
+        public T borrowObject() throws Exception, NoSuchElementException, IllegalStateException {
             synchronized (lock) {
                 return pool.borrowObject();
             }
@@ -1512,7 +1512,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        public void returnObject(final Object obj) {
+        public void returnObject(final T obj) {
             synchronized (lock) {
                 try {
                     pool.returnObject(obj);
@@ -1525,7 +1525,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        public void invalidateObject(final Object obj) {
+        public void invalidateObject(final T obj) {
             synchronized (lock) {
                 try {
                     pool.invalidateObject(obj);
@@ -1590,7 +1590,7 @@ public final class PoolUtils {
          * @param factory new PoolableObjectFactory
          * @deprecated to be removed in pool 2.0
          */
-        public void setFactory(final PoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
+        public void setFactory(final PoolableObjectFactory<T> factory) throws IllegalStateException, UnsupportedOperationException {
             synchronized (lock) {
                 pool.setFactory(factory);
             }
@@ -1618,13 +1618,13 @@ public final class PoolUtils {
      * borrowed with another layer of synchronization will cause liveliness issues or a deadlock.
      * </p>
      */
-    private static class SynchronizedKeyedObjectPool implements KeyedObjectPool {
+    private static class SynchronizedKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
         
         /** Object whose monitor is used to synchronize methods on the wrapped pool. */
         private final Object lock;
         
         /** Underlying object pool */
-        private final KeyedObjectPool keyedPool;
+        private final KeyedObjectPool<K,V> keyedPool;
 
         /**
          * Create a new SynchronizedKeyedObjectPool wrapping the given pool
@@ -1632,7 +1632,7 @@ public final class PoolUtils {
          * @param keyedPool KeyedObjectPool to wrap
          * @throws IllegalArgumentException if keyedPool is null
          */
-        SynchronizedKeyedObjectPool(final KeyedObjectPool keyedPool) throws IllegalArgumentException {
+        SynchronizedKeyedObjectPool(final KeyedObjectPool<K,V> keyedPool) throws IllegalArgumentException {
             if (keyedPool == null) {
                 throw new IllegalArgumentException("keyedPool must not be null.");
             }
@@ -1643,7 +1643,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        public Object borrowObject(final Object key) throws Exception, NoSuchElementException, IllegalStateException {
+        public V borrowObject(final K key) throws Exception, NoSuchElementException, IllegalStateException {
             synchronized (lock) {
                 return keyedPool.borrowObject(key);
             }
@@ -1652,7 +1652,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        public void returnObject(final Object key, final Object obj) {
+        public void returnObject(final K key, final V obj) {
             synchronized (lock) {
                 try {
                     keyedPool.returnObject(key, obj);
@@ -1665,7 +1665,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        public void invalidateObject(final Object key, final Object obj) {
+        public void invalidateObject(final K key, final V obj) {
             synchronized (lock) {
                 try {
                     keyedPool.invalidateObject(key, obj);
@@ -1678,7 +1678,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        public void addObject(final Object key) throws Exception, IllegalStateException, UnsupportedOperationException {
+        public void addObject(final K key) throws Exception, IllegalStateException, UnsupportedOperationException {
             synchronized (lock) {
                 keyedPool.addObject(key);
             }
@@ -1687,7 +1687,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        public int getNumIdle(final Object key) throws UnsupportedOperationException {
+        public int getNumIdle(final K key) throws UnsupportedOperationException {
             synchronized (lock) {
                 return keyedPool.getNumIdle(key);
             }
@@ -1696,7 +1696,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        public int getNumActive(final Object key) throws UnsupportedOperationException {
+        public int getNumActive(final K key) throws UnsupportedOperationException {
             synchronized (lock) {
                 return keyedPool.getNumActive(key);
             }
@@ -1732,7 +1732,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        public void clear(final Object key) throws Exception, UnsupportedOperationException {
+        public void clear(final K key) throws Exception, UnsupportedOperationException {
             synchronized (lock) {
                 keyedPool.clear(key);
             }
@@ -1757,7 +1757,7 @@ public final class PoolUtils {
          * @param factory KeyedPoolableObjectFactory used by the pool
          * @deprecated to be removed in pool 2.0
          */
-        public void setFactory(final KeyedPoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
+        public void setFactory(final KeyedPoolableObjectFactory<K,V> factory) throws IllegalStateException, UnsupportedOperationException {
             synchronized (lock) {
                 keyedPool.setFactory(factory);
             }
@@ -1783,12 +1783,12 @@ public final class PoolUtils {
      * This should not be used on pool implementations that already provide proper synchronization
      * such as the pools provided in the Commons Pool library. </p>
      */
-    private static class SynchronizedPoolableObjectFactory implements PoolableObjectFactory {
+    private static class SynchronizedPoolableObjectFactory<T> implements PoolableObjectFactory<T> {
         /** Synchronization lock */
         private final Object lock;
         
         /** Wrapped factory */
-        private final PoolableObjectFactory factory;
+        private final PoolableObjectFactory<T> factory;
 
         /** 
          * Create a SynchronizedPoolableObjectFactory wrapping the given factory.
@@ -1796,7 +1796,7 @@ public final class PoolUtils {
          * @param factory underlying factory to wrap
          * @throws IllegalArgumentException if the factory is null
          */
-        SynchronizedPoolableObjectFactory(final PoolableObjectFactory factory) throws IllegalArgumentException {
+        SynchronizedPoolableObjectFactory(final PoolableObjectFactory<T> factory) throws IllegalArgumentException {
             if (factory == null) {
                 throw new IllegalArgumentException("factory must not be null.");
             }
@@ -1807,7 +1807,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        public Object makeObject() throws Exception {
+        public T makeObject() throws Exception {
             synchronized (lock) {
                 return factory.makeObject();
             }
@@ -1816,7 +1816,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        public void destroyObject(final Object obj) throws Exception {
+        public void destroyObject(final T obj) throws Exception {
             synchronized (lock) {
                 factory.destroyObject(obj);
             }
@@ -1825,7 +1825,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        public boolean validateObject(final Object obj) {
+        public boolean validateObject(final T obj) {
             synchronized (lock) {
                 return factory.validateObject(obj);
             }
@@ -1834,7 +1834,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        public void activateObject(final Object obj) throws Exception {
+        public void activateObject(final T obj) throws Exception {
             synchronized (lock) {
                 factory.activateObject(obj);
             }
@@ -1843,7 +1843,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        public void passivateObject(final Object obj) throws Exception {
+        public void passivateObject(final T obj) throws Exception {
             synchronized (lock) {
                 factory.passivateObject(obj);
             }
@@ -1869,12 +1869,12 @@ public final class PoolUtils {
      * This should not be used on pool implementations that already provide proper synchronization
      * such as the pools provided in the Commons Pool library. </p>
      */
-    private static class SynchronizedKeyedPoolableObjectFactory implements KeyedPoolableObjectFactory {
+    private static class SynchronizedKeyedPoolableObjectFactory<K,V> implements KeyedPoolableObjectFactory<K,V> {
         /** Synchronization lock */
         private final Object lock;
         
         /** Wrapped factory */
-        private final KeyedPoolableObjectFactory keyedFactory;
+        private final KeyedPoolableObjectFactory<K,V> keyedFactory;
 
         /** 
          * Create a SynchronizedKeyedPoolableObjectFactory wrapping the given factory.
@@ -1882,7 +1882,7 @@ public final class PoolUtils {
          * @param keyedFactory underlying factory to wrap
          * @throws IllegalArgumentException if the factory is null
          */
-        SynchronizedKeyedPoolableObjectFactory(final KeyedPoolableObjectFactory keyedFactory) throws IllegalArgumentException {
+        SynchronizedKeyedPoolableObjectFactory(final KeyedPoolableObjectFactory<K,V> keyedFactory) throws IllegalArgumentException {
             if (keyedFactory == null) {
                 throw new IllegalArgumentException("keyedFactory must not be null.");
             }
@@ -1893,7 +1893,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        public Object makeObject(final Object key) throws Exception {
+        public V makeObject(final K key) throws Exception {
             synchronized (lock) {
                 return keyedFactory.makeObject(key);
             }
@@ -1902,7 +1902,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        public void destroyObject(final Object key, final Object obj) throws Exception {
+        public void destroyObject(final K key, final V obj) throws Exception {
             synchronized (lock) {
                 keyedFactory.destroyObject(key, obj);
             }
@@ -1911,7 +1911,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        public boolean validateObject(final Object key, final Object obj) {
+        public boolean validateObject(final K key, final V obj) {
             synchronized (lock) {
                 return keyedFactory.validateObject(key, obj);
             }
@@ -1920,7 +1920,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        public void activateObject(final Object key, final Object obj) throws Exception {
+        public void activateObject(final K key, final V obj) throws Exception {
             synchronized (lock) {
                 keyedFactory.activateObject(key, obj);
             }
@@ -1929,7 +1929,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        public void passivateObject(final Object key, final Object obj) throws Exception {
+        public void passivateObject(final K key, final V obj) throws Exception {
             synchronized (lock) {
                 keyedFactory.passivateObject(key, obj);
             }
@@ -2026,9 +2026,9 @@ public final class PoolUtils {
      * may be invalidated instead of being added to idle capacity.
      *
      */
-    private static class ErodingObjectPool implements ObjectPool {
+    private static class ErodingObjectPool<T> implements ObjectPool<T> {
         /** Underlying object pool */
-        private final ObjectPool pool;
+        private final ObjectPool<T> pool;
         
         /** Erosion factor */
         private final ErodingFactor factor;
@@ -2040,7 +2040,7 @@ public final class PoolUtils {
          * @param factor erosion factor - determines the frequency of erosion events
          * @see #factor
          */
-        public ErodingObjectPool(final ObjectPool pool, final float factor) {
+        public ErodingObjectPool(final ObjectPool<T> pool, final float factor) {
             this.pool = pool;
             this.factor = new ErodingFactor(factor);
         }
@@ -2048,7 +2048,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        public Object borrowObject() throws Exception, NoSuchElementException, IllegalStateException {
+        public T borrowObject() throws Exception, NoSuchElementException, IllegalStateException {
             return pool.borrowObject();
         }
 
@@ -2061,7 +2061,7 @@ public final class PoolUtils {
          * @param obj object to return or invalidate
          * @see #factor
          */
-        public void returnObject(final Object obj) {
+        public void returnObject(final T obj) {
             boolean discard = false;
             final long now = System.currentTimeMillis();
             synchronized (pool) {
@@ -2088,7 +2088,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        public void invalidateObject(final Object obj) {
+        public void invalidateObject(final T obj) {
             try {
                 pool.invalidateObject(obj);
             } catch (Exception e) {
@@ -2139,7 +2139,7 @@ public final class PoolUtils {
          * {@inheritDoc}
          * @deprecated to be removed in pool 2.0
          */
-        public void setFactory(final PoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
+        public void setFactory(final PoolableObjectFactory<T> factory) throws IllegalStateException, UnsupportedOperationException {
             pool.setFactory(factory);
         }
 
@@ -2160,9 +2160,9 @@ public final class PoolUtils {
      * may be invalidated instead of being added to idle capacity.
      *
      */
-    private static class ErodingKeyedObjectPool implements KeyedObjectPool {
+    private static class ErodingKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
         /** Underlying pool */
-        private final KeyedObjectPool keyedPool;
+        private final KeyedObjectPool<K,V> keyedPool;
         
         /** Erosion factor */
         private final ErodingFactor erodingFactor;
@@ -2174,7 +2174,7 @@ public final class PoolUtils {
          * @param factor erosion factor - determines the frequency of erosion events
          * @see #factor
          */
-        public ErodingKeyedObjectPool(final KeyedObjectPool keyedPool, final float factor) {
+        public ErodingKeyedObjectPool(final KeyedObjectPool<K,V> keyedPool, final float factor) {
             this(keyedPool, new ErodingFactor(factor));
         }
 
@@ -2185,7 +2185,7 @@ public final class PoolUtils {
          * @param erodingFactor erosion factor - determines the frequency of erosion events
          * @see #factor
          */
-        protected ErodingKeyedObjectPool(final KeyedObjectPool keyedPool, final ErodingFactor erodingFactor) {
+        protected ErodingKeyedObjectPool(final KeyedObjectPool<K,V> keyedPool, final ErodingFactor erodingFactor) {
             if (keyedPool == null) {
                 throw new IllegalArgumentException("keyedPool must not be null.");
             }
@@ -2196,7 +2196,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        public Object borrowObject(final Object key) throws Exception, NoSuchElementException, IllegalStateException {
+        public V borrowObject(final K key) throws Exception, NoSuchElementException, IllegalStateException {
             return keyedPool.borrowObject(key);
         }
 
@@ -2210,7 +2210,7 @@ public final class PoolUtils {
          * @param key key
          * @see #factor
          */
-        public void returnObject(final Object key, final Object obj) throws Exception {
+        public void returnObject(final K key, final V obj) throws Exception {
             boolean discard = false;
             final long now = System.currentTimeMillis();
             final ErodingFactor factor = getErodingFactor(key);
@@ -2238,7 +2238,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        protected int numIdle(final Object key) {
+        protected int numIdle(final K key) {
             return getKeyedPool().getNumIdle();
         }
 
@@ -2247,14 +2247,14 @@ public final class PoolUtils {
          * @param key key
          * @return eroding factor for the given keyed pool
          */
-        protected ErodingFactor getErodingFactor(final Object key) {
+        protected ErodingFactor getErodingFactor(final K key) {
             return erodingFactor;
         }
 
         /**
          * {@inheritDoc}
          */
-        public void invalidateObject(final Object key, final Object obj) {
+        public void invalidateObject(final K key, final V obj) {
             try {
                 keyedPool.invalidateObject(key, obj);
             } catch (Exception e) {
@@ -2265,7 +2265,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        public void addObject(final Object key) throws Exception, IllegalStateException, UnsupportedOperationException {
+        public void addObject(final K key) throws Exception, IllegalStateException, UnsupportedOperationException {
             keyedPool.addObject(key);
         }
 
@@ -2279,7 +2279,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        public int getNumIdle(final Object key) throws UnsupportedOperationException {
+        public int getNumIdle(final K key) throws UnsupportedOperationException {
             return keyedPool.getNumIdle(key);
         }
 
@@ -2293,7 +2293,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        public int getNumActive(final Object key) throws UnsupportedOperationException {
+        public int getNumActive(final K key) throws UnsupportedOperationException {
             return keyedPool.getNumActive(key);
         }
 
@@ -2307,7 +2307,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        public void clear(final Object key) throws Exception, UnsupportedOperationException {
+        public void clear(final K key) throws Exception, UnsupportedOperationException {
             keyedPool.clear(key);
         }
 
@@ -2326,7 +2326,7 @@ public final class PoolUtils {
          * {@inheritDoc}
          * @deprecated to be removed in pool 2.0
          */
-        public void setFactory(final KeyedPoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
+        public void setFactory(final KeyedPoolableObjectFactory<K,V> factory) throws IllegalStateException, UnsupportedOperationException {
             keyedPool.setFactory(factory);
         }
 
@@ -2335,7 +2335,7 @@ public final class PoolUtils {
          * 
          * @return the keyed pool that this ErodingKeyedObjectPool wraps
          */
-        protected KeyedObjectPool getKeyedPool() {
+        protected KeyedObjectPool<K,V> getKeyedPool() {
             return keyedPool;
         }
 
@@ -2354,12 +2354,12 @@ public final class PoolUtils {
      * Extends ErodingKeyedObjectPool to allow erosion to take place on a per-key
      * basis.  Timing of erosion events is tracked separately for separate keyed pools.
      */
-    private static class ErodingPerKeyKeyedObjectPool extends ErodingKeyedObjectPool {
+    private static class ErodingPerKeyKeyedObjectPool<K,V> extends ErodingKeyedObjectPool<K,V> {
         /** Erosion factor - same for all pools */
         private final float factor;
         
         /** Map of ErodingFactor instances keyed on pool keys */
-        private final Map factors = Collections.synchronizedMap(new HashMap());
+        private final Map<K,ErodingFactor> factors = Collections.synchronizedMap(new HashMap<K,ErodingFactor>());
 
         /**
          * Create a new ErordingPerKeyKeyedObjectPool decorating the given keyed pool with
@@ -2367,7 +2367,7 @@ public final class PoolUtils {
          * @param keyedPool underlying keyed pool
          * @param factor erosion factor
          */
-        public ErodingPerKeyKeyedObjectPool(final KeyedObjectPool keyedPool, final float factor) {
+        public ErodingPerKeyKeyedObjectPool(final KeyedObjectPool<K,V> keyedPool, final float factor) {
             super(keyedPool, null);
             this.factor = factor;
         }
@@ -2375,14 +2375,14 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        protected int numIdle(final Object key) {
+        protected int numIdle(final K key) {
             return getKeyedPool().getNumIdle(key);
         }
 
         /**
          * {@inheritDoc}
          */
-        protected ErodingFactor getErodingFactor(final Object key) {
+        protected ErodingFactor getErodingFactor(final K key) {
             ErodingFactor factor = (ErodingFactor)factors.get(key);
             // this may result in two ErodingFactors being created for a key
             // since they are small and cheap this is okay.
