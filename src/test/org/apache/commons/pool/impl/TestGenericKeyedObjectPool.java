@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Random;
 
+import org.apache.commons.pool.BaseKeyedPoolableObjectFactory;
 import org.apache.commons.pool.KeyedObjectPool;
 import org.apache.commons.pool.KeyedPoolableObjectFactory;
 import org.apache.commons.pool.TestBaseKeyedObjectPool;
@@ -967,6 +968,14 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         }
     }
     
+    public void testConstructorsNoFactory() {
+        try {
+            new GenericKeyedObjectPool<Object,Object>(null);
+            fail("Expected IllegalArgumentException");
+        } catch (IllegalArgumentException expected) {
+        }        
+    }
+    
     public void testConstructors() {
         
         // Make constructor arguments all different from defaults
@@ -984,7 +993,13 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         WhenExhaustedAction whenExhaustedAction = WhenExhaustedAction.GROW;
         boolean lifo = false;
         
-        GenericKeyedObjectPool<Object,Object> pool = new GenericKeyedObjectPool<Object,Object>();
+        KeyedPoolableObjectFactory<Object,Object> factory = new BaseKeyedPoolableObjectFactory<Object,Object>() { 
+            @Override
+            public Object makeObject(Object key) throws Exception {
+                return null;
+            }
+        };   
+        GenericKeyedObjectPool<Object,Object> pool = new GenericKeyedObjectPool<Object,Object>(factory);
         assertEquals(GenericKeyedObjectPool.DEFAULT_MAX_ACTIVE, pool.getMaxActive());
         assertEquals(GenericKeyedObjectPool.DEFAULT_MAX_IDLE, pool.getMaxIdle());
         assertEquals(GenericKeyedObjectPool.DEFAULT_MAX_WAIT, pool.getMaxWait());
@@ -1020,7 +1035,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         config.testWhileIdle = testWhileIdle;
         config.timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
         config.whenExhaustedAction = whenExhaustedAction;
-        pool = new GenericKeyedObjectPool<Object,Object>(null, config);
+        pool = new GenericKeyedObjectPool<Object,Object>(factory, config);
         assertEquals(maxActive, pool.getMaxActive());
         assertEquals(maxIdle, pool.getMaxIdle());
         assertEquals(maxWait, pool.getMaxWait());
@@ -1037,7 +1052,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals(whenExhaustedAction,pool.getWhenExhaustedAction());
         assertEquals(lifo, pool.getLifo());
         
-        pool = new GenericKeyedObjectPool<Object,Object>(null, maxActive);
+        pool = new GenericKeyedObjectPool<Object,Object>(factory, maxActive);
         assertEquals(maxActive, pool.getMaxActive());
         assertEquals(GenericKeyedObjectPool.DEFAULT_MAX_IDLE, pool.getMaxIdle());
         assertEquals(GenericKeyedObjectPool.DEFAULT_MAX_WAIT, pool.getMaxWait());
@@ -1059,7 +1074,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
                 pool.getWhenExhaustedAction());
         assertEquals(GenericKeyedObjectPool.DEFAULT_LIFO, pool.getLifo());
         
-        pool = new GenericKeyedObjectPool<Object,Object>(null, maxActive, whenExhaustedAction, maxWait);
+        pool = new GenericKeyedObjectPool<Object,Object>(factory, maxActive, whenExhaustedAction, maxWait);
         assertEquals(maxActive, pool.getMaxActive());
         assertEquals(GenericKeyedObjectPool.DEFAULT_MAX_IDLE, pool.getMaxIdle());
         assertEquals(maxWait, pool.getMaxWait());
@@ -1080,7 +1095,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals(whenExhaustedAction,pool.getWhenExhaustedAction());
         assertEquals(GenericKeyedObjectPool.DEFAULT_LIFO, pool.getLifo());
         
-        pool = new GenericKeyedObjectPool<Object,Object>(null, maxActive, whenExhaustedAction,
+        pool = new GenericKeyedObjectPool<Object,Object>(factory, maxActive, whenExhaustedAction,
                    maxWait, testOnBorrow, testOnReturn);
         assertEquals(maxActive, pool.getMaxActive());
         assertEquals(GenericKeyedObjectPool.DEFAULT_MAX_IDLE, pool.getMaxIdle());
@@ -1100,7 +1115,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals(whenExhaustedAction,pool.getWhenExhaustedAction());
         assertEquals(GenericKeyedObjectPool.DEFAULT_LIFO, pool.getLifo());
         
-        pool = new GenericKeyedObjectPool<Object,Object>(null, maxActive, whenExhaustedAction,
+        pool = new GenericKeyedObjectPool<Object,Object>(factory, maxActive, whenExhaustedAction,
                 maxWait, maxIdle);
         assertEquals(maxActive, pool.getMaxActive());
         assertEquals(maxIdle, pool.getMaxIdle());
@@ -1122,7 +1137,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals(whenExhaustedAction,pool.getWhenExhaustedAction());
         assertEquals(GenericKeyedObjectPool.DEFAULT_LIFO, pool.getLifo());
 
-        pool = new GenericKeyedObjectPool<Object,Object>(null, maxActive, whenExhaustedAction,
+        pool = new GenericKeyedObjectPool<Object,Object>(factory, maxActive, whenExhaustedAction,
                 maxWait, maxIdle, testOnBorrow, testOnReturn);
         assertEquals(maxActive, pool.getMaxActive());
         assertEquals(maxIdle, pool.getMaxIdle());
@@ -1142,7 +1157,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals(whenExhaustedAction,pool.getWhenExhaustedAction());
         assertEquals(GenericKeyedObjectPool.DEFAULT_LIFO, pool.getLifo());
 
-        pool = new GenericKeyedObjectPool<Object,Object>(null, maxActive, whenExhaustedAction,
+        pool = new GenericKeyedObjectPool<Object,Object>(factory, maxActive, whenExhaustedAction,
                 maxWait, maxIdle, testOnBorrow, testOnReturn,
                 timeBetweenEvictionRunsMillis, numTestsPerEvictionRun,
                 minEvictableIdleTimeMillis, testWhileIdle);
@@ -1164,7 +1179,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals(whenExhaustedAction,pool.getWhenExhaustedAction());
         assertEquals(GenericKeyedObjectPool.DEFAULT_LIFO, pool.getLifo());
         
-        pool = new GenericKeyedObjectPool<Object,Object>(null, maxActive, whenExhaustedAction,
+        pool = new GenericKeyedObjectPool<Object,Object>(factory, maxActive, whenExhaustedAction,
                 maxWait, maxIdle, maxTotal, testOnBorrow, testOnReturn,
                 timeBetweenEvictionRunsMillis, numTestsPerEvictionRun,
                 minEvictableIdleTimeMillis, testWhileIdle);
@@ -1186,7 +1201,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals(whenExhaustedAction,pool.getWhenExhaustedAction());
         assertEquals(GenericKeyedObjectPool.DEFAULT_LIFO, pool.getLifo());
         
-        pool = new GenericKeyedObjectPool<Object,Object>(null, maxActive, whenExhaustedAction,
+        pool = new GenericKeyedObjectPool<Object,Object>(factory, maxActive, whenExhaustedAction,
                 maxWait, maxIdle, maxTotal, minIdle, testOnBorrow, testOnReturn,
                 timeBetweenEvictionRunsMillis, numTestsPerEvictionRun,
                 minEvictableIdleTimeMillis, testWhileIdle);
@@ -1208,7 +1223,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals(whenExhaustedAction,pool.getWhenExhaustedAction());
         assertEquals(GenericKeyedObjectPool.DEFAULT_LIFO, pool.getLifo());
         
-        pool = new GenericKeyedObjectPool<Object,Object>(null, maxActive, whenExhaustedAction,
+        pool = new GenericKeyedObjectPool<Object,Object>(factory, maxActive, whenExhaustedAction,
                 maxWait, maxIdle, maxTotal, minIdle, testOnBorrow, testOnReturn,
                 timeBetweenEvictionRunsMillis, numTestsPerEvictionRun,
                 minEvictableIdleTimeMillis, testWhileIdle, lifo);
