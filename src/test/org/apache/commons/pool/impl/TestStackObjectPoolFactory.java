@@ -18,6 +18,7 @@
 package org.apache.commons.pool.impl;
 
 import org.apache.commons.pool.MethodCallPoolableObjectFactory;
+import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.ObjectPoolFactory;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.TestObjectPoolFactory;
@@ -39,22 +40,8 @@ public class TestStackObjectPoolFactory extends TestObjectPoolFactory {
     }
 
     public void testConstructors() throws Exception {
-        StackObjectPoolFactory<Object> factory = new StackObjectPoolFactory<Object>();
-        factory.createPool().close();
-
-        
-        factory = new StackObjectPoolFactory<Object>(1);
-        StackObjectPool<Object> pool = (StackObjectPool<Object>)factory.createPool();
-        pool.close();
-
-
-        factory = new StackObjectPoolFactory<Object>(1, 1);
-        pool = (StackObjectPool<Object>)factory.createPool();
-        pool.close();
-
-
-        factory = new StackObjectPoolFactory<Object>(new MethodCallPoolableObjectFactory(), 1);
-        pool = (StackObjectPool<Object>)factory.createPool();
+        StackObjectPoolFactory<Object> factory = new StackObjectPoolFactory<Object>(new MethodCallPoolableObjectFactory(), 1);
+        ObjectPool<Object> pool = factory.createPool();
         Object a = pool.borrowObject();
         Object b = pool.borrowObject();
         pool.returnObject(a);
