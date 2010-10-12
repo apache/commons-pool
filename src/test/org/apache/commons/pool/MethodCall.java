@@ -52,7 +52,7 @@ public class MethodCall {
         if (params != null) {
             this.params = params;
         } else {
-            this.params = Collections.EMPTY_LIST;
+            this.params = Collections.emptyList();
         }
     }
 
