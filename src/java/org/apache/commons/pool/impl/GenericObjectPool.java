@@ -298,15 +298,6 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
     //--- constructors -----------------------------------------------
 
     /**
-     * Create a new <tt>GenericObjectPool</tt> with default properties.
-     */
-    public GenericObjectPool() {
-        this(null, DEFAULT_MAX_ACTIVE, DEFAULT_WHEN_EXHAUSTED_ACTION, DEFAULT_MAX_WAIT, DEFAULT_MAX_IDLE,
-                DEFAULT_MIN_IDLE, DEFAULT_TEST_ON_BORROW, DEFAULT_TEST_ON_RETURN, DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
-                DEFAULT_NUM_TESTS_PER_EVICTION_RUN, DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS, DEFAULT_TEST_WHILE_IDLE);
-    }
-
-    /**
      * Create a new <tt>GenericObjectPool</tt> using the specified factory.
      * @param factory the (possibly <tt>null</tt>)PoolableObjectFactory to use to create, validate and destroy objects
      */
@@ -527,12 +518,16 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * remain in the pool. (see {@link #setSoftMinEvictableIdleTimeMillis})
      * @param lifo whether or not objects are returned in last-in-first-out order from the idle object pool
      * (see {@link #setLifo})
+     * @throws IllegalArgumentException if the factory is null
      * @since Pool 1.4
      */
     public GenericObjectPool(PoolableObjectFactory<T> factory, int maxActive, WhenExhaustedAction whenExhaustedAction,
             long maxWait, int maxIdle, int minIdle, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis,
             int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle,
             long softMinEvictableIdleTimeMillis, boolean lifo) {
+        if (factory == null) {
+            throw new IllegalArgumentException("factory must not be null");
+        }
         _factory = factory;
         _maxActive = maxActive;
         _lifo = lifo;
@@ -1203,9 +1198,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
     @Override
     public void invalidateObject(T obj) throws Exception {
         try {
-            if (_factory != null) {
-                _factory.destroyObject(obj);
-            }
+            _factory.destroyObject(obj);
         } finally {
             synchronized (this) {
                 _numActive--;
@@ -1309,19 +1302,17 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
         try {
             addObjectToPool(obj, true);
         } catch (Exception e) {
-            if (_factory != null) {
-                try {
-                    _factory.destroyObject(obj);
-                } catch (Exception e2) {
-                    // swallowed
-                }
-                // TODO: Correctness here depends on control in addObjectToPool.
-                // These two methods should be refactored, removing the
-                // "behavior flag", decrementNumActive, from addObjectToPool.
-                synchronized(this) {
-                    _numActive--;
-                    allocate();
-                }
+            try {
+                _factory.destroyObject(obj);
+            } catch (Exception e2) {
+                // swallowed
+            }
+            // TODO: Correctness here depends on control in addObjectToPool.
+            // These two methods should be refactored, removing the
+            // "behavior flag", decrementNumActive, from addObjectToPool.
+            synchronized(this) {
+                _numActive--;
+                allocate();
             }
         }
     }
@@ -1555,9 +1546,6 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
     @Override
     public void addObject() throws Exception {
         assertOpen();
-        if (_factory == null) {
-            throw new IllegalStateException("Cannot add objects without a factory.");
-        }
         T obj = _factory.makeObject();
         try {
             assertOpen();
@@ -1931,7 +1919,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
     private CursorableLinkedList<ObjectTimestampPair<T>>.Cursor _evictionCursor = null;
 
     /** My {@link PoolableObjectFactory}. */
-    private PoolableObjectFactory<T> _factory = null;
+    private final PoolableObjectFactory<T> _factory;
 
     /**
      * The number of objects {@link #borrowObject} borrowed

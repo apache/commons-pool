@@ -334,10 +334,10 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements Obj
     }
 
     /** My pool. */
-    private List<SoftReference<T>> _pool = null;
+    private final List<SoftReference<T>> _pool;
 
     /** My {@link PoolableObjectFactory}. */
-    private PoolableObjectFactory<T> _factory = null;
+    private final PoolableObjectFactory<T> _factory;
 
     /**
      * Queue of broken references that might be able to be removed from <code>_pool</code>.
