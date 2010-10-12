@@ -116,7 +116,7 @@ public class TestSoftRefOutOfMemory extends TestCase {
         pool = new SoftReferenceObjectPool<String>(new LargePoolableObjectFactory(1000000));
 
         String obj = pool.borrowObject();
-        assertTrue(((String)obj).startsWith("1."));
+        assertTrue(obj.startsWith("1."));
         pool.returnObject(obj);
         obj = null;
 
@@ -136,7 +136,7 @@ public class TestSoftRefOutOfMemory extends TestCase {
         System.gc();
 
         obj = pool.borrowObject();
-        assertTrue(((String)obj).startsWith("2."));
+        assertTrue((obj).startsWith("2."));
         pool.returnObject(obj);
         obj = null;
 

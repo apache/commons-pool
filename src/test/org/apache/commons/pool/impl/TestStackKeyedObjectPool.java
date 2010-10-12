@@ -34,25 +34,30 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
         super(testName);
     }
 
+    @Override
     protected KeyedObjectPool<Object,Object> makeEmptyPool(int mincapacity) {
         StackKeyedObjectPool<Object,Object> pool = new StackKeyedObjectPool<Object,Object>(new SimpleFactory(),mincapacity);
         return pool;
     }
 
+    @Override
     protected KeyedObjectPool<Object,Object> makeEmptyPool(KeyedPoolableObjectFactory<Object,Object> factory) {
         return new StackKeyedObjectPool<Object,Object>(factory);
     }
 
+    @Override
     protected Object getNthObject(Object key, int n) {
         return String.valueOf(key) + String.valueOf(n);
     }
 
+    @Override
     protected Object makeKey(int n) {
         return String.valueOf(n);
     }
 
     private StackKeyedObjectPool<String,String> pool = null;
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         pool = new StackKeyedObjectPool<String,String>(
@@ -68,6 +73,7 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
     }
 
 
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
         pool = null;
@@ -138,7 +144,7 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
             Integer[] borrowed = new Integer[10];
             BitSet found = new BitSet();
             for(int i=0;i<10;i++) {
-                borrowed[i] = (Integer)(pool.borrowObject("X"));
+                borrowed[i] = (pool.borrowObject("X"));
                 assertNotNull(borrowed);
                 assertTrue(!found.get(borrowed[i].intValue()));
                 found.set(borrowed[i].intValue());
@@ -180,6 +186,7 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
         }
     }
 
+    @Override
     public void testToString() throws Exception {
         StackKeyedObjectPool<Object,Object> pool = new StackKeyedObjectPool<Object,Object>(new SimpleFactory());
         assertNotNull(pool.toString());
@@ -317,10 +324,12 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
         public void passivateObject(Object key, Object obj) { }
     }
 
+    @Override
     protected boolean isLifo() {
         return true;
     }
 
+    @Override
     protected boolean isFifo() {
         return false;
     }

@@ -225,5 +225,6 @@ public interface KeyedObjectPool<K,V> {
      * @throws UnsupportedOperationException when this implementation doesn't support the operation
      * @deprecated to be removed in pool 2.0
      */
+    @Deprecated
     void setFactory(KeyedPoolableObjectFactory<K,V> factory) throws IllegalStateException, UnsupportedOperationException;
 }
