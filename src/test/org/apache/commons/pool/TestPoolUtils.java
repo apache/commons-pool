@@ -175,10 +175,13 @@ public class TestPoolUtils extends TestCase {
         assertEquals(expectedMethods, calledMethods);
 
         op = new BaseObjectPool<Object>() {
+            @Override
             public Object borrowObject() throws Exception {
                 return new Integer(0);
             }
+            @Override
             public void returnObject(Object obj) {}
+            @Override
             public void invalidateObject(Object obj) {}
         };
         cop = PoolUtils.checkedPool(op, String.class);
@@ -226,12 +229,15 @@ public class TestPoolUtils extends TestCase {
 
 
         op = new BaseKeyedObjectPool<Object,Object>() {
+            @Override
             public Object borrowObject(Object key) {
                 return new Integer(0);
             }
 
+            @Override
             public void returnObject(Object key, Object obj) {}
 
+            @Override
             public void invalidateObject(Object key, Object obj) {}
         };
         cop = PoolUtils.checkedPool(op, String.class);
@@ -616,6 +622,7 @@ public class TestPoolUtils extends TestCase {
 
         final List<String> calledMethods = new ArrayList<String>();
         final InvocationHandler handler = new MethodCallLogger(calledMethods) {
+            @Override
             public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
                 Object o = super.invoke(proxy, method, args);
                 if (o instanceof Integer) {
@@ -706,6 +713,7 @@ public class TestPoolUtils extends TestCase {
 
         final List<String> calledMethods = new ArrayList<String>();
         final InvocationHandler handler = new MethodCallLogger(calledMethods) {
+            @Override
             public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
                 Object o = super.invoke(proxy, method, args);
                 if (o instanceof Integer) {
@@ -784,6 +792,7 @@ public class TestPoolUtils extends TestCase {
 
         final List<String> calledMethods = new ArrayList<String>();
         final InvocationHandler handler = new MethodCallLogger(calledMethods) {
+            @Override
             public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
                 Object o = super.invoke(proxy, method, args);
                 if (o instanceof Integer) {
