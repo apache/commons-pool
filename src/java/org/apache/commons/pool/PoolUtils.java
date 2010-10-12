@@ -650,6 +650,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public String toString() {
             final StringBuffer sb = new StringBuffer();
             sb.append("PoolableObjectFactoryAdaptor");
@@ -737,6 +738,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public String toString() {
             final StringBuffer sb = new StringBuffer();
             sb.append("KeyedPoolableObjectFactoryAdaptor");
@@ -850,6 +852,7 @@ public final class PoolUtils {
          * @param factory new PoolableObjectFactory 
          * @deprecated to be removed in version 2.0
          */
+        @Deprecated
         public void setFactory(final PoolableObjectFactory<V> factory) throws IllegalStateException, UnsupportedOperationException {
             keyedPool.setFactory((KeyedPoolableObjectFactory<K, V>) adapt(factory));
         }
@@ -857,6 +860,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public String toString() {
             final StringBuffer sb = new StringBuffer();
             sb.append("ObjectPoolAdaptor");
@@ -1002,6 +1006,7 @@ public final class PoolUtils {
          * @param factory new factory to use managing object instances
          * @deprecated to be removed in version 2.0
          */
+        @Deprecated
         public void setFactory(final KeyedPoolableObjectFactory<K,V> factory) throws IllegalStateException, UnsupportedOperationException {
             pool.setFactory(adapt((KeyedPoolableObjectFactory<Object, V>) factory));
         }
@@ -1009,6 +1014,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public String toString() {
             final StringBuffer sb = new StringBuffer();
             sb.append("KeyedObjectPoolAdaptor");
@@ -1148,6 +1154,7 @@ public final class PoolUtils {
          * @param factory object factory
          * @deprecated to be removed in version 2.0
          */
+        @Deprecated
         public void setFactory(final PoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
             pool.setFactory(factory);
         }
@@ -1155,6 +1162,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public String toString() {
             final StringBuffer sb = new StringBuffer();
             sb.append("CheckedObjectPool");
@@ -1318,6 +1326,7 @@ public final class PoolUtils {
          * @param factory object factory
          * @deprecated to be removed in version 2.0
          */
+        @Deprecated
         public void setFactory(final KeyedPoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
             keyedPool.setFactory(factory);
         }
@@ -1325,6 +1334,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public String toString() {
             final StringBuffer sb = new StringBuffer();
             sb.append("CheckedKeyedObjectPool");
@@ -1367,6 +1377,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void run() {
             boolean success = false;
             try {
@@ -1389,6 +1400,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public String toString() {
             final StringBuffer sb = new StringBuffer();
             sb.append("ObjectPoolMinIdleTimerTask");
@@ -1435,6 +1447,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void run() {
             boolean success = false;
             try {
@@ -1457,6 +1470,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public String toString() {
             final StringBuffer sb = new StringBuffer();
             sb.append("KeyedObjectPoolMinIdleTimerTask");
@@ -1590,6 +1604,7 @@ public final class PoolUtils {
          * @param factory new PoolableObjectFactory
          * @deprecated to be removed in pool 2.0
          */
+        @Deprecated
         public void setFactory(final PoolableObjectFactory<T> factory) throws IllegalStateException, UnsupportedOperationException {
             synchronized (lock) {
                 pool.setFactory(factory);
@@ -1599,6 +1614,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public String toString() {
             final StringBuffer sb = new StringBuffer();
             sb.append("SynchronizedObjectPool");
@@ -1757,6 +1773,7 @@ public final class PoolUtils {
          * @param factory KeyedPoolableObjectFactory used by the pool
          * @deprecated to be removed in pool 2.0
          */
+        @Deprecated
         public void setFactory(final KeyedPoolableObjectFactory<K,V> factory) throws IllegalStateException, UnsupportedOperationException {
             synchronized (lock) {
                 keyedPool.setFactory(factory);
@@ -1766,6 +1783,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public String toString() {
             final StringBuffer sb = new StringBuffer();
             sb.append("SynchronizedKeyedObjectPool");
@@ -1852,6 +1870,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public String toString() {
             final StringBuffer sb = new StringBuffer();
             sb.append("SynchronizedPoolableObjectFactory");
@@ -1938,6 +1957,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public String toString() {
             final StringBuffer sb = new StringBuffer();
             sb.append("SynchronizedKeyedPoolableObjectFactory");
@@ -2012,6 +2032,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public String toString() {
             return "ErodingFactor{" +
                     "factor=" + factor +
@@ -2139,6 +2160,7 @@ public final class PoolUtils {
          * {@inheritDoc}
          * @deprecated to be removed in pool 2.0
          */
+        @Deprecated
         public void setFactory(final PoolableObjectFactory<T> factory) throws IllegalStateException, UnsupportedOperationException {
             pool.setFactory(factory);
         }
@@ -2146,6 +2168,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public String toString() {
             return "ErodingObjectPool{" +
                     "factor=" + factor +
@@ -2172,7 +2195,6 @@ public final class PoolUtils {
          * 
          * @param keyedPool underlying pool
          * @param factor erosion factor - determines the frequency of erosion events
-         * @see #factor
          */
         public ErodingKeyedObjectPool(final KeyedObjectPool<K,V> keyedPool, final float factor) {
             this(keyedPool, new ErodingFactor(factor));
@@ -2203,12 +2225,12 @@ public final class PoolUtils {
         /**
          * Returns obj to the pool, unless erosion is triggered, in which
          * case obj is invalidated.  Erosion is triggered when there are idle instances in 
-         * the pool associated with the given key and more than the configured {@link #factor erosion factor}
+         * the pool associated with the given key and more than the configured {@link #getErodingFactor(Object) erosion factor}
          * time has elapsed since the last returnObject activation. 
          * 
          * @param obj object to return or invalidate
          * @param key key
-         * @see #factor
+         * @see #getErodingFactor(Object)
          */
         public void returnObject(final K key, final V obj) throws Exception {
             boolean discard = false;
@@ -2235,9 +2257,6 @@ public final class PoolUtils {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         protected int numIdle(final K key) {
             return getKeyedPool().getNumIdle();
         }
@@ -2326,6 +2345,7 @@ public final class PoolUtils {
          * {@inheritDoc}
          * @deprecated to be removed in pool 2.0
          */
+        @Deprecated
         public void setFactory(final KeyedPoolableObjectFactory<K,V> factory) throws IllegalStateException, UnsupportedOperationException {
             keyedPool.setFactory(factory);
         }
@@ -2342,6 +2362,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public String toString() {
             return "ErodingKeyedObjectPool{" +
                     "erodingFactor=" + erodingFactor +
@@ -2375,6 +2396,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         protected int numIdle(final K key) {
             return getKeyedPool().getNumIdle(key);
         }
@@ -2382,6 +2404,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         protected ErodingFactor getErodingFactor(final K key) {
             ErodingFactor factor = (ErodingFactor)factors.get(key);
             // this may result in two ErodingFactors being created for a key
@@ -2396,6 +2419,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public String toString() {
             return "ErodingPerKeyKeyedObjectPool{" +
                     "factor=" + factor +
