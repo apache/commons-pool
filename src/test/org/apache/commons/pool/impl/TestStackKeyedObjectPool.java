@@ -17,10 +17,8 @@
 
 package org.apache.commons.pool.impl;
 
-import java.util.BitSet;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
-import java.util.Random;
 
 import org.apache.commons.pool.KeyedObjectPool;
 import org.apache.commons.pool.KeyedPoolableObjectFactory;
