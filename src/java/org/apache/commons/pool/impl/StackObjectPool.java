@@ -46,52 +46,6 @@ import org.apache.commons.pool.PoolableObjectFactory;
  */
 public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<T> {
     /**
-     * Create a new pool using no factory. Clients must first 
-     * {@link #setFactory(PoolableObjectFactory) set the factory} or
-     * else this pool will not behave correctly. Clients may first populate the pool
-     * using {@link #returnObject(java.lang.Object)} before they can be {@link #borrowObject borrowed}
-     * but this usage is <strong>discouraged</strong>.
-     *
-     * @see #StackObjectPool(PoolableObjectFactory)
-     * @deprecated to be removed in pool 2.0 - use {@link #StackObjectPool(PoolableObjectFactory)}
-     */
-    public StackObjectPool() {
-        this((PoolableObjectFactory<T>)null,DEFAULT_MAX_SLEEPING,DEFAULT_INIT_SLEEPING_CAPACITY);
-    }
-
-    /**
-     * Create a new pool using no factory.
-     * Clients must first {@link #setFactory(PoolableObjectFactory) set the factory} or
-     * else this pool will not behave correctly. Clients may first populate the pool
-     * using {@link #returnObject(java.lang.Object)} before they can be {@link #borrowObject borrowed}
-     * but this usage is <strong>discouraged</strong>.
-     *
-     * @param maxIdle cap on the number of "sleeping" instances in the pool
-     * @see #StackObjectPool(PoolableObjectFactory, int)
-     * @deprecated to be removed in pool 2.0 - use {@link #StackObjectPool(PoolableObjectFactory, int)}
-     */
-    public StackObjectPool(int maxIdle) {
-        this((PoolableObjectFactory<T>)null,maxIdle,DEFAULT_INIT_SLEEPING_CAPACITY);
-    }
-
-    /**
-     * Create a new pool using no factory.
-     * Clients must first {@link #setFactory(PoolableObjectFactory) set the factory} or
-     * else this pool will not behave correctly. Clients may first populate the pool
-     * using {@link #returnObject(java.lang.Object)} before they can be {@link #borrowObject borrowed}
-     * but this usage is <strong>discouraged</strong>.
-     *
-     * @param maxIdle cap on the number of "sleeping" instances in the pool
-     * @param initIdleCapacity initial size of the pool (this specifies the size of the container,
-     *             it does not cause the pool to be pre-populated.)
-     * @see #StackObjectPool(PoolableObjectFactory, int, int)
-     * @deprecated to be removed in pool 2.0 - use {@link #StackObjectPool(PoolableObjectFactory, int, int)}
-     */
-    public StackObjectPool(int maxIdle, int initIdleCapacity) {
-        this((PoolableObjectFactory<T>)null,maxIdle,initIdleCapacity);
-    }
-
-    /**
      * Create a new <tt>StackObjectPool</tt> using the specified <i>factory</i> to create new instances.
      *
      * @param factory the {@link PoolableObjectFactory} used to populate the pool
@@ -381,27 +335,6 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
     }
 
     /**
-     * Sets the {@link PoolableObjectFactory factory} this pool uses
-     * to create new instances. Trying to change
-     * the <code>factory</code> while there are borrowed objects will
-     * throw an {@link IllegalStateException}.
-     *
-     * @param factory the {@link PoolableObjectFactory} used to create new instances.
-     * @throws IllegalStateException when the factory cannot be set at this time
-     * @deprecated to be removed in pool 2.0
-     */
-    @Override
-    public synchronized void setFactory(PoolableObjectFactory<T> factory) throws IllegalStateException {
-        assertOpen();
-        if(0 < getNumActive()) {
-            throw new IllegalStateException("Objects are already active");
-        } else {
-            clear();
-            _factory = factory;
-        }
-    }
-
-    /**
      * The cap on the number of "sleeping" instances in the pool.
      */
     protected static final int DEFAULT_MAX_SLEEPING  = 8;
@@ -414,28 +347,24 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
     protected static final int DEFAULT_INIT_SLEEPING_CAPACITY = 4;
 
     /** 
-     * My pool.
-     * @deprecated to be made private in pool 2.0 
+     * My pool. 
      */
-    protected Stack<T> _pool = null;
+    private Stack<T> _pool = null;
 
     /** 
      * My {@link PoolableObjectFactory}.
-     * @deprecated to be made private in pool 2.0 - use {@link #getFactory()}
      */
-    protected PoolableObjectFactory<T> _factory = null;
+    private final PoolableObjectFactory<T> _factory;
 
     /** 
-     * The cap on the number of "sleeping" instances in the pool. 
-     * @deprecated to be made private in pool 2.0 - use {@link #getMaxSleeping()}
+     * The cap on the number of "sleeping" instances in the pool.
      */
-    protected int _maxSleeping = DEFAULT_MAX_SLEEPING;
+    private int _maxSleeping = DEFAULT_MAX_SLEEPING;
     
     /**
      * Number of objects borrowed but not yet returned to the pool.
-     * @deprecated to be made private in pool 2.0 - use {@link #getNumActive()}
      */
-    protected int _numActive = 0;
+    private int _numActive = 0;
 
     /**
      * Returns the {@link PoolableObjectFactory} used by this pool to create and manage object instances.
@@ -453,9 +382,17 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
      * @return maxSleeping
      * @since 1.5.5
      */
-    public int getMaxSleeping() {
+    public synchronized int getMaxSleeping() {
         return _maxSleeping;
     }
 
-   
+    /**
+     * Sets the maximum number of idle instances in the pool.
+     *
+     * @param maxSleeping
+     * @since 2.0
+     */
+   public synchronized void setMaxSleeping(int maxSleeping) {
+       _maxSleeping = maxSleeping;
+   }
 }
