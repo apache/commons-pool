@@ -21,7 +21,6 @@ import java.lang.ref.SoftReference;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.Reference;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
