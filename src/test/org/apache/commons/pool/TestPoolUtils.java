@@ -213,7 +213,7 @@ public class TestPoolUtils extends TestCase {
             // expected
         }
         try {
-            PoolUtils.checkedPool((KeyedObjectPool<Object,Object>)createProxy(KeyedObjectPool.class, (List)null), null);
+            PoolUtils.checkedPool((KeyedObjectPool<Object,Object>)createProxy(KeyedObjectPool.class, (List<String>)null), null);
             fail("PoolUtils.checkedPool(KeyedObjectPool, Class) must not allow a null type.");
         } catch(IllegalArgumentException iae) {
             // expected
@@ -331,14 +331,14 @@ public class TestPoolUtils extends TestCase {
             // expected
         }
         try {
-            final KeyedObjectPool<Object,Object> pool = (KeyedObjectPool<Object,Object>)createProxy(KeyedObjectPool.class, (List)null);
+            final KeyedObjectPool<Object,Object> pool = (KeyedObjectPool<Object,Object>)createProxy(KeyedObjectPool.class, (List<String>)null);
             PoolUtils.checkMinIdle(pool, (Object)null, 1, 1);
             fail("PoolUtils.checkMinIdle(KeyedObjectPool,Object,int,long) must not accept null keys.");
         } catch (IllegalArgumentException iae) {
             // expected
         }
         try {
-            final KeyedObjectPool<Object,Object> pool = (KeyedObjectPool<Object,Object>)createProxy(KeyedObjectPool.class, (List)null);
+            final KeyedObjectPool<Object,Object> pool = (KeyedObjectPool<Object,Object>)createProxy(KeyedObjectPool.class, (List<String>)null);
             PoolUtils.checkMinIdle(pool, new Object(), -1, 1);
             fail("PoolUtils.checkMinIdle(KeyedObjectPool,Object,int,long) must not accept negative min idle values.");
         } catch (IllegalArgumentException iae) {
@@ -396,7 +396,7 @@ public class TestPoolUtils extends TestCase {
 
     public void testCheckMinIdleKeyedObjectPoolKeys() throws Exception {
         try {
-            final KeyedObjectPool<Object,Object> pool = (KeyedObjectPool<Object,Object>)createProxy(KeyedObjectPool.class, (List)null);
+            final KeyedObjectPool<Object,Object> pool = (KeyedObjectPool<Object,Object>)createProxy(KeyedObjectPool.class, (List<String>)null);
             PoolUtils.checkMinIdle(pool, (Object)null, 1, 1);
             fail("PoolUtils.checkMinIdle(KeyedObjectPool,Collection,int,long) must not accept null keys.");
         } catch (IllegalArgumentException iae) {
@@ -467,7 +467,7 @@ public class TestPoolUtils extends TestCase {
             // expected
         }
         try {
-            final KeyedObjectPool<Object,Object> pool = (KeyedObjectPool<Object,Object>)createProxy(KeyedObjectPool.class, (List)null);
+            final KeyedObjectPool<Object,Object> pool = (KeyedObjectPool<Object,Object>)createProxy(KeyedObjectPool.class, (List<String>)null);
             PoolUtils.prefill(pool, (Object)null, 1);
             fail("PoolUtils.prefill(KeyedObjectPool,Object,int) must not accept null key.");
         } catch (IllegalArgumentException iae) {
@@ -492,7 +492,7 @@ public class TestPoolUtils extends TestCase {
     public void testPrefillKeyedObjectPoolCollection() throws Exception {
         // FIXME any reason why when using Object as K the methods signature match?
         try {
-            final KeyedObjectPool<String,String> pool = (KeyedObjectPool<String,String>)createProxy(KeyedObjectPool.class, (List)null);
+            final KeyedObjectPool<String,String> pool = (KeyedObjectPool<String,String>)createProxy(KeyedObjectPool.class, (List<String>)null);
             PoolUtils.prefill(pool, (Collection<String>)null, 1);
             fail("PoolUtils.prefill(KeyedObjectPool,Collection,int) must not accept null keys.");
         } catch (IllegalArgumentException iae) {
@@ -556,7 +556,7 @@ public class TestPoolUtils extends TestCase {
 
     public void testSynchronizedPoolableFactoryPoolableObjectFactory() throws Exception {
         try {
-            PoolUtils.synchronizedPoolableFactory((PoolableObjectFactory)null);
+            PoolUtils.synchronizedPoolableFactory((PoolableObjectFactory<?>)null);
             fail("PoolUtils.synchronizedPoolableFactory(PoolableObjectFactory) must not allow a null factory.");
         } catch(IllegalArgumentException iae) {
             // expected
