@@ -185,8 +185,7 @@ import org.apache.commons.pool.PoolUtils;
  * </ul>
  * <p>
  * GenericKeyedObjectPool is not usable without a {@link KeyedPoolableObjectFactory}.  A
- * non-<code>null</code> factory must be provided either as a constructor argument
- * or via a call to {@link #setFactory setFactory} before the pool is used.
+ * non-<code>null</code> factory must be provided as a constructor argument
  * </p>
  * <p>
  * Implementation note: To prevent possible deadlocks, care has been taken to
@@ -318,7 +317,6 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
      * Create a new <code>GenericKeyedObjectPool</code> with no factory.
      *
      * @see #GenericKeyedObjectPool(KeyedPoolableObjectFactory)
-     * @see #setFactory(KeyedPoolableObjectFactory)
      */
     public GenericKeyedObjectPool() {
         this(null, DEFAULT_MAX_ACTIVE, DEFAULT_WHEN_EXHAUSTED_ACTION, DEFAULT_MAX_WAIT, DEFAULT_MAX_IDLE, 

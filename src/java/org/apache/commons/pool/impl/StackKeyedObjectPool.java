@@ -54,7 +54,6 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
      * before they can be {@link #borrowObject borrowed}.
      *
      * @see #StackKeyedObjectPool(KeyedPoolableObjectFactory)
-     * @see #setFactory(KeyedPoolableObjectFactory)
      */
     public StackKeyedObjectPool() {
         this((KeyedPoolableObjectFactory<K,V>)null,DEFAULT_MAX_SLEEPING,DEFAULT_INIT_SLEEPING_CAPACITY);
@@ -68,7 +67,6 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
      *
      * @param max cap on the number of "sleeping" instances in the pool
      * @see #StackKeyedObjectPool(KeyedPoolableObjectFactory, int)
-     * @see #setFactory(KeyedPoolableObjectFactory)
      */
     public StackKeyedObjectPool(int max) {
         this((KeyedPoolableObjectFactory<K,V>)null,max,DEFAULT_INIT_SLEEPING_CAPACITY);
@@ -84,7 +82,6 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
      * @param init initial size of the pool (this specifies the size of the container,
      *             it does not cause the pool to be pre-populated.)
      * @see #StackKeyedObjectPool(KeyedPoolableObjectFactory, int, int)
-     * @see #setFactory(KeyedPoolableObjectFactory)
      */
     public StackKeyedObjectPool(int max, int init) {
         this((KeyedPoolableObjectFactory<K,V>)null,max,init);
@@ -272,7 +269,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
      *
      * @param key the key a new instance should be added to
      * @throws Exception when {@link KeyedPoolableObjectFactory#makeObject} fails.
-     * @throws IllegalStateException when no {@link #setFactory factory} has been set or after {@link #close} has been called on this pool.
+     * @throws IllegalStateException when no {@link #_factory} has been set or after {@link #close} has been called on this pool.
      */
     @Override
     public synchronized void addObject(K key) throws Exception {
