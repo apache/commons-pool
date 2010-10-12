@@ -289,7 +289,7 @@ public class TestPoolUtils extends TestCase {
         int makeObjectCount = 0;
         final Iterator<String> iter = calledMethods.iterator();
         while (iter.hasNext()) {
-            final String methodName = (String)iter.next();
+            final String methodName = iter.next();
             if ("makeObject".equals(methodName)) {
                 makeObjectCount++;
             }
@@ -424,7 +424,7 @@ public class TestPoolUtils extends TestCase {
                 Thread.sleep(CHECK_SLEEP_PERIOD); // will check CHECK_COUNT more times.
                 final Iterator<TimerTask> iter = tasks.values().iterator();
                 while (iter.hasNext()) {
-                    final TimerTask task = (TimerTask)iter.next();
+                    final TimerTask task = iter.next();
                     task.cancel();
                 }
 
