@@ -327,10 +327,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     }
 
     public void testSettersAndGetters() throws Exception {
-        GenericKeyedObjectPool<String,String> pool = new GenericKeyedObjectPool<String,String>();
-        {
-            pool.setFactory(new SimpleFactory<String>());
-        }
+        GenericKeyedObjectPool<String,String> pool = new GenericKeyedObjectPool<String,String>(new SimpleFactory<String>());
         {
             pool.setMaxActive(123);
             assertEquals(123,pool.getMaxActive());

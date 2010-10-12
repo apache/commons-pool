@@ -16,15 +16,16 @@
  */
 package org.apache.commons.pool;
 
-import junit.framework.TestCase;
-import org.apache.commons.pool.impl.GenericObjectPool;
-import org.apache.commons.pool.impl.StackObjectPool;
-import org.apache.commons.pool.impl.SoftReferenceObjectPool;
-
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
+
+import junit.framework.TestCase;
+
+import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.commons.pool.impl.SoftReferenceObjectPool;
+import org.apache.commons.pool.impl.StackObjectPool;
 
 /**
  * Abstract {@link TestCase} for {@link ObjectPool} implementations.
@@ -388,21 +389,6 @@ public abstract class TestObjectPool extends TestCase {
         factory.setDestroyObjectFail(true);
         PoolUtils.prefill(pool, 5);
         pool.close();
-    }
-
-    public void testSetFactory() throws Exception {
-        ObjectPool<Object> pool;
-        try {
-            pool = makeEmptyPool(new MethodCallPoolableObjectFactory());
-        } catch (UnsupportedOperationException uoe) {
-            return; // test not supported
-        }
-        final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
-        try {
-            pool.setFactory(factory);
-        } catch (UnsupportedOperationException uoe) {
-            return;
-        }
     }
 
     public void testToString() {

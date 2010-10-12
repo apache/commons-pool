@@ -459,37 +459,6 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertEquals(0, pool.getNumIdle());
     }
 
-    public void testSetFactoryWithActiveObjects() throws Exception {
-        GenericObjectPool<Object> pool = new GenericObjectPool<Object>();
-        pool.setMaxIdle(10);
-        pool.setFactory(new SimpleFactory());
-        Object obj = pool.borrowObject();
-        assertNotNull(obj);
-        try {
-            pool.setFactory(null);
-            fail("Expected IllegalStateException");
-        } catch(IllegalStateException e) {
-            // expected
-        }
-        try {
-            pool.setFactory(new SimpleFactory());
-            fail("Expected IllegalStateException");
-        } catch(IllegalStateException e) {
-            // expected
-        }
-    }
-
-    public void testSetFactoryWithNoActiveObjects() throws Exception {
-        GenericObjectPool<Object> pool = new GenericObjectPool<Object>();
-        pool.setMaxIdle(10);
-        pool.setFactory(new SimpleFactory());
-        Object obj = pool.borrowObject();
-        pool.returnObject(obj);
-        assertEquals(1,pool.getNumIdle());
-        pool.setFactory(new SimpleFactory());
-        assertEquals(0,pool.getNumIdle());
-    }
-    
     public void testNegativeMaxActive() throws Exception {
         pool.setMaxActive(-1);
         pool.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
@@ -585,7 +554,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         
         SimpleFactory factory = new SimpleFactory();
         factory.setMaxActive(maxActive);
-        pool.setFactory(factory);
+        pool = new GenericObjectPool<Object>(factory);
         pool.setMaxActive(maxActive);
         pool.setWhenExhaustedAction(WhenExhaustedAction.BLOCK);
         pool.setTimeBetweenEvictionRunsMillis(-1);
@@ -655,10 +624,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     public void testSettersAndGetters() throws Exception {
-        GenericObjectPool<Object> pool = new GenericObjectPool<Object>();
-        {
-            pool.setFactory(new SimpleFactory());
-        }
+        GenericObjectPool<Object> pool = new GenericObjectPool<Object>(new SimpleFactory());
         {
             pool.setMaxActive(123);
             assertEquals(123,pool.getMaxActive());
@@ -1485,7 +1451,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
         SimpleFactory factory = new SimpleFactory();
         factory.setMaxActive(maxActive);
-        pool.setFactory(factory);
+        pool = new GenericObjectPool<Object>(factory);
         pool.setMaxActive(maxActive);
         pool.setWhenExhaustedAction(WhenExhaustedAction.BLOCK);
         pool.setTimeBetweenEvictionRunsMillis(-1);
@@ -1528,7 +1494,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         
         SimpleFactory factory = new SimpleFactory();
         factory.setMaxActive(maxActive);
-        pool.setFactory(factory);
+        pool = new GenericObjectPool<Object>(factory);
         pool.setMaxActive(maxActive);
         pool.setWhenExhaustedAction(WhenExhaustedAction.BLOCK);
         pool.setTestOnBorrow(true);

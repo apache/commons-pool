@@ -126,18 +126,6 @@ public abstract class BaseKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
     }
 
     /**
-     * Not supported in this base implementation.
-     * Always throws an {@link UnsupportedOperationException},
-     * subclasses should override this behavior.
-     * @param factory the new KeyedPoolableObjectFactory
-     * @deprecated to be removed in pool 2.0
-     */
-    @Deprecated
-    public void setFactory(KeyedPoolableObjectFactory<K,V> factory) throws IllegalStateException, UnsupportedOperationException {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
      * Has this pool instance been closed.
      * @return <code>true</code> when this pool has been closed.
      * @since Pool 1.4

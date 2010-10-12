@@ -311,27 +311,6 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements Obj
     }
 
     /**
-     * Sets the {@link PoolableObjectFactory factory} this pool uses
-     * to create new instances. Trying to change
-     * the <code>factory</code> while there are borrowed objects will
-     * throw an {@link IllegalStateException}.
-     *
-     * @param factory the {@link PoolableObjectFactory} used to create new instances.
-     * @throws IllegalStateException when the factory cannot be set at this time
-     * @deprecated to be removed in pool 2.0
-     */
-    @Override
-    public synchronized void setFactory(PoolableObjectFactory<T> factory) throws IllegalStateException {
-        assertOpen();
-        if(0 < getNumActive()) {
-            throw new IllegalStateException("Objects are already active");
-        } else {
-            clear();
-            _factory = factory;
-        }
-    }
-
-    /**
      * If any idle objects were garbage collected, remove their
      * {@link Reference} wrappers from the idle object pool.
      */

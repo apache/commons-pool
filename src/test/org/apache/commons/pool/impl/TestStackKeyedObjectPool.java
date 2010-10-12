@@ -206,50 +206,6 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
         }
     }
 
-    public void testSetFactory() throws Exception {
-        KeyedObjectPool<Object,Object> pool = new StackKeyedObjectPool<Object,Object>();
-        try {
-            pool.borrowObject("x");
-            fail("Expected NoSuchElementException");
-        } catch(NoSuchElementException e) {
-            // expected
-        }
-        pool.setFactory(new SimpleFactory());
-        Object obj = pool.borrowObject("x");
-        assertNotNull(obj);
-        pool.returnObject("x",obj);
-    }
-
-    public void testCantResetFactoryWithActiveObjects() throws Exception {
-        KeyedObjectPool<Object,Object> pool = new StackKeyedObjectPool<Object,Object>();
-        pool.setFactory(new SimpleFactory());
-        Object obj = pool.borrowObject("x");
-        assertNotNull(obj);
-
-        try {
-            pool.setFactory(new SimpleFactory());
-            fail("Expected IllegalStateException");
-        } catch(IllegalStateException e) {
-            // expected
-        }
-    }
-
-    public void testCanResetFactoryWithoutActiveObjects() throws Exception {
-        KeyedObjectPool<Object,Object> pool = new StackKeyedObjectPool<Object,Object>();
-        {
-            pool.setFactory(new SimpleFactory());
-            Object obj = pool.borrowObject("x");
-            assertNotNull(obj);
-            pool.returnObject("x",obj);
-        }
-        {
-            pool.setFactory(new SimpleFactory());
-            Object obj = pool.borrowObject("x");
-            assertNotNull(obj);
-            pool.returnObject("x",obj);
-        }
-    }
-
     public void testBorrowReturnWithSometimesInvalidObjects() throws Exception {
         KeyedObjectPool<Object,Object> pool = new StackKeyedObjectPool<Object,Object>(
             new KeyedPoolableObjectFactory<Object,Object>() {

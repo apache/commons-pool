@@ -124,13 +124,6 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
             // expected
         }
 
-        try {
-            pool.setFactory(null);
-            fail("Expected UnsupportedOperationException");
-        } catch(UnsupportedOperationException e) {
-            // expected
-        }
-
         pool.close(); // a no-op, probably should be remove
 
     }

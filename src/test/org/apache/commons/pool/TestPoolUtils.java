@@ -857,13 +857,12 @@ public class TestPoolUtils extends TestCase {
         op.getNumIdle();
         op.invalidateObject(new Object());
         op.returnObject(new Object());
-        op.setFactory((PoolableObjectFactory<Object>)createProxy(PoolableObjectFactory.class, (List)null));
         op.toString();
 
         final List<String> expectedMethods = Arrays.asList(new String[] {
                 "addObject", "borrowObject", "clear", "close",
                 "getNumActive", "getNumIdle", "invalidateObject",
-                "returnObject", "setFactory", "toString"
+                "returnObject", "toString"
         });
         return expectedMethods;
     }
@@ -880,13 +879,12 @@ public class TestPoolUtils extends TestCase {
         kop.getNumIdle(null);
         kop.invalidateObject(null, new Object());
         kop.returnObject(null, new Object());
-        kop.setFactory((KeyedPoolableObjectFactory<Object,Object>)createProxy(KeyedPoolableObjectFactory.class, (List<String>)null));
         kop.toString();
 
         final List<String> expectedMethods = Arrays.asList(new String[] {
                 "addObject", "borrowObject", "clear", "clear", "close",
                 "getNumActive", "getNumActive", "getNumIdle", "getNumIdle", "invalidateObject",
-                "returnObject", "setFactory", "toString"
+                "returnObject", "toString"
         });
         return expectedMethods;
     }
