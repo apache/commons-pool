@@ -20,6 +20,7 @@ package org.apache.commons.pool.impl;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
+import java.util.Random;
 
 import org.apache.commons.pool.KeyedObjectPool;
 import org.apache.commons.pool.KeyedPoolableObjectFactory;
@@ -135,41 +136,17 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals("3", pool.borrowObject("")); // New instance created (0 is gone)
     }
 
-    public void testPoolWithNullFactory() throws Exception {
-        KeyedObjectPool<String,Integer> pool = new StackKeyedObjectPool<String,Integer>(10);
-        for(int i=0;i<10;i++) {
-            pool.returnObject("X",new Integer(i));
-        }
-        for(int j=0;j<3;j++) {
-            Integer[] borrowed = new Integer[10];
-            BitSet found = new BitSet();
-            for(int i=0;i<10;i++) {
-                borrowed[i] = (pool.borrowObject("X"));
-                assertNotNull(borrowed);
-                assertTrue(!found.get(borrowed[i].intValue()));
-                found.set(borrowed[i].intValue());
-            }
-            for(int i=0;i<10;i++) {
-                pool.returnObject("X",borrowed[i]);
-            }
-        }
-        pool.invalidateObject("X",pool.borrowObject("X"));
-        pool.invalidateObject("X",pool.borrowObject("X"));
-        pool.clear("X");
-        pool.clear();
-    }
-
     public void testVariousConstructors() throws Exception {
         {
-            StackKeyedObjectPool<Object,Object> pool = new StackKeyedObjectPool<Object,Object>(null);
+            StackKeyedObjectPool<Object,Object> pool = new StackKeyedObjectPool<Object,Object>(new SimpleFactory());
             assertNotNull(pool);
         }
         {
-            StackKeyedObjectPool<Object,Object> pool = new StackKeyedObjectPool<Object,Object>(null,10);
+            StackKeyedObjectPool<Object,Object> pool = new StackKeyedObjectPool<Object,Object>(new SimpleFactory(),10);
             assertNotNull(pool);
         }
         {
-            StackKeyedObjectPool<Object,Object> pool = new StackKeyedObjectPool<Object,Object>(null,10,5);
+            StackKeyedObjectPool<Object,Object> pool = new StackKeyedObjectPool<Object,Object>(new SimpleFactory(),10,5);
             assertNotNull(pool);
         }
     }
@@ -182,16 +159,6 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertNotNull(pool.toString());
         pool.returnObject("key",obj);
         assertNotNull(pool.toString());
-    }
-
-    public void testBorrowFromEmptyPoolWithNullFactory() throws Exception {
-        KeyedObjectPool<String,Object> pool = new StackKeyedObjectPool<String,Object>();
-        try {
-            pool.borrowObject("x");
-            fail("Expected NoSuchElementException");
-        } catch(NoSuchElementException e) {
-            // expected
-        }
     }
 
     public void testBorrowReturnWithSometimesInvalidObjects() throws Exception {
