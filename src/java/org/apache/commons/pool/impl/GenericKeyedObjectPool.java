@@ -1317,14 +1317,13 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
         // build sorted map of idle objects
         final Map<ObjectTimestampPair<V>, K> map = new TreeMap<ObjectTimestampPair<V>, K>();
         synchronized (this) {
-            for (Iterator<K> keyiter = _poolMap.keySet().iterator(); keyiter.hasNext();) {
-                final K key = keyiter.next();
+            for (K key : _poolMap.keySet()) {
                 final CursorableLinkedList<ObjectTimestampPair<V>> list = _poolMap.get(key).queue;
-                for (Iterator<ObjectTimestampPair<V>> it = list.iterator(); it.hasNext();) {
+                for (ObjectTimestampPair<V> pair : list) {
                     // each item into the map uses the objectimestamppair object
                     // as the key.  It then gets sorted based on the timstamp field
                     // each value in the map is the parent list it belongs in.
-                    map.put(it.next(), key);
+                    map.put(pair, key);
                 }
             }
 
@@ -1401,24 +1400,22 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
      * @param m Map containing keyed pools to clear
      * @param factory KeyedPoolableObjectFactory used to destroy the objects
      */
-    private void destroy(Map<K, List<ObjectTimestampPair<V>>> m, KeyedPoolableObjectFactory<K,V> factory) {
-        for (Iterator<Map.Entry<K, List<ObjectTimestampPair<V>>>> entries = m.entrySet().iterator(); entries.hasNext();) {
-            Map.Entry<K, List<ObjectTimestampPair<V>>> entry = entries.next();
+    private void destroy(Map<K, List<ObjectTimestampPair<V>>> m, KeyedPoolableObjectFactory<K, V> factory) {
+        for (Map.Entry<K, List<ObjectTimestampPair<V>>> entry : m.entrySet()) {
             K key = entry.getKey();
             Collection<ObjectTimestampPair<V>> c = entry.getValue();
-            for (Iterator<ObjectTimestampPair<V>> it = c.iterator(); it.hasNext();) {
+            for (ObjectTimestampPair<V> pair : c) {
                 try {
-                    factory.destroyObject(key,it.next().getValue());
-                } catch(Exception e) {
+                    factory.destroyObject(key, pair.getValue());
+                } catch (Exception e) {
                     // ignore error, keep destroying the rest
                 } finally {
-                    synchronized(this) {
+                    synchronized (this) {
                         _totalInternalProcessing--;
                         allocate();
                     }
                 }
             }
-
         }
     }
 
@@ -2005,9 +2002,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
         StringBuffer buf = new StringBuffer();
         buf.append("Active: ").append(getNumActive()).append("\n");
         buf.append("Idle: ").append(getNumIdle()).append("\n");
-        Iterator<K> it = _poolMap.keySet().iterator();
-        while (it.hasNext()) {
-            K key = it.next();
+        for (K key : _poolMap.keySet()) {
             buf.append("\t").append(key).append(" ").append(_poolMap.get(key)).append("\n");
         }
         return buf.toString();

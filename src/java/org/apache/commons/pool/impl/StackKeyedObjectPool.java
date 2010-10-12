@@ -378,11 +378,9 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
      */
     @Override
     public synchronized void clear() {
-        Iterator<K> it = _pools.keySet().iterator();
-        while(it.hasNext()) {
-            K key = it.next();
+        for (K key : _pools.keySet()) {
             Stack<V> stack = _pools.get(key);
-            destroyStack(key,stack);
+            destroyStack(key,stack);            
         }
         _totIdle = 0;
         _pools.clear();
@@ -411,10 +409,9 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
             return;
         } else {
             if(null != _factory) {
-                Iterator<V> it = stack.iterator();
-                while(it.hasNext()) {
+                for (V v : stack) {
                     try {
-                        _factory.destroyObject(key,it.next());
+                        _factory.destroyObject(key, v);
                     } catch(Exception e) {
                         // ignore error, keep destroying the rest
                     }
@@ -437,12 +434,10 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
         StringBuffer buf = new StringBuffer();
         buf.append(getClass().getName());
         buf.append(" contains ").append(_pools.size()).append(" distinct pools: ");
-        Iterator<K> it = _pools.keySet().iterator();
-        while(it.hasNext()) {
-            Object key = it.next();
+        for (Object key : _pools.keySet()) {
             buf.append(" |").append(key).append("|=");
             Stack<V> s = _pools.get(key);
-            buf.append(s.size());
+            buf.append(s.size());            
         }
         return buf.toString();
     }

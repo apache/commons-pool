@@ -251,13 +251,12 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
     @Override
     public synchronized void clear() {
         if(null != _factory) {
-            Iterator<T> it = _pool.iterator();
-            while(it.hasNext()) {
+            for (T element : _pool) {
                 try {
-                    _factory.destroyObject(it.next());
+                    _factory.destroyObject(element);
                 } catch(Exception e) {
                     // ignore error, keep destroying the rest
-                }
+                }                
             }
         }
         _pool.clear();

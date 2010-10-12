@@ -277,15 +277,14 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements Obj
      */
     @Override
     public synchronized void clear() {
-        if(null != _factory) {
-            Iterator<SoftReference<T>> iter = _pool.iterator();
-            while(iter.hasNext()) {
+        if (null != _factory) {
+            for (SoftReference<T> element : _pool) {
                 try {
-                    T obj = iter.next().get();
-                    if(null != obj) {
+                    T obj = element.get();
+                    if (null != obj) {
                         _factory.destroyObject(obj);
                     }
-                } catch(Exception e) {
+                } catch (Exception e) {
                     // ignore error, keep destroying the rest
                 }
             }

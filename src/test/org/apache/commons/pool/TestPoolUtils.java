@@ -287,12 +287,10 @@ public class TestPoolUtils extends TestCase {
         assertEquals(2, op.getNumIdle());
         op.close();
         int makeObjectCount = 0;
-        final Iterator<String> iter = calledMethods.iterator();
-        while (iter.hasNext()) {
-            final String methodName = iter.next();
+        for (String methodName : calledMethods) {
             if ("makeObject".equals(methodName)) {
                 makeObjectCount++;
-            }
+            }            
         }
         assertEquals("makeObject should have been called two time", 2, makeObjectCount);
 
@@ -360,9 +358,7 @@ public class TestPoolUtils extends TestCase {
         assertEquals(2, kop.getNumIdle());
         kop.close();
         int makeObjectCount = 0;
-        final Iterator<String> iter = calledMethods.iterator();
-        while (iter.hasNext()) {
-            final String methodName = iter.next();
+        for (String methodName : calledMethods) {
             if ("makeObject".equals(methodName)) {
                 makeObjectCount++;
             }
@@ -422,9 +418,7 @@ public class TestPoolUtils extends TestCase {
                 final Map<String,TimerTask> tasks = PoolUtils.checkMinIdle(pool, keys, 1, CHECK_PERIOD); // checks minIdle immediately
 
                 Thread.sleep(CHECK_SLEEP_PERIOD); // will check CHECK_COUNT more times.
-                final Iterator<TimerTask> iter = tasks.values().iterator();
-                while (iter.hasNext()) {
-                    final TimerTask task = iter.next();
+                for (TimerTask task : tasks.values()) {
                     task.cancel();
                 }
 

@@ -1253,13 +1253,13 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @param factory PoolableConnectionFactory used to destroy the objects
      */
     private void destroy(Collection<ObjectTimestampPair<T>> c, PoolableObjectFactory<T> factory) {
-        for (Iterator<ObjectTimestampPair<T>> it = c.iterator(); it.hasNext();) {
+        for (ObjectTimestampPair<T> pair : c) {
             try {
-                factory.destroyObject(it.next().getValue());
-            } catch(Exception e) {
+                factory.destroyObject(pair.getValue());
+            } catch (Exception e) {
                 // ignore error, keep destroying the rest
             } finally {
-                synchronized(this) {
+                synchronized (this) {
                     _numInternalProcessing--;
                     allocate();
                 }
@@ -1605,11 +1605,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
         buf.append("Active: ").append(getNumActive()).append("\n");
         buf.append("Idle: ").append(getNumIdle()).append("\n");
         buf.append("Idle Objects:\n");
-        Iterator<ObjectTimestampPair<T>> it = _pool.iterator();
         long time = System.currentTimeMillis();
-        while(it.hasNext()) {
-            ObjectTimestampPair<T> pair = it.next();
-            buf.append("\t").append(pair.getValue()).append("\t").append(time - pair.getTstamp()).append("\n");
+        for (ObjectTimestampPair<T> pair  : _pool) {
+            buf.append("\t").append(pair.getValue()).append("\t").append(time - pair.getTstamp()).append("\n");            
         }
         return buf.toString();
     }
