@@ -36,7 +36,7 @@ public enum WhenExhaustedAction {
 
     /**
      * The {@code borrowObject()} method should block until a new
-     * object is available, or the {@link #getMaxWait maximum wait time}
+     * object is available, or the {@link GenericKeyedObjectPool#getMaxWait maximum wait time}
      * has been reached.
      */
     BLOCK,
