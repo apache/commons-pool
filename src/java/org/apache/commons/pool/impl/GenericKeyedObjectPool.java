@@ -1203,20 +1203,20 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
 
             // activate & validate the object
             try {
-                _factory.activateObject(key, latch.getPair().value);
-                if (_testOnBorrow && !_factory.validateObject(key, latch.getPair().value)) {
+                _factory.activateObject(key, latch.getPair().getValue());
+                if (_testOnBorrow && !_factory.validateObject(key, latch.getPair().getValue())) {
                     throw new Exception("ValidateObject failed");
                 }
                 synchronized (this) {
                     latch.getPool().decrementInternalProcessingCount();
                     latch.getPool().incrementActiveCount();
                 }
-                return latch.getPair().value;
+                return latch.getPair().getValue();
             } catch (Throwable e) {
                 PoolUtils.checkRethrow(e);
                 // object cannot be activated or is invalid
                 try {
-                    _factory.destroyObject(key, latch.getPair().value);
+                    _factory.destroyObject(key, latch.getPair().getValue());
                 } catch (Throwable e2) {
                     PoolUtils.checkRethrow(e2);
                     // cannot destroy broken object
@@ -1462,7 +1462,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
             Collection<ObjectTimestampPair<V>> c = entry.getValue();
             for (Iterator<ObjectTimestampPair<V>> it = c.iterator(); it.hasNext();) {
                 try {
-                    factory.destroyObject(key,it.next().value);
+                    factory.destroyObject(key,it.next().getValue());
                 } catch(Exception e) {
                     // ignore error, keep destroying the rest
                 } finally {
@@ -1909,24 +1909,24 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
 
             boolean removeObject=false;
             if ((minEvictableIdleTimeMillis > 0) &&
-               (System.currentTimeMillis() - pair.tstamp >
+               (System.currentTimeMillis() - pair.getTstamp() >
                minEvictableIdleTimeMillis)) {
                 removeObject=true;
             }
             if (testWhileIdle && removeObject == false) {
                 boolean active = false;
                 try {
-                    _factory.activateObject(key,pair.value);
+                    _factory.activateObject(key,pair.getValue());
                     active = true;
                 } catch(Exception e) {
                     removeObject=true;
                 }
                 if (active) {
-                    if (!_factory.validateObject(key,pair.value)) {
+                    if (!_factory.validateObject(key,pair.getValue())) {
                         removeObject=true;
                     } else {
                         try {
-                            _factory.passivateObject(key,pair.value);
+                            _factory.passivateObject(key,pair.getValue());
                         } catch(Exception e) {
                             removeObject=true;
                         }
@@ -1936,7 +1936,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
 
             if (removeObject) {
                 try {
-                    _factory.destroyObject(key, pair.value);
+                    _factory.destroyObject(key, pair.getValue());
                 } catch(Exception e) {
                     // ignored
                 } finally {
@@ -2222,18 +2222,14 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
     static class ObjectTimestampPair<V> implements Comparable<ObjectTimestampPair<V>> {
         //CHECKSTYLE: stop VisibilityModifier
         /** 
-         * Object instance 
-         * @deprecated this field will be made private and final in version 2.0
+         * Object instance.
          */
-        @Deprecated
-        V value;
+        private final V value;
         
         /**
          * timestamp
-         * @deprecated this field will be made private and final in version 2.0
          */
-        @Deprecated
-        long tstamp;
+        private final long tstamp;
         //CHECKSTYLE: resume VisibilityModifier
 
         /**
