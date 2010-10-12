@@ -123,7 +123,7 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
      * returning instance, which is pushed onto the idle object stack.
      */
     public void testRemoveOldest() throws Exception {
-        pool._maxSleeping = 2;
+        pool.setMaxSleeping(2);
         String obj0 = pool.borrowObject("");
         String obj1 = pool.borrowObject("");
         String obj2 = pool.borrowObject("");
@@ -160,18 +160,6 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
     }
 
     public void testVariousConstructors() throws Exception {
-        {
-            StackKeyedObjectPool<Object,Object> pool = new StackKeyedObjectPool<Object,Object>();
-            assertNotNull(pool);
-        }
-        {
-            StackKeyedObjectPool<Object,Object> pool = new StackKeyedObjectPool<Object,Object>(10);
-            assertNotNull(pool);
-        }
-        {
-            StackKeyedObjectPool<Object,Object> pool = new StackKeyedObjectPool<Object,Object>(10,5);
-            assertNotNull(pool);
-        }
         {
             StackKeyedObjectPool<Object,Object> pool = new StackKeyedObjectPool<Object,Object>(null);
             assertNotNull(pool);
