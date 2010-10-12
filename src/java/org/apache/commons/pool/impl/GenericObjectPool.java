@@ -60,18 +60,18 @@ import org.apache.commons.pool.impl.GenericKeyedObjectPool.ObjectTimestampPair;
  *    <ul>
  *    <li>
  *      When {@link #setWhenExhaustedAction <i>whenExhaustedAction</i>} is
- *      {@link #WHEN_EXHAUSTED_FAIL}, {@link #borrowObject} will throw
+ *      {@link WhenExhaustedAction#FAIL}, {@link #borrowObject} will throw
  *      a {@link NoSuchElementException}
  *    </li>
  *    <li>
  *      When {@link #setWhenExhaustedAction <i>whenExhaustedAction</i>} is
- *      {@link #WHEN_EXHAUSTED_GROW}, {@link #borrowObject} will create a new
+ *      {@link WhenExhaustedAction#GROW}, {@link #borrowObject} will create a new
  *      object and return it (essentially making {@link #setMaxActive <i>maxActive</i>}
  *      meaningless.)
  *    </li>
  *    <li>
  *      When {@link #setWhenExhaustedAction <i>whenExhaustedAction</i>}
- *      is {@link #WHEN_EXHAUSTED_BLOCK}, {@link #borrowObject} will block
+ *      is {@link WhenExhaustedAction#BLOCK}, {@link #borrowObject} will block
  *      (invoke {@link Object#wait()}) until a new or idle object is available.
  *      If a positive {@link #setMaxWait <i>maxWait</i>}
  *      value is supplied, then {@link #borrowObject} will block for at
@@ -81,7 +81,7 @@ import org.apache.commons.pool.impl.GenericKeyedObjectPool.ObjectTimestampPair;
  *    </li>
  *    </ul>
  *    The default <code>whenExhaustedAction</code> setting is
- *    {@link #WHEN_EXHAUSTED_BLOCK} and the default <code>maxWait</code>
+ *    {@link WhenExhaustedAction#BLOCK} and the default <code>maxWait</code>
  *    setting is -1. By default, therefore, <code>borrowObject</code> will
  *    block indefinitely until an idle instance becomes available.
  *  </li>
@@ -214,9 +214,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
 
     /**
      * The default "when exhausted action" for the pool.
-     * @see #WHEN_EXHAUSTED_BLOCK
-     * @see #WHEN_EXHAUSTED_FAIL
-     * @see #WHEN_EXHAUSTED_GROW
+     * @see WhenExhaustedAction#BLOCK
+     * @see WhenExhaustedAction#FAIL
+     * @see WhenExhaustedAction#GROW
      * @see #setWhenExhaustedAction
      */
     public static final WhenExhaustedAction DEFAULT_WHEN_EXHAUSTED_ACTION = WhenExhaustedAction.BLOCK;
@@ -237,7 +237,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * {@link #borrowObject} method should block before throwing
      * an exception when the pool is exhausted and the
      * {@link #getWhenExhaustedAction "when exhausted" action} is
-     * {@link #WHEN_EXHAUSTED_BLOCK}.
+     * {@link WhenExhaustedAction#BLOCK}.
      * @see #getMaxWait
      * @see #setMaxWait
      */
@@ -347,7 +347,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @param maxActive the maximum number of objects that can be borrowed from me at one time (see {@link #setMaxActive})
      * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #getWhenExhaustedAction})
      * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted an and
-     * <i>whenExhaustedAction</i> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #getMaxWait})
+     * <i>whenExhaustedAction</i> is {@link WhenExhaustedAction#BLOCK} (otherwise ignored) (see {@link #getMaxWait})
      */
     public GenericObjectPool(PoolableObjectFactory<T> factory, int maxActive, WhenExhaustedAction whenExhaustedAction, long maxWait) {
         this(factory, maxActive, whenExhaustedAction, maxWait, DEFAULT_MAX_IDLE, DEFAULT_MIN_IDLE, DEFAULT_TEST_ON_BORROW,
@@ -361,7 +361,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @param maxActive the maximum number of objects that can be borrowed at one time (see {@link #setMaxActive})
      * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #getWhenExhaustedAction})
      * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted an and
-     * <i>whenExhaustedAction</i> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #getMaxWait})
+     * <i>whenExhaustedAction</i> is {@link WhenExhaustedAction#BLOCK} (otherwise ignored) (see {@link #getMaxWait})
      * @param testOnBorrow whether or not to validate objects before they are returned by the {@link #borrowObject} method
      * (see {@link #getTestOnBorrow})
      * @param testOnReturn whether or not to validate objects after they are returned to the {@link #returnObject} method
@@ -380,7 +380,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @param maxActive the maximum number of objects that can be borrowed at one time (see {@link #setMaxActive})
      * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #getWhenExhaustedAction})
      * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted and 
-     * <i>whenExhaustedAction</i> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #getMaxWait})
+     * <i>whenExhaustedAction</i> is {@link WhenExhaustedAction#BLOCK} (otherwise ignored) (see {@link #getMaxWait})
      * @param maxIdle the maximum number of idle objects in my pool (see {@link #getMaxIdle})
      */
     public GenericObjectPool(PoolableObjectFactory<T> factory, int maxActive, WhenExhaustedAction whenExhaustedAction,
@@ -396,7 +396,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @param maxActive the maximum number of objects that can be borrowed at one time (see {@link #setMaxActive})
      * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #getWhenExhaustedAction})
      * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted and
-     * <i>whenExhaustedAction</i> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #getMaxWait})
+     * <i>whenExhaustedAction</i> is {@link WhenExhaustedAction#BLOCK} (otherwise ignored) (see {@link #getMaxWait})
      * @param maxIdle the maximum number of idle objects in my pool (see {@link #getMaxIdle})
      * @param testOnBorrow whether or not to validate objects before they are returned by the {@link #borrowObject} method
      * (see {@link #getTestOnBorrow})
@@ -416,7 +416,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @param maxActive the maximum number of objects that can be borrowed at one time (see {@link #setMaxActive})
      * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #setWhenExhaustedAction})
      * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted and 
-     * <i>whenExhaustedAction</i> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
+     * <i>whenExhaustedAction</i> is {@link WhenExhaustedAction#BLOCK} (otherwise ignored) (see {@link #setMaxWait})
      * @param maxIdle the maximum number of idle objects in my pool (see {@link #setMaxIdle})
      * @param testOnBorrow whether or not to validate objects before they are returned by the {@link #borrowObject}
      * method (see {@link #setTestOnBorrow})
@@ -444,7 +444,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @param maxActive the maximum number of objects that can be borrowed at one time (see {@link #setMaxActive})
      * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #setWhenExhaustedAction})
      * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted and
-     *  <i>whenExhaustedAction</i> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
+     *  <i>whenExhaustedAction</i> is {@link WhenExhaustedAction#BLOCK} (otherwise ignored) (see {@link #setMaxWait})
      * @param maxIdle the maximum number of idle objects in my pool (see {@link #setMaxIdle})
      * @param minIdle the minimum number of idle objects in my pool (see {@link #setMinIdle})
      * @param testOnBorrow whether or not to validate objects before they are returned by the {@link #borrowObject} method
@@ -474,7 +474,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @param maxActive the maximum number of objects that can be borrowed at one time (see {@link #setMaxActive})
      * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #setWhenExhaustedAction})
      * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted and
-     * <i>whenExhaustedAction</i> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
+     * <i>whenExhaustedAction</i> is {@link WhenExhaustedAction#BLOCK} (otherwise ignored) (see {@link #setMaxWait})
      * @param maxIdle the maximum number of idle objects in my pool (see {@link #setMaxIdle})
      * @param minIdle the minimum number of idle objects in my pool (see {@link #setMinIdle})
      * @param testOnBorrow whether or not to validate objects before they are returned by the {@link #borrowObject}
@@ -509,7 +509,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @param maxActive the maximum number of objects that can be borrowed at one time (see {@link #setMaxActive})
      * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #setWhenExhaustedAction})
      * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted and
-     * <i>whenExhaustedAction</i> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
+     * <i>whenExhaustedAction</i> is {@link WhenExhaustedAction#BLOCK} (otherwise ignored) (see {@link #setMaxWait})
      * @param maxIdle the maximum number of idle objects in my pool (see {@link #setMaxIdle})
      * @param minIdle the minimum number of idle objects in my pool (see {@link #setMinIdle})
      * @param testOnBorrow whether or not to validate objects before they are returned by the {@link #borrowObject}
@@ -591,7 +591,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * is invoked when the pool is exhausted (the maximum number
      * of "active" objects has been reached).
      *
-     * @return one of {@link #WHEN_EXHAUSTED_BLOCK}, {@link #WHEN_EXHAUSTED_FAIL} or {@link #WHEN_EXHAUSTED_GROW}
+     * @return one of {@link WhenExhaustedAction#BLOCK}, {@link WhenExhaustedAction#FAIL} or {@link WhenExhaustedAction#GROW}
      * @see #setWhenExhaustedAction
      */
     public synchronized WhenExhaustedAction getWhenExhaustedAction() {
@@ -604,8 +604,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * of "active" objects has been reached).
      *
      * @param whenExhaustedAction the action code, which must be one of
-     *        {@link #WHEN_EXHAUSTED_BLOCK}, {@link #WHEN_EXHAUSTED_FAIL},
-     *        or {@link #WHEN_EXHAUSTED_GROW}
+     *        {@link WhenExhaustedAction#BLOCK}, {@link WhenExhaustedAction#FAIL},
+     *        or {@link WhenExhaustedAction#GROW}
      * @see #getWhenExhaustedAction
      */
     public synchronized void setWhenExhaustedAction(WhenExhaustedAction whenExhaustedAction) {
@@ -619,7 +619,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * {@link #borrowObject} method should block before throwing
      * an exception when the pool is exhausted and the
      * {@link #setWhenExhaustedAction "when exhausted" action} is
-     * {@link #WHEN_EXHAUSTED_BLOCK}.
+     * {@link WhenExhaustedAction#BLOCK}.
      *
      * When less than or equal to 0, the {@link #borrowObject} method
      * may block indefinitely.
@@ -627,7 +627,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @return maximum number of milliseconds to block when borrowing an object.
      * @see #setMaxWait
      * @see #setWhenExhaustedAction
-     * @see #WHEN_EXHAUSTED_BLOCK
+     * @see WhenExhaustedAction#BLOCK
      */
     public synchronized long getMaxWait() {
         return _maxWait;
@@ -638,7 +638,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * {@link #borrowObject} method should block before throwing
      * an exception when the pool is exhausted and the
      * {@link #setWhenExhaustedAction "when exhausted" action} is
-     * {@link #WHEN_EXHAUSTED_BLOCK}.
+     * {@link WhenExhaustedAction#BLOCK}.
      *
      * When less than or equal to 0, the {@link #borrowObject} method
      * may block indefinitely.
@@ -646,7 +646,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @param maxWait maximum number of milliseconds to block when borrowing an object.
      * @see #getMaxWait
      * @see #setWhenExhaustedAction
-     * @see #WHEN_EXHAUSTED_BLOCK
+     * @see WhenExhaustedAction#BLOCK
      */
     public synchronized void setMaxWait(long maxWait) {
         _maxWait = maxWait;
@@ -977,8 +977,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * instance is created, activated and (if applicable) validated and returned to the caller.</p>
      * 
      * <p>If the pool is exhausted (no available idle instances and no capacity to create new ones),
-     * this method will either block ({@link #WHEN_EXHAUSTED_BLOCK}), throw a <code>NoSuchElementException</code>
-     * ({@link #WHEN_EXHAUSTED_FAIL}), or grow ({@link #WHEN_EXHAUSTED_GROW} - ignoring maxActive).
+     * this method will either block ({@link WhenExhaustedAction#BLOCK}), throw a <code>NoSuchElementException</code>
+     * ({@link WhenExhaustedAction#FAIL}), or grow ({@link WhenExhaustedAction#GROW} - ignoring maxActive).
      * The length of time that this method will block when <code>whenExhaustedAction == WHEN_EXHAUSTED_BLOCK</code>
      * is determined by the {@link #getMaxWait() maxWait} property.</p>
      * 
@@ -1839,14 +1839,14 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * {@link #borrowObject} method should block before throwing
      * an exception when the pool is exhausted and the
      * {@link #getWhenExhaustedAction "when exhausted" action} is
-     * {@link #WHEN_EXHAUSTED_BLOCK}.
+     * {@link WhenExhaustedAction#BLOCK}.
      *
      * When less than or equal to 0, the {@link #borrowObject} method
      * may block indefinitely.
      *
      * @see #setMaxWait
      * @see #getMaxWait
-     * @see #WHEN_EXHAUSTED_BLOCK
+     * @see WhenExhaustedAction#BLOCK
      * @see #setWhenExhaustedAction
      * @see #getWhenExhaustedAction
      */
@@ -1857,10 +1857,10 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * is invoked when the pool is exhausted (the maximum number
      * of "active" objects has been reached).
      *
-     * @see #WHEN_EXHAUSTED_ACTION.BLOCK
-     * @see #WHEN_EXHAUSTED_ACTION.FAIL
-     * @see #WHEN_EXHAUSTED_ACTION.GROW
-     * @see #DEFAULT_WHEN_EXHAUSTED_ACTION
+     * @see WHEN_EXHAUSTED_ACTION#BLOCK
+     * @see WHEN_EXHAUSTED_ACTION#FAIL
+     * @see WHEN_EXHAUSTED_ACTION#GROW
+     * @see DEFAULT_WHEN_EXHAUSTED_ACTION
      * @see #setWhenExhaustedAction
      * @see #getWhenExhaustedAction
      */
