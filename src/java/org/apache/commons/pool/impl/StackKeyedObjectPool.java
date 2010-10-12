@@ -140,6 +140,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
      * @param key the pool key
      * @return keyed poolable object instance
      */
+    @Override
     public synchronized V borrowObject(K key) throws Exception {
         assertOpen();
         Stack<V> stack = _pools.get(key);
@@ -199,6 +200,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
      * @param key the pool key
      * @param obj returning instance
      */
+    @Override
     public synchronized void returnObject(K key, V obj) throws Exception {
         decrementActiveCount(key);
         if (null != _factory) {
@@ -255,6 +257,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
     /**
      * {@inheritDoc}
      */
+    @Override
     public synchronized void invalidateObject(K key, V obj) throws Exception {
         decrementActiveCount(key);
         if(null != _factory) {
@@ -272,6 +275,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
      * @throws Exception when {@link KeyedPoolableObjectFactory#makeObject} fails.
      * @throws IllegalStateException when no {@link #setFactory factory} has been set or after {@link #close} has been called on this pool.
      */
+    @Override
     public synchronized void addObject(K key) throws Exception {
         assertOpen();
         if (_factory == null) {
@@ -327,6 +331,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
      *
      * @return the total number of instances currently idle in this pool
      */
+    @Override
     public synchronized int getNumIdle() {
         return _totIdle;
     }
@@ -336,6 +341,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
      *
      * @return the total number of instances currently borrowed from this pool
      */
+    @Override
     public synchronized int getNumActive() {
         return _totActive;
     }
@@ -347,6 +353,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
      * @param key the key to query
      * @return the number of instances corresponding to the given <code>key</code> currently borrowed in this pool
      */
+    @Override
     public synchronized int getNumActive(K key) {
         return getActiveCount(key);
     }
@@ -357,6 +364,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
      * @param key the key to query
      * @return the number of instances corresponding to the given <code>key</code> currently idle in this pool
      */
+    @Override
     public synchronized int getNumIdle(K key) {
         try {
             return _pools.get(key).size();
@@ -368,6 +376,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
     /**
      * Clears the pool, removing all pooled instances.
      */
+    @Override
     public synchronized void clear() {
         Iterator<K> it = _pools.keySet().iterator();
         while(it.hasNext()) {
@@ -385,6 +394,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
      *
      * @param key the key to clear
      */
+    @Override
     public synchronized void clear(K key) {
         Stack<V> stack = _pools.remove(key);
         destroyStack(key,stack);
@@ -422,6 +432,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
      * 
      * @return Keys and pool sizes
      */
+    @Override
     public synchronized String toString() {
         StringBuffer buf = new StringBuffer();
         buf.append(getClass().getName());
@@ -445,6 +456,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
      *
      * @throws Exception <strong>deprecated</strong>: implementations should silently fail if not all resources can be freed.
      */
+    @Override
     public void close() throws Exception {
         super.close();
         clear();
@@ -460,6 +472,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
      * @throws IllegalStateException when the factory cannot be set at this time
      * @deprecated to be removed in pool 2.0
      */
+    @Override
     public synchronized void setFactory(KeyedPoolableObjectFactory<K,V> factory) throws IllegalStateException {
         if(0 < getNumActive()) {
             throw new IllegalStateException("Objects are already active");
