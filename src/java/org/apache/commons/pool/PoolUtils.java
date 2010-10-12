@@ -271,12 +271,9 @@ public final class PoolUtils {
             throw new IllegalArgumentException("keys must not be null.");
         }
         final Map<K,TimerTask> tasks = new HashMap<K,TimerTask>(keys.size());
-        final Iterator<K> iter = keys.iterator();
-        while (iter.hasNext()) {
-            final K key = iter.next();
-            final TimerTask task = checkMinIdle(keyedPool, key, minIdle, period);
-            tasks.put(key, task);
-        }
+        for (K key : keys) {
+            tasks.put(key, checkMinIdle(keyedPool, key, minIdle, period));            
+        } 
         return tasks;
     }
 
@@ -339,9 +336,8 @@ public final class PoolUtils {
         if (keys == null) {
             throw new IllegalArgumentException("keys must not be null.");
         }
-        final Iterator<K> iter = keys.iterator();
-        while (iter.hasNext()) {
-            prefill(keyedPool, iter.next(), count);
+        for (K key : keys) {
+            prefill(keyedPool, key, count);
         }
     }
 
