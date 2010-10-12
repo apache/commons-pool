@@ -99,13 +99,6 @@ public class TestBaseObjectPool extends TestObjectPool {
         } catch(UnsupportedOperationException e) {
             // expected
         }
-
-        try {
-            pool.setFactory(null);
-            fail("Expected UnsupportedOperationException");
-        } catch(UnsupportedOperationException e) {
-            // expected
-        }
     }
 
     public void testClose() throws Exception {

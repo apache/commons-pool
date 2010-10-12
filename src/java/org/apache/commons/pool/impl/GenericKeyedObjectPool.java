@@ -1706,50 +1706,6 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
     }
 
     /**
-     * <p>Sets the keyed poolable object factory associated with this pool.</p>
-     * 
-     * <p>If this method is called when objects are checked out of any of the keyed pools,
-     * an IllegalStateException is thrown.  Calling this method also has the side effect of
-     * destroying any idle instances in existing keyed pools, using the original factory.</p>
-     * 
-     * @param factory KeyedPoolableObjectFactory to use when creating keyed object pool instances
-     * @throws IllegalStateException if there are active (checked out) instances associated with this keyed object pool
-     * @deprecated to be removed in version 2.0
-     */
-    @Deprecated
-    @Override
-    public void setFactory(KeyedPoolableObjectFactory<K,V> factory) throws IllegalStateException {
-        Map<K, List<ObjectTimestampPair<V>>> toDestroy = new HashMap<K, List<ObjectTimestampPair<V>>>();
-        final KeyedPoolableObjectFactory<K,V> oldFactory = _factory;
-        synchronized (this) {
-            assertOpen();
-            if (0 < getNumActive()) {
-                throw new IllegalStateException("Objects are already active");
-            } else {
-                for (Iterator<K> it = _poolMap.keySet().iterator(); it.hasNext();) {
-                    K key = it.next();
-                    ObjectQueue pool = _poolMap.get(key);
-                    if (pool != null) {
-                        // Copy objects to new list so pool.queue can be cleared
-                        // inside the sync
-                        List<ObjectTimestampPair<V>> objects = new ArrayList<ObjectTimestampPair<V>>();
-                        objects.addAll(pool.queue);
-                        toDestroy.put(key, objects);
-                        it.remove();
-                        _poolList.remove(key);
-                        _totalIdle = _totalIdle - pool.queue.size();
-                        _totalInternalProcessing =
-                            _totalInternalProcessing + pool.queue.size();
-                        pool.queue.clear();
-                    }
-                }
-                _factory = factory;
-            }
-        }
-        destroy(toDestroy, oldFactory);
-    }
-
-    /**
      * <p>Perform <code>numTests</code> idle object eviction tests, evicting
      * examined objects that meet the criteria for eviction. If
      * <code>testWhileIdle</code> is true, examined objects are validated

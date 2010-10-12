@@ -18,12 +18,12 @@
 package org.apache.commons.pool;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.Collections;
 
 /**
  * This class consists exclusively of static methods that operate on or return ObjectPool
@@ -842,17 +842,6 @@ public final class PoolUtils {
         }
 
         /**
-         * Sets the PoolableObjectFactory for the pool.
-         * 
-         * @param factory new PoolableObjectFactory 
-         * @deprecated to be removed in version 2.0
-         */
-        @Deprecated
-        public void setFactory(final PoolableObjectFactory<V> factory) throws IllegalStateException, UnsupportedOperationException {
-            keyedPool.setFactory((KeyedPoolableObjectFactory<K, V>) adapt(factory));
-        }
-
-        /**
          * {@inheritDoc}
          */
         @Override
@@ -996,17 +985,6 @@ public final class PoolUtils {
         }
 
         /**
-         * Sets the factory used to manage objects.
-         * 
-         * @param factory new factory to use managing object instances
-         * @deprecated to be removed in version 2.0
-         */
-        @Deprecated
-        public void setFactory(final KeyedPoolableObjectFactory<K,V> factory) throws IllegalStateException, UnsupportedOperationException {
-            pool.setFactory(adapt((KeyedPoolableObjectFactory<Object, V>) factory));
-        }
-
-        /**
          * {@inheritDoc}
          */
         @Override
@@ -1141,17 +1119,6 @@ public final class PoolUtils {
             } catch (Exception e) {
                 // swallowed as of Pool 2
             }
-        }
-
-        /**
-         * Sets the object factory associated with the pool
-         * 
-         * @param factory object factory
-         * @deprecated to be removed in version 2.0
-         */
-        @Deprecated
-        public void setFactory(final PoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
-            pool.setFactory(factory);
         }
 
         /**
@@ -1313,17 +1280,6 @@ public final class PoolUtils {
             } catch (Exception e) {
                 // swallowed as of Pool 2
             }
-        }
-
-        /**
-         * Sets the object factory associated with the pool
-         * 
-         * @param factory object factory
-         * @deprecated to be removed in version 2.0
-         */
-        @Deprecated
-        public void setFactory(final KeyedPoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
-            keyedPool.setFactory(factory);
         }
 
         /**
@@ -1594,19 +1550,6 @@ public final class PoolUtils {
         }
 
         /**
-         * Sets the factory used by the pool.
-         * 
-         * @param factory new PoolableObjectFactory
-         * @deprecated to be removed in pool 2.0
-         */
-        @Deprecated
-        public void setFactory(final PoolableObjectFactory<T> factory) throws IllegalStateException, UnsupportedOperationException {
-            synchronized (lock) {
-                pool.setFactory(factory);
-            }
-        }
-
-        /**
          * {@inheritDoc}
          */
         @Override
@@ -1759,19 +1702,6 @@ public final class PoolUtils {
                 }
             } catch (Exception e) {
                 // swallowed as of Pool 2
-            }
-        }
-
-        /**
-         * Sets the object factory used by the pool.
-         * 
-         * @param factory KeyedPoolableObjectFactory used by the pool
-         * @deprecated to be removed in pool 2.0
-         */
-        @Deprecated
-        public void setFactory(final KeyedPoolableObjectFactory<K,V> factory) throws IllegalStateException, UnsupportedOperationException {
-            synchronized (lock) {
-                keyedPool.setFactory(factory);
             }
         }
 
@@ -2153,15 +2083,6 @@ public final class PoolUtils {
 
         /**
          * {@inheritDoc}
-         * @deprecated to be removed in pool 2.0
-         */
-        @Deprecated
-        public void setFactory(final PoolableObjectFactory<T> factory) throws IllegalStateException, UnsupportedOperationException {
-            pool.setFactory(factory);
-        }
-
-        /**
-         * {@inheritDoc}
          */
         @Override
         public String toString() {
@@ -2334,15 +2255,6 @@ public final class PoolUtils {
             } catch (Exception e) {
                 // swallowed
             }
-        }
-
-        /**
-         * {@inheritDoc}
-         * @deprecated to be removed in pool 2.0
-         */
-        @Deprecated
-        public void setFactory(final KeyedPoolableObjectFactory<K,V> factory) throws IllegalStateException, UnsupportedOperationException {
-            keyedPool.setFactory(factory);
         }
 
         /**

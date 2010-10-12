@@ -1413,37 +1413,6 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
     }
 
     /**
-     * Sets the {@link PoolableObjectFactory factory} this pool uses
-     * to create new instances. Trying to change
-     * the <code>factory</code> while there are borrowed objects will
-     * throw an {@link IllegalStateException}.  If there are instances idle
-     * in the pool when this method is invoked, these will be destroyed
-     * using the original factory.
-     *
-     * @param factory the {@link PoolableObjectFactory} used to create new instances.
-     * @throws IllegalStateException when the factory cannot be set at this time
-     * @deprecated to be removed in version 2.0
-     */
-    @Deprecated
-    @Override
-    public void setFactory(PoolableObjectFactory<T> factory) throws IllegalStateException {
-        List<ObjectTimestampPair<T>> toDestroy = new ArrayList<ObjectTimestampPair<T>>();
-        final PoolableObjectFactory<T> oldFactory = _factory;
-        synchronized (this) {
-            assertOpen();
-            if(0 < getNumActive()) {
-                throw new IllegalStateException("Objects are already active");
-            } else {
-                toDestroy.addAll(_pool);
-                _numInternalProcessing = _numInternalProcessing + _pool._size;
-                _pool.clear();
-            }
-            _factory = factory;
-        }
-        destroy(toDestroy, oldFactory); 
-    }
-
-    /**
      * <p>Perform <code>numTests</code> idle object eviction tests, evicting
      * examined objects that meet the criteria for eviction. If
      * <code>testWhileIdle</code> is true, examined objects are validated

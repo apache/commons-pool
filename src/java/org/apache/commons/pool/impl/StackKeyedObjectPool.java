@@ -463,26 +463,6 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
     }
 
     /**
-     * Sets the {@link KeyedPoolableObjectFactory factory} the pool uses
-     * to create new instances.
-     * Trying to change the <code>factory</code> after a pool has been used will frequently
-     * throw an {@link UnsupportedOperationException}.
-     *
-     * @param factory the {@link KeyedPoolableObjectFactory} used to manage object instances
-     * @throws IllegalStateException when the factory cannot be set at this time
-     * @deprecated to be removed in pool 2.0
-     */
-    @Override
-    public synchronized void setFactory(KeyedPoolableObjectFactory<K,V> factory) throws IllegalStateException {
-        if(0 < getNumActive()) {
-            throw new IllegalStateException("Objects are already active");
-        } else {
-            clear();
-            _factory = factory;
-        }
-    }
-    
-    /**
      * @return the {@link KeyedPoolableObjectFactory} used by this pool to manage object instances.
      * @since 1.5.5
      */
