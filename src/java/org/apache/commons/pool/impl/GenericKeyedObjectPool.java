@@ -314,17 +314,6 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
     //--- constructors -----------------------------------------------
 
     /**
-     * Create a new <code>GenericKeyedObjectPool</code> with no factory.
-     *
-     * @see #GenericKeyedObjectPool(KeyedPoolableObjectFactory)
-     */
-    public GenericKeyedObjectPool() {
-        this(null, DEFAULT_MAX_ACTIVE, DEFAULT_WHEN_EXHAUSTED_ACTION, DEFAULT_MAX_WAIT, DEFAULT_MAX_IDLE, 
-                DEFAULT_TEST_ON_BORROW, DEFAULT_TEST_ON_RETURN, DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
-                DEFAULT_NUM_TESTS_PER_EVICTION_RUN, DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS, DEFAULT_TEST_WHILE_IDLE);
-    }
-
-    /**
      * Create a new <code>GenericKeyedObjectPool</code> using the specified values.
      * @param factory the <code>KeyedPoolableObjectFactory</code> to use to create, validate, and destroy
      * objects if not <code>null</code>
@@ -560,12 +549,16 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
      * @param testWhileIdle whether or not to validate objects in the idle object eviction thread, if any
      * (see {@link #setTestWhileIdle})
      * @param lifo whether or not the pools behave as LIFO (last in first out) queues (see {@link #setLifo})
+     * @throws IllegalArgumentException if the factory is null
      * @since Pool 1.4
      */
     public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,V> factory, int maxActive, WhenExhaustedAction whenExhaustedAction,
             long maxWait, int maxIdle, int maxTotal, int minIdle, boolean testOnBorrow, boolean testOnReturn,
             long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis,
             boolean testWhileIdle, boolean lifo) {
+        if (factory == null) {
+            throw new IllegalArgumentException("factory must not be null");
+        }
         _factory = factory;
         _maxActive = maxActive;
         _lifo = lifo;
@@ -1485,21 +1478,19 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
         try {
             addObjectToPool(key, obj, true);
         } catch (Exception e) {
-            if (_factory != null) {
-                try {
-                    _factory.destroyObject(key, obj);
-                } catch (Exception e2) {
-                    // swallowed
-                }
-                // TODO: Correctness here depends on control in addObjectToPool.
-                // These two methods should be refactored, removing the
-                // "behavior flag", decrementNumActive, from addObjectToPool.
-                ObjectQueue pool = (_poolMap.get(key));
-                if (pool != null) {
-                    synchronized(this) {
-                        pool.decrementActiveCount();
-                        allocate();
-                    }
+            try {
+                _factory.destroyObject(key, obj);
+            } catch (Exception e2) {
+                // swallowed
+            }
+            // TODO: Correctness here depends on control in addObjectToPool.
+            // These two methods should be refactored, removing the
+            // "behavior flag", decrementNumActive, from addObjectToPool.
+            ObjectQueue pool = (_poolMap.get(key));
+            if (pool != null) {
+                synchronized(this) {
+                    pool.decrementActiveCount();
+                    allocate();
                 }
             }
         }
@@ -1619,15 +1610,11 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
      *
      * @param key the key a new instance should be added to
      * @throws Exception when {@link KeyedPoolableObjectFactory#makeObject} fails.
-     * @throws IllegalStateException when no {@link #setFactory factory} has been set or after {@link #close} has been
      * called on this pool.
      */
     @Override
     public void addObject(K key) throws Exception {
         assertOpen();
-        if (_factory == null) {
-            throw new IllegalStateException("Cannot add objects without a factory.");
-        }
         V obj = _factory.makeObject(key);
         try {
             assertOpen();
@@ -2533,7 +2520,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
     private int _totalInternalProcessing = 0;
 
     /** My {@link KeyedPoolableObjectFactory}. */
-    private KeyedPoolableObjectFactory<K,V> _factory = null;
+    private final KeyedPoolableObjectFactory<K,V> _factory;
 
     /**
      * My idle object eviction {@link TimerTask}, if any.

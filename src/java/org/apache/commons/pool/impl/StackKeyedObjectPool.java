@@ -47,45 +47,7 @@ import org.apache.commons.pool.PoolUtils;
  * @since Pool 1.0
  */
 public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
-    /**
-     * Create a new pool using no factory.
-     * Clients must first set the {@link #setFactory factory} or
-     * may populate the pool using {@link #returnObject returnObject}
-     * before they can be {@link #borrowObject borrowed}.
-     *
-     * @see #StackKeyedObjectPool(KeyedPoolableObjectFactory)
-     */
-    public StackKeyedObjectPool() {
-        this((KeyedPoolableObjectFactory<K,V>)null,DEFAULT_MAX_SLEEPING,DEFAULT_INIT_SLEEPING_CAPACITY);
-    }
 
-    /**
-     * Create a new pool using no factory.
-     * Clients must first set the {@link #setFactory factory} or
-     * may populate the pool using {@link #returnObject returnObject}
-     * before they can be {@link #borrowObject borrowed}.
-     *
-     * @param max cap on the number of "sleeping" instances in the pool
-     * @see #StackKeyedObjectPool(KeyedPoolableObjectFactory, int)
-     */
-    public StackKeyedObjectPool(int max) {
-        this((KeyedPoolableObjectFactory<K,V>)null,max,DEFAULT_INIT_SLEEPING_CAPACITY);
-    }
-
-    /**
-     * Create a new pool using no factory.
-     * Clients must first set the {@link #setFactory factory} or
-     * may populate the pool using {@link #returnObject returnObject}
-     * before they can be {@link #borrowObject borrowed}.
-     *
-     * @param max cap on the number of "sleeping" instances in the pool
-     * @param init initial size of the pool (this specifies the size of the container,
-     *             it does not cause the pool to be pre-populated.)
-     * @see #StackKeyedObjectPool(KeyedPoolableObjectFactory, int, int)
-     */
-    public StackKeyedObjectPool(int max, int init) {
-        this((KeyedPoolableObjectFactory<K,V>)null,max,init);
-    }
 
     /**
      * Create a new <code>SimpleKeyedObjectPool</code> using
@@ -122,6 +84,9 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
      *             it does not cause the pool to be pre-populated.)
      */
     public StackKeyedObjectPool(KeyedPoolableObjectFactory<K,V> factory, int max, int init) {
+        if (factory == null) {
+            throw new IllegalArgumentException("factory must not be null");
+        }
         _factory = factory;
         _maxSleeping = (max < 0 ? DEFAULT_MAX_SLEEPING : max);
         _initSleepingCapacity = (init < 1 ? DEFAULT_INIT_SLEEPING_CAPACITY : init);
@@ -152,14 +117,10 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
                 obj = stack.pop();
                 _totIdle--;
             } else {
-                if(null == _factory) {
-                    throw new NoSuchElementException("pools without a factory cannot create new objects as needed.");
-                } else {
-                    obj = _factory.makeObject(key);
-                    newlyMade = true;
-                }
+                obj = _factory.makeObject(key);
+                newlyMade = true;
             }
-            if (null != _factory && null != obj) {
+            if (null != obj) {
                 try {
                     _factory.activateObject(key, obj);
                     if (!_factory.validateObject(key, obj)) {
@@ -199,26 +160,22 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
     @Override
     public synchronized void returnObject(K key, V obj) throws Exception {
         decrementActiveCount(key);
-        if (null != _factory) {
-            if (_factory.validateObject(key, obj)) {
-                try {
-                    _factory.passivateObject(key, obj);
-                } catch (Exception ex) {
-                    _factory.destroyObject(key, obj);
-                    return;
-                }
-            } else {
+        if (_factory.validateObject(key, obj)) {
+            try {
+                _factory.passivateObject(key, obj);
+            } catch (Exception ex) {
+                _factory.destroyObject(key, obj);
                 return;
             }
+        } else {
+            return;
         }
 
         if (isClosed()) {
-            if (null != _factory) {
-                try {
-                    _factory.destroyObject(key, obj);
-                } catch (Exception e) {
-                    // swallowed
-                }
+            try {
+                _factory.destroyObject(key, obj);
+            } catch (Exception e) {
+                // swallowed
             }
             return;
         }
@@ -238,12 +195,10 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
             } else {
                 staleObj = obj;
             }
-            if(null != _factory) {
-                try {
-                    _factory.destroyObject(key, staleObj);
-                } catch (Exception e) {
-                    // swallowed
-                }
+            try {
+                _factory.destroyObject(key, staleObj);
+            } catch (Exception e) {
+                // swallowed
             }
         }
         stack.push(obj);
@@ -256,9 +211,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
     @Override
     public synchronized void invalidateObject(K key, V obj) throws Exception {
         decrementActiveCount(key);
-        if(null != _factory) {
-            _factory.destroyObject(key,obj);
-        }
+        _factory.destroyObject(key,obj);
         notifyAll(); // _totalActive has changed
     }
 
@@ -269,14 +222,10 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
      *
      * @param key the key a new instance should be added to
      * @throws Exception when {@link KeyedPoolableObjectFactory#makeObject} fails.
-     * @throws IllegalStateException when no {@link #_factory} has been set or after {@link #close} has been called on this pool.
      */
     @Override
     public synchronized void addObject(K key) throws Exception {
         assertOpen();
-        if (_factory == null) {
-            throw new IllegalStateException("Cannot add objects without a factory.");
-        }
         V obj = _factory.makeObject(key);
         try {
             if (!_factory.validateObject(key, obj)) {
@@ -404,13 +353,11 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
         if(null == stack) {
             return;
         } else {
-            if(null != _factory) {
-                for (V v : stack) {
-                    try {
-                        _factory.destroyObject(key, v);
-                    } catch(Exception e) {
-                        // ignore error, keep destroying the rest
-                    }
+            for (V v : stack) {
+                try {
+                    _factory.destroyObject(key, v);
+                } catch(Exception e) {
+                    // ignore error, keep destroying the rest
                 }
             }
             _totIdle -= stack.size();
@@ -457,6 +404,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
      * @return the {@link KeyedPoolableObjectFactory} used by this pool to manage object instances.
      * @since 1.5.5
      */
+    // TODO does this still need to be synchronised?
     public synchronized KeyedPoolableObjectFactory<K,V> getFactory() {
         return _factory;
     }
