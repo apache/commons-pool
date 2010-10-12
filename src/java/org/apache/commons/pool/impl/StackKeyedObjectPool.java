@@ -417,7 +417,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
      */
     private int getActiveCount(K key) {
         try {
-            return _activeCount.get(key);
+            return _activeCount.get(key).intValue();
         } catch(NoSuchElementException e) {
             return 0;
         } catch(NullPointerException e) {
