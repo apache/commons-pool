@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TimerTask;
@@ -1074,7 +1073,8 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
      * @return object instance from the keyed pool
      * @throws NoSuchElementException if a keyed object instance cannot be returned.
      */
-     public V borrowObject(K key) throws Exception {
+     @Override
+    public V borrowObject(K key) throws Exception {
         long starttime = System.currentTimeMillis();
         Latch latch = new Latch(key);
         byte whenExhaustedAction;
@@ -1335,6 +1335,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
      * while removed items are being destroyed.</li>
      * <li>Exceptions encountered destroying idle instances are swallowed.</li></ul></p>
      */
+    @Override
     public void clear() {
         Map<K,List<ObjectTimestampPair<V>>> toDestroy = new HashMap<K,List<ObjectTimestampPair<V>>>();
         synchronized (this) {
@@ -1422,12 +1423,13 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
      *
      * @param key the key to clear
      */
+    @Override
     public void clear(K key) {
         Map<K, List<ObjectTimestampPair<V>>> toDestroy = new HashMap<K, List<ObjectTimestampPair<V>>>();
 
         final ObjectQueue pool;
         synchronized (this) {
-            pool = (ObjectQueue)(_poolMap.remove(key));
+            pool = _poolMap.remove(key);
             if (pool == null) {
                 return;
             } else {
@@ -1479,6 +1481,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
      *
      * @return the total number of instances currently borrowed from this pool
      */
+    @Override
     public synchronized int getNumActive() {
         return _totalActive;
     }
@@ -1488,6 +1491,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
      *
      * @return the total number of instances currently idle in this pool
      */
+    @Override
     public synchronized int getNumIdle() {
         return _totalIdle;
     }
@@ -1499,8 +1503,9 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
      * @param key the key to query
      * @return the number of instances corresponding to the given <code>key</code> currently borrowed in this pool
      */
+    @Override
     public synchronized int getNumActive(Object key) {
-        final ObjectQueue pool = (ObjectQueue)(_poolMap.get(key));
+        final ObjectQueue pool = (_poolMap.get(key));
         return pool != null ? pool.activeCount : 0;
     }
 
@@ -1510,8 +1515,9 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
      * @param key the key to query
      * @return the number of instances corresponding to the given <code>key</code> currently idle in this pool
      */
+    @Override
     public synchronized int getNumIdle(Object key) {
-        final ObjectQueue pool = (ObjectQueue)(_poolMap.get(key));
+        final ObjectQueue pool = (_poolMap.get(key));
         return pool != null ? pool.queue.size() : 0;
     }
 
@@ -1533,6 +1539,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
      * @param obj instance to return to the keyed pool
      * @throws Exception
      */
+    @Override
     public void returnObject(K key, V obj) throws Exception {
         try {
             addObjectToPool(key, obj, true);
@@ -1546,7 +1553,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
                 // TODO: Correctness here depends on control in addObjectToPool.
                 // These two methods should be refactored, removing the
                 // "behavior flag", decrementNumActive, from addObjectToPool.
-                ObjectQueue pool = (ObjectQueue) (_poolMap.get(key));
+                ObjectQueue pool = (_poolMap.get(key));
                 if (pool != null) {
                     synchronized(this) {
                         pool.decrementActiveCount();
@@ -1589,7 +1596,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
         // (if testOnreturn is set)
         synchronized (this) {
             // grab the pool (list) of objects associated with the given key
-            pool = (ObjectQueue) (_poolMap.get(key));
+            pool = (_poolMap.get(key));
             // if it doesn't exist, create it
             if (null == pool) {
                 pool = new ObjectQueue();
@@ -1646,12 +1653,13 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
      * @param obj instance to invalidate
      * @throws Exception if an exception occurs destroying the object
      */
+    @Override
     public void invalidateObject(K key, V obj) throws Exception {
         try {
             _factory.destroyObject(key, obj);
         } finally {
             synchronized (this) {
-                ObjectQueue pool = (ObjectQueue) (_poolMap.get(key));
+                ObjectQueue pool = (_poolMap.get(key));
                 if (null == pool) {
                     pool = new ObjectQueue();
                     _poolMap.put(key, pool);
@@ -1673,6 +1681,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
      * @throws IllegalStateException when no {@link #setFactory factory} has been set or after {@link #close} has been
      * called on this pool.
      */
+    @Override
     public void addObject(K key) throws Exception {
         assertOpen();
         if (_factory == null) {
@@ -1705,7 +1714,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
      * @since Pool 1.3
      */
     public synchronized void preparePool(K key, boolean populateImmediately) {
-        ObjectQueue pool = (ObjectQueue)(_poolMap.get(key));
+        ObjectQueue pool = (_poolMap.get(key));
         if (null == pool) {
             pool = new ObjectQueue();
             _poolMap.put(key,pool);
@@ -1733,6 +1742,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
      * 
      * @throws Exception
      */
+    @Override
     public void close() throws Exception {
         super.close();
         synchronized (this) {
@@ -1760,6 +1770,8 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
      * @throws IllegalStateException if there are active (checked out) instances associated with this keyed object pool
      * @deprecated to be removed in version 2.0
      */
+    @Deprecated
+    @Override
     public void setFactory(KeyedPoolableObjectFactory<K,V> factory) throws IllegalStateException {
         Map<K, List<ObjectTimestampPair<V>>> toDestroy = new HashMap<K, List<ObjectTimestampPair<V>>>();
         final KeyedPoolableObjectFactory<K,V> oldFactory = _factory;
@@ -1937,7 +1949,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
                     if (_minIdle == 0) {
                         synchronized (this) {
                             ObjectQueue objectQueue =
-                                (ObjectQueue)_poolMap.get(key);
+                                _poolMap.get(key);
                             if (objectQueue != null &&
                                     objectQueue.queue.isEmpty()) {
                                 _poolMap.remove(key);
@@ -2036,7 +2048,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
         // Calculate current pool objects
         ObjectQueue pool;
         synchronized(this) {
-            pool = (ObjectQueue)(_poolMap.get(key));
+            pool = (_poolMap.get(key));
         }
         if (pool == null) {
             return;
@@ -2213,12 +2225,14 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
          * Object instance 
          * @deprecated this field will be made private and final in version 2.0
          */
+        @Deprecated
         V value;
         
         /**
          * timestamp
          * @deprecated this field will be made private and final in version 2.0
          */
+        @Deprecated
         long tstamp;
         //CHECKSTYLE: resume VisibilityModifier
 
@@ -2245,6 +2259,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
          * 
          * @return String representing this ObjectTimestampPair
          */
+        @Override
         public String toString() {
             return value + ";" + tstamp;
         }
@@ -2253,7 +2268,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
          * Compares this to another object by casting the argument to an
          * ObjectTimestampPair.
          * 
-         * @param obj object to cmpare
+         * @param other object to compare
          * @return result of comparison
          */
         public int compareTo(ObjectTimestampPair<V> other) {
@@ -2292,6 +2307,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
          * Run pool maintenance.  Evict objects qualifying for eviction and then
          * invoke {@link GenericKeyedObjectPool#ensureMinIdle()}.
          */
+        @Override
         public void run() {
             //Evict from the pool
             try {
