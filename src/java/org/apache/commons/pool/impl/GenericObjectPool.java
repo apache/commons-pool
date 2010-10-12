@@ -1040,6 +1040,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @return object instance
      * @throws NoSuchElementException if an instance cannot be returned
      */
+    @Override
     public T borrowObject() throws Exception {
         long starttime = System.currentTimeMillis();
         Latch latch = new Latch();
@@ -1171,22 +1172,22 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
             }
             // activate & validate the object
             try {
-                _factory.activateObject(latch.getPair().value);
+                _factory.activateObject(latch.getPair().getValue());
                 if(_testOnBorrow &&
-                        !_factory.validateObject(latch.getPair().value)) {
+                        !_factory.validateObject(latch.getPair().getValue())) {
                     throw new Exception("ValidateObject failed");
                 }
                 synchronized(this) {
                     _numInternalProcessing--;
                     _numActive++;
                 }
-                return latch.getPair().value;
+                return latch.getPair().getValue();
             }
             catch (Throwable e) {
                 PoolUtils.checkRethrow(e);
                 // object cannot be activated or is invalid
                 try {
-                    _factory.destroyObject(latch.getPair().value);
+                    _factory.destroyObject(latch.getPair().getValue());
                 } catch (Throwable e2) {
                     PoolUtils.checkRethrow(e2);
                     // cannot destroy broken object
@@ -1221,7 +1222,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
         for (;;) {
             if (!_pool.isEmpty() && !_allocationQueue.isEmpty()) {
                 Latch latch = _allocationQueue.removeFirst();
-                latch.setPair((ObjectTimestampPair<T>) _pool.removeFirst());
+                latch.setPair(_pool.removeFirst());
                 _numInternalProcessing++;
                 synchronized (latch) {
                     latch.notify();
@@ -1234,7 +1235,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
         // Second utilise any spare capacity to create new objects
         for(;;) {
             if((!_allocationQueue.isEmpty()) && (_maxActive < 0 || (_numActive + _numInternalProcessing) < _maxActive)) {
-                Latch latch = (Latch) _allocationQueue.removeFirst();
+                Latch latch = _allocationQueue.removeFirst();
                 latch.setMayCreate(true);
                 _numInternalProcessing++;
                 synchronized (latch) {
@@ -1252,6 +1253,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * 
      * @throws Exception if the configured {@link PoolableObjectFactory} throws an exception destroying obj
      */
+    @Override
     public void invalidateObject(T obj) throws Exception {
         try {
             if (_factory != null) {
@@ -1280,6 +1282,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * while removed items are being destroyed.</li>
      * <li>Exceptions encountered destroying idle instances are swallowed.</li></ul></p>
      */
+    @Override
     public void clear() {
         List<ObjectTimestampPair<T>> toDestroy = new ArrayList<ObjectTimestampPair<T>>();
 
@@ -1320,6 +1323,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      *
      * @return the number of instances currently borrowed from this pool
      */
+    @Override
     public synchronized int getNumActive() {
         return _numActive;
     }
@@ -1329,6 +1333,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      *
      * @return the number of instances currently idle in this pool
      */
+    @Override
     public synchronized int getNumIdle() {
         return _pool.size();
     }
@@ -1352,6 +1357,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * 
      * @param obj instance to return to the pool
      */
+    @Override
     public void returnObject(T obj) throws Exception {
         try {
             addObjectToPool(obj, true);
@@ -1448,6 +1454,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * 
      * @throws Exception
      */
+    @Override
     public void close() throws Exception {
         super.close();
         synchronized (this) {
@@ -1468,6 +1475,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @throws IllegalStateException when the factory cannot be set at this time
      * @deprecated to be removed in version 2.0
      */
+    @Deprecated
+    @Override
     public void setFactory(PoolableObjectFactory<T> factory) throws IllegalStateException {
         List<ObjectTimestampPair<T>> toDestroy = new ArrayList<ObjectTimestampPair<T>>();
         final PoolableObjectFactory<T> oldFactory = _factory;
@@ -1525,7 +1534,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
             }
 
             boolean removeObject = false;
-            final long idleTimeMilis = System.currentTimeMillis() - pair.tstamp;
+            final long idleTimeMilis = System.currentTimeMillis() - pair.getTstamp();
             if ((getMinEvictableIdleTimeMillis() > 0) &&
                     (idleTimeMilis > getMinEvictableIdleTimeMillis())) {
                 removeObject = true;
@@ -1537,17 +1546,17 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
             if(getTestWhileIdle() && !removeObject) {
                 boolean active = false;
                 try {
-                    _factory.activateObject(pair.value);
+                    _factory.activateObject(pair.getValue());
                     active = true;
                 } catch(Exception e) {
                     removeObject=true;
                 }
                 if(active) {
-                    if(!_factory.validateObject(pair.value)) {
+                    if(!_factory.validateObject(pair.getValue())) {
                         removeObject=true;
                     } else {
                         try {
-                            _factory.passivateObject(pair.value);
+                            _factory.passivateObject(pair.getValue());
                         } catch(Exception e) {
                             removeObject=true;
                         }
@@ -1557,7 +1566,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
 
             if (removeObject) {
                 try {
-                    _factory.destroyObject(pair.value);
+                    _factory.destroyObject(pair.getValue());
                 } catch(Exception e) {
                     // ignored
                 }
@@ -1627,6 +1636,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * Create an object, and place it into the pool.
      * addObject() is useful for "pre-loading" a pool with idle objects.
      */
+    @Override
     public void addObject() throws Exception {
         assertOpen();
         if (_factory == null) {
@@ -1681,7 +1691,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
         long time = System.currentTimeMillis();
         while(it.hasNext()) {
             ObjectTimestampPair<T> pair = it.next();
-            buf.append("\t").append(pair.value).append("\t").append(time - pair.tstamp).append("\n");
+            buf.append("\t").append(pair.getValue()).append("\t").append(time - pair.getTstamp()).append("\n");
         }
         return buf.toString();
     }
@@ -1713,6 +1723,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
          * Run pool maintenance.  Evict objects qualifying for eviction and then
          * invoke {@link GenericObjectPool#ensureMinIdle()}.
          */
+        @Override
         public void run() {
             try {
                 evict();
