@@ -71,6 +71,15 @@
       <property name="javac.deprecation" value="true"/>
       <property name="javac.target.version" value="1.5"/>
       <property name="javac.src.version" value="1.5"/>
+   	
+      <!-- Construct unit test classpath -->
+      <path id="test.classpath">
+         <pathelement location="${build.classes.dir}" /> 
+         <pathelement location="${build.test-classes.dir}" /> 
+         <pathelement path="${classpath}" /> 
+         <pathelement location="${junit.jar}"/>
+      </path>
+
    </target>
 
    <!-- ######################################################### -->
@@ -129,23 +138,14 @@
              optimize="${javac.optimize}"
              target="${javac.target.version}"
              source="${javac.src.version}">
-        <classpath>
-          <pathelement location="${build.classes.dir}" /> 
-          <pathelement location="${build.test-classes.dir}" /> 
-          <pathelement path="${classpath}" /> 
-          <pathelement location="${junit.jar}"/>
-        </classpath>
+         <classpath refid="test.classpath"/>
       </javac>
    </target>
 
    <target name="test" depends="compile-test" description="runs (junit) unit tests">
       <echo message="Because we need to sleep to test the eviction threads, this takes a little while (around 2 minutes)..."/>
       <junit printsummary="true" showoutput="true" fork="yes" haltonerror="${test.failonerror}">
-        <classpath>
-          <pathelement location="${build.classes.dir}" /> 
-          <pathelement location="${build.test-classes.dir}" /> 
-          <pathelement path="${classpath}" /> 
-        </classpath>
+        <classpath refid="test.classpath"/>
         <!-- If test.entry is defined, run a single test, otherwise run all valid tests -->
         <test name="${test.entry}" if="test.entry"/>
         <batchtest todir="${build.dir}/ant-reports" unless="test.entry">
@@ -177,7 +177,6 @@
             <attribute name="Implementation-Vendor" value="Apache Software Foundation"/>
             <attribute name="X-Compile-Source-JDK" value="${javac.src.version}"/>
             <attribute name="X-Compile-Target-JDK" value="${javac.target.version}"/>
-
          </manifest>
       </jar>
    </target>
