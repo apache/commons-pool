@@ -1228,14 +1228,6 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertEquals("should be one idle", 1, pool.getNumIdle());
         assertEquals("should be zero active", 0, pool.getNumActive());
 
-        ObjectPool<Object> op = new GenericObjectPool<Object>(new SimpleFactory());
-        try {
-            op.addObject();
-            fail("Expected IllegalStateException when there is no factory.");
-        } catch (IllegalStateException ise) {
-            //expected
-        }
-        op.close();
     }
     
     protected GenericObjectPool<Object> pool = null;
