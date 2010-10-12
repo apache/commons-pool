@@ -172,8 +172,7 @@ import org.apache.commons.pool.impl.GenericKeyedObjectPool.ObjectTimestampPair;
  * </ul>
  * <p>
  * GenericObjectPool is not usable without a {@link PoolableObjectFactory}.  A
- * non-<code>null</code> factory must be provided either as a constructor argument
- * or via a call to {@link #setFactory} before the pool is used.
+ * non-<code>null</code> factory must be provided as a constructor argument
  * <p>
  * Implementation note: To prevent possible deadlocks, care has been taken to
  * ensure that no call to a factory method will occur within a synchronization
