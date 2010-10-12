@@ -497,26 +497,27 @@ public class TestPoolUtils extends TestCase {
     }
 
     public void testPrefillKeyedObjectPoolCollection() throws Exception {
+        // FIXME any reason why when using Object as K the methods signature match?
         try {
-            final KeyedObjectPool<Object,Object> pool = (KeyedObjectPool<Object,Object>)createProxy(KeyedObjectPool.class, (List)null);
-            PoolUtils.prefill(pool, null, 1);
+            final KeyedObjectPool<String,String> pool = (KeyedObjectPool<String,String>)createProxy(KeyedObjectPool.class, (List)null);
+            PoolUtils.prefill(pool, (Collection<String>)null, 1);
             fail("PoolUtils.prefill(KeyedObjectPool,Collection,int) must not accept null keys.");
         } catch (IllegalArgumentException iae) {
             // expected
         }
 
         final List<String> calledMethods = new ArrayList<String>();
-        final KeyedObjectPool<Object,Object> pool = (KeyedObjectPool<Object,Object>)createProxy(KeyedObjectPool.class, calledMethods);
+        final KeyedObjectPool<String,Object> pool = (KeyedObjectPool<String,Object>)createProxy(KeyedObjectPool.class, calledMethods);
 
-        final Set<Object> keys = new HashSet<Object>();
+        final Set<String> keys = new HashSet<String>();
         PoolUtils.prefill(pool, keys, 0);
         final List<String> expectedMethods = new ArrayList<String>();
         assertEquals(expectedMethods, calledMethods);
 
         calledMethods.clear();
-        keys.add(new Integer(1));
+        keys.add("one");
         keys.add("two");
-        keys.add(new Double(3.1415926));
+        keys.add("three");
         PoolUtils.prefill(pool, keys, 3);
         for (int i=0; i < keys.size() * 3; i++) {
             expectedMethods.add("addObject");
