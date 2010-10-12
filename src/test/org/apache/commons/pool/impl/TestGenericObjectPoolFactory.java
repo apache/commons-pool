@@ -35,6 +35,7 @@ public class TestGenericObjectPoolFactory extends TestObjectPoolFactory {
         super(name);
     }
 
+    @Override
     protected ObjectPoolFactory<Object> makeFactory(final PoolableObjectFactory<Object> objectFactory) throws UnsupportedOperationException {
         return new GenericObjectPoolFactory<Object>(objectFactory);
     }
