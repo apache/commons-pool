@@ -39,47 +39,19 @@ import org.apache.commons.pool.PoolUtils;
  * @since Pool 1.0
  */
 public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<T> {
-    /**
-     * Create a <code>SoftReferenceObjectPool</code> without a factory.
-     * {@link #setFactory(PoolableObjectFactory) setFactory} should be called
-     * before any attempts to use the pool are made.
-     * Generally speaking you should prefer the {@link #SoftReferenceObjectPool(PoolableObjectFactory)} constructor.
-     *
-     * @see #SoftReferenceObjectPool(PoolableObjectFactory)
-     * @deprecated to be removed in pool 2.0.  Use {@link #SoftReferenceObjectPool(PoolableObjectFactory)}.
-     */
-    public SoftReferenceObjectPool() {
-        _pool = new ArrayList<SoftReference<T>>();
-        _factory = null;
-    }
 
     /**
      * Create a <code>SoftReferenceObjectPool</code> with the specified factory.
      *
-     * @param factory object factory to use.
+     * @param factory object factory to use, not {@code null}
+     * @throws IllegalArgumentException if the factory is null
      */
     public SoftReferenceObjectPool(PoolableObjectFactory<T> factory) {
+        if (factory == null) {
+            throw new IllegalArgumentException("factory must not be null");
+        }
         _pool = new ArrayList<SoftReference<T>>();
         _factory = factory;
-    }
-
-    /**
-     * Create a <code>SoftReferenceObjectPool</code> with the specified factory and initial idle object count.
-     *
-     * @param factory object factory to use.
-     * @param initSize initial size to attempt to prefill the pool.
-     * @throws Exception when there is a problem prefilling the pool.
-     * @throws IllegalArgumentException when <code>factory</code> is <code>null</code>.
-     * @deprecated because this is a SoftReference pool, prefilled idle obejects may be garbage collected before they are used.
-     *      To be removed in Pool 2.0.
-     */
-    public SoftReferenceObjectPool(PoolableObjectFactory<T> factory, int initSize) throws Exception, IllegalArgumentException {
-        if (factory == null) {
-            throw new IllegalArgumentException("factory required to prefill the pool.");
-        }
-        _pool = new ArrayList<SoftReference<T>>(initSize);
-        _factory = factory;
-        PoolUtils.prefill(this, initSize);
     }
 
     /**
@@ -347,5 +319,5 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements Obj
     private final ReferenceQueue<T> refQueue = new ReferenceQueue<T>();
 
     /** Number of active objects. */
-    private int _numActive = 0;
+    private int _numActive = 0; // 
 }
