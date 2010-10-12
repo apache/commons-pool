@@ -37,14 +37,17 @@ public class TestStackObjectPool extends TestBaseObjectPool {
         super(testName);
     }
 
+    @Override
     protected ObjectPool<Object> makeEmptyPool(int mincap) {
         return new StackObjectPool<Object>(new SimpleFactory());
     }
 
+    @Override
     protected ObjectPool<Object> makeEmptyPool(final PoolableObjectFactory<Object> factory) {
         return new StackObjectPool<Object>(factory);
     }
 
+    @Override
     protected Object getNthObject(int n) {
         return String.valueOf(n);
     }
@@ -106,6 +109,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
     /**
      * @deprecated - to be removed in pool 2.0
      */
+    @Override
     public void testSetFactory() throws Exception {
         ObjectPool<Object> pool = new StackObjectPool<Object>();
         try {
@@ -174,7 +178,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
                 try {
                     k++;
                     object = pool.borrowObject();
-                    if (((Integer) object).intValue() % 2 == 0) {
+                    if (object.intValue() % 2 == 0) {
                         fail("Expecting NoSuchElementException");
                     } else {
                         obj[i] = object; 
@@ -274,10 +278,10 @@ public class TestStackObjectPool extends TestBaseObjectPool {
         ObjectPool<Integer> pool = new StackObjectPool<Integer>(factory, 3);
 
         // borrow more objects than the pool can hold
-        Integer i0 = (Integer)pool.borrowObject();
-        Integer i1 = (Integer)pool.borrowObject();
-        Integer i2 = (Integer)pool.borrowObject();
-        Integer i3 = (Integer)pool.borrowObject();
+        Integer i0 = pool.borrowObject();
+        Integer i1 = pool.borrowObject();
+        Integer i2 = pool.borrowObject();
+        Integer i3 = pool.borrowObject();
 
         // tests
         // return as many as the pool will hold.
@@ -293,7 +297,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
         assertEquals("One object should have been destroyed.", 1, factory.getDestroyed().size());
 
         // check to see what object was destroyed
-        Integer d = (Integer)factory.getDestroyed().get(0);
+        Integer d = factory.getDestroyed().get(0);
         assertEquals("Destoryed object should be the stalest object.", i0, d);
     }
     
@@ -460,13 +464,14 @@ public class TestStackObjectPool extends TestBaseObjectPool {
      * Verifies close contract - idle instances are destroyed, returning instances
      * are destroyed, add/borrowObject throw IllegalStateException.
      */
+    @Override
     public void testClose() throws Exception {
         SelectiveFactory factory = new SelectiveFactory();
         ObjectPool<Integer> pool = new StackObjectPool<Integer>(factory);
         pool.addObject(); // 0
         pool.addObject(); // 1
         pool.addObject(); // 2
-        Integer two = (Integer) pool.borrowObject();
+        Integer two = pool.borrowObject();
         assertEquals(2, two.intValue());
         pool.close();
         assertEquals(0, pool.getNumIdle());
@@ -529,20 +534,20 @@ public class TestStackObjectPool extends TestBaseObjectPool {
         }
         public void destroyObject(Integer obj) {
             if (throwOnDestroy) {
-                final Integer integer = (Integer)obj;
+                final Integer integer = obj;
                 throw new IntegerFactoryException("destroyObject", integer.intValue());
             }
             destroyed.add(obj);
         }
         public boolean validateObject(Integer obj) {
             if (throwOnValidate) {
-                final Integer integer = (Integer)obj;
+                final Integer integer = obj;
                 throw new IntegerFactoryException("validateObject", integer.intValue());
             }
             if (validateSelectively) {
                 // only odd objects are valid
                 if(obj instanceof Integer) {
-                    return ((((Integer)obj).intValue() % 2) == 1);
+                    return (((obj).intValue() % 2) == 1);
                 } else {
                     return false;
                 }
@@ -551,17 +556,17 @@ public class TestStackObjectPool extends TestBaseObjectPool {
         }
         public void activateObject(Integer obj) {
             if (throwOnActivate) {
-                final Integer integer = (Integer)obj;
+                final Integer integer = obj;
                 throw new IntegerFactoryException("activateObject", integer.intValue());
             }
         }
         public void passivateObject(Integer obj) { 
             if (throwOnPassivate) {
-                final Integer integer = (Integer)obj;
+                final Integer integer = obj;
                 throw new IntegerFactoryException("passivateObject", integer.intValue());
             }
             if (passivateSelectively) {
-                final Integer integer = (Integer)obj;
+                final Integer integer = obj;
                 if (integer.intValue() % 3 == 0) {
                     throw new IntegerFactoryException("passivateObject", integer.intValue());
                 }
@@ -615,10 +620,12 @@ public class TestStackObjectPool extends TestBaseObjectPool {
         }
     }
 
+    @Override
     protected boolean isLifo() {
         return true;
     }
 
+    @Override
     protected boolean isFifo() {
         return false;
     }

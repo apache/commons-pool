@@ -39,6 +39,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         super(testName);
     }
 
+    @Override
     protected ObjectPool<Object> makeEmptyPool(int mincap) {
        GenericObjectPool<Object> pool = new GenericObjectPool<Object>(new SimpleFactory());
        pool.setMaxActive(mincap);
@@ -46,19 +47,23 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
        return pool;
     }
 
+    @Override
     protected ObjectPool<Object> makeEmptyPool(final PoolableObjectFactory<Object> factory) {
         return new GenericObjectPool<Object>(factory);
     }
 
+    @Override
     protected Object getNthObject(int n) {
         return String.valueOf(n);
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         pool = new GenericObjectPool<Object>(new SimpleFactory());
     }
 
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
         pool.clear();
@@ -991,6 +996,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             public TimeTest() {
                 createTime = System.currentTimeMillis();
             }
+            @Override
             public TimeTest makeObject() throws Exception {
                 return new TimeTest();
             }
@@ -1012,7 +1018,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         Long[] creationTime = new Long[5] ;
         for(int i=0;i<5;i++) {
             active[i] = pool.borrowObject();
-            creationTime[i] = new Long(((TimeTest)active[i]).getCreateTime());
+            creationTime[i] = new Long(active[i].getCreateTime());
         }
         
         for(int i=0;i<5;i++) {
@@ -1486,10 +1492,12 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             }
         }
     }
+    @Override
     protected boolean isLifo() {
         return true;
     }
 
+    @Override
     protected boolean isFifo() {
         return false;
     }
@@ -1608,6 +1616,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             _thrown = null;
         }
 
+        @Override
         public void run() {
             try {
                 preborrow = System.currentTimeMillis();
