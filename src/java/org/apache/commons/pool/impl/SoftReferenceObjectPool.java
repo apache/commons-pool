@@ -82,18 +82,14 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements Obj
         boolean newlyCreated = false;
         while(null == obj) {
             if(_pool.isEmpty()) {
-                if(null == _factory) {
-                    throw new NoSuchElementException();
-                } else {
-                    newlyCreated = true;
-                    obj = _factory.makeObject();
-                }
+                newlyCreated = true;
+                obj = _factory.makeObject();
             } else {
                 SoftReference<T> ref = _pool.remove(_pool.size() - 1);
                 obj = ref.get();
                 ref.clear(); // prevent this ref from being enqueued with refQueue.
             }
-            if (null != _factory && null != obj) {
+            if (null != obj) {
                 try {
                     _factory.activateObject(obj);
                     if (!_factory.validateObject(obj)) {
@@ -137,16 +133,14 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements Obj
      */
     @Override
     public synchronized void returnObject(T obj) throws Exception {
-        boolean success = !isClosed();
-        if (_factory != null) {
-            if(!_factory.validateObject(obj)) {
+    boolean success = !isClosed();
+        if(!_factory.validateObject(obj)) {
+            success = false;
+        } else {
+            try {
+                _factory.passivateObject(obj);
+            } catch(Exception e) {
                 success = false;
-            } else {
-                try {
-                    _factory.passivateObject(obj);
-                } catch(Exception e) {
-                    success = false;
-                }
             }
         }
 
@@ -157,7 +151,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements Obj
         }
         notifyAll(); // _numActive has changed
 
-        if (shouldDestroy && _factory != null) {
+        if (shouldDestroy) {
             try {
                 _factory.destroyObject(obj);
             } catch(Exception e) {
@@ -172,9 +166,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements Obj
     @Override
     public synchronized void invalidateObject(T obj) throws Exception {
         _numActive--;
-        if (_factory != null) {
-            _factory.destroyObject(obj);
-        }
+        _factory.destroyObject(obj);
         notifyAll(); // _numActive has changed
     }
 
@@ -195,9 +187,6 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements Obj
     @Override
     public synchronized void addObject() throws Exception {
         assertOpen();
-        if (_factory == null) {
-            throw new IllegalStateException("Cannot add objects without a factory.");
-        }
         T obj = _factory.makeObject();
 
         boolean success = true;
@@ -248,16 +237,14 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements Obj
      */
     @Override
     public synchronized void clear() {
-        if (null != _factory) {
-            for (SoftReference<T> element : _pool) {
-                try {
-                    T obj = element.get();
-                    if (null != obj) {
-                        _factory.destroyObject(obj);
-                    }
-                } catch (Exception e) {
-                    // ignore error, keep destroying the rest
+        for (SoftReference<T> element : _pool) {
+            try {
+                T obj = element.get();
+                if (null != obj) {
+                    _factory.destroyObject(obj);
                 }
+            } catch (Exception e) {
+                // ignore error, keep destroying the rest
             }
         }
         _pool.clear();
@@ -301,7 +288,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements Obj
      * @return the factory
      * @since 1.5.5
      */
-    public synchronized PoolableObjectFactory<T> getFactory() { 
+    public PoolableObjectFactory<T> getFactory() { 
         return _factory;
     }
 
@@ -319,5 +306,5 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements Obj
     private final ReferenceQueue<T> refQueue = new ReferenceQueue<T>();
 
     /** Number of active objects. */
-    private int _numActive = 0; // 
+    private int _numActive = 0; // @GuardedBy("this")
 }
