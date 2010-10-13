@@ -434,10 +434,10 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
     private void incrementActiveCount(K key) {
         _totActive++;
         Integer old = _activeCount.get(key);
-        if(null == old) {
-            _activeCount.put(key,new Integer(1));
+        if (null == old) {
+            _activeCount.put(key, Integer.valueOf(1));
         } else {
-            _activeCount.put(key,new Integer(old.intValue() + 1));
+            _activeCount.put(key, Integer.valueOf(old.intValue() + 1));
         }
     }
 
@@ -455,7 +455,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
         } else if(active.intValue() <= 1) {
             _activeCount.remove(key);
         } else {
-            _activeCount.put(key, new Integer(active.intValue() - 1));
+            _activeCount.put(key, Integer.valueOf(active.intValue() - 1));
         }
     }
 
