@@ -490,7 +490,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
      * @return the initial capacity of each pool.
      * @since 1.5.5
      */
-    public synchronized int getInitSleepingCapacity() {
+    public int getInitSleepingCapacity() {
         return _initSleepingCapacity;
     }
 
@@ -530,7 +530,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
     /**
      *  My named-set of pools.
      */
-    private HashMap<K,Stack<V>> _pools = null;
+    private final HashMap<K,Stack<V>> _pools;
 
     /**
      * My {@link KeyedPoolableObjectFactory}.
@@ -540,26 +540,26 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
     /**
      *  The cap on the number of "sleeping" instances in <code>each</code> pool.
      */
-    private int _maxSleeping = DEFAULT_MAX_SLEEPING;
+    private int _maxSleeping = DEFAULT_MAX_SLEEPING; // @GuardedBy("this")
 
     /**
      * The initial capacity of each pool.
      */
-    private int _initSleepingCapacity = DEFAULT_INIT_SLEEPING_CAPACITY;
+    private final int _initSleepingCapacity;
 
     /**
      * Total number of object borrowed and not yet returned for all pools.
      */
-    private int _totActive = 0;
+    private int _totActive = 0; // @GuardedBy("this")
 
     /**
      * Total number of objects "sleeping" for all pools.
      */
-    private int _totIdle = 0;
+    private int _totIdle = 0; // @GuardedBy("this")
 
     /**
      * Number of active objects borrowed and not yet returned by pool.
      */
-    private HashMap<K,Integer> _activeCount = null;
+    private final HashMap<K,Integer> _activeCount; // @GuardedBy("this")
 
 }
