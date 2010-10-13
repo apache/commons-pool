@@ -2504,7 +2504,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
     private long _minEvictableIdleTimeMillis = DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 
     /** My hash of pools (ObjectQueue). */
-    private Map<K,ObjectQueue> _poolMap = null;
+    private final Map<K,ObjectQueue> _poolMap;
 
     /** The total number of active instances. */
     private int _totalActive = 0;
@@ -2531,7 +2531,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
      * A cursorable list of my pools.
      * @see GenericKeyedObjectPool.Evictor#run
      */
-    private CursorableLinkedList<K> _poolList = null;
+    private final CursorableLinkedList<K> _poolList;
 
     /** Eviction cursor (over instances within-key) */
     private CursorableLinkedList<ObjectTimestampPair<V>>.Cursor _evictionCursor = null;
@@ -2547,6 +2547,6 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
      * that objects can be allocated in the order in which the threads requested
      * them.
      */
-    private LinkedList<Latch> _allocationQueue = new LinkedList<Latch>();
+    private final LinkedList<Latch> _allocationQueue = new LinkedList<Latch>();
 
 }
