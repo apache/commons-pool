@@ -17,9 +17,12 @@
 
 package org.apache.commons.pool.impl;
 
+import static org.junit.Assert.assertEquals;
+
 import org.apache.commons.pool.KeyedObjectPoolFactory;
 import org.apache.commons.pool.KeyedPoolableObjectFactory;
 import org.apache.commons.pool.TestKeyedObjectPoolFactory;
+import org.junit.Test;
 
 /**
  * Tests for {@link StackKeyedObjectPoolFactory}.
@@ -28,15 +31,12 @@ import org.apache.commons.pool.TestKeyedObjectPoolFactory;
  * @version $Revision$ $Date$
  */
 public class TestStackKeyedObjectPoolFactory extends TestKeyedObjectPoolFactory {
-    public TestStackKeyedObjectPoolFactory(final String name) {
-        super(name);
-    }
-
     @Override
     protected KeyedObjectPoolFactory<Object,Object> makeFactory(final KeyedPoolableObjectFactory<Object,Object> objectFactory) throws UnsupportedOperationException {
         return new StackKeyedObjectPoolFactory<Object,Object>(objectFactory);
     }
 
+    @Test
     public void testConstructors() throws Exception {
         StackKeyedObjectPoolFactory<Object,Object> factory = new StackKeyedObjectPoolFactory<Object,Object>(createObjectFactory());
         StackKeyedObjectPool<Object,Object> pool = (StackKeyedObjectPool<Object,Object>)factory.createPool();

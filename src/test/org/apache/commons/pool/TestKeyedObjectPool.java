@@ -16,14 +16,18 @@
  */
 package org.apache.commons.pool;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
+
+import junit.framework.TestCase;
 
 import org.apache.commons.pool.impl.GenericKeyedObjectPool;
 import org.apache.commons.pool.impl.StackKeyedObjectPool;
+import org.junit.Test;
 
 /**
  * Abstract {@link TestCase} for {@link ObjectPool} implementations.
@@ -31,11 +35,7 @@ import org.apache.commons.pool.impl.StackKeyedObjectPool;
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  */
-public abstract class TestKeyedObjectPool extends TestCase {
-    public TestKeyedObjectPool(String testName) {
-        super(testName);
-    }
-
+public abstract class TestKeyedObjectPool {
     /**
      * Create an <code>KeyedObjectPool</code> with the specified factory.
      * The pool should be in a default configuration and conform to the expected
@@ -46,6 +46,7 @@ public abstract class TestKeyedObjectPool extends TestCase {
 
     protected final String KEY = "key";
 
+    @Test
     public void testClosedPoolBehavior() throws Exception {
         final KeyedObjectPool<Object,Object> pool;
         try {
@@ -95,6 +96,7 @@ public abstract class TestKeyedObjectPool extends TestCase {
     private final Integer ZERO = new Integer(0);
     private final Integer ONE = new Integer(1);
 
+    @Test
     public void testKPOFAddObjectUsage() throws Exception {
         final FailingKeyedPoolableObjectFactory factory = new FailingKeyedPoolableObjectFactory();
         final KeyedObjectPool<Object,Object> pool;
@@ -149,6 +151,7 @@ public abstract class TestKeyedObjectPool extends TestCase {
         assertEquals(expectedMethods, factory.getMethodCalls());
     }
 
+    @Test
     public void testKPOFBorrowObjectUsages() throws Exception {
         final FailingKeyedPoolableObjectFactory factory = new FailingKeyedPoolableObjectFactory();
         final KeyedObjectPool<Object,Object> pool;
@@ -235,6 +238,7 @@ public abstract class TestKeyedObjectPool extends TestCase {
         assertEquals(expectedMethods, factory.getMethodCalls());
     }
 
+    @Test
     public void testKPOFReturnObjectUsages() throws Exception {
         final FailingKeyedPoolableObjectFactory factory = new FailingKeyedPoolableObjectFactory();
         final KeyedObjectPool<Object,Object> pool;
@@ -299,6 +303,7 @@ public abstract class TestKeyedObjectPool extends TestCase {
         }
     }
 
+    @Test
     public void testKPOFInvalidateObjectUsages() throws Exception {
         final FailingKeyedPoolableObjectFactory factory = new FailingKeyedPoolableObjectFactory();
         final KeyedObjectPool<Object,Object> pool;
@@ -336,6 +341,7 @@ public abstract class TestKeyedObjectPool extends TestCase {
         assertEquals(expectedMethods, factory.getMethodCalls());
     }
 
+    @Test
     public void testKPOFClearUsages() throws Exception {
         final FailingKeyedPoolableObjectFactory factory = new FailingKeyedPoolableObjectFactory();
         final KeyedObjectPool<Object,Object> pool;
@@ -357,6 +363,7 @@ public abstract class TestKeyedObjectPool extends TestCase {
         pool.clear();
     }
 
+    @Test
     public void testKPOFCloseUsages() throws Exception {
         final FailingKeyedPoolableObjectFactory factory = new FailingKeyedPoolableObjectFactory();
         KeyedObjectPool<Object,Object> pool;
@@ -380,6 +387,7 @@ public abstract class TestKeyedObjectPool extends TestCase {
         pool.close();
     }
 
+    @Test
     public void testToString() throws Exception {
         final FailingKeyedPoolableObjectFactory factory = new FailingKeyedPoolableObjectFactory();
         try {

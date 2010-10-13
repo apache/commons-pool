@@ -27,10 +27,6 @@ import org.apache.commons.pool.TestBaseObjectPool;
  * @version $Revision$ $Date$
  */
 public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
-    public TestSoftReferenceObjectPool(String testName) {
-        super(testName);
-    }
-
     @Override
     protected ObjectPool<Object> makeEmptyPool(int cap) {
         return new SoftReferenceObjectPool<Object>(

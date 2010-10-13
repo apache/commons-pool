@@ -17,11 +17,14 @@
 
 package org.apache.commons.pool.impl;
 
+import static org.junit.Assert.assertEquals;
+
 import org.apache.commons.pool.MethodCallPoolableObjectFactory;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.ObjectPoolFactory;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.TestObjectPoolFactory;
+import org.junit.Test;
 
 /**
  * Tests for {@link StackObjectPoolFactory}.
@@ -30,15 +33,12 @@ import org.apache.commons.pool.TestObjectPoolFactory;
  * @version $Revision$ $Date$
  */
 public class TestStackObjectPoolFactory extends TestObjectPoolFactory {
-    public TestStackObjectPoolFactory(final String name) {
-        super(name);
-    }
-
     @Override
     protected ObjectPoolFactory<Object> makeFactory(final PoolableObjectFactory<Object> objectFactory) throws UnsupportedOperationException {
         return new StackObjectPoolFactory<Object>(objectFactory);
     }
 
+    @Test
     public void testConstructors() throws Exception {
         StackObjectPoolFactory<Object> factory = new StackObjectPoolFactory<Object>(new MethodCallPoolableObjectFactory(), 1);
         ObjectPool<Object> pool = factory.createPool();

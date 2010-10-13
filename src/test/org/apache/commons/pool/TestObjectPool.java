@@ -16,6 +16,10 @@
  */
 package org.apache.commons.pool;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -26,6 +30,7 @@ import junit.framework.TestCase;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.commons.pool.impl.SoftReferenceObjectPool;
 import org.apache.commons.pool.impl.StackObjectPool;
+import org.junit.Test;
 
 /**
  * Abstract {@link TestCase} for {@link ObjectPool} implementations.
@@ -33,11 +38,7 @@ import org.apache.commons.pool.impl.StackObjectPool;
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  */
-public abstract class TestObjectPool extends TestCase {
-    public TestObjectPool(String testName) {
-        super(testName);
-    }
-
+public abstract class TestObjectPool {
     /**
      * Create an <code>ObjectPool</code> with the specified factory.
      * The pool should be in a default configuration and conform to the expected
@@ -47,6 +48,7 @@ public abstract class TestObjectPool extends TestCase {
      */
     protected abstract ObjectPool<Object> makeEmptyPool(PoolableObjectFactory<Object> factory) throws UnsupportedOperationException;
 
+    @Test
     public void testClosedPoolBehavior() throws Exception {
         final ObjectPool<Object> pool;
         try {
@@ -101,6 +103,7 @@ public abstract class TestObjectPool extends TestCase {
     private final Integer ZERO = new Integer(0);
     private final Integer ONE = new Integer(1);
 
+    @Test
     public void testPOFAddObjectUsage() throws Exception {
         final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
         final ObjectPool<Object> pool;
@@ -163,6 +166,7 @@ public abstract class TestObjectPool extends TestCase {
         assertEquals(expectedMethods, factory.getMethodCalls());
     }
 
+    @Test
     public void testPOFBorrowObjectUsages() throws Exception {
         final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
         final ObjectPool<Object> pool;
@@ -245,6 +249,7 @@ public abstract class TestObjectPool extends TestCase {
         assertTrue(factory.getMethodCalls().containsAll(expectedMethods));
     }
 
+    @Test
     public void testPOFReturnObjectUsages() throws Exception {
         final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
         final ObjectPool<Object> pool;
@@ -306,6 +311,7 @@ public abstract class TestObjectPool extends TestCase {
         pool.returnObject(obj);
     }
 
+    @Test
     public void testPOFInvalidateObjectUsages() throws Exception {
         final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
         final ObjectPool<Object> pool;
@@ -343,6 +349,7 @@ public abstract class TestObjectPool extends TestCase {
         assertEquals(expectedMethods, factory.getMethodCalls());
     }
 
+    @Test
     public void testPOFClearUsages() throws Exception {
         final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
         final ObjectPool<Object> pool;
@@ -364,6 +371,7 @@ public abstract class TestObjectPool extends TestCase {
         pool.clear();
     }
 
+    @Test
     public void testPOFCloseUsages() throws Exception {
         final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
         ObjectPool<Object> pool;
@@ -391,6 +399,7 @@ public abstract class TestObjectPool extends TestCase {
         pool.close();
     }
 
+    @Test
     public void testToString() {
         ObjectPool<Object> pool;
         try {

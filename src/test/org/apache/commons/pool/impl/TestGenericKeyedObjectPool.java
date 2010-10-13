@@ -17,6 +17,13 @@
 
 package org.apache.commons.pool.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -29,16 +36,15 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
 import org.apache.commons.pool.TestBaseKeyedObjectPool;
 import org.apache.commons.pool.VisitTracker;
 import org.apache.commons.pool.VisitTrackerFactory;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author Rodney Waldhoff
  * @version $Revision$ $Date$
  */
 public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
-    public TestGenericKeyedObjectPool(String testName) {
-        super(testName);
-    }
-
     @Override
     protected KeyedObjectPool<Object,Object> makeEmptyPool(int mincapacity) {
         GenericKeyedObjectPool <Object,Object>pool = new GenericKeyedObjectPool<Object,Object>(
@@ -84,12 +90,12 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     private final Integer one = new Integer(1);
     private final Integer two = new Integer(2);
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() {
         pool = new GenericKeyedObjectPool<String,String>(new SimpleFactory<String>());
     }
 
+    @After
     @Override
     public void tearDown() throws Exception {
         super.tearDown();
@@ -98,6 +104,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         pool = null;
     }
 
+    @Test
     public void testNegativeMaxActive() throws Exception {
         pool.setMaxActive(-1);
         pool.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
@@ -106,6 +113,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         pool.returnObject("",obj);
     }
 
+    @Test
     public void testNumActiveNumIdle2() throws Exception {
         assertEquals(0,pool.getNumActive());
         assertEquals(0,pool.getNumIdle());
@@ -155,6 +163,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals(2,pool.getNumIdle("B"));
     }
 
+    @Test
     public void testMaxIdle() throws Exception {
         pool.setMaxActive(100);
         pool.setMaxIdle(8);
@@ -189,6 +198,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
              
     }
 
+    @Test
     public void testMaxActive() throws Exception {
         pool.setMaxActive(3);
         pool.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
@@ -204,6 +214,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         }
     }
 
+    @Test
     public void testMaxActiveZero() throws Exception {
         pool.setMaxActive(0);
         pool.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
@@ -216,6 +227,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         }
     }
     
+    @Test
     public void testWhenExhaustedGrow() throws Exception {
         pool.setMaxActive(1);
         pool.setMaxTotal(1);
@@ -225,6 +237,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         }
     }
 
+    @Test
     public void testMaxTotal() throws Exception {
         pool.setMaxActive(2);
         pool.setMaxTotal(3);
@@ -266,6 +279,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
                 pool.getMaxTotal());
     }
 
+    @Test
     public void testMaxTotalZero() throws Exception {
         pool.setMaxTotal(0);
         pool.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
@@ -278,6 +292,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         }
     }
 
+    @Test
     public void testMaxTotalLRU() throws Exception {
         pool.setMaxActive(2);
         pool.setMaxTotal(3);
@@ -327,6 +342,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertSame(o4, o7);
     }
 
+    @Test
     public void testSettersAndGetters() throws Exception {
         GenericKeyedObjectPool<String,String> pool = new GenericKeyedObjectPool<String,String>(new SimpleFactory<String>());
         {
@@ -381,6 +397,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         }
     }
 
+    @Test
     public void testEviction() throws Exception {
         pool.setMaxIdle(500);
         pool.setMaxActive(500);
@@ -430,6 +447,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals("Should be zero idle, found " + pool.getNumIdle(""),0,pool.getNumIdle(""));
     }
 
+    @Test
     public void testEviction2() throws Exception {
         pool.setMaxIdle(500);
         pool.setMaxActive(500);

@@ -17,12 +17,17 @@
 
 package org.apache.commons.pool.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.NoSuchElementException;
 
 import org.apache.commons.pool.MethodCallPoolableObjectFactory;
 import org.apache.commons.pool.ObjectPoolFactory;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.TestObjectPoolFactory;
+import org.junit.Test;
 
 /**
  * Tests for {@link GenericObjectPoolFactory}.
@@ -31,15 +36,12 @@ import org.apache.commons.pool.TestObjectPoolFactory;
  * @version $Revision$ $Date$
  */
 public class TestGenericObjectPoolFactory extends TestObjectPoolFactory {
-    public TestGenericObjectPoolFactory(final String name) {
-        super(name);
-    }
-
     @Override
     protected ObjectPoolFactory<Object> makeFactory(final PoolableObjectFactory<Object> objectFactory) throws UnsupportedOperationException {
         return new GenericObjectPoolFactory<Object>(objectFactory);
     }
 
+    @Test
     public void testConstructors() throws Exception {
         GenericObjectPoolFactory<Object> factory = new GenericObjectPoolFactory<Object>(new MethodCallPoolableObjectFactory());
         GenericObjectPool<Object> pool;

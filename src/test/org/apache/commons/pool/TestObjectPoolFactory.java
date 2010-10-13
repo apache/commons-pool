@@ -17,7 +17,8 @@
 
 package org.apache.commons.pool;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
 
 /**
  * Unit tests for all {@link ObjectPoolFactory}.
@@ -25,11 +26,7 @@ import junit.framework.TestCase;
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  */
-public abstract class TestObjectPoolFactory extends TestCase {
-    protected TestObjectPoolFactory(final String name) {
-        super(name);
-    }
-
+public abstract class TestObjectPoolFactory {
     /**
      * @throws UnsupportedOperationException when this is unsupported by this PoolableObjectFactory type.
      */
@@ -42,6 +39,7 @@ public abstract class TestObjectPoolFactory extends TestCase {
      */
     protected abstract ObjectPoolFactory<Object> makeFactory(PoolableObjectFactory<Object> objectFactory) throws UnsupportedOperationException;
 
+    @Test
     public void testCreatePool() throws Exception {
         final ObjectPoolFactory<Object> factory;
         try {
@@ -53,6 +51,7 @@ public abstract class TestObjectPoolFactory extends TestCase {
         pool.close();
     }
 
+    @Test
     public void testToString() {
         final ObjectPoolFactory<Object> factory;
         try {

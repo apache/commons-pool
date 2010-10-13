@@ -16,17 +16,16 @@
  */
 package org.apache.commons.pool;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
 
 /**
  * @author Rodney Waldhoff
  * @version $Revision$ $Date$ 
  */
-public class TestBasePoolableObjectFactory extends TestCase {
-    public TestBasePoolableObjectFactory(String testName) {
-        super(testName);
-    }
-
+public class TestBasePoolableObjectFactory {
+    @Test
     public void testDefaultMethods() throws Exception {
         PoolableObjectFactory<Object> factory = new BasePoolableObjectFactory<Object>() { 
             @Override
