@@ -198,19 +198,20 @@ public class TestCursorableLinkedList {
         assertEquals(10,ia.length);
         assertNotNull(ia[0]);
         assertNull(ia[cll.size()]);
-        try {
-            cll.toArray(new String[0]);
-            fail("Should have generated ArrayStoreException");
-        } catch (ArrayStoreException expected){
-            // expected
-        }
         cll.toArray(new Number[0]);
-        try {
-            cll.toArray(null);
-            fail("Should have generated NullPointerException");
-        } catch (NullPointerException expected){
-            // expected
-        }
+    }
+
+    @Test(expected = ArrayStoreException.class)
+    public void toArrayOfIncompatibleTypeShouldThrowASE() throws Exception {
+        CursorableLinkedList<Integer> cll = new CursorableLinkedList<Integer>();
+        cll.add(Integer.valueOf(1)); // Needs at least one entry
+        cll.toArray(new String[0]);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void toArrayOfNullShouldThrowNPE() throws Exception {
+        CursorableLinkedList<Integer> cll = new CursorableLinkedList<Integer>();
+        cll.toArray(null);
     }
 
 //    @Test
