@@ -673,19 +673,24 @@ class CursorableLinkedList<T> implements List<T>, Serializable {
      * @param a      the array into which the elements of this list are to
      *               be stored, if it is big enough; otherwise, a new array of the
      *               same runtime type is allocated for this purpose.
+     *               If the list does not occupy the entire array, then the next
+     *               free element in the array is set to {@code null}.
+     *               This allows the end to be found (assuming the list does not contain {@code null}) 
      * @return an array containing the elements of this list.
      * @exception ArrayStoreException
      *                   if the runtime type of the specified array
      *                   is not a supertype of the runtime type of every element in
      *                   this list.
+     * @throws NullPointerException if the input parameter is null
      */
+    @SuppressWarnings("unchecked") // OK, see (1) and (2)
     public <E> E[] toArray(E a[]) {
         if(a.length < _size) {
-            a = (E[])Array.newInstance(a.getClass().getComponentType(), _size);
+            a = (E[])Array.newInstance(a.getClass().getComponentType(), _size);//(1)
         }
         int i = 0;
         for(Listable elt = _head.next(), past = null; null != elt && past != _head.prev(); elt = (past = elt).next()) {
-            a[i++] = (E) elt.value();
+            a[i++] = (E) elt.value(); //(2) May cause ArrayStoreException if the types are not compatible
         }
         if(a.length > _size) {
             a[_size] = null; // should we null out the rest of the array also? java.util.LinkedList doesn't
