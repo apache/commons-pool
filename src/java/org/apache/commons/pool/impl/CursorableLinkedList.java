@@ -928,6 +928,7 @@ class CursorableLinkedList<E> implements List<E>, Serializable {
         }
     }
 
+    @SuppressWarnings("unchecked") // OK, see (1)
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         _size = 0;
@@ -936,7 +937,7 @@ class CursorableLinkedList<E> implements List<E>, Serializable {
         _head = new Listable(null,null,null);
         int size = in.readInt();
         for (int i=0;i<size;i++) {
-            this.add((E) in.readObject());
+            this.add((E) in.readObject()); // (1) could cause class cast, but only for corrupt input
         }
     }
 
@@ -1285,7 +1286,7 @@ class CursorableSubList<E> extends CursorableLinkedList<E> implements List<E> {
     }
 
     @Override
-    public <E> E[] toArray(E a[]) {
+    public <T> T[] toArray(T a[]) {
         checkForComod();
         return super.toArray(a);
     }
