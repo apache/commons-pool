@@ -151,7 +151,7 @@
           <!-- Override plugin versions in parent Pom, which are too old to support manifests -->
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
-          <version>2.1</version>
+          <version>2.1.2</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -219,7 +219,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-changes-plugin</artifactId>
-          <version>2.0</version>
+          <version>2.3</version>
           <configuration>
             <xmlPath>${basedir}/src/changes/changes.xml</xmlPath>
             <issueLinkTemplate>%URL%/%ISSUE%</issueLinkTemplate>
@@ -266,7 +266,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>cobertura-maven-plugin</artifactId>
-        <version>2.3</version>
+        <version>2.4</version>
       </plugin>
       </plugins>
     </reporting>
