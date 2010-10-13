@@ -17,9 +17,12 @@
 
 package org.apache.commons.pool.impl;
 
+import static org.junit.Assert.assertEquals;
+
 import org.apache.commons.pool.KeyedObjectPoolFactory;
 import org.apache.commons.pool.KeyedPoolableObjectFactory;
 import org.apache.commons.pool.TestKeyedObjectPoolFactory;
+import org.junit.Test;
 
 /**
  * Tests for {@link GenericKeyedObjectPoolFactory}.
@@ -28,15 +31,12 @@ import org.apache.commons.pool.TestKeyedObjectPoolFactory;
  * @version $Revision$ $Date$
  */
 public class TestGenericKeyedObjectPoolFactory extends TestKeyedObjectPoolFactory {
-    public TestGenericKeyedObjectPoolFactory(final String name) {
-        super(name);
-    }
-
     @Override
     protected KeyedObjectPoolFactory<Object,Object> makeFactory(final KeyedPoolableObjectFactory<Object,Object> objectFactory) {
         return new GenericKeyedObjectPoolFactory<Object,Object>(objectFactory);
     }
 
+    @Test
     public void testConstructors() throws Exception {
         GenericKeyedObjectPoolFactory<Object,Object> factory = new GenericKeyedObjectPoolFactory<Object,Object>(createObjectFactory());
         factory.createPool().close();

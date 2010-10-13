@@ -17,22 +17,24 @@
 
 package org.apache.commons.pool.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 
 import org.apache.commons.pool.KeyedObjectPool;
 import org.apache.commons.pool.KeyedPoolableObjectFactory;
 import org.apache.commons.pool.TestBaseKeyedObjectPool;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author Rodney Waldhoff
  * @version $Revision$ $Date$
  */
 public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
-    public TestStackKeyedObjectPool(String testName) {
-        super(testName);
-    }
-
     @Override
     protected KeyedObjectPool<Object,Object> makeEmptyPool(int mincapacity) {
         StackKeyedObjectPool<Object,Object> pool = new StackKeyedObjectPool<Object,Object>(new SimpleFactory(),mincapacity);
@@ -56,9 +58,8 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
 
     private StackKeyedObjectPool<String,String> pool = null;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
         pool = new StackKeyedObjectPool<String,String>(
             new KeyedPoolableObjectFactory<String,String>()  {
                 int counter = 0;
@@ -72,12 +73,12 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
     }
 
 
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
+    @After
+    public void tearDown() {
         pool = null;
     }
 
+    @Test
     public void testCloseBug() throws Exception {
         {
             String obj0 = pool.borrowObject("");
@@ -102,6 +103,7 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
         pool.close();
     }
 
+    @Test
     public void testIdleCap() throws Exception {
         String[] active = new String[100];
         for(int i=0;i<100;i++) {
@@ -121,6 +123,7 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
      * the bottom (oldest) instance in the pool is destroyed to make room for the newly
      * returning instance, which is pushed onto the idle object stack.
      */
+    @Test
     public void testRemoveOldest() throws Exception {
         pool.setMaxSleeping(2);
         String obj0 = pool.borrowObject("");
@@ -134,6 +137,7 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals("3", pool.borrowObject("")); // New instance created (0 is gone)
     }
 
+    @Test
     public void testVariousConstructors() throws Exception {
         {
             StackKeyedObjectPool<Object,Object> pool = new StackKeyedObjectPool<Object,Object>(new SimpleFactory());
@@ -150,6 +154,7 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
     }
 
     @Override
+    @Test
     public void testToString() throws Exception {
         StackKeyedObjectPool<Object,Object> pool = new StackKeyedObjectPool<Object,Object>(new SimpleFactory());
         assertNotNull(pool.toString());
@@ -159,6 +164,7 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertNotNull(pool.toString());
     }
 
+    @Test
     public void testBorrowReturnWithSometimesInvalidObjects() throws Exception {
         KeyedObjectPool<Object,Object> pool = new StackKeyedObjectPool<Object,Object>(
             new KeyedPoolableObjectFactory<Object,Object>() {

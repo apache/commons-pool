@@ -17,7 +17,7 @@
 
 package org.apache.commons.pool;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * Tests for all {@link KeyedObjectPoolFactory}s.
@@ -25,11 +25,7 @@ import junit.framework.TestCase;
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  */
-public abstract class TestKeyedObjectPoolFactory extends TestCase {
-    protected TestKeyedObjectPoolFactory(final String name) {
-        super(name);
-    }
-
+public abstract class TestKeyedObjectPoolFactory {
     /**
      * @throws UnsupportedOperationException when this is unsupported by this KeyedPoolableObjectFactory type.
      */
@@ -46,6 +42,7 @@ public abstract class TestKeyedObjectPoolFactory extends TestCase {
         return PoolUtils.adapt(new MethodCallPoolableObjectFactory());
     }
 
+    @Test
     public void testCreatePool() throws Exception {
         final KeyedObjectPoolFactory<Object,Object> factory;
         try {
@@ -57,6 +54,7 @@ public abstract class TestKeyedObjectPoolFactory extends TestCase {
         pool.close();
     }
 
+    @Test
     public void testToString() {
         final KeyedObjectPoolFactory<Object,Object> factory;
         try {

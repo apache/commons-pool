@@ -17,6 +17,9 @@
 
 package org.apache.commons.pool;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -30,10 +33,10 @@ import java.util.Set;
 import java.util.TimerTask;
 
 import junit.framework.AssertionFailedError;
-import junit.framework.TestCase;
 
 import org.apache.commons.pool.impl.GenericKeyedObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
+import org.junit.Test;
 
 /**
  * Unit tests for {@link PoolUtils}.
@@ -41,7 +44,7 @@ import org.apache.commons.pool.impl.GenericObjectPool;
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  */
-public class TestPoolUtils extends TestCase {
+public class TestPoolUtils {
 
     /** Period between checks for minIdle tests. Increase this if you happen to get too many false failures. */
     private static final int CHECK_PERIOD = 300;
@@ -56,6 +59,7 @@ public class TestPoolUtils extends TestCase {
         new PoolUtils();
     }
 
+    @Test
     public void testAdaptKeyedPoolableObjectFactory() throws Exception {
         try {
             PoolUtils.adapt((KeyedPoolableObjectFactory<Object,Object>)null);
@@ -65,6 +69,7 @@ public class TestPoolUtils extends TestCase {
         }
     }
 
+    @Test
     public void testAdaptKeyedPoolableObjectFactoryKey() throws Exception {
         try {
             PoolUtils.adapt((KeyedPoolableObjectFactory<Object,Object>)null, new Object());
@@ -88,6 +93,7 @@ public class TestPoolUtils extends TestCase {
         assertEquals(expectedMethods, calledMethods);
     }
 
+    @Test
     public void testAdaptPoolableObjectFactory() throws Exception {
         try {
             PoolUtils.adapt((PoolableObjectFactory<Object>)null);
@@ -105,6 +111,7 @@ public class TestPoolUtils extends TestCase {
         assertEquals(expectedMethods, calledMethods);
     }
 
+    @Test
     public void testAdaptKeyedObjectPool() throws Exception {
         try {
             PoolUtils.adapt((KeyedObjectPool<Object,Object>)null);
@@ -114,6 +121,7 @@ public class TestPoolUtils extends TestCase {
         }
     }
 
+    @Test
     public void testAdaptKeyedObjectPoolKey() throws Exception {
         try {
             PoolUtils.adapt((KeyedObjectPool<Object,Object>)null, new Object());
@@ -136,6 +144,7 @@ public class TestPoolUtils extends TestCase {
         assertEquals(expectedMethods, calledMethods);
     }
 
+    @Test
     public void testAdaptObjectPool() throws Exception {
         try {
             PoolUtils.adapt((ObjectPool<Object>)null);
@@ -152,6 +161,7 @@ public class TestPoolUtils extends TestCase {
         assertEquals(expectedMethods, calledMethods);
     }
 
+    @Test
     public void testCheckedPoolObjectPool() throws Exception {
         try {
             PoolUtils.checkedPool((ObjectPool<Object>)null, Object.class);
@@ -205,6 +215,7 @@ public class TestPoolUtils extends TestCase {
         }
     }
 
+    @Test
     public void testCheckedPoolKeyedObjectPool() throws Exception {
         try {
             PoolUtils.checkedPool((KeyedObjectPool<Object,Object>)null, Object.class);
@@ -261,6 +272,7 @@ public class TestPoolUtils extends TestCase {
         }
     }
 
+    @Test
     public void testCheckMinIdleObjectPool() throws Exception {
         try {
             PoolUtils.checkMinIdle(null, 1, 1);
@@ -323,6 +335,7 @@ public class TestPoolUtils extends TestCase {
         }
     }
 
+    @Test
     public void testCheckMinIdleKeyedObjectPool() throws Exception {
         try {
             PoolUtils.checkMinIdle(null, new Object(), 1, 1);
@@ -394,6 +407,7 @@ public class TestPoolUtils extends TestCase {
         }
     }
 
+    @Test
     public void testCheckMinIdleKeyedObjectPoolKeys() throws Exception {
         try {
             final KeyedObjectPool<Object,Object> pool = (KeyedObjectPool<Object,Object>)createProxy(KeyedObjectPool.class, (List<String>)null);
@@ -436,6 +450,7 @@ public class TestPoolUtils extends TestCase {
         }
     }
 
+    @Test
     public void testPrefillObjectPool() throws Exception {
         try {
             PoolUtils.prefill(null, 1);
@@ -459,6 +474,7 @@ public class TestPoolUtils extends TestCase {
         assertEquals(expectedMethods, calledMethods);
     }
 
+    @Test
     public void testPrefillKeyedObjectPool() throws Exception {
         try {
             PoolUtils.prefill(null, new Object(), 1);
@@ -489,6 +505,7 @@ public class TestPoolUtils extends TestCase {
         assertEquals(expectedMethods, calledMethods);
     }
 
+    @Test
     public void testPrefillKeyedObjectPoolCollection() throws Exception {
         // FIXME any reason why when using Object as K the methods signature match?
         try {
@@ -518,6 +535,7 @@ public class TestPoolUtils extends TestCase {
         assertEquals(expectedMethods, calledMethods);
     }
 
+    @Test
     public void testSynchronizedPoolObjectPool() throws Exception {
         try {
             PoolUtils.synchronizedPool((ObjectPool<Object>)null);
@@ -536,6 +554,7 @@ public class TestPoolUtils extends TestCase {
         // TODO: Anyone feel motivated to construct a test that verifies proper synchronization?
     }
 
+    @Test
     public void testSynchronizedPoolKeyedObjectPool() throws Exception {
         try {
             PoolUtils.synchronizedPool((KeyedObjectPool<Object,Object>)null);
@@ -554,6 +573,7 @@ public class TestPoolUtils extends TestCase {
         // TODO: Anyone feel motivated to construct a test that verifies proper synchronization?
     }
 
+    @Test
     public void testSynchronizedPoolableFactoryPoolableObjectFactory() throws Exception {
         try {
             PoolUtils.synchronizedPoolableFactory((PoolableObjectFactory<?>)null);
@@ -573,6 +593,7 @@ public class TestPoolUtils extends TestCase {
         // TODO: Anyone feel motivated to construct a test that verifies proper synchronization?
     }
 
+    @Test
     public void testSynchronizedPoolableFactoryKeyedPoolableObjectFactory() throws Exception {
         try {
             PoolUtils.synchronizedPoolableFactory((KeyedPoolableObjectFactory<Object,Object>)null);
@@ -592,6 +613,7 @@ public class TestPoolUtils extends TestCase {
         // TODO: Anyone feel motivated to construct a test that verifies proper synchronization?
     }
 
+    @Test
     public void testErodingPoolObjectPool() throws Exception {
         try {
             PoolUtils.erodingPool((ObjectPool<Object>)null);
@@ -669,6 +691,7 @@ public class TestPoolUtils extends TestCase {
         assertEquals(expectedMethods, calledMethods);
     }
 
+    @Test
     public void testErodingPoolKeyedObjectPool() throws Exception {
         try {
             PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null);
@@ -762,6 +785,7 @@ public class TestPoolUtils extends TestCase {
         assertEquals(expectedMethods, calledMethods);
     }
     
+    @Test
     public void testErodingPerKeyKeyedObjectPool() throws Exception {
         try {
             PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null, 1, true);

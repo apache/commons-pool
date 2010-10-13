@@ -17,28 +17,28 @@
 
 package org.apache.commons.pool.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.pool.BasePoolableObjectFactory;
 import org.apache.commons.pool.PoolableObjectFactory;
+import org.junit.After;
+import org.junit.Test;
 
 /**
  * @author Dirk Verbeeck
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  */
-public class TestSoftRefOutOfMemory extends TestCase {
+public class TestSoftRefOutOfMemory {
     private SoftReferenceObjectPool<String> pool;
 
-    public TestSoftRefOutOfMemory(String testName) {
-        super(testName);
-    }
-
-    @Override
+    @After
     public void tearDown() throws Exception {
         if (pool != null) {
             pool.close();
@@ -47,6 +47,7 @@ public class TestSoftRefOutOfMemory extends TestCase {
         System.gc();
     }
 
+    @Test
     public void testOutOfMemory() throws Exception {
         pool = new SoftReferenceObjectPool<String>(new SmallPoolableObjectFactory());
 
@@ -78,6 +79,7 @@ public class TestSoftRefOutOfMemory extends TestCase {
         assertEquals(1, pool.getNumIdle());
     }
 
+    @Test
     public void testOutOfMemory1000() throws Exception {
         pool = new SoftReferenceObjectPool<String>(new SmallPoolableObjectFactory());
 
@@ -113,6 +115,7 @@ public class TestSoftRefOutOfMemory extends TestCase {
         assertEquals(1, pool.getNumIdle());
     }
 
+    @Test
     public void testOutOfMemoryLarge() throws Exception {
         pool = new SoftReferenceObjectPool<String>(new LargePoolableObjectFactory(1000000));
 
@@ -147,6 +150,7 @@ public class TestSoftRefOutOfMemory extends TestCase {
     /**
      * Makes sure an {@link OutOfMemoryError} isn't swallowed.
      */
+    @Test
     public void testOutOfMemoryError() throws Exception {
         pool = new SoftReferenceObjectPool<String>(new BasePoolableObjectFactory<String>() {
             @Override
