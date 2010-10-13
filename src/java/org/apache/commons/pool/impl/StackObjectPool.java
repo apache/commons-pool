@@ -357,12 +357,12 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
     /** 
      * The cap on the number of "sleeping" instances in the pool.
      */
-    private int _maxSleeping = DEFAULT_MAX_SLEEPING;
+    private int _maxSleeping = DEFAULT_MAX_SLEEPING; // @GuardedBy("this")
     
     /**
      * Number of objects borrowed but not yet returned to the pool.
      */
-    private int _numActive = 0;
+    private int _numActive = 0; // @GuardedBy("this")
 
     /**
      * Returns the {@link PoolableObjectFactory} used by this pool to create and manage object instances.
