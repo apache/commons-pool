@@ -90,7 +90,7 @@ public class StackKeyedObjectPoolFactory<K,V> implements KeyedObjectPoolFactory<
     /**
      * Initial capacity of StackKeyedObjectPools created by this factory.
      */
-    private int _initCapacity = StackKeyedObjectPool.DEFAULT_INIT_SLEEPING_CAPACITY;
+    private final int _initCapacity;
 
     /**
      * Returns the KeyedPoolableObjectFactory used by StackKeyedObjectPools created by this factory

@@ -347,7 +347,7 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
     /** 
      * My pool. 
      */
-    private Stack<T> _pool = null;
+    private final Stack<T> _pool;
 
     /** 
      * My {@link PoolableObjectFactory}.

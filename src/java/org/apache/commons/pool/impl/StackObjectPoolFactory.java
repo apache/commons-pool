@@ -87,7 +87,7 @@ public class StackObjectPoolFactory<T> implements ObjectPoolFactory<T> {/**
     /**
      * The initial size of created pools.
      */
-    private int _initCapacity = StackObjectPool.DEFAULT_INIT_SLEEPING_CAPACITY;
+    private final int _initCapacity;
 
     /**
      * Returns the factory used by created pools.
