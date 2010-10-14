@@ -73,6 +73,7 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
     }
 
 
+    @Override
     @After
     public void tearDown() {
         pool = null;
