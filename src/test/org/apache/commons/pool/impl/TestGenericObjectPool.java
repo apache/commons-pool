@@ -569,7 +569,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     @Test
-    public void testMaxActiveUnderLoad() {
+    public void testMaxActiveUnderLoad() throws Exception {
         // Config
         int numThreads = 199; // And main thread makes a round 200.
         int numIter = 20;
@@ -618,10 +618,6 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 } catch(InterruptedException e) {
                     // ignored
                 }
-            } catch (Exception e) {
-                // Shouldn't happen
-                e.printStackTrace();
-                fail("Exception on borrow");
             } finally {
                 if (obj != null) {
                     try {
