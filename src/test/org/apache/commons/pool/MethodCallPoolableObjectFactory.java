@@ -17,8 +17,8 @@
 
 package org.apache.commons.pool;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A poolable object factory that tracks how {@link MethodCall methods are called}.
