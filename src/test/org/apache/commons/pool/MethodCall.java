@@ -17,9 +17,9 @@
 
 package org.apache.commons.pool;
 
-import java.util.List;
-import java.util.Collections;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Holds method names, parameters, and return values for tracing method calls.
