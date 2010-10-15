@@ -972,6 +972,7 @@ class CursorableLinkedList<E> implements List<E>, Serializable {
     //--- inner classes ----------------------------------------------
 
     class Listable implements Serializable {
+        private static final long serialVersionUID = 1L;
         private Listable _prev = null;
         private Listable _next = null;
         private E _val = null;
@@ -1217,6 +1218,8 @@ class CursorableLinkedList<E> implements List<E>, Serializable {
 }
 
 class CursorableSubList<E> extends CursorableLinkedList<E> implements List<E> {
+
+    private static final long serialVersionUID = 1L;
 
     //--- constructors -----------------------------------------------
 
