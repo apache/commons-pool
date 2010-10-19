@@ -231,7 +231,6 @@ public class GenericObjectPoolFactory<T> implements ObjectPoolFactory<T> {
         return new GenericObjectPool<T>(_factory,_maxActive,_whenExhaustedAction,_maxWait,_maxIdle,_minIdle,_testOnBorrow,_testOnReturn,_timeBetweenEvictionRunsMillis,_numTestsPerEvictionRun,_minEvictableIdleTimeMillis,_testWhileIdle,_softMinEvictableIdleTimeMillis,_lifo);
     }
 
-    
     /**
      * @return the {@link GenericObjectPool#getMaxIdle() maxIdle} setting for pools created by this factory.
      * @since 1.5.5
@@ -467,72 +466,72 @@ public class GenericObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      * The {@link GenericObjectPool#getMaxIdle() maxIdle} setting for pools created by this factory.
      */
     private int _maxIdle = GenericObjectPool.DEFAULT_MAX_IDLE; // @GuardedBy("this")
-    
+
     /**
      * The {@link GenericObjectPool#getMinIdle() minIdle} setting for pools created by this factory.
      */
     private int _minIdle = GenericObjectPool.DEFAULT_MIN_IDLE; // @GuardedBy("this")
-    
+
     /**
      * The {@link GenericObjectPool#getMaxActive() maxActive} setting for pools created by this factory.
      */
     private int _maxActive = GenericObjectPool.DEFAULT_MAX_ACTIVE; // @GuardedBy("this")
-    
+
     /**
      * The {@link GenericObjectPool#getMaxWait() maxWait} setting for pools created by this factory.
      */
     private long _maxWait = GenericObjectPool.DEFAULT_MAX_WAIT; // @GuardedBy("this")
-    
+
     /**
      * The {@link GenericObjectPool#getWhenExhaustedAction() whenExhaustedAction} setting for pools
      * created by this factory.
      */
     private WhenExhaustedAction _whenExhaustedAction = GenericObjectPool.DEFAULT_WHEN_EXHAUSTED_ACTION; // @GuardedBy("this")
-    
+
     /**
      * The {@link GenericObjectPool#getTestOnBorrow() testOnBorrow} setting for pools created by this factory.
      */
     private boolean _testOnBorrow = GenericObjectPool.DEFAULT_TEST_ON_BORROW; // @GuardedBy("this")
-    
+
     /**
      * The {@link GenericObjectPool#getTestOnReturn() testOnReturn} setting for pools created by this factory.
      */
     private boolean _testOnReturn = GenericObjectPool.DEFAULT_TEST_ON_RETURN; // @GuardedBy("this")
-    
+
     /**
      * The {@link GenericObjectPool#getTestWhileIdle() testWhileIdle} setting for pools created by this factory.
      */
     private boolean _testWhileIdle = GenericObjectPool.DEFAULT_TEST_WHILE_IDLE; // @GuardedBy("this")
-    
+
     /**
      * The {@link GenericObjectPool#getTimeBetweenEvictionRunsMillis() timeBetweenEvictionRunsMillis}
      * setting for pools created by this factory.
      */
     private long _timeBetweenEvictionRunsMillis = GenericObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS; // @GuardedBy("this")
-    
+
     /**
      * The {@link GenericObjectPool#getNumTestsPerEvictionRun() numTestsPerEvictionRun} setting
      * for pools created by this factory.
      */
     private int _numTestsPerEvictionRun =  GenericObjectPool.DEFAULT_NUM_TESTS_PER_EVICTION_RUN; // @GuardedBy("this")
-    
+
     /**
      * The {@link GenericObjectPool#getMinEvictableIdleTimeMillis() minEvictableIdleTimeMillis}
      * setting for pools created by this factory.
      */
     private long _minEvictableIdleTimeMillis = GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS; // @GuardedBy("this")
-    
+
     /**
      * The {@link GenericObjectPool#getSoftMinEvictableIdleTimeMillis() softMinEvictableIdleTimeMillis}
      * setting for pools created by this factory.
      */
     private long _softMinEvictableIdleTimeMillis = GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS; // @GuardedBy("this")
-    
+
     /**
      * The {@link GenericObjectPool#getLifo() lifo} setting for pools created by this factory.
      */
     private boolean _lifo = GenericObjectPool.DEFAULT_LIFO; // @GuardedBy("this")
-    
+
     /**
      * The {@link PoolableObjectFactory} used by pools created by this factory.
      */

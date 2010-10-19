@@ -35,14 +35,14 @@ public abstract class BaseObjectPool<T> implements ObjectPool<T> {
      * @throws Exception if an instance cannot be obtained from the pool
      */
     public abstract T borrowObject() throws Exception;
-    
+
     /**
      * Returns an instance to the pool.
      * 
      * @param obj instance to return to the pool
      */
     public abstract void returnObject(T obj) throws Exception;
-    
+
     /**
      * <p>Invalidates an object from the pool.</p>
      * 

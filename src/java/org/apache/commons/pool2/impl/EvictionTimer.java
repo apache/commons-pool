@@ -37,10 +37,10 @@ import java.util.TimerTask;
  * </p>
  */
 class EvictionTimer {
-    
+
     /** Timer instance */
     private static Timer _timer; //@GuardedBy("this")
-    
+
     /** Static usage count tracker */
     private static int _usageCount; //@GuardedBy("this")
 
@@ -88,7 +88,7 @@ class EvictionTimer {
             _timer = null;
         }
     }
-    
+
     /** 
      * {@link PrivilegedAction} used to get the ContextClassLoader
      */

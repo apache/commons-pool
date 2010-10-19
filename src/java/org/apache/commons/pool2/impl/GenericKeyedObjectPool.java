@@ -1188,9 +1188,9 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
 
         synchronized (this) {
             if (isClosed()) return;
-            
+
             Iterator<Latch> allocationQueueIter = _allocationQueue.iterator();
-            
+
             while (allocationQueueIter.hasNext()) {
                 // First use any objects in the pool to clear the queue
                 Latch latch = allocationQueueIter.next();
@@ -1243,7 +1243,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
                 }
             }
         }
-        
+
         if (clearOldest) {
             /* Clear oldest calls factory methods so it must be called from
              * outside the sync block.
@@ -1256,7 +1256,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
             clearOldest();
         }
     }
-    
+
     /**
      * Clears any objects sitting idle in the pool by removing them from the
      * idle instance pool and then invoking the configured PoolableObjectFactory's
@@ -2052,10 +2052,10 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
     private class ObjectQueue {
         /** Number of instances checked out to clients from this queue */
         private int activeCount = 0;
-        
+
         /** Idle instance queue */
         private final CursorableLinkedList<ObjectTimestampPair<V>> queue = new CursorableLinkedList<ObjectTimestampPair<V>>();
-        
+
         /** Number of instances in process of being created */
         private int internalProcessingCount = 0;
 
@@ -2107,7 +2107,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
          * Object instance.
          */
         private final V value;
-        
+
         /**
          * timestamp
          */
@@ -2277,16 +2277,16 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
      * @since 1.5
      */
     private final class Latch {
-        
+
         /** key of associated pool */
         private final K _key;
-        
+
         /** keyed pool associated with this latch */
         private ObjectQueue _pool;
-        
+
         /** holds an ObjectTimestampPair when this latch has been allocated an instance */
         private ObjectTimestampPair<V> _pair;
-        
+
         /** indicates that this latch can create an instance */
         private boolean _mayCreate = false;
 
@@ -2313,7 +2313,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
         private synchronized ObjectQueue getPool() {
             return _pool;
         }
-        
+
         /**
          * Sets the pool associated with this latch
          * @param pool the pool
@@ -2330,7 +2330,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
         private synchronized ObjectTimestampPair<V> getPair() {
             return _pair;
         }
-        
+
         /**
          * Allocate an ObjectTimestampPair to this latch.
          * @param pair ObjectTimestampPair on this latch
@@ -2346,7 +2346,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
         private synchronized boolean mayCreate() {
             return _mayCreate;
         }
-        
+
         /**
          * Sets the mayCreate property
          * 
@@ -2535,7 +2535,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
 
     /** Eviction cursor (over instances within-key) */
     private CursorableLinkedList<ObjectTimestampPair<V>>.Cursor _evictionCursor = null;
-    
+
     /** Eviction cursor (over keys) */
     private CursorableLinkedList<K>.Cursor _evictionKeyCursor = null;
 
