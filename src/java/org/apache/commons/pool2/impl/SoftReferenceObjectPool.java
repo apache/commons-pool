@@ -281,7 +281,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements Obj
             }
         }
     }
-    
+
     /**
      * Returns the {@link PoolableObjectFactory} used by this pool to create and manage object instances.
      * 

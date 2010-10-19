@@ -28,17 +28,16 @@ package org.apache.commons.pool2;
  * @since Pool 1.0
  */
 public abstract class BaseKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
-    
     /**
      * {@inheritDoc}
      */
     public abstract V borrowObject(K key) throws Exception;
-    
+
     /**
      * {@inheritDoc}
      */
     public abstract void returnObject(K key, V obj) throws Exception;
-    
+
     /**
      * <p>Invalidates an object from the pool.</p>
      * 

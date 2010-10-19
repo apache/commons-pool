@@ -572,7 +572,7 @@ public final class PoolUtils {
     private static class PoolableObjectFactoryAdaptor<K,V> implements PoolableObjectFactory<V> {
         /** Fixed key */
         private final K key;
-        
+
         /** Wrapped factory */
         private final KeyedPoolableObjectFactory<K,V> keyedFactory;
 
@@ -661,7 +661,7 @@ public final class PoolUtils {
      * ignoring keys.
      */
     private static class KeyedPoolableObjectFactoryAdaptor<K,V> implements KeyedPoolableObjectFactory<K,V> {
-        
+
         /** Underlying PoolableObjectFactory */
         private final PoolableObjectFactory<V> factory;
 
@@ -748,10 +748,10 @@ public final class PoolUtils {
      * a fixed key.
      */
     private static class ObjectPoolAdaptor<K,V> implements ObjectPool<V> {
-        
+
         /** Fixed key */
         private final K key;
-        
+
         /** Underlying KeyedObjectPool */
         private final KeyedObjectPool<K,V> keyedPool;
 
@@ -859,7 +859,7 @@ public final class PoolUtils {
      * Adapts an ObjectPool to implement KeyedObjectPool by ignoring key arguments.
      */
     private static class KeyedObjectPoolAdaptor<K,V> implements KeyedObjectPool<K,V> {
-       
+
         /** Underlying pool */
         private final ObjectPool<V> pool;
 
@@ -1008,7 +1008,7 @@ public final class PoolUtils {
          * the underlying pool's associated object factory.
          */
         private final Class<?> type;
-       
+
         /** Underlying object pool */
         private final ObjectPool<? super Object> pool;
 
@@ -1146,7 +1146,7 @@ public final class PoolUtils {
          * a subtype of the return type of the object factory used by the pool.
          */
         private final Class<?> type;
-        
+
         /** Underlying pool */
         private final KeyedObjectPool<? super Object,? super Object> keyedPool;
 
@@ -1228,7 +1228,7 @@ public final class PoolUtils {
         public void addObject(final Object key) throws Exception, IllegalStateException, UnsupportedOperationException {
             keyedPool.addObject(key);
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -1303,10 +1303,10 @@ public final class PoolUtils {
      * 
      */
     private static class ObjectPoolMinIdleTimerTask<T> extends TimerTask {
-        
+
         /** Minimum number of idle instances.  Not the same as pool.getMinIdle(). */
         private final int minIdle;
-        
+
         /** Object pool */
         private final ObjectPool<T> pool;
 
@@ -1371,10 +1371,10 @@ public final class PoolUtils {
     private static class KeyedObjectPoolMinIdleTimerTask<K,V> extends TimerTask {
         /** Minimum number of idle instances.  Not the same as pool.getMinIdle(). */
         private final int minIdle;
-        
+
         /** Key to ensure minIdle for */
         private final K key;
-        
+
         /** Keyed object pool */
         private final KeyedObjectPool<K,V> keyedPool;
 
@@ -1444,10 +1444,10 @@ public final class PoolUtils {
      * </p>
      */
     private static class SynchronizedObjectPool<T> implements ObjectPool<T> {
-        
+
         /** Object whose monitor is used to synchronize methods on the wrapped pool. */
         private final Object lock;
-        
+
         /** the underlying object pool */
         private final ObjectPool<T> pool;
 
@@ -1573,10 +1573,10 @@ public final class PoolUtils {
      * </p>
      */
     private static class SynchronizedKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
-        
+
         /** Object whose monitor is used to synchronize methods on the wrapped pool. */
         private final Object lock;
-        
+
         /** Underlying object pool */
         private final KeyedObjectPool<K,V> keyedPool;
 
@@ -1729,7 +1729,7 @@ public final class PoolUtils {
     private static class SynchronizedPoolableObjectFactory<T> implements PoolableObjectFactory<T> {
         /** Synchronization lock */
         private final Object lock;
-        
+
         /** Wrapped factory */
         private final PoolableObjectFactory<T> factory;
 
@@ -1816,7 +1816,7 @@ public final class PoolUtils {
     private static class SynchronizedKeyedPoolableObjectFactory<K,V> implements KeyedPoolableObjectFactory<K,V> {
         /** Synchronization lock */
         private final Object lock;
-        
+
         /** Wrapped factory */
         private final KeyedPoolableObjectFactory<K,V> keyedFactory;
 
@@ -1904,10 +1904,10 @@ public final class PoolUtils {
     private static class ErodingFactor {
         /** Determines frequency of "erosion" events */
         private final float factor;
-        
+
         /** Time of next shrink event */
         private transient volatile long nextShrink;
-        
+
         /** High water mark - largest numIdle encountered */
         private transient volatile int idleHighWaterMark;
 
@@ -1975,7 +1975,7 @@ public final class PoolUtils {
     private static class ErodingObjectPool<T> implements ObjectPool<T> {
         /** Underlying object pool */
         private final ObjectPool<T> pool;
-        
+
         /** Erosion factor */
         private final ErodingFactor factor;
 
@@ -2102,7 +2102,7 @@ public final class PoolUtils {
     private static class ErodingKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
         /** Underlying pool */
         private final KeyedObjectPool<K,V> keyedPool;
-        
+
         /** Erosion factor */
         private final ErodingFactor erodingFactor;
 
@@ -2285,7 +2285,7 @@ public final class PoolUtils {
     private static class ErodingPerKeyKeyedObjectPool<K,V> extends ErodingKeyedObjectPool<K,V> {
         /** Erosion factor - same for all pools */
         private final float factor;
-        
+
         /** Map of ErodingFactor instances keyed on pool keys */
         private final Map<K,ErodingFactor> factors = Collections.synchronizedMap(new HashMap<K,ErodingFactor>());
 

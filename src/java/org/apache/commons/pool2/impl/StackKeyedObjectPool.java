@@ -47,8 +47,6 @@ import org.apache.commons.pool2.PoolUtils;
  * @since Pool 1.0
  */
 public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
-
-
     /**
      * Create a new <code>SimpleKeyedObjectPool</code> using
      * the specified <code>factory</code> to create new instances.
@@ -459,7 +457,6 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
         }
     }
 
-    
     /**
      * @return map of keyed pools
      * @since 1.5.5

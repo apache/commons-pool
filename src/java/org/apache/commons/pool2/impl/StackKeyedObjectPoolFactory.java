@@ -81,12 +81,12 @@ public class StackKeyedObjectPoolFactory<K,V> implements KeyedObjectPoolFactory<
      * KeyedPoolableObjectFactory used by StackKeyedObjectPools created by this factory
      */
     private final KeyedPoolableObjectFactory<K,V> _factory;
-    
+
     /** 
      * Maximum number of idle instances in each keyed pool for StackKeyedObjectPools created by this factory
      */
     private int _maxSleeping = StackKeyedObjectPool.DEFAULT_MAX_SLEEPING;
-    
+
     /**
      * Initial capacity of StackKeyedObjectPools created by this factory.
      */

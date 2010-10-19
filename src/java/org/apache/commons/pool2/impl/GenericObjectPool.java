@@ -1714,10 +1714,10 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * threads request objects.
      */
     private final class Latch {
-        
+
         /** object timestamp pair allocated to this latch */
         private ObjectTimestampPair<T> _pair;
-        
+
         /** Whether or not this latch may create an object instance */
         private boolean _mayCreate = false;
 
@@ -1728,7 +1728,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
         private synchronized ObjectTimestampPair<T> getPair() {
             return _pair;
         }
-        
+
         /**
          * Sets ObjectTimestampPair on this latch
          * @param pair ObjectTimestampPair allocated to this latch
@@ -1744,7 +1744,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
         private synchronized boolean mayCreate() {
             return _mayCreate;
         }
-        
+
         /**
          * Sets the mayCreate property
          * @param mayCreate new value for mayCreate

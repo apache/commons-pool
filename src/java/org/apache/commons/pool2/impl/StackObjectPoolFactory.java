@@ -31,7 +31,8 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  * @version $Revision$ $Date$
  * @since Pool 1.0
  */
-public class StackObjectPoolFactory<T> implements ObjectPoolFactory<T> {/**
+public class StackObjectPoolFactory<T> implements ObjectPoolFactory<T> {
+    /**
      * Create a new StackObjectPoolFactory.
      *
      * @param factory the PoolableObjectFactory used by created pools.
@@ -78,12 +79,12 @@ public class StackObjectPoolFactory<T> implements ObjectPoolFactory<T> {/**
      * The PoolableObjectFactory used by created pools.
      */
     private final PoolableObjectFactory<T> _factory;
-    
+
     /**
      * The maximum number of idle instances in created pools.
      */
     private int _maxSleeping = StackObjectPool.DEFAULT_MAX_SLEEPING;
-    
+
     /**
      * The initial size of created pools.
      */

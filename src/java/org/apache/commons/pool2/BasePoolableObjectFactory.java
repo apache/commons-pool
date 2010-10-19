@@ -30,7 +30,6 @@ package org.apache.commons.pool2;
  * @since Pool 1.0
  */
 public abstract class BasePoolableObjectFactory<T> implements PoolableObjectFactory<T> {
-    
     /**
      * {@inheritDoc}
      */
