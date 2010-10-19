@@ -1652,60 +1652,162 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @see GenericObjectPool#setConfig
      */
     public static class Config {
-        //CHECKSTYLE: stop VisibilityModifier
         /**
          * @see GenericObjectPool#setMaxIdle
          */
-        public int maxIdle = GenericObjectPool.DEFAULT_MAX_IDLE;
+        private int maxIdle = GenericObjectPool.DEFAULT_MAX_IDLE;
         /**
          * @see GenericObjectPool#setMinIdle
          */
-        public int minIdle = GenericObjectPool.DEFAULT_MIN_IDLE;
+        private int minIdle = GenericObjectPool.DEFAULT_MIN_IDLE;
         /**
          * @see GenericObjectPool#setMaxActive
          */
-        public int maxActive = GenericObjectPool.DEFAULT_MAX_ACTIVE;
+        private int maxActive = GenericObjectPool.DEFAULT_MAX_ACTIVE;
         /**
          * @see GenericObjectPool#setMaxWait
          */
-        public long maxWait = GenericObjectPool.DEFAULT_MAX_WAIT;
+        private long maxWait = GenericObjectPool.DEFAULT_MAX_WAIT;
         /**
          * @see GenericObjectPool#setWhenExhaustedAction
          */
-        public WhenExhaustedAction whenExhaustedAction = GenericObjectPool.DEFAULT_WHEN_EXHAUSTED_ACTION;
+        private WhenExhaustedAction whenExhaustedAction = GenericObjectPool.DEFAULT_WHEN_EXHAUSTED_ACTION;
         /**
          * @see GenericObjectPool#setTestOnBorrow
          */
-        public boolean testOnBorrow = GenericObjectPool.DEFAULT_TEST_ON_BORROW;
+        private boolean testOnBorrow = GenericObjectPool.DEFAULT_TEST_ON_BORROW;
         /**
          * @see GenericObjectPool#setTestOnReturn
          */
-        public boolean testOnReturn = GenericObjectPool.DEFAULT_TEST_ON_RETURN;
+        private boolean testOnReturn = GenericObjectPool.DEFAULT_TEST_ON_RETURN;
         /**
          * @see GenericObjectPool#setTestWhileIdle
          */
-        public boolean testWhileIdle = GenericObjectPool.DEFAULT_TEST_WHILE_IDLE;
+        private boolean testWhileIdle = GenericObjectPool.DEFAULT_TEST_WHILE_IDLE;
         /**
          * @see GenericObjectPool#setTimeBetweenEvictionRunsMillis
          */
-        public long timeBetweenEvictionRunsMillis = GenericObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
+        private long timeBetweenEvictionRunsMillis = GenericObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
         /**
          * @see GenericObjectPool#setNumTestsPerEvictionRun
          */
-        public int numTestsPerEvictionRun =  GenericObjectPool.DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
+        private int numTestsPerEvictionRun =  GenericObjectPool.DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
         /**
          * @see GenericObjectPool#setMinEvictableIdleTimeMillis
          */
-        public long minEvictableIdleTimeMillis = GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+        private long minEvictableIdleTimeMillis = GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
         /**
          * @see GenericObjectPool#setSoftMinEvictableIdleTimeMillis
          */
-        public long softMinEvictableIdleTimeMillis = GenericObjectPool.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+        private long softMinEvictableIdleTimeMillis = GenericObjectPool.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
         /**
          * @see GenericObjectPool#setLifo
          */
-        public boolean lifo = GenericObjectPool.DEFAULT_LIFO;
-        //CHECKSTYLE: resume VisibilityModifier
+        private boolean lifo = GenericObjectPool.DEFAULT_LIFO;
+
+        public int getMaxIdle() {
+            return maxIdle;
+        }
+
+        public void setMaxIdle(int maxIdle) {
+            this.maxIdle = maxIdle;
+        }
+
+        public int getMinIdle() {
+            return minIdle;
+        }
+
+        public void setMinIdle(int minIdle) {
+            this.minIdle = minIdle;
+        }
+
+        public int getMaxActive() {
+            return maxActive;
+        }
+
+        public void setMaxActive(int maxActive) {
+            this.maxActive = maxActive;
+        }
+
+        public long getMaxWait() {
+            return maxWait;
+        }
+
+        public void setMaxWait(long maxWait) {
+            this.maxWait = maxWait;
+        }
+
+        public WhenExhaustedAction getWhenExhaustedAction() {
+            return whenExhaustedAction;
+        }
+
+        public void setWhenExhaustedAction(WhenExhaustedAction whenExhaustedAction) {
+            this.whenExhaustedAction = whenExhaustedAction;
+        }
+
+        public boolean getTestOnBorrow() {
+            return testOnBorrow;
+        }
+
+        public void setTestOnBorrow(boolean testOnBorrow) {
+            this.testOnBorrow = testOnBorrow;
+        }
+
+        public boolean getTestOnReturn() {
+            return testOnReturn;
+        }
+
+        public void setTestOnReturn(boolean testOnReturn) {
+            this.testOnReturn = testOnReturn;
+        }
+
+        public boolean getTestWhileIdle() {
+            return testWhileIdle;
+        }
+
+        public void setTestWhileIdle(boolean testWhileIdle) {
+            this.testWhileIdle = testWhileIdle;
+        }
+
+        public long getTimeBetweenEvictionRunsMillis() {
+            return timeBetweenEvictionRunsMillis;
+        }
+
+        public void setTimeBetweenEvictionRunsMillis(long timeBetweenEvictionRunsMillis) {
+            this.timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
+        }
+
+        public int getNumTestsPerEvictionRun() {
+            return numTestsPerEvictionRun;
+        }
+
+        public void setNumTestsPerEvictionRun(int numTestsPerEvictionRun) {
+            this.numTestsPerEvictionRun = numTestsPerEvictionRun;
+        }
+
+        public long getMinEvictableIdleTimeMillis() {
+            return minEvictableIdleTimeMillis;
+        }
+
+        public void setMinEvictableIdleTimeMillis(long minEvictableIdleTimeMillis) {
+            this.minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
+        }
+
+        public long getSoftMinEvictableIdleTimeMillis() {
+            return softMinEvictableIdleTimeMillis;
+        }
+
+        public void setSoftMinEvictableIdleTimeMillis(long softMinEvictableIdleTimeMillis) {
+            this.softMinEvictableIdleTimeMillis = softMinEvictableIdleTimeMillis;
+        }
+
+        public boolean getLifo() {
+            return lifo;
+        }
+
+        public void setLifo(boolean lifo) {
+            this.lifo = lifo;
+        }
     }
 
     /**

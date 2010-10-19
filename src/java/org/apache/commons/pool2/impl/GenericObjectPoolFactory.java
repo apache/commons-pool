@@ -51,7 +51,7 @@ public class GenericObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      * @see GenericObjectPool#GenericObjectPool(PoolableObjectFactory, GenericObjectPool.Config)
      */
     public GenericObjectPoolFactory(PoolableObjectFactory<T> factory, GenericObjectPool.Config config) throws NullPointerException {
-        this(factory,config.maxActive,config.whenExhaustedAction,config.maxWait,config.maxIdle,config.minIdle,config.testOnBorrow,config.testOnReturn,config.timeBetweenEvictionRunsMillis,config.numTestsPerEvictionRun,config.minEvictableIdleTimeMillis,config.testWhileIdle,config.softMinEvictableIdleTimeMillis, config.lifo);
+        this(factory,config.getMaxActive(),config.getWhenExhaustedAction(),config.getMaxWait(),config.getMaxIdle(),config.getMinIdle(),config.getTestOnBorrow(),config.getTestOnReturn(),config.getTimeBetweenEvictionRunsMillis(),config.getNumTestsPerEvictionRun(),config.getMinEvictableIdleTimeMillis(),config.getTestWhileIdle(),config.getSoftMinEvictableIdleTimeMillis(), config.getLifo());
     }
 
     /**
