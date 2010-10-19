@@ -96,7 +96,7 @@ public class StackObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      * @return the PoolableObjectFactory used by created pools
      * @since 1.5.5
      */
-    public synchronized PoolableObjectFactory<T> getFactory() {
+    public PoolableObjectFactory<T> getFactory() {
         return _factory;
     }
 
