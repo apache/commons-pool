@@ -52,7 +52,7 @@ public class GenericKeyedObjectPoolFactory<K,V> implements KeyedObjectPoolFactor
      * @throws NullPointerException when config is <code>null</code>.
      */
     public GenericKeyedObjectPoolFactory(KeyedPoolableObjectFactory<K,V> factory, GenericKeyedObjectPool.Config config) throws NullPointerException {
-        this(factory,config.maxActive,config.whenExhaustedAction,config.maxWait,config.maxIdle,config.maxTotal,config.minIdle,config.testOnBorrow,config.testOnReturn,config.timeBetweenEvictionRunsMillis,config.numTestsPerEvictionRun,config.minEvictableIdleTimeMillis,config.testWhileIdle,config.lifo);
+        this(factory,config.getMaxActive(),config.getWhenExhaustedAction(),config.getMaxWait(),config.getMaxIdle(),config.getMaxTotal(),config.getMinIdle(),config.getTestOnBorrow(),config.getTestOnReturn(),config.getTimeBetweenEvictionRunsMillis(),config.getNumTestsPerEvictionRun(),config.getMinEvictableIdleTimeMillis(),config.getTestWhileIdle(),config.getLifo());
     }
 
     /**

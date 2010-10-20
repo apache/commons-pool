@@ -47,18 +47,18 @@ public class TestGenericKeyedObjectPoolFactory extends TestKeyedObjectPoolFactor
 
 
         final GenericKeyedObjectPool.Config config = new GenericKeyedObjectPool.Config();
-        config.maxActive = 1;
-        config.maxIdle = 2;
-        config.maxWait = 3;
-        config.minIdle = 4;
-        config.minEvictableIdleTimeMillis = 5;
-        config.numTestsPerEvictionRun = 6;
-        config.testOnBorrow = true;
-        config.testOnReturn = false;
-        config.testWhileIdle = true;
-        config.timeBetweenEvictionRunsMillis = 8;
-        config.whenExhaustedAction = WhenExhaustedAction.GROW;
-        config.lifo = false;
+        config.setMaxActive(1);
+        config.setMaxIdle(2);
+        config.setMaxWait(3);
+        config.setMinIdle(4);
+        config.setMinEvictableIdleTimeMillis(5);
+        config.setNumTestsPerEvictionRun(6);
+        config.setTestOnBorrow(true);
+        config.setTestOnReturn(false);
+        config.setTestWhileIdle(true);
+        config.setTimeBetweenEvictionRunsMillis(8);
+        config.setWhenExhaustedAction(WhenExhaustedAction.GROW);
+        config.setLifo(false);
         factory = new GenericKeyedObjectPoolFactory<Object,Object>(createObjectFactory(), config);
         pool = (GenericKeyedObjectPool<Object,Object>)factory.createPool();
         assertEquals(1, pool.getMaxActive());
