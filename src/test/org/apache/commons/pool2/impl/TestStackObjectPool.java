@@ -80,7 +80,11 @@ public class TestStackObjectPool extends TestBaseObjectPool {
         SelectiveFactory factory = new SelectiveFactory();
         factory.setValidateSelectively(true);  // Even numbers fail validation
         factory.setPassivateSelectively(true); // Multiples of 3 fail passivation
-        ObjectPool<Integer> pool = new StackObjectPool<Integer>(factory, 20);
+
+        StackObjectPoolConfig config = new StackObjectPoolConfig();
+        config.setMaxSleeping(20);
+
+        ObjectPool<Integer> pool = new StackObjectPool<Integer>(factory, config);
         Integer[] obj = new Integer[10];
         for(int i=0;i<10;i++) {
             Integer object = null;
@@ -123,7 +127,9 @@ public class TestStackObjectPool extends TestBaseObjectPool {
     @Test
     public void testBorrowReturnWithSometimesInvalidObjects() throws Exception {
         SelectiveFactory factory = new SelectiveFactory();
-        ObjectPool<Integer> pool = new StackObjectPool<Integer>(factory, 20);
+        StackObjectPoolConfig config = new StackObjectPoolConfig();
+        config.setMaxSleeping(20);
+        ObjectPool<Integer> pool = new StackObjectPool<Integer>(factory, config);
 
         Integer[] obj = new Integer[10];
         for(int i=0;i<10;i++) {
@@ -150,11 +156,16 @@ public class TestStackObjectPool extends TestBaseObjectPool {
             assertNotNull(pool);
         }
         {
-            StackObjectPool<Integer> pool = new StackObjectPool<Integer>(null,10);
+            StackObjectPoolConfig config = new StackObjectPoolConfig();
+            config.setMaxSleeping(10);
+            StackObjectPool<Integer> pool = new StackObjectPool<Integer>(null,config);
             assertNotNull(pool);
         }
         {
-            StackObjectPool<Integer> pool = new StackObjectPool<Integer>(null,10,5);
+            StackObjectPoolConfig config = new StackObjectPoolConfig();
+            config.setMaxSleeping(20);
+            config.setInitIdleCapacity(5);
+            StackObjectPool<Integer> pool = new StackObjectPool<Integer>(null,config);
             assertNotNull(pool);
         }
     }
@@ -165,8 +176,11 @@ public class TestStackObjectPool extends TestBaseObjectPool {
     @Test
     public void testMaxIdleInitCapacityOutOfRange() throws Exception {
         SimpleFactory factory = new SimpleFactory();
-        StackObjectPool<Object> pool = new StackObjectPool<Object>(factory, -1, 0);
-        assertEquals(pool.getMaxSleeping(), StackObjectPool.DEFAULT_MAX_SLEEPING);
+        StackObjectPoolConfig config = new StackObjectPoolConfig();
+        config.setMaxSleeping(-1);
+        config.setInitIdleCapacity(0);
+        StackObjectPool<Object> pool = new StackObjectPool<Object>(factory, config);
+        assertEquals(pool.getMaxSleeping(), StackObjectPoolConfig.DEFAULT_MAX_SLEEPING);
         pool.addObject();
         pool.close();
     }
@@ -178,7 +192,9 @@ public class TestStackObjectPool extends TestBaseObjectPool {
     @Test
     public void testReturnObjectDiscardOrder() throws Exception {
         SelectiveFactory factory = new SelectiveFactory();
-        ObjectPool<Integer> pool = new StackObjectPool<Integer>(factory, 3);
+        StackObjectPoolConfig config = new StackObjectPoolConfig();
+        config.setMaxSleeping(3);
+        ObjectPool<Integer> pool = new StackObjectPool<Integer>(factory, config);
 
         // borrow more objects than the pool can hold
         Integer i0 = pool.borrowObject();
@@ -233,7 +249,9 @@ public class TestStackObjectPool extends TestBaseObjectPool {
     @Test
     public void testExceptionOnDestroy() throws Exception {
         SelectiveFactory factory = new SelectiveFactory();
-        ObjectPool<Integer> pool = new StackObjectPool<Integer>(factory, 2);
+        StackObjectPoolConfig config = new StackObjectPoolConfig();
+        config.setMaxSleeping(2);
+        ObjectPool<Integer> pool = new StackObjectPool<Integer>(factory, config);
         factory.setThrowOnDestroy(true);
         for (int i = 0; i < 3; i++) {
             pool.addObject(); // Third one will destroy, exception should be swallowed
@@ -257,7 +275,9 @@ public class TestStackObjectPool extends TestBaseObjectPool {
     @Test
     public void testExceptionOnPassivate() throws Exception {
         SelectiveFactory factory = new SelectiveFactory();
-        ObjectPool<Integer> pool = new StackObjectPool<Integer>(factory, 2);
+        StackObjectPoolConfig config = new StackObjectPoolConfig();
+        config.setMaxSleeping(2);
+        ObjectPool<Integer> pool = new StackObjectPool<Integer>(factory, config);
         factory.setThrowOnPassivate(true);
         
         // addObject propagates
@@ -282,7 +302,9 @@ public class TestStackObjectPool extends TestBaseObjectPool {
     @Test
     public void testExceptionOnValidate() throws Exception {
         SelectiveFactory factory = new SelectiveFactory();
-        ObjectPool<Integer> pool = new StackObjectPool<Integer>(factory, 2);
+        StackObjectPoolConfig config = new StackObjectPoolConfig();
+        config.setMaxSleeping(2);
+        ObjectPool<Integer> pool = new StackObjectPool<Integer>(factory, config);
         factory.setThrowOnValidate(true);
         
         // addObject
@@ -359,12 +381,17 @@ public class TestStackObjectPool extends TestBaseObjectPool {
     @Test
     public void testInitIdleCapacityExceeded() throws Exception {
         PoolableObjectFactory<Object> factory = new SimpleFactory();
-        ObjectPool<Object> pool = new StackObjectPool<Object>(factory, 2, 1);
+        StackObjectPoolConfig config = new StackObjectPoolConfig();
+        config.setMaxSleeping(2);
+        config.setInitIdleCapacity(1);
+        ObjectPool<Object> pool = new StackObjectPool<Object>(factory, config);
         pool.addObject();
         pool.addObject();
         assertEquals(2, pool.getNumIdle());
         pool.close();
-        pool = new StackObjectPool<Object>(factory, 1, 2);
+        config.setMaxSleeping(1);
+        config.setInitIdleCapacity(2);
+        pool = new StackObjectPool<Object>(factory, config);
         pool.addObject();
         pool.addObject();
         assertEquals(1, pool.getNumIdle());
