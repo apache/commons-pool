@@ -45,46 +45,31 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  */
 public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<T> {
     /**
-     * Create a new <tt>StackObjectPool</tt> using the specified <i>factory</i> to create new instances.
+     * Create a new <tt>StackObjectPool</tt> using the specified <i>factory</i> to create new instances
+     * with the default configuration.
      *
      * @param factory the {@link PoolableObjectFactory} used to populate the pool
      */
     public StackObjectPool(PoolableObjectFactory<T> factory) {
-        this(factory,DEFAULT_MAX_SLEEPING,DEFAULT_INIT_SLEEPING_CAPACITY);
+        this(factory,new StackObjectPoolConfig());
     }
 
     /**
      * Create a new <tt>SimpleObjectPool</tt> using the specified <i>factory</i> to create new instances,
-     * capping the number of "sleeping" instances to <i>maxIdle</i>.
+     * with a user defined configuration.
      *
-     * @param factory the {@link PoolableObjectFactory} used to populate the pool
-     * @param maxIdle cap on the number of "sleeping" instances in the pool
+     * @param factory the {@link PoolableObjectFactory} used to populate the pool.
+     * @param config the {@link StackObjectPoolConfig} used to configure the pool.
      */
-    public StackObjectPool(PoolableObjectFactory<T> factory, int maxIdle) {
-        this(factory,maxIdle,DEFAULT_INIT_SLEEPING_CAPACITY);
-    }
-
-    /**
-     * <p>Create a new <tt>StackObjectPool</tt> using the specified <code>factory</code> to create new instances,
-     * capping the number of "sleeping" instances to <code>maxIdle</code>, and initially allocating a container
-     * capable of containing at least <code>initIdleCapacity</code> instances.  The pool is not pre-populated.
-     * The <code>initIdleCapacity</code> parameter just determines the initial size of the underlying
-     * container, which can increase beyond this value if <code>maxIdle &gt; initIdleCapacity.</code></p>
-     * 
-     * <p>Negative values of <code>maxIdle</code> are ignored (i.e., the pool is created using
-     * {@link #DEFAULT_MAX_SLEEPING}) as are non-positive values for <code>initIdleCapacity.</code>
-     *
-     * @param factory the {@link PoolableObjectFactory} used to populate the pool
-     * @param maxIdle cap on the number of "sleeping" instances in the pool
-     * @param initIdleCapacity initial size of the pool (this specifies the size of the container,
-     *             it does not cause the pool to be pre-populated.)
-     */
-    public StackObjectPool(PoolableObjectFactory<T> factory, int maxIdle, int initIdleCapacity) {
+    public StackObjectPool(PoolableObjectFactory<T> factory, StackObjectPoolConfig config) {
+        if (config == null) {
+            throw new IllegalArgumentException("config must not be null");
+        }
         _factory = factory;
-        _maxSleeping = (maxIdle < 0 ? DEFAULT_MAX_SLEEPING : maxIdle);
-        int initcapacity = (initIdleCapacity < 1 ? DEFAULT_INIT_SLEEPING_CAPACITY : initIdleCapacity);
+        this.config = config;
+
         _pool = new Stack<T>();
-        _pool.ensureCapacity( initcapacity > _maxSleeping ? _maxSleeping : initcapacity);
+        _pool.ensureCapacity(this.config.getInitIdleCapacity() > this.config.getMaxSleeping() ? this.config.getMaxSleeping() : this.config.getInitIdleCapacity());
     }
 
     /**
@@ -192,7 +177,7 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
         _numActive--;
         if (success) {
             T toBeDestroyed = null;
-            if(_pool.size() >= _maxSleeping) {
+            if(_pool.size() >= this.config.getMaxSleeping()) {
                 shouldDestroy = true;
                 toBeDestroyed = _pool.remove(0); // remove the stalest object
             }
@@ -314,7 +299,7 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
 
         if (success) {
             T toBeDestroyed = null;
-            if(_pool.size() >= _maxSleeping) {
+            if(_pool.size() >= this.config.getMaxSleeping()) {
                 shouldDestroy = true;
                 toBeDestroyed = _pool.remove(0); // remove the stalest object
             }
@@ -332,18 +317,6 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
         }
     }
 
-    /**
-     * The cap on the number of "sleeping" instances in the pool.
-     */
-    protected static final int DEFAULT_MAX_SLEEPING  = 8;
-
-    /**
-     * The default initial size of the pool
-     * (this specifies the size of the container, it does not
-     * cause the pool to be pre-populated.)
-     */
-    protected static final int DEFAULT_INIT_SLEEPING_CAPACITY = 4;
-
     /** 
      * My pool. 
      */
@@ -354,10 +327,10 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
      */
     private final PoolableObjectFactory<T> _factory;
 
-    /** 
-     * The cap on the number of "sleeping" instances in the pool.
+    /**
+     * My {@link StackObjectPoolConfig}.
      */
-    private int _maxSleeping = DEFAULT_MAX_SLEEPING; // @GuardedBy("this")
+    private final StackObjectPoolConfig config;
 
     /**
      * Number of objects borrowed but not yet returned to the pool.
@@ -381,7 +354,7 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
      * @since 1.5.5
      */
     public synchronized int getMaxSleeping() {
-        return _maxSleeping;
+        return this.config.getMaxSleeping();
     }
 
     /**
@@ -391,6 +364,6 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
      * @since 2.0
      */
    public synchronized void setMaxSleeping(int maxSleeping) {
-       _maxSleeping = maxSleeping;
+       this.config.setMaxSleeping(maxSleeping);
    }
 }

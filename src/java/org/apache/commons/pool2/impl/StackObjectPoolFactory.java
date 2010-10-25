@@ -39,31 +39,24 @@ public class StackObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      * @see StackObjectPool#StackObjectPool(PoolableObjectFactory)
      */
     public StackObjectPoolFactory(PoolableObjectFactory<T> factory) {
-        this(factory,StackObjectPool.DEFAULT_MAX_SLEEPING,StackObjectPool.DEFAULT_INIT_SLEEPING_CAPACITY);
+        this(factory,new StackObjectPoolConfig());
     }
 
     /**
      * Create a new StackObjectPoolFactory.
      *
      * @param factory the PoolableObjectFactory used by created pools.
-     * @param maxIdle cap on the number of "sleeping" instances in the pool.
+     * @param config the {@link StackObjectPoolConfig} used to configure the pool.
      */
-    public StackObjectPoolFactory(PoolableObjectFactory<T> factory, int maxIdle) {
-        this(factory,maxIdle,StackObjectPool.DEFAULT_INIT_SLEEPING_CAPACITY);
-    }
-
-    /**
-     * Create a new StackObjectPoolFactory.
-     *
-     * @param factory the PoolableObjectFactory used by created pools.
-     * @param maxIdle cap on the number of "sleeping" instances in the pool.
-     * @param initIdleCapacity - initial size of the pool (this specifies the size of the container,
-     * it does not cause the pool to be pre-populated.)
-     */
-    public StackObjectPoolFactory(PoolableObjectFactory<T> factory, int maxIdle, int initIdleCapacity) {
+    public StackObjectPoolFactory(PoolableObjectFactory<T> factory, StackObjectPoolConfig config) {
+        if (factory == null) {
+            throw new IllegalArgumentException("factory must not be null");
+        }
+        if (config == null) {
+            throw new IllegalArgumentException("config must not be null");
+        }
         _factory = factory;
-        _maxSleeping = maxIdle;
-        _initCapacity = initIdleCapacity;
+        this.config = config;
     }
 
     /**
@@ -72,7 +65,7 @@ public class StackObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      * @return a new StackObjectPool with the configured factory, maxIdle and initial capacity settings
      */
     public ObjectPool<T> createPool() {
-        return new StackObjectPool<T>(_factory,_maxSleeping,_initCapacity);
+        return new StackObjectPool<T>(_factory,this.config);
     }
 
     /**
@@ -81,14 +74,9 @@ public class StackObjectPoolFactory<T> implements ObjectPoolFactory<T> {
     private final PoolableObjectFactory<T> _factory;
 
     /**
-     * The maximum number of idle instances in created pools.
+     * The {@link StackObjectPoolConfig} used to configure the pool.
      */
-    private int _maxSleeping = StackObjectPool.DEFAULT_MAX_SLEEPING;
-
-    /**
-     * The initial size of created pools.
-     */
-    private final int _initCapacity;
+    private final StackObjectPoolConfig config;
 
     /**
      * Returns the factory used by created pools.
@@ -107,7 +95,7 @@ public class StackObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      * @since 1.5.5
      */
     public synchronized int getMaxSleeping() {
-        return _maxSleeping;
+        return this.config.getMaxSleeping();
     }
 
     /**
@@ -117,7 +105,7 @@ public class StackObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      * @since 2.0
      */
     public synchronized void setMaxSleeping(int maxSleeping) {
-        _maxSleeping = maxSleeping;
+        this.config.setMaxSleeping(maxSleeping);
     }
 
     /**
@@ -127,7 +115,7 @@ public class StackObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      * @since 1.5.5
      */
     public synchronized int getInitCapacity() {
-        return _initCapacity;
+        return this.config.getInitIdleCapacity();
     }
 
 }
