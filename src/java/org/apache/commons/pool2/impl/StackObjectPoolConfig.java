@@ -46,6 +46,19 @@ public class StackObjectPoolConfig {
      */
     private final int initIdleCapacity;
 
+    /**
+     * Creates a new StackObjectPoolConfig instance, resetting the parameters
+     * if they are out of range.
+     *
+     * If maxSleeping parameter is less than 0, the configuration instance takes
+     * the {@link #DEFAULT_MAX_SLEEPING} value.
+     *
+     * If initIdleCapacity parameter is less than 1, the configuration instance takes
+     * the {@link #DEFAULT_INIT_SLEEPING_CAPACITY} value.
+     *
+     * @param maxSleeping
+     * @param initIdleCapacity
+     */
     public StackObjectPoolConfig(final int maxSleeping, final int initIdleCapacity) {
         this.maxSleeping = (maxSleeping < 0 ? DEFAULT_MAX_SLEEPING : maxSleeping);
         this.initIdleCapacity = (initIdleCapacity < 1 ? DEFAULT_INIT_SLEEPING_CAPACITY : initIdleCapacity);
