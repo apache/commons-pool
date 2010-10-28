@@ -29,7 +29,6 @@ import java.util.NoSuchElementException;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PoolableObjectFactory;
 import org.apache.commons.pool2.TestBaseObjectPool;
-import org.apache.commons.pool2.impl.StackObjectPool;
 import org.junit.Test;
 
 /**
@@ -81,8 +80,9 @@ public class TestStackObjectPool extends TestBaseObjectPool {
         factory.setValidateSelectively(true);  // Even numbers fail validation
         factory.setPassivateSelectively(true); // Multiples of 3 fail passivation
 
-        StackObjectPoolConfig config = new StackObjectPoolConfig();
-        config.setMaxSleeping(20);
+        StackObjectPoolConfig config = new StackObjectPoolConfig.Builder()
+            .setMaxSleeping(20)
+            .createConfig();
 
         ObjectPool<Integer> pool = new StackObjectPool<Integer>(factory, config);
         Integer[] obj = new Integer[10];
@@ -127,8 +127,9 @@ public class TestStackObjectPool extends TestBaseObjectPool {
     @Test
     public void testBorrowReturnWithSometimesInvalidObjects() throws Exception {
         SelectiveFactory factory = new SelectiveFactory();
-        StackObjectPoolConfig config = new StackObjectPoolConfig();
-        config.setMaxSleeping(20);
+        StackObjectPoolConfig config = new StackObjectPoolConfig.Builder()
+            .setMaxSleeping(20)
+            .createConfig();
         ObjectPool<Integer> pool = new StackObjectPool<Integer>(factory, config);
 
         Integer[] obj = new Integer[10];
@@ -156,15 +157,14 @@ public class TestStackObjectPool extends TestBaseObjectPool {
             assertNotNull(pool);
         }
         {
-            StackObjectPoolConfig config = new StackObjectPoolConfig();
-            config.setMaxSleeping(10);
+            StackObjectPoolConfig config = new StackObjectPoolConfig.Builder()
+                .setMaxSleeping(10)
+                .createConfig();
             StackObjectPool<Integer> pool = new StackObjectPool<Integer>(null,config);
             assertNotNull(pool);
         }
         {
-            StackObjectPoolConfig config = new StackObjectPoolConfig();
-            config.setMaxSleeping(20);
-            config.setInitIdleCapacity(5);
+            StackObjectPoolConfig config = new StackObjectPoolConfig(20, 5);
             StackObjectPool<Integer> pool = new StackObjectPool<Integer>(null,config);
             assertNotNull(pool);
         }
@@ -176,9 +176,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
     @Test
     public void testMaxIdleInitCapacityOutOfRange() throws Exception {
         SimpleFactory factory = new SimpleFactory();
-        StackObjectPoolConfig config = new StackObjectPoolConfig();
-        config.setMaxSleeping(-1);
-        config.setInitIdleCapacity(0);
+        StackObjectPoolConfig config = new StackObjectPoolConfig(-1, 0);
         StackObjectPool<Object> pool = new StackObjectPool<Object>(factory, config);
         assertEquals(pool.getMaxSleeping(), StackObjectPoolConfig.DEFAULT_MAX_SLEEPING);
         pool.addObject();
@@ -192,8 +190,9 @@ public class TestStackObjectPool extends TestBaseObjectPool {
     @Test
     public void testReturnObjectDiscardOrder() throws Exception {
         SelectiveFactory factory = new SelectiveFactory();
-        StackObjectPoolConfig config = new StackObjectPoolConfig();
-        config.setMaxSleeping(3);
+        StackObjectPoolConfig config = new StackObjectPoolConfig.Builder()
+            .setMaxSleeping(3)
+            .createConfig();
         ObjectPool<Integer> pool = new StackObjectPool<Integer>(factory, config);
 
         // borrow more objects than the pool can hold
@@ -249,8 +248,9 @@ public class TestStackObjectPool extends TestBaseObjectPool {
     @Test
     public void testExceptionOnDestroy() throws Exception {
         SelectiveFactory factory = new SelectiveFactory();
-        StackObjectPoolConfig config = new StackObjectPoolConfig();
-        config.setMaxSleeping(2);
+        StackObjectPoolConfig config = new StackObjectPoolConfig.Builder()
+            .setMaxSleeping(2)
+            .createConfig();
         ObjectPool<Integer> pool = new StackObjectPool<Integer>(factory, config);
         factory.setThrowOnDestroy(true);
         for (int i = 0; i < 3; i++) {
@@ -275,8 +275,9 @@ public class TestStackObjectPool extends TestBaseObjectPool {
     @Test
     public void testExceptionOnPassivate() throws Exception {
         SelectiveFactory factory = new SelectiveFactory();
-        StackObjectPoolConfig config = new StackObjectPoolConfig();
-        config.setMaxSleeping(2);
+        StackObjectPoolConfig config = new StackObjectPoolConfig.Builder()
+            .setMaxSleeping(2)
+            .createConfig();
         ObjectPool<Integer> pool = new StackObjectPool<Integer>(factory, config);
         factory.setThrowOnPassivate(true);
         
@@ -302,8 +303,9 @@ public class TestStackObjectPool extends TestBaseObjectPool {
     @Test
     public void testExceptionOnValidate() throws Exception {
         SelectiveFactory factory = new SelectiveFactory();
-        StackObjectPoolConfig config = new StackObjectPoolConfig();
-        config.setMaxSleeping(2);
+        StackObjectPoolConfig config = new StackObjectPoolConfig.Builder()
+            .setMaxSleeping(2)
+            .createConfig();
         ObjectPool<Integer> pool = new StackObjectPool<Integer>(factory, config);
         factory.setThrowOnValidate(true);
         
@@ -381,16 +383,13 @@ public class TestStackObjectPool extends TestBaseObjectPool {
     @Test
     public void testInitIdleCapacityExceeded() throws Exception {
         PoolableObjectFactory<Object> factory = new SimpleFactory();
-        StackObjectPoolConfig config = new StackObjectPoolConfig();
-        config.setMaxSleeping(2);
-        config.setInitIdleCapacity(1);
+        StackObjectPoolConfig config = new StackObjectPoolConfig(2, 1);
         ObjectPool<Object> pool = new StackObjectPool<Object>(factory, config);
         pool.addObject();
         pool.addObject();
         assertEquals(2, pool.getNumIdle());
         pool.close();
-        config.setMaxSleeping(1);
-        config.setInitIdleCapacity(2);
+        config = new StackObjectPoolConfig(1, 2);
         pool = new StackObjectPool<Object>(factory, config);
         pool.addObject();
         pool.addObject();

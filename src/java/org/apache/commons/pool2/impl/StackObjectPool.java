@@ -51,7 +51,7 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
      * @param factory the {@link PoolableObjectFactory} used to populate the pool
      */
     public StackObjectPool(PoolableObjectFactory<T> factory) {
-        this(factory,new StackObjectPoolConfig());
+        this(factory,StackObjectPoolConfig.Builder.createDefaultConfig());
     }
 
     /**
@@ -62,14 +62,22 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
      * @param config the {@link StackObjectPoolConfig} used to configure the pool.
      */
     public StackObjectPool(PoolableObjectFactory<T> factory, StackObjectPoolConfig config) {
+        _factory = factory;
+        _pool = new Stack<T>();
+        this.reconfigure(config);
+    }
+
+    /**
+     * Reconfigure the current StackObjectPoolFactory instance.
+     *
+     * @param config the {@link StackObjectPoolConfig} used to configure the pool.
+     */
+    public void reconfigure(StackObjectPoolConfig config) {
         if (config == null) {
             throw new IllegalArgumentException("config must not be null");
         }
-        _factory = factory;
-        this.config = config;
-
-        _pool = new Stack<T>();
-        _pool.ensureCapacity(this.config.getInitIdleCapacity() > this.config.getMaxSleeping() ? this.config.getMaxSleeping() : this.config.getInitIdleCapacity());
+        this.maxSleeping = config.getMaxSleeping();
+        _pool.ensureCapacity(config.getInitIdleCapacity() > config.getMaxSleeping() ? config.getMaxSleeping() : config.getInitIdleCapacity());
     }
 
     /**
@@ -177,7 +185,7 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
         _numActive--;
         if (success) {
             T toBeDestroyed = null;
-            if(_pool.size() >= this.config.getMaxSleeping()) {
+            if(_pool.size() >= this.maxSleeping) {
                 shouldDestroy = true;
                 toBeDestroyed = _pool.remove(0); // remove the stalest object
             }
@@ -299,7 +307,7 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
 
         if (success) {
             T toBeDestroyed = null;
-            if(_pool.size() >= this.config.getMaxSleeping()) {
+            if(_pool.size() >= this.maxSleeping) {
                 shouldDestroy = true;
                 toBeDestroyed = _pool.remove(0); // remove the stalest object
             }
@@ -328,9 +336,9 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
     private final PoolableObjectFactory<T> _factory;
 
     /**
-     * My {@link StackObjectPoolConfig}.
+     * cap on the number of "sleeping" instances in the pool
      */
-    private final StackObjectPoolConfig config;
+    private int maxSleeping; // @GuardedBy("this")
 
     /**
      * Number of objects borrowed but not yet returned to the pool.
@@ -354,7 +362,7 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
      * @since 1.5.5
      */
     public synchronized int getMaxSleeping() {
-        return this.config.getMaxSleeping();
+        return this.maxSleeping;
     }
 
     /**
@@ -364,6 +372,6 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
      * @since 2.0
      */
    public synchronized void setMaxSleeping(int maxSleeping) {
-       this.config.setMaxSleeping(maxSleeping);
+       this.maxSleeping = maxSleeping;
    }
 }

@@ -44,14 +44,15 @@ public class TestStackKeyedObjectPoolFactory extends TestKeyedObjectPoolFactory 
         StackKeyedObjectPool<Object,Object> pool = (StackKeyedObjectPool<Object,Object>)factory.createPool();
         pool.close();
 
-        StackObjectPoolConfig config = new StackObjectPoolConfig();
-        config.setMaxSleeping(1);
+        StackObjectPoolConfig config = new StackObjectPoolConfig.Builder()
+            .setMaxSleeping(1)
+            .createConfig();
         factory = new StackKeyedObjectPoolFactory<Object,Object>(createObjectFactory(), config);
         pool = (StackKeyedObjectPool<Object,Object>)factory.createPool();
         assertEquals(1,pool.getMaxSleeping());
         pool.close();
 
-        config.setInitIdleCapacity(2);
+        config = new StackObjectPoolConfig(1, 2);
         factory = new StackKeyedObjectPoolFactory<Object,Object>(createObjectFactory(), config);
         pool = (StackKeyedObjectPool<Object,Object>)factory.createPool();
         assertEquals(1,pool.getMaxSleeping());

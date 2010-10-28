@@ -38,8 +38,9 @@ import org.junit.Test;
 public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
     @Override
     protected KeyedObjectPool<Object,Object> makeEmptyPool(int mincapacity) {
-        StackObjectPoolConfig config = new StackObjectPoolConfig();
-        config.setInitIdleCapacity(mincapacity);
+        StackObjectPoolConfig config = new StackObjectPoolConfig.Builder()
+            .setInitIdleCapacity(mincapacity)
+            .createConfig();
         StackKeyedObjectPool<Object,Object> pool = new StackKeyedObjectPool<Object,Object>(new SimpleFactory(),config);
         return pool;
     }
@@ -148,16 +149,12 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
             assertNotNull(pool);
         }
         {
-            StackObjectPoolConfig config = new StackObjectPoolConfig();
-            config.setMaxSleeping(10);
-            config.setInitIdleCapacity(5);
+            StackObjectPoolConfig config = new StackObjectPoolConfig(10, 5);
             StackKeyedObjectPool<Object,Object> pool = new StackKeyedObjectPool<Object,Object>(new SimpleFactory(),config);
             assertNotNull(pool);
         }
         {
-            StackObjectPoolConfig config = new StackObjectPoolConfig();
-            config.setMaxSleeping(10);
-            config.setInitIdleCapacity(5);
+            StackObjectPoolConfig config = new StackObjectPoolConfig(10, 5);
             StackKeyedObjectPool<Object,Object> pool = new StackKeyedObjectPool<Object,Object>(new SimpleFactory(),config);
             assertNotNull(pool);
         }
