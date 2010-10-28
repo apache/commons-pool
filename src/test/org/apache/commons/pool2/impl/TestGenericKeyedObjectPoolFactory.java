@@ -18,6 +18,8 @@
 package org.apache.commons.pool2.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.apache.commons.pool2.KeyedObjectPoolFactory;
 import org.apache.commons.pool2.KeyedPoolableObjectFactory;
@@ -67,10 +69,10 @@ public class TestGenericKeyedObjectPoolFactory extends TestKeyedObjectPoolFactor
         assertEquals(4, pool.getMinIdle());
         assertEquals(5, pool.getMinEvictableIdleTimeMillis());
         assertEquals(6, pool.getNumTestsPerEvictionRun());
-        assertEquals(true, pool.getTestOnBorrow());
-        assertEquals(false, pool.getTestOnReturn());
-        assertEquals(true, pool.getTestWhileIdle());
-        assertEquals(false, pool.getLifo());
+        assertTrue(pool.getTestOnBorrow());
+        assertFalse(pool.getTestOnReturn());
+        assertTrue(pool.getTestWhileIdle());
+        assertFalse(pool.getLifo());
         assertEquals(8, pool.getTimeBetweenEvictionRunsMillis());
         assertEquals(WhenExhaustedAction.GROW, pool.getWhenExhaustedAction());
         pool.close();
@@ -106,8 +108,8 @@ public class TestGenericKeyedObjectPoolFactory extends TestKeyedObjectPoolFactor
         pool = (GenericKeyedObjectPool<Object,Object>)factory.createPool();
         assertEquals(1, pool.getMaxActive());
         assertEquals(2, pool.getMaxWait());
-        assertEquals(true, pool.getTestOnBorrow());
-        assertEquals(false, pool.getTestOnReturn());
+        assertTrue(pool.getTestOnBorrow());
+        assertFalse(pool.getTestOnReturn());
         assertEquals(WhenExhaustedAction.GROW, pool.getWhenExhaustedAction());
         pool.close();
 
@@ -154,8 +156,8 @@ public class TestGenericKeyedObjectPoolFactory extends TestKeyedObjectPoolFactor
         assertEquals(1, pool.getMaxActive());
         assertEquals(2, pool.getMaxWait());
         assertEquals(3, pool.getMaxIdle());
-        assertEquals(true, pool.getTestOnBorrow());
-        assertEquals(false, pool.getTestOnReturn());
+        assertTrue(pool.getTestOnBorrow());
+        assertFalse(pool.getTestOnReturn());
         assertEquals(WhenExhaustedAction.GROW, pool.getWhenExhaustedAction());
         pool.close();
 
@@ -179,9 +181,9 @@ public class TestGenericKeyedObjectPoolFactory extends TestKeyedObjectPoolFactor
         assertEquals(4, pool.getTimeBetweenEvictionRunsMillis());
         assertEquals(5, pool.getNumTestsPerEvictionRun());
         assertEquals(6, pool.getMinEvictableIdleTimeMillis());
-        assertEquals(true, pool.getTestOnBorrow());
-        assertEquals(false, pool.getTestOnReturn());
-        assertEquals(false, pool.getTestWhileIdle());
+        assertTrue(pool.getTestOnBorrow());
+        assertFalse(pool.getTestOnReturn());
+        assertFalse(pool.getTestWhileIdle());
         assertEquals(WhenExhaustedAction.GROW, pool.getWhenExhaustedAction());
         pool.close();
 
@@ -207,9 +209,9 @@ public class TestGenericKeyedObjectPoolFactory extends TestKeyedObjectPoolFactor
         assertEquals(5, pool.getTimeBetweenEvictionRunsMillis());
         assertEquals(6, pool.getNumTestsPerEvictionRun());
         assertEquals(7, pool.getMinEvictableIdleTimeMillis());
-        assertEquals(true, pool.getTestOnBorrow());
-        assertEquals(false, pool.getTestOnReturn());
-        assertEquals(true, pool.getTestWhileIdle());
+        assertTrue(pool.getTestOnBorrow());
+        assertFalse(pool.getTestOnReturn());
+        assertTrue(pool.getTestWhileIdle());
         assertEquals(WhenExhaustedAction.GROW, pool.getWhenExhaustedAction());
         pool.close();
     }
