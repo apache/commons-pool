@@ -603,7 +603,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * Sets my configuration.
      *
      * @param conf configuration to use.
-     * @see GenericObjectPool.Config
+     * @see GenericObjectPoolConfig
      */
     public synchronized void setConfig(GenericObjectPoolConfig conf) {
         this.config = conf;

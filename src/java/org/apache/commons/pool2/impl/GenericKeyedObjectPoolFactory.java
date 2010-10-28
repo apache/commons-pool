@@ -48,7 +48,7 @@ public class GenericKeyedObjectPoolFactory<K,V> implements KeyedObjectPoolFactor
      *
      * @param factory the KeyedPoolableObjectFactory to used by created pools.
      * @param config a non-null GenericKeyedObjectPool.Config describing the configuration.
-     * @see GenericKeyedObjectPool#GenericKeyedObjectPool(KeyedPoolableObjectFactory, GenericKeyedObjectPool.Config)
+     * @see GenericKeyedObjectPool#GenericKeyedObjectPool(KeyedPoolableObjectFactory, GenericKeyedObjectPoolConfig)
      * @throws NullPointerException when config is <code>null</code>.
      */
     public GenericKeyedObjectPoolFactory(KeyedPoolableObjectFactory<K,V> factory, GenericKeyedObjectPoolConfig config) throws NullPointerException {
@@ -65,7 +65,7 @@ public class GenericKeyedObjectPoolFactory<K,V> implements KeyedObjectPoolFactor
     /**
      * Create a new GenericKeyedObjectPool with the currently configured properties.
      * 
-     * @return GenericKeyedObjectPool with {@link GenericKeyedObjectPool.Config Configuration} determined by
+     * @return GenericKeyedObjectPool with {@link GenericKeyedObjectPoolConfig Configuration} determined by
      * current property settings
      */
     public KeyedObjectPool<K,V> createPool() {
