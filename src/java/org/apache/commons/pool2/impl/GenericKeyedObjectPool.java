@@ -586,7 +586,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
     /**
      * Sets the configuration.
      * @param conf the new configuration to use.
-     * @see GenericKeyedObjectPool.Config
+     * @see GenericKeyedObjectPoolConfig
      */
     public synchronized void setConfig(GenericKeyedObjectPoolConfig conf) {
         this.config = conf;
@@ -1541,13 +1541,14 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
      * @see #setMinIdle
      * @throws Exception If there was an error whilst creating the pooled objects.
      */
+    @SuppressWarnings("unchecked") // OK, see (1)
     private void ensureMinIdle() throws Exception {
         //Check if should sustain the pool
         if (this.config.getMinIdle() > 0) {
             K[] keysCopy;
             synchronized(this) {
                 // Get the current set of keys
-                keysCopy = (K[]) _poolMap.keySet().toArray();
+                keysCopy = (K[]) _poolMap.keySet().toArray(); // (1) keySet() is of type Set<T>
             }
 
             // Loop through all elements in _poolList

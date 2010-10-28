@@ -48,7 +48,7 @@ public class GenericObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      * @param factory the PoolableObjectFactory used by created pools.
      * @param config a non-<code>null</code> GenericObjectPoolConfig describing the configuration.
      * @throws IllegalArgumentException when factory or config is <code>null</code>.
-     * @see GenericObjectPoolConfig#GenericObjectPool(PoolableObjectFactory, GenericObjectPool.Config)
+     * @see GenericObjectPoolConfig#GenericObjectPool(PoolableObjectFactory, GenericObjectPoolConfig)
      */
     public GenericObjectPoolFactory(PoolableObjectFactory<T> factory, GenericObjectPoolConfig config) throws NullPointerException {
         if (factory == null) {
