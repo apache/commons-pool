@@ -77,11 +77,12 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
     }
 
     /**
-     * Reconfigure the current StackObjectPoolFactory instance.
+     * Allows reconfiguring the current StackObjectPoolFactory instance
+     * without setting the parameters one by one.
      *
      * @param config the {@link StackObjectPoolConfig} used to configure the pool.
      */
-    public void reconfigure(StackObjectPoolConfig config) {
+    public synchronized final void reconfigure(StackObjectPoolConfig config) {
         if (config == null) {
             throw new IllegalArgumentException("config must not be null");
         }
