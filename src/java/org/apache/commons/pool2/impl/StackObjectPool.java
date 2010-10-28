@@ -248,7 +248,7 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
                     _factory.destroyObject(element);
                 } catch(Exception e) {
                     // ignore error, keep destroying the rest
-                }                
+                }
             }
         }
         _pool.clear();
