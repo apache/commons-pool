@@ -483,11 +483,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
             }
             if (validateSelectively) {
                 // only odd objects are valid
-                if(obj instanceof Integer) {
-                    return (((obj).intValue() % 2) == 1);
-                } else {
-                    return false;
-                }
+                return (((obj).intValue() % 2) == 1);
             }
             return true;
         }
