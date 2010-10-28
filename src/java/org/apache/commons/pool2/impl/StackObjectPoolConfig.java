@@ -62,4 +62,47 @@ public class StackObjectPoolConfig {
         this.initIdleCapacity = (initIdleCapacity < 1 ? DEFAULT_INIT_SLEEPING_CAPACITY : initIdleCapacity);
     }
 
+    /**
+     * Helper class to easily build {@link StackObjectPoolConfig} instances.
+     */
+    public static final class Builder {
+
+        /**
+         * The {@link StackObjectPoolConfig} instance, initialized with default values.
+         */
+        private final StackObjectPoolConfig config = new StackObjectPoolConfig();
+
+        /**
+         * Set the number of "sleeping" instances in the pool.
+         *
+         * @param maxSleeping the number of "sleeping" instances in the pool.
+         * @return this builder instance.
+         */
+        public Builder setMaxSleeping(int maxSleeping) {
+            this.config.setMaxSleeping(maxSleeping);
+            return this;
+        }
+
+        /**
+         * Set the default initial size of the pool.
+         *
+         * @param initIdleCapacity the default initial size of the pool.
+         * @return this builder instance.
+         */
+        public Builder setInitIdleCapacity(int initIdleCapacity) {
+            this.config.setInitIdleCapacity(initIdleCapacity);
+            return this;
+        }
+
+        /**
+         * Return the created {@link StackObjectPoolConfig} instance.
+         *
+         * @return the created {@link StackObjectPoolConfig} instance.
+         */
+        public StackObjectPoolConfig getConfig() {
+            return this.config;
+        }
+
+    }
+
 }
