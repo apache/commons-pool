@@ -41,8 +41,9 @@ public class TestStackObjectPoolFactory extends TestObjectPoolFactory {
 
     @Test
     public void testConstructors() throws Exception {
-        StackObjectPoolConfig config = new StackObjectPoolConfig();
-        config.setMaxSleeping(1);
+        StackObjectPoolConfig config = new StackObjectPoolConfig.Builder()
+            .setMaxSleeping(1)
+            .createConfig();
         StackObjectPoolFactory<Object> factory = new StackObjectPoolFactory<Object>(new MethodCallPoolableObjectFactory(), config);
         ObjectPool<Object> pool = factory.createPool();
         Object a = pool.borrowObject();

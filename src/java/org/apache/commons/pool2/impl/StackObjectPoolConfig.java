@@ -38,28 +38,25 @@ public class StackObjectPoolConfig {
     /**
      * cap on the number of "sleeping" instances in the pool
      */
-    private int maxSleeping = DEFAULT_MAX_SLEEPING;
+    private final int maxSleeping;
 
     /**
      * initial size of the pool (this specifies the size of the container,
      * it does not cause the pool to be pre-populated.)
      */
-    private int initIdleCapacity = DEFAULT_INIT_SLEEPING_CAPACITY;
+    private final int initIdleCapacity;
+
+    public StackObjectPoolConfig(final int maxSleeping, final int initIdleCapacity) {
+        this.maxSleeping = (maxSleeping < 0 ? DEFAULT_MAX_SLEEPING : maxSleeping);
+        this.initIdleCapacity = (initIdleCapacity < 1 ? DEFAULT_INIT_SLEEPING_CAPACITY : initIdleCapacity);
+    }
 
     public int getMaxSleeping() {
         return maxSleeping;
     }
 
-    public void setMaxSleeping(int maxSleeping) {
-        this.maxSleeping = (maxSleeping < 0 ? DEFAULT_MAX_SLEEPING : maxSleeping);
-    }
-
     public int getInitIdleCapacity() {
         return initIdleCapacity;
-    }
-
-    public void setInitIdleCapacity(int initIdleCapacity) {
-        this.initIdleCapacity = (initIdleCapacity < 1 ? DEFAULT_INIT_SLEEPING_CAPACITY : initIdleCapacity);
     }
 
     /**
@@ -68,9 +65,15 @@ public class StackObjectPoolConfig {
     public static final class Builder {
 
         /**
-         * The {@link StackObjectPoolConfig} instance, initialized with default values.
+         * cap on the number of "sleeping" instances in the pool
          */
-        private final StackObjectPoolConfig config = new StackObjectPoolConfig();
+        private int maxSleeping = DEFAULT_MAX_SLEEPING;
+
+        /**
+         * initial size of the pool (this specifies the size of the container,
+         * it does not cause the pool to be pre-populated.)
+         */
+        private int initIdleCapacity = DEFAULT_INIT_SLEEPING_CAPACITY;
 
         /**
          * Set the number of "sleeping" instances in the pool.
@@ -79,7 +82,7 @@ public class StackObjectPoolConfig {
          * @return this builder instance.
          */
         public Builder setMaxSleeping(int maxSleeping) {
-            this.config.setMaxSleeping(maxSleeping);
+            this.maxSleeping = maxSleeping;
             return this;
         }
 
@@ -90,17 +93,26 @@ public class StackObjectPoolConfig {
          * @return this builder instance.
          */
         public Builder setInitIdleCapacity(int initIdleCapacity) {
-            this.config.setInitIdleCapacity(initIdleCapacity);
+            this.initIdleCapacity = initIdleCapacity;
             return this;
         }
 
         /**
-         * Return the created {@link StackObjectPoolConfig} instance.
+         * Creates a {@link StackObjectPoolConfig} instance.
          *
          * @return the created {@link StackObjectPoolConfig} instance.
          */
-        public StackObjectPoolConfig getConfig() {
-            return this.config;
+        public StackObjectPoolConfig createConfig() {
+            return new StackObjectPoolConfig(this.maxSleeping, this.initIdleCapacity);
+        }
+
+        /**
+         * Creates a {@link StackObjectPoolConfig} instance with default values.
+         *
+         * @return a {@link StackObjectPoolConfig} instance with default values.
+         */
+        public static StackObjectPoolConfig createDefaultConfig() {
+            return new Builder().createConfig();
         }
 
     }

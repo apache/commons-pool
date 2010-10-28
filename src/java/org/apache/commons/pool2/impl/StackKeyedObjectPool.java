@@ -55,7 +55,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
      * @param factory the {@link KeyedPoolableObjectFactory} used to populate the pool
      */
     public StackKeyedObjectPool(KeyedPoolableObjectFactory<K,V> factory) {
-        this(factory,new StackObjectPoolConfig());
+        this(factory,StackObjectPoolConfig.Builder.createDefaultConfig());
     }
 
     /**
@@ -70,14 +70,23 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
         if (factory == null) {
             throw new IllegalArgumentException("factory must not be null");
         }
+        this.reconfigure(config);
+        _factory = factory;
+        _pools = new HashMap<K,Stack<V>>();
+        _activeCount = new HashMap<K,Integer>();
+    }
+
+    /**
+     * Reconfigure the current StackObjectPoolFactory instance.
+     *
+     * @param config the {@link StackObjectPoolConfig} used to configure the pool.
+     */
+    public void reconfigure(StackObjectPoolConfig config) {
         if (config == null) {
             throw new IllegalArgumentException("config must not be null");
         }
-        _factory = factory;
-        this.config = config;
-
-        _pools = new HashMap<K,Stack<V>>();
-        _activeCount = new HashMap<K,Integer>();
+        this.maxSleeping = config.getMaxSleeping();
+        this.initIdleCapacity = config.getInitIdleCapacity();
     }
 
     /**
@@ -93,7 +102,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
         Stack<V> stack = _pools.get(key);
         if(null == stack) {
             stack = new Stack<V>();
-            stack.ensureCapacity(this.config.getInitIdleCapacity() > this.config.getMaxSleeping() ? this.config.getMaxSleeping() : this.config.getInitIdleCapacity());
+            stack.ensureCapacity(this.initIdleCapacity > this.maxSleeping ? this.maxSleeping : this.initIdleCapacity);
             _pools.put(key,stack);
         }
         V obj = null;
@@ -169,11 +178,11 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
         Stack<V> stack = _pools.get(key);
         if(null == stack) {
             stack = new Stack<V>();
-            stack.ensureCapacity(this.config.getInitIdleCapacity() > this.config.getMaxSleeping() ? this.config.getMaxSleeping() : this.config.getInitIdleCapacity());
+            stack.ensureCapacity(this.initIdleCapacity > this.maxSleeping ? this.maxSleeping : this.initIdleCapacity);
             _pools.put(key,stack);
         }
         final int stackSize = stack.size();
-        if (stackSize >= this.config.getMaxSleeping()) {
+        if (stackSize >= this.maxSleeping) {
             final V staleObj;
             if (stackSize > 0) {
                 staleObj = stack.remove(0);
@@ -230,12 +239,12 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
         Stack<V> stack = _pools.get(key);
         if(null == stack) {
             stack = new Stack<V>();
-            stack.ensureCapacity(this.config.getInitIdleCapacity() > this.config.getMaxSleeping() ? this.config.getMaxSleeping() : this.config.getInitIdleCapacity());
+            stack.ensureCapacity(this.initIdleCapacity > this.maxSleeping ? this.maxSleeping : this.initIdleCapacity);
             _pools.put(key,stack);
         }
 
         final int stackSize = stack.size();
-        if (stackSize >= this.config.getMaxSleeping()) {
+        if (stackSize >= this.maxSleeping) {
             final V staleObj;
             if (stackSize > 0) {
                 staleObj = stack.remove(0);
@@ -458,7 +467,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
      * @since 1.5.5
      */
     public synchronized int getMaxSleeping() {
-        return this.config.getMaxSleeping();
+        return this.maxSleeping;
     }
 
     /**
@@ -468,15 +477,15 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
      * @since 2.0
      */
     public synchronized void setMaxSleeping(int maxSleeping) {
-        this.config.setMaxSleeping(maxSleeping);
+        this.maxSleeping = maxSleeping;
     }
 
     /**
      * @return the initial capacity of each pool.
      * @since 1.5.5
      */
-    public int getInitSleepingCapacity() {
-        return this.config.getInitIdleCapacity();
+    public synchronized int getInitSleepingCapacity() {
+        return this.initIdleCapacity;
     }
 
     /**
@@ -513,9 +522,15 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
     private final KeyedPoolableObjectFactory<K,V> _factory;
 
     /**
-     * My {@link StackObjectPoolConfig}.
+     * cap on the number of "sleeping" instances in the pool
      */
-    private final StackObjectPoolConfig config;
+    private int maxSleeping; // @GuardedBy("this")
+
+    /**
+     * initial size of the pool (this specifies the size of the container,
+     * it does not cause the pool to be pre-populated.)
+     */
+    private int initIdleCapacity; // @GuardedBy("this")
 
     /**
      * Total number of object borrowed and not yet returned for all pools.
