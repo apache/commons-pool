@@ -22,7 +22,7 @@ package org.apache.commons.pool2.impl;
  * @since Pool 2.0
  * @version $Revision$ $Date$
  */
-public class GenericKeyedObjectPoolConfig extends AbstractGenericObjectPoolConfig {
+public class GenericKeyedObjectPoolConfig extends GenericObjectPoolConfig {
 
     /**
      * The default cap on the the overall maximum number of objects that can
