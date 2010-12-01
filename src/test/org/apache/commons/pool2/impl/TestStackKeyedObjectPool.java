@@ -149,12 +149,18 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
             assertNotNull(pool);
         }
         {
-            StackObjectPoolConfig config = new StackObjectPoolConfig(10, 5);
+            StackObjectPoolConfig config = new StackObjectPoolConfig.Builder()
+                .setMaxSleeping(10)
+                .setInitIdleCapacity(5)
+                .createConfig();
             StackKeyedObjectPool<Object,Object> pool = new StackKeyedObjectPool<Object,Object>(new SimpleFactory(),config);
             assertNotNull(pool);
         }
         {
-            StackObjectPoolConfig config = new StackObjectPoolConfig(10, 5);
+            StackObjectPoolConfig config = new StackObjectPoolConfig.Builder()
+                .setMaxSleeping(10)
+                .setInitIdleCapacity(5)
+                .createConfig();
             StackKeyedObjectPool<Object,Object> pool = new StackKeyedObjectPool<Object,Object>(new SimpleFactory(),config);
             assertNotNull(pool);
         }

@@ -52,7 +52,10 @@ public class TestStackKeyedObjectPoolFactory extends TestKeyedObjectPoolFactory 
         assertEquals(1,pool.getMaxSleeping());
         pool.close();
 
-        config = new StackObjectPoolConfig(1, 2);
+        config = new StackObjectPoolConfig.Builder()
+            .setMaxSleeping(1)
+            .setInitIdleCapacity(2)
+            .createConfig();
         factory = new StackKeyedObjectPoolFactory<Object,Object>(createObjectFactory(), config);
         pool = (StackKeyedObjectPool<Object,Object>)factory.createPool();
         assertEquals(1,pool.getMaxSleeping());
