@@ -59,7 +59,7 @@ public class StackObjectPoolConfig {
      * @param maxSleeping
      * @param initIdleCapacity
      */
-    public StackObjectPoolConfig(final int maxSleeping, final int initIdleCapacity) {
+    private StackObjectPoolConfig(final int maxSleeping, final int initIdleCapacity) {
         this.maxSleeping = (maxSleeping < 0 ? DEFAULT_MAX_SLEEPING : maxSleeping);
         this.initIdleCapacity = (initIdleCapacity < 1 ? DEFAULT_INIT_SLEEPING_CAPACITY : initIdleCapacity);
     }

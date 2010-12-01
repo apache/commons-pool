@@ -77,7 +77,10 @@ public class StackKeyedObjectPoolFactory<K,V> implements KeyedObjectPoolFactory<
      * @return a new StackKeyedObjectPool with the configured factory, maxSleeping and initialCapacity
      */
     public KeyedObjectPool<K,V> createPool() {
-        return new StackKeyedObjectPool<K,V>(_factory,new StackObjectPoolConfig(this.maxSleeping, this.initIdleCapacity));
+        return new StackKeyedObjectPool<K,V>(_factory,new StackObjectPoolConfig.Builder()
+            .setMaxSleeping(this.maxSleeping)
+            .setInitIdleCapacity(this.initIdleCapacity)
+            .createConfig());
     }
 
     /** 
