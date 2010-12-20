@@ -39,7 +39,7 @@ public class StackObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      * @see StackObjectPool#StackObjectPool(PoolableObjectFactory)
      */
     public StackObjectPoolFactory(PoolableObjectFactory<T> factory) {
-        this(factory,StackObjectPoolConfig.Builder.createDefaultConfig());
+        this(factory,new StackObjectPoolConfig.Builder().createConfig());
     }
 
     /**
@@ -52,20 +52,10 @@ public class StackObjectPoolFactory<T> implements ObjectPoolFactory<T> {
         if (factory == null) {
             throw new IllegalArgumentException("factory must not be null");
         }
-        this.reconfigure(config);
-        _factory = factory;
-    }
-
-    /**
-     * Allows reconfiguring the current StackObjectPoolFactory instance
-     * without setting the parameters one by one.
-     *
-     * @param config the {@link StackObjectPoolConfig} used to configure the pool.
-     */
-    public synchronized final void reconfigure(StackObjectPoolConfig config) {
         if (config == null) {
             throw new IllegalArgumentException("config must not be null");
         }
+        _factory = factory;
         this.maxSleeping = config.getMaxSleeping();
         this.initIdleCapacity = config.getInitIdleCapacity();
     }

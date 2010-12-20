@@ -119,15 +119,6 @@ public class StackObjectPoolConfig {
             return new StackObjectPoolConfig(this.maxSleeping, this.initIdleCapacity);
         }
 
-        /**
-         * Creates a {@link StackObjectPoolConfig} instance with default values.
-         *
-         * @return a {@link StackObjectPoolConfig} instance with default values.
-         */
-        public static StackObjectPoolConfig createDefaultConfig() {
-            return new Builder().createConfig();
-        }
-
     }
 
 }

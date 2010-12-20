@@ -39,7 +39,7 @@ public class StackKeyedObjectPoolFactory<K,V> implements KeyedObjectPoolFactory<
      * @see StackKeyedObjectPool#StackKeyedObjectPool(KeyedPoolableObjectFactory)
      */
     public StackKeyedObjectPoolFactory(KeyedPoolableObjectFactory<K,V> factory) {
-        this(factory,StackObjectPoolConfig.Builder.createDefaultConfig());
+        this(factory,new StackObjectPoolConfig.Builder().createConfig());
     }
 
     /**
@@ -53,20 +53,10 @@ public class StackKeyedObjectPoolFactory<K,V> implements KeyedObjectPoolFactory<
         if (factory == null) {
             throw new IllegalArgumentException("factory must not be null");
         }
-        _factory = factory;
-        this.reconfigure(config);
-    }
-
-    /**
-     * Allows reconfiguring the current StackObjectPoolFactory instance
-     * without setting the parameters one by one.
-     *
-     * @param config the {@link StackObjectPoolConfig} used to configure the pool.
-     */
-    public synchronized final void reconfigure(StackObjectPoolConfig config) {
         if (config == null) {
             throw new IllegalArgumentException("config must not be null");
         }
+        _factory = factory;
         this.maxSleeping = config.getMaxSleeping();
         this.initIdleCapacity = config.getInitIdleCapacity();
     }
