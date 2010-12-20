@@ -152,15 +152,16 @@ public class TestStackObjectPool extends TestBaseObjectPool {
      
     @Test
     public void testVariousConstructors() throws Exception {
+        PoolableObjectFactory<Integer> factory = new SelectiveFactory();
         {
-            StackObjectPool<Integer> pool = new StackObjectPool<Integer>(null);
+            StackObjectPool<Integer> pool = new StackObjectPool<Integer>(factory);
             assertNotNull(pool);
         }
         {
             StackObjectPoolConfig config = new StackObjectPoolConfig.Builder()
                 .setMaxSleeping(10)
                 .createConfig();
-            StackObjectPool<Integer> pool = new StackObjectPool<Integer>(null,config);
+            StackObjectPool<Integer> pool = new StackObjectPool<Integer>(factory,config);
             assertNotNull(pool);
         }
         {
@@ -168,7 +169,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
                 .setMaxSleeping(20)
                 .setInitIdleCapacity(5)
                 .createConfig();
-            StackObjectPool<Integer> pool = new StackObjectPool<Integer>(null,config);
+            StackObjectPool<Integer> pool = new StackObjectPool<Integer>(factory,config);
             assertNotNull(pool);
         }
     }
