@@ -174,6 +174,23 @@ public class TestStackObjectPool extends TestBaseObjectPool {
         }
     }
     
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullFactory1(){
+        new StackObjectPool<Integer>(null);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullFactory2(){
+        new StackObjectPool<Integer>(null, null);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullFactory3(){
+        PoolableObjectFactory<Integer> factory = new SelectiveFactory();
+        new StackObjectPool<Integer>(factory, null);
+    }
+
+    /**
     /**
      * Verify that out of range constructor arguments are ignored.
      */
