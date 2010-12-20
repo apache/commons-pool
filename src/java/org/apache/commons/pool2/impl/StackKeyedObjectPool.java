@@ -55,7 +55,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
      * @param factory the {@link KeyedPoolableObjectFactory} used to populate the pool
      */
     public StackKeyedObjectPool(KeyedPoolableObjectFactory<K,V> factory) {
-        this(factory,StackObjectPoolConfig.Builder.createDefaultConfig());
+        this(factory,new StackObjectPoolConfig.Builder().createConfig());
     }
 
     /**
@@ -70,22 +70,12 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
         if (factory == null) {
             throw new IllegalArgumentException("factory must not be null");
         }
-        this.reconfigure(config);
-        _factory = factory;
-        _pools = new HashMap<K,Stack<V>>();
-        _activeCount = new HashMap<K,Integer>();
-    }
-
-    /**
-     * Allows reconfiguring the current StackObjectPoolFactory instance
-     * without setting the parameters one by one.
-     *
-     * @param config the {@link StackObjectPoolConfig} used to configure the pool.
-     */
-    public synchronized final void reconfigure(StackObjectPoolConfig config) {
         if (config == null) {
             throw new IllegalArgumentException("config must not be null");
         }
+        _factory = factory;
+        _pools = new HashMap<K,Stack<V>>();
+        _activeCount = new HashMap<K,Integer>();
         this.maxSleeping = config.getMaxSleeping();
         this.initIdleCapacity = config.getInitIdleCapacity();
     }

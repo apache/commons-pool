@@ -51,7 +51,7 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
      * @param factory the {@link PoolableObjectFactory} used to populate the pool
      */
     public StackObjectPool(PoolableObjectFactory<T> factory) {
-        this(factory,StackObjectPoolConfig.Builder.createDefaultConfig());
+        this(factory,new StackObjectPoolConfig.Builder().createConfig());
     }
 
     /**
@@ -62,21 +62,14 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
      * @param config the {@link StackObjectPoolConfig} used to configure the pool.
      */
     public StackObjectPool(PoolableObjectFactory<T> factory, StackObjectPoolConfig config) {
-        _factory = factory;
-        _pool = new Stack<T>();
-        this.reconfigure(config);
-    }
-
-    /**
-     * Allows reconfiguring the current StackObjectPoolFactory instance
-     * without setting the parameters one by one.
-     *
-     * @param config the {@link StackObjectPoolConfig} used to configure the pool.
-     */
-    public synchronized final void reconfigure(StackObjectPoolConfig config) {
+        if (factory == null) {
+            throw new IllegalArgumentException("factory must not be null");
+        }
         if (config == null) {
             throw new IllegalArgumentException("config must not be null");
         }
+        _factory = factory;
+        _pool = new Stack<T>();
         this.maxSleeping = config.getMaxSleeping();
         _pool.ensureCapacity(config.getInitIdleCapacity() > config.getMaxSleeping() ? config.getMaxSleeping() : config.getInitIdleCapacity());
     }
