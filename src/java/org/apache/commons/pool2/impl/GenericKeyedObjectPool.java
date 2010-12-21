@@ -1098,7 +1098,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
      * @return the number of instances corresponding to the given <code>key</code> currently borrowed in this pool
      */
     @Override
-    public synchronized int getNumActive(Object key) {
+    public synchronized int getNumActive(K key) {
         final ObjectQueue pool = (_poolMap.get(key));
         return pool != null ? pool.activeCount : 0;
     }
@@ -1110,7 +1110,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
      * @return the number of instances corresponding to the given <code>key</code> currently idle in this pool
      */
     @Override
-    public synchronized int getNumIdle(Object key) {
+    public synchronized int getNumIdle(K key) {
         final ObjectQueue pool = (_poolMap.get(key));
         return pool != null ? pool.queue.size() : 0;
     }
