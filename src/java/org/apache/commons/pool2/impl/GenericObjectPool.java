@@ -44,7 +44,7 @@ import org.apache.commons.pool2.impl.GenericKeyedObjectPool.ObjectTimestampPair;
  *    objects that can be allocated by the pool (checked out to clients, or
  *    idle awaiting checkout) at a given time.  When non-positive, there is no
  *    limit to the number of objects that can be managed by the pool at one time.
- *    When {@link #setMaxActive <i>maxActive</i>} is reached, the pool is said
+ *    When {@link # <i>maxActive</i>} is reached, the pool is said
  *    to be exhausted. The default setting for this parameter is 8.
  *  </li>
  *  <li>
@@ -65,7 +65,7 @@ import org.apache.commons.pool2.impl.GenericKeyedObjectPool.ObjectTimestampPair;
  *    <li>
  *      When {@link #setWhenExhaustedAction <i>whenExhaustedAction</i>} is
  *      {@link WhenExhaustedAction#GROW}, {@link #borrowObject} will create a new
- *      object and return it (essentially making {@link #setMaxActive <i>maxActive</i>}
+ *      object and return it (essentially making {@link #expected <i>maxActive</i>}
  *      meaningless.)
  *    </li>
  *    <li>
@@ -194,7 +194,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @param factory the (possibly <tt>null</tt>)PoolableObjectFactory to use to create, validate and destroy objects
      */
     public GenericObjectPool(PoolableObjectFactory<T> factory) {
-        this(factory, new GenericObjectPoolConfig());
+        this(factory, new GenericObjectPoolConfig.Builder().createConfig());
     }
 
     /**
@@ -210,7 +210,19 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
             throw new IllegalArgumentException("config must not be null");
         }
         this._factory = factory;
-        this.config = config;
+        this.maxIdle = config.getMaxIdle();
+        this.minIdle = config.getMinIdle();
+        this.maxTotal = config.getMaxTotal();
+        this.maxWait = config.getMaxWait();
+        this.whenExhaustedAction = config.getWhenExhaustedAction();
+        this.testOnBorrow = config.getTestOnBorrow();
+        this.testOnReturn = config.getTestOnReturn();
+        this.testWhileIdle = config.getTestWhileIdle();
+        this.timeBetweenEvictionRunsMillis = config.getTimeBetweenEvictionRunsMillis();
+        this.numTestsPerEvictionRun = config.getNumTestsPerEvictionRun();
+        this.minEvictableIdleTimeMillis = config.getMinEvictableIdleTimeMillis();
+        this.lifo = config.getLifo();
+        this.softMinEvictableIdleTimeMillis = config.getSoftMinEvictableIdleTimeMillis();
 
         _pool = new CursorableLinkedList<ObjectTimestampPair<T>>();
         startEvictor(config.getTimeBetweenEvictionRunsMillis());
@@ -227,10 +239,11 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * be managed by the pool at one time.
      *
      * @return the cap on the total number of object instances managed by the pool.
-     * @see #setMaxActive
+     * @see #expected
+     * @since 2.0
      */
-    public synchronized int getMaxActive() {
-        return this.config.getMaxActive();
+    public synchronized int getMaxTotal() {
+        return this.maxTotal;
     }
 
     /**
@@ -238,13 +251,13 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * (checked out to clients, or idle awaiting checkout) at a given time. Use
      * a negative value for no limit.
      *
-     * @param maxActive The cap on the total number of object instances managed by the pool.
+     * @param maxTotal The cap on the total number of object instances managed by the pool.
      * Negative values mean that there is no limit to the number of objects allocated
      * by the pool.
-     * @see #getMaxActive
+     * @see #getMaxTotal
      */
-    public synchronized void setMaxActive(int maxActive) {
-        this.config.setMaxActive(maxActive);
+    public synchronized void setMaxTotal(int maxTotal) {
+        this.maxTotal = maxTotal;
         allocate();
     }
 
@@ -257,7 +270,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @see #setWhenExhaustedAction
      */
     public synchronized WhenExhaustedAction getWhenExhaustedAction() {
-        return this.config.getWhenExhaustedAction();
+        return this.whenExhaustedAction;
     }
 
     /**
@@ -271,7 +284,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @see #getWhenExhaustedAction
      */
     public synchronized void setWhenExhaustedAction(WhenExhaustedAction whenExhaustedAction) {
-        this.config.setWhenExhaustedAction(whenExhaustedAction);
+        this.whenExhaustedAction = whenExhaustedAction;
         allocate();
     }
 
@@ -292,7 +305,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @see WhenExhaustedAction#BLOCK
      */
     public synchronized long getMaxWait() {
-        return this.config.getMaxWait();
+        return this.maxWait;
     }
 
     /**
@@ -311,7 +324,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @see WhenExhaustedAction#BLOCK
      */
     public synchronized void setMaxWait(long maxWait) {
-        this.config.setMaxWait(maxWait);
+        this.maxWait = maxWait;
         allocate();
     }
 
@@ -321,7 +334,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @see #setMaxIdle
      */
     public synchronized int getMaxIdle() {
-        return this.config.getMaxIdle();
+        return this.maxIdle;
     }
 
     /**
@@ -338,7 +351,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @see #getMaxIdle
      */
     public synchronized void setMaxIdle(int maxIdle) {
-        this.config.setMaxIdle(maxIdle);
+        this.maxIdle = maxIdle;
         allocate();
     }
 
@@ -355,7 +368,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @see #getTimeBetweenEvictionRunsMillis()
      */
     public synchronized void setMinIdle(int minIdle) {
-        this.config.setMinIdle(minIdle);
+        this.minIdle = minIdle;
         allocate();
     }
 
@@ -368,7 +381,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @see #setMinIdle
      */
     public synchronized int getMinIdle() {
-        return this.config.getMinIdle();
+        return this.minIdle;
     }
 
     /**
@@ -383,7 +396,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @see #setTestOnBorrow
      */
     public boolean getTestOnBorrow() {
-        return this.config.getTestOnBorrow();
+        return this.testOnBorrow;
     }
 
     /**
@@ -398,7 +411,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @see #getTestOnBorrow
      */
     public void setTestOnBorrow(boolean testOnBorrow) {
-        this.config.setTestOnBorrow(testOnBorrow);
+        this.testOnBorrow = testOnBorrow;
     }
 
     /**
@@ -411,7 +424,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @see #setTestOnReturn
      */
     public boolean getTestOnReturn() {
-        return this.config.getTestOnReturn();
+        return this.testOnReturn;
     }
 
     /**
@@ -424,7 +437,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @see #getTestOnReturn
      */
     public void setTestOnReturn(boolean testOnReturn) {
-        this.config.setTestOnReturn(testOnReturn);
+        this.testOnReturn = testOnReturn;
     }
 
     /**
@@ -437,7 +450,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @see #setTimeBetweenEvictionRunsMillis
      */
     public synchronized long getTimeBetweenEvictionRunsMillis() {
-        return this.config.getTimeBetweenEvictionRunsMillis();
+        return this.timeBetweenEvictionRunsMillis;
     }
 
     /**
@@ -450,8 +463,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @see #getTimeBetweenEvictionRunsMillis
      */
     public synchronized void setTimeBetweenEvictionRunsMillis(long timeBetweenEvictionRunsMillis) {
-        this.config.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
-        startEvictor(this.config.getTimeBetweenEvictionRunsMillis());
+        this.timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
+        startEvictor(this.timeBetweenEvictionRunsMillis);
     }
 
     /**
@@ -463,7 +476,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @see #setTimeBetweenEvictionRunsMillis
      */
     public synchronized int getNumTestsPerEvictionRun() {
-        return this.config.getNumTestsPerEvictionRun();
+        return this.numTestsPerEvictionRun;
     }
 
     /**
@@ -481,7 +494,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @see #setTimeBetweenEvictionRunsMillis
      */
     public synchronized void setNumTestsPerEvictionRun(int numTestsPerEvictionRun) {
-        this.config.setNumTestsPerEvictionRun(numTestsPerEvictionRun);
+        this.numTestsPerEvictionRun = numTestsPerEvictionRun;
     }
 
     /**
@@ -494,7 +507,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @see #setTimeBetweenEvictionRunsMillis
      */
     public synchronized long getMinEvictableIdleTimeMillis() {
-        return this.config.getMinEvictableIdleTimeMillis();
+        return this.minEvictableIdleTimeMillis;
     }
 
     /**
@@ -509,7 +522,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @see #setTimeBetweenEvictionRunsMillis
      */
     public synchronized void setMinEvictableIdleTimeMillis(long minEvictableIdleTimeMillis) {
-        this.config.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis);
+        this.minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
     }
 
     /**
@@ -523,7 +536,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @see #setSoftMinEvictableIdleTimeMillis
      */
     public synchronized long getSoftMinEvictableIdleTimeMillis() {
-        return this.config.getSoftMinEvictableIdleTimeMillis();
+        return this.softMinEvictableIdleTimeMillis;
     }
 
     /**
@@ -540,7 +553,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @see #getSoftMinEvictableIdleTimeMillis
      */
     public synchronized void setSoftMinEvictableIdleTimeMillis(long softMinEvictableIdleTimeMillis) {
-        this.config.setSoftMinEvictableIdleTimeMillis(softMinEvictableIdleTimeMillis);
+        this.softMinEvictableIdleTimeMillis = softMinEvictableIdleTimeMillis;
     }
 
     /**
@@ -554,7 +567,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @see #setTimeBetweenEvictionRunsMillis
      */
     public synchronized boolean getTestWhileIdle() {
-        return this.config.getTestWhileIdle();
+        return this.testWhileIdle;
     }
 
     /**
@@ -568,7 +581,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @see #setTimeBetweenEvictionRunsMillis
      */
     public synchronized void setTestWhileIdle(boolean testWhileIdle) {
-        this.config.setTestWhileIdle(testWhileIdle);
+        this.testWhileIdle = testWhileIdle;
     }
 
     /**
@@ -582,7 +595,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @since 1.4
      */
      public synchronized boolean getLifo() {
-         return this.config.getLifo();
+         return this.lifo;
      }
 
      /**
@@ -596,19 +609,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
       * @since 1.4
       */
      public synchronized void setLifo(boolean lifo) {
-         this.config.setLifo(lifo);
+         this.lifo = lifo;
      }
-
-    /**
-     * Sets my configuration.
-     *
-     * @param conf configuration to use.
-     * @see GenericObjectPoolConfig
-     */
-    public synchronized void setConfig(GenericObjectPoolConfig conf) {
-        this.config = conf;
-        allocate();
-    }
 
     //-- ObjectPool methods ------------------------------------------
 
@@ -649,8 +651,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
             // Get local copy of current config. Can't sync when used later as
             // it can result in a deadlock. Has the added advantage that config
             // is consistent for entire method execution
-            whenExhaustedAction = this.config.getWhenExhaustedAction();
-            maxWait = this.config.getMaxWait();
+            whenExhaustedAction = this.whenExhaustedAction;
+            maxWait = this.maxWait;
 
             // Add this request to the queue
             _allocationQueue.add(latch);
@@ -772,7 +774,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
             // activate & validate the object
             try {
                 _factory.activateObject(latch.getPair().getValue());
-                if(this.config.getTestOnBorrow() &&
+                if(testOnBorrow &&
                         !_factory.validateObject(latch.getPair().getValue())) {
                     throw new Exception("ValidateObject failed");
                 }
@@ -833,7 +835,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
 
         // Second utilise any spare capacity to create new objects
         for(;;) {
-            if((!_allocationQueue.isEmpty()) && (this.config.getMaxActive() < 0 || (_numActive + _numInternalProcessing) < this.config.getMaxActive())) {
+            if((!_allocationQueue.isEmpty()) && (this.maxTotal < 0 || (_numActive + _numInternalProcessing) < this.maxTotal)) {
                 Latch latch = _allocationQueue.removeFirst();
                 latch.setMayCreate(true);
                 _numInternalProcessing++;
@@ -989,7 +991,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      */
     private void addObjectToPool(T obj, boolean decrementNumActive) throws Exception {
         boolean success = true;
-        if(this.config.getTestOnReturn() && !(_factory.validateObject(obj))) {
+        if(this.testOnReturn && !(_factory.validateObject(obj))) {
             success = false;
         } else {
             _factory.passivateObject(obj);
@@ -1003,7 +1005,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
             if (isClosed()) {
                 shouldDestroy = true;
             } else {
-                if((this.config.getMaxIdle() >= 0) && (_pool.size() >= this.config.getMaxIdle())) {
+                if((this.maxIdle >= 0) && (_pool.size() >= this.maxIdle)) {
                     shouldDestroy = true;
                 } else if(success) {
                     // borrowObject always takes the first element from the queue,
@@ -1078,20 +1080,20 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
                 return;
             }
             if (null == _evictionCursor) {
-                _evictionCursor = (_pool.cursor(this.config.getLifo() ? _pool.size() : 0));
+                _evictionCursor = (_pool.cursor(this.lifo ? _pool.size() : 0));
             }
         }
 
         for (int i=0,m=getNumTests();i<m;i++) {
             final ObjectTimestampPair<T> pair;
             synchronized (this) {
-                if ((this.config.getLifo() && !_evictionCursor.hasPrevious()) ||
-                        !this.config.getLifo() && !_evictionCursor.hasNext()) {
+                if ((this.lifo && !_evictionCursor.hasPrevious()) ||
+                        !this.lifo && !_evictionCursor.hasNext()) {
                     _evictionCursor.close();
-                    _evictionCursor = _pool.cursor(this.config.getLifo() ? _pool.size() : 0);
+                    _evictionCursor = _pool.cursor(this.lifo ? _pool.size() : 0);
                 }
 
-                pair = this.config.getLifo() ? _evictionCursor.previous() : _evictionCursor.next();
+                pair = this.lifo ? _evictionCursor.previous() : _evictionCursor.next();
 
                 _evictionCursor.remove();
                 _numInternalProcessing++;
@@ -1138,7 +1140,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
             synchronized (this) {
                 if(!removeObject) {
                     _evictionCursor.add(pair);
-                    if (this.config.getLifo()) {
+                    if (this.lifo) {
                         // Skip over the element we just added back
                         _evictionCursor.previous();
                     }
@@ -1185,9 +1187,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      */
     private synchronized int calculateDeficit(boolean incrementInternal) {
         int objectDeficit = getMinIdle() - getNumIdle();
-        if (this.config.getMaxActive() > 0) {
+        if (this.maxTotal > 0) {
             int growLimit = Math.max(0,
-                    getMaxActive() - getNumActive() - getNumIdle() - _numInternalProcessing);
+                    maxTotal - getNumActive() - getNumIdle() - _numInternalProcessing);
             objectDeficit = Math.min(objectDeficit, growLimit);
         }
         if (incrementInternal && objectDeficit >0) {
@@ -1264,7 +1266,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @return the number of tests for the Evictor to run
      */
     private int getNumTests() {
-        int numTestsPerEvictionRun = this.config.getNumTestsPerEvictionRun();
+        int numTestsPerEvictionRun = this.numTestsPerEvictionRun;
         if(numTestsPerEvictionRun >= 0) {
             return Math.min(numTestsPerEvictionRun, _pool.size());
         } else {
@@ -1360,8 +1362,141 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
 
     //--- private attributes ---------------------------------------
 
-    /** Pool configuration */
-    private GenericObjectPoolConfig config;
+    /* Pool configuration */
+
+    /**
+     * The cap on the number of idle instances in the pool.
+     */
+    private int maxIdle; // @GuardedBy("this")
+
+    /**
+     * The cap on the minimum number of idle instances in the pool.
+     *
+     * @see #setMinIdle
+     */
+    private int minIdle; // @GuardedBy("this")
+
+    /**
+     * The cap on the total number of active instances from the pool.
+     *
+     * @see #  */
+    private int maxTotal; // @GuardedBy("this")
+
+    /**
+     * The maximum amount of time (in millis) the
+     * {@link org.apache.commons.pool2.ObjectPool#borrowObject} method should block before throwing
+     * an exception when the pool is exhausted and the
+     * {@link #getWhenExhaustedAction "when exhausted" action} is
+     * {@link WhenExhaustedAction#BLOCK}.
+     *
+     * When less than or equal to 0, the {@link org.apache.commons.pool2.ObjectPool#borrowObject} method
+     * may block indefinitely.
+     *
+     * @see #setMaxWait
+     * @see WhenExhaustedAction#BLOCK
+     * @see #setWhenExhaustedAction
+     */
+    private long maxWait; // @GuardedBy("this")
+
+    /**
+     * The action to take when the {@link org.apache.commons.pool2.ObjectPool#borrowObject} method
+     * is invoked when the pool is exhausted (the maximum number
+     * of "active" objects has been reached).
+     *
+     * @see WHEN_EXHAUSTED_ACTION#BLOCK
+     * @see WHEN_EXHAUSTED_ACTION#FAIL
+     * @see WHEN_EXHAUSTED_ACTION#GROW
+     * @see DEFAULT_WHEN_EXHAUSTED_ACTION
+     * @see #setWhenExhaustedAction
+     */
+    private WhenExhaustedAction whenExhaustedAction; // @GuardedBy("this")
+
+    /**
+     * When <tt>true</tt>, objects will be
+     * {@link org.apache.commons.pool2.PoolableObjectFactory#validateObject validated}
+     * before being returned by the {@link org.apache.commons.pool2.ObjectPool#borrowObject}
+     * method.  If the object fails to validate,
+     * it will be dropped from the pool, and we will attempt
+     * to borrow another.
+     *
+     * @see #setTestOnBorrow
+     */
+    private boolean testOnBorrow; // @GuardedBy("this")
+
+    /**
+     * When <tt>true</tt>, objects will be
+     * {@link org.apache.commons.pool2.ObjectPool#validateObject validated}
+     * before being returned to the pool within the
+     * {@link #returnObject}.
+     *
+     * @see #setTestOnReturn
+     */
+    private boolean testOnReturn; // @GuardedBy("this")
+
+    /**
+     * When <tt>true</tt>, objects will be
+     * {@link org.apache.commons.pool2.ObjectPool#validateObject validated}
+     * by the idle object evictor (if any).  If an object
+     * fails to validate, it will be dropped from the pool.
+     *
+     * @see #setTestWhileIdle
+     * @see #setTimeBetweenEvictionRunsMillis
+     */
+    private boolean testWhileIdle; // @GuardedBy("this")
+
+    /**
+     * The number of milliseconds to sleep between runs of the
+     * idle object evictor thread.
+     * When non-positive, no idle object evictor thread will be
+     * run.
+     *
+     * @see #setTimeBetweenEvictionRunsMillis
+     */
+    private long timeBetweenEvictionRunsMillis; // @GuardedBy("this")
+
+    /**
+     * The max number of objects to examine during each run of the
+     * idle object evictor thread (if any).
+     * <p>
+     * When a negative value is supplied, <tt>ceil({@link #getNumIdle})/abs({@link #getNumTestsPerEvictionRun})</tt>
+     * tests will be run.  I.e., when the value is <i>-n</i>, roughly one <i>n</i>th of the
+     * idle objects will be tested per run.
+     *
+     * @see #setNumTestsPerEvictionRun
+     * @see #setTimeBetweenEvictionRunsMillis
+     */
+    private int numTestsPerEvictionRun; // @GuardedBy("this")
+
+    /**
+     * The minimum amount of time an object may sit idle in the pool
+     * before it is eligible for eviction by the idle object evictor
+     * (if any).
+     * When non-positive, no objects will be evicted from the pool
+     * due to idle time alone.
+     *
+     * @see #setMinEvictableIdleTimeMillis
+     * @see #setTimeBetweenEvictionRunsMillis
+     */
+    private long minEvictableIdleTimeMillis; // @GuardedBy("this")
+
+    /**
+     * Whether or not the pool behaves as a LIFO queue (last in first out)
+     *
+     * @see #setLifo
+     */
+    private boolean lifo; // @GuardedBy("this")
+
+    /**
+     * The minimum amount of time an object may sit idle in the pool
+     * before it is eligible for eviction by the idle object evictor
+     * (if any), with the extra condition that at least
+     * "minIdle" amount of object remain in the pool.
+     * When non-positive, no objects will be evicted from the pool
+     * due to idle time alone.
+     *
+     * @see #setSoftMinEvictableIdleTimeMillis
+     */
+    private long softMinEvictableIdleTimeMillis; // @GuardedBy("this")
 
     /** My pool. */
     private CursorableLinkedList<ObjectTimestampPair<T>> _pool = null;

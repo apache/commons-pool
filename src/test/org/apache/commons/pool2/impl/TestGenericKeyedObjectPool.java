@@ -65,8 +65,8 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
                 public void passivateObject(Object key, Object obj) { }
             }
         );
-        pool.setMaxActive(mincapacity);
-        pool.setMaxIdle(mincapacity);
+        pool.setMaxTotalPerKey(mincapacity);
+        pool.setMaxIdlePerKey(mincapacity);
         return pool;
     }
 
@@ -106,7 +106,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
 
     @Test
     public void testNegativeMaxActive() throws Exception {
-        pool.setMaxActive(-1);
+        pool.setMaxTotalPerKey(-1);
         pool.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
         String obj = pool.borrowObject("");
         assertEquals("0",obj);
@@ -164,9 +164,9 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     }
 
     @Test
-    public void testMaxIdle() throws Exception {
-        pool.setMaxActive(100);
-        pool.setMaxIdle(8);
+    public void testMaxIdlePerKey() throws Exception {
+        pool.setMaxTotalPerKey(100);
+        pool.setMaxIdlePerKey(8);
         String[] active = new String[100];
         for(int i=0;i<100;i++) {
             active[i] = pool.borrowObject("");
@@ -200,7 +200,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
 
     @Test
     public void testMaxActive() throws Exception {
-        pool.setMaxActive(3);
+        pool.setMaxTotalPerKey(3);
         pool.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
 
         pool.borrowObject("");
@@ -216,7 +216,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
 
     @Test
     public void testMaxActiveZero() throws Exception {
-        pool.setMaxActive(0);
+        pool.setMaxTotalPerKey(0);
         pool.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
 
         try {
@@ -229,7 +229,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     
     @Test
     public void testWhenExhaustedGrow() throws Exception {
-        pool.setMaxActive(1);
+        pool.setMaxTotalPerKey(1);
         pool.setMaxTotal(1);
         pool.setWhenExhaustedAction(WhenExhaustedAction.GROW);
         for (int i = 0; i < 10; i++) {
@@ -239,7 +239,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
 
     @Test
     public void testMaxTotal() throws Exception {
-        pool.setMaxActive(2);
+        pool.setMaxTotalPerKey(2);
         pool.setMaxTotal(3);
         pool.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
 
@@ -294,7 +294,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
 
     @Test
     public void testMaxTotalLRU() throws Exception {
-        pool.setMaxActive(2);
+        pool.setMaxTotalPerKey(2);
         pool.setMaxTotal(3);
 //        pool.setWhenExhaustedAction(GenericKeyedObjectPoolConfig.WHEN_EXHAUSTED_GROW);
 
@@ -346,12 +346,12 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     public void testSettersAndGetters() throws Exception {
         GenericKeyedObjectPool<String,String> pool = new GenericKeyedObjectPool<String,String>(new SimpleFactory<String>());
         {
-            pool.setMaxActive(123);
-            assertEquals(123,pool.getMaxActive());
+            pool.setMaxTotalPerKey(123);
+            assertEquals(123,pool.getMaxTotalPerKey());
         }
         {
-            pool.setMaxIdle(12);
-            assertEquals(12,pool.getMaxIdle());
+            pool.setMaxIdlePerKey(12);
+            assertEquals(12,pool.getMaxIdlePerKey());
         }
         {
             pool.setMaxWait(1234L);
@@ -399,8 +399,8 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
 
     @Test
     public void testEviction() throws Exception {
-        pool.setMaxIdle(500);
-        pool.setMaxActive(500);
+        pool.setMaxIdlePerKey(500);
+        pool.setMaxTotalPerKey(500);
         pool.setNumTestsPerEvictionRun(100);
         pool.setMinEvictableIdleTimeMillis(250L);
         pool.setTimeBetweenEvictionRunsMillis(500L);
@@ -449,8 +449,8 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
 
     @Test
     public void testEviction2() throws Exception {
-        pool.setMaxIdle(500);
-        pool.setMaxActive(500);
+        pool.setMaxIdlePerKey(500);
+        pool.setMaxTotalPerKey(500);
         pool.setNumTestsPerEvictionRun(100);
         pool.setMinEvictableIdleTimeMillis(500L);
         pool.setTimeBetweenEvictionRunsMillis(500L);
@@ -517,8 +517,8 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     }
     
     public void testThreaded1() throws Exception {
-        pool.setMaxActive(15);
-        pool.setMaxIdle(15);
+        pool.setMaxTotalPerKey(15);
+        pool.setMaxIdlePerKey(15);
         pool.setMaxWait(1000L);
         runTestThreads(20, 100, 50);
     }
@@ -533,20 +533,20 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         SimpleFactory<String> factory = new SimpleFactory<String>();
         factory.setEvenValid(false);     // Every other validation fails
         factory.setDestroyLatency(100);  // Destroy takes 100 ms
-        factory.setMaxActive(maxTotal);  // (makes - destroys) bound
+        factory.setMaxTotalPerKey(maxTotal);  // (makes - destroys) bound
         factory.setValidationEnabled(true);
         pool = new GenericKeyedObjectPool<String,String>(factory);
         pool.setMaxTotal(maxTotal);
-        pool.setMaxIdle(-1);
+        pool.setMaxIdlePerKey(-1);
         pool.setTestOnReturn(true);
         pool.setMaxWait(10000L);
         runTestThreads(5, 10, 50);
     }
 
     public void testMinIdle() throws Exception {
-        pool.setMaxIdle(500);
+        pool.setMaxIdlePerKey(500);
         pool.setMinIdle(5);
-        pool.setMaxActive(10);
+        pool.setMaxTotalPerKey(10);
         pool.setNumTestsPerEvictionRun(0);
         pool.setMinEvictableIdleTimeMillis(50L);
         pool.setTimeBetweenEvictionRunsMillis(100L);
@@ -583,9 +583,9 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     }
 
     public void testMinIdleMaxActive() throws Exception {
-        pool.setMaxIdle(500);
+        pool.setMaxIdlePerKey(500);
         pool.setMinIdle(5);
-        pool.setMaxActive(10);
+        pool.setMaxTotalPerKey(10);
         pool.setNumTestsPerEvictionRun(0);
         pool.setMinEvictableIdleTimeMillis(50L);
         pool.setTimeBetweenEvictionRunsMillis(100L);
@@ -635,9 +635,9 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     }
 
     public void testMinIdleNoPopulateImmediately() throws Exception {
-        pool.setMaxIdle(500);
+        pool.setMaxIdlePerKey(500);
         pool.setMinIdle(5);
-        pool.setMaxActive(10);
+        pool.setMaxTotalPerKey(10);
         pool.setNumTestsPerEvictionRun(0);
         pool.setMinEvictableIdleTimeMillis(50L);
         pool.setTimeBetweenEvictionRunsMillis(1000L);
@@ -656,9 +656,9 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     }
 
     public void testMinIdleNoPreparePool() throws Exception {
-        pool.setMaxIdle(500);
+        pool.setMaxIdlePerKey(500);
         pool.setMinIdle(5);
-        pool.setMaxActive(10);
+        pool.setMaxTotalPerKey(10);
         pool.setNumTestsPerEvictionRun(0);
         pool.setMinEvictableIdleTimeMillis(50L);
         pool.setTimeBetweenEvictionRunsMillis(100L);
@@ -913,7 +913,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         int[] smallPrimes = {2, 3, 5, 7};
         Random random = new Random();
         random.setSeed(System.currentTimeMillis());
-        pool.setMaxIdle(-1);
+        pool.setMaxIdlePerKey(-1);
         for (int i = 0; i < smallPrimes.length; i++) {
             pool.setNumTestsPerEvictionRun(smallPrimes[i]);
             for (int j = 0; j < 5; j++) {// Try the tests a few times
@@ -996,7 +996,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     
     public void testConstructors() {
         
-        // Make constructor arguments all different from defaults
+        // Make constructor arguments all different from Builder.DEFAULTs
         int maxActive = 1;
         int maxIdle = 2;
         long maxWait = 3;
@@ -1018,46 +1018,47 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
             }
         };   
         GenericKeyedObjectPool<Object,Object> pool = new GenericKeyedObjectPool<Object,Object>(factory);
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MAX_ACTIVE, pool.getMaxActive());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MAX_IDLE, pool.getMaxIdle());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MAX_WAIT, pool.getMaxWait());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MIN_IDLE, pool.getMinIdle());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL, pool.getMaxTotal());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_MAX_IDLE_PER_KEY, pool.getMaxTotalPerKey());
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_MAX_IDLE_PER_KEY, pool.getMaxIdlePerKey());
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_MAX_WAIT, pool.getMaxWait());
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_MIN_IDLE_PER_KEY, pool.getMinIdlePerKey());
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_MAX_TOTAL, pool.getMaxTotal());
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
                 pool.getMinEvictableIdleTimeMillis());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
                 pool.getNumTestsPerEvictionRun());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_TEST_ON_BORROW,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_TEST_ON_BORROW,
                 pool.getTestOnBorrow());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_TEST_ON_RETURN,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_TEST_ON_RETURN,
                 pool.getTestOnReturn());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_TEST_WHILE_IDLE,
                 pool.getTestWhileIdle());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
                 pool.getTimeBetweenEvictionRunsMillis());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_WHEN_EXHAUSTED_ACTION,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_WHEN_EXHAUSTED_ACTION,
                 pool.getWhenExhaustedAction());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_LIFO, pool.getLifo());
-        
-        GenericKeyedObjectPoolConfig config = new GenericKeyedObjectPoolConfig();
-        config.setLifo(lifo);
-        config.setMaxActive(maxActive);
-        config.setMaxIdle(maxIdle);
-        config.setMinIdle(minIdle);
-        config.setMaxTotal(maxTotal);
-        config.setMaxWait(maxWait);
-        config.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis);
-        config.setNumTestsPerEvictionRun(numTestsPerEvictionRun);
-        config.setTestOnBorrow(testOnBorrow);
-        config.setTestOnReturn(testOnReturn);
-        config.setTestWhileIdle(testWhileIdle);
-        config.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
-        config.setWhenExhaustedAction(whenExhaustedAction);
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_LIFO, pool.getLifo());
+
+        GenericKeyedObjectPoolConfig config = new GenericKeyedObjectPoolConfig.Builder()
+            .setLifo(lifo)
+            .setMaxTotalPerKey(maxActive)
+            .setMaxIdlePerKey(maxIdle)
+            .setMinIdlePerKey(minIdle)
+            .setMaxTotal(maxTotal)
+            .setMaxWait(maxWait)
+            .setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis)
+            .setNumTestsPerEvictionRun(numTestsPerEvictionRun)
+            .setTestOnBorrow(testOnBorrow)
+            .setTestOnReturn(testOnReturn)
+            .setTestWhileIdle(testWhileIdle)
+            .setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis)
+            .setWhenExhaustedAction(whenExhaustedAction)
+            .createConfig();
         pool = new GenericKeyedObjectPool<Object,Object>(factory, config);
-        assertEquals(maxActive, pool.getMaxActive());
-        assertEquals(maxIdle, pool.getMaxIdle());
+        assertEquals(maxActive, pool.getMaxTotalPerKey());
+        assertEquals(maxIdle, pool.getMaxIdlePerKey());
         assertEquals(maxWait, pool.getMaxWait());
-        assertEquals(minIdle, pool.getMinIdle());
+        assertEquals(minIdle, pool.getMinIdlePerKey());
         assertEquals(maxTotal, pool.getMaxTotal());
         assertEquals(minEvictableIdleTimeMillis,
                 pool.getMinEvictableIdleTimeMillis());
@@ -1070,149 +1071,155 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals(whenExhaustedAction,pool.getWhenExhaustedAction());
         assertEquals(lifo, pool.getLifo());
 
-        config = new GenericKeyedObjectPoolConfig();
-        config.setMaxActive(maxActive);
+        config = new GenericKeyedObjectPoolConfig.Builder()
+                .setMaxTotalPerKey(maxActive)
+                .createConfig();
         pool = new GenericKeyedObjectPool<Object,Object>(factory, config);
-        assertEquals(maxActive, pool.getMaxActive());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MAX_IDLE, pool.getMaxIdle());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MAX_WAIT, pool.getMaxWait());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MIN_IDLE, pool.getMinIdle());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL, pool.getMaxTotal());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
+        assertEquals(maxActive, pool.getMaxTotalPerKey());
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_MAX_IDLE_PER_KEY, pool.getMaxIdlePerKey());
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_MAX_WAIT, pool.getMaxWait());
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_MIN_IDLE_PER_KEY, pool.getMinIdlePerKey());
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_MAX_TOTAL, pool.getMaxTotal());
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
                 pool.getMinEvictableIdleTimeMillis());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
                 pool.getNumTestsPerEvictionRun());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_TEST_ON_BORROW,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_TEST_ON_BORROW,
                 pool.getTestOnBorrow());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_TEST_ON_RETURN,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_TEST_ON_RETURN,
                 pool.getTestOnReturn());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_TEST_WHILE_IDLE,
                 pool.getTestWhileIdle());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
                 pool.getTimeBetweenEvictionRunsMillis());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_WHEN_EXHAUSTED_ACTION,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_WHEN_EXHAUSTED_ACTION,
                 pool.getWhenExhaustedAction());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_LIFO, pool.getLifo());
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_LIFO, pool.getLifo());
 
-        config = new GenericKeyedObjectPoolConfig();
-        config.setMaxActive(maxActive);
-        config.setWhenExhaustedAction(whenExhaustedAction);
-        config.setMaxWait(maxWait);
+        config = new GenericKeyedObjectPoolConfig.Builder()
+            .setMaxTotalPerKey(maxActive)
+            .setWhenExhaustedAction(whenExhaustedAction)
+            .setMaxWait(maxWait)
+            .createConfig();
         pool = new GenericKeyedObjectPool<Object,Object>(factory, config);
-        assertEquals(maxActive, pool.getMaxActive());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MAX_IDLE, pool.getMaxIdle());
+        assertEquals(maxActive, pool.getMaxTotalPerKey());
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_MAX_IDLE_PER_KEY, pool.getMaxIdlePerKey());
         assertEquals(maxWait, pool.getMaxWait());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MIN_IDLE, pool.getMinIdle());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL, pool.getMaxTotal());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_MIN_IDLE_PER_KEY, pool.getMinIdlePerKey());
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_MAX_TOTAL, pool.getMaxTotal());
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
                 pool.getMinEvictableIdleTimeMillis());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
                 pool.getNumTestsPerEvictionRun());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_TEST_ON_BORROW,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_TEST_ON_BORROW,
                 pool.getTestOnBorrow());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_TEST_ON_RETURN,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_TEST_ON_RETURN,
                 pool.getTestOnReturn());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_TEST_WHILE_IDLE,
                 pool.getTestWhileIdle());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
                 pool.getTimeBetweenEvictionRunsMillis());
         assertEquals(whenExhaustedAction,pool.getWhenExhaustedAction());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_LIFO, pool.getLifo());
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_LIFO, pool.getLifo());
 
-        config = new GenericKeyedObjectPoolConfig();
-        config.setMaxActive(maxActive);
-        config.setWhenExhaustedAction(whenExhaustedAction);
-        config.setMaxWait(maxWait);
-        config.setTestOnReturn(testOnReturn);
-        config.setTestOnReturn(testOnReturn);
+        config = new GenericKeyedObjectPoolConfig.Builder()
+            .setMaxTotalPerKey(maxActive)
+            .setWhenExhaustedAction(whenExhaustedAction)
+            .setMaxWait(maxWait)
+            .setTestOnReturn(testOnReturn)
+            .setTestOnReturn(testOnReturn)
+            .createConfig();
         pool = new GenericKeyedObjectPool<Object,Object>(factory, config);
-        assertEquals(maxActive, pool.getMaxActive());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MAX_IDLE, pool.getMaxIdle());
+        assertEquals(maxActive, pool.getMaxTotalPerKey());
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_MAX_IDLE_PER_KEY, pool.getMaxIdlePerKey());
         assertEquals(maxWait, pool.getMaxWait());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MIN_IDLE, pool.getMinIdle());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL, pool.getMaxTotal());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_MIN_IDLE_PER_KEY, pool.getMinIdlePerKey());
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_MAX_TOTAL, pool.getMaxTotal());
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
                 pool.getMinEvictableIdleTimeMillis());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
                 pool.getNumTestsPerEvictionRun());
         assertEquals(testOnBorrow,pool.getTestOnBorrow());
         assertEquals(testOnReturn,pool.getTestOnReturn());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_TEST_WHILE_IDLE,
                 pool.getTestWhileIdle());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
                 pool.getTimeBetweenEvictionRunsMillis());
         assertEquals(whenExhaustedAction,pool.getWhenExhaustedAction());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_LIFO, pool.getLifo());
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_LIFO, pool.getLifo());
 
-        config = new GenericKeyedObjectPoolConfig();
-        config.setMaxActive(maxActive);
-        config.setWhenExhaustedAction(whenExhaustedAction);
-        config.setMaxWait(maxWait);
-        config.setMinIdle(minIdle);
+        config = new GenericKeyedObjectPoolConfig.Builder()
+            .setMaxTotalPerKey(maxActive)
+            .setWhenExhaustedAction(whenExhaustedAction)
+            .setMaxWait(maxWait)
+            .setMinIdlePerKey(minIdle)
+            .createConfig();
         pool = new GenericKeyedObjectPool<Object,Object>(factory, config);
-        assertEquals(maxActive, pool.getMaxActive());
-        assertEquals(maxIdle, pool.getMaxIdle());
+        assertEquals(maxActive, pool.getMaxTotalPerKey());
+        assertEquals(maxIdle, pool.getMaxIdlePerKey());
         assertEquals(maxWait, pool.getMaxWait());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MIN_IDLE, pool.getMinIdle());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL, pool.getMaxTotal());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_MIN_IDLE_PER_KEY, pool.getMinIdlePerKey());
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_MAX_TOTAL, pool.getMaxTotal());
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
                 pool.getMinEvictableIdleTimeMillis());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
                 pool.getNumTestsPerEvictionRun());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_TEST_ON_BORROW,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_TEST_ON_BORROW,
                 pool.getTestOnBorrow());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_TEST_ON_RETURN,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_TEST_ON_RETURN,
                 pool.getTestOnReturn());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_TEST_WHILE_IDLE,
                 pool.getTestWhileIdle());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
                 pool.getTimeBetweenEvictionRunsMillis());
         assertEquals(whenExhaustedAction,pool.getWhenExhaustedAction());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_LIFO, pool.getLifo());
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_LIFO, pool.getLifo());
 
-        config = new GenericKeyedObjectPoolConfig();
-        config.setMaxActive(maxActive);
-        config.setWhenExhaustedAction(whenExhaustedAction);
-        config.setMaxWait(maxWait);
-        config.setMaxIdle(maxIdle);
-        config.setTestOnBorrow(testOnBorrow);
-        config.setTestOnReturn(testOnReturn);
+        config = new GenericKeyedObjectPoolConfig.Builder()
+            .setMaxTotalPerKey(maxActive)
+            .setWhenExhaustedAction(whenExhaustedAction)
+            .setMaxWait(maxWait)
+            .setMaxIdlePerKey(maxIdle)
+            .setTestOnBorrow(testOnBorrow)
+            .setTestOnReturn(testOnReturn)
+            .createConfig();
         pool = new GenericKeyedObjectPool<Object,Object>(factory, config);
-        assertEquals(maxActive, pool.getMaxActive());
-        assertEquals(maxIdle, pool.getMaxIdle());
+        assertEquals(maxActive, pool.getMaxTotalPerKey());
+        assertEquals(maxIdle, pool.getMaxIdlePerKey());
         assertEquals(maxWait, pool.getMaxWait());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MIN_IDLE, pool.getMinIdle());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL, pool.getMaxTotal());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_MIN_IDLE_PER_KEY, pool.getMinIdlePerKey());
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_MAX_TOTAL, pool.getMaxTotal());
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
                 pool.getMinEvictableIdleTimeMillis());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
                 pool.getNumTestsPerEvictionRun());
         assertEquals(testOnBorrow, pool.getTestOnBorrow());
         assertEquals(testOnReturn, pool.getTestOnReturn());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_TEST_WHILE_IDLE,
                 pool.getTestWhileIdle());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
                 pool.getTimeBetweenEvictionRunsMillis());
         assertEquals(whenExhaustedAction,pool.getWhenExhaustedAction());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_LIFO, pool.getLifo());
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_LIFO, pool.getLifo());
 
-        config = new GenericKeyedObjectPoolConfig();
-        config.setMaxActive(maxActive);
-        config.setWhenExhaustedAction(whenExhaustedAction);
-        config.setMaxWait(maxWait);
-        config.setMaxIdle(maxIdle);
-        config.setTestOnBorrow(testOnBorrow);
-        config.setTestOnReturn(testOnReturn);
-        config.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
-        config.setNumTestsPerEvictionRun(numTestsPerEvictionRun);
-        config.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis);
-        config.setTestWhileIdle(testWhileIdle);
+        config = new GenericKeyedObjectPoolConfig.Builder()
+            .setMaxTotalPerKey(maxActive)
+            .setWhenExhaustedAction(whenExhaustedAction)
+            .setMaxWait(maxWait)
+            .setMaxIdlePerKey(maxIdle)
+            .setTestOnBorrow(testOnBorrow)
+            .setTestOnReturn(testOnReturn)
+            .setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis)
+            .setNumTestsPerEvictionRun(numTestsPerEvictionRun)
+            .setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis)
+            .setTestWhileIdle(testWhileIdle)
+            .createConfig();
         pool = new GenericKeyedObjectPool<Object,Object>(factory, config);
-        assertEquals(maxActive, pool.getMaxActive());
-        assertEquals(maxIdle, pool.getMaxIdle());
+        assertEquals(maxActive, pool.getMaxTotalPerKey());
+        assertEquals(maxIdle, pool.getMaxIdlePerKey());
         assertEquals(maxWait, pool.getMaxWait());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MIN_IDLE, pool.getMinIdle());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL, pool.getMaxTotal());
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_MIN_IDLE_PER_KEY, pool.getMinIdlePerKey());
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_MAX_TOTAL, pool.getMaxTotal());
         assertEquals(minEvictableIdleTimeMillis,
                 pool.getMinEvictableIdleTimeMillis());
         assertEquals(numTestsPerEvictionRun,
@@ -1224,25 +1231,26 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals(timeBetweenEvictionRunsMillis,
                 pool.getTimeBetweenEvictionRunsMillis());
         assertEquals(whenExhaustedAction,pool.getWhenExhaustedAction());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_LIFO, pool.getLifo());
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_LIFO, pool.getLifo());
 
-        config = new GenericKeyedObjectPoolConfig();
-        config.setMaxActive(maxActive);
-        config.setWhenExhaustedAction(whenExhaustedAction);
-        config.setMaxWait(maxWait);
-        config.setMaxIdle(maxIdle);
-        config.setMaxTotal(maxTotal);
-        config.setTestOnBorrow(testOnBorrow);
-        config.setTestOnReturn(testOnReturn);
-        config.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
-        config.setNumTestsPerEvictionRun(numTestsPerEvictionRun);
-        config.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis);
-        config.setTestWhileIdle(testWhileIdle);
+        config = new GenericKeyedObjectPoolConfig.Builder()
+            .setMaxTotalPerKey(maxActive)
+            .setWhenExhaustedAction(whenExhaustedAction)
+            .setMaxWait(maxWait)
+            .setMaxIdlePerKey(maxIdle)
+            .setMaxTotal(maxTotal)
+            .setTestOnBorrow(testOnBorrow)
+            .setTestOnReturn(testOnReturn)
+            .setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis)
+            .setNumTestsPerEvictionRun(numTestsPerEvictionRun)
+            .setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis)
+            .setTestWhileIdle(testWhileIdle)
+            .createConfig();
         pool = new GenericKeyedObjectPool<Object,Object>(factory, config);
-        assertEquals(maxActive, pool.getMaxActive());
-        assertEquals(maxIdle, pool.getMaxIdle());
+        assertEquals(maxActive, pool.getMaxTotalPerKey());
+        assertEquals(maxIdle, pool.getMaxIdlePerKey());
         assertEquals(maxWait, pool.getMaxWait());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MIN_IDLE, pool.getMinIdle());
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_MIN_IDLE_PER_KEY, pool.getMinIdlePerKey());
         assertEquals(maxTotal, pool.getMaxTotal());
         assertEquals(minEvictableIdleTimeMillis,
                 pool.getMinEvictableIdleTimeMillis());
@@ -1255,26 +1263,27 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals(timeBetweenEvictionRunsMillis,
                 pool.getTimeBetweenEvictionRunsMillis());
         assertEquals(whenExhaustedAction,pool.getWhenExhaustedAction());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_LIFO, pool.getLifo());
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_LIFO, pool.getLifo());
 
-        config = new GenericKeyedObjectPoolConfig();
-        config.setMaxActive(maxActive);
-        config.setWhenExhaustedAction(whenExhaustedAction);
-        config.setMaxWait(maxWait);
-        config.setMaxIdle(maxIdle);
-        config.setMaxTotal(maxTotal);
-        config.setMinIdle(minIdle);
-        config.setTestOnBorrow(testOnBorrow);
-        config.setTestOnReturn(testOnReturn);
-        config.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
-        config.setNumTestsPerEvictionRun(numTestsPerEvictionRun);
-        config.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis);
-        config.setTestWhileIdle(testWhileIdle);
+        config = new GenericKeyedObjectPoolConfig.Builder()
+            .setMaxTotalPerKey(maxActive)
+            .setWhenExhaustedAction(whenExhaustedAction)
+            .setMaxWait(maxWait)
+            .setMaxIdlePerKey(maxIdle)
+            .setMaxTotal(maxTotal)
+            .setMinIdlePerKey(minIdle)
+            .setTestOnBorrow(testOnBorrow)
+            .setTestOnReturn(testOnReturn)
+            .setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis)
+            .setNumTestsPerEvictionRun(numTestsPerEvictionRun)
+            .setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis)
+            .setTestWhileIdle(testWhileIdle)
+            .createConfig();
         pool = new GenericKeyedObjectPool<Object,Object>(factory, config);
-        assertEquals(maxActive, pool.getMaxActive());
-        assertEquals(maxIdle, pool.getMaxIdle());
+        assertEquals(maxActive, pool.getMaxTotalPerKey());
+        assertEquals(maxIdle, pool.getMaxIdlePerKey());
         assertEquals(maxWait, pool.getMaxWait());
-        assertEquals(minIdle, pool.getMinIdle());
+        assertEquals(minIdle, pool.getMinIdlePerKey());
         assertEquals(maxTotal, pool.getMaxTotal());
         assertEquals(minEvictableIdleTimeMillis,
                 pool.getMinEvictableIdleTimeMillis());
@@ -1287,27 +1296,28 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals(timeBetweenEvictionRunsMillis,
                 pool.getTimeBetweenEvictionRunsMillis());
         assertEquals(whenExhaustedAction,pool.getWhenExhaustedAction());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_LIFO, pool.getLifo());
+        assertEquals(GenericKeyedObjectPoolConfig.Builder.DEFAULT_LIFO, pool.getLifo());
 
-        config = new GenericKeyedObjectPoolConfig();
-        config.setMaxActive(maxActive);
-        config.setWhenExhaustedAction(whenExhaustedAction);
-        config.setMaxWait(maxWait);
-        config.setMaxIdle(maxIdle);
-        config.setMaxTotal(maxTotal);
-        config.setMinIdle(minIdle);
-        config.setTestOnBorrow(testOnBorrow);
-        config.setTestOnReturn(testOnReturn);
-        config.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
-        config.setNumTestsPerEvictionRun(numTestsPerEvictionRun);
-        config.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis);
-        config.setTestWhileIdle(testWhileIdle);
-        config.setLifo(lifo);
+        config = new GenericKeyedObjectPoolConfig.Builder()
+            .setMaxTotalPerKey(maxActive)
+            .setWhenExhaustedAction(whenExhaustedAction)
+            .setMaxWait(maxWait)
+            .setMaxIdlePerKey(maxIdle)
+            .setMaxTotal(maxTotal)
+            .setMinIdlePerKey(minIdle)
+            .setTestOnBorrow(testOnBorrow)
+            .setTestOnReturn(testOnReturn)
+            .setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis)
+            .setNumTestsPerEvictionRun(numTestsPerEvictionRun)
+            .setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis)
+            .setTestWhileIdle(testWhileIdle)
+            .setLifo(lifo)
+            .createConfig();
         pool = new GenericKeyedObjectPool<Object,Object>(factory, config);
-        assertEquals(maxActive, pool.getMaxActive());
-        assertEquals(maxIdle, pool.getMaxIdle());
+        assertEquals(maxActive, pool.getMaxTotalPerKey());
+        assertEquals(maxIdle, pool.getMaxIdlePerKey());
         assertEquals(maxWait, pool.getMaxWait());
-        assertEquals(minIdle, pool.getMinIdle());
+        assertEquals(minIdle, pool.getMinIdlePerKey());
         assertEquals(maxTotal, pool.getMaxTotal());
         assertEquals(minEvictableIdleTimeMillis,
                 pool.getMinEvictableIdleTimeMillis());
@@ -1407,7 +1417,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         GenericKeyedObjectPool<String,String> pool = new GenericKeyedObjectPool<String,String>(factory);
         pool.setWhenExhaustedAction(WhenExhaustedAction.BLOCK);
         pool.setMaxWait(5000);
-        pool.setMaxActive(1);
+        pool.setMaxTotalPerKey(1);
         pool.setMaxTotal(-1);
         pool.borrowObject("one");
         long start = System.currentTimeMillis();
@@ -1451,7 +1461,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         GenericKeyedObjectPool<String,String> pool = new GenericKeyedObjectPool<String,String>(factory);
         pool.setWhenExhaustedAction(WhenExhaustedAction.BLOCK);
         pool.setMaxWait(maxWait);
-        pool.setMaxActive(threadsPerKey);
+        pool.setMaxTotalPerKey(threadsPerKey);
         // Create enough threads so half the threads will have to wait
         WaitingTestThread wtt[] = new WaitingTestThread[keyCount * threadsPerKey * 2];
         for(int i=0; i < wtt.length; i++){
@@ -1673,7 +1683,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
             }
         }
         
-        public void setMaxActive(int maxActive) {
+        public void setMaxTotalPerKey(int maxActive) {
             this.maxActive = maxActive;
         }
         public void setDestroyLatency(long destroyLatency) {
