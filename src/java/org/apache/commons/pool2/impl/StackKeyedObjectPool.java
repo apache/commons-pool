@@ -379,8 +379,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
      * @return the {@link KeyedPoolableObjectFactory} used by this pool to manage object instances.
      * @since 1.5.5
      */
-    // TODO does this still need to be synchronised?
-    public synchronized KeyedPoolableObjectFactory<K,V> getFactory() {
+    public KeyedPoolableObjectFactory<K,V> getFactory() {
         return _factory;
     }
 
