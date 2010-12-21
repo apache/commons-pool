@@ -199,7 +199,7 @@ import org.apache.commons.pool2.PoolUtils;
  * @version $Revision$ $Date$
  * @since Pool 1.0
  */
-public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
+public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implements KeyedObjectPool<K,V>, GenericKeyedObjectPoolMBean<K> {
 
     //--- constructors -----------------------------------------------
 
@@ -251,29 +251,14 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
     //--- configuration methods --------------------------------------
 
     /**
-     * Returns the cap on the number of object instances allocated by the pool
-     * (checked out or idle),  per key.
-     * A negative value indicates no limit.
-     *
-     * @return the cap on the number of active instances per key.
-     * @see #setMaxTotalPerKey
-     * @since 2.0
+     * {@inheritDoc}
      */
     public synchronized int getMaxTotalPerKey() {
         return this.maxTotalPerKey;
     }
 
     /**
-     * Sets the cap on the total number of instances from all pools combined.
-     * When <code>maxTotal</code> is set to a
-     * positive value and {@link #borrowObject borrowObject} is invoked
-     * when at the limit with no idle instances available, an attempt is made to
-     * create room by clearing the oldest 15% of the elements from the keyed
-     * pools.
-     *
-     * @param maxTotal The cap on the total number of instances across pools.
-     * Use a negative value for no limit.
-     * @see #getMaxTotal
+     * {@inheritDoc}
      */
     public synchronized void setMaxTotalPerKey(int maxTotalPerKey) {
         this.maxTotalPerKey = maxTotalPerKey;
@@ -281,26 +266,14 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
     }
 
     /**
-     * Returns the overall maximum number of objects (across pools) that can
-     * exist at one time. A negative value indicates no limit.
-     * @return the maximum number of instances in circulation at one time.
-     * @see #setMaxTotal
+     * {@inheritDoc}
      */
     public synchronized int getMaxTotal() {
         return this.maxTotal;
     }
 
     /**
-     * Sets the cap on the total number of instances from all pools combined.
-     * When <code>maxTotal</code> is set to a
-     * positive value and {@link #borrowObject borrowObject} is invoked
-     * when at the limit with no idle instances available, an attempt is made to
-     * create room by clearing the oldest 15% of the elements from the keyed
-     * pools.
-     *
-     * @param maxTotal The cap on the total number of instances across pools.
-     * Use a negative value for no limit.
-     * @see #getMaxTotal
+     * {@inheritDoc}
      */
     public synchronized void setMaxTotal(int maxTotal) {
         this.maxTotal = maxTotal;
@@ -308,25 +281,14 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
     }
 
     /**
-     * Returns the action to take when the {@link #borrowObject} method
-     * is invoked when the pool is exhausted (the maximum number
-     * of "active" objects has been reached).
-     *
-     * @return one of {@link WhenExhaustedAction#BLOCK},
-     * {@link WhenExhaustedAction#FAIL} or {@link WhenExhaustedAction#GROW}
-     * @see #setWhenExhaustedAction
+     * {@inheritDoc}
      */
     public synchronized WhenExhaustedAction getWhenExhaustedAction() {
         return this.whenExhaustedAction;
     }
 
     /**
-     * Sets the action to take when the {@link #borrowObject} method
-     * is invoked when the pool is exhausted (the maximum number
-     * of "active" objects has been reached).
-     *
-     * @param whenExhaustedAction the action code
-     * @see #getWhenExhaustedAction
+     * {@inheritDoc}
      */
     public synchronized void setWhenExhaustedAction(WhenExhaustedAction whenExhaustedAction) {
         this.whenExhaustedAction = whenExhaustedAction;
@@ -335,70 +297,28 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
 
 
     /**
-     * Returns the maximum amount of time (in milliseconds) the
-     * {@link #borrowObject} method should block before throwing
-     * an exception when the pool is exhausted and the
-     * {@link #setWhenExhaustedAction "when exhausted" action} is
-     * {@link WhenExhaustedAction#BLOCK}.
-     *
-     * When less than or equal to 0, the {@link #borrowObject} method
-     * may block indefinitely.
-     *
-     * @return the maximum number of milliseconds borrowObject will block.
-     * @see #setMaxWait
-     * @see #setWhenExhaustedAction
-     * @see WhenExhaustedAction#BLOCK
+     * {@inheritDoc}
      */
     public synchronized long getMaxWait() {
         return this.maxWait;
     }
 
     /**
-     * Sets the maximum amount of time (in milliseconds) the
-     * {@link #borrowObject} method should block before throwing
-     * an exception when the pool is exhausted and the
-     * {@link #setWhenExhaustedAction "when exhausted" action} is
-     * {@link WhenExhaustedAction#BLOCK}.
-     *
-     * When less than or equal to 0, the {@link #borrowObject} method
-     * may block indefinitely.
-     *
-     * @param maxWait the maximum number of milliseconds borrowObject will block or negative for indefinitely.
-     * @see #getMaxWait
-     * @see #setWhenExhaustedAction
-     * @see WhenExhaustedAction#BLOCK
+     * {@inheritDoc}
      */
     public synchronized void setMaxWait(long maxWait) {
         this.maxWait = maxWait;
     }
 
     /**
-     * Returns the cap on the number of "idle" instances per key.
-     * @return the maximum number of "idle" instances that can be held
-     * in a given keyed pool.
-     * @see #setMaxIdle
-     *
-     * @since 2.0
+     * {@inheritDoc}
      */
     public synchronized int getMaxIdlePerKey() {
         return this.maxIdlePerKey;
     }
 
     /**
-     * Sets the cap on the number of "idle" instances in the pool.
-     * If maxIdle is set too low on heavily loaded systems it is possible you
-     * will see objects being destroyed and almost immediately new objects
-     * being created. This is a result of the active threads momentarily
-     * returning objects faster than they are requesting them them, causing the
-     * number of idle objects to rise above maxIdle. The best value for maxIdle
-     * for heavily loaded system will vary but the default is a good starting
-     * point.
-     * @param maxIdlePerKey the maximum number of "idle" instances that can be held
-     * in a given keyed pool. Use a negative value for no limit.
-     * @see #getMaxIdle
-     * @see #DEFAULT_MAX_IDLE_PER_KEY
-     *
-     * @since 2.0
+     * {@inheritDoc}
      */
     public synchronized void setMaxIdlePerKey(int maxIdlePerKey) {
         this.maxIdlePerKey = maxIdlePerKey;
@@ -406,115 +326,56 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
     }
 
     /**
-     * Sets the minimum number of idle objects to maintain in each of the keyed
-     * pools. This setting has no effect unless
-     * <code>timeBetweenEvictionRunsMillis > 0</code> and attempts to ensure
-     * that each pool has the required minimum number of instances are only
-     * made during idle object eviction runs.
-     * @param minIdlePerKey - The minimum size of the each keyed pool
-     * @since Pool 1.3
-     * @see #getMinIdle
-     * @see #setTimeBetweenEvictionRunsMillis
-     *
-     * @since 2.0
+     * {@inheritDoc}
      */
     public synchronized void setMinIdle(int minIdlePerKey) {
         this.minIdlePerKey = minIdlePerKey;
     }
 
     /**
-     * Returns the minimum number of idle objects to maintain in each of the keyed
-     * pools. This setting has no effect unless
-     * <code>timeBetweenEvictionRunsMillis > 0</code> and attempts to ensure
-     * that each pool has the required minimum number of instances are only
-     * made during idle object eviction runs.
-     * @return minimum size of the each keyed pool
-     * @since Pool 1.3
-     * @see #setTimeBetweenEvictionRunsMillis
-     *
-     * @since 2.0
+     * {@inheritDoc}
      */
     public synchronized int getMinIdlePerKey() {
         return this.minIdlePerKey;
     }
 
     /**
-     * When <code>true</code>, objects will be
-     * {@link org.apache.commons.pool2.PoolableObjectFactory#validateObject validated}
-     * before being returned by the {@link #borrowObject}
-     * method.  If the object fails to validate,
-     * it will be dropped from the pool, and we will attempt
-     * to borrow another.
-     *
-     * @return <code>true</code> if objects are validated before being borrowed.
-     * @see #setTestOnBorrow
+     * {@inheritDoc}
      */
     public synchronized boolean getTestOnBorrow() {
         return this.testOnBorrow;
     }
 
     /**
-     * When <code>true</code>, objects will be
-     * {@link org.apache.commons.pool2.PoolableObjectFactory#validateObject validated}
-     * before being returned by the {@link #borrowObject}
-     * method.  If the object fails to validate,
-     * it will be dropped from the pool, and we will attempt
-     * to borrow another.
-     *
-     * @param testOnBorrow whether object should be validated before being returned by borrowObject.
-     * @see #getTestOnBorrow
+     * {@inheritDoc}
      */
     public synchronized void setTestOnBorrow(boolean testOnBorrow) {
         this.testOnBorrow = testOnBorrow;
     }
 
     /**
-     * When <code>true</code>, objects will be
-     * {@link org.apache.commons.pool2.PoolableObjectFactory#validateObject validated}
-     * before being returned to the pool within the
-     * {@link #returnObject}.
-     *
-     * @return <code>true</code> when objects will be validated before being returned.
-     * @see #setTestOnReturn
+     * {@inheritDoc}
      */
     public synchronized boolean getTestOnReturn() {
         return this.testOnReturn;
     }
 
     /**
-     * When <code>true</code>, objects will be
-     * {@link org.apache.commons.pool2.PoolableObjectFactory#validateObject validated}
-     * before being returned to the pool within the
-     * {@link #returnObject}.
-     *
-     * @param testOnReturn <code>true</code> so objects will be validated before being returned.
-     * @see #getTestOnReturn
+     * {@inheritDoc}
      */
     public synchronized void setTestOnReturn(boolean testOnReturn) {
         this.testOnReturn = testOnReturn;
     }
 
     /**
-     * Returns the number of milliseconds to sleep between runs of the
-     * idle object evictor thread.
-     * When non-positive, no idle object evictor thread will be
-     * run.
-     *
-     * @return milliseconds to sleep between evictor runs.
-     * @see #setTimeBetweenEvictionRunsMillis
+     * {@inheritDoc}
      */
     public synchronized long getTimeBetweenEvictionRunsMillis() {
         return this.timeBetweenEvictionRunsMillis;
     }
 
     /**
-     * Sets the number of milliseconds to sleep between runs of the
-     * idle object evictor thread.
-     * When non-positive, no idle object evictor thread will be
-     * run.
-     *
-     * @param timeBetweenEvictionRunsMillis milliseconds to sleep between evictor runs.
-     * @see #getTimeBetweenEvictionRunsMillis
+     * {@inheritDoc}
      */
     public synchronized void setTimeBetweenEvictionRunsMillis(long timeBetweenEvictionRunsMillis) {
         this.timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
@@ -522,120 +383,60 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
     }
 
     /**
-     * Returns the max number of objects to examine during each run of the
-     * idle object evictor thread (if any).
-     *
-     * @return number of objects to examine each eviction run.
-     * @see #setNumTestsPerEvictionRun
-     * @see #setTimeBetweenEvictionRunsMillis
+     * {@inheritDoc}
      */
     public synchronized int getNumTestsPerEvictionRun() {
         return this.numTestsPerEvictionRun;
     }
 
     /**
-     * Sets the max number of objects to examine during each run of the
-     * idle object evictor thread (if any).
-     * <p>
-     * When a negative value is supplied, 
-     * <code>ceil({@link #getNumIdle()})/abs({@link #getNumTestsPerEvictionRun})</code>
-     * tests will be run.  I.e., when the value is <code>-n</code>, roughly one <code>n</code>th of the
-     * idle objects will be tested per run.  When the value is positive, the number of tests
-     * actually performed in each run will be the minimum of this value and the number of instances
-     * idle in the pools.
-     *
-     * @param numTestsPerEvictionRun number of objects to examine each eviction run.
-     * @see #setNumTestsPerEvictionRun
-     * @see #setTimeBetweenEvictionRunsMillis
+     * {@inheritDoc}
      */
     public synchronized void setNumTestsPerEvictionRun(int numTestsPerEvictionRun) {
         this.numTestsPerEvictionRun = numTestsPerEvictionRun;
     }
 
     /**
-     * Returns the minimum amount of time an object may sit idle in the pool
-     * before it is eligible for eviction by the idle object evictor
-     * (if any).
-     *
-     * @return minimum amount of time an object may sit idle in the pool before it is eligible for eviction.
-     * @see #setMinEvictableIdleTimeMillis
-     * @see #setTimeBetweenEvictionRunsMillis
+     * {@inheritDoc}
      */
     public synchronized long getMinEvictableIdleTimeMillis() {
         return this.minEvictableIdleTimeMillis;
     }
 
     /**
-     * Sets the minimum amount of time an object may sit idle in the pool
-     * before it is eligible for eviction by the idle object evictor
-     * (if any).
-     * When non-positive, no objects will be evicted from the pool
-     * due to idle time alone.
-     *
-     * @param minEvictableIdleTimeMillis minimum amount of time an object may sit idle in the pool before
-     * it is eligible for eviction.
-     * @see #getMinEvictableIdleTimeMillis
-     * @see #setTimeBetweenEvictionRunsMillis
+     * {@inheritDoc}
      */
     public synchronized void setMinEvictableIdleTimeMillis(long minEvictableIdleTimeMillis) {
         this.minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
     }
 
     /**
-     * When <code>true</code>, objects will be
-     * {@link org.apache.commons.pool2.PoolableObjectFactory#validateObject validated}
-     * by the idle object evictor (if any).  If an object
-     * fails to validate, it will be dropped from the pool.
-     *
-     * @return <code>true</code> when objects are validated when borrowed.
-     * @see #setTestWhileIdle
-     * @see #setTimeBetweenEvictionRunsMillis
+     * {@inheritDoc}
      */
     public synchronized boolean getTestWhileIdle() {
         return this.testWhileIdle;
     }
 
     /**
-     * When <code>true</code>, objects will be
-     * {@link org.apache.commons.pool2.PoolableObjectFactory#validateObject validated}
-     * by the idle object evictor (if any).  If an object
-     * fails to validate, it will be dropped from the pool.
-     *
-     * @param testWhileIdle <code>true</code> so objects are validated when borrowed.
-     * @see #getTestWhileIdle
-     * @see #setTimeBetweenEvictionRunsMillis
+     * {@inheritDoc}
      */
     public synchronized void setTestWhileIdle(boolean testWhileIdle) {
         this.testWhileIdle = testWhileIdle;
     }
 
     /**
-     * Whether or not the idle object pools act as LIFO queues. True means
-     * that borrowObject returns the most recently used ("last in") idle object
-     * in a pool (if there are idle instances available).  False means that
-     * the pools behave as FIFO queues - objects are taken from idle object
-     * pools in the order that they are returned.
-     *
-     * @return <code>true</code> if the pools are configured to act as LIFO queues
-     * @since 1.4
+     * {@inheritDoc}
      */
-     public synchronized boolean getLifo() {
-         return this.lifo;
-     }
+    public synchronized boolean getLifo() {
+        return this.lifo;
+    }
 
-     /**
-      * Sets the LIFO property of the pools. True means that borrowObject returns
-      * the most recently used ("last in") idle object in a pool (if there are
-      * idle instances available).  False means that the pools behave as FIFO
-      * queues - objects are taken from idle object pools in the order that
-      * they are returned.
-      *
-      * @param lifo the new value for the lifo property
-      * @since 1.4
-      */
-     public synchronized void setLifo(boolean lifo) {
-         this.lifo = lifo;
-     }
+    /**
+     * {@inheritDoc}
+     */
+    public synchronized void setLifo(boolean lifo) {
+        this.lifo = lifo;
+    }
 
     //-- ObjectPool methods ------------------------------------------
 
@@ -1071,9 +872,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
     }
 
     /**
-     * Returns the total number of instances current borrowed from this pool but not yet returned.
-     *
-     * @return the total number of instances currently borrowed from this pool
+     * {@inheritDoc}
      */
     @Override
     public synchronized int getNumActive() {
@@ -1081,9 +880,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
     }
 
     /**
-     * Returns the total number of instances currently idle in this pool.
-     *
-     * @return the total number of instances currently idle in this pool
+     * {@inheritDoc}
      */
     @Override
     public synchronized int getNumIdle() {
@@ -1091,11 +888,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
     }
 
     /**
-     * Returns the number of instances currently borrowed from but not yet returned
-     * to the pool corresponding to the given <code>key</code>.
-     *
-     * @param key the key to query
-     * @return the number of instances corresponding to the given <code>key</code> currently borrowed in this pool
+     * {@inheritDoc}
      */
     @Override
     public synchronized int getNumActive(K key) {
@@ -1104,10 +897,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
     }
 
     /**
-     * Returns the number of instances corresponding to the given <code>key</code> currently idle in this pool.
-     *
-     * @param key the key to query
-     * @return the number of instances corresponding to the given <code>key</code> currently idle in this pool
+     * {@inheritDoc}
      */
     @Override
     public synchronized int getNumIdle(K key) {

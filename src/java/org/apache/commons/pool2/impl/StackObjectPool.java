@@ -43,7 +43,7 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  * @version $Revision$ $Date$
  * @since Pool 1.0
  */
-public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<T> {
+public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<T>, StackObjectPoolMBean {
     /**
      * Create a new <tt>StackObjectPool</tt> using the specified <i>factory</i> to create new instances
      * with the default configuration.
@@ -210,10 +210,7 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
     }
 
     /**
-     * Return the number of instances
-     * currently idle in this pool.
-     *
-     * @return the number of instances currently idle in this pool
+     * {@inheritDoc}
      */
     @Override
     public synchronized int getNumIdle() {
@@ -221,9 +218,7 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
     }
 
     /**
-     * Return the number of instances currently borrowed from this pool.
-     *
-     * @return the number of instances currently borrowed from this pool
+     * {@inheritDoc}
      */
     @Override
     public synchronized int getNumActive() {
@@ -350,22 +345,16 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
     }
 
     /**
-     * Returns the maximum number of idle instances in the pool.
-     * 
-     * @return maxSleeping
-     * @since 1.5.5
+     * {@inheritDoc}
      */
     public synchronized int getMaxSleeping() {
         return this.maxSleeping;
     }
 
     /**
-     * Sets the maximum number of idle instances in the pool.
-     *
-     * @param maxSleeping
-     * @since 2.0
+     * {@inheritDoc}
      */
-   public synchronized void setMaxSleeping(int maxSleeping) {
-       this.maxSleeping = maxSleeping;
-   }
+    public synchronized void setMaxSleeping(int maxSleeping) {
+        this.maxSleeping = maxSleeping;
+    }
 }
