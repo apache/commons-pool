@@ -185,7 +185,7 @@ import org.apache.commons.pool2.impl.GenericKeyedObjectPool.ObjectTimestampPair;
  * @version $Revision$ $Date$
  * @since Pool 1.0
  */
-public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<T> {
+public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<T>, GenericObjectPoolMBean<T> {
 
     //--- constructors -----------------------------------------------
 
@@ -233,28 +233,14 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
     //--- configuration methods --------------------------------------
 
     /**
-     * Returns the maximum number of objects that can be allocated by the pool
-     * (checked out to clients, or idle awaiting checkout) at a given time.
-     * When non-positive, there is no limit to the number of objects that can
-     * be managed by the pool at one time.
-     *
-     * @return the cap on the total number of object instances managed by the pool.
-     * @see #expected
-     * @since 2.0
+     * {@inheritDoc}
      */
     public synchronized int getMaxTotal() {
         return this.maxTotal;
     }
 
     /**
-     * Sets the cap on the number of objects that can be allocated by the pool
-     * (checked out to clients, or idle awaiting checkout) at a given time. Use
-     * a negative value for no limit.
-     *
-     * @param maxTotal The cap on the total number of object instances managed by the pool.
-     * Negative values mean that there is no limit to the number of objects allocated
-     * by the pool.
-     * @see #getMaxTotal
+     * {@inheritDoc}
      */
     public synchronized void setMaxTotal(int maxTotal) {
         this.maxTotal = maxTotal;
@@ -262,26 +248,14 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
     }
 
     /**
-     * Returns the action to take when the {@link #borrowObject} method
-     * is invoked when the pool is exhausted (the maximum number
-     * of "active" objects has been reached).
-     *
-     * @return one of {@link WhenExhaustedAction#BLOCK}, {@link WhenExhaustedAction#FAIL} or {@link WhenExhaustedAction#GROW}
-     * @see #setWhenExhaustedAction
+     * {@inheritDoc}
      */
     public synchronized WhenExhaustedAction getWhenExhaustedAction() {
         return this.whenExhaustedAction;
     }
 
     /**
-     * Sets the action to take when the {@link #borrowObject} method
-     * is invoked when the pool is exhausted (the maximum number
-     * of "active" objects has been reached).
-     *
-     * @param whenExhaustedAction the action code, which must be one of
-     *        {@link WhenExhaustedAction#BLOCK}, {@link WhenExhaustedAction#FAIL},
-     *        or {@link WhenExhaustedAction#GROW}
-     * @see #getWhenExhaustedAction
+     * {@inheritDoc}
      */
     public synchronized void setWhenExhaustedAction(WhenExhaustedAction whenExhaustedAction) {
         this.whenExhaustedAction = whenExhaustedAction;
@@ -290,38 +264,14 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
 
 
     /**
-     * Returns the maximum amount of time (in milliseconds) the
-     * {@link #borrowObject} method should block before throwing
-     * an exception when the pool is exhausted and the
-     * {@link #setWhenExhaustedAction "when exhausted" action} is
-     * {@link WhenExhaustedAction#BLOCK}.
-     *
-     * When less than or equal to 0, the {@link #borrowObject} method
-     * may block indefinitely.
-     *
-     * @return maximum number of milliseconds to block when borrowing an object.
-     * @see #setMaxWait
-     * @see #setWhenExhaustedAction
-     * @see WhenExhaustedAction#BLOCK
+     * {@inheritDoc}
      */
     public synchronized long getMaxWait() {
         return this.maxWait;
     }
 
     /**
-     * Sets the maximum amount of time (in milliseconds) the
-     * {@link #borrowObject} method should block before throwing
-     * an exception when the pool is exhausted and the
-     * {@link #setWhenExhaustedAction "when exhausted" action} is
-     * {@link WhenExhaustedAction#BLOCK}.
-     *
-     * When less than or equal to 0, the {@link #borrowObject} method
-     * may block indefinitely.
-     *
-     * @param maxWait maximum number of milliseconds to block when borrowing an object.
-     * @see #getMaxWait
-     * @see #setWhenExhaustedAction
-     * @see WhenExhaustedAction#BLOCK
+     * {@inheritDoc}
      */
     public synchronized void setMaxWait(long maxWait) {
         this.maxWait = maxWait;
@@ -329,26 +279,14 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
     }
 
     /**
-     * Returns the cap on the number of "idle" instances in the pool.
-     * @return the cap on the number of "idle" instances in the pool.
-     * @see #setMaxIdle
+     * {@inheritDoc}
      */
     public synchronized int getMaxIdle() {
         return this.maxIdle;
     }
 
     /**
-     * Sets the cap on the number of "idle" instances in the pool.
-     * If maxIdle is set too low on heavily loaded systems it is possible you
-     * will see objects being destroyed and almost immediately new objects
-     * being created. This is a result of the active threads momentarily
-     * returning objects faster than they are requesting them them, causing the
-     * number of idle objects to rise above maxIdle. The best value for maxIdle
-     * for heavily loaded system will vary but the default is a good starting
-     * point.
-     * @param maxIdle The cap on the number of "idle" instances in the pool.
-     * Use a negative value to indicate an unlimited number of idle instances.
-     * @see #getMaxIdle
+     * {@inheritDoc}
      */
     public synchronized void setMaxIdle(int maxIdle) {
         this.maxIdle = maxIdle;
@@ -356,16 +294,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
     }
 
     /**
-     * Sets the minimum number of objects allowed in the pool
-     * before the evictor thread (if active) spawns new objects.
-     * Note that no objects are created when
-     * <code>numActive + numIdle >= maxActive.</code>
-     * This setting has no effect if the idle object evictor is disabled
-     * (i.e. if <code>timeBetweenEvictionRunsMillis <= 0</code>).
-     *
-     * @param minIdle The minimum number of objects.
-     * @see #getMinIdle
-     * @see #getTimeBetweenEvictionRunsMillis()
+     * {@inheritDoc}
      */
     public synchronized void setMinIdle(int minIdle) {
         this.minIdle = minIdle;
@@ -373,94 +302,49 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
     }
 
     /**
-     * Returns the minimum number of objects allowed in the pool
-     * before the evictor thread (if active) spawns new objects.
-     * (Note no objects are created when: numActive + numIdle >= maxActive)
-     *
-     * @return The minimum number of objects.
-     * @see #setMinIdle
+     * {@inheritDoc}
      */
     public synchronized int getMinIdle() {
         return this.minIdle;
     }
 
     /**
-     * When <tt>true</tt>, objects will be
-     * {@link PoolableObjectFactory#validateObject validated}
-     * before being returned by the {@link #borrowObject}
-     * method.  If the object fails to validate,
-     * it will be dropped from the pool, and we will attempt
-     * to borrow another.
-     *
-     * @return <code>true</code> if objects are validated before being borrowed.
-     * @see #setTestOnBorrow
+     * {@inheritDoc}
      */
     public synchronized boolean getTestOnBorrow() {
         return this.testOnBorrow;
     }
 
     /**
-     * When <tt>true</tt>, objects will be
-     * {@link PoolableObjectFactory#validateObject validated}
-     * before being returned by the {@link #borrowObject}
-     * method.  If the object fails to validate,
-     * it will be dropped from the pool, and we will attempt
-     * to borrow another.
-     *
-     * @param testOnBorrow <code>true</code> if objects should be validated before being borrowed.
-     * @see #getTestOnBorrow
+     * {@inheritDoc}
      */
     public synchronized void setTestOnBorrow(boolean testOnBorrow) {
         this.testOnBorrow = testOnBorrow;
     }
 
     /**
-     * When <tt>true</tt>, objects will be
-     * {@link PoolableObjectFactory#validateObject validated}
-     * before being returned to the pool within the
-     * {@link #returnObject}.
-     *
-     * @return <code>true</code> when objects will be validated after returned to {@link #returnObject}.
-     * @see #setTestOnReturn
+     * {@inheritDoc}
      */
     public synchronized boolean getTestOnReturn() {
         return this.testOnReturn;
     }
 
     /**
-     * When <tt>true</tt>, objects will be
-     * {@link PoolableObjectFactory#validateObject validated}
-     * before being returned to the pool within the
-     * {@link #returnObject}.
-     *
-     * @param testOnReturn <code>true</code> so objects will be validated after returned to {@link #returnObject}.
-     * @see #getTestOnReturn
+     * {@inheritDoc}
      */
     public synchronized void setTestOnReturn(boolean testOnReturn) {
         this.testOnReturn = testOnReturn;
     }
 
     /**
-     * Returns the number of milliseconds to sleep between runs of the
-     * idle object evictor thread.
-     * When non-positive, no idle object evictor thread will be
-     * run.
-     *
-     * @return number of milliseconds to sleep between evictor runs.
-     * @see #setTimeBetweenEvictionRunsMillis
+     * {@inheritDoc}
      */
     public synchronized long getTimeBetweenEvictionRunsMillis() {
         return this.timeBetweenEvictionRunsMillis;
     }
 
     /**
-     * Sets the number of milliseconds to sleep between runs of the
-     * idle object evictor thread.
-     * When non-positive, no idle object evictor thread will be
-     * run.
-     *
-     * @param timeBetweenEvictionRunsMillis number of milliseconds to sleep between evictor runs.
-     * @see #getTimeBetweenEvictionRunsMillis
+     * {@inheritDoc}
      */
     public synchronized void setTimeBetweenEvictionRunsMillis(long timeBetweenEvictionRunsMillis) {
         this.timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
@@ -468,149 +352,74 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
     }
 
     /**
-     * Returns the max number of objects to examine during each run of the
-     * idle object evictor thread (if any).
-     *
-     * @return max number of objects to examine during each evictor run.
-     * @see #setNumTestsPerEvictionRun
-     * @see #setTimeBetweenEvictionRunsMillis
+     * {@inheritDoc}
      */
     public synchronized int getNumTestsPerEvictionRun() {
         return this.numTestsPerEvictionRun;
     }
 
     /**
-     * Sets the max number of objects to examine during each run of the
-     * idle object evictor thread (if any).
-     * <p>
-     * When a negative value is supplied, <tt>ceil({@link #getNumIdle})/abs({@link #getNumTestsPerEvictionRun})</tt>
-     * tests will be run.  That is, when the value is <i>-n</i>, roughly one <i>n</i>th of the
-     * idle objects will be tested per run. When the value is positive, the number of tests
-     * actually performed in each run will be the minimum of this value and the number of instances
-     * idle in the pool.
-     *
-     * @param numTestsPerEvictionRun max number of objects to examine during each evictor run.
-     * @see #getNumTestsPerEvictionRun
-     * @see #setTimeBetweenEvictionRunsMillis
+     * {@inheritDoc}
      */
     public synchronized void setNumTestsPerEvictionRun(int numTestsPerEvictionRun) {
         this.numTestsPerEvictionRun = numTestsPerEvictionRun;
     }
 
     /**
-     * Returns the minimum amount of time an object may sit idle in the pool
-     * before it is eligible for eviction by the idle object evictor
-     * (if any).
-     *
-     * @return minimum amount of time an object may sit idle in the pool before it is eligible for eviction.
-     * @see #setMinEvictableIdleTimeMillis
-     * @see #setTimeBetweenEvictionRunsMillis
+     * {@inheritDoc}
      */
     public synchronized long getMinEvictableIdleTimeMillis() {
         return this.minEvictableIdleTimeMillis;
     }
 
     /**
-     * Sets the minimum amount of time an object may sit idle in the pool
-     * before it is eligible for eviction by the idle object evictor
-     * (if any).
-     * When non-positive, no objects will be evicted from the pool
-     * due to idle time alone.
-     * @param minEvictableIdleTimeMillis minimum amount of time an object may sit idle in the pool before
-     * it is eligible for eviction.
-     * @see #getMinEvictableIdleTimeMillis
-     * @see #setTimeBetweenEvictionRunsMillis
+     * {@inheritDoc}
      */
     public synchronized void setMinEvictableIdleTimeMillis(long minEvictableIdleTimeMillis) {
         this.minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
     }
 
     /**
-     * Returns the minimum amount of time an object may sit idle in the pool
-     * before it is eligible for eviction by the idle object evictor
-     * (if any), with the extra condition that at least
-     * "minIdle" amount of object remain in the pool.
-     *
-     * @return minimum amount of time an object may sit idle in the pool before it is eligible for eviction.
-     * @since Pool 1.3
-     * @see #setSoftMinEvictableIdleTimeMillis
+     * {@inheritDoc}
      */
     public synchronized long getSoftMinEvictableIdleTimeMillis() {
         return this.softMinEvictableIdleTimeMillis;
     }
 
     /**
-     * Sets the minimum amount of time an object may sit idle in the pool
-     * before it is eligible for eviction by the idle object evictor
-     * (if any), with the extra condition that at least
-     * "minIdle" object instances remain in the pool.
-     * When non-positive, no objects will be evicted from the pool
-     * due to idle time alone.
-     *
-     * @param softMinEvictableIdleTimeMillis minimum amount of time an object may sit idle in the pool before
-     * it is eligible for eviction.
-     * @since Pool 1.3
-     * @see #getSoftMinEvictableIdleTimeMillis
+     * {@inheritDoc}
      */
     public synchronized void setSoftMinEvictableIdleTimeMillis(long softMinEvictableIdleTimeMillis) {
         this.softMinEvictableIdleTimeMillis = softMinEvictableIdleTimeMillis;
     }
 
     /**
-     * When <tt>true</tt>, objects will be
-     * {@link PoolableObjectFactory#validateObject validated}
-     * by the idle object evictor (if any).  If an object
-     * fails to validate, it will be dropped from the pool.
-     *
-     * @return <code>true</code> when objects will be validated by the evictor.
-     * @see #setTestWhileIdle
-     * @see #setTimeBetweenEvictionRunsMillis
+     * {@inheritDoc}
      */
     public synchronized boolean getTestWhileIdle() {
         return this.testWhileIdle;
     }
 
     /**
-     * When <tt>true</tt>, objects will be
-     * {@link PoolableObjectFactory#validateObject validated}
-     * by the idle object evictor (if any).  If an object
-     * fails to validate, it will be dropped from the pool.
-     *
-     * @param testWhileIdle <code>true</code> so objects will be validated by the evictor.
-     * @see #getTestWhileIdle
-     * @see #setTimeBetweenEvictionRunsMillis
+     * {@inheritDoc}
      */
     public synchronized void setTestWhileIdle(boolean testWhileIdle) {
         this.testWhileIdle = testWhileIdle;
     }
 
     /**
-     * Whether or not the idle object pool acts as a LIFO queue. True means
-     * that borrowObject returns the most recently used ("last in") idle object
-     * in the pool (if there are idle instances available).  False means that
-     * the pool behaves as a FIFO queue - objects are taken from the idle object
-     * pool in the order that they are returned to the pool.
-     *
-     * @return <code>true</true> if the pool is configured to act as a LIFO queue
-     * @since 1.4
+     * {@inheritDoc}
      */
-     public synchronized boolean getLifo() {
-         return this.lifo;
-     }
+    public synchronized boolean getLifo() {
+        return this.lifo;
+    }
 
-     /**
-      * Sets the LIFO property of the pool. True means that borrowObject returns
-      * the most recently used ("last in") idle object in the pool (if there are
-      * idle instances available).  False means that the pool behaves as a FIFO
-      * queue - objects are taken from the idle object pool in the order that
-      * they are returned to the pool.
-      *
-      * @param lifo the new value for the LIFO property
-      * @since 1.4
-      */
-     public synchronized void setLifo(boolean lifo) {
-         this.lifo = lifo;
-     }
+    /**
+     * {@inheritDoc}
+     */
+    public synchronized void setLifo(boolean lifo) {
+        this.lifo = lifo;
+    }
 
     //-- ObjectPool methods ------------------------------------------
 
@@ -918,9 +727,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
     }
 
     /**
-     * Return the number of instances currently borrowed from this pool.
-     *
-     * @return the number of instances currently borrowed from this pool
+     * {@inheritDoc}
      */
     @Override
     public synchronized int getNumActive() {
@@ -928,9 +735,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
     }
 
     /**
-     * Return the number of instances currently idle in this pool.
-     *
-     * @return the number of instances currently idle in this pool
+     * {@inheritDoc}
      */
     @Override
     public synchronized int getNumIdle() {

@@ -46,7 +46,7 @@ import org.apache.commons.pool2.PoolUtils;
  * @see Stack
  * @since Pool 1.0
  */
-public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
+public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implements KeyedObjectPool<K,V>, StackKeyedObjectPoolMBean<K> {
     /**
      * Create a new <code>SimpleKeyedObjectPool</code> using
      * the specified <code>factory</code> to create new instances
@@ -258,9 +258,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
     }
 
     /**
-     * Returns the total number of instances currently idle in this pool.
-     *
-     * @return the total number of instances currently idle in this pool
+     * {@inheritDoc}
      */
     @Override
     public synchronized int getNumIdle() {
@@ -268,9 +266,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
     }
 
     /**
-     * Returns the total number of instances current borrowed from this pool but not yet returned.
-     *
-     * @return the total number of instances currently borrowed from this pool
+     * {@inheritDoc}
      */
     @Override
     public synchronized int getNumActive() {
@@ -278,11 +274,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
     }
 
     /**
-     * Returns the number of instances currently borrowed from but not yet returned
-     * to the pool corresponding to the given <code>key</code>.
-     *
-     * @param key the key to query
-     * @return the number of instances corresponding to the given <code>key</code> currently borrowed in this pool
+     * {@inheritDoc}
      */
     @Override
     public synchronized int getNumActive(K key) {
@@ -290,10 +282,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
     }
 
     /**
-     * Returns the number of instances corresponding to the given <code>key</code> currently idle in this pool.
-     *
-     * @param key the key to query
-     * @return the number of instances corresponding to the given <code>key</code> currently idle in this pool
+     * {@inheritDoc}
      */
     @Override
     public synchronized int getNumIdle(K key) {
@@ -454,48 +443,42 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
     }
 
     /**
-     * @return the cap on the number of "sleeping" instances in <code>each</code> pool.
-     * @since 1.5.5
+     * {@inheritDoc}
      */
     public synchronized int getMaxSleeping() {
         return this.maxSleeping;
     }
 
     /**
-     * Sets the cap on the number of "sleeping" instances in <code>each</code> pool.
-     *
-     * @param maxSleeping
-     * @since 2.0
+     * {@inheritDoc}
      */
     public synchronized void setMaxSleeping(int maxSleeping) {
         this.maxSleeping = maxSleeping;
     }
 
     /**
-     * @return the initial capacity of each pool.
-     * @since 1.5.5
+     * {@inheritDoc}
      */
     public synchronized int getInitSleepingCapacity() {
         return this.initIdleCapacity;
     }
 
     /**
-     * @return the _totActive
+     * {@inheritDoc}
      */
     public synchronized int getTotActive() {
         return _totActive;
     }
 
     /**
-     * @return the _totIdle
+     * {@inheritDoc}
      */
     public synchronized int getTotIdle() {
         return _totIdle;
     }
 
     /**
-     * @return the _activeCount
-     * @since 1.5.5
+     * {@inheritDoc}
      */
     public synchronized Map<K,Integer> getActiveCount() {
         return _activeCount;
