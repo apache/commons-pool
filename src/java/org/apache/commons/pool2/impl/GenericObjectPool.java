@@ -395,7 +395,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @return <code>true</code> if objects are validated before being borrowed.
      * @see #setTestOnBorrow
      */
-    public boolean getTestOnBorrow() {
+    public synchronized boolean getTestOnBorrow() {
         return this.testOnBorrow;
     }
 
@@ -410,7 +410,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @param testOnBorrow <code>true</code> if objects should be validated before being borrowed.
      * @see #getTestOnBorrow
      */
-    public void setTestOnBorrow(boolean testOnBorrow) {
+    public synchronized void setTestOnBorrow(boolean testOnBorrow) {
         this.testOnBorrow = testOnBorrow;
     }
 
@@ -423,7 +423,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @return <code>true</code> when objects will be validated after returned to {@link #returnObject}.
      * @see #setTestOnReturn
      */
-    public boolean getTestOnReturn() {
+    public synchronized boolean getTestOnReturn() {
         return this.testOnReturn;
     }
 
@@ -436,7 +436,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @param testOnReturn <code>true</code> so objects will be validated after returned to {@link #returnObject}.
      * @see #getTestOnReturn
      */
-    public void setTestOnReturn(boolean testOnReturn) {
+    public synchronized void setTestOnReturn(boolean testOnReturn) {
         this.testOnReturn = testOnReturn;
     }
 
