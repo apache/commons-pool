@@ -38,7 +38,7 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  * @version $Revision$ $Date$
  * @since Pool 1.0
  */
-public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<T> {
+public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<T>, SoftReferenceObjectPoolMBean {
 
     /**
      * Create a <code>SoftReferenceObjectPool</code> with the specified factory.
