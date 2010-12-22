@@ -345,7 +345,7 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
      * @return the factory
      * @since 1.5.5
      */
-    public synchronized PoolableObjectFactory<T> getFactory() {
+    public PoolableObjectFactory<T> getFactory() {
         return _factory;
     }
 
