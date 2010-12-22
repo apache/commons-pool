@@ -81,13 +81,13 @@ public class StackKeyedObjectPoolFactory<K,V> implements KeyedObjectPoolFactory<
     /**
      * cap on the number of "sleeping" instances in the pool
      */
-    private volatile int maxSleeping; // @GuardedBy("this")
+    private volatile int maxSleeping;
 
     /**
      * initial size of the pool (this specifies the size of the container,
      * it does not cause the pool to be pre-populated.)
      */
-    private volatile int initIdleCapacity; // @GuardedBy("this")
+    private volatile int initIdleCapacity;
 
     /**
      * Returns the KeyedPoolableObjectFactory used by StackKeyedObjectPools created by this factory
