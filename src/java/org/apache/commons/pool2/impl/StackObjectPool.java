@@ -226,7 +226,7 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
      * @return the number of instances currently borrowed from this pool
      */
     @Override
-    public synchronized int getNumActive() {
+    public int getNumActive() {
         return _numActive;
     }
 
@@ -332,12 +332,12 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
     /**
      * cap on the number of "sleeping" instances in the pool
      */
-    private int maxSleeping; // @GuardedBy("this")
+    private volatile int maxSleeping; // @GuardedBy("this")
 
     /**
      * Number of objects borrowed but not yet returned to the pool.
      */
-    private int _numActive = 0; // @GuardedBy("this")
+    private volatile int _numActive = 0; // @GuardedBy("this")
 
     /**
      * Returns the {@link PoolableObjectFactory} used by this pool to create and manage object instances.
@@ -355,7 +355,7 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
      * @return maxSleeping
      * @since 1.5.5
      */
-    public synchronized int getMaxSleeping() {
+    public int getMaxSleeping() {
         return this.maxSleeping;
     }
 
@@ -365,7 +365,7 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
      * @param maxSleeping
      * @since 2.0
      */
-    public synchronized void setMaxSleeping(int maxSleeping) {
+    public void setMaxSleeping(int maxSleeping) {
         this.maxSleeping = maxSleeping;
     }
 }
