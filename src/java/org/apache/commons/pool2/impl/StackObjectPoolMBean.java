@@ -43,7 +43,6 @@ public interface StackObjectPoolMBean {
      * Returns the maximum number of idle instances in the pool.
      * 
      * @return maxSleeping
-     * @since 1.5.5
      */
     int getMaxSleeping();
 
@@ -51,7 +50,6 @@ public interface StackObjectPoolMBean {
      * Sets the maximum number of idle instances in the pool.
      *
      * @param maxSleeping
-     * @since 2.0
      */
     void setMaxSleeping(int maxSleeping);
 

@@ -210,7 +210,10 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
     }
 
     /**
-     * {@inheritDoc}
+     * Return the number of instances
+     * currently idle in this pool.
+     *
+     * @return the number of instances currently idle in this pool
      */
     @Override
     public synchronized int getNumIdle() {
@@ -218,7 +221,9 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
     }
 
     /**
-     * {@inheritDoc}
+     * Return the number of instances currently borrowed from this pool.
+     *
+     * @return the number of instances currently borrowed from this pool
      */
     @Override
     public synchronized int getNumActive() {
@@ -345,14 +350,20 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the maximum number of idle instances in the pool.
+     * 
+     * @return maxSleeping
+     * @since 1.5.5
      */
     public synchronized int getMaxSleeping() {
         return this.maxSleeping;
     }
 
     /**
-     * {@inheritDoc}
+     * Sets the maximum number of idle instances in the pool.
+     *
+     * @param maxSleeping
+     * @since 2.0
      */
     public synchronized void setMaxSleeping(int maxSleeping) {
         this.maxSleeping = maxSleeping;

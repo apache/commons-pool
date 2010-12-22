@@ -30,8 +30,6 @@ public interface GenericKeyedObjectPoolMBean<K> {
      * A negative value indicates no limit.
      *
      * @return the cap on the number of active instances per key.
-     * @see #setMaxTotalPerKey
-     * @since 2.0
      */
     int getMaxTotalPerKey();
 
@@ -45,7 +43,6 @@ public interface GenericKeyedObjectPoolMBean<K> {
      *
      * @param maxTotal The cap on the total number of instances across pools.
      * Use a negative value for no limit.
-     * @see #getMaxTotal
      */
     void setMaxTotalPerKey(int maxTotalPerKey);
 
@@ -53,7 +50,6 @@ public interface GenericKeyedObjectPoolMBean<K> {
      * Returns the overall maximum number of objects (across pools) that can
      * exist at one time. A negative value indicates no limit.
      * @return the maximum number of instances in circulation at one time.
-     * @see #setMaxTotal
      */
     int getMaxTotal();
 
@@ -67,7 +63,6 @@ public interface GenericKeyedObjectPoolMBean<K> {
      *
      * @param maxTotal The cap on the total number of instances across pools.
      * Use a negative value for no limit.
-     * @see #getMaxTotal
      */
     void setMaxTotal(int maxTotal);
 
@@ -78,7 +73,6 @@ public interface GenericKeyedObjectPoolMBean<K> {
      *
      * @return one of {@link WhenExhaustedAction#BLOCK},
      * {@link WhenExhaustedAction#FAIL} or {@link WhenExhaustedAction#GROW}
-     * @see #setWhenExhaustedAction
      */
     WhenExhaustedAction getWhenExhaustedAction();
 
@@ -88,7 +82,6 @@ public interface GenericKeyedObjectPoolMBean<K> {
      * of "active" objects has been reached).
      *
      * @param whenExhaustedAction the action code
-     * @see #getWhenExhaustedAction
      */
     void setWhenExhaustedAction(WhenExhaustedAction whenExhaustedAction);
 
@@ -103,9 +96,6 @@ public interface GenericKeyedObjectPoolMBean<K> {
      * may block indefinitely.
      *
      * @return the maximum number of milliseconds borrowObject will block.
-     * @see #setMaxWait
-     * @see #setWhenExhaustedAction
-     * @see WhenExhaustedAction#BLOCK
      */
     long getMaxWait();
 
@@ -120,19 +110,14 @@ public interface GenericKeyedObjectPoolMBean<K> {
      * may block indefinitely.
      *
      * @param maxWait the maximum number of milliseconds borrowObject will block or negative for indefinitely.
-     * @see #getMaxWait
-     * @see #setWhenExhaustedAction
-     * @see WhenExhaustedAction#BLOCK
      */
     void setMaxWait(long maxWait);
 
     /**
      * Returns the cap on the number of "idle" instances per key.
+     *
      * @return the maximum number of "idle" instances that can be held
      * in a given keyed pool.
-     * @see #setMaxIdle
-     *
-     * @since 2.0
      */
     int getMaxIdlePerKey();
 
@@ -145,12 +130,9 @@ public interface GenericKeyedObjectPoolMBean<K> {
      * number of idle objects to rise above maxIdle. The best value for maxIdle
      * for heavily loaded system will vary but the default is a good starting
      * point.
+     *
      * @param maxIdlePerKey the maximum number of "idle" instances that can be held
      * in a given keyed pool. Use a negative value for no limit.
-     * @see #getMaxIdle
-     * @see #DEFAULT_MAX_IDLE_PER_KEY
-     *
-     * @since 2.0
      */
     void setMaxIdlePerKey(int maxIdlePerKey);
 
@@ -160,12 +142,8 @@ public interface GenericKeyedObjectPoolMBean<K> {
      * <code>timeBetweenEvictionRunsMillis > 0</code> and attempts to ensure
      * that each pool has the required minimum number of instances are only
      * made during idle object eviction runs.
-     * @param minIdlePerKey - The minimum size of the each keyed pool
-     * @since Pool 1.3
-     * @see #getMinIdle
-     * @see #setTimeBetweenEvictionRunsMillis
      *
-     * @since 2.0
+     * @param minIdlePerKey - The minimum size of the each keyed pool
      */
     void setMinIdle(int minIdlePerKey);
 
@@ -175,11 +153,8 @@ public interface GenericKeyedObjectPoolMBean<K> {
      * <code>timeBetweenEvictionRunsMillis > 0</code> and attempts to ensure
      * that each pool has the required minimum number of instances are only
      * made during idle object eviction runs.
-     * @return minimum size of the each keyed pool
-     * @since Pool 1.3
-     * @see #setTimeBetweenEvictionRunsMillis
      *
-     * @since 2.0
+     * @return minimum size of the each keyed pool
      */
     int getMinIdlePerKey();
 
@@ -192,7 +167,6 @@ public interface GenericKeyedObjectPoolMBean<K> {
      * to borrow another.
      *
      * @return <code>true</code> if objects are validated before being borrowed.
-     * @see #setTestOnBorrow
      */
     boolean getTestOnBorrow();
 
@@ -205,7 +179,6 @@ public interface GenericKeyedObjectPoolMBean<K> {
      * to borrow another.
      *
      * @param testOnBorrow whether object should be validated before being returned by borrowObject.
-     * @see #getTestOnBorrow
      */
     void setTestOnBorrow(boolean testOnBorrow);
 
@@ -216,7 +189,6 @@ public interface GenericKeyedObjectPoolMBean<K> {
      * {@link #returnObject}.
      *
      * @return <code>true</code> when objects will be validated before being returned.
-     * @see #setTestOnReturn
      */
     boolean getTestOnReturn();
 
@@ -227,7 +199,6 @@ public interface GenericKeyedObjectPoolMBean<K> {
      * {@link #returnObject}.
      *
      * @param testOnReturn <code>true</code> so objects will be validated before being returned.
-     * @see #getTestOnReturn
      */
     void setTestOnReturn(boolean testOnReturn);
 
@@ -238,7 +209,6 @@ public interface GenericKeyedObjectPoolMBean<K> {
      * run.
      *
      * @return milliseconds to sleep between evictor runs.
-     * @see #setTimeBetweenEvictionRunsMillis
      */
     long getTimeBetweenEvictionRunsMillis();
 
@@ -249,7 +219,6 @@ public interface GenericKeyedObjectPoolMBean<K> {
      * run.
      *
      * @param timeBetweenEvictionRunsMillis milliseconds to sleep between evictor runs.
-     * @see #getTimeBetweenEvictionRunsMillis
      */
     void setTimeBetweenEvictionRunsMillis(long timeBetweenEvictionRunsMillis);
 
@@ -258,8 +227,6 @@ public interface GenericKeyedObjectPoolMBean<K> {
      * idle object evictor thread (if any).
      *
      * @return number of objects to examine each eviction run.
-     * @see #setNumTestsPerEvictionRun
-     * @see #setTimeBetweenEvictionRunsMillis
      */
     int getNumTestsPerEvictionRun();
 
@@ -275,8 +242,6 @@ public interface GenericKeyedObjectPoolMBean<K> {
      * idle in the pools.
      *
      * @param numTestsPerEvictionRun number of objects to examine each eviction run.
-     * @see #setNumTestsPerEvictionRun
-     * @see #setTimeBetweenEvictionRunsMillis
      */
     void setNumTestsPerEvictionRun(int numTestsPerEvictionRun);
 
@@ -286,8 +251,6 @@ public interface GenericKeyedObjectPoolMBean<K> {
      * (if any).
      *
      * @return minimum amount of time an object may sit idle in the pool before it is eligible for eviction.
-     * @see #setMinEvictableIdleTimeMillis
-     * @see #setTimeBetweenEvictionRunsMillis
      */
     long getMinEvictableIdleTimeMillis();
 
@@ -300,8 +263,6 @@ public interface GenericKeyedObjectPoolMBean<K> {
      *
      * @param minEvictableIdleTimeMillis minimum amount of time an object may sit idle in the pool before
      * it is eligible for eviction.
-     * @see #getMinEvictableIdleTimeMillis
-     * @see #setTimeBetweenEvictionRunsMillis
      */
     void setMinEvictableIdleTimeMillis(long minEvictableIdleTimeMillis);
 
@@ -312,8 +273,6 @@ public interface GenericKeyedObjectPoolMBean<K> {
      * fails to validate, it will be dropped from the pool.
      *
      * @return <code>true</code> when objects are validated when borrowed.
-     * @see #setTestWhileIdle
-     * @see #setTimeBetweenEvictionRunsMillis
      */
     boolean getTestWhileIdle();
 
@@ -324,8 +283,6 @@ public interface GenericKeyedObjectPoolMBean<K> {
      * fails to validate, it will be dropped from the pool.
      *
      * @param testWhileIdle <code>true</code> so objects are validated when borrowed.
-     * @see #getTestWhileIdle
-     * @see #setTimeBetweenEvictionRunsMillis
      */
     void setTestWhileIdle(boolean testWhileIdle);
 
@@ -337,7 +294,6 @@ public interface GenericKeyedObjectPoolMBean<K> {
      * pools in the order that they are returned.
      *
      * @return <code>true</code> if the pools are configured to act as LIFO queues
-     * @since 1.4
      */
     boolean getLifo();
 
@@ -349,7 +305,6 @@ public interface GenericKeyedObjectPoolMBean<K> {
      * they are returned.
      *
      * @param lifo the new value for the lifo property
-     * @since 1.4
      */
     void setLifo(boolean lifo);
 
