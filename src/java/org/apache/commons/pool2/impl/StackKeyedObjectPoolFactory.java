@@ -95,7 +95,7 @@ public class StackKeyedObjectPoolFactory<K,V> implements KeyedObjectPoolFactory<
      * @return factory setting for created pools
      * @since 1.5.5
      */
-    public synchronized KeyedPoolableObjectFactory<K,V> getFactory() {
+    public KeyedPoolableObjectFactory<K,V> getFactory() {
         return _factory;
     }
 
