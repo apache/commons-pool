@@ -81,13 +81,13 @@ public class StackKeyedObjectPoolFactory<K,V> implements KeyedObjectPoolFactory<
     /**
      * cap on the number of "sleeping" instances in the pool
      */
-    private int maxSleeping; // @GuardedBy("this")
+    private volatile int maxSleeping; // @GuardedBy("this")
 
     /**
      * initial size of the pool (this specifies the size of the container,
      * it does not cause the pool to be pre-populated.)
      */
-    private int initIdleCapacity; // @GuardedBy("this")
+    private volatile int initIdleCapacity; // @GuardedBy("this")
 
     /**
      * Returns the KeyedPoolableObjectFactory used by StackKeyedObjectPools created by this factory
@@ -105,7 +105,7 @@ public class StackKeyedObjectPoolFactory<K,V> implements KeyedObjectPoolFactory<
      * @return maxSleeping setting for created pools
      * @since 1.5.5
      */
-    public synchronized int getMaxSleeping() {
+    public int getMaxSleeping() {
         return this.maxSleeping;
     }
 
@@ -115,7 +115,7 @@ public class StackKeyedObjectPoolFactory<K,V> implements KeyedObjectPoolFactory<
      * @param maxSleeping
      * @since 2.0
      */
-    public synchronized void setMaxSleeping(int maxSleeping) {
+    public void setMaxSleeping(int maxSleeping) {
         this.maxSleeping = maxSleeping;
     }
 
@@ -125,7 +125,7 @@ public class StackKeyedObjectPoolFactory<K,V> implements KeyedObjectPoolFactory<
      * @return initial capacity setting for created pools
      * @since 1.5.5
      */
-    public synchronized int getInitialCapacity() {
+    public int getInitialCapacity() {
         return this.initIdleCapacity;
     }
 
@@ -135,7 +135,7 @@ public class StackKeyedObjectPoolFactory<K,V> implements KeyedObjectPoolFactory<
      * @param initIdleCapacity
      * @since 2.0
      */
-    public synchronized void setInitIdleCapacity(int initIdleCapacity) {
+    public void setInitIdleCapacity(int initIdleCapacity) {
         this.initIdleCapacity = initIdleCapacity;
     }
 
