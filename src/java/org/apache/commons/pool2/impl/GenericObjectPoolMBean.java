@@ -33,8 +33,6 @@ public interface GenericObjectPoolMBean<T> {
      * be managed by the pool at one time.
      *
      * @return the cap on the total number of object instances managed by the pool.
-     * @see #expected
-     * @since 2.0
      */
     int getMaxTotal();
 
@@ -46,7 +44,6 @@ public interface GenericObjectPoolMBean<T> {
      * @param maxTotal The cap on the total number of object instances managed by the pool.
      * Negative values mean that there is no limit to the number of objects allocated
      * by the pool.
-     * @see #getMaxTotal
      */
     void setMaxTotal(int maxTotal);
 
@@ -55,8 +52,8 @@ public interface GenericObjectPoolMBean<T> {
      * is invoked when the pool is exhausted (the maximum number
      * of "active" objects has been reached).
      *
-     * @return one of {@link WhenExhaustedAction#BLOCK}, {@link WhenExhaustedAction#FAIL} or {@link WhenExhaustedAction#GROW}
-     * @see #setWhenExhaustedAction
+     * @return one of {@link WhenExhaustedAction#BLOCK},
+     *      {@link WhenExhaustedAction#FAIL} or {@link WhenExhaustedAction#GROW}
      */
     WhenExhaustedAction getWhenExhaustedAction();
 
@@ -68,7 +65,6 @@ public interface GenericObjectPoolMBean<T> {
      * @param whenExhaustedAction the action code, which must be one of
      *        {@link WhenExhaustedAction#BLOCK}, {@link WhenExhaustedAction#FAIL},
      *        or {@link WhenExhaustedAction#GROW}
-     * @see #getWhenExhaustedAction
      */
     void setWhenExhaustedAction(WhenExhaustedAction whenExhaustedAction);
 
@@ -83,9 +79,6 @@ public interface GenericObjectPoolMBean<T> {
      * may block indefinitely.
      *
      * @return maximum number of milliseconds to block when borrowing an object.
-     * @see #setMaxWait
-     * @see #setWhenExhaustedAction
-     * @see WhenExhaustedAction#BLOCK
      */
     long getMaxWait();
 
@@ -100,16 +93,13 @@ public interface GenericObjectPoolMBean<T> {
      * may block indefinitely.
      *
      * @param maxWait maximum number of milliseconds to block when borrowing an object.
-     * @see #getMaxWait
-     * @see #setWhenExhaustedAction
-     * @see WhenExhaustedAction#BLOCK
      */
     void setMaxWait(long maxWait);
 
     /**
      * Returns the cap on the number of "idle" instances in the pool.
+     *
      * @return the cap on the number of "idle" instances in the pool.
-     * @see #setMaxIdle
      */
     int getMaxIdle();
 
@@ -122,9 +112,9 @@ public interface GenericObjectPoolMBean<T> {
      * number of idle objects to rise above maxIdle. The best value for maxIdle
      * for heavily loaded system will vary but the default is a good starting
      * point.
+     *
      * @param maxIdle The cap on the number of "idle" instances in the pool.
      * Use a negative value to indicate an unlimited number of idle instances.
-     * @see #getMaxIdle
      */
     void setMaxIdle(int maxIdle);
 
@@ -137,8 +127,6 @@ public interface GenericObjectPoolMBean<T> {
      * (i.e. if <code>timeBetweenEvictionRunsMillis <= 0</code>).
      *
      * @param minIdle The minimum number of objects.
-     * @see #getMinIdle
-     * @see #getTimeBetweenEvictionRunsMillis()
      */
     void setMinIdle(int minIdle);
 
@@ -148,7 +136,6 @@ public interface GenericObjectPoolMBean<T> {
      * (Note no objects are created when: numActive + numIdle >= maxActive)
      *
      * @return The minimum number of objects.
-     * @see #setMinIdle
      */
     int getMinIdle();
 
@@ -161,7 +148,6 @@ public interface GenericObjectPoolMBean<T> {
      * to borrow another.
      *
      * @return <code>true</code> if objects are validated before being borrowed.
-     * @see #setTestOnBorrow
      */
     boolean getTestOnBorrow();
 
@@ -174,7 +160,6 @@ public interface GenericObjectPoolMBean<T> {
      * to borrow another.
      *
      * @param testOnBorrow <code>true</code> if objects should be validated before being borrowed.
-     * @see #getTestOnBorrow
      */
     void setTestOnBorrow(boolean testOnBorrow);
 
@@ -185,7 +170,6 @@ public interface GenericObjectPoolMBean<T> {
      * {@link #returnObject}.
      *
      * @return <code>true</code> when objects will be validated after returned to {@link #returnObject}.
-     * @see #setTestOnReturn
      */
     boolean getTestOnReturn();
 
@@ -196,7 +180,6 @@ public interface GenericObjectPoolMBean<T> {
      * {@link #returnObject}.
      *
      * @param testOnReturn <code>true</code> so objects will be validated after returned to {@link #returnObject}.
-     * @see #getTestOnReturn
      */
     void setTestOnReturn(boolean testOnReturn);
 
@@ -207,7 +190,6 @@ public interface GenericObjectPoolMBean<T> {
      * run.
      *
      * @return number of milliseconds to sleep between evictor runs.
-     * @see #setTimeBetweenEvictionRunsMillis
      */
     long getTimeBetweenEvictionRunsMillis();
 
@@ -218,7 +200,6 @@ public interface GenericObjectPoolMBean<T> {
      * run.
      *
      * @param timeBetweenEvictionRunsMillis number of milliseconds to sleep between evictor runs.
-     * @see #getTimeBetweenEvictionRunsMillis
      */
     void setTimeBetweenEvictionRunsMillis(long timeBetweenEvictionRunsMillis);
 
@@ -227,8 +208,6 @@ public interface GenericObjectPoolMBean<T> {
      * idle object evictor thread (if any).
      *
      * @return max number of objects to examine during each evictor run.
-     * @see #setNumTestsPerEvictionRun
-     * @see #setTimeBetweenEvictionRunsMillis
      */
     int getNumTestsPerEvictionRun();
 
@@ -243,8 +222,6 @@ public interface GenericObjectPoolMBean<T> {
      * idle in the pool.
      *
      * @param numTestsPerEvictionRun max number of objects to examine during each evictor run.
-     * @see #getNumTestsPerEvictionRun
-     * @see #setTimeBetweenEvictionRunsMillis
      */
     void setNumTestsPerEvictionRun(int numTestsPerEvictionRun);
 
@@ -254,8 +231,6 @@ public interface GenericObjectPoolMBean<T> {
      * (if any).
      *
      * @return minimum amount of time an object may sit idle in the pool before it is eligible for eviction.
-     * @see #setMinEvictableIdleTimeMillis
-     * @see #setTimeBetweenEvictionRunsMillis
      */
     long getMinEvictableIdleTimeMillis();
 
@@ -265,10 +240,9 @@ public interface GenericObjectPoolMBean<T> {
      * (if any).
      * When non-positive, no objects will be evicted from the pool
      * due to idle time alone.
+     *
      * @param minEvictableIdleTimeMillis minimum amount of time an object may sit idle in the pool before
      * it is eligible for eviction.
-     * @see #getMinEvictableIdleTimeMillis
-     * @see #setTimeBetweenEvictionRunsMillis
      */
     void setMinEvictableIdleTimeMillis(long minEvictableIdleTimeMillis);
 
@@ -279,8 +253,6 @@ public interface GenericObjectPoolMBean<T> {
      * "minIdle" amount of object remain in the pool.
      *
      * @return minimum amount of time an object may sit idle in the pool before it is eligible for eviction.
-     * @since Pool 1.3
-     * @see #setSoftMinEvictableIdleTimeMillis
      */
     long getSoftMinEvictableIdleTimeMillis();
 
@@ -294,8 +266,6 @@ public interface GenericObjectPoolMBean<T> {
      *
      * @param softMinEvictableIdleTimeMillis minimum amount of time an object may sit idle in the pool before
      * it is eligible for eviction.
-     * @since Pool 1.3
-     * @see #getSoftMinEvictableIdleTimeMillis
      */
     void setSoftMinEvictableIdleTimeMillis(long softMinEvictableIdleTimeMillis);
 
@@ -306,8 +276,6 @@ public interface GenericObjectPoolMBean<T> {
      * fails to validate, it will be dropped from the pool.
      *
      * @return <code>true</code> when objects will be validated by the evictor.
-     * @see #setTestWhileIdle
-     * @see #setTimeBetweenEvictionRunsMillis
      */
     boolean getTestWhileIdle();
 
@@ -318,8 +286,6 @@ public interface GenericObjectPoolMBean<T> {
      * fails to validate, it will be dropped from the pool.
      *
      * @param testWhileIdle <code>true</code> so objects will be validated by the evictor.
-     * @see #getTestWhileIdle
-     * @see #setTimeBetweenEvictionRunsMillis
      */
     void setTestWhileIdle(boolean testWhileIdle);
 
@@ -331,7 +297,6 @@ public interface GenericObjectPoolMBean<T> {
      * pool in the order that they are returned to the pool.
      *
      * @return <code>true</true> if the pool is configured to act as a LIFO queue
-     * @since 1.4
      */
     boolean getLifo();
 
@@ -343,7 +308,6 @@ public interface GenericObjectPoolMBean<T> {
      * they are returned to the pool.
      *
      * @param lifo the new value for the LIFO property
-     * @since 1.4
      */
     void setLifo(boolean lifo);
 

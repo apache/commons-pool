@@ -45,7 +45,6 @@ public interface StackKeyedObjectPoolMBean<K> extends StackObjectPoolMBean {
 
     /**
      * @return the initial capacity of each pool.
-     * @since 1.5.5
      */
     int getInitSleepingCapacity();
 
@@ -61,7 +60,6 @@ public interface StackKeyedObjectPoolMBean<K> extends StackObjectPoolMBean {
 
     /**
      * @return the _activeCount
-     * @since 1.5.5
      */
     Map<K, Integer> getActiveCount();
 

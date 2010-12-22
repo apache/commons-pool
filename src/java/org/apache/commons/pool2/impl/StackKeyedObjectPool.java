@@ -258,7 +258,9 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the total number of instances currently idle in this pool.
+     *
+     * @return the total number of instances currently idle in this pool
      */
     @Override
     public synchronized int getNumIdle() {
@@ -266,7 +268,9 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the total number of instances current borrowed from this pool but not yet returned.
+     *
+     * @return the total number of instances currently borrowed from this pool
      */
     @Override
     public synchronized int getNumActive() {
@@ -274,7 +278,11 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the number of instances currently borrowed from but not yet returned
+     * to the pool corresponding to the given <code>key</code>.
+     *
+     * @param key the key to query
+     * @return the number of instances corresponding to the given <code>key</code> currently borrowed in this pool
      */
     @Override
     public synchronized int getNumActive(K key) {
@@ -282,7 +290,10 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the number of instances corresponding to the given <code>key</code> currently idle in this pool.
+     *
+     * @param key the key to query
+     * @return the number of instances corresponding to the given <code>key</code> currently idle in this pool
      */
     @Override
     public synchronized int getNumIdle(K key) {
@@ -442,42 +453,48 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
     }
 
     /**
-     * {@inheritDoc}
+     * @return the cap on the number of "sleeping" instances in <code>each</code> pool.
+     * @since 1.5.5
      */
     public synchronized int getMaxSleeping() {
         return this.maxSleeping;
     }
 
     /**
-     * {@inheritDoc}
+     * Sets the cap on the number of "sleeping" instances in <code>each</code> pool.
+     *
+     * @param maxSleeping
+     * @since 2.0
      */
     public synchronized void setMaxSleeping(int maxSleeping) {
         this.maxSleeping = maxSleeping;
     }
 
     /**
-     * {@inheritDoc}
+     * @return the initial capacity of each pool.
+     * @since 1.5.5
      */
     public synchronized int getInitSleepingCapacity() {
         return this.initIdleCapacity;
     }
 
     /**
-     * {@inheritDoc}
+     * @return the _totActive
      */
     public synchronized int getTotActive() {
         return _totActive;
     }
 
     /**
-     * {@inheritDoc}
+     * @return the _totIdle
      */
     public synchronized int getTotIdle() {
         return _totIdle;
     }
 
     /**
-     * {@inheritDoc}
+     * @return the _activeCount
+     * @since 1.5.5
      */
     public synchronized Map<K,Integer> getActiveCount() {
         return _activeCount;
