@@ -226,7 +226,7 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
      * @return the number of instances currently borrowed from this pool
      */
     @Override
-    public int getNumActive() {
+    public synchronized int getNumActive() {
         return _numActive;
     }
 
@@ -337,7 +337,7 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
     /**
      * Number of objects borrowed but not yet returned to the pool.
      */
-    private volatile int _numActive = 0;
+    private int _numActive = 0;
 
     /**
      * Returns the {@link PoolableObjectFactory} used by this pool to create and manage object instances.
