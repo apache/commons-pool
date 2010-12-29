@@ -17,22 +17,19 @@
 
 package org.apache.commons.pool2.ref;
 
+import java.lang.ref.PhantomReference;
 import java.lang.ref.ReferenceQueue;
-import java.lang.ref.SoftReference;
 
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PoolableObjectFactory;
 
 /**
- * A {@link java.lang.ref.SoftReference SoftReference} based
+ * A {@link java.lang.ref.PhantomReference PhantomReference} based
  * {@link ObjectPool}.
  *
- * @author Rodney Waldhoff
- * @author Sandy McArthur
  * @version $Revision$ $Date$
- * @since Pool 1.0
  */
-public class SoftReferenceObjectPool<T> extends AbstractReferenceObjectPool<T, SoftReference<T>> implements SoftReferenceObjectPoolMBean {
+public final class PhantomReferenceObjectPool<T> extends AbstractReferenceObjectPool<T, PhantomReference<T>> implements PhantomReferenceObjectPoolMBean {
 
     /**
      * Create a <code>SoftReferenceObjectPool</code> with the specified factory.
@@ -40,15 +37,15 @@ public class SoftReferenceObjectPool<T> extends AbstractReferenceObjectPool<T, S
      * @param factory object factory to use, not {@code null}
      * @throws IllegalArgumentException if the factory is null
      */
-    public SoftReferenceObjectPool(PoolableObjectFactory<T> factory) {
+    public PhantomReferenceObjectPool(PoolableObjectFactory<T> factory) {
         super(factory);
     }
 
     /**
      * {@inheritDoc}
      */
-    protected SoftReference<T> createReference(T referent, ReferenceQueue<? super T> referenceQueue) {
-        return new SoftReference<T>(referent, referenceQueue);
+    protected PhantomReference<T> createReference(T referent, ReferenceQueue<? super T> referenceQueue) {
+        return new PhantomReference<T>(referent, referenceQueue);
     }
 
 }
