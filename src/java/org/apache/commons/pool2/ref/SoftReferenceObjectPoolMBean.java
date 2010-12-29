@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.pool2.impl;
+package org.apache.commons.pool2.ref;
 
 /**
  * The <code>SoftReference</code>-based <code>ObjectPool</code> JMX interface.

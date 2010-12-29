@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.commons.pool2.impl;
+package org.apache.commons.pool2.ref;
 
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
