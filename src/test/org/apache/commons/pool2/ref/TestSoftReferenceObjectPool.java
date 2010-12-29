@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.commons.pool2.impl;
+package org.apache.commons.pool2.ref;
 
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PoolableObjectFactory;
 import org.apache.commons.pool2.TestBaseObjectPool;
-import org.apache.commons.pool2.impl.SoftReferenceObjectPool;
+import org.apache.commons.pool2.ref.SoftReferenceObjectPool;
 
 /**
  * @author Rodney Waldhoff

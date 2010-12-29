@@ -28,7 +28,7 @@ import java.util.NoSuchElementException;
 import junit.framework.TestCase;
 
 import org.apache.commons.pool2.impl.GenericObjectPool;
-import org.apache.commons.pool2.impl.SoftReferenceObjectPool;
+import org.apache.commons.pool2.ref.SoftReferenceObjectPool;
 import org.junit.Test;
 
 /**

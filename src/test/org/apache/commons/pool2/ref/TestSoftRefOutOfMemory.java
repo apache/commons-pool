@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.commons.pool2.impl;
+package org.apache.commons.pool2.ref;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -27,7 +27,7 @@ import java.util.List;
 
 import org.apache.commons.pool2.BasePoolableObjectFactory;
 import org.apache.commons.pool2.PoolableObjectFactory;
-import org.apache.commons.pool2.impl.SoftReferenceObjectPool;
+import org.apache.commons.pool2.ref.SoftReferenceObjectPool;
 import org.junit.After;
 import org.junit.Test;
 
