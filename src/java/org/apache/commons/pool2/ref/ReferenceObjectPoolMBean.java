@@ -16,14 +16,26 @@
  */
 package org.apache.commons.pool2.ref;
 
-import org.apache.commons.pool2.ref.ReferenceObjectPoolMBean;
-
 /**
- * The <code>SoftReference</code>-based <code>ObjectPool</code> JMX interface.
+ * The <code>Reference</code>-based <code>ObjectPool</code> JMX interface.
  *
  * @version $Revision$ $Date$
  * @since 2.0
  */
-public interface SoftReferenceObjectPoolMBean extends ReferenceObjectPoolMBean {
+interface ReferenceObjectPoolMBean {
+
+    /**
+     * Returns an approximation not less than the of the number of idle instances in the pool.
+     * 
+     * @return estimated number of idle instances in the pool
+     */
+    int getNumIdle();
+
+    /**
+     * Return the number of instances currently borrowed from this pool.
+     *
+     * @return the number of instances currently borrowed from this pool
+     */
+    int getNumActive();
 
 }
