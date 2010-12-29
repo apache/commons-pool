@@ -17,11 +17,16 @@
 
 package org.apache.commons.pool2;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -231,6 +236,7 @@ public final class PoolUtils {
      * @return a synchronized view of the specified ObjectPool.
      * @since Pool 1.3
      */
+    @SuppressWarnings("unchecked") // returned proxy is a ObjectPool<T> wrapper
     public static <T> ObjectPool<T> synchronizedPool(final ObjectPool<T> pool) {
         if (pool == null) {
             throw new IllegalArgumentException("pool must not be null.");
@@ -245,7 +251,7 @@ public final class PoolUtils {
         assert !"org.apache.commons.pool.composite.CompositeObjectPool".equals(pool.getClass().getName())
                 : "CompositeObjectPools are already thread-safe";
         */
-        return new SynchronizedObjectPool<T>(pool);
+        return synchronizedObject(pool, ObjectPool.class);
     }
 
     /**
@@ -262,6 +268,7 @@ public final class PoolUtils {
      * @return a synchronized view of the specified KeyedObjectPool.
      * @since Pool 1.3
      */
+    @SuppressWarnings("unchecked") // returned proxy is a KeyedObjectPool<K,V> wrapper
     public static <K,V> KeyedObjectPool<K,V> synchronizedPool(final KeyedObjectPool<K,V> keyedPool) {
         if (keyedPool == null) {
             throw new IllegalArgumentException("keyedPool must not be null.");
@@ -274,7 +281,7 @@ public final class PoolUtils {
         assert !"org.apache.commons.pool.composite.CompositeKeyedObjectPool".equals(keyedPool.getClass().getName())
                 : "CompositeKeyedObjectPools are already thread-safe";
         */
-        return new SynchronizedKeyedObjectPool<K,V>(keyedPool);
+        return synchronizedObject(keyedPool, KeyedObjectPool.class);
     }
 
     /**
@@ -284,8 +291,12 @@ public final class PoolUtils {
      * @return a synchronized view of the specified PoolableObjectFactory.
      * @since Pool 1.3
      */
+    @SuppressWarnings("unchecked") // returned proxy is a PoolableObjectFactory<T> wrapper
     public static <T> PoolableObjectFactory<T> synchronizedPoolableFactory(final PoolableObjectFactory<T> factory) {
-        return new SynchronizedPoolableObjectFactory<T>(factory);
+        if (factory == null) {
+            throw new IllegalArgumentException("factory must not be null.");
+        }
+        return synchronizedObject(factory, PoolableObjectFactory.class);
     }
 
     /**
@@ -295,8 +306,49 @@ public final class PoolUtils {
      * @return a synchronized view of the specified KeyedPoolableObjectFactory.
      * @since Pool 1.3
      */
+    @SuppressWarnings("unchecked") // returned proxy is a KeyedPoolableObjectFactory<K,V> wrapper
     public static <K,V> KeyedPoolableObjectFactory<K,V> synchronizedPoolableFactory(final KeyedPoolableObjectFactory<K,V> keyedFactory) {
-        return new SynchronizedKeyedPoolableObjectFactory<K,V>(keyedFactory);
+        if (keyedFactory == null) {
+            throw new IllegalArgumentException("keyedFactory must not be null.");
+        }
+        return synchronizedObject(keyedFactory, KeyedPoolableObjectFactory.class);
+    }
+
+    /**
+     * Wrap the given object in a proxed one where all methods declared in the given interface will be synchronized.
+     *
+     * @param <T> the object type has to be proxed
+     * @param toBeSynchronized to object which methods have to be synchronized
+     * @param type the interface has to be proxed
+     * @return the dynamic synchronized proxy
+     */
+    private static <T> T synchronizedObject(final T toBeSynchronized, final Class<T> type) {
+        /*
+         * Used to synchronize method declared on the pool/factory interface only.
+         */
+        final Set<Method> synchronizedMethods = new HashSet<Method>();
+
+        for (Method method : type.getDeclaredMethods()) {
+            synchronizedMethods.add(method);
+        }
+
+        return type.cast(Proxy.newProxyInstance(type.getClassLoader(),
+                new Class<?>[] { type },
+                new InvocationHandler() {
+
+                    private final Object lock = new Object();
+
+                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                        if (synchronizedMethods.contains(method)) {
+                            synchronized (this.lock) {
+                                return method.invoke(toBeSynchronized, args);
+                            }
+                        }
+                        return method.invoke(toBeSynchronized, args);
+                    }
+
+                }
+        ));
     }
 
     /**
@@ -574,465 +626,6 @@ public final class PoolUtils {
             sb.append("{minIdle=").append(minIdle);
             sb.append(", key=").append(key);
             sb.append(", keyedPool=").append(keyedPool);
-            sb.append('}');
-            return sb.toString();
-        }
-    }
-
-    /**
-     * A synchronized (thread-safe) ObjectPool backed by the specified ObjectPool.
-     *
-     * <p><b>Note:</b>
-     * This should not be used on pool implementations that already provide proper synchronization
-     * such as the pools provided in the Commons Pool library. Wrapping a pool that
-     * {@link #wait() waits} for poolable objects to be returned before allowing another one to be
-     * borrowed with another layer of synchronization will cause liveliness issues or a deadlock.
-     * </p>
-     */
-    private static class SynchronizedObjectPool<T> implements ObjectPool<T> {
-
-        /** Object whose monitor is used to synchronize methods on the wrapped pool. */
-        private final Object lock;
-
-        /** the underlying object pool */
-        private final ObjectPool<T> pool;
-
-        /**
-         * Create a new SynchronizedObjectPool wrapping the given pool.
-         * 
-         * @param pool the ObjectPool to be "wrapped" in a synchronized ObjectPool.
-         * @throws IllegalArgumentException if the pool is null
-         */
-        SynchronizedObjectPool(final ObjectPool<T> pool) throws IllegalArgumentException {
-            if (pool == null) {
-                throw new IllegalArgumentException("pool must not be null.");
-            }
-            this.pool = pool;
-            lock = new Object();
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public T borrowObject() throws Exception, NoSuchElementException, IllegalStateException {
-            synchronized (lock) {
-                return pool.borrowObject();
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void returnObject(final T obj) {
-            synchronized (lock) {
-                try {
-                    pool.returnObject(obj);
-                } catch (Exception e) {
-                    // swallowed as of Pool 2
-                }
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void invalidateObject(final T obj) {
-            synchronized (lock) {
-                try {
-                    pool.invalidateObject(obj);
-                } catch (Exception e) {
-                    // swallowed as of Pool 2
-                }
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void addObject() throws Exception, IllegalStateException, UnsupportedOperationException {
-            synchronized (lock) {
-                pool.addObject();
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public int getNumIdle() throws UnsupportedOperationException {
-            synchronized (lock) {
-                return pool.getNumIdle();
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public int getNumActive() throws UnsupportedOperationException {
-            synchronized (lock) {
-                return pool.getNumActive();
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void clear() throws Exception, UnsupportedOperationException {
-            synchronized (lock) {
-                pool.clear();
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void close() {
-            try {
-                synchronized (lock) {
-                    pool.close();
-                }
-            } catch (Exception e) {
-                // swallowed as of Pool 2
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public String toString() {
-            final StringBuffer sb = new StringBuffer();
-            sb.append("SynchronizedObjectPool");
-            sb.append("{pool=").append(pool);
-            sb.append('}');
-            return sb.toString();
-        }
-    }
-
-    /**
-     * A synchronized (thread-safe) KeyedObjectPool backed by the specified KeyedObjectPool.
-     *
-     * <p><b>Note:</b>
-     * This should not be used on pool implementations that already provide proper synchronization
-     * such as the pools provided in the Commons Pool library. Wrapping a pool that
-     * {@link #wait() waits} for poolable objects to be returned before allowing another one to be
-     * borrowed with another layer of synchronization will cause liveliness issues or a deadlock.
-     * </p>
-     */
-    private static class SynchronizedKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
-
-        /** Object whose monitor is used to synchronize methods on the wrapped pool. */
-        private final Object lock;
-
-        /** Underlying object pool */
-        private final KeyedObjectPool<K,V> keyedPool;
-
-        /**
-         * Create a new SynchronizedKeyedObjectPool wrapping the given pool
-         * 
-         * @param keyedPool KeyedObjectPool to wrap
-         * @throws IllegalArgumentException if keyedPool is null
-         */
-        SynchronizedKeyedObjectPool(final KeyedObjectPool<K,V> keyedPool) throws IllegalArgumentException {
-            if (keyedPool == null) {
-                throw new IllegalArgumentException("keyedPool must not be null.");
-            }
-            this.keyedPool = keyedPool;
-            lock = new Object();
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public V borrowObject(final K key) throws Exception, NoSuchElementException, IllegalStateException {
-            synchronized (lock) {
-                return keyedPool.borrowObject(key);
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void returnObject(final K key, final V obj) {
-            synchronized (lock) {
-                try {
-                    keyedPool.returnObject(key, obj);
-                } catch (Exception e) {
-                    // swallowed
-                }
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void invalidateObject(final K key, final V obj) {
-            synchronized (lock) {
-                try {
-                    keyedPool.invalidateObject(key, obj);
-                } catch (Exception e) {
-                    // swallowed as of Pool 2
-                }
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void addObject(final K key) throws Exception, IllegalStateException, UnsupportedOperationException {
-            synchronized (lock) {
-                keyedPool.addObject(key);
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public int getNumIdle(final K key) throws UnsupportedOperationException {
-            synchronized (lock) {
-                return keyedPool.getNumIdle(key);
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public int getNumActive(final K key) throws UnsupportedOperationException {
-            synchronized (lock) {
-                return keyedPool.getNumActive(key);
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public int getNumIdle() throws UnsupportedOperationException {
-            synchronized (lock) {
-                return keyedPool.getNumIdle();
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public int getNumActive() throws UnsupportedOperationException {
-            synchronized (lock) {
-                return keyedPool.getNumActive();
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void clear() throws Exception, UnsupportedOperationException {
-            synchronized (lock) {
-                keyedPool.clear();
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void clear(final K key) throws Exception, UnsupportedOperationException {
-            synchronized (lock) {
-                keyedPool.clear(key);
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void close() {
-            try {
-                synchronized (lock) {
-                    keyedPool.close();
-                }
-            } catch (Exception e) {
-                // swallowed as of Pool 2
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public String toString() {
-            final StringBuffer sb = new StringBuffer();
-            sb.append("SynchronizedKeyedObjectPool");
-            sb.append("{keyedPool=").append(keyedPool);
-            sb.append('}');
-            return sb.toString();
-        }
-    }
-
-    /**
-     * A fully synchronized PoolableObjectFactory that wraps a PoolableObjectFactory and synchronizes
-     * access to the wrapped factory methods.
-     *
-     * <p><b>Note:</b>
-     * This should not be used on pool implementations that already provide proper synchronization
-     * such as the pools provided in the Commons Pool library. </p>
-     */
-    private static class SynchronizedPoolableObjectFactory<T> implements PoolableObjectFactory<T> {
-        /** Synchronization lock */
-        private final Object lock;
-
-        /** Wrapped factory */
-        private final PoolableObjectFactory<T> factory;
-
-        /** 
-         * Create a SynchronizedPoolableObjectFactory wrapping the given factory.
-         * 
-         * @param factory underlying factory to wrap
-         * @throws IllegalArgumentException if the factory is null
-         */
-        SynchronizedPoolableObjectFactory(final PoolableObjectFactory<T> factory) throws IllegalArgumentException {
-            if (factory == null) {
-                throw new IllegalArgumentException("factory must not be null.");
-            }
-            this.factory = factory;
-            lock = new Object();
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public T makeObject() throws Exception {
-            synchronized (lock) {
-                return factory.makeObject();
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void destroyObject(final T obj) throws Exception {
-            synchronized (lock) {
-                factory.destroyObject(obj);
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public boolean validateObject(final T obj) {
-            synchronized (lock) {
-                return factory.validateObject(obj);
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void activateObject(final T obj) throws Exception {
-            synchronized (lock) {
-                factory.activateObject(obj);
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void passivateObject(final T obj) throws Exception {
-            synchronized (lock) {
-                factory.passivateObject(obj);
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public String toString() {
-            final StringBuffer sb = new StringBuffer();
-            sb.append("SynchronizedPoolableObjectFactory");
-            sb.append("{factory=").append(factory);
-            sb.append('}');
-            return sb.toString();
-        }
-    }
-
-    /**
-     * A fully synchronized KeyedPoolableObjectFactory that wraps a KeyedPoolableObjectFactory and synchronizes
-     * access to the wrapped factory methods.
-     *
-     * <p><b>Note:</b>
-     * This should not be used on pool implementations that already provide proper synchronization
-     * such as the pools provided in the Commons Pool library. </p>
-     */
-    private static class SynchronizedKeyedPoolableObjectFactory<K,V> implements KeyedPoolableObjectFactory<K,V> {
-        /** Synchronization lock */
-        private final Object lock;
-
-        /** Wrapped factory */
-        private final KeyedPoolableObjectFactory<K,V> keyedFactory;
-
-        /** 
-         * Create a SynchronizedKeyedPoolableObjectFactory wrapping the given factory.
-         * 
-         * @param keyedFactory underlying factory to wrap
-         * @throws IllegalArgumentException if the factory is null
-         */
-        SynchronizedKeyedPoolableObjectFactory(final KeyedPoolableObjectFactory<K,V> keyedFactory) throws IllegalArgumentException {
-            if (keyedFactory == null) {
-                throw new IllegalArgumentException("keyedFactory must not be null.");
-            }
-            this.keyedFactory = keyedFactory;
-            lock = new Object();
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public V makeObject(final K key) throws Exception {
-            synchronized (lock) {
-                return keyedFactory.makeObject(key);
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void destroyObject(final K key, final V obj) throws Exception {
-            synchronized (lock) {
-                keyedFactory.destroyObject(key, obj);
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public boolean validateObject(final K key, final V obj) {
-            synchronized (lock) {
-                return keyedFactory.validateObject(key, obj);
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void activateObject(final K key, final V obj) throws Exception {
-            synchronized (lock) {
-                keyedFactory.activateObject(key, obj);
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void passivateObject(final K key, final V obj) throws Exception {
-            synchronized (lock) {
-                keyedFactory.passivateObject(key, obj);
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public String toString() {
-            final StringBuffer sb = new StringBuffer();
-            sb.append("SynchronizedKeyedPoolableObjectFactory");
-            sb.append("{keyedFactory=").append(keyedFactory);
             sb.append('}');
             return sb.toString();
         }
