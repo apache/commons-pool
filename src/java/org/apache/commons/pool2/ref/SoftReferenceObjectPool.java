@@ -32,7 +32,7 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  * @version $Revision$ $Date$
  * @since Pool 1.0
  */
-public class SoftReferenceObjectPool<T> extends AbstractReferenceObjectPool<T, SoftReference<T>> implements SoftReferenceObjectPoolMBean {
+public class SoftReferenceObjectPool<T> extends AbstractReferenceObjectPool<T, SoftReference<T>> {
 
     /**
      * Create a <code>SoftReferenceObjectPool</code> with the specified factory.
@@ -47,6 +47,7 @@ public class SoftReferenceObjectPool<T> extends AbstractReferenceObjectPool<T, S
     /**
      * {@inheritDoc}
      */
+    @Override
     protected SoftReference<T> createReference(T referent, ReferenceQueue<? super T> referenceQueue) {
         return new SoftReference<T>(referent, referenceQueue);
     }

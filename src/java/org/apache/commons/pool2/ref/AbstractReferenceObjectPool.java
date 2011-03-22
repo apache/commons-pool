@@ -34,7 +34,7 @@ import org.apache.commons.pool2.ref.SoftReferenceObjectPoolMBean;
  *
  * @version $Revision$ $Date$
  */
-abstract class AbstractReferenceObjectPool<T, R extends Reference<T>> extends BaseObjectPool<T> implements ObjectPool<T>, SoftReferenceObjectPoolMBean {
+abstract class AbstractReferenceObjectPool<T, R extends Reference<T>> extends BaseObjectPool<T> implements SoftReferenceObjectPoolMBean {
 
     /**
      * Create a <code>SoftReferenceObjectPool</code> with the specified factory.

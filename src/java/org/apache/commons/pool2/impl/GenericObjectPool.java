@@ -185,7 +185,7 @@ import org.apache.commons.pool2.impl.GenericKeyedObjectPool.ObjectTimestampPair;
  * @version $Revision$ $Date$
  * @since Pool 1.0
  */
-public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<T>, GenericObjectPoolMBean<T> {
+public class GenericObjectPool<T> extends BaseObjectPool<T> implements GenericObjectPoolMBean<T> {
 
     //--- constructors -----------------------------------------------
 

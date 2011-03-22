@@ -44,6 +44,7 @@ public final class PhantomReferenceObjectPool<T> extends AbstractReferenceObject
     /**
      * {@inheritDoc}
      */
+    @Override
     protected PhantomReference<T> createReference(T referent, ReferenceQueue<? super T> referenceQueue) {
         return new PhantomReference<T>(referent, referenceQueue);
     }

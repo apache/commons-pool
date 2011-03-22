@@ -44,6 +44,7 @@ public final class WeakReferenceObjectPool<T> extends AbstractReferenceObjectPoo
     /**
      * {@inheritDoc}
      */
+    @Override
     protected WeakReference<T> createReference(T referent, ReferenceQueue<? super T> referenceQueue) {
         return new WeakReference<T>(referent, referenceQueue);
     }

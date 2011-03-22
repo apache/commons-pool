@@ -30,7 +30,6 @@ import java.util.TimerTask;
 import java.util.TreeMap;
 
 import org.apache.commons.pool2.BaseKeyedObjectPool;
-import org.apache.commons.pool2.KeyedObjectPool;
 import org.apache.commons.pool2.KeyedPoolableObjectFactory;
 import org.apache.commons.pool2.PoolUtils;
 
@@ -199,7 +198,7 @@ import org.apache.commons.pool2.PoolUtils;
  * @version $Revision$ $Date$
  * @since Pool 1.0
  */
-public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implements KeyedObjectPool<K,V>, GenericKeyedObjectPoolMBean<K> {
+public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implements GenericKeyedObjectPoolMBean<K> {
 
     //--- constructors -----------------------------------------------
 
