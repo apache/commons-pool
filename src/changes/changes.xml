@@ -32,6 +32,10 @@
     <action dev="markt" type="update" issue="POOL-181">
       Make BaseObjectPool.isClosed() public.
     </action>
+    <action dev="markt" type="fix" issue="POOL-184" dut-to="Adrian Nistor">
+      Correct bug that could lead to inappropriate pool starvation when evict()
+      and borrowObject() are called concurrently.
+    </action>
   </release>
   <release version="1.5.5" date="2010-09-10" description=
      "This is a patch release, including bugfixes, documentation improvements and some deprecations

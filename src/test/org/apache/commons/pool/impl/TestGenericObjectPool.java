@@ -1164,6 +1164,49 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         runTestThreads(5, 10, 50);
     }
 
+    public void testConcurrentBorrowAndEvict() throws Exception {
+
+        pool.setMaxActive(1);
+        pool.addObject();
+
+        for( int i=0; i<5000; i++) {
+            ConcurrentBorrowAndEvictThread one =
+                    new ConcurrentBorrowAndEvictThread(true);
+            ConcurrentBorrowAndEvictThread two =
+                    new ConcurrentBorrowAndEvictThread(false);
+
+            one.start();
+            two.start();
+            one.join();
+            two.join();
+
+            pool.returnObject(one.obj);
+            
+            if (i % 10 == 0) {
+                System.out.println(i/10);
+            } 
+        }
+    }
+
+    private class ConcurrentBorrowAndEvictThread extends Thread {
+        private boolean borrow;
+        public Object obj;
+        
+        public ConcurrentBorrowAndEvictThread(boolean borrow) {
+            this.borrow = borrow;
+        }
+
+        public void run() {
+            try {
+                if (borrow) {
+                    obj = pool.borrowObject();
+                } else {
+                    pool.evict();
+                }
+            } catch (Exception e) { /* Ignore */}
+        }
+    }
+
     static class TestThread implements Runnable {
         private final java.util.Random _random = new java.util.Random();
         
