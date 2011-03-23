@@ -123,7 +123,7 @@ public abstract class BaseObjectPool implements ObjectPool {
      * Has this pool instance been closed.
      * @return <code>true</code> when this pool has been closed.
      */
-    protected final boolean isClosed() {
+    public final boolean isClosed() {
         return closed;
     }
 

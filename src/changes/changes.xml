@@ -29,6 +29,9 @@
       Only stop tracking objects for a key when there are no idle objects, no
       active objects and no objects being processed.
     </action>
+    <action dev="markt" type="update" issue="POOL-181">
+      Make BaseObjectPool.isClosed() public.
+    </action>
   </release>
   <release version="1.5.5" date="2010-09-10" description=
      "This is a patch release, including bugfixes, documentation improvements and some deprecations
