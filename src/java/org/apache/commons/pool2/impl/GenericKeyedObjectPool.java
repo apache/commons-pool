@@ -1529,6 +1529,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
                 _totalInternalProcessing--;
             }
         }
+        allocate();
     }
 
     /**
