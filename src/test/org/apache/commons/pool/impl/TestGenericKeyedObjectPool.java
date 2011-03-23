@@ -28,6 +28,7 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
 import org.apache.commons.pool.TestBaseKeyedObjectPool;
 import org.apache.commons.pool.VisitTracker;
 import org.apache.commons.pool.VisitTrackerFactory;
+import org.apache.commons.pool.WaiterFactory;
 
 /**
  * @author Rodney Waldhoff
@@ -1398,6 +1399,20 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals("Expected half the threads to fail",wtt.length/2,failed);
     }
 
+    /**
+     * Test case for POOL-180.
+     */
+    public void testMaxActivePerKeyExceeded() {
+        WaiterFactory factory = new WaiterFactory(0, 20, 0, 0, 0, 0, 8, 5, 0);
+        pool = new GenericKeyedObjectPool(factory);
+        pool.setMaxActive(5);
+        pool.setMaxTotal(8);
+        pool.setTestOnBorrow(true);
+        pool.setMaxIdle(5);
+        pool.setMaxWait(-1);
+        runTestThreads(20, 300, 250);
+    }
+    
     /*
      * Very simple test thread that just tries to borrow an object from
      * the provided pool with the specified key and returns it

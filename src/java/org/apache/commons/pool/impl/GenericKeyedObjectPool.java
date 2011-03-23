@@ -1404,8 +1404,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 // key references is the key of the list it belongs to.
                 Object key = entry.getValue();
                 ObjectTimestampPair pairTimeStamp = (ObjectTimestampPair) entry.getKey();
-                final CursorableLinkedList list =
-                    ((ObjectQueue)(_poolMap.get(key))).queue;
+                ObjectQueue objectQueue = (ObjectQueue)_poolMap.get(key);
+                final CursorableLinkedList list = objectQueue.queue;
                 list.remove(pairTimeStamp);
 
                 if (toDestroy.containsKey(key)) {
@@ -1415,13 +1415,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                     listForKey.add(pairTimeStamp);
                     toDestroy.put(key, listForKey);
                 }
-                // if that was the last object for that key, drop that pool
-                if (list.isEmpty()) {
-                    _poolMap.remove(key);
-                    _poolList.remove(key);
-                }
+                objectQueue.incrementInternalProcessingCount();
                 _totalIdle--;
-                _totalInternalProcessing++;
                 itemsToRemove--;
             }
 
@@ -1478,7 +1473,17 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                     // ignore error, keep destroying the rest
                 } finally {
                     synchronized(this) {
-                        _totalInternalProcessing--;
+                        ObjectQueue objectQueue =
+                                (ObjectQueue) _poolMap.get(key);
+                        if (objectQueue != null) {
+                            objectQueue.decrementInternalProcessingCount();
+                            if (objectQueue.internalProcessingCount == 0 &&
+                                    objectQueue.activeCount == 0 &&
+                                    objectQueue.queue.isEmpty()) {
+                                _poolMap.remove(key);
+                                _poolList.remove(key);
+                            }
+                        }
                         allocate();
                     }
                 }
