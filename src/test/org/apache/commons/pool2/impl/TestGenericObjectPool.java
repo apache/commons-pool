@@ -1280,6 +1280,51 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
     }
     
+    @Test
+    public void testConcurrentBorrowAndEvict() throws Exception {
+
+        pool.setMaxTotal(1);
+        pool.addObject();
+
+        for( int i=0; i<5000; i++) {
+            ConcurrentBorrowAndEvictThread one =
+                    new ConcurrentBorrowAndEvictThread(true);
+            ConcurrentBorrowAndEvictThread two =
+                    new ConcurrentBorrowAndEvictThread(false);
+
+            one.start();
+            two.start();
+            one.join();
+            two.join();
+
+            pool.returnObject(one.obj);
+            
+            if (i % 10 == 0) {
+                System.out.println(i/10);
+            } 
+        }
+    }
+
+    private class ConcurrentBorrowAndEvictThread extends Thread {
+        private boolean borrow;
+        public Object obj;
+        
+        public ConcurrentBorrowAndEvictThread(boolean borrow) {
+            this.borrow = borrow;
+        }
+
+        @Override
+        public void run() {
+            try {
+                if (borrow) {
+                    obj = pool.borrowObject();
+                } else {
+                    pool.evict();
+                }
+            } catch (Exception e) { /* Ignore */}
+        }
+    }
+
     protected GenericObjectPool<Object> pool = null;
 
     private void assertConfiguration(GenericObjectPoolConfig expected, GenericObjectPool<Object> actual) throws Exception {

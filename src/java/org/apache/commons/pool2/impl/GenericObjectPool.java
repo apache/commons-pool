@@ -1156,6 +1156,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements GenericOb
                 _numInternalProcessing--;
             }
         }
+        allocate();
     }
 
     /**
