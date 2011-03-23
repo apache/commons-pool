@@ -1583,6 +1583,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                 _numInternalProcessing--;
             }
         }
+        allocate();
     }
 
     /**

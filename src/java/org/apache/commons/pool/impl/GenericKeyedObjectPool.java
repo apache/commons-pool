@@ -1977,6 +1977,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                 _totalInternalProcessing--;
             }
         }
+        allocate();
     }
 
     /**
