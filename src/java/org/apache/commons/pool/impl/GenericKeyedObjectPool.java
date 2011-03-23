@@ -1152,12 +1152,21 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                                 }
                             } catch(InterruptedException e) {
                                 synchronized (this) {
-                                    // Make sure allocate hasn't already assigned an object
-                                    // in a different thread or permitted a new object to be created
+                                    // Need to handle the all three possibilities
                                     if (latch.getPair() == null && !latch.mayCreate()) {
+                                        // Case 1: latch still in allocation queue
+                                        // Remove latch from the allocation queue
                                         _allocationQueue.remove(latch);
+                                    } else if (latch.getPair() == null && latch.mayCreate()) {
+                                        // Case 2: latch has been given permission to create
+                                        //         a new object
+                                        latch.getPool().decrementInternalProcessingCount();
+                                        allocate();
                                     } else {
-                                        break;
+                                        // Case 3: An object has been allocated
+                                        latch.getPool().decrementInternalProcessingCount();
+                                        latch.getPool().incrementActiveCount();
+                                        returnObject(latch.getkey(), latch.getPair().getValue());
                                     }
                                 }
                                 Thread.currentThread().interrupt();
