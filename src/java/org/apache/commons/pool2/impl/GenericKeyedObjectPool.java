@@ -998,7 +998,9 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
                 // key references is the key of the list it belongs to.
                 K key = entry.getValue();
                 ObjectTimestampPair<V> pairTimeStamp = entry.getKey();
-                final CursorableLinkedList<ObjectTimestampPair<V>> list = _poolMap.get(key).queue;
+                ObjectQueue objectQueue = _poolMap.get(key);
+                final CursorableLinkedList<ObjectTimestampPair<V>> list =
+                        objectQueue.queue;
                 list.remove(pairTimeStamp);
 
                 if (toDestroy.containsKey(key)) {
@@ -1008,13 +1010,8 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
                     listForKey.add(pairTimeStamp);
                     toDestroy.put(key, listForKey);
                 }
-                // if that was the last object for that key, drop that pool
-                if (list.isEmpty()) {
-                    _poolMap.remove(key);
-                    _poolList.remove(key);
-                }
+                objectQueue.incrementInternalProcessingCount();
                 _totalIdle--;
-                _totalInternalProcessing++;
                 itemsToRemove--;
             }
 
@@ -1070,7 +1067,16 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
                     // ignore error, keep destroying the rest
                 } finally {
                     synchronized (this) {
-                        _totalInternalProcessing--;
+                        ObjectQueue objectQueue = _poolMap.get(key);
+                        if (objectQueue != null) {
+                            objectQueue.decrementInternalProcessingCount();
+                            if (objectQueue.internalProcessingCount == 0 &&
+                                    objectQueue.activeCount == 0 &&
+                                    objectQueue.queue.isEmpty()) {
+                                _poolMap.remove(key);
+                                _poolList.remove(key);
+                            }
+                        }
                         allocate();
                     }
                 }
