@@ -60,7 +60,11 @@ public class TestSoftRefOutOfMemory extends TestCase {
         final Runtime runtime = Runtime.getRuntime();
         while (pool.getNumIdle() > 0) {
             try {
-                garbage.add(new byte[Math.min(1024 * 1024, (int)runtime.freeMemory()/2)]);
+                long freeMemory = runtime.freeMemory();
+                if (freeMemory > Integer.MAX_VALUE) {
+                    freeMemory = Integer.MAX_VALUE;
+                }
+                garbage.add(new byte[Math.min(1024 * 1024, (int)freeMemory/2)]);
             } catch (OutOfMemoryError oome) {
                 System.gc();
             }
@@ -95,7 +99,11 @@ public class TestSoftRefOutOfMemory extends TestCase {
         final Runtime runtime = Runtime.getRuntime();
         while (pool.getNumIdle() > 0) {
             try {
-                garbage.add(new byte[Math.min(1024 * 1024, (int)runtime.freeMemory()/2)]);
+                long freeMemory = runtime.freeMemory();
+                if (freeMemory > Integer.MAX_VALUE) {
+                    freeMemory = Integer.MAX_VALUE;
+                }
+                garbage.add(new byte[Math.min(1024 * 1024, (int)freeMemory/2)]);
             } catch (OutOfMemoryError oome) {
                 System.gc();
             }
@@ -126,7 +134,11 @@ public class TestSoftRefOutOfMemory extends TestCase {
         final Runtime runtime = Runtime.getRuntime();
         while (pool.getNumIdle() > 0) {
             try {
-                garbage.add(new byte[Math.min(1024 * 1024, (int)runtime.freeMemory()/2)]);
+                long freeMemory = runtime.freeMemory();
+                if (freeMemory > Integer.MAX_VALUE) {
+                    freeMemory = Integer.MAX_VALUE;
+                }
+                garbage.add(new byte[Math.min(1024 * 1024, (int)freeMemory/2)]);
             } catch (OutOfMemoryError oome) {
                 System.gc();
             }
