@@ -725,35 +725,42 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         
         pool.evict(); // Kill (0,0),(0,1)
         assertEquals(3, pool.getNumIdle(zero));
-        Object obj = pool.borrowObject(zero);
-        assertTrue(lifo ? obj.equals("04") : obj.equals("02"));
+        Object objZeroA = pool.borrowObject(zero);
+        assertTrue(lifo ? objZeroA.equals("04") : objZeroA.equals("02"));
         assertEquals(2, pool.getNumIdle(zero));
-        obj = pool.borrowObject(zero);
-        assertTrue(obj.equals("03"));
+        Object objZeroB = pool.borrowObject(zero);
+        assertTrue(objZeroB.equals("03"));
         assertEquals(1, pool.getNumIdle(zero));
         
         pool.evict(); // Kill remaining 0 survivor and (1,5)
         assertEquals(0, pool.getNumIdle(zero));
         assertEquals(4, pool.getNumIdle(one));
-        obj = pool.borrowObject(one);
-        assertTrue(lifo ? obj.equals("19") : obj.equals("16"));
+        Object objOneA = pool.borrowObject(one);
+        assertTrue(lifo ? objOneA.equals("19") : objOneA.equals("16"));
         assertEquals(3, pool.getNumIdle(one));
-        obj = pool.borrowObject(one);
-        assertTrue(lifo ? obj.equals("18") : obj.equals("17"));
+        Object objOneB = pool.borrowObject(one);
+        assertTrue(lifo ? objOneB.equals("18") : objOneB.equals("17"));
         assertEquals(2, pool.getNumIdle(one));
         
         pool.evict(); // Kill remaining 1 survivors
         assertEquals(0, pool.getNumIdle(one));
         pool.evict(); // Kill (2,10), (2,11)
         assertEquals(3, pool.getNumIdle(two));
-        obj = pool.borrowObject(two);
-        assertTrue(lifo ? obj.equals("214") : obj.equals("212"));
+        Object objTwoA = pool.borrowObject(two);
+        assertTrue(lifo ? objTwoA.equals("214") : objTwoA.equals("212"));
         assertEquals(2, pool.getNumIdle(two));
         pool.evict(); // All dead now
         assertEquals(0, pool.getNumIdle(two));  
         
         pool.evict(); // Should do nothing - make sure no exception
-        pool.evict();
+        // Currently 2 zero, 2 one and 1 two active. Return them
+        pool.returnObject(zero, objZeroA);
+        pool.returnObject(zero, objZeroB);
+        pool.returnObject(one, objOneA);
+        pool.returnObject(one, objOneB);
+        pool.returnObject(two, objTwoA);
+        // Remove all idle objects
+        pool.clear();
         
         // Reload
         pool.setMinEvictableIdleTimeMillis(500);
@@ -794,8 +801,12 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         pool.evict(); // kill (1,6), (1,7) - (1,5) missed
         assertEquals(3, pool.getNumIdle(one));
         assertEquals(5, pool.getNumIdle(two));
-        obj = pool.borrowObject(one);
-        assertTrue(lifo ? obj.equals("19") : obj.equals("15"));  
+        Object obj = pool.borrowObject(one);
+        if (lifo) {
+            assertEquals("19", obj);
+        } else {
+            assertEquals("15", obj);
+        }
     }
     
     
