@@ -1164,6 +1164,12 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
             if (pool != null) {
                 synchronized(this) {
                     pool.decrementActiveCount();
+                    if (pool.queue.isEmpty() &&
+                            pool.activeCount == 0 &&
+                            pool.internalProcessingCount == 0) {
+                        _poolMap.remove(key);
+                        _poolList.remove(key);
+                    }
                     allocate();
                 }
             }
@@ -1244,6 +1250,12 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
             if (decrementNumActive) {
                 synchronized(this) {
                     pool.decrementActiveCount();
+                    if (pool.queue.isEmpty() &&
+                            pool.activeCount == 0 &&
+                            pool.internalProcessingCount == 0) {
+                        _poolMap.remove(key);
+                        _poolList.remove(key);
+                    }
                     allocate();
                 }
             }
@@ -1461,8 +1473,9 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
                         _evictionCursor.previous() :
                         _evictionCursor.next();
                 _evictionCursor.remove();
+                ObjectQueue objectQueue = _poolMap.get(key);
+                objectQueue.incrementInternalProcessingCount();
                 _totalIdle--;
-                _totalInternalProcessing++;
             }
 
             boolean removeObject=false;
@@ -1497,28 +1510,19 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
                     _factory.destroyObject(key, pair.getValue());
                 } catch(Exception e) {
                     // ignored
-                } finally {
-                    // Do not remove the key from the _poolList or _poolmap,
-                    // even if the list stored in the _poolMap for this key is
-                    // empty when minIdle > 0.
-                    //
-                    // Otherwise if it was the last object for that key,
-                    // drop that pool
-                    if (this.minIdlePerKey == 0) {
-                        synchronized (this) {
-                            ObjectQueue objectQueue =
-                                _poolMap.get(key);
-                            if (objectQueue != null &&
-                                    objectQueue.queue.isEmpty()) {
-                                _poolMap.remove(key);
-                                _poolList.remove(key);
-                            }
-                        }
-                    }
                 }
             }
             synchronized (this) {
-                if (!removeObject) {
+                ObjectQueue objectQueue = _poolMap.get(key);
+                objectQueue.decrementInternalProcessingCount();
+                if (removeObject) {
+                    if (objectQueue.queue.isEmpty() &&
+                            objectQueue.activeCount == 0 &&
+                            objectQueue.internalProcessingCount == 0) {
+                        _poolMap.remove(key);
+                        _poolList.remove(key);
+                    }
+                } else {
                     _evictionCursor.add(pair);
                     _totalIdle++;
                     if (this.lifo) {
@@ -1526,8 +1530,8 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
                         _evictionCursor.previous();
                     }
                 }
-                _totalInternalProcessing--;
             }
+
         }
         allocate();
     }
