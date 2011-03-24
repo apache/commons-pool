@@ -1299,9 +1299,11 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
             pool.returnObject(one.obj);
             
+            /* Uncomment this for a progress indication
             if (i % 10 == 0) {
                 System.out.println(i/10);
-            } 
+            }
+            */
         }
     }
 
