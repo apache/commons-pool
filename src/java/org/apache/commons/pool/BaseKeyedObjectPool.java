@@ -102,7 +102,7 @@ public abstract class BaseKeyedObjectPool implements KeyedObjectPool {
 
     /**
      * Not supported in this base implementation.
-     * @throws UnsupportedOpereationException
+     * @throws UnsupportedOperationException
      */
     public void clear() throws Exception, UnsupportedOperationException {
         throw new UnsupportedOperationException();

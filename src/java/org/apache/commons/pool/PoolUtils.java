@@ -2172,7 +2172,7 @@ public final class PoolUtils {
          * 
          * @param keyedPool underlying pool
          * @param factor erosion factor - determines the frequency of erosion events
-         * @see #factor
+         * @see #erodingFactor
          */
         public ErodingKeyedObjectPool(final KeyedObjectPool keyedPool, final float factor) {
             this(keyedPool, new ErodingFactor(factor));
@@ -2203,12 +2203,12 @@ public final class PoolUtils {
         /**
          * Returns obj to the pool, unless erosion is triggered, in which
          * case obj is invalidated.  Erosion is triggered when there are idle instances in 
-         * the pool associated with the given key and more than the configured {@link #factor erosion factor}
+         * the pool associated with the given key and more than the configured {@link #erodingFactor erosion factor}
          * time has elapsed since the last returnObject activation. 
          * 
          * @param obj object to return or invalidate
          * @param key key
-         * @see #factor
+         * @see #erodingFactor
          */
         public void returnObject(final Object key, final Object obj) throws Exception {
             boolean discard = false;
@@ -2235,9 +2235,6 @@ public final class PoolUtils {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         protected int numIdle(final Object key) {
             return getKeyedPool().getNumIdle();
         }
