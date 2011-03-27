@@ -34,7 +34,6 @@ import org.apache.commons.pool.BaseKeyedObjectPool;
 import org.apache.commons.pool.KeyedObjectPool;
 import org.apache.commons.pool.KeyedPoolableObjectFactory;
 import org.apache.commons.pool.PoolUtils;
-import org.apache.commons.pool.PoolableObjectFactory;
 
 /**
  * A configurable <code>KeyedObjectPool</code> implementation.
