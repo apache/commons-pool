@@ -40,7 +40,7 @@
 
       <property name="name" value="commons-pool"/>
       <property name="title" value="Apache Commons Object Pooling Package"/>
-      <property name="version" value="2.0-SNAPSHOT"/>
+      <property name="version" value="1.5.6-SNAPSHOT"/>
       <property name="package" value="org.apache.commons.pool.*"/>
 
       <property name="src.dir" value="${basedir}/src"/>
@@ -50,12 +50,12 @@
       <property name="build.classes.dir" value="${build.dir}/classes"/>
       <property name="build.test-classes.dir" value="${build.dir}/test-classes"/>
       <property name="dist.dir" value="${basedir}/dist"/>
-      <property name="dist.jar" value="${dist.dir}/${name}.jar"/>
+      <property name="dist.jar" value="${dist.dir}/${name}-${version}.jar"/>
 
       <property name="test.failonerror" value="true" /> 
      
       <property name="javadoc.dir" value="${dist.dir}/docs/api"/>
-      <property name="javadoc.bottom" value="&lt;small&gt;Copyright &amp;copy; 2001-2003 Apache Software Foundation. Documenation generated ${TODAY}&lt;/small&gt;."/>
+      <property name="javadoc.bottom" value="&lt;small&gt;Copyright &amp;copy; 2001-2011 Apache Software Foundation. Documenation generated ${TODAY}&lt;/small&gt;."/>
       <property name="javadoc.overview" value="${src.java.dir}/org/apache/commons/pool/overview.html" />
 
       <property name="javac.optimize" value="false"/>
