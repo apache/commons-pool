@@ -762,6 +762,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      */
     public synchronized void setMaxWait(long maxWait) {
         _maxWait = maxWait;
+        allocate();
     }
 
     /**
