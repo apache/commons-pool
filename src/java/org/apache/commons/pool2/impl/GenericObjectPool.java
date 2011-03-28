@@ -256,8 +256,10 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements GenericOb
      * by the pool.
      * @see #getMaxTotal
      */
-    public synchronized void setMaxTotal(int maxTotal) {
-        this.maxTotal = maxTotal;
+    public void setMaxTotal(int maxTotal) {
+        synchronized(this) {
+            this.maxTotal = maxTotal;
+        }
         allocate();
     }
 
@@ -283,8 +285,10 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements GenericOb
      *        or {@link WhenExhaustedAction#GROW}
      * @see #getWhenExhaustedAction
      */
-    public synchronized void setWhenExhaustedAction(WhenExhaustedAction whenExhaustedAction) {
-        this.whenExhaustedAction = whenExhaustedAction;
+    public void setWhenExhaustedAction(WhenExhaustedAction whenExhaustedAction) {
+        synchronized(this) {
+            this.whenExhaustedAction = whenExhaustedAction;
+        }
         allocate();
     }
 
@@ -323,8 +327,10 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements GenericOb
      * @see #setWhenExhaustedAction
      * @see WhenExhaustedAction#BLOCK
      */
-    public synchronized void setMaxWait(long maxWait) {
-        this.maxWait = maxWait;
+    public void setMaxWait(long maxWait) {
+        synchronized(this) {
+            this.maxWait = maxWait;
+        }
         allocate();
     }
 
@@ -350,8 +356,10 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements GenericOb
      * Use a negative value to indicate an unlimited number of idle instances.
      * @see #getMaxIdle
      */
-    public synchronized void setMaxIdle(int maxIdle) {
-        this.maxIdle = maxIdle;
+    public void setMaxIdle(int maxIdle) {
+        synchronized(this) {
+            this.maxIdle = maxIdle;
+        }
         allocate();
     }
 
@@ -367,8 +375,10 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements GenericOb
      * @see #getMinIdle
      * @see #getTimeBetweenEvictionRunsMillis()
      */
-    public synchronized void setMinIdle(int minIdle) {
-        this.minIdle = minIdle;
+    public void setMinIdle(int minIdle) {
+        synchronized(this) {
+            this.minIdle = minIdle;
+        }
         allocate();
     }
 
@@ -656,11 +666,10 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements GenericOb
 
             // Add this request to the queue
             _allocationQueue.add(latch);
-
-            // Work the allocation queue, allocating idle instances and
-            // instance creation permits in request arrival order
-            allocate();
         }
+        // Work the allocation queue, allocating idle instances and
+        // instance creation permits in request arrival order
+        allocate();
 
         for(;;) {
             synchronized (this) {
@@ -719,6 +728,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements GenericOb
                                     }
                                 }
                             } catch(InterruptedException e) {
+                                boolean doAllocate = false;
                                 synchronized(this) {
                                     // Need to handle the all three possibilities
                                     if (latch.getPair() == null && !latch.mayCreate()) {
@@ -729,13 +739,16 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements GenericOb
                                         // Case 2: latch has been given permission to create
                                         //         a new object
                                         _numInternalProcessing--;
-                                        allocate();
+                                        doAllocate = true;
                                     } else {
                                         // Case 3: An object has been allocated
                                         _numInternalProcessing--;
                                         _numActive++;
                                         returnObject(latch.getPair().getValue());
                                     }
+                                }
+                                if (doAllocate) {
+                                    allocate();
                                 }
                                 Thread.currentThread().interrupt();
                                 throw e;
@@ -774,8 +787,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements GenericOb
                         synchronized (this) {
                             _numInternalProcessing--;
                             // No need to reset latch - about to throw exception
-                            allocate();
                         }
+                        allocate();
                     }
                 }
             }
@@ -807,8 +820,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements GenericOb
                         latch.reset();
                         _allocationQueue.add(0, latch);
                     }
-                    allocate();
                 }
+                allocate();
                 if(newlyCreated) {
                     throw new NoSuchElementException("Could not create a validated object, cause: " + e.getMessage());
                 }
@@ -822,7 +835,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements GenericOb
     /**
      * Allocate available instances to latches in the allocation queue.  Then
      * set _mayCreate to true for as many additional latches remaining in queue
-     * as _maxActive allows.
+     * as _maxActive allows. While it is safe for GOP, for consistency with GKOP
+     * this method should not be called from inside a sync block. 
      */
     private synchronized void allocate() {
         if (isClosed()) return;
@@ -869,8 +883,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements GenericOb
         } finally {
             synchronized (this) {
                 _numActive--;
-                allocate();
             }
+            allocate();
         }
     }
 
@@ -919,8 +933,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements GenericOb
             } finally {
                 synchronized (this) {
                     _numInternalProcessing--;
-                    allocate();
                 }
+                allocate();
             }
         }
     }
@@ -979,8 +993,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements GenericOb
             // "behavior flag", decrementNumActive, from addObjectToPool.
             synchronized(this) {
                 _numActive--;
-                allocate();
             }
+            allocate();
         }
     }
 
@@ -1009,6 +1023,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements GenericOb
 
         // Add instance to pool if there is room and it has passed validation
         // (if testOnreturn is set)
+        boolean doAllocate = false;
         synchronized (this) {
             if (isClosed()) {
                 shouldDestroy = true;
@@ -1026,9 +1041,12 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements GenericOb
                     if (decrementNumActive) {
                         _numActive--;
                     }
-                    allocate();
+                    doAllocate = true;
                 }
             }
+        }
+        if (doAllocate) {
+            allocate();
         }
 
         // Destroy the instance if necessary
@@ -1042,8 +1060,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements GenericOb
             if (decrementNumActive) {
                 synchronized(this) {
                     _numActive--;
-                    allocate();
                 }
+                allocate();
             }
         }
 
@@ -1178,8 +1196,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements GenericOb
             } finally {
                 synchronized (this) {
                     _numInternalProcessing--;
-                    allocate();
                 }
+                allocate();
             }
         }
     }
