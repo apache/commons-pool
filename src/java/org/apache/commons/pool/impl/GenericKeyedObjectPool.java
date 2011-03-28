@@ -657,8 +657,10 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      *
      * @see #getMaxActive
      */
-    public synchronized void setMaxActive(int maxActive) {
-        _maxActive = maxActive;
+    public void setMaxActive(int maxActive) {
+        synchronized(this) {
+            _maxActive = maxActive;
+        }
         allocate();
     }
 
@@ -684,8 +686,10 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * Use a negative value for no limit.
      * @see #getMaxTotal
      */
-    public synchronized void setMaxTotal(int maxTotal) {
-        _maxTotal = maxTotal;
+    public void setMaxTotal(int maxTotal) {
+        synchronized(this) {
+            _maxTotal = maxTotal;
+        }
         allocate();
     }
 
@@ -712,17 +716,19 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      *        or {@link #WHEN_EXHAUSTED_GROW}
      * @see #getWhenExhaustedAction
      */
-    public synchronized void setWhenExhaustedAction(byte whenExhaustedAction) {
-        switch(whenExhaustedAction) {
-            case WHEN_EXHAUSTED_BLOCK:
-            case WHEN_EXHAUSTED_FAIL:
-            case WHEN_EXHAUSTED_GROW:
-                _whenExhaustedAction = whenExhaustedAction;
-                allocate();
-                break;
-            default:
-                throw new IllegalArgumentException("whenExhaustedAction " + whenExhaustedAction + " not recognized.");
+    public void setWhenExhaustedAction(byte whenExhaustedAction) {
+        synchronized(this) {
+            switch(whenExhaustedAction) {
+                case WHEN_EXHAUSTED_BLOCK:
+                case WHEN_EXHAUSTED_FAIL:
+                case WHEN_EXHAUSTED_GROW:
+                    _whenExhaustedAction = whenExhaustedAction;
+                    break;
+                default:
+                    throw new IllegalArgumentException("whenExhaustedAction " + whenExhaustedAction + " not recognized.");
+            }
         }
+        allocate();
     }
 
 
@@ -760,8 +766,10 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @see #setWhenExhaustedAction
      * @see #WHEN_EXHAUSTED_BLOCK
      */
-    public synchronized void setMaxWait(long maxWait) {
-        _maxWait = maxWait;
+    public void setMaxWait(long maxWait) {
+        synchronized(this) {
+            _maxWait = maxWait;
+        }
         allocate();
     }
 
@@ -789,8 +797,10 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * @see #getMaxIdle
      * @see #DEFAULT_MAX_IDLE
      */
-    public synchronized void setMaxIdle(int maxIdle) {
-        _maxIdle = maxIdle;
+    public void setMaxIdle(int maxIdle) {
+        synchronized(this) {
+            _maxIdle = maxIdle;
+        }
         allocate();
     }
 
@@ -1089,11 +1099,10 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
             // Add this request to the queue
             _allocationQueue.add(latch);
-
-            // Work the allocation queue, allocating idle instances and
-            // instance creation permits in request arrival order
-            allocate();
         }
+        // Work the allocation queue, allocating idle instances and
+        // instance creation permits in request arrival order
+        allocate();
 
         for(;;) {
             synchronized (this) {
@@ -1151,6 +1160,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                                     }
                                 }
                             } catch(InterruptedException e) {
+                                boolean doAllocate = false;
                                 synchronized (this) {
                                     // Need to handle the all three possibilities
                                     if (latch.getPair() == null && !latch.mayCreate()) {
@@ -1161,13 +1171,16 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                                         // Case 2: latch has been given permission to create
                                         //         a new object
                                         latch.getPool().decrementInternalProcessingCount();
-                                        allocate();
+                                        doAllocate = true;
                                     } else {
                                         // Case 3: An object has been allocated
                                         latch.getPool().decrementInternalProcessingCount();
                                         latch.getPool().incrementActiveCount();
                                         returnObject(latch.getkey(), latch.getPair().getValue());
                                     }
+                                }
+                                if (doAllocate) {
+                                    allocate();
                                 }
                                 Thread.currentThread().interrupt();
                                 throw e;
@@ -1205,8 +1218,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                         synchronized (this) {
                             latch.getPool().decrementInternalProcessingCount();
                             // No need to reset latch - about to throw exception
-                            allocate();
                         }
+                        allocate();
                     }
                 }
             }
@@ -1237,8 +1250,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                         latch.reset();
                         _allocationQueue.add(0, latch);
                     }
-                    allocate();
                 }
+                allocate();
                 if (newlyCreated) {
                     throw new NoSuchElementException(
                        "Could not create a validated object, cause: " +
@@ -1254,7 +1267,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
     /**
      * Allocate available instances to latches in the allocation queue.  Then
      * set _mayCreate to true for as many additional latches remaining in queue
-     * as _maxActive allows for each key.
+     * as _maxActive allows for each key. This method <b>MUST NOT</b> be called
+     * from inside a sync block.
      */
     private void allocate() {
         boolean clearOldest = false;
@@ -1484,8 +1498,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                                 _poolList.remove(key);
                             }
                         }
-                        allocate();
                     }
+                    allocate();
                 }
             }
 
@@ -1574,8 +1588,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                             _poolMap.remove(key);
                             _poolList.remove(key);
                         }
-                        allocate();
                     }
+                    allocate();
                 }
             }
         }
@@ -1611,6 +1625,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
 
         // Add instance to pool if there is room and it has passed validation
         // (if testOnreturn is set)
+        boolean doAllocate = false;
         synchronized (this) {
             // grab the pool (list) of objects associated with the given key
             pool = (ObjectQueue) (_poolMap.get(key));
@@ -1639,9 +1654,12 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                     if (decrementNumActive) {
                         pool.decrementActiveCount();
                     }
-                    allocate();
+                    doAllocate = true;
                 }
             }
+        }
+        if (doAllocate) {
+            allocate();
         }
 
         // Destroy the instance if necessary
@@ -1661,8 +1679,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                         _poolMap.remove(key);
                         _poolList.remove(key);
                     }
-                    allocate();
                 }
+                allocate();
             }
         }
     }
@@ -1688,8 +1706,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                     _poolList.add(key);
                 }
                 pool.decrementActiveCount();
-                allocate(); // _totalActive has changed
             }
+            allocate(); // _totalActive has changed
         }
     }
 
@@ -2078,8 +2096,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             } finally {
                 synchronized (this) {
                     pool.decrementInternalProcessingCount();
-                    allocate();
                 }
+                allocate();
             }
         }
     }

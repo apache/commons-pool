@@ -36,6 +36,9 @@
       Correct bug that could lead to inappropriate pool starvation when evict()
       and borrowObject() are called concurrently.
     </action>
+    <action dev="markt" type="fix" due-to="psteitz">
+      Fix performance issues when object destruction has latency.
+    </action>
   </release>
   <release version="1.5.5" date="2010-09-10" description=
      "This is a patch release, including bugfixes, documentation improvements and some deprecations
