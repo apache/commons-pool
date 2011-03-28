@@ -369,6 +369,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
      */
     public synchronized void setMaxWait(long maxWait) {
         this.maxWait = maxWait;
+        allocate();
     }
 
     /**
