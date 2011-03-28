@@ -50,7 +50,7 @@
       <property name="build.classes.dir" value="${build.dir}/classes"/>
       <property name="build.test-classes.dir" value="${build.dir}/test-classes"/>
       <property name="dist.dir" value="${basedir}/dist"/>
-      <property name="dist.jar" value="${dist.dir}/${name}-${version}.jar"/>
+      <property name="dist.jar" value="${dist.dir}/${name}.jar"/>
 
       <property name="test.failonerror" value="true" /> 
      
