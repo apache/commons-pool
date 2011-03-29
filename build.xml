@@ -40,7 +40,7 @@
 
       <property name="name" value="commons-pool"/>
       <property name="title" value="Apache Commons Object Pooling Package"/>
-      <property name="version" value="1.5.6-SNAPSHOT"/>
+      <property name="version" value="1.5.6"/>
       <property name="package" value="org.apache.commons.pool.*"/>
 
       <property name="src.dir" value="${basedir}/src"/>
