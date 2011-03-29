@@ -22,8 +22,8 @@
 # $Revision$ $Date$
 # -----------------------------------------------------------------------------
 # Set script variables
-version=1.5.5
-rc=2
+version=1.5.6
+rc=1
 repo_path=~/.m2/repository/commons-pool/commons-pool/${version}
 release_path=~/pool-${version}-rc${rc}
 #
