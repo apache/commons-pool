@@ -1,30 +1,24 @@
                         
 
-              commons-pool-1.5.5 RELEASE NOTES
+              commons-pool-1.5.6 RELEASE NOTES
 
-This is a patch release, including bugfixes, documentation improvements and some deprecations
-in preparation for pool 2.0.
+This is a patch release, including bugfixes only.
 
 Changes in this version include:
 
+
 Fixed Bugs:
-o  POOL-158:  Made GenericKeyedObjectPool._minIdle volatile. 
-o  POOL-161:  Made the default context class loader for the eviction thread the same loader that loads
-      the library to prevent memory leaks in multiple class loader environments. 
-o  POOL-157:  GenericObjectPool and GenericKeyedObjectPool setFactory methods destroy idle instances
-      in the pool by contract. Prior to the fix for this issue, newly set factories were being
-      used to destroy idle instances, rather than the factories used to create them.  The 
-      setFactory methods have also been deprecated, to be removed in version 2.0. Thanks to David Hu. 
-o  POOL-162:  When waiting threads are interrupted, GOP, GKOP may leak capacity. 
-o  POOL-154:  Documentation for the close method in GenericObjectPool and GenericKeyedObjectPool
-      incorrectly states that this method does not clear the pool. Thanks to Glen Mazza. 
+o  POOL-179:  Correctly handle an InterruptedException when waiting for an object from
+      the pool. Thanks to Axel Grossmann. 
+o  POOL-180:  Only stop tracking objects for a key when there are no idle objects, no
+      active objects and no objects being processed. 
+o  POOL-184:  Correct bug that could lead to inappropriate pool starvation when evict()
+      and borrowObject() are called concurrently. 
+o  Fix performance issues when object destruction has latency. Thanks to psteitz. 
 
 Changes:
-o  POOL-169:  In preparation for pool 2.0, deprecated direct access to protected fields
-      and setFactory methods.  In pool 2.0, pool object factories will be immutable. 
-o  POOL-166:  GenericKeyedObjectPool.destroy could use entrySet() rather than keySet() followed by get() 
-o  POOL-156:  ObjectPool classes can ignore Throwable. Added consistent handling for Throwables
-      that are normally swallowed including always re-throwing certain Throwables (e.g. ThreadDeath). 
+o  POOL-181:  Make BaseObjectPool.isClosed() public. 
+
  
 For complete information on commons-pool, including instructions on how to submit bug reports,
 patches, or suggestions for improvement, see the commons-pool website:
