@@ -20,7 +20,7 @@
     <title>Commons Pool Changes</title>
   </properties>
   <body>
-  <release version="1.5.6" date="TBD" description="This is a patch release, including bugfixes only.">
+  <release version="1.5.6" date="2011-04-03" description="This is a patch release, including bugfixes only.">
     <action dev="markt" type="fix" issue="POOL-179" due-to="Axel Grossmann">
       Correctly handle an InterruptedException when waiting for an object from
       the pool.
