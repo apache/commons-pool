@@ -29,19 +29,18 @@ package org.apache.commons.pool2;
  * @version $Revision$ $Date$
  * @since Pool 1.0
  */
-public abstract class BasePoolableObjectFactory implements PoolableObjectFactory {
-    
+public abstract class BasePoolableObjectFactory<T> implements PoolableObjectFactory<T> {
     /**
      * {@inheritDoc}
      */
-    public abstract Object makeObject() throws Exception;
+    public abstract T makeObject() throws Exception;
 
     /**
      *  No-op.
      *  
      *  @param obj ignored
      */
-    public void destroyObject(Object obj)
+    public void destroyObject(T obj)
         throws Exception  {
     }
 
@@ -51,7 +50,7 @@ public abstract class BasePoolableObjectFactory implements PoolableObjectFactory
      * @param obj ignored
      * @return <tt>true</tt>
      */
-    public boolean validateObject(Object obj) {
+    public boolean validateObject(T obj) {
         return true;
     }
 
@@ -60,7 +59,7 @@ public abstract class BasePoolableObjectFactory implements PoolableObjectFactory
      *  
      *  @param obj ignored
      */
-    public void activateObject(Object obj) throws Exception {
+    public void activateObject(T obj) throws Exception {
     }
 
     /**
@@ -68,7 +67,7 @@ public abstract class BasePoolableObjectFactory implements PoolableObjectFactory
      *  
      * @param obj ignored
      */
-    public void passivateObject(Object obj)
+    public void passivateObject(T obj)
         throws Exception {
     }
 }
