@@ -156,6 +156,7 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
      * 
      * @return an instance from the pool
      */
+    @Override
     public synchronized T borrowObject() throws Exception {
         assertOpen();
         T obj = null;
@@ -218,6 +219,7 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
      * 
      * @param obj instance to return to the pool
      */
+    @Override
     public synchronized void returnObject(T obj) throws Exception {
         boolean success = !isClosed();
         if(null != _factory) {
@@ -258,6 +260,7 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
     /**
      * {@inheritDoc}
      */
+    @Override
     public synchronized void invalidateObject(T obj) throws Exception {
         _numActive--;
         if (null != _factory) {
@@ -272,6 +275,7 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
      *
      * @return the number of instances currently idle in this pool
      */
+    @Override
     public synchronized int getNumIdle() {
         return _pool.size();
     }
@@ -281,6 +285,7 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
      *
      * @return the number of instances currently borrowed from this pool
      */
+    @Override
     public synchronized int getNumActive() {
         return _numActive;
     }
@@ -289,6 +294,7 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
      * Clears any objects sitting idle in the pool. Silently swallows any
      * exceptions thrown by {@link PoolableObjectFactory#destroyObject(Object)}.
      */
+    @Override
     public synchronized void clear() {
         if(null != _factory) {
             Iterator<T> it = _pool.iterator();
@@ -313,6 +319,7 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
      *
      * @throws Exception never - exceptions clearing the pool are swallowed
      */
+    @Override
     public void close() throws Exception {
         super.close();
         clear();
@@ -336,6 +343,7 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
      * 
      * @throws Exception when the {@link #getFactory() factory} has a problem creating or passivating an object.
      */
+    @Override
     public synchronized void addObject() throws Exception {
         assertOpen();
         if (_factory == null) {
@@ -382,6 +390,7 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
      * @throws IllegalStateException when the factory cannot be set at this time
      * @deprecated to be removed in pool 2.0
      */
+    @Override
     public synchronized void setFactory(PoolableObjectFactory<T> factory) throws IllegalStateException {
         assertOpen();
         if(0 < getNumActive()) {
