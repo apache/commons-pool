@@ -553,7 +553,7 @@ public final class PoolUtils {
         if (perKey) {
             return new ErodingPerKeyKeyedObjectPool<K,V>(keyedPool, factor);
         } else {
-            return new ErodingKeyedObjectPool(keyedPool, factor);
+            return new ErodingKeyedObjectPool<K,V>(keyedPool, factor);
         }
     }
 
