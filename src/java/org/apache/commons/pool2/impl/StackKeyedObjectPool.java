@@ -157,10 +157,9 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
             } else {
                 if(null == _factory) {
                     throw new NoSuchElementException("pools without a factory cannot create new objects as needed.");
-                } else {
-                    obj = _factory.makeObject(key);
-                    newlyMade = true;
                 }
+                obj = _factory.makeObject(key);
+                newlyMade = true;
             }
             if (null != _factory && null != obj) {
                 try {
@@ -463,10 +462,9 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
     public synchronized void setFactory(KeyedPoolableObjectFactory<K,V> factory) throws IllegalStateException {
         if(0 < getNumActive()) {
             throw new IllegalStateException("Objects are already active");
-        } else {
-            clear();
-            _factory = factory;
         }
+        clear();
+        _factory = factory;
     }
     
     /**
