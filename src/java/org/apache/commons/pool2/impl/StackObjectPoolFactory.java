@@ -31,7 +31,7 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  * @version $Revision$ $Date$
  * @since Pool 1.0
  */
-public class StackObjectPoolFactory implements ObjectPoolFactory {
+public class StackObjectPoolFactory<T> implements ObjectPoolFactory<T> {
     /**
      * Create a new StackObjectPoolFactory.
      *
@@ -39,7 +39,7 @@ public class StackObjectPoolFactory implements ObjectPoolFactory {
      * @deprecated to be removed in pool 2.0 - use {@link #StackObjectPoolFactory(PoolableObjectFactory)}
      */
     public StackObjectPoolFactory() {
-        this((PoolableObjectFactory)null,StackObjectPool.DEFAULT_MAX_SLEEPING,StackObjectPool.DEFAULT_INIT_SLEEPING_CAPACITY);
+        this((PoolableObjectFactory<T>)null,StackObjectPool.DEFAULT_MAX_SLEEPING,StackObjectPool.DEFAULT_INIT_SLEEPING_CAPACITY);
     }
 
     /**
@@ -50,7 +50,7 @@ public class StackObjectPoolFactory implements ObjectPoolFactory {
      * @deprecated to be removed in pool 2.0 - use {@link #StackObjectPoolFactory(PoolableObjectFactory, int)}
      */
     public StackObjectPoolFactory(int maxIdle) {
-        this((PoolableObjectFactory)null,maxIdle,StackObjectPool.DEFAULT_INIT_SLEEPING_CAPACITY);
+        this((PoolableObjectFactory<T>)null,maxIdle,StackObjectPool.DEFAULT_INIT_SLEEPING_CAPACITY);
     }
 
     /**
@@ -63,7 +63,7 @@ public class StackObjectPoolFactory implements ObjectPoolFactory {
      * @deprecated to be removed in pool 2.0 - use {@link #StackObjectPoolFactory(PoolableObjectFactory, int, int)}
      */
     public StackObjectPoolFactory(int maxIdle, int initIdleCapacity) {
-        this((PoolableObjectFactory)null,maxIdle,initIdleCapacity);
+        this((PoolableObjectFactory<T>)null,maxIdle,initIdleCapacity);
     }
 
     /**
@@ -72,7 +72,7 @@ public class StackObjectPoolFactory implements ObjectPoolFactory {
      * @param factory the PoolableObjectFactory used by created pools.
      * @see StackObjectPool#StackObjectPool(PoolableObjectFactory)
      */
-    public StackObjectPoolFactory(PoolableObjectFactory factory) {
+    public StackObjectPoolFactory(PoolableObjectFactory<T> factory) {
         this(factory,StackObjectPool.DEFAULT_MAX_SLEEPING,StackObjectPool.DEFAULT_INIT_SLEEPING_CAPACITY);
     }
 
@@ -82,7 +82,7 @@ public class StackObjectPoolFactory implements ObjectPoolFactory {
      * @param factory the PoolableObjectFactory used by created pools.
      * @param maxIdle cap on the number of "sleeping" instances in the pool.
      */
-    public StackObjectPoolFactory(PoolableObjectFactory factory, int maxIdle) {
+    public StackObjectPoolFactory(PoolableObjectFactory<T> factory, int maxIdle) {
         this(factory,maxIdle,StackObjectPool.DEFAULT_INIT_SLEEPING_CAPACITY);
     }
 
@@ -94,7 +94,7 @@ public class StackObjectPoolFactory implements ObjectPoolFactory {
      * @param initIdleCapacity - initial size of the pool (this specifies the size of the container,
      * it does not cause the pool to be pre-populated.)
      */
-    public StackObjectPoolFactory(PoolableObjectFactory factory, int maxIdle, int initIdleCapacity) {
+    public StackObjectPoolFactory(PoolableObjectFactory<T> factory, int maxIdle, int initIdleCapacity) {
         _factory = factory;
         _maxSleeping = maxIdle;
         _initCapacity = initIdleCapacity;
@@ -105,15 +105,15 @@ public class StackObjectPoolFactory implements ObjectPoolFactory {
      * 
      * @return a new StackObjectPool with the configured factory, maxIdle and initial capacity settings
      */
-    public ObjectPool createPool() {
-        return new StackObjectPool(_factory,_maxSleeping,_initCapacity);
+    public ObjectPool<T> createPool() {
+        return new StackObjectPool<T>(_factory,_maxSleeping,_initCapacity);
     }
 
     /**
      * The PoolableObjectFactory used by created pools.
      * @deprecated to be made private in pool 2.0
      */
-    protected PoolableObjectFactory _factory = null;
+    protected PoolableObjectFactory<T> _factory = null;
     
     /**
      * The maximum number of idle instances in created pools.
@@ -133,7 +133,7 @@ public class StackObjectPoolFactory implements ObjectPoolFactory {
      * @return the PoolableObjectFactory used by created pools
      * @since 1.5.5
      */
-    public PoolableObjectFactory getFactory() {
+    public PoolableObjectFactory<T> getFactory() {
         return _factory;
     }
 
