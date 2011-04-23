@@ -164,14 +164,14 @@ public final class PoolUtils {
      * @return an <code>ObjectPool</code> that will only allow objects of <code>type</code>
      * @since Pool 1.3
      */
-    public static ObjectPool checkedPool(final ObjectPool pool, final Class type) {
+    public static <T> ObjectPool<T> checkedPool(final ObjectPool<T> pool, final Class<T> type) {
         if (pool == null) {
             throw new IllegalArgumentException("pool must not be null.");
         }
         if (type == null) {
             throw new IllegalArgumentException("type must not be null.");
         }
-        return new CheckedObjectPool(pool, type);
+        return new CheckedObjectPool<T>(pool, type);
     }
 
     /**
@@ -1023,15 +1023,15 @@ public final class PoolUtils {
      * to pool methods.
      *
      */
-    private static class CheckedObjectPool implements ObjectPool {
+    private static class CheckedObjectPool<T> implements ObjectPool<T> {
         /** 
          * Type of objects allowed in the pool. This should be a subtype of the return type of
          * the underlying pool's associated object factory.
          */
-        private final Class type;
+        private final Class<T> type;
        
         /** Underlying object pool */
-        private final ObjectPool pool;
+        private final ObjectPool<T> pool;
 
         /**
          * Create a CheckedObjectPool accepting objects of the given type using
@@ -1041,7 +1041,7 @@ public final class PoolUtils {
          * @param type expected pooled object type
          * @throws IllegalArgumentException if either parameter is null
          */
-        CheckedObjectPool(final ObjectPool pool, final Class type) {
+        CheckedObjectPool(final ObjectPool<T> pool, final Class<T> type) {
             if (pool == null) {
                 throw new IllegalArgumentException("pool must not be null.");
             }
@@ -1058,8 +1058,8 @@ public final class PoolUtils {
          * @return a type-checked object from the pool
          * @throws ClassCastException if the object returned by the pool is not of the expected type
          */
-        public Object borrowObject() throws Exception, NoSuchElementException, IllegalStateException {
-            final Object obj = pool.borrowObject();
+        public T borrowObject() throws Exception, NoSuchElementException, IllegalStateException {
+            final T obj = pool.borrowObject();
             if (type.isInstance(obj)) {
                 return obj;
             } else {
@@ -1073,7 +1073,7 @@ public final class PoolUtils {
          * @param obj object to return
          * @throws ClassCastException if obj is not of the expected type
          */
-        public void returnObject(final Object obj) {
+        public void returnObject(final T obj) {
             if (type.isInstance(obj)) {
                 try {
                     pool.returnObject(obj);
@@ -1091,7 +1091,7 @@ public final class PoolUtils {
          * @param obj object to invalidate
          * @throws ClassCastException if obj is not of the expected type
          */
-        public void invalidateObject(final Object obj) {
+        public void invalidateObject(final T obj) {
             if (type.isInstance(obj)) {
                 try {
                     pool.invalidateObject(obj);
@@ -1148,7 +1148,7 @@ public final class PoolUtils {
          * @param factory object factory
          * @deprecated to be removed in version 2.0
          */
-        public void setFactory(final PoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
+        public void setFactory(final PoolableObjectFactory<T> factory) throws IllegalStateException, UnsupportedOperationException {
             pool.setFactory(factory);
         }
 
