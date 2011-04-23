@@ -438,7 +438,7 @@ public final class PoolUtils {
      * @see #erodingPool(ObjectPool, float)
      * @since Pool 1.4
      */
-    public static ObjectPool erodingPool(final ObjectPool pool) {
+    public static <T> ObjectPool<T> erodingPool(final ObjectPool<T> pool) {
         return erodingPool(pool, 1f);
     }
 
@@ -462,14 +462,14 @@ public final class PoolUtils {
      * @see #erodingPool(ObjectPool)
      * @since Pool 1.4
      */
-    public static ObjectPool erodingPool(final ObjectPool pool, final float factor) {
+    public static <T> ObjectPool<T> erodingPool(final ObjectPool<T> pool, final float factor) {
         if (pool == null) {
             throw new IllegalArgumentException("pool must not be null.");
         }
         if (factor <= 0f) {
             throw new IllegalArgumentException("factor must be positive.");
         }
-        return new ErodingObjectPool(pool, factor);
+        return new ErodingObjectPool<T>(pool, factor);
     }
 
     /**
@@ -2026,9 +2026,9 @@ public final class PoolUtils {
      * may be invalidated instead of being added to idle capacity.
      *
      */
-    private static class ErodingObjectPool implements ObjectPool {
+    private static class ErodingObjectPool<T> implements ObjectPool<T> {
         /** Underlying object pool */
-        private final ObjectPool pool;
+        private final ObjectPool<T> pool;
         
         /** Erosion factor */
         private final ErodingFactor factor;
@@ -2040,7 +2040,7 @@ public final class PoolUtils {
          * @param factor erosion factor - determines the frequency of erosion events
          * @see #factor
          */
-        public ErodingObjectPool(final ObjectPool pool, final float factor) {
+        public ErodingObjectPool(final ObjectPool<T> pool, final float factor) {
             this.pool = pool;
             this.factor = new ErodingFactor(factor);
         }
@@ -2048,7 +2048,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        public Object borrowObject() throws Exception, NoSuchElementException, IllegalStateException {
+        public T borrowObject() throws Exception, NoSuchElementException, IllegalStateException {
             return pool.borrowObject();
         }
 
@@ -2061,7 +2061,7 @@ public final class PoolUtils {
          * @param obj object to return or invalidate
          * @see #factor
          */
-        public void returnObject(final Object obj) {
+        public void returnObject(final T obj) {
             boolean discard = false;
             final long now = System.currentTimeMillis();
             synchronized (pool) {
@@ -2088,7 +2088,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
-        public void invalidateObject(final Object obj) {
+        public void invalidateObject(final T obj) {
             try {
                 pool.invalidateObject(obj);
             } catch (Exception e) {
@@ -2139,7 +2139,7 @@ public final class PoolUtils {
          * {@inheritDoc}
          * @deprecated to be removed in pool 2.0
          */
-        public void setFactory(final PoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
+        public void setFactory(final PoolableObjectFactory<T> factory) throws IllegalStateException, UnsupportedOperationException {
             pool.setFactory(factory);
         }
 
