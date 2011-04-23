@@ -25,6 +25,7 @@ import org.apache.commons.pool2.PoolUtils;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Stack;
 
@@ -368,11 +369,8 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
      * Clears the pool, removing all pooled instances.
      */
     public synchronized void clear() {
-        Iterator<K> it = _pools.keySet().iterator();
-        while(it.hasNext()) {
-            K key = it.next();
-            Stack<V> stack = _pools.get(key);
-            destroyStack(key,stack);
+        for (Entry<K, Stack<V>> poolEntry : _pools.entrySet()) {
+            destroyStack(poolEntry.getKey(),poolEntry.getValue());
         }
         _totIdle = 0;
         _pools.clear();
@@ -400,10 +398,9 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
             return;
         } else {
             if(null != _factory) {
-                Iterator<V> it = stack.iterator();
-                while(it.hasNext()) {
+                for (V stackElement : stack) {
                     try {
-                        _factory.destroyObject(key,it.next());
+                        _factory.destroyObject(key,stackElement);
                     } catch(Exception e) {
                         // ignore error, keep destroying the rest
                     }
@@ -425,12 +422,8 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
         StringBuffer buf = new StringBuffer();
         buf.append(getClass().getName());
         buf.append(" contains ").append(_pools.size()).append(" distinct pools: ");
-        Iterator<K> it = _pools.keySet().iterator();
-        while(it.hasNext()) {
-            K key = it.next();
-            buf.append(" |").append(key).append("|=");
-            Stack<V> s = _pools.get(key);
-            buf.append(s.size());
+        for (Entry<K, Stack<V>> poolEntry : _pools.entrySet()) {
+            buf.append(" |").append(poolEntry.getKey()).append("|=").append(poolEntry.getValue().size());
         }
         return buf.toString();
     }
