@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,7 +30,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
-import java.lang.ref.WeakReference;
 
 /**
  * <p>
@@ -59,7 +59,7 @@ import java.lang.ref.WeakReference;
  * @author Janek Bogucki
  * @author Simon Kitching
  */
-class CursorableLinkedList implements List, Serializable {
+class CursorableLinkedList<E> implements List<E>, Serializable {
     /** Ensure serialization compatibility */
     private static final long serialVersionUID = 8836393098519411393L;
 
@@ -72,7 +72,7 @@ class CursorableLinkedList implements List, Serializable {
      * @param o element to be appended to this list.
      * @return <tt>true</tt>
      */
-    public boolean add(Object o) {
+    public boolean add(E o) {
         insertListable(_head.prev(),null,o);
         return true;
     }
@@ -92,7 +92,7 @@ class CursorableLinkedList implements List, Serializable {
      * @throws IndexOutOfBoundsException if the index is out of range
      *         (index &lt; 0 || index &gt; size()).
      */
-    public void add(int index, Object element) {
+    public void add(int index, E element) {
         if(index == _size) {
             add(element);
         } else {
@@ -122,11 +122,11 @@ class CursorableLinkedList implements List, Serializable {
      *         specified collection prevents it from being added to this
      *         list.
      */
-    public boolean addAll(Collection c) {
+    public boolean addAll(Collection<? extends E> c) {
         if(c.isEmpty()) {
             return false;
         }
-        Iterator it = c.iterator();
+        Iterator<? extends E> it = c.iterator();
         while(it.hasNext()) {
             insertListable(_head.prev(),null,it.next());
         }
@@ -158,7 +158,7 @@ class CursorableLinkedList implements List, Serializable {
      * @throws IndexOutOfBoundsException if the index is out of range (index
      *         &lt; 0 || index &gt; size()).
      */
-    public boolean addAll(int index, Collection c) {
+    public boolean addAll(int index, Collection<? extends E> c) {
         if(c.isEmpty()) {
             return false;
         } else if(_size == index || _size == 0) {
@@ -166,7 +166,7 @@ class CursorableLinkedList implements List, Serializable {
         } else {
             Listable succ = getListableAt(index);
             Listable pred = (null == succ) ? null : succ.prev();
-            Iterator it = c.iterator();
+            Iterator<? extends E> it = c.iterator();
             while(it.hasNext()) {
                 pred = insertListable(pred,succ,it.next());
             }
@@ -181,7 +181,7 @@ class CursorableLinkedList implements List, Serializable {
      * @param o element to be prepended to this list.
      * @return <tt>true</tt>
      */
-    public boolean addFirst(Object o) {
+    public boolean addFirst(E o) {
         insertListable(null,_head.next(),o);
         return true;
     }
@@ -193,7 +193,7 @@ class CursorableLinkedList implements List, Serializable {
      * @param o element to be appended to this list.
      * @return <tt>true</tt>
      */
-    public boolean addLast(Object o) {
+    public boolean addLast(E o) {
         insertListable(_head.prev(),null,o);
         return true;
     }
@@ -212,7 +212,7 @@ class CursorableLinkedList implements List, Serializable {
         _head.setPrev(null);
         _size = 0;
         */
-        Iterator it = iterator();
+        Iterator<E> it = iterator();
         while(it.hasNext()) {
             it.next();
             it.remove();
@@ -246,8 +246,8 @@ class CursorableLinkedList implements List, Serializable {
      * @return <tt>true</tt> if this list contains all of the elements of the
      *         specified collection.
      */
-    public boolean containsAll(Collection c) {
-        Iterator it = c.iterator();
+    public boolean containsAll(Collection<?> c) {
+        Iterator<?> it = c.iterator();
         while(it.hasNext()) {
             if(!this.contains(it.next())) {
                 return false;
@@ -281,7 +281,7 @@ class CursorableLinkedList implements List, Serializable {
      * @see #listIterator()
      * @see CursorableLinkedList.Cursor
      */
-    public CursorableLinkedList.Cursor cursor() {
+    public CursorableLinkedList<E>.Cursor cursor() {
         return new Cursor(0);
     }
 
@@ -301,7 +301,7 @@ class CursorableLinkedList implements List, Serializable {
      * @throws IndexOutOfBoundsException if the index is out of range (index
      *          &lt; 0 || index &gt; size()).
      */
-    public CursorableLinkedList.Cursor cursor(int i) {
+    public CursorableLinkedList<E>.Cursor cursor(int i) {
         return new Cursor(i);
     }
 
@@ -319,13 +319,14 @@ class CursorableLinkedList implements List, Serializable {
      * @param o the object to be compared for equality with this list.
      * @return <tt>true</tt> if the specified object is equal to this list.
      */
+    @Override
     public boolean equals(Object o) {
         if(o == this) {
             return true;
         } else if(!(o instanceof List)) {
             return false;
         }
-        Iterator it = ((List)o).listIterator();
+        Iterator<?> it = ((List<?>)o).listIterator();
         for(Listable elt = _head.next(), past = null; null != elt && past != _head.prev(); elt = (past = elt).next()) {
             if(!it.hasNext() || (null == elt.value() ? null != it.next() : !(elt.value().equals(it.next()))) ) {
                 return false;
@@ -343,14 +344,14 @@ class CursorableLinkedList implements List, Serializable {
      * @throws IndexOutOfBoundsException if the index is out of range (index
      *         &lt; 0 || index &gt;= size()).
      */
-    public Object get(int index) {
+    public E get(int index) {
         return getListableAt(index).value();
     }
 
     /**
      * Returns the element at the beginning of this list.
      */
-    public Object getFirst() {
+    public E getFirst() {
         try {
             return _head.next().value();
         } catch(NullPointerException e) {
@@ -361,7 +362,7 @@ class CursorableLinkedList implements List, Serializable {
     /**
      * Returns the element at the end of this list.
      */
-    public Object getLast() {
+    public E getLast() {
         try {
             return _head.prev().value();
         } catch(NullPointerException e) {
@@ -390,6 +391,7 @@ class CursorableLinkedList implements List, Serializable {
      * @see Object#equals(Object)
      * @see #equals(Object)
      */
+    @Override
     public int hashCode() {
         int hash = 1;
         for(Listable elt = _head.next(), past = null; null != elt && past != _head.prev(); elt = (past = elt).next()) {
@@ -445,7 +447,7 @@ class CursorableLinkedList implements List, Serializable {
      * Returns a fail-fast iterator.
      * @see List#iterator
      */
-    public Iterator iterator() {
+    public Iterator<E> iterator() {
         return listIterator(0);
     }
 
@@ -487,7 +489,7 @@ class CursorableLinkedList implements List, Serializable {
      * Returns a fail-fast ListIterator.
      * @see List#listIterator()
      */
-    public ListIterator listIterator() {
+    public ListIterator<E> listIterator() {
         return listIterator(0);
     }
 
@@ -495,7 +497,7 @@ class CursorableLinkedList implements List, Serializable {
      * Returns a fail-fast ListIterator.
      * @see List#listIterator(int)
      */
-    public ListIterator listIterator(int index) {
+    public ListIterator<E> listIterator(int index) {
         if(index<0 || index > _size) {
             throw new IndexOutOfBoundsException(index + " < 0 or > " + _size);
         }
@@ -537,9 +539,9 @@ class CursorableLinkedList implements List, Serializable {
      * @throws IndexOutOfBoundsException if the index is out of range (index
      *            &lt; 0 || index &gt;= size()).
      */
-    public Object remove(int index) {
+    public E remove(int index) {
         Listable elt = getListableAt(index);
-        Object ret = elt.value();
+        E ret = elt.value();
         removeListable(elt);
         return ret;
     }
@@ -552,12 +554,12 @@ class CursorableLinkedList implements List, Serializable {
      *          this list.
      * @return <tt>true</tt> if this list changed as a result of the call.
      */
-    public boolean removeAll(Collection c) {
+    public boolean removeAll(Collection<?> c) {
         if(0 == c.size() || 0 == _size) {
             return false;
         } else {
             boolean changed = false;
-            Iterator it = iterator();
+            Iterator<?> it = iterator();
             while(it.hasNext()) {
                 if(c.contains(it.next())) {
                     it.remove();
@@ -571,9 +573,9 @@ class CursorableLinkedList implements List, Serializable {
     /**
      * Removes the first element of this list, if any.
      */
-    public Object removeFirst() {
+    public E removeFirst() {
         if(_head.next() != null) {
-            Object val = _head.next().value();
+            E val = _head.next().value();
             removeListable(_head.next());
             return val;
         } else {
@@ -584,9 +586,9 @@ class CursorableLinkedList implements List, Serializable {
     /**
      * Removes the last element of this list, if any.
      */
-    public Object removeLast() {
+    public E removeLast() {
         if(_head.prev() != null) {
-            Object val = _head.prev().value();
+            E val = _head.prev().value();
             removeListable(_head.prev());
             return val;
         } else {
@@ -604,9 +606,9 @@ class CursorableLinkedList implements List, Serializable {
      *
      * @return <tt>true</tt> if this list changed as a result of the call.
      */
-    public boolean retainAll(Collection c) {
+    public boolean retainAll(Collection<?> c) {
         boolean changed = false;
-        Iterator it = iterator();
+        Iterator<?> it = iterator();
         while(it.hasNext()) {
             if(!c.contains(it.next())) {
                 it.remove();
@@ -631,9 +633,9 @@ class CursorableLinkedList implements List, Serializable {
      * @throws IndexOutOfBoundsException if the index is out of range
      *         (index &lt; 0 || index &gt;= size()).
      */
-    public Object set(int index, Object element) {
+    public E set(int index, E element) {
         Listable elt = getListableAt(index);
-        Object val = elt.setValue(element);
+        E val = elt.setValue(element);
         broadcastListableChanged(elt);
         return val;
     }
@@ -677,13 +679,14 @@ class CursorableLinkedList implements List, Serializable {
      *                   is not a supertype of the runtime type of every element in
      *                   this list.
      */
-    public Object[] toArray(Object a[]) {
+    @SuppressWarnings("unchecked") // OK, see (1) and (2)
+    public <T> T[] toArray(T a[]) {
         if(a.length < _size) {
-            a = (Object[])Array.newInstance(a.getClass().getComponentType(), _size);
+            a = (T[])Array.newInstance(a.getClass().getComponentType(), _size);//(1)
         }
         int i = 0;
         for(Listable elt = _head.next(), past = null; null != elt && past != _head.prev(); elt = (past = elt).next()) {
-            a[i++] = elt.value();
+            a[i++] = (T) elt.value(); //(2) May cause ArrayStoreException if the types are not compatible
         }
         if(a.length > _size) {
             a[_size] = null; // should we null out the rest of the array also? java.util.LinkedList doesn't
@@ -695,6 +698,7 @@ class CursorableLinkedList implements List, Serializable {
      * Returns a {@link String} representation of this list, suitable for debugging.
      * @return a {@link String} representation of this list, suitable for debugging.
      */
+    @Override
     public String toString() {
         StringBuffer buf = new StringBuffer();
         buf.append("[");
@@ -712,13 +716,13 @@ class CursorableLinkedList implements List, Serializable {
      * Returns a fail-fast sublist.
      * @see List#subList(int,int)
      */
-    public List subList(int i, int j) {
+    public List<E> subList(int i, int j) {
         if(i < 0 || j > _size || i > j) {
             throw new IndexOutOfBoundsException();
         } else if(i == 0 && j == _size) {
             return this;
         } else {
-            return new CursorableSubList(this,i,j);
+            return new CursorableSubList<E>(this,i,j);
         }
     }
 
@@ -732,7 +736,7 @@ class CursorableLinkedList implements List, Serializable {
      * @return the newly created
      * {@link org.apache.commons.collections.CursorableLinkedList.Listable}
      */
-    protected Listable insertListable(Listable before, Listable after, Object value) {
+    protected Listable insertListable(Listable before, Listable after, E value) {
         _modCount++;
         _size++;
         Listable elt = new Listable(before,after,value);
@@ -808,14 +812,14 @@ class CursorableLinkedList implements List, Serializable {
     protected void registerCursor(Cursor cur) {
         // We take this opportunity to clean the _cursors list
         // of WeakReference objects to garbage-collected cursors.
-        for (Iterator it = _cursors.iterator(); it.hasNext(); ) {
-            WeakReference ref = (WeakReference) it.next();
+        for (Iterator<WeakReference<Cursor>> it = _cursors.iterator(); it.hasNext(); ) {
+            WeakReference<Cursor> ref = it.next();
             if (ref.get() == null) {
                 it.remove();
             }
         }
 
-        _cursors.add( new WeakReference(cur) );
+        _cursors.add( new WeakReference<Cursor>(cur) );
     }
 
     /**
@@ -823,9 +827,9 @@ class CursorableLinkedList implements List, Serializable {
      * the set of cursors to be notified of changes to this list.
      */
     protected void unregisterCursor(Cursor cur) {
-        for (Iterator it = _cursors.iterator(); it.hasNext(); ) {
-            WeakReference ref = (WeakReference) it.next();
-            Cursor cursor = (Cursor) ref.get();
+        for (Iterator<WeakReference<Cursor>> it = _cursors.iterator(); it.hasNext(); ) {
+            WeakReference<Cursor> ref = it.next();
+            Cursor cursor = ref.get();
             if (cursor == null) {
                 // some other unrelated cursor object has been
                 // garbage-collected; let's take the opportunity to
@@ -845,10 +849,10 @@ class CursorableLinkedList implements List, Serializable {
      * invalid.
      */
     protected void invalidateCursors() {
-        Iterator it = _cursors.iterator();
+        Iterator<WeakReference<Cursor>> it = _cursors.iterator();
         while (it.hasNext()) {
-            WeakReference ref = (WeakReference) it.next();
-            Cursor cursor = (Cursor) ref.get();
+            WeakReference<Cursor> ref = it.next();
+            Cursor cursor = ref.get();
             if (cursor != null) {
                 // cursor is null if object has been garbage-collected
                 cursor.invalidate();
@@ -864,10 +868,10 @@ class CursorableLinkedList implements List, Serializable {
      * @see #set(int,java.lang.Object)
      */
     protected void broadcastListableChanged(Listable elt) {
-        Iterator it = _cursors.iterator();
+        Iterator<WeakReference<Cursor>> it = _cursors.iterator();
         while (it.hasNext()) {
-            WeakReference ref = (WeakReference) it.next();
-            Cursor cursor = (Cursor) ref.get();
+            WeakReference<Cursor> ref = it.next();
+            Cursor cursor = ref.get();
             if (cursor == null) {
                 it.remove(); // clean up list
             } else {
@@ -881,10 +885,10 @@ class CursorableLinkedList implements List, Serializable {
      * element was just removed from my list.
      */
     protected void broadcastListableRemoved(Listable elt) {
-        Iterator it = _cursors.iterator();
+        Iterator<WeakReference<Cursor>> it = _cursors.iterator();
         while (it.hasNext()) {
-            WeakReference ref = (WeakReference) it.next();
-            Cursor cursor = (Cursor) ref.get();
+            WeakReference<Cursor> ref = it.next();
+            Cursor cursor = ref.get();
             if (cursor == null) {
                 it.remove(); // clean up list
             } else {
@@ -898,10 +902,10 @@ class CursorableLinkedList implements List, Serializable {
      * element was just added to my list.
      */
     protected void broadcastListableInserted(Listable elt) {
-        Iterator it = _cursors.iterator();
+        Iterator<WeakReference<Cursor>> it = _cursors.iterator();
         while (it.hasNext()) {
-            WeakReference ref = (WeakReference) it.next();
-            Cursor cursor = (Cursor) ref.get();
+            WeakReference<Cursor> ref = it.next();
+            Cursor cursor = ref.get();
             if (cursor == null) {
                 it.remove();  // clean up list
             } else {
@@ -920,15 +924,16 @@ class CursorableLinkedList implements List, Serializable {
         }
     }
 
+    @SuppressWarnings("unchecked") // OK, see (1)
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         _size = 0;
         _modCount = 0;
-        _cursors = new ArrayList();
+        _cursors = new ArrayList<WeakReference<Cursor>>();
         _head = new Listable(null,null,null);
         int size = in.readInt();
         for (int i=0;i<size;i++) {
-            this.add(in.readObject());
+            this.add((E) in.readObject()); // (1) could cause class cast, but only for corrupt input
         }
     }
 
@@ -958,16 +963,17 @@ class CursorableLinkedList implements List, Serializable {
      * A list of the currently {@link CursorableLinkedList.Cursor}s currently
      * open in this list.
      */
-    protected transient List _cursors = new ArrayList();
+    protected transient List<WeakReference<Cursor>> _cursors = new ArrayList<WeakReference<Cursor>>();
 
     //--- inner classes ----------------------------------------------
 
-    static class Listable implements Serializable {
+    class Listable implements Serializable {
+        private static final long serialVersionUID = 1L;
         private Listable _prev = null;
         private Listable _next = null;
-        private Object _val = null;
+        private E _val = null;
 
-        Listable(Listable prev, Listable next, Object val) {
+        Listable(Listable prev, Listable next, E val) {
             _prev = prev;
             _next = next;
             _val = val;
@@ -981,7 +987,7 @@ class CursorableLinkedList implements List, Serializable {
             return _prev;
         }
 
-        Object value() {
+        E value() {
             return _val;
         }
 
@@ -993,14 +999,14 @@ class CursorableLinkedList implements List, Serializable {
             _prev = prev;
         }
 
-        Object setValue(Object val) {
-            Object temp = _val;
+        E setValue(E val) {
+            E temp = _val;
             _val = val;
             return temp;
         }
     }
 
-    class ListIter implements ListIterator {
+    class ListIter implements ListIterator<E> {
         Listable _cur = null;
         Listable _lastReturned = null;
         int _expectedModCount = _modCount;
@@ -1020,12 +1026,12 @@ class CursorableLinkedList implements List, Serializable {
             }
         }
 
-        public Object previous() {
+        public E previous() {
             checkForComod();
             if(!hasPrevious()) {
                 throw new NoSuchElementException();
             } else {
-                Object ret = _cur.prev().value();
+                E ret = _cur.prev().value();
                 _lastReturned = _cur.prev();
                 _cur.setNext(_cur.prev());
                 _cur.setPrev(_cur.prev().prev());
@@ -1039,12 +1045,12 @@ class CursorableLinkedList implements List, Serializable {
             return(null != _cur.next() && _cur.prev() != _head.prev());
         }
 
-        public Object next() {
+        public E next() {
             checkForComod();
             if(!hasNext()) {
                 throw new NoSuchElementException();
             } else {
-                Object ret = _cur.next().value();
+                E ret = _cur.next().value();
                 _lastReturned = _cur.next();
                 _cur.setPrev(_cur.next());
                 _cur.setNext(_cur.next().next());
@@ -1066,7 +1072,7 @@ class CursorableLinkedList implements List, Serializable {
             return(null != _cur.prev() && _cur.next() != _head.next());
         }
 
-        public void set(Object o) {
+        public void set(E o) {
             checkForComod();
             try {
                 _lastReturned.setValue(o);
@@ -1097,7 +1103,7 @@ class CursorableLinkedList implements List, Serializable {
             }
         }
 
-        public void add(Object o) {
+        public void add(E o) {
             checkForComod();
             _cur.setPrev(insertListable(_cur.prev(),_cur.next(),o));
             _lastReturned = null;
@@ -1112,7 +1118,7 @@ class CursorableLinkedList implements List, Serializable {
         }
     }
 
-    public class Cursor extends ListIter implements ListIterator {
+    public class Cursor extends ListIter implements ListIterator<E> {
         boolean _valid = false;
 
         Cursor(int index) {
@@ -1121,15 +1127,18 @@ class CursorableLinkedList implements List, Serializable {
             registerCursor(this);
         }
 
+        @Override
         public int previousIndex() {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public int nextIndex() {
             throw new UnsupportedOperationException();
         }
 
-        public void add(Object o) {
+        @Override
+        public void add(E o) {
             checkForComod();
             Listable elt = insertListable(_cur.prev(),_cur.next(),o);
             _cur.setPrev(elt);
@@ -1175,6 +1184,7 @@ class CursorableLinkedList implements List, Serializable {
             }
         }
 
+        @Override
         protected void checkForComod() {
             if(!_valid) {
                 throw new ConcurrentModificationException();
@@ -1203,11 +1213,13 @@ class CursorableLinkedList implements List, Serializable {
 
 }
 
-class CursorableSubList extends CursorableLinkedList implements List {
+class CursorableSubList<E> extends CursorableLinkedList<E> implements List<E> {
+
+    private static final long serialVersionUID = 1L;
 
     //--- constructors -----------------------------------------------
 
-    CursorableSubList(CursorableLinkedList list, int from, int to) {
+    CursorableSubList(CursorableLinkedList<E> list, int from, int to) {
         if(0 > from || list.size() < to) {
             throw new IndexOutOfBoundsException();
         } else if(from > to) {
@@ -1238,161 +1250,192 @@ class CursorableSubList extends CursorableLinkedList implements List {
 
     //--- public methods ------------------------------------------
 
+    @Override
     public void clear() {
         checkForComod();
-        Iterator it = iterator();
+        Iterator<E> it = iterator();
         while(it.hasNext()) {
             it.next();
             it.remove();
         }
     }
 
-    public Iterator iterator() {
+    @Override
+    public Iterator<E> iterator() {
         checkForComod();
         return super.iterator();
     }
 
+    @Override
     public int size() {
         checkForComod();
         return super.size();
     }
 
+    @Override
     public boolean isEmpty() {
         checkForComod();
         return super.isEmpty();
     }
 
+    @Override
     public Object[] toArray() {
         checkForComod();
         return super.toArray();
     }
 
-    public Object[] toArray(Object a[]) {
+    @Override
+    public <T> T[] toArray(T a[]) {
         checkForComod();
         return super.toArray(a);
     }
 
+    @Override
     public boolean contains(Object o) {
         checkForComod();
         return super.contains(o);
     }
 
+    @Override
     public boolean remove(Object o) {
         checkForComod();
         return super.remove(o);
     }
 
-    public Object removeFirst() {
+    @Override
+    public E removeFirst() {
         checkForComod();
         return super.removeFirst();
     }
 
-    public Object removeLast() {
+    @Override
+    public E removeLast() {
         checkForComod();
         return super.removeLast();
     }
 
-    public boolean addAll(Collection c) {
+    @Override
+    public boolean addAll(Collection<? extends E> c) {
         checkForComod();
         return super.addAll(c);
     }
 
-    public boolean add(Object o) {
+    @Override
+    public boolean add(E o) {
         checkForComod();
         return super.add(o);
     }
 
-    public boolean addFirst(Object o) {
+    @Override
+    public boolean addFirst(E o) {
         checkForComod();
         return super.addFirst(o);
     }
 
-    public boolean addLast(Object o) {
+    @Override
+    public boolean addLast(E o) {
         checkForComod();
         return super.addLast(o);
     }
 
-    public boolean removeAll(Collection c) {
+    @Override
+    public boolean removeAll(Collection<?> c) {
         checkForComod();
         return super.removeAll(c);
     }
 
-    public boolean containsAll(Collection c) {
+    @Override
+    public boolean containsAll(Collection<?> c) {
         checkForComod();
         return super.containsAll(c);
     }
 
-    public boolean addAll(int index, Collection c) {
+    @Override
+    public boolean addAll(int index, Collection<? extends E> c) {
         checkForComod();
         return super.addAll(index,c);
     }
 
+    @Override
     public int hashCode() {
         checkForComod();
         return super.hashCode();
     }
 
-    public boolean retainAll(Collection c) {
+    @Override
+    public boolean retainAll(Collection<?> c) {
         checkForComod();
         return super.retainAll(c);
     }
 
-    public Object set(int index, Object element) {
+    @Override
+    public E set(int index, E element) {
         checkForComod();
         return super.set(index,element);
     }
 
+    @Override
     public boolean equals(Object o) {
         checkForComod();
         return super.equals(o);
     }
 
-    public Object get(int index) {
+    @Override
+    public E get(int index) {
         checkForComod();
         return super.get(index);
     }
 
-    public Object getFirst() {
+    @Override
+    public E getFirst() {
         checkForComod();
         return super.getFirst();
     }
 
-    public Object getLast() {
+    @Override
+    public E getLast() {
         checkForComod();
         return super.getLast();
     }
 
-    public void add(int index, Object element) {
+    @Override
+    public void add(int index, E element) {
         checkForComod();
         super.add(index,element);
     }
 
-    public ListIterator listIterator(int index) {
+    @Override
+    public ListIterator<E> listIterator(int index) {
         checkForComod();
         return super.listIterator(index);
     }
 
-    public Object remove(int index) {
+    @Override
+    public E remove(int index) {
         checkForComod();
         return super.remove(index);
     }
 
+    @Override
     public int indexOf(Object o) {
         checkForComod();
         return super.indexOf(o);
     }
 
+    @Override
     public int lastIndexOf(Object o) {
         checkForComod();
         return super.lastIndexOf(o);
     }
 
-    public ListIterator listIterator() {
+    @Override
+    public ListIterator<E> listIterator() {
         checkForComod();
         return super.listIterator();
     }
 
-    public List subList(int fromIndex, int toIndex) {
+    @Override
+    public List<E> subList(int fromIndex, int toIndex) {
         checkForComod();
         return super.subList(fromIndex,toIndex);
     }
@@ -1406,7 +1449,8 @@ class CursorableSubList extends CursorableLinkedList implements List {
      *
      * @return the newly created {@link CursorableLinkedList.Listable}
      */
-    protected Listable insertListable(Listable before, Listable after, Object value) {
+    @Override
+    protected Listable insertListable(Listable before, Listable after, E value) {
         _modCount++;
         _size++;
         Listable elt = _list.insertListable((null == before ? _pre : before), (null == after ? _post : after),value);
@@ -1427,6 +1471,7 @@ class CursorableSubList extends CursorableLinkedList implements List {
     /**
      * Removes the given {@link CursorableLinkedList.Listable} from my list.
      */
+    @Override
     protected void removeListable(Listable elt) {
         _modCount++;
         _size--;
@@ -1461,7 +1506,7 @@ class CursorableSubList extends CursorableLinkedList implements List {
     //--- protected attributes ---------------------------------------
 
     /** My underlying list */
-    protected CursorableLinkedList _list = null;
+    protected CursorableLinkedList<E> _list = null;
 
     /** The element in my underlying list preceding the first element in my list. */
     protected Listable _pre = null;
