@@ -557,17 +557,16 @@ class CursorableLinkedList<E> implements List<E>, Serializable {
     public boolean removeAll(Collection<?> c) {
         if(0 == c.size() || 0 == _size) {
             return false;
-        } else {
-            boolean changed = false;
-            Iterator<?> it = iterator();
-            while(it.hasNext()) {
-                if(c.contains(it.next())) {
-                    it.remove();
-                    changed = true;
-                }
-            }
-            return changed;
         }
+        boolean changed = false;
+        Iterator<?> it = iterator();
+        while(it.hasNext()) {
+            if(c.contains(it.next())) {
+                it.remove();
+                changed = true;
+            }
+        }
+        return changed;
     }
 
     /**
@@ -578,9 +577,8 @@ class CursorableLinkedList<E> implements List<E>, Serializable {
             E val = _head.next().value();
             removeListable(_head.next());
             return val;
-        } else {
-            throw new NoSuchElementException();
         }
+        throw new NoSuchElementException();
     }
 
     /**
@@ -591,9 +589,8 @@ class CursorableLinkedList<E> implements List<E>, Serializable {
             E val = _head.prev().value();
             removeListable(_head.prev());
             return val;
-        } else {
-            throw new NoSuchElementException();
         }
+        throw new NoSuchElementException();
     }
 
     /**
@@ -796,13 +793,12 @@ class CursorableLinkedList<E> implements List<E>, Serializable {
                 elt = elt.next();
             }
             return elt;
-        } else {
-            Listable elt = _head.prev();
-            for(int i = (_size-1); i > index; i--) {
-                elt = elt.prev();
-            }
-            return elt;
         }
+        Listable elt = _head.prev();
+        for(int i = (_size-1); i > index; i--) {
+            elt = elt.prev();
+        }
+        return elt;
     }
 
     /**
@@ -1030,14 +1026,13 @@ class CursorableLinkedList<E> implements List<E>, Serializable {
             checkForComod();
             if(!hasPrevious()) {
                 throw new NoSuchElementException();
-            } else {
-                E ret = _cur.prev().value();
-                _lastReturned = _cur.prev();
-                _cur.setNext(_cur.prev());
-                _cur.setPrev(_cur.prev().prev());
-                _nextIndex--;
-                return ret;
             }
+            E ret = _cur.prev().value();
+            _lastReturned = _cur.prev();
+            _cur.setNext(_cur.prev());
+            _cur.setPrev(_cur.prev().prev());
+            _nextIndex--;
+            return ret;
         }
 
         public boolean hasNext() {
@@ -1049,14 +1044,13 @@ class CursorableLinkedList<E> implements List<E>, Serializable {
             checkForComod();
             if(!hasNext()) {
                 throw new NoSuchElementException();
-            } else {
-                E ret = _cur.next().value();
-                _lastReturned = _cur.next();
-                _cur.setPrev(_cur.next());
-                _cur.setNext(_cur.next().next());
-                _nextIndex++;
-                return ret;
             }
+            E ret = _cur.next().value();
+            _lastReturned = _cur.next();
+            _cur.setPrev(_cur.next());
+            _cur.setNext(_cur.next().next());
+            _nextIndex++;
+            return ret;
         }
 
         public int previousIndex() {
@@ -1093,14 +1087,13 @@ class CursorableLinkedList<E> implements List<E>, Serializable {
             checkForComod();
             if(null == _lastReturned) {
                 throw new IllegalStateException();
-            } else {
-                _cur.setNext(_lastReturned == _head.prev() ? null : _lastReturned.next());
-                _cur.setPrev(_lastReturned == _head.next() ? null : _lastReturned.prev());
-                removeListable(_lastReturned);
-                _lastReturned = null;
-                _nextIndex--;
-                _expectedModCount++;
             }
+            _cur.setNext(_lastReturned == _head.prev() ? null : _lastReturned.next());
+            _cur.setPrev(_lastReturned == _head.next() ? null : _lastReturned.prev());
+            removeListable(_lastReturned);
+            _lastReturned = null;
+            _nextIndex--;
+            _expectedModCount++;
         }
 
         public void add(E o) {
