@@ -32,24 +32,16 @@
       <property name="user-propfile" value="${user.home}/build.properties"/>
       <property file="${user-propfile}"/>
 
-      <!-- Repository base path -->
-      <property name="repository" value="${user.home}/.m2/repository"/>
-
-      <!-- The directories corresponding to your necessary dependencies -->
-      <property name="junit.version" value="4.8.2"/>
-      <property name="junit.home" value="${repository}/junit/junit/${junit.version}"/>
-      <property name="junit.jar" value="${junit.home}/junit-${junit.version}.jar"/>
-
       <!-- command line classpath, if any -->
       <property name="cp" value=""/>
 
       <!-- now combine the classpaths -->
       <property name="classpath" value="${cp}"/>
 
-      <property name="name" value="commons-pool2"/>
+      <property name="name" value="commons-pool"/>
       <property name="title" value="Apache Commons Object Pooling Package"/>
-      <property name="version" value="2.0-SNAPSHOT"/>
-      <property name="package" value="org.apache.commons.pool2.*"/>
+      <property name="version" value="1.5.7-SNAPSHOT"/>
+      <property name="package" value="org.apache.commons.pool.*"/>
 
       <property name="src.dir" value="${basedir}/src"/>
       <property name="src.java.dir" value="${src.dir}/java"/>
@@ -58,28 +50,19 @@
       <property name="build.classes.dir" value="${build.dir}/classes"/>
       <property name="build.test-classes.dir" value="${build.dir}/test-classes"/>
       <property name="dist.dir" value="${basedir}/dist"/>
-      <property name="dist.jar" value="${dist.dir}/${name}.jar"/>
+      <property name="dist.jar" value="${dist.dir}/${name}-${version}.jar"/>
 
       <property name="test.failonerror" value="true" /> 
      
       <property name="javadoc.dir" value="${dist.dir}/docs/api"/>
-      <property name="javadoc.bottom" value="&lt;small&gt;Copyright &amp;copy; 2001-2010 Apache Software Foundation. Documenation generated ${TODAY}&lt;/small&gt;."/>
+      <property name="javadoc.bottom" value="&lt;small&gt;Copyright &amp;copy; 2001-2011 Apache Software Foundation. Documenation generated ${TODAY}&lt;/small&gt;."/>
       <property name="javadoc.overview" value="${src.java.dir}/org/apache/commons/pool/overview.html" />
 
       <property name="javac.optimize" value="false"/>
       <property name="javac.debug" value="true"/>
       <property name="javac.deprecation" value="true"/>
-      <property name="javac.target.version" value="1.5"/>
-      <property name="javac.src.version" value="1.5"/>
-   	
-      <!-- Construct unit test classpath -->
-      <path id="test.classpath">
-         <pathelement location="${build.classes.dir}" /> 
-         <pathelement location="${build.test-classes.dir}" /> 
-         <pathelement path="${classpath}" /> 
-         <pathelement location="${junit.jar}"/>
-      </path>
-
+      <property name="javac.target.version" value="1.3"/>
+      <property name="javac.src.version" value="1.3"/>
    </target>
 
    <!-- ######################################################### -->
@@ -111,7 +94,7 @@
                nonavbar="false"
                serialwarn="false"
                source="${javac.src.version}">
-          <link href="http://java.sun.com/j2se/1.5.0/docs/api"/>
+          <link href="http://java.sun.com/j2se/1.4.2/docs/api"/>
       </javadoc>
    </target>
 
@@ -138,20 +121,28 @@
              optimize="${javac.optimize}"
              target="${javac.target.version}"
              source="${javac.src.version}">
-         <classpath refid="test.classpath"/>
+        <classpath>
+          <pathelement location="${build.classes.dir}" /> 
+          <pathelement location="${build.test-classes.dir}" /> 
+          <pathelement path="${classpath}" /> 
+        </classpath>
       </javac>
    </target>
 
    <target name="test" depends="compile-test" description="runs (junit) unit tests">
       <echo message="Because we need to sleep to test the eviction threads, this takes a little while (around 2 minutes)..."/>
       <junit printsummary="true" showoutput="true" fork="yes" haltonerror="${test.failonerror}">
-        <classpath refid="test.classpath"/>
+        <classpath>
+          <pathelement location="${build.classes.dir}" /> 
+          <pathelement location="${build.test-classes.dir}" /> 
+          <pathelement path="${classpath}" /> 
+        </classpath>
         <!-- If test.entry is defined, run a single test, otherwise run all valid tests -->
         <test name="${test.entry}" if="test.entry"/>
         <batchtest todir="${build.dir}/ant-reports" unless="test.entry">
           <fileset dir="${src.test.dir}">
             <include name="**/Test*.java"/>
-            <exclude name="org/apache/commons/pool2/impl/TestSoftRefOutOfMemory.java"/>
+            <exclude name="org/apache/commons/pool/impl/TestSoftRefOutOfMemory.java"/>
             <!-- abstract classes -->
             <exclude name="**/TestObjectPool.java"/>
             <exclude name="**/TestObjectPoolFactory.java"/>
@@ -177,6 +168,7 @@
             <attribute name="Implementation-Vendor" value="Apache Software Foundation"/>
             <attribute name="X-Compile-Source-JDK" value="${javac.src.version}"/>
             <attribute name="X-Compile-Target-JDK" value="${javac.target.version}"/>
+
          </manifest>
       </jar>
    </target>
