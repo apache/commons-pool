@@ -27,18 +27,17 @@ package org.apache.commons.pool2;
  * @version $Revision$ $Date$
  * @since Pool 1.0
  */
-public abstract class BaseKeyedObjectPool implements KeyedObjectPool {
-    
+public abstract class BaseKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
     /**
      * {@inheritDoc}
      */
-    public abstract Object borrowObject(Object key) throws Exception;
-    
+    public abstract V borrowObject(K key) throws Exception;
+
     /**
      * {@inheritDoc}
      */
-    public abstract void returnObject(Object key, Object obj) throws Exception;
-    
+    public abstract void returnObject(K key, V obj) throws Exception;
+
     /**
      * <p>Invalidates an object from the pool.</p>
      * 
@@ -53,7 +52,7 @@ public abstract class BaseKeyedObjectPool implements KeyedObjectPool {
      * @param obj a {@link #borrowObject borrowed} instance to be returned.
      * @throws Exception 
      */
-    public abstract void invalidateObject(Object key, Object obj) throws Exception;
+    public abstract void invalidateObject(K key, V obj) throws Exception;
 
     /**
      * Not supported in this base implementation.
@@ -62,7 +61,7 @@ public abstract class BaseKeyedObjectPool implements KeyedObjectPool {
      * @param key ignored
      * @throws UnsupportedOperationException
      */
-    public void addObject(Object key) throws Exception, UnsupportedOperationException {
+    public void addObject(K key) throws Exception, UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 
@@ -71,7 +70,7 @@ public abstract class BaseKeyedObjectPool implements KeyedObjectPool {
      * @return a negative value.
      * @param key ignored
      */
-    public int getNumIdle(Object key) throws UnsupportedOperationException {
+    public int getNumIdle(K key) throws UnsupportedOperationException {
         return -1;
     }
 
@@ -80,7 +79,7 @@ public abstract class BaseKeyedObjectPool implements KeyedObjectPool {
      * @return a negative value.
      * @param key ignored
      */
-    public int getNumActive(Object key) throws UnsupportedOperationException {
+    public int getNumActive(K key) throws UnsupportedOperationException {
         return -1;
     }
 
@@ -113,7 +112,7 @@ public abstract class BaseKeyedObjectPool implements KeyedObjectPool {
      * @param key ignored
      * @throws UnsupportedOperationException
      */
-    public void clear(Object key) throws Exception, UnsupportedOperationException {
+    public void clear(K key) throws Exception, UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 
@@ -132,7 +131,7 @@ public abstract class BaseKeyedObjectPool implements KeyedObjectPool {
      * @param factory the new KeyedPoolableObjectFactory
      * @deprecated to be removed in pool 2.0
      */
-    public void setFactory(KeyedPoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
+    public void setFactory(KeyedPoolableObjectFactory<K,V> factory) throws IllegalStateException, UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 
