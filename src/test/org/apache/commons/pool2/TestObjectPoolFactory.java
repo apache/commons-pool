@@ -37,28 +37,28 @@ public abstract class TestObjectPoolFactory extends TestCase {
     /**
      * @throws UnsupportedOperationException when this is unsupported by this PoolableObjectFactory type.
      */
-    protected ObjectPoolFactory makeFactory() throws UnsupportedOperationException {
+    protected ObjectPoolFactory<Object> makeFactory() throws UnsupportedOperationException {
         return makeFactory(new MethodCallPoolableObjectFactory());
     }
 
     /**
      * @throws UnsupportedOperationException when this is unsupported by this PoolableObjectFactory type.
      */
-    protected abstract ObjectPoolFactory makeFactory(PoolableObjectFactory objectFactory) throws UnsupportedOperationException;
+    protected abstract ObjectPoolFactory<Object> makeFactory(PoolableObjectFactory<Object> objectFactory) throws UnsupportedOperationException;
 
     public void testCreatePool() throws Exception {
-        final ObjectPoolFactory factory;
+        final ObjectPoolFactory<Object> factory;
         try {
             factory = makeFactory();
         } catch (UnsupportedOperationException uoe) {
             return;
         }
-        final ObjectPool pool = factory.createPool();
+        final ObjectPool<Object> pool = factory.createPool();
         pool.close();
     }
 
     public void testToString() {
-        final ObjectPoolFactory factory;
+        final ObjectPoolFactory<Object> factory;
         try {
             factory = makeFactory();
         } catch (UnsupportedOperationException uoe) {

@@ -47,14 +47,15 @@ public abstract class TestKeyedObjectPool extends TestCase {
      * behaviors described in {@link KeyedObjectPool}.
      * Generally speaking there should be no limits on the various object counts.
      */
-    protected abstract KeyedObjectPool makeEmptyPool(KeyedPoolableObjectFactory factory);
+    protected abstract KeyedObjectPool<Object,Object> makeEmptyPool(KeyedPoolableObjectFactory<Object,Object> factory);
 
     protected final String KEY = "key";
 
     public void testClosedPoolBehavior() throws Exception {
-        final KeyedObjectPool pool;
+        final KeyedObjectPool<Object,Object> pool;
         try {
-            pool = makeEmptyPool(new BaseKeyedPoolableObjectFactory() {
+            pool = makeEmptyPool(new BaseKeyedPoolableObjectFactory<Object,Object>() {
+                @Override
                 public Object makeObject(final Object key) throws Exception {
                     return new Object();
                 }
@@ -101,13 +102,13 @@ public abstract class TestKeyedObjectPool extends TestCase {
 
     public void testKPOFAddObjectUsage() throws Exception {
         final FailingKeyedPoolableObjectFactory factory = new FailingKeyedPoolableObjectFactory();
-        final KeyedObjectPool pool;
+        final KeyedObjectPool<Object,Object> pool;
         try {
             pool = makeEmptyPool(factory);
         } catch(UnsupportedOperationException uoe) {
             return; // test not supported
         }
-        final List expectedMethods = new ArrayList();
+        final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
 
         // addObject should make a new object, pasivate it and put it in the pool
         pool.addObject(KEY);
@@ -155,17 +156,17 @@ public abstract class TestKeyedObjectPool extends TestCase {
 
     public void testKPOFBorrowObjectUsages() throws Exception {
         final FailingKeyedPoolableObjectFactory factory = new FailingKeyedPoolableObjectFactory();
-        final KeyedObjectPool pool;
+        final KeyedObjectPool<Object,Object> pool;
         try {
             pool = makeEmptyPool(factory);
         } catch(UnsupportedOperationException uoe) {
             return; // test not supported
         }
-        final List expectedMethods = new ArrayList();
+        final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
         Object obj;
         
         if (pool instanceof GenericKeyedObjectPool) {
-            ((GenericKeyedObjectPool) pool).setTestOnBorrow(true);
+            ((GenericKeyedObjectPool<Object,Object>) pool).setTestOnBorrow(true);
         }
 
         /// Test correct behavior code paths
@@ -241,13 +242,13 @@ public abstract class TestKeyedObjectPool extends TestCase {
 
     public void testKPOFReturnObjectUsages() throws Exception {
         final FailingKeyedPoolableObjectFactory factory = new FailingKeyedPoolableObjectFactory();
-        final KeyedObjectPool pool;
+        final KeyedObjectPool<Object,Object> pool;
         try {
             pool = makeEmptyPool(factory);
         } catch(UnsupportedOperationException uoe) {
             return; // test not supported
         }
-        final List expectedMethods = new ArrayList();
+        final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
         Object obj;
 
         /// Test correct behavior code paths
@@ -305,13 +306,13 @@ public abstract class TestKeyedObjectPool extends TestCase {
 
     public void testKPOFInvalidateObjectUsages() throws Exception {
         final FailingKeyedPoolableObjectFactory factory = new FailingKeyedPoolableObjectFactory();
-        final KeyedObjectPool pool;
+        final KeyedObjectPool<Object,Object> pool;
         try {
             pool = makeEmptyPool(factory);
         } catch(UnsupportedOperationException uoe) {
             return; // test not supported
         }
-        final List expectedMethods = new ArrayList();
+        final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
         Object obj;
 
         /// Test correct behavior code paths
@@ -342,13 +343,13 @@ public abstract class TestKeyedObjectPool extends TestCase {
 
     public void testKPOFClearUsages() throws Exception {
         final FailingKeyedPoolableObjectFactory factory = new FailingKeyedPoolableObjectFactory();
-        final KeyedObjectPool pool;
+        final KeyedObjectPool<Object,Object> pool;
         try {
             pool = makeEmptyPool(factory);
         } catch(UnsupportedOperationException uoe) {
             return; // test not supported
         }
-        final List expectedMethods = new ArrayList();
+        final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
 
         /// Test correct behavior code paths
         PoolUtils.prefill(pool, KEY, 5);
@@ -363,13 +364,13 @@ public abstract class TestKeyedObjectPool extends TestCase {
 
     public void testKPOFCloseUsages() throws Exception {
         final FailingKeyedPoolableObjectFactory factory = new FailingKeyedPoolableObjectFactory();
-        KeyedObjectPool pool;
+        KeyedObjectPool<Object,Object> pool;
         try {
             pool = makeEmptyPool(factory);
         } catch(UnsupportedOperationException uoe) {
             return; // test not supported
         }
-        final List expectedMethods = new ArrayList();
+        final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
 
         /// Test correct behavior code paths
         PoolUtils.prefill(pool, KEY, 5);
@@ -393,19 +394,19 @@ public abstract class TestKeyedObjectPool extends TestCase {
         }
     }
 
-    private void reset(final KeyedObjectPool pool, final FailingKeyedPoolableObjectFactory factory, final List expectedMethods) throws Exception {
+    private void reset(final KeyedObjectPool<Object,Object> pool, final FailingKeyedPoolableObjectFactory factory, final List<MethodCall> expectedMethods) throws Exception {
         pool.clear();
         clear(factory, expectedMethods);
         factory.reset();
     }
 
-    private void clear(final FailingKeyedPoolableObjectFactory factory, final List expectedMethods) {
+    private void clear(final FailingKeyedPoolableObjectFactory factory, final List<MethodCall> expectedMethods) {
         factory.getMethodCalls().clear();
         expectedMethods.clear();
     }
 
-    protected static class FailingKeyedPoolableObjectFactory implements KeyedPoolableObjectFactory {
-        private final List methodCalls = new ArrayList();
+    protected static class FailingKeyedPoolableObjectFactory implements KeyedPoolableObjectFactory<Object,Object> {
+        private final List<MethodCall> methodCalls = new ArrayList<MethodCall>();
         private int count = 0;
         private boolean makeObjectFail;
         private boolean activateObjectFail;
@@ -426,7 +427,7 @@ public abstract class TestKeyedObjectPool extends TestCase {
             setDestroyObjectFail(false);
         }
 
-        public List getMethodCalls() {
+        public List<MethodCall> getMethodCalls() {
             return methodCalls;
         }
 
