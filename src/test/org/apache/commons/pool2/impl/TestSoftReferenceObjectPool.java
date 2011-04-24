@@ -32,9 +32,10 @@ public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
         super(testName);
     }
 
-    protected ObjectPool makeEmptyPool(int cap) {
-        return new SoftReferenceObjectPool(
-            new PoolableObjectFactory()  {
+    @Override
+    protected ObjectPool<Object> makeEmptyPool(int cap) {
+        return new SoftReferenceObjectPool<Object>(
+            new PoolableObjectFactory<Object>()  {
                 int counter = 0;
                 public Object makeObject() { return String.valueOf(counter++); }
                 public void destroyObject(Object obj) { }
@@ -45,18 +46,22 @@ public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
             );
     }
 
-    protected ObjectPool makeEmptyPool(final PoolableObjectFactory factory) {
-        return new SoftReferenceObjectPool(factory);
+    @Override
+    protected ObjectPool<Object> makeEmptyPool(final PoolableObjectFactory<Object> factory) {
+        return new SoftReferenceObjectPool<Object>(factory);
     }
 
+    @Override
     protected Object getNthObject(int n) {
         return String.valueOf(n);
     }
 
+    @Override
     protected boolean isLifo() {
         return false;
     }
 
+    @Override
     protected boolean isFifo() {
         return false;
     }
