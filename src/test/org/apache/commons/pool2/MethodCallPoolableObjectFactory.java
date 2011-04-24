@@ -29,8 +29,8 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  * @version $Revision$ $Date$
  * @see MethodCall
  */
-public class MethodCallPoolableObjectFactory implements PoolableObjectFactory {
-    private final List methodCalls = new ArrayList();
+public class MethodCallPoolableObjectFactory implements PoolableObjectFactory<Object> {
+    private final List<MethodCall> methodCalls = new ArrayList<MethodCall>();
     private int count = 0;
     private boolean valid = true;
     private boolean makeObjectFail;
@@ -50,7 +50,7 @@ public class MethodCallPoolableObjectFactory implements PoolableObjectFactory {
         setDestroyObjectFail(false);
     }
 
-    public List getMethodCalls() {
+    public List<MethodCall> getMethodCalls() {
         return methodCalls;
     }
 
