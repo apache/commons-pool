@@ -21,13 +21,13 @@ package org.apache.commons.pool2;
  * validated, activated, passivated.
  *
  */
-public class VisitTracker {
+public class VisitTracker<K> {
     private int validateCount = 0;
     private int activateCount = 0;
     private int passivateCount = 0;
     private boolean destroyed = false;
     private int id = 0;
-    private Object key = null;
+    private K key = null;
     
     public VisitTracker() {
         super();
@@ -40,7 +40,7 @@ public class VisitTracker {
         reset();
     }
     
-    public VisitTracker(int id, Object key) {
+    public VisitTracker(int id, K key) {
         super();
         this.id = id;
         this.key = key;
@@ -90,9 +90,10 @@ public class VisitTracker {
     public int getId() {
         return id;
     }
-    public Object getKey() {
+    public K getKey() {
         return key;
     }
+    @Override
     public String toString() {
         return "Key: " + key + " id: " + id;
     }
