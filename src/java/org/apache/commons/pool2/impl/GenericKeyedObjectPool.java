@@ -1817,7 +1817,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
      * @deprecated to be removed in version 2.0
      */
     public void setFactory(KeyedPoolableObjectFactory<K,V> factory) throws IllegalStateException {
-        Map toDestroy = new HashMap();
+        Map<K,List<ObjectTimestampPair<V>>> toDestroy = new HashMap<K, List<ObjectTimestampPair<V>>>();
         final KeyedPoolableObjectFactory<K,V> oldFactory = _factory;
         synchronized (this) {
             assertOpen();
@@ -1830,7 +1830,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
                 if (pool != null) {
                     // Copy objects to new list so pool.queue can be cleared
                     // inside the sync
-                    List objects = new ArrayList();
+                    List<ObjectTimestampPair<V>> objects = new ArrayList<ObjectTimestampPair<V>>();
                     objects.addAll(pool.queue);
                     toDestroy.put(key, objects);
                     it.remove();
