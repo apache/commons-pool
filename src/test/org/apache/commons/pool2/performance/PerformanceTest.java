@@ -29,7 +29,7 @@ public class PerformanceTest {
     private int logLevel = 0;
     private int nrIterations = 5;
 
-    private GenericObjectPool pool;
+    private GenericObjectPool<Integer> pool;
     private boolean start = false;
     private volatile int waiting = 0;
     private volatile int complete = 0;
@@ -62,7 +62,7 @@ public class PerformanceTest {
                     System.out.println(name + "   waiting: " + waiting + "   complete: " + complete);
                 }
                 long bbegin = System.currentTimeMillis();
-                Object o = pool.borrowObject();
+                Integer o = pool.borrowObject();
                 long bend = System.currentTimeMillis();
                 waiting--;
                 do {
@@ -111,7 +111,7 @@ public class PerformanceTest {
         
         SleepingObjectFactory factory = new SleepingObjectFactory();
         if (logLevel >= 4) { factory.setDebug(true); } 
-        pool = new GenericObjectPool(factory);
+        pool = new GenericObjectPool<Integer>(factory);
         pool.setMaxActive(maxActive);
         pool.setMaxIdle(maxIdle);
         pool.setTestOnBorrow(true);
