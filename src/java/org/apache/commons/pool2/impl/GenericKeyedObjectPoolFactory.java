@@ -32,14 +32,14 @@ import org.apache.commons.pool2.KeyedPoolableObjectFactory;
  * @version $Revision$ $Date$
  * @since Pool 1.0
  */
-public class GenericKeyedObjectPoolFactory implements KeyedObjectPoolFactory {
+public class GenericKeyedObjectPoolFactory<K,V> implements KeyedObjectPoolFactory<K,V> {
     /**
      * Create a new GenericKeyedObjectPoolFactory.
      *
      * @param factory the KeyedPoolableObjectFactory to used by created pools.
      * @see GenericKeyedObjectPool#GenericKeyedObjectPool(KeyedPoolableObjectFactory)
      */
-    public GenericKeyedObjectPoolFactory(KeyedPoolableObjectFactory factory) {
+    public GenericKeyedObjectPoolFactory(KeyedPoolableObjectFactory<K,V> factory) {
         this(factory,GenericKeyedObjectPool.DEFAULT_MAX_ACTIVE,GenericKeyedObjectPool.DEFAULT_WHEN_EXHAUSTED_ACTION,GenericKeyedObjectPool.DEFAULT_MAX_WAIT,GenericKeyedObjectPool.DEFAULT_MAX_IDLE,GenericKeyedObjectPool.DEFAULT_TEST_ON_BORROW,GenericKeyedObjectPool.DEFAULT_TEST_ON_RETURN,GenericKeyedObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,GenericKeyedObjectPool.DEFAULT_NUM_TESTS_PER_EVICTION_RUN,GenericKeyedObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,GenericKeyedObjectPool.DEFAULT_TEST_WHILE_IDLE);
     }
 
@@ -51,7 +51,7 @@ public class GenericKeyedObjectPoolFactory implements KeyedObjectPoolFactory {
      * @see GenericKeyedObjectPool#GenericKeyedObjectPool(KeyedPoolableObjectFactory, GenericKeyedObjectPool.Config)
      * @throws NullPointerException when config is <code>null</code>.
      */
-    public GenericKeyedObjectPoolFactory(KeyedPoolableObjectFactory factory, GenericKeyedObjectPool.Config config) throws NullPointerException {
+    public GenericKeyedObjectPoolFactory(KeyedPoolableObjectFactory<K,V> factory, GenericKeyedObjectPool.Config config) throws NullPointerException {
         this(factory,config.maxActive,config.whenExhaustedAction,config.maxWait,config.maxIdle,config.maxTotal,config.minIdle,config.testOnBorrow,config.testOnReturn,config.timeBetweenEvictionRunsMillis,config.numTestsPerEvictionRun,config.minEvictableIdleTimeMillis,config.testWhileIdle,config.lifo);
     }
 
@@ -62,7 +62,7 @@ public class GenericKeyedObjectPoolFactory implements KeyedObjectPoolFactory {
      * @param maxActive the maximum number of objects that can be borrowed from pools at one time.
      * @see GenericKeyedObjectPool#GenericKeyedObjectPool(KeyedPoolableObjectFactory, int)
      */
-    public GenericKeyedObjectPoolFactory(KeyedPoolableObjectFactory factory, int maxActive) {
+    public GenericKeyedObjectPoolFactory(KeyedPoolableObjectFactory<K,V> factory, int maxActive) {
         this(factory,maxActive,GenericKeyedObjectPool.DEFAULT_WHEN_EXHAUSTED_ACTION,GenericKeyedObjectPool.DEFAULT_MAX_WAIT,GenericKeyedObjectPool.DEFAULT_MAX_IDLE, GenericKeyedObjectPool.DEFAULT_MAX_TOTAL,GenericKeyedObjectPool.DEFAULT_TEST_ON_BORROW,GenericKeyedObjectPool.DEFAULT_TEST_ON_RETURN,GenericKeyedObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,GenericKeyedObjectPool.DEFAULT_NUM_TESTS_PER_EVICTION_RUN,GenericKeyedObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,GenericKeyedObjectPool.DEFAULT_TEST_WHILE_IDLE);
     }
 
@@ -75,7 +75,7 @@ public class GenericKeyedObjectPoolFactory implements KeyedObjectPoolFactory {
      * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted.
      * @see GenericKeyedObjectPool#GenericKeyedObjectPool(KeyedPoolableObjectFactory, int, byte, long)
      */
-    public GenericKeyedObjectPoolFactory(KeyedPoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait) {
+    public GenericKeyedObjectPoolFactory(KeyedPoolableObjectFactory<K,V> factory, int maxActive, byte whenExhaustedAction, long maxWait) {
         this(factory,maxActive,whenExhaustedAction,maxWait,GenericKeyedObjectPool.DEFAULT_MAX_IDLE, GenericKeyedObjectPool.DEFAULT_MAX_TOTAL,GenericKeyedObjectPool.DEFAULT_TEST_ON_BORROW,GenericKeyedObjectPool.DEFAULT_TEST_ON_RETURN,GenericKeyedObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,GenericKeyedObjectPool.DEFAULT_NUM_TESTS_PER_EVICTION_RUN,GenericKeyedObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,GenericKeyedObjectPool.DEFAULT_TEST_WHILE_IDLE);
     }
 
@@ -90,7 +90,7 @@ public class GenericKeyedObjectPoolFactory implements KeyedObjectPoolFactory {
      * @param testOnReturn whether to validate objects after they are returned to returnObject.
      * @see GenericKeyedObjectPool#GenericKeyedObjectPool(KeyedPoolableObjectFactory, int, byte, long, boolean, boolean)
      */
-    public GenericKeyedObjectPoolFactory(KeyedPoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, boolean testOnBorrow, boolean testOnReturn) {
+    public GenericKeyedObjectPoolFactory(KeyedPoolableObjectFactory<K,V> factory, int maxActive, byte whenExhaustedAction, long maxWait, boolean testOnBorrow, boolean testOnReturn) {
         this(factory,maxActive,whenExhaustedAction,maxWait,GenericKeyedObjectPool.DEFAULT_MAX_IDLE, GenericKeyedObjectPool.DEFAULT_MAX_TOTAL,testOnBorrow,testOnReturn,GenericKeyedObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,GenericKeyedObjectPool.DEFAULT_NUM_TESTS_PER_EVICTION_RUN,GenericKeyedObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,GenericKeyedObjectPool.DEFAULT_TEST_WHILE_IDLE);
     }
 
@@ -104,7 +104,7 @@ public class GenericKeyedObjectPoolFactory implements KeyedObjectPoolFactory {
      * @param maxIdle the maximum number of idle objects in the pools.
      * @see GenericKeyedObjectPool#GenericKeyedObjectPool(KeyedPoolableObjectFactory, int, byte, long, int)
      */
-    public GenericKeyedObjectPoolFactory(KeyedPoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle) {
+    public GenericKeyedObjectPoolFactory(KeyedPoolableObjectFactory<K,V> factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle) {
         this(factory,maxActive,whenExhaustedAction,maxWait,maxIdle, GenericKeyedObjectPool.DEFAULT_MAX_TOTAL,GenericKeyedObjectPool.DEFAULT_TEST_ON_BORROW,GenericKeyedObjectPool.DEFAULT_TEST_ON_RETURN,GenericKeyedObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,GenericKeyedObjectPool.DEFAULT_NUM_TESTS_PER_EVICTION_RUN,GenericKeyedObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,GenericKeyedObjectPool.DEFAULT_TEST_WHILE_IDLE);
     }
 
@@ -118,7 +118,7 @@ public class GenericKeyedObjectPoolFactory implements KeyedObjectPoolFactory {
      * @param maxIdle the maximum number of idle objects in the pools.
      * @param maxTotal the maximum number of objects that can exists at one time.
      */
-    public GenericKeyedObjectPoolFactory(KeyedPoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, int maxTotal) {
+    public GenericKeyedObjectPoolFactory(KeyedPoolableObjectFactory<K,V> factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, int maxTotal) {
         this(factory,maxActive,whenExhaustedAction,maxWait,maxIdle, maxTotal, GenericKeyedObjectPool.DEFAULT_TEST_ON_BORROW,GenericKeyedObjectPool.DEFAULT_TEST_ON_RETURN,GenericKeyedObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,GenericKeyedObjectPool.DEFAULT_NUM_TESTS_PER_EVICTION_RUN,GenericKeyedObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,GenericKeyedObjectPool.DEFAULT_TEST_WHILE_IDLE);
     }
 
@@ -134,7 +134,7 @@ public class GenericKeyedObjectPoolFactory implements KeyedObjectPoolFactory {
      * @param testOnReturn whether to validate objects after they are returned to returnObject.
      * @see GenericKeyedObjectPool#GenericKeyedObjectPool(KeyedPoolableObjectFactory, int, byte, long, int, boolean, boolean)
      */
-    public GenericKeyedObjectPoolFactory(KeyedPoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, boolean testOnBorrow, boolean testOnReturn) {
+    public GenericKeyedObjectPoolFactory(KeyedPoolableObjectFactory<K,V> factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, boolean testOnBorrow, boolean testOnReturn) {
         this(factory,maxActive,whenExhaustedAction,maxWait,maxIdle, GenericKeyedObjectPool.DEFAULT_MAX_TOTAL,testOnBorrow,testOnReturn,GenericKeyedObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,GenericKeyedObjectPool.DEFAULT_NUM_TESTS_PER_EVICTION_RUN,GenericKeyedObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,GenericKeyedObjectPool.DEFAULT_TEST_WHILE_IDLE);
     }
 
@@ -154,7 +154,7 @@ public class GenericKeyedObjectPoolFactory implements KeyedObjectPoolFactory {
      * @param testWhileIdle whether to validate objects in the idle object eviction thread.
      * @see GenericKeyedObjectPool#GenericKeyedObjectPool(KeyedPoolableObjectFactory, int, byte, long, int, boolean, boolean, long, int, long, boolean)
      */
-    public GenericKeyedObjectPoolFactory(KeyedPoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle) {
+    public GenericKeyedObjectPoolFactory(KeyedPoolableObjectFactory<K,V> factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle) {
         this(factory, maxActive, whenExhaustedAction, maxWait, maxIdle, GenericKeyedObjectPool.DEFAULT_MAX_TOTAL, testOnBorrow, testOnReturn, timeBetweenEvictionRunsMillis, numTestsPerEvictionRun, minEvictableIdleTimeMillis, testWhileIdle);
     }
 
@@ -175,7 +175,7 @@ public class GenericKeyedObjectPoolFactory implements KeyedObjectPoolFactory {
      * @param testWhileIdle whether to validate objects in the idle object eviction thread.
      * @see GenericKeyedObjectPool#GenericKeyedObjectPool(KeyedPoolableObjectFactory, int, byte, long, int, int, boolean, boolean, long, int, long, boolean)
      */
-    public GenericKeyedObjectPoolFactory(KeyedPoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, int maxTotal, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle) {
+    public GenericKeyedObjectPoolFactory(KeyedPoolableObjectFactory<K,V> factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, int maxTotal, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle) {
         this(factory, maxActive, whenExhaustedAction, maxWait, maxIdle, maxTotal, GenericKeyedObjectPool.DEFAULT_MIN_IDLE , testOnBorrow, testOnReturn, timeBetweenEvictionRunsMillis, numTestsPerEvictionRun, minEvictableIdleTimeMillis, testWhileIdle);
     }
 
@@ -198,7 +198,7 @@ public class GenericKeyedObjectPoolFactory implements KeyedObjectPoolFactory {
      * @since Pool 1.3
      * @see GenericKeyedObjectPool#GenericKeyedObjectPool(KeyedPoolableObjectFactory, int, byte, long, int, int, int, boolean, boolean, long, int, long, boolean)
      */
-    public GenericKeyedObjectPoolFactory(KeyedPoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, int maxTotal, int minIdle, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle) {
+    public GenericKeyedObjectPoolFactory(KeyedPoolableObjectFactory<K,V> factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, int maxTotal, int minIdle, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle) {
         this(factory, maxActive, whenExhaustedAction, maxWait, maxIdle, maxTotal, minIdle, testOnBorrow, testOnReturn, timeBetweenEvictionRunsMillis, numTestsPerEvictionRun, minEvictableIdleTimeMillis, testWhileIdle, GenericKeyedObjectPool.DEFAULT_LIFO);
     }
 
@@ -222,7 +222,7 @@ public class GenericKeyedObjectPoolFactory implements KeyedObjectPoolFactory {
      * @since Pool 1.4
      * @see GenericKeyedObjectPool#GenericKeyedObjectPool(KeyedPoolableObjectFactory, int, byte, long, int, int, int, boolean, boolean, long, int, long, boolean, boolean)
      */
-    public GenericKeyedObjectPoolFactory(KeyedPoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, int maxTotal, int minIdle, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle, boolean lifo) {
+    public GenericKeyedObjectPoolFactory(KeyedPoolableObjectFactory<K,V> factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle, int maxTotal, int minIdle, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle, boolean lifo) {
         _maxIdle = maxIdle;
         _maxActive = maxActive;
         _maxTotal = maxTotal;
@@ -245,8 +245,8 @@ public class GenericKeyedObjectPoolFactory implements KeyedObjectPoolFactory {
      * @return GenericKeyedObjectPool with {@link GenericKeyedObjectPool.Config Configuration} determined by
      * current property settings
      */
-    public KeyedObjectPool createPool() {
-        return new GenericKeyedObjectPool(_factory,_maxActive,_whenExhaustedAction,_maxWait,_maxIdle,_maxTotal,_minIdle,_testOnBorrow,_testOnReturn,_timeBetweenEvictionRunsMillis,_numTestsPerEvictionRun,_minEvictableIdleTimeMillis,_testWhileIdle,_lifo);
+    public KeyedObjectPool<K,V> createPool() {
+        return new GenericKeyedObjectPool<K,V>(_factory,_maxActive,_whenExhaustedAction,_maxWait,_maxIdle,_maxTotal,_minIdle,_testOnBorrow,_testOnReturn,_timeBetweenEvictionRunsMillis,_numTestsPerEvictionRun,_minEvictableIdleTimeMillis,_testWhileIdle,_lifo);
     }
     
     /**
@@ -352,7 +352,7 @@ public class GenericKeyedObjectPoolFactory implements KeyedObjectPoolFactory {
      * @return the {@link KeyedPoolableObjectFactory} used by pools created by this factory.
      * @since 1.5.5
      */
-    public KeyedPoolableObjectFactory getFactory() {
+    public KeyedPoolableObjectFactory<K,V> getFactory() {
         return _factory;
     }
 
@@ -445,7 +445,7 @@ public class GenericKeyedObjectPoolFactory implements KeyedObjectPoolFactory {
      * The {@link KeyedPoolableObjectFactory} used by pools created by this factory.
      * @deprecated to be removed in pool 2.0. Use {@link #getFactory()}.
      */
-    protected KeyedPoolableObjectFactory _factory = null;
+    protected KeyedPoolableObjectFactory<K,V> _factory = null;
     
     /**
      * The {@link GenericKeyedObjectPool#getLifo() lifo} setting for pools created by this factory.
