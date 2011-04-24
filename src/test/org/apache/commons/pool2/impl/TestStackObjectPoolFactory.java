@@ -35,27 +35,28 @@ public class TestStackObjectPoolFactory extends TestObjectPoolFactory {
         super(name);
     }
 
-    protected ObjectPoolFactory makeFactory(final PoolableObjectFactory objectFactory) throws UnsupportedOperationException {
-        return new StackObjectPoolFactory(objectFactory);
+    @Override
+    protected ObjectPoolFactory<Object> makeFactory(final PoolableObjectFactory<Object> objectFactory) throws UnsupportedOperationException {
+        return new StackObjectPoolFactory<Object>(objectFactory);
     }
 
     public void testConstructors() throws Exception {
-        StackObjectPoolFactory factory = new StackObjectPoolFactory();
+        StackObjectPoolFactory<Object> factory = new StackObjectPoolFactory<Object>();
         factory.createPool().close();
 
         
-        factory = new StackObjectPoolFactory(1);
-        StackObjectPool pool = (StackObjectPool)factory.createPool();
+        factory = new StackObjectPoolFactory<Object>(1);
+        StackObjectPool<Object> pool = (StackObjectPool<Object>)factory.createPool();
         pool.close();
 
 
-        factory = new StackObjectPoolFactory(1, 1);
-        pool = (StackObjectPool)factory.createPool();
+        factory = new StackObjectPoolFactory<Object>(1, 1);
+        pool = (StackObjectPool<Object>)factory.createPool();
         pool.close();
 
 
-        factory = new StackObjectPoolFactory(new MethodCallPoolableObjectFactory(), 1);
-        pool = (StackObjectPool)factory.createPool();
+        factory = new StackObjectPoolFactory<Object>(new MethodCallPoolableObjectFactory(), 1);
+        pool = (StackObjectPool<Object>)factory.createPool();
         Object a = pool.borrowObject();
         Object b = pool.borrowObject();
         pool.returnObject(a);
