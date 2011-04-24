@@ -29,7 +29,7 @@ import java.util.Arrays;
  */
 public class MethodCall {
     private final String name;
-    private final List params;
+    private final List<Object> params;
     private Object returned;
 
     public MethodCall(final String name) {
@@ -44,7 +44,7 @@ public class MethodCall {
         this(name, Arrays.asList(new Object[] {param1, param2}));
     }
 
-    public MethodCall(final String name, final List params) {
+    public MethodCall(final String name, final List<Object> params) {
         if (name == null) {
             throw new IllegalArgumentException("name must not be null.");
         }
@@ -52,7 +52,7 @@ public class MethodCall {
         if (params != null) {
             this.params = params;
         } else {
-            this.params = Collections.EMPTY_LIST;
+            this.params = Collections.emptyList();
         }
     }
 
@@ -60,7 +60,7 @@ public class MethodCall {
         return name;
     }
 
-    public List getParams() {
+    public List<Object> getParams() {
         return params;
     }
 
@@ -77,6 +77,7 @@ public class MethodCall {
         return this;
     }
 
+    @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -90,6 +91,7 @@ public class MethodCall {
         return true;
     }
 
+    @Override
     public int hashCode() {
         int result;
         result = (name != null ? name.hashCode() : 0);
@@ -98,6 +100,7 @@ public class MethodCall {
         return result;
     }
 
+    @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer();
         sb.append("MethodCall");
