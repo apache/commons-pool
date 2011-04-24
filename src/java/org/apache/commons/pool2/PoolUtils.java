@@ -851,6 +851,7 @@ public final class PoolUtils {
          * @param factory new PoolableObjectFactory 
          * @deprecated to be removed in version 2.0
          */
+        @Deprecated
         public void setFactory(final PoolableObjectFactory<V> factory) throws IllegalStateException, UnsupportedOperationException {
             keyedPool.setFactory(new KeyedPoolableObjectFactoryAdaptor<K,V>(factory));
         }
@@ -1004,6 +1005,7 @@ public final class PoolUtils {
          * @param factory new factory to use managing object instances
          * @deprecated to be removed in version 2.0
          */
+        @Deprecated
         public void setFactory(final KeyedPoolableObjectFactory<K,V> factory) throws IllegalStateException, UnsupportedOperationException {
             pool.setFactory(adapt((KeyedPoolableObjectFactory<Object, V>) factory));
         }
@@ -1150,6 +1152,7 @@ public final class PoolUtils {
          * @param factory object factory
          * @deprecated to be removed in version 2.0
          */
+        @Deprecated
         public void setFactory(final PoolableObjectFactory<T> factory) throws IllegalStateException, UnsupportedOperationException {
             pool.setFactory(factory);
         }
@@ -1320,6 +1323,7 @@ public final class PoolUtils {
          * @param factory object factory
          * @deprecated to be removed in version 2.0
          */
+        @Deprecated
         public void setFactory(final KeyedPoolableObjectFactory<K,V> factory) throws IllegalStateException, UnsupportedOperationException {
             keyedPool.setFactory(factory);
         }
@@ -1597,6 +1601,7 @@ public final class PoolUtils {
          * @param factory new PoolableObjectFactory
          * @deprecated to be removed in pool 2.0
          */
+        @Deprecated
         public void setFactory(final PoolableObjectFactory<T> factory) throws IllegalStateException, UnsupportedOperationException {
             synchronized (lock) {
                 pool.setFactory(factory);
@@ -1765,6 +1770,7 @@ public final class PoolUtils {
          * @param factory KeyedPoolableObjectFactory used by the pool
          * @deprecated to be removed in pool 2.0
          */
+        @Deprecated
         public void setFactory(final KeyedPoolableObjectFactory<K,V> factory) throws IllegalStateException, UnsupportedOperationException {
             synchronized (lock) {
                 keyedPool.setFactory(factory);
@@ -2151,6 +2157,7 @@ public final class PoolUtils {
          * {@inheritDoc}
          * @deprecated to be removed in pool 2.0
          */
+        @Deprecated
         public void setFactory(final PoolableObjectFactory<T> factory) throws IllegalStateException, UnsupportedOperationException {
             pool.setFactory(factory);
         }
@@ -2339,6 +2346,7 @@ public final class PoolUtils {
          * {@inheritDoc}
          * @deprecated to be removed in pool 2.0
          */
+        @Deprecated
         public void setFactory(final KeyedPoolableObjectFactory<K,V> factory) throws IllegalStateException, UnsupportedOperationException {
             keyedPool.setFactory(factory);
         }

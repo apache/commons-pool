@@ -452,6 +452,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
      * @throws IllegalStateException when the factory cannot be set at this time
      * @deprecated to be removed in pool 2.0
      */
+    @Deprecated
     public synchronized void setFactory(KeyedPoolableObjectFactory<K,V> factory) throws IllegalStateException {
         if(0 < getNumActive()) {
             throw new IllegalStateException("Objects are already active");

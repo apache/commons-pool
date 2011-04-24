@@ -1503,6 +1503,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @throws IllegalStateException when the factory cannot be set at this time
      * @deprecated to be removed in version 2.0
      */
+    @Deprecated
     public void setFactory(PoolableObjectFactory<T> factory) throws IllegalStateException {
         List<ObjectTimestampPair<T>> toDestroy = new ArrayList<ObjectTimestampPair<T>>();
         final PoolableObjectFactory<T> oldFactory = _factory;

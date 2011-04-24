@@ -131,6 +131,7 @@ public abstract class BaseKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
      * @param factory the new KeyedPoolableObjectFactory
      * @deprecated to be removed in pool 2.0
      */
+    @Deprecated
     public void setFactory(KeyedPoolableObjectFactory<K,V> factory) throws IllegalStateException, UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
