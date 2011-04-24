@@ -27,13 +27,14 @@ import org.apache.commons.pool2.KeyedPoolableObjectFactory;
  * @version $Revision$ $Date$
  */
 public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
-    private KeyedObjectPool _pool = null;
+    private KeyedObjectPool<Object,Object> _pool = null;
 
     public TestBaseKeyedObjectPool(final String testName) {
         super(testName);
     }
 
-    protected KeyedObjectPool makeEmptyPool(KeyedPoolableObjectFactory factory) {
+    @Override
+    protected KeyedObjectPool<Object,Object> makeEmptyPool(KeyedPoolableObjectFactory<Object,Object> factory) {
         if (this.getClass() != TestBaseKeyedObjectPool.class) {
             fail("Subclasses of TestBaseKeyedObjectPool must reimplement this method.");
         }
@@ -47,7 +48,7 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
      * throw {@link IllegalArgumentException}
      * if such a pool cannot be created.
      */
-    protected KeyedObjectPool makeEmptyPool(int mincapacity) {
+    protected KeyedObjectPool<Object,Object> makeEmptyPool(int mincapacity) {
         if (this.getClass() != TestBaseKeyedObjectPool.class) {
             fail("Subclasses of TestBaseKeyedObjectPool must reimplement this method.");
         }
@@ -86,12 +87,15 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
         if (!getClass().equals(TestBaseKeyedObjectPool.class)) {
             return; // skip redundant tests
         }
-        KeyedObjectPool pool = new BaseKeyedObjectPool() { 
+        KeyedObjectPool<Object,Object> pool = new BaseKeyedObjectPool<Object,Object>() { 
+            @Override
             public Object borrowObject(Object key) {
                 return null;
             }
+            @Override
             public void returnObject(Object key, Object obj) {
             }
+            @Override
             public void invalidateObject(Object key, Object obj) {
             }            
         };
