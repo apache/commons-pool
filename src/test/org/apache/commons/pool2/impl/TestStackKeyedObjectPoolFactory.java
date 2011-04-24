@@ -34,36 +34,37 @@ public class TestStackKeyedObjectPoolFactory extends TestKeyedObjectPoolFactory 
         super(name);
     }
 
-    protected KeyedObjectPoolFactory makeFactory(final KeyedPoolableObjectFactory objectFactory) throws UnsupportedOperationException {
-        return new StackKeyedObjectPoolFactory(objectFactory);
+    @Override
+    protected KeyedObjectPoolFactory<Object,Object> makeFactory(final KeyedPoolableObjectFactory<Object,Object> objectFactory) throws UnsupportedOperationException {
+        return new StackKeyedObjectPoolFactory<Object,Object>(objectFactory);
     }
 
     public void testConstructors() throws Exception {
-        StackKeyedObjectPoolFactory factory = new StackKeyedObjectPoolFactory();
+        StackKeyedObjectPoolFactory<Object,Object> factory = new StackKeyedObjectPoolFactory<Object,Object>();
         factory.createPool().close();
 
-        factory = new StackKeyedObjectPoolFactory(1);
-        StackKeyedObjectPool pool = (StackKeyedObjectPool)factory.createPool();
+        factory = new StackKeyedObjectPoolFactory<Object,Object>(1);
+        StackKeyedObjectPool<Object,Object> pool = (StackKeyedObjectPool<Object,Object>)factory.createPool();
         assertEquals(1,pool._maxSleeping);
         pool.close();
 
-        factory = new StackKeyedObjectPoolFactory(1, 2);
-        pool = (StackKeyedObjectPool)factory.createPool();
+        factory = new StackKeyedObjectPoolFactory<Object,Object>(1, 2);
+        pool = (StackKeyedObjectPool<Object,Object>)factory.createPool();
         assertEquals(1,pool._maxSleeping);
         assertEquals(2,pool._initSleepingCapacity);
         pool.close();
 
-        factory = new StackKeyedObjectPoolFactory(createObjectFactory());
-        pool = (StackKeyedObjectPool)factory.createPool();
+        factory = new StackKeyedObjectPoolFactory<Object,Object>(createObjectFactory());
+        pool = (StackKeyedObjectPool<Object,Object>)factory.createPool();
         pool.close();
 
-        factory = new StackKeyedObjectPoolFactory(createObjectFactory(),  1);
-        pool = (StackKeyedObjectPool)factory.createPool();
+        factory = new StackKeyedObjectPoolFactory<Object,Object>(createObjectFactory(),  1);
+        pool = (StackKeyedObjectPool<Object,Object>)factory.createPool();
         assertEquals(1,pool._maxSleeping);
         pool.close();
 
-        factory = new StackKeyedObjectPoolFactory(createObjectFactory(),  1, 2);
-        pool = (StackKeyedObjectPool)factory.createPool();
+        factory = new StackKeyedObjectPoolFactory<Object,Object>(createObjectFactory(),  1, 2);
+        pool = (StackKeyedObjectPool<Object,Object>)factory.createPool();
         assertEquals(1,pool._maxSleeping);
         assertEquals(2,pool._initSleepingCapacity);
         pool.close();
