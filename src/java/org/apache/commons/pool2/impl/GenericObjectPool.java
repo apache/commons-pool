@@ -187,7 +187,7 @@ import org.apache.commons.pool2.impl.GenericKeyedObjectPool.ObjectTimestampPair;
  * @version $Revision$ $Date$
  * @since Pool 1.0
  */
-public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
+public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<T> {
 
     //--- public constants -------------------------------------------
 
@@ -348,7 +348,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * Create a new <tt>GenericObjectPool</tt> using the specified factory.
      * @param factory the (possibly <tt>null</tt>)PoolableObjectFactory to use to create, validate and destroy objects
      */
-    public GenericObjectPool(PoolableObjectFactory factory) {
+    public GenericObjectPool(PoolableObjectFactory<T> factory) {
         this(factory, DEFAULT_MAX_ACTIVE, DEFAULT_WHEN_EXHAUSTED_ACTION, DEFAULT_MAX_WAIT, DEFAULT_MAX_IDLE,
                 DEFAULT_MIN_IDLE, DEFAULT_TEST_ON_BORROW, DEFAULT_TEST_ON_RETURN, DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
                 DEFAULT_NUM_TESTS_PER_EVICTION_RUN, DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS, DEFAULT_TEST_WHILE_IDLE);
@@ -359,7 +359,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @param factory the (possibly <tt>null</tt>)PoolableObjectFactory to use to create, validate and destroy objects
      * @param config a non-<tt>null</tt> {@link GenericObjectPool.Config} describing my configuration
      */
-    public GenericObjectPool(PoolableObjectFactory factory, GenericObjectPool.Config config) {
+    public GenericObjectPool(PoolableObjectFactory<T> factory, GenericObjectPool.Config config) {
         this(factory, config.maxActive, config.whenExhaustedAction, config.maxWait, config.maxIdle, config.minIdle,
                 config.testOnBorrow, config.testOnReturn, config.timeBetweenEvictionRunsMillis, 
                 config.numTestsPerEvictionRun, config.minEvictableIdleTimeMillis, config.testWhileIdle, 
@@ -371,7 +371,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @param factory the (possibly <tt>null</tt>)PoolableObjectFactory to use to create, validate and destroy objects
      * @param maxActive the maximum number of objects that can be borrowed from me at one time (see {@link #setMaxActive})
      */
-    public GenericObjectPool(PoolableObjectFactory factory, int maxActive) {
+    public GenericObjectPool(PoolableObjectFactory<T> factory, int maxActive) {
         this(factory, maxActive, DEFAULT_WHEN_EXHAUSTED_ACTION, DEFAULT_MAX_WAIT, DEFAULT_MAX_IDLE, DEFAULT_MIN_IDLE,
                 DEFAULT_TEST_ON_BORROW, DEFAULT_TEST_ON_RETURN, DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
                 DEFAULT_NUM_TESTS_PER_EVICTION_RUN, DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS, DEFAULT_TEST_WHILE_IDLE);
@@ -385,7 +385,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted an and
      * <i>whenExhaustedAction</i> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #getMaxWait})
      */
-    public GenericObjectPool(PoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait) {
+    public GenericObjectPool(PoolableObjectFactory<T> factory, int maxActive, byte whenExhaustedAction, long maxWait) {
         this(factory, maxActive, whenExhaustedAction, maxWait, DEFAULT_MAX_IDLE, DEFAULT_MIN_IDLE, DEFAULT_TEST_ON_BORROW,
                 DEFAULT_TEST_ON_RETURN, DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS, DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
                 DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS, DEFAULT_TEST_WHILE_IDLE);
@@ -403,7 +403,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @param testOnReturn whether or not to validate objects after they are returned to the {@link #returnObject} method
      * (see {@link #getTestOnReturn})
      */
-    public GenericObjectPool(PoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait,
+    public GenericObjectPool(PoolableObjectFactory<T> factory, int maxActive, byte whenExhaustedAction, long maxWait,
             boolean testOnBorrow, boolean testOnReturn) {
         this(factory, maxActive, whenExhaustedAction, maxWait, DEFAULT_MAX_IDLE, DEFAULT_MIN_IDLE, testOnBorrow,
                 testOnReturn, DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS, DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
@@ -419,7 +419,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * <i>whenExhaustedAction</i> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #getMaxWait})
      * @param maxIdle the maximum number of idle objects in my pool (see {@link #getMaxIdle})
      */
-    public GenericObjectPool(PoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle) {
+    public GenericObjectPool(PoolableObjectFactory<T> factory, int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle) {
         this(factory, maxActive, whenExhaustedAction, maxWait, maxIdle, DEFAULT_MIN_IDLE, DEFAULT_TEST_ON_BORROW,
                 DEFAULT_TEST_ON_RETURN, DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS, DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
                 DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS, DEFAULT_TEST_WHILE_IDLE);
@@ -438,7 +438,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @param testOnReturn whether or not to validate objects after they are returned to the {@link #returnObject} method
      * (see {@link #getTestOnReturn})
      */
-    public GenericObjectPool(PoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait,
+    public GenericObjectPool(PoolableObjectFactory<T> factory, int maxActive, byte whenExhaustedAction, long maxWait,
             int maxIdle, boolean testOnBorrow, boolean testOnReturn) {
         this(factory, maxActive, whenExhaustedAction, maxWait, maxIdle, DEFAULT_MIN_IDLE, testOnBorrow, testOnReturn,
                 DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS, DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
@@ -466,7 +466,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @param testWhileIdle whether or not to validate objects in the idle object eviction thread, if any
      * (see {@link #setTestWhileIdle})
      */
-    public GenericObjectPool(PoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait,
+    public GenericObjectPool(PoolableObjectFactory<T> factory, int maxActive, byte whenExhaustedAction, long maxWait,
             int maxIdle, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis,
             int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle) {
         this(factory, maxActive, whenExhaustedAction, maxWait, maxIdle, DEFAULT_MIN_IDLE, testOnBorrow, testOnReturn,
@@ -495,7 +495,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @param testWhileIdle whether or not to validate objects in the idle object eviction thread, if any
      *  (see {@link #setTestWhileIdle})
      */
-    public GenericObjectPool(PoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait,
+    public GenericObjectPool(PoolableObjectFactory<T> factory, int maxActive, byte whenExhaustedAction, long maxWait,
             int maxIdle, int minIdle, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis,
             int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle) {
         this(factory, maxActive, whenExhaustedAction, maxWait, maxIdle, minIdle, testOnBorrow, testOnReturn,
@@ -529,7 +529,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * (see {@link #setSoftMinEvictableIdleTimeMillis})
      * @since Pool 1.3
      */
-    public GenericObjectPool(PoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait,
+    public GenericObjectPool(PoolableObjectFactory<T> factory, int maxActive, byte whenExhaustedAction, long maxWait,
             int maxIdle, int minIdle, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis,
             int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle,
             long softMinEvictableIdleTimeMillis) {
@@ -566,7 +566,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * (see {@link #setLifo})
      * @since Pool 1.4
      */
-    public GenericObjectPool(PoolableObjectFactory factory, int maxActive, byte whenExhaustedAction, long maxWait,
+    public GenericObjectPool(PoolableObjectFactory<T> factory, int maxActive, byte whenExhaustedAction, long maxWait,
             int maxIdle, int minIdle, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis,
             int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle,
             long softMinEvictableIdleTimeMillis, boolean lifo) {
@@ -593,7 +593,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         _softMinEvictableIdleTimeMillis = softMinEvictableIdleTimeMillis;
         _testWhileIdle = testWhileIdle;
 
-        _pool = new CursorableLinkedList();
+        _pool = new CursorableLinkedList<ObjectTimestampPair<T>>();
         startEvictor(_timeBetweenEvictionRunsMillis);
     }
 
@@ -1052,7 +1052,8 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @return object instance
      * @throws NoSuchElementException if an instance cannot be returned
      */
-    public Object borrowObject() throws Exception {
+    @Override
+    public T borrowObject() throws Exception {
         long starttime = System.currentTimeMillis();
         Latch latch = new Latch();
         byte whenExhaustedAction;
@@ -1178,8 +1179,8 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
             boolean newlyCreated = false;
             if(null == latch.getPair()) {
                 try {
-                    Object obj = _factory.makeObject();
-                    latch.setPair(new ObjectTimestampPair(obj));
+                    T obj = _factory.makeObject();
+                    latch.setPair(new ObjectTimestampPair<T>(obj));
                     newlyCreated = true;
                 } finally {
                     if (!newlyCreated) {
@@ -1244,8 +1245,8 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         // First use any objects in the pool to clear the queue
         for (;;) {
             if (!_pool.isEmpty() && !_allocationQueue.isEmpty()) {
-                Latch latch = (Latch) _allocationQueue.removeFirst();
-                latch.setPair((ObjectTimestampPair) _pool.removeFirst());
+                Latch latch = _allocationQueue.removeFirst();
+                latch.setPair(_pool.removeFirst());
                 _numInternalProcessing++;
                 synchronized (latch) {
                     latch.notify();
@@ -1258,7 +1259,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         // Second utilise any spare capacity to create new objects
         for(;;) {
             if((!_allocationQueue.isEmpty()) && (_maxActive < 0 || (_numActive + _numInternalProcessing) < _maxActive)) {
-                Latch latch = (Latch) _allocationQueue.removeFirst();
+                Latch latch = _allocationQueue.removeFirst();
                 latch.setMayCreate(true);
                 _numInternalProcessing++;
                 synchronized (latch) {
@@ -1276,7 +1277,8 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * 
      * @throws Exception if the configured {@link PoolableObjectFactory} throws an exception destroying obj
      */
-    public void invalidateObject(Object obj) throws Exception {
+    @Override
+    public void invalidateObject(T obj) throws Exception {
         try {
             if (_factory != null) {
                 _factory.destroyObject(obj);
@@ -1304,8 +1306,9 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * while removed items are being destroyed.</li>
      * <li>Exceptions encountered destroying idle instances are swallowed.</li></ul></p>
      */
+    @Override
     public void clear() {
-        List toDestroy = new ArrayList();
+        List<ObjectTimestampPair<T>> toDestroy = new ArrayList<ObjectTimestampPair<T>>();
 
         synchronized(this) {
             toDestroy.addAll(_pool);
@@ -1324,11 +1327,11 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @param c Collection of objects to destroy
      * @param factory PoolableConnectionFactory used to destroy the objects
      */
-    private void destroy(Collection c, PoolableObjectFactory factory) {
-        for (Iterator it = c.iterator(); it.hasNext();) {
+    private void destroy(Collection<ObjectTimestampPair<T>> c, PoolableObjectFactory<T> factory) {
+        for (ObjectTimestampPair<T> pair : c) {
             try {
-                factory.destroyObject(((ObjectTimestampPair)(it.next())).value);
-            } catch(Exception e) {
+                factory.destroyObject(pair.getValue());
+            } catch (Exception e) {
                 // ignore error, keep destroying the rest
             } finally {
                 synchronized(this) {
@@ -1344,6 +1347,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      *
      * @return the number of instances currently borrowed from this pool
      */
+    @Override
     public synchronized int getNumActive() {
         return _numActive;
     }
@@ -1353,6 +1357,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      *
      * @return the number of instances currently idle in this pool
      */
+    @Override
     public synchronized int getNumIdle() {
         return _pool.size();
     }
@@ -1376,7 +1381,8 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * 
      * @param obj instance to return to the pool
      */
-    public void returnObject(Object obj) throws Exception {
+    @Override
+    public void returnObject(T obj) throws Exception {
         try {
             addObjectToPool(obj, true);
         } catch (Exception e) {
@@ -1410,7 +1416,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @param decrementNumActive whether or not to decrement the active count
      * @throws Exception
      */
-    private void addObjectToPool(Object obj, boolean decrementNumActive) throws Exception {
+    private void addObjectToPool(T obj, boolean decrementNumActive) throws Exception {
         boolean success = true;
         if(_testOnReturn && !(_factory.validateObject(obj))) {
             success = false;
@@ -1433,9 +1439,9 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                     // borrowObject always takes the first element from the queue,
                     // so for LIFO, push on top, FIFO add to end
                     if (_lifo) {
-                        _pool.addFirst(new ObjectTimestampPair(obj));
+                        _pool.addFirst(new ObjectTimestampPair<T>(obj));
                     } else {
-                        _pool.addLast(new ObjectTimestampPair(obj));
+                        _pool.addLast(new ObjectTimestampPair<T>(obj));
                     }
                     if (decrementNumActive) {
                         _numActive--;
@@ -1476,6 +1482,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * 
      * @throws Exception
      */
+    @Override
     public void close() throws Exception {
         super.close();
         synchronized (this) {
@@ -1496,9 +1503,9 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * @throws IllegalStateException when the factory cannot be set at this time
      * @deprecated to be removed in version 2.0
      */
-    public void setFactory(PoolableObjectFactory factory) throws IllegalStateException {
-        List toDestroy = new ArrayList();
-        final PoolableObjectFactory oldFactory = _factory;
+    public void setFactory(PoolableObjectFactory<T> factory) throws IllegalStateException {
+        List<ObjectTimestampPair<T>> toDestroy = new ArrayList<ObjectTimestampPair<T>>();
+        final PoolableObjectFactory<T> oldFactory = _factory;
         synchronized (this) {
             assertOpen();
             if(0 < getNumActive()) {
@@ -1538,7 +1545,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         }
 
         for (int i=0,m=getNumTests();i<m;i++) {
-            final ObjectTimestampPair pair;
+            final ObjectTimestampPair<T> pair;
             synchronized (this) {
                 if ((_lifo && !_evictionCursor.hasPrevious()) ||
                         !_lifo && !_evictionCursor.hasNext()) {
@@ -1547,8 +1554,8 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                 }
 
                 pair = _lifo ?
-                        (ObjectTimestampPair) _evictionCursor.previous() :
-                        (ObjectTimestampPair) _evictionCursor.next();
+                        _evictionCursor.previous() :
+                        _evictionCursor.next();
 
                 _evictionCursor.remove();
                 _numInternalProcessing++;
@@ -1658,12 +1665,13 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * Create an object, and place it into the pool.
      * addObject() is useful for "pre-loading" a pool with idle objects.
      */
+    @Override
     public void addObject() throws Exception {
         assertOpen();
         if (_factory == null) {
             throw new IllegalStateException("Cannot add objects without a factory.");
         }
-        Object obj = _factory.makeObject();
+        T obj = _factory.makeObject();
         try {
             assertOpen();
             addObjectToPool(obj, false);
@@ -1708,11 +1716,9 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         buf.append("Active: ").append(getNumActive()).append("\n");
         buf.append("Idle: ").append(getNumIdle()).append("\n");
         buf.append("Idle Objects:\n");
-        Iterator it = _pool.iterator();
         long time = System.currentTimeMillis();
-        while(it.hasNext()) {
-            ObjectTimestampPair pair = (ObjectTimestampPair)(it.next());
-            buf.append("\t").append(pair.value).append("\t").append(time - pair.tstamp).append("\n");
+        for (ObjectTimestampPair<T> pair  : _pool) {
+            buf.append("\t").append(pair.getValue()).append("\t").append(time - pair.getTstamp()).append("\n");            
         }
         return buf.toString();
     }
@@ -1744,6 +1750,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
          * Run pool maintenance.  Evict objects qualifying for eviction and then
          * invoke {@link GenericObjectPool#ensureMinIdle()}.
          */
+        @Override
         public void run() {
             try {
                 evict();
@@ -1831,11 +1838,11 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * fairness. That is, objects are allocated to threads in the order that
      * threads request objects.
      */
-    private static final class Latch {
-        
+    private final class Latch {
+
         /** object timestamp pair allocated to this latch */
-        private ObjectTimestampPair _pair;
-        
+        private ObjectTimestampPair<T> _pair;
+
         /** Whether or not this latch may create an object instance */
         private boolean _mayCreate = false;
 
@@ -1843,7 +1850,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
          * Returns ObjectTimestampPair allocated to this latch
          * @return ObjectTimestampPair allocated to this latch
          */
-        private synchronized ObjectTimestampPair getPair() {
+        private synchronized ObjectTimestampPair<T> getPair() {
             return _pair;
         }
         
@@ -1851,7 +1858,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
          * Sets ObjectTimestampPair on this latch
          * @param pair ObjectTimestampPair allocated to this latch
          */
-        private synchronized void setPair(ObjectTimestampPair pair) {
+        private synchronized void setPair(ObjectTimestampPair<T> pair) {
             _pair = pair;
         }
 
@@ -2031,13 +2038,13 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
     private boolean _lifo = DEFAULT_LIFO;
 
     /** My pool. */
-    private CursorableLinkedList _pool = null;
+    private CursorableLinkedList<ObjectTimestampPair<T>> _pool = null;
 
     /** Eviction cursor - keeps track of idle object evictor position */
-    private CursorableLinkedList.Cursor _evictionCursor = null;
+    private CursorableLinkedList<ObjectTimestampPair<T>>.Cursor _evictionCursor = null;
 
     /** My {@link PoolableObjectFactory}. */
-    private PoolableObjectFactory _factory = null;
+    private PoolableObjectFactory<T> _factory;
 
     /**
      * The number of objects {@link #borrowObject} borrowed
@@ -2062,6 +2069,6 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * that objects can be allocated in the order in which the threads requested
      * them.
      */
-    private final LinkedList _allocationQueue = new LinkedList();
+    private final LinkedList<Latch> _allocationQueue = new LinkedList<Latch>();
 
 }
