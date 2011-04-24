@@ -38,32 +38,32 @@ public abstract class TestKeyedObjectPoolFactory extends TestCase {
     /**
      * @throws UnsupportedOperationException when this is unsupported by this KeyedPoolableObjectFactory type.
      */
-    protected KeyedObjectPoolFactory makeFactory() throws UnsupportedOperationException {
+    protected KeyedObjectPoolFactory<Object,Object> makeFactory() throws UnsupportedOperationException {
         return makeFactory(createObjectFactory());
     }
 
     /**
      * @throws UnsupportedOperationException when this is unsupported by this KeyedPoolableObjectFactory type.
      */
-    protected abstract KeyedObjectPoolFactory makeFactory(KeyedPoolableObjectFactory objectFactory) throws UnsupportedOperationException;
+    protected abstract KeyedObjectPoolFactory<Object,Object> makeFactory(KeyedPoolableObjectFactory<Object,Object> objectFactory) throws UnsupportedOperationException;
 
-    protected static KeyedPoolableObjectFactory createObjectFactory() {
+    protected static KeyedPoolableObjectFactory<Object,Object> createObjectFactory() {
         return PoolUtils.adapt(new MethodCallPoolableObjectFactory());
     }
 
     public void testCreatePool() throws Exception {
-        final KeyedObjectPoolFactory factory;
+        final KeyedObjectPoolFactory<Object,Object> factory;
         try {
             factory = makeFactory();
         } catch (UnsupportedOperationException uoe) {
             return;
         }
-        final KeyedObjectPool pool = factory.createPool();
+        final KeyedObjectPool<Object,Object> pool = factory.createPool();
         pool.close();
     }
 
     public void testToString() {
-        final KeyedObjectPoolFactory factory;
+        final KeyedObjectPoolFactory<Object,Object> factory;
         try {
             factory = makeFactory();
         } catch (UnsupportedOperationException uoe) {
