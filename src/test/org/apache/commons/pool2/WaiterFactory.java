@@ -32,8 +32,8 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  * (per key) exceeds the configured max.
  *
  */
-public class WaiterFactory implements PoolableObjectFactory,
-KeyedPoolableObjectFactory {
+public class WaiterFactory<K> implements PoolableObjectFactory<Waiter>,
+KeyedPoolableObjectFactory<K,Waiter> {
     
     /** Latency of activateObject */
     private final long activateLatency;
@@ -60,7 +60,7 @@ KeyedPoolableObjectFactory {
     private long activeCount = 0;
     
     /** Count of (makes - destroys) per key since last reset */
-    private Map activeCounts = new HashMap();
+    private Map<K,Integer> activeCounts = new HashMap<K,Integer>();
     
     /** Maximum of (makes - destroys) - if exceeded IllegalStateException */
     private final long maxActive;  // GKOP 1.x calls this maxTotal
@@ -97,22 +97,22 @@ KeyedPoolableObjectFactory {
                 validateLatency, waiterLatency, maxActive, Long.MAX_VALUE, 0);
     }
 
-    public void activateObject(Object obj) throws Exception {
+    public void activateObject(Waiter obj) throws Exception {
         doWait(activateLatency);
-        ((Waiter) obj).setActive(true);
+        obj.setActive(true);
     }
 
-    public void destroyObject(Object obj) throws Exception {
+    public void destroyObject(Waiter obj) throws Exception {
         doWait(destroyLatency);
-        ((Waiter) obj).setValid(false);
-        ((Waiter) obj).setActive(false);
+        obj.setValid(false);
+        obj.setActive(false);
         // Decrement *after* destroy 
         synchronized (this) {
             activeCount--;
         }
     }
 
-    public Object makeObject() throws Exception {
+    public Waiter makeObject() throws Exception {
         // Increment and test *before* make
         synchronized (this) {
             if (activeCount >= maxActive) {
@@ -126,17 +126,17 @@ KeyedPoolableObjectFactory {
         return new Waiter(false, true, waiterLatency);
     }
 
-    public void passivateObject(Object arg0) throws Exception {
-        ((Waiter) arg0).setActive(false);
+    public void passivateObject(Waiter arg0) throws Exception {
+        arg0.setActive(false);
         doWait(passivateLatency);
         if (Math.random() < passivateInvalidationProbability) {
-            ((Waiter) arg0).setValid(false);
+            arg0.setValid(false);
         }
     }
 
-    public boolean validateObject(Object arg0) {
+    public boolean validateObject(Waiter arg0) {
         doWait(validateLatency);
-        return ((Waiter) arg0).isValid();
+        return arg0.isValid();
     }
     
     protected void doWait(long latency) {
@@ -152,9 +152,9 @@ KeyedPoolableObjectFactory {
         if (activeCounts.isEmpty()) {
             return;
         }
-        Iterator it = activeCounts.keySet().iterator();
+        Iterator<K> it = activeCounts.keySet().iterator();
         while (it.hasNext()) {
-            Object key = it.next();
+            K key = it.next();
             activeCounts.put(key, new Integer (0));
         }
     }
@@ -168,21 +168,21 @@ KeyedPoolableObjectFactory {
 
     // KeyedPoolableObjectFactory methods
     
-    public void activateObject(Object key, Object obj) throws Exception {
+    public void activateObject(K key, Waiter obj) throws Exception {
         activateObject(obj);
     }
 
-    public void destroyObject(Object key, Object obj) throws Exception {
+    public void destroyObject(K key, Waiter obj) throws Exception {
         destroyObject(obj);
         synchronized (this) {
-            Integer count = (Integer) activeCounts.get(key);
+            Integer count = activeCounts.get(key);
             activeCounts.put(key, new Integer(count.intValue() - 1));
         }
     }
 
-    public Object makeObject(Object key) throws Exception {
+    public Waiter makeObject(K key) throws Exception {
         synchronized (this) {
-            Integer count = (Integer) activeCounts.get(key);
+            Integer count = activeCounts.get(key);
             if (count == null) {
                 count = new Integer(1);
                 activeCounts.put(key, count);
@@ -200,11 +200,11 @@ KeyedPoolableObjectFactory {
         return makeObject();
     }
 
-    public void passivateObject(Object key, Object obj) throws Exception {
+    public void passivateObject(K key, Waiter obj) throws Exception {
         passivateObject(obj);
     }
 
-    public boolean validateObject(Object key, Object obj) {
+    public boolean validateObject(K key, Waiter obj) {
         return validateObject(obj);
     }
 
