@@ -49,6 +49,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements Obj
      * @see #SoftReferenceObjectPool(PoolableObjectFactory)
      * @deprecated to be removed in pool 2.0.  Use {@link #SoftReferenceObjectPool(PoolableObjectFactory)}.
      */
+    @Deprecated
     public SoftReferenceObjectPool() {
         _pool = new ArrayList<SoftReference<T>>();
         _factory = null;
@@ -74,6 +75,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements Obj
      * @deprecated because this is a SoftReference pool, prefilled idle obejects may be garbage collected before they are used.
      *      To be removed in Pool 2.0.
      */
+    @Deprecated
     public SoftReferenceObjectPool(PoolableObjectFactory<T> factory, int initSize) throws Exception, IllegalArgumentException {
         if (factory == null) {
             throw new IllegalArgumentException("factory required to prefill the pool.");
@@ -312,6 +314,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements Obj
      * @throws IllegalStateException when the factory cannot be set at this time
      * @deprecated to be removed in pool 2.0
      */
+    @Deprecated
     public synchronized void setFactory(PoolableObjectFactory<T> factory) throws IllegalStateException {
         assertOpen();
         if(0 < getNumActive()) {

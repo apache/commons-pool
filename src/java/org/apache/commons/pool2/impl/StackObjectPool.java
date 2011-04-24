@@ -390,6 +390,7 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
      * @throws IllegalStateException when the factory cannot be set at this time
      * @deprecated to be removed in pool 2.0
      */
+    @Deprecated
     @Override
     public synchronized void setFactory(PoolableObjectFactory<T> factory) throws IllegalStateException {
         assertOpen();

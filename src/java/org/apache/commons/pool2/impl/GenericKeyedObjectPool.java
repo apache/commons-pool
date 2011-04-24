@@ -1816,6 +1816,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
      * @throws IllegalStateException if there are active (checked out) instances associated with this keyed object pool
      * @deprecated to be removed in version 2.0
      */
+    @Deprecated
     public void setFactory(KeyedPoolableObjectFactory<K,V> factory) throws IllegalStateException {
         Map<K,List<ObjectTimestampPair<V>>> toDestroy = new HashMap<K, List<ObjectTimestampPair<V>>>();
         final KeyedPoolableObjectFactory<K,V> oldFactory = _factory;
