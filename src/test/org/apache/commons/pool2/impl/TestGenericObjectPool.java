@@ -1032,6 +1032,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             public TimeTest() {
                 createTime = System.currentTimeMillis();
             }
+            @Override
             public TimeTest makeObject() throws Exception {
                 return new TimeTest();
             }
@@ -1242,6 +1243,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             this.borrow = borrow;
         }
 
+        @Override
         public void run() {
             try {
                 if (borrow) {
