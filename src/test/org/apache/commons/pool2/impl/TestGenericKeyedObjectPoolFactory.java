@@ -17,12 +17,12 @@
 
 package org.apache.commons.pool2.impl;
 
+import static junit.framework.Assert.assertEquals;
+
 import org.apache.commons.pool2.KeyedObjectPoolFactory;
 import org.apache.commons.pool2.KeyedPoolableObjectFactory;
 import org.apache.commons.pool2.TestKeyedObjectPoolFactory;
-import org.apache.commons.pool2.impl.GenericKeyedObjectPool;
-import org.apache.commons.pool2.impl.GenericKeyedObjectPoolFactory;
-import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.junit.Test;
 
 /**
  * Tests for {@link GenericKeyedObjectPoolFactory}.
@@ -31,15 +31,13 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
  * @version $Revision$ $Date$
  */
 public class TestGenericKeyedObjectPoolFactory extends TestKeyedObjectPoolFactory {
-    public TestGenericKeyedObjectPoolFactory(final String name) {
-        super(name);
-    }
 
     @Override
     protected KeyedObjectPoolFactory<Object,Object> makeFactory(final KeyedPoolableObjectFactory<Object,Object> objectFactory) {
         return new GenericKeyedObjectPoolFactory<Object,Object>(objectFactory);
     }
 
+    @Test
     public void testConstructors() throws Exception {
         GenericKeyedObjectPoolFactory<Object,Object> factory = new GenericKeyedObjectPoolFactory<Object,Object>(createObjectFactory());
         factory.createPool().close();
