@@ -17,6 +17,8 @@
 
 package org.apache.commons.pool2.impl;
 
+import static junit.framework.Assert.*;
+
 import java.util.NoSuchElementException;
 
 import org.apache.commons.pool2.MethodCallPoolableObjectFactory;
@@ -25,6 +27,7 @@ import org.apache.commons.pool2.PoolableObjectFactory;
 import org.apache.commons.pool2.TestObjectPoolFactory;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolFactory;
+import org.junit.Test;
 
 /**
  * Tests for {@link GenericObjectPoolFactory}.
@@ -33,14 +36,13 @@ import org.apache.commons.pool2.impl.GenericObjectPoolFactory;
  * @version $Revision$ $Date$
  */
 public class TestGenericObjectPoolFactory extends TestObjectPoolFactory {
-    public TestGenericObjectPoolFactory(final String name) {
-        super(name);
-    }
 
+    @Override
     protected ObjectPoolFactory<Object> makeFactory(final PoolableObjectFactory<Object> objectFactory) throws UnsupportedOperationException {
         return new GenericObjectPoolFactory<Object>(objectFactory);
     }
 
+    @Test
     public void testConstructors() throws Exception {
         GenericObjectPoolFactory<Object> factory = new GenericObjectPoolFactory<Object>(new MethodCallPoolableObjectFactory());
         GenericObjectPool<Object> pool;
