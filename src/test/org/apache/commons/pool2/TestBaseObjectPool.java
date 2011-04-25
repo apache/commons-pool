@@ -16,9 +16,11 @@
  */
 package org.apache.commons.pool2;
 
-import org.apache.commons.pool2.BaseObjectPool;
-import org.apache.commons.pool2.ObjectPool;
-import org.apache.commons.pool2.PoolableObjectFactory;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
+
+import org.junit.Test;
 
 
 /**
@@ -28,10 +30,6 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  */
 public class TestBaseObjectPool extends TestObjectPool {
     private ObjectPool<Object> _pool = null;
-
-    public TestBaseObjectPool(String testName) {
-        super(testName);
-    }
 
     protected ObjectPool<Object> makeEmptyPool(int mincapacity) {
         if (this.getClass() != TestBaseObjectPool.class) {
@@ -70,6 +68,7 @@ public class TestBaseObjectPool extends TestObjectPool {
     }
 
     // tests
+    @Test
     public void testUnsupportedOperations() throws Exception {
         if (!getClass().equals(TestBaseObjectPool.class)) {
             return; // skip redundant tests
@@ -112,6 +111,7 @@ public class TestBaseObjectPool extends TestObjectPool {
         }
     }
 
+    @Test
     public void testClose() throws Exception {
         ObjectPool<Object> pool = new BaseObjectPool<Object>() {
             @Override
@@ -130,6 +130,7 @@ public class TestBaseObjectPool extends TestObjectPool {
         pool.close(); // should not error as of Pool 2.0.
     }
 
+    @Test
     public void testBaseBorrow() throws Exception {
         try {
             _pool = makeEmptyPool(3);
@@ -141,6 +142,7 @@ public class TestBaseObjectPool extends TestObjectPool {
         assertEquals(getNthObject(2),_pool.borrowObject());
     }
 
+    @Test
     public void testBaseAddObject() throws Exception {
         try {
             _pool = makeEmptyPool(3);
@@ -165,6 +167,7 @@ public class TestBaseObjectPool extends TestObjectPool {
         }
     }
 
+    @Test
     public void testBaseBorrowReturn() throws Exception {
         try {
             _pool = makeEmptyPool(3);
@@ -202,6 +205,7 @@ public class TestBaseObjectPool extends TestObjectPool {
         }
     }
 
+    @Test
     public void testBaseNumActiveNumIdle() throws Exception {
         try {
             _pool = makeEmptyPool(3);
@@ -224,6 +228,7 @@ public class TestBaseObjectPool extends TestObjectPool {
         assertEquals(2,_pool.getNumIdle());
     }
 
+    @Test
     public void testBaseClear() throws Exception {
         try {
             _pool = makeEmptyPool(3);
@@ -247,6 +252,7 @@ public class TestBaseObjectPool extends TestObjectPool {
         assertEquals(getNthObject(2),obj2);
     }
 
+    @Test
     public void testBaseInvalidateObject() throws Exception {
         try {
             _pool = makeEmptyPool(3);
@@ -267,6 +273,7 @@ public class TestBaseObjectPool extends TestObjectPool {
         assertEquals(0,_pool.getNumIdle());
     }
 
+    @Test
     public void testBaseClosePool() throws Exception {
         try {
             _pool = makeEmptyPool(3);
