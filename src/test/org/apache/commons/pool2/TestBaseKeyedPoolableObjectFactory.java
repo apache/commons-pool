@@ -16,20 +16,17 @@
  */
 package org.apache.commons.pool2;
 
-import org.apache.commons.pool2.BaseKeyedPoolableObjectFactory;
-import org.apache.commons.pool2.KeyedPoolableObjectFactory;
+import static junit.framework.Assert.assertTrue;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * @author Rodney Waldhoff
  * @version $Revision$ $Date$
  */
-public class TestBaseKeyedPoolableObjectFactory extends TestCase {
-    public TestBaseKeyedPoolableObjectFactory(String testName) {
-        super(testName);
-    }
+public class TestBaseKeyedPoolableObjectFactory {
 
+    @Test
     public void testDefaultMethods() throws Exception {
         KeyedPoolableObjectFactory<Object,Object> factory = new BaseKeyedPoolableObjectFactory<Object,Object>() { 
             @Override
