@@ -16,9 +16,12 @@
  */
 package org.apache.commons.pool2;
 
-import org.apache.commons.pool2.BaseKeyedObjectPool;
-import org.apache.commons.pool2.KeyedObjectPool;
-import org.apache.commons.pool2.KeyedPoolableObjectFactory;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
+
+import org.junit.After;
+import org.junit.Test;
 
 
 /**
@@ -28,10 +31,6 @@ import org.apache.commons.pool2.KeyedPoolableObjectFactory;
  */
 public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
     private KeyedObjectPool<Object,Object> _pool = null;
-
-    public TestBaseKeyedObjectPool(final String testName) {
-        super(testName);
-    }
 
     @Override
     protected KeyedObjectPool<Object,Object> makeEmptyPool(KeyedPoolableObjectFactory<Object,Object> factory) {
@@ -74,13 +73,9 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
         throw new UnsupportedOperationException("BaseKeyedObjectPool isn't a complete implementation.");
     }
 
-    public void setUp() throws Exception {
-        super.setUp();
-    }
-
+    @After
     public void tearDown() throws Exception {
         _pool = null;
-        super.tearDown();
     }
 
     public void testUnsupportedOperations() throws Exception {
@@ -151,6 +146,7 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
         return false;
     }
 
+    @Test
     public void testBaseBorrowReturn() throws Exception {
         try {
             _pool = makeEmptyPool(3);
@@ -188,6 +184,7 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
         }
     }
 
+    @Test
     public void testBaseBorrow() throws Exception {
         try {
             _pool = makeEmptyPool(3);
@@ -204,6 +201,7 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
         assertEquals("6",getNthObject(keya,2),_pool.borrowObject(keya));
     }
 
+    @Test
     public void testBaseNumActiveNumIdle() throws Exception {
         try {
             _pool = makeEmptyPool(3);
@@ -230,6 +228,7 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
         assertEquals(0,_pool.getNumIdle("xyzzy12345"));
     }
 
+    @Test
     public void testBaseNumActiveNumIdle2() throws Exception {
         try {
             _pool = makeEmptyPool(6);
@@ -286,6 +285,7 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
         assertEquals(2,_pool.getNumIdle(keyb));
     }
 
+    @Test
     public void testBaseClear() throws Exception {
         try {
             _pool = makeEmptyPool(3);
@@ -310,6 +310,7 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
         assertEquals(getNthObject(keya,2),obj2);
     }
 
+    @Test
     public void testBaseInvalidateObject() throws Exception {
         try {
             _pool = makeEmptyPool(3);
@@ -331,6 +332,7 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
         assertEquals(0,_pool.getNumIdle(keya));
     }
 
+    @Test
     public void testBaseAddObject() throws Exception {
         try {
             _pool = makeEmptyPool(3);
