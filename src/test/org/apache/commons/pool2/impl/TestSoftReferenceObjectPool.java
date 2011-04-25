@@ -20,7 +20,6 @@ package org.apache.commons.pool2.impl;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PoolableObjectFactory;
 import org.apache.commons.pool2.TestBaseObjectPool;
-import org.apache.commons.pool2.impl.SoftReferenceObjectPool;
 
 /**
  * @author Rodney Waldhoff
@@ -28,9 +27,6 @@ import org.apache.commons.pool2.impl.SoftReferenceObjectPool;
  * @version $Revision$ $Date$
  */
 public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
-    public TestSoftReferenceObjectPool(String testName) {
-        super(testName);
-    }
 
     @Override
     protected ObjectPool<Object> makeEmptyPool(int cap) {

@@ -17,6 +17,11 @@
 
 package org.apache.commons.pool2.impl;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
@@ -25,7 +30,8 @@ import java.util.NoSuchElementException;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PoolableObjectFactory;
 import org.apache.commons.pool2.TestBaseObjectPool;
-import org.apache.commons.pool2.impl.StackObjectPool;
+import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  * @author Rodney Waldhoff
@@ -34,9 +40,6 @@ import org.apache.commons.pool2.impl.StackObjectPool;
  * @version $Revision$ $Date$
  */
 public class TestStackObjectPool extends TestBaseObjectPool {
-    public TestStackObjectPool(String testName) {
-        super(testName);
-    }
 
     @Override
     protected ObjectPool<Object> makeEmptyPool(int mincap) {
@@ -53,6 +56,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
         return String.valueOf(n);
     }
 
+    @Test
     public void testIdleCap() throws Exception {
         ObjectPool<Object> pool = makeEmptyPool(8);
         Object[] active = new Object[100];
@@ -71,6 +75,9 @@ public class TestStackObjectPool extends TestBaseObjectPool {
     /**
      * @deprecated - to be removed in pool 2.0
      */
+    @Test
+    @Ignore
+    @Deprecated
     public void testPoolWithNullFactory() throws Exception {
         ObjectPool<Integer> pool = new StackObjectPool<Integer>(10);
         for(int i=0;i<10;i++) {
@@ -111,6 +118,9 @@ public class TestStackObjectPool extends TestBaseObjectPool {
      * @deprecated - to be removed in pool 2.0
      */
     @Override
+    @Test
+    @Ignore
+    @Deprecated
     public void testSetFactory() throws Exception {
         ObjectPool<Object> pool = new StackObjectPool<Object>();
         try {
@@ -128,6 +138,9 @@ public class TestStackObjectPool extends TestBaseObjectPool {
     /**
      * @deprecated - to be removed in pool 2.0
      */
+    @Test
+    @Ignore
+    @Deprecated
     public void testCantResetFactoryWithActiveObjects() throws Exception {
         ObjectPool<Object> pool = new StackObjectPool<Object>();
         pool.setFactory(new SimpleFactory());
@@ -145,6 +158,9 @@ public class TestStackObjectPool extends TestBaseObjectPool {
     /**
      * @deprecated - to be removed in pool 2.0
      */
+    @Test
+    @Ignore
+    @Deprecated
     public void testCanResetFactoryWithoutActiveObjects() throws Exception {
         ObjectPool<Object> pool = new StackObjectPool<Object>();
         {
@@ -166,6 +182,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
      * from the pool result in NoSuchElementExceptions and passivation failures
      * result in instances not being returned to the pool.
      */
+    @Test
     public void testBorrowWithSometimesInvalidObjects() throws Exception {
         SelectiveFactory factory = new SelectiveFactory();
         factory.setValidateSelectively(true);  // Even numbers fail validation
@@ -210,6 +227,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
      * Verifies that validation and passivation failures returning objects are handled
      * properly - instances destroyed and not returned to the pool, but no exceptions propagated.
      */
+    @Test
     public void testBorrowReturnWithSometimesInvalidObjects() throws Exception {
         SelectiveFactory factory = new SelectiveFactory();
         ObjectPool<Object> pool = new StackObjectPool<Object>(factory, 20);
@@ -231,7 +249,8 @@ public class TestStackObjectPool extends TestBaseObjectPool {
         // 0,2,4,6,8 fail validation, 3, 9 fail passivation - 3 left.
         assertEquals(3,pool.getNumIdle());
     }
-     
+
+    @Test
     public void testVariousConstructors() throws Exception {
         {
             StackObjectPool<Object> pool = new StackObjectPool<Object>();
@@ -262,6 +281,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
     /**
      * Verify that out of range constructor arguments are ignored.
      */
+    @Test
     public void testMaxIdleInitCapacityOutOfRange() throws Exception {
         SimpleFactory factory = new SimpleFactory();
         StackObjectPool<Object> pool = new StackObjectPool<Object>(factory, -1, 0);
@@ -274,6 +294,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
      * Verifies that when returning objects cause maxSleeping exceeded, oldest instances
      * are destroyed to make room for returning objects.
      */
+    @Test
     public void testReturnObjectDiscardOrder() throws Exception {
         SelectiveFactory factory = new SelectiveFactory();
         ObjectPool<Object> pool = new StackObjectPool<Object>(factory, 3);
@@ -307,6 +328,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
      * the caller.  Objects that throw on activate are destroyed and if none succeed,
      * the caller gets NoSuchElementException.
      */
+    @Test
     public void testExceptionOnActivate() throws Exception {
         SelectiveFactory factory = new SelectiveFactory();
         ObjectPool<Object> pool = new StackObjectPool<Object>(factory);
@@ -327,6 +349,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
      * Verifies that exceptions thrown by factory destroy are swallowed
      * by both addObject and returnObject.
      */
+    @Test
     public void testExceptionOnDestroy() throws Exception {
         SelectiveFactory factory = new SelectiveFactory();
         ObjectPool<Object> pool = new StackObjectPool<Object>(factory, 2);
@@ -350,6 +373,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
      * Verifies that addObject propagates exceptions thrown by
      * factory passivate, but returnObject swallows these.
      */
+    @Test
     public void testExceptionOnPassivate() throws Exception {
         SelectiveFactory factory = new SelectiveFactory();
         ObjectPool<Object> pool = new StackObjectPool<Object>(factory, 2);
@@ -374,6 +398,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
     /**
      * Verifies that validation exceptions always propagate
      */
+    @Test
     public void testExceptionOnValidate() throws Exception {
         SelectiveFactory factory = new SelectiveFactory();
         ObjectPool<Object> pool = new StackObjectPool<Object>(factory, 2);
@@ -412,6 +437,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
     /**
      * Verifies that exceptions thrown by makeObject are propagated.
      */
+    @Test
     public void testExceptionOnMake() throws Exception {
         SelectiveFactory factory = new SelectiveFactory();
         factory.setThrowOnMake(true);
@@ -433,6 +459,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
     /**
      * Verifies NoSuchElementException when the factory returns a null object in borrowObject
      */
+    @Test
     public void testMakeNull() throws Exception {
         SelectiveFactory factory = new SelectiveFactory();
         ObjectPool<Object> pool = new StackObjectPool<Object>(factory);
@@ -448,6 +475,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
     /**
      * Verifies that initIdleCapacity is not a hard limit, but maxIdle is.
      */
+    @Test
     public void testInitIdleCapacityExceeded() throws Exception {
         PoolableObjectFactory<Object> factory = new SimpleFactory();
         ObjectPool<Object> pool = new StackObjectPool<Object>(factory, 2, 1);
@@ -466,6 +494,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
      * are destroyed, add/borrowObject throw IllegalStateException.
      */
     @Override
+    @Test
     public void testClose() throws Exception {
         SelectiveFactory factory = new SelectiveFactory();
         ObjectPool<Object> pool = new StackObjectPool<Object>(factory);
