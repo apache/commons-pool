@@ -208,7 +208,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     public void checkEvict(boolean lifo) throws Exception {
         // yea this is hairy but it tests all the code paths in GOP.evict()
         final SimpleFactory factory = new SimpleFactory();
-        final GenericObjectPool pool = new GenericObjectPool(factory);
+        final GenericObjectPool<Object> pool = new GenericObjectPool<Object>(factory);
         pool.setSoftMinEvictableIdleTimeMillis(10);
         pool.setMinIdle(2);
         pool.setTestWhileIdle(true);
@@ -478,7 +478,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
     @Test
     public void testSetFactoryWithActiveObjects() throws Exception {
-        GenericObjectPool pool = new GenericObjectPool();
+        GenericObjectPool<Object> pool = new GenericObjectPool<Object>();
         pool.setMaxIdle(10);
         pool.setFactory(new SimpleFactory());
         Object obj = pool.borrowObject();
