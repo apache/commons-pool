@@ -22,6 +22,8 @@ package org.apache.commons.pool2;
  * <p>
  * All operations defined here are essentially no-op's.
  *
+ * @param <T> Type of element managed in this factory.
+ *
  * @see PoolableObjectFactory
  * @see BaseKeyedPoolableObjectFactory
  *
