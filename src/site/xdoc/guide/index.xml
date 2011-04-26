@@ -29,10 +29,10 @@
 <center><img src="../images/uml/ObjectPool.gif"/></center>
 <br/>
 <p>
-<a href="../apidocs/org/apache/commons/pool/ObjectPool.html">ObjectPool</a> defines a simple pooling interface.
+<a href="../apidocs/org/apache/commons/pool2/ObjectPool.html">ObjectPool</a> defines a simple pooling interface.
 <ul>
    <li>
-       <a href="../apidocs/org/apache/commons/pool/impl/GenericObjectPool.html">GenericObjectPool</a>:
+       <a href="../apidocs/org/apache/commons/pool2/impl/GenericObjectPool.html">GenericObjectPool</a>:
        ObjectPool implementation with configurable LIFO/FIFO behavior.
        The default behavior is for the pool to act as a LIFO queue. What this
        means is that when there are idle objects available in the pool, 
@@ -41,11 +41,11 @@
        returned in the oppposite order - first-in, first-out.
    </li>
    <li>
-       <a href="../apidocs/org/apache/commons/pool/impl/StackObjectPool.html">StackObjectPool</a>:
+       <a href="../apidocs/org/apache/commons/pool2/impl/StackObjectPool.html">StackObjectPool</a>:
        ObjectPool implementation with a LIFO (Last In First Out) behavior.
    </li>
    <li>
-       <a href="../apidocs/org/apache/commons/pool/impl/SoftReferenceObjectPool.html">SoftReferenceObjectPool</a>: 
+       <a href="../apidocs/org/apache/commons/pool2/impl/SoftReferenceObjectPool.html">SoftReferenceObjectPool</a>: 
        ObjectPool implementation with a LIFO (Last In First Out) behavior. Additionally this pool wraps 
        each object in a SoftReference allowing the garbage collector to remove them in response to 
        memory demand.
@@ -58,15 +58,15 @@
 <center><img src="../images/uml/KeyedObjectPool.gif"/></center>
 <br/>
 <p>
-A <a href="../apidocs/org/apache/commons/pool/KeyedObjectPool.html">KeyedObjectPool</a>
+A <a href="../apidocs/org/apache/commons/pool2/KeyedObjectPool.html">KeyedObjectPool</a>
 pools instances of multiple types. Each type may be accessed using an arbitrary key.
 <ul>
    <li>
-       <a href="../apidocs/org/apache/commons/pool/impl/GenericKeyedObjectPool.html">GenericKeyedObjectPool</a>:
+       <a href="../apidocs/org/apache/commons/pool2/impl/GenericKeyedObjectPool.html">GenericKeyedObjectPool</a>:
        ObjectPool implementation with a FIFO (First In First Out) behavior.
    </li>
    <li>
-       <a href="../apidocs/org/apache/commons/pool/impl/StackKeyedObjectPool.html">StackKeyedObjectPool</a>:
+       <a href="../apidocs/org/apache/commons/pool2/impl/StackKeyedObjectPool.html">StackKeyedObjectPool</a>:
        ObjectPool implementation with a LIFO (Last In First Out) behavior.
    </li>
 </ul>
