@@ -17,62 +17,61 @@
 <!-- $Id$ -->
 <html>
    <head>
-      <title>Overview of the org.apache.commons.pool component</title>
+      <title>Overview of the org.apache.commons.pool2 component</title>
    </head>
    <body>
       <p>
          Generic Object pooling API with several implementations.
       </p>
       <p>
-         The <code>org.apache.commons.pool</code> package defines a simple
+         The <code>org.apache.commons.pool2</code> package defines a simple
          interface for a pool of object instances, and a handful of base
          classes that may be useful when creating pool implementations.
          The API supports pooling of unique objects which can be requested
          via a key as well as pools where all objects are equivalent.
       </p>
       <p>
-         The <code>org.apache.commons.pool.impl</code> package contains
+         The <code>org.apache.commons.pool2.impl</code> package contains
          several pool implementations.
-         {@link org.apache.commons.pool.impl.StackObjectPool StackObjectPool}
+         {@link org.apache.commons.pool2.impl.StackObjectPool StackObjectPool}
          is useful for supporting reuse of a limited number of instances while
          allowing new instances to be created as needed to support high demand.
-         {@link org.apache.commons.pool.impl.GenericObjectPool
+         {@link org.apache.commons.pool2.impl.GenericObjectPool
          GenericObjectPool} has many configuration options and can support
          a limited set of objects such as would be useful in a database
          connection pool.
-         {@link org.apache.commons.pool.impl.SoftReferenceObjectPool
+         {@link org.apache.commons.pool2.impl.SoftReferenceObjectPool
          SoftReferenceObjectPool} has no limit on the number of objects in the
          pool, but the garbage collector can remove idle objects from the pool
          as needed.  There are also keyed versions of the first two.
       </p>
       <p>
          Here is a simple example of pooling <code>HashMap</code>'s. First
-         create an {@link org.apache.commons.pool.ObjectPoolFactory
+         create an {@link org.apache.commons.pool2.ObjectPoolFactory
          ObjectPoolFactory}
       </p>
 <pre>
     public class HashMapFactory
-        extends {@link org.apache.commons.pool.BasePoolableObjectFactory BasePoolableObjectFactory}
+        extends {@link org.apache.commons.pool2.BasePoolableObjectFactory BasePoolableObjectFactory}&lt;Map&lt;Object,Object&gt;&gt;
     {
         /**
          * Creates an instance that can be returned by the pool.
          * @return an instance that can be returned by the pool.
          */
-        public Object makeObject()
+        public Map&lt;Object,Object&gt; makeObject()
             throws Exception
         {
-            return new HashMap();
+            return new HashMap&lt;Object,Object&gt;();
         }
 
         /**
          * Uninitialize an instance to be returned to the pool.
          * @param obj the instance to be passivated
          */
-        public void passivateObject(Object obj)
+        public void passivateObject(Map&lt;Object,Object&gt; obj)
             throws Exception
         {
-            Map map = (Map)obj;
-            map.clear();
+            obj.clear();
         }
     }
 </pre>
@@ -83,20 +82,20 @@
 <pre>
     public class Foo
     {
-        private {@link org.apache.commons.pool.ObjectPool ObjectPool} pool;
+        private {@link org.apache.commons.pool2.ObjectPool ObjectPool&lt;Map&lt;Object,Object&gt;&gt;} pool;
         public Foo()
         {
-            {@link org.apache.commons.pool.PoolableObjectFactory PoolableObjectFactory} factory = new HashMapFactory();
-            pool = new StackObjectPool(factory, 1000);
+            {@link org.apache.commons.pool2.PoolableObjectFactory PoolableObjectFactory&lt;Map&lt;Object,Object&gt;&gt;} factory = new HashMapFactory();
+            pool = new StackObjectPool&lt;Map&lt;Object,Object&gt;&gt;(factory, 1000);
         }
 
         public doSomething()
         {
             ...
-            Map map = null;
+            Map&lt;Object,Object&gt; map = null;
             try
             {
-                map = (Map)pool.borrowObject();
+                map = pool.borrowObject();
                 // use map
                 ...
             }
@@ -114,7 +113,7 @@
 
 <p>
 The above example shows how one would use an
-{@link org.apache.commons.pool.ObjectPool ObjectPool}.  The other supplied
+{@link org.apache.commons.pool2.ObjectPool ObjectPool}.  The other supplied
 implementations or another special purpose pool would be used similarly.
 </p>
    </body>
