@@ -20,6 +20,8 @@ package org.apache.commons.pool2;
 /**
  * A factory interface for creating {@link ObjectPool}s.
  *
+ * @param <T> Type of element pooled in the built pool.
+ *
  * @see ObjectPool
  *
  * @author Rodney Waldhoff

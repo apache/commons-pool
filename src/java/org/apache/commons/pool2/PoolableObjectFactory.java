@@ -64,6 +64,8 @@ package org.apache.commons.pool2;
  * at a time.
  * </p>
  *
+ * @param <T> Type of element managed in this factory.
+ *
  * @see ObjectPool
  *
  * @author Rodney Waldhoff
