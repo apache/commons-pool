@@ -38,10 +38,10 @@
       <!-- now combine the classpaths -->
       <property name="classpath" value="${cp}"/>
 
-      <property name="name" value="commons-pool"/>
+      <property name="name" value="commons-pool2"/>
       <property name="title" value="Apache Commons Object Pooling Package"/>
       <property name="version" value="2.0-SNAPSHOT"/>
-      <property name="package" value="org.apache.commons.pool.*"/>
+      <property name="package" value="org.apache.commons.pool2.*"/>
 
       <property name="src.dir" value="${basedir}/src"/>
       <property name="src.java.dir" value="${src.dir}/java"/>
@@ -149,6 +149,7 @@
             <exclude name="**/TestKeyedObjectPool.java"/>
             <exclude name="**/TestKeyedObjectPoolFactory.java"/>
           </fileset>
+          <formatter type="plain" usefile="false"/>
         </batchtest>
       </junit>
    </target>
