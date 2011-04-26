@@ -22,6 +22,9 @@ package org.apache.commons.pool2;
  *
  * @see KeyedObjectPool
  *
+ * @param <K> The type of keys maintained by the built pool.
+ * @param <V> Type of element pooled in the built pool.
+ *
  * @author Rodney Waldhoff
  * @version $Revision$ $Date$
  * @since Pool 1.0

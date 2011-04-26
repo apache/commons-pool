@@ -66,6 +66,9 @@ package org.apache.commons.pool2;
  *
  * @see KeyedObjectPool
  *
+ * @param <K> The type of keys managed by this factory.
+ * @param <V> Type of element managed by this factory.
+ *
  * @author Rodney Waldhoff
  * @author Sandy McArthur
  * @version $Revision$ $Date$
