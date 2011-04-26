@@ -25,6 +25,9 @@ package org.apache.commons.pool2;
  *
  * @see KeyedPoolableObjectFactory
  *
+ * @param <K> The type of keys managed by this factory.
+ * @param <V> Type of element managed by this factory.
+ *
  * @author Rodney Waldhoff
  * @version $Revision$ $Date$
  * @since Pool 1.0
