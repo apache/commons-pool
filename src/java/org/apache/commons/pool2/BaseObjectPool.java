@@ -22,6 +22,8 @@ package org.apache.commons.pool2;
  * Optional operations are implemented to either do nothing, return a value
  * indicating it is unsupported or throw {@link UnsupportedOperationException}.
  *
+ * @param <T> Type of element pooled in this pool.
+ *
  * @author Rodney Waldhoff
  * @author Sandy McArthur
  * @version $Revision$ $Date$
