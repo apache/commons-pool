@@ -53,6 +53,8 @@ import java.util.NoSuchElementException;
  *
  * @see java.util.LinkedList
  *
+ * @param <E> Type of element stored in this list.
+ *
  * @version $Revision: 480452 $ $Date: 2006-11-29 00:45:14 -0700 (Wed, 29 Nov 2006) $
  *
  * @author Rodney Waldhoff
