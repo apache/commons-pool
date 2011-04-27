@@ -17,9 +17,9 @@
 
 package org.apache.commons.pool2.impl;
 
-import java.lang.ref.SoftReference;
-import java.lang.ref.ReferenceQueue;
 import java.lang.ref.Reference;
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
