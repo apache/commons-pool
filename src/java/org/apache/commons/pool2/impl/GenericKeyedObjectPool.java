@@ -194,6 +194,10 @@ import org.apache.commons.pool2.PoolUtils;
  * block. See POOL-125 and DBCP-44 for more information.
  * </p>
  * @see GenericObjectPool
+ *
+ * @param <K> The type of keys maintained by this pool.
+ * @param <V> Type of element pooled in this pool.
+ *
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
  * @author Sandy McArthur

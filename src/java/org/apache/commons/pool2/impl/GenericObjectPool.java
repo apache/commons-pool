@@ -181,6 +181,9 @@ import org.apache.commons.pool2.impl.GenericKeyedObjectPool.ObjectTimestampPair;
  * block. See POOL-125 and DBCP-44 for more information.
  *
  * @see GenericKeyedObjectPool
+ *
+ * @param <T> Type of element pooled in this pool.
+ *
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
  * @author Sandy McArthur

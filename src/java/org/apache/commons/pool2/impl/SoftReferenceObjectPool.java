@@ -34,6 +34,8 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  * A {@link java.lang.ref.SoftReference SoftReference} based
  * {@link ObjectPool}.
  *
+ * @param <T> Type of element pooled in this pool.
+ *
  * @author Rodney Waldhoff
  * @author Sandy McArthur
  * @version $Revision$ $Date$
