@@ -27,6 +27,8 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  * @see GenericObjectPool
  * @see ObjectPoolFactory
  *
+ * @param <T> Type of element pooled in the built pool.
+ *
  * @author Rodney Waldhoff
  * @version $Revision$ $Date$
  * @since Pool 1.0

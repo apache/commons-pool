@@ -27,6 +27,9 @@ import org.apache.commons.pool2.KeyedPoolableObjectFactory;
  * @see GenericKeyedObjectPool
  * @see KeyedObjectPoolFactory
  *
+ * @param <K> The type of keys maintained by the built pool.
+ * @param <V> Type of element pooled in the built pool.
+ *
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
  * @version $Revision$ $Date$
