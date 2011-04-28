@@ -21,6 +21,15 @@
   </properties>
   <body>
   <release version="2.0" date="TBD" description="TBD">
+    <action dev="simonetripodi" date="2011-04-28" issue="83">
+      Support Java 1.5 Generics
+    </action>
+    <action dev="simonetripodi" date="2011-04-28" issue="186">
+      Developer documentation and examples have to be updated once the 2.0 repackaging has been done
+    </action>
+    <action dev="simonetripodi" date="2011-04-28" issue="187">
+      TestGenericKeyedObjectPool.testMaxTotalLRU method falls in an infinite loops
+    </action>
   </release>
   <release version="1.5.6" date="2011-04-03" description="This is a patch release, including bugfixes only.">
     <action dev="markt" type="fix" issue="POOL-179" due-to="Axel Grossmann">
