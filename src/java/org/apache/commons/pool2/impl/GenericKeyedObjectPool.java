@@ -1430,13 +1430,8 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
                     listForKey.add(pairTimeStamp);
                     toDestroy.put(key, listForKey);
                 }
-                // if that was the last object for that key, drop that pool
-                if (list.isEmpty()) {
-                    _poolMap.remove(key);
-                    _poolList.remove(key);
-                }
+                objectQueue.incrementInternalProcessingCount();
                 _totalIdle--;
-                _totalInternalProcessing++;
                 itemsToRemove--;
             }
 

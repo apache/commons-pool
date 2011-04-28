@@ -39,7 +39,6 @@ import org.apache.commons.pool2.Waiter;
 import org.apache.commons.pool2.WaiterFactory;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -295,11 +294,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         }
     }
 
-    /*
-     * FIXME this test is stuck!!!
-     */
     @Test
-    @Ignore
     public void testMaxTotalLRU() throws Exception {
         pool.setMaxActive(2);
         pool.setMaxTotal(3);
