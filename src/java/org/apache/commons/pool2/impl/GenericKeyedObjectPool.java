@@ -30,7 +30,6 @@ import java.util.TimerTask;
 import java.util.TreeMap;
 
 import org.apache.commons.pool2.BaseKeyedObjectPool;
-import org.apache.commons.pool2.KeyedObjectPool;
 import org.apache.commons.pool2.KeyedPoolableObjectFactory;
 import org.apache.commons.pool2.PoolUtils;
 
@@ -204,7 +203,7 @@ import org.apache.commons.pool2.PoolUtils;
  * @version $Revision$ $Date$
  * @since Pool 1.0
  */
-public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
+public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V>  {
 
     //--- public constants -------------------------------------------
 
@@ -1815,6 +1814,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
      * @throws IllegalStateException if there are active (checked out) instances associated with this keyed object pool
      * @deprecated to be removed in version 2.0
      */
+    @Override
     @Deprecated
     public void setFactory(KeyedPoolableObjectFactory<K,V> factory) throws IllegalStateException {
         Map<K,List<ObjectTimestampPair<V>>> toDestroy = new HashMap<K, List<ObjectTimestampPair<V>>>();
@@ -2254,19 +2254,15 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implem
      * This is also used by {@link GenericObjectPool}.
      */
     static class ObjectTimestampPair<V> implements Comparable<ObjectTimestampPair<V>> {
-        //CHECKSTYLE: stop VisibilityModifier
         /** 
          * Object instance 
-         * @deprecated this field will be made private and final in version 2.0
          */
-        V value;
+        private final V value;
         
         /**
          * timestamp
-         * @deprecated this field will be made private and final in version 2.0
          */
-        long tstamp;
-        //CHECKSTYLE: resume VisibilityModifier
+        private final long tstamp;
 
         /**
          * Create a new ObjectTimestampPair using the given object and the current system time.
