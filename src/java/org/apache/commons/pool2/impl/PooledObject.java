@@ -16,6 +16,8 @@
  */
 package org.apache.commons.pool2.impl;
 
+import java.util.concurrent.BlockingDeque;
+
 /**
  * This wrapper is used to track the additional information, such as state, for
  * the pooled objects.
@@ -68,12 +70,40 @@ public class PooledObject<T> {
         return false;
     }
 
-    public synchronized boolean endEvictionTest() {
+    public synchronized boolean endEvictionTest(
+            BlockingDeque<PooledObject<T>> idleQueue) {
         if (_state == PooledObjectState.MAINTAIN_EVICTION) {
             _state = PooledObjectState.IDLE;
             return true;
+        } else if (_state == PooledObjectState.MAINTAIN_EVICTION_RETURN_TO_HEAD) {
+            _state = PooledObjectState.IDLE;
+            if (!idleQueue.offerFirst(this)) {
+                // TODO - Should never happen
+            }
         }
         
+        return false;
+    }
+
+    public synchronized boolean allocate() {
+        if (_state == PooledObjectState.IDLE) {
+            _state = PooledObjectState.ALLOCATED;
+            return true;
+        } else if (_state == PooledObjectState.MAINTAIN_EVICTION) {
+            _state = PooledObjectState.MAINTAIN_EVICTION_RETURN_TO_HEAD;
+            return false;
+        }
+        // TODO if validating and testOnBorrow == true then pre-allocate for
+        // performance
+        return false;
+    }
+
+    public synchronized boolean deallocate() {
+        if (_state == PooledObjectState.ALLOCATED) {
+            _state = PooledObjectState.IDLE;
+            return true;
+        }
+
         return false;
     }
 }
