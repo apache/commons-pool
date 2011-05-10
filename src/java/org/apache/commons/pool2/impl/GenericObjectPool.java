@@ -19,16 +19,17 @@ package org.apache.commons.pool2.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.TimerTask;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import org.apache.commons.pool2.BaseObjectPool;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PoolUtils;
 import org.apache.commons.pool2.PoolableObjectFactory;
-import org.apache.commons.pool2.impl.GenericKeyedObjectPool.ObjectTimestampPair;
 
 /**
  * A configurable {@link ObjectPool} implementation.
@@ -595,7 +596,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
         _softMinEvictableIdleTimeMillis = softMinEvictableIdleTimeMillis;
         _testWhileIdle = testWhileIdle;
 
-        _pool = new CursorableLinkedList<ObjectTimestampPair<T>>();
+        _pool = new LinkedBlockingDeque<PooledObject<T>>();
         startEvictor(_timeBetweenEvictionRunsMillis);
     }
 
@@ -1147,7 +1148,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
                                         // Case 3: An object has been allocated
                                         _numInternalProcessing--;
                                         _numActive++;
-                                        returnObject(latch.getPair().getValue());
+                                        returnObject(latch.getPair().getObject());
                                     }
                                 }
                                 if (doAllocate) {
@@ -1182,7 +1183,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
             if(null == latch.getPair()) {
                 try {
                     T obj = _factory.makeObject();
-                    latch.setPair(new ObjectTimestampPair<T>(obj));
+                    latch.setPair(new PooledObject<T>(obj));
                     newlyCreated = true;
                 } finally {
                     if (!newlyCreated) {
@@ -1197,22 +1198,22 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
             }
             // activate & validate the object
             try {
-                _factory.activateObject(latch.getPair().getValue());
+                _factory.activateObject(latch.getPair().getObject());
                 if(_testOnBorrow &&
-                        !_factory.validateObject(latch.getPair().getValue())) {
+                        !_factory.validateObject(latch.getPair().getObject())) {
                     throw new Exception("ValidateObject failed");
                 }
                 synchronized(this) {
                     _numInternalProcessing--;
                     _numActive++;
                 }
-                return latch.getPair().getValue();
+                return latch.getPair().getObject();
             }
             catch (Throwable e) {
                 PoolUtils.checkRethrow(e);
                 // object cannot be activated or is invalid
                 try {
-                    _factory.destroyObject(latch.getPair().getValue());
+                    _factory.destroyObject(latch.getPair().getObject());
                 } catch (Throwable e2) {
                     PoolUtils.checkRethrow(e2);
                     // cannot destroy broken object
@@ -1310,11 +1311,11 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      */
     @Override
     public void clear() {
-        List<ObjectTimestampPair<T>> toDestroy = new ArrayList<ObjectTimestampPair<T>>();
+        List<PooledObject<T>> toDestroy = new ArrayList<PooledObject<T>>();
 
         synchronized(this) {
             toDestroy.addAll(_pool);
-            _numInternalProcessing = _numInternalProcessing + _pool._size;
+            _numInternalProcessing = _numInternalProcessing + _pool.size();
             _pool.clear();
         }
         destroy(toDestroy, _factory);
@@ -1329,10 +1330,10 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @param c Collection of objects to destroy
      * @param factory PoolableConnectionFactory used to destroy the objects
      */
-    private void destroy(Collection<ObjectTimestampPair<T>> c, PoolableObjectFactory<T> factory) {
-        for (ObjectTimestampPair<T> pair : c) {
+    private void destroy(Collection<PooledObject<T>> c, PoolableObjectFactory<T> factory) {
+        for (PooledObject<T> pair : c) {
             try {
-                factory.destroyObject(pair.getValue());
+                factory.destroyObject(pair.getObject());
             } catch (Exception e) {
                 // ignore error, keep destroying the rest
             } finally {
@@ -1441,9 +1442,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
                     // borrowObject always takes the first element from the queue,
                     // so for LIFO, push on top, FIFO add to end
                     if (_lifo) {
-                        _pool.addFirst(new ObjectTimestampPair<T>(obj));
+                        _pool.addFirst(new PooledObject<T>(obj));
                     } else {
-                        _pool.addLast(new ObjectTimestampPair<T>(obj));
+                        _pool.addLast(new PooledObject<T>(obj));
                     }
                     if (decrementNumActive) {
                         _numActive--;
@@ -1508,7 +1509,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
     @Override
     @Deprecated
     public void setFactory(PoolableObjectFactory<T> factory) throws IllegalStateException {
-        List<ObjectTimestampPair<T>> toDestroy = new ArrayList<ObjectTimestampPair<T>>();
+        List<PooledObject<T>> toDestroy = new ArrayList<PooledObject<T>>();
         final PoolableObjectFactory<T> oldFactory = _factory;
         synchronized (this) {
             assertOpen();
@@ -1516,7 +1517,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
                 throw new IllegalStateException("Objects are already active");
             } else {
                 toDestroy.addAll(_pool);
-                _numInternalProcessing = _numInternalProcessing + _pool._size;
+                _numInternalProcessing = _numInternalProcessing + _pool.size();
                 _pool.clear();
             }
             _factory = factory;
@@ -1539,82 +1540,89 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      */
     public void evict() throws Exception {
         assertOpen();
-        synchronized (this) {
-            if(_pool.isEmpty()) {
-                return;
-            }
-            if (null == _evictionCursor) {
-                _evictionCursor = (_pool.cursor(_lifo ? _pool.size() : 0));
-            }
+
+        if (_pool.size() == 0) {
+            return;
         }
-
-        for (int i=0,m=getNumTests();i<m;i++) {
-            final ObjectTimestampPair<T> pair;
-            synchronized (this) {
-                if ((_lifo && !_evictionCursor.hasPrevious()) ||
-                        !_lifo && !_evictionCursor.hasNext()) {
-                    _evictionCursor.close();
-                    _evictionCursor = _pool.cursor(_lifo ? _pool.size() : 0);
+        
+        PooledObject<T> underTest = null;
+        
+        for (int i = 0, m = getNumTests(); i < m; i++) {
+            if (_evictionIterator == null || !_evictionIterator.hasNext()) {
+                if (getLifo()) {
+                    _evictionIterator = _pool.descendingIterator();
+                } else {
+                    _evictionIterator = _pool.iterator();
                 }
-
-                pair = _lifo ?
-                        _evictionCursor.previous() :
-                        _evictionCursor.next();
-
-                _evictionCursor.remove();
-                _numInternalProcessing++;
             }
-
-            boolean removeObject = false;
-            final long idleTimeMilis = System.currentTimeMillis() - pair.getTstamp();
-            if ((getMinEvictableIdleTimeMillis() > 0) &&
-                    (idleTimeMilis > getMinEvictableIdleTimeMillis())) {
-                removeObject = true;
-            } else if ((getSoftMinEvictableIdleTimeMillis() > 0) &&
-                    (idleTimeMilis > getSoftMinEvictableIdleTimeMillis()) &&
-                    ((getNumIdle() + 1)> getMinIdle())) { // +1 accounts for object we are processing
-                removeObject = true;
-            }
-            if(getTestWhileIdle() && !removeObject) {
-                boolean active = false;
+            if (!_evictionIterator.hasNext()) {
+                // Pool exhausted, nothing to do here
+                return;
+            } else {
                 try {
-                    _factory.activateObject(pair.getValue());
-                    active = true;
-                } catch(Exception e) {
-                    removeObject=true;
+                    underTest = _evictionIterator.next();
+                } catch (NoSuchElementException nsee) {
+                    // Object was borrowed in another thread
+                    // Don't count this as an eviction test so reduce i;
+                    i--;
+                    _evictionIterator = null;
+                    continue;
                 }
-                if(active) {
-                    if(!_factory.validateObject(pair.getValue())) {
-                        removeObject=true;
-                    } else {
-                        try {
-                            _factory.passivateObject(pair.getValue());
-                        } catch(Exception e) {
-                            removeObject=true;
+            }
+
+            if (!underTest.startEvictionTest()) {
+                // Object was borrowed in another thread
+                // Don't count this as an eviction test so reduce i;
+                i--;
+                continue;
+            }
+            
+            if (getMinEvictableIdleTimeMillis() > 0 &&
+                        getMinEvictableIdleTimeMillis() <
+                            underTest.getIdleTimeMillis() ||
+                    (getSoftMinEvictableIdleTimeMillis() > 0 &&
+                            getSoftMinEvictableIdleTimeMillis() <
+                                underTest.getIdleTimeMillis() &&
+                            getMinIdle() < _pool.size())) {
+                destroy(underTest);
+            } else {
+                if (getTestWhileIdle()) {
+                    boolean active = false;
+                    try {
+                        _factory.activateObject(underTest.getObject());
+                        active = true;
+                    } catch(Exception e) {
+                        destroy(underTest);
+                    }
+                    if(active) {
+                        if(!_factory.validateObject(underTest.getObject())) {
+                            destroy(underTest);
+                        } else {
+                            try {
+                                _factory.passivateObject(underTest.getObject());
+                            } catch(Exception e) {
+                                destroy(underTest);
+                            }
                         }
                     }
                 }
-            }
-
-            if (removeObject) {
-                try {
-                    _factory.destroyObject(pair.getValue());
-                } catch(Exception e) {
-                    // ignored
+                if (!underTest.endEvictionTest()) {
+                    // TODO - May need to add code here once additional states
+                    // are used
                 }
-            }
-            synchronized (this) {
-                if(!removeObject) {
-                    _evictionCursor.add(pair);
-                    if (_lifo) {
-                        // Skip over the element we just added back
-                        _evictionCursor.previous();
-                    }
-                }
-                _numInternalProcessing--;
             }
         }
-        allocate();
+
+        return;
+    }
+
+    private void destroy(PooledObject<T> toDestory) {
+        _pool.remove(toDestory);
+        try {
+            _factory.destroyObject(toDestory.getObject());
+        } catch (Exception e) {
+            // Ignore
+        }
     }
 
     /**
@@ -1720,9 +1728,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
         buf.append("Active: ").append(getNumActive()).append("\n");
         buf.append("Idle: ").append(getNumIdle()).append("\n");
         buf.append("Idle Objects:\n");
-        long time = System.currentTimeMillis();
-        for (ObjectTimestampPair<T> pair  : _pool) {
-            buf.append("\t").append(pair.getValue()).append("\t").append(time - pair.getTstamp()).append("\n");            
+        for (PooledObject<T> pair  : _pool) {
+            buf.append("\t").append(pair.toString());            
         }
         return buf.toString();
     }
@@ -1845,7 +1852,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
     private final class Latch {
 
         /** object timestamp pair allocated to this latch */
-        private ObjectTimestampPair<T> _pair;
+        private PooledObject<T> _pair;
 
         /** Whether or not this latch may create an object instance */
         private boolean _mayCreate = false;
@@ -1854,7 +1861,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
          * Returns ObjectTimestampPair allocated to this latch
          * @return ObjectTimestampPair allocated to this latch
          */
-        private synchronized ObjectTimestampPair<T> getPair() {
+        private synchronized PooledObject<T> getPair() {
             return _pair;
         }
         
@@ -1862,7 +1869,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
          * Sets ObjectTimestampPair on this latch
          * @param pair ObjectTimestampPair allocated to this latch
          */
-        private synchronized void setPair(ObjectTimestampPair<T> pair) {
+        private synchronized void setPair(PooledObject<T> pair) {
             _pair = pair;
         }
 
@@ -2042,10 +2049,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
     private boolean _lifo = DEFAULT_LIFO;
 
     /** My pool. */
-    private CursorableLinkedList<ObjectTimestampPair<T>> _pool = null;
+    private LinkedBlockingDeque<PooledObject<T>> _pool = null;
 
-    /** Eviction cursor - keeps track of idle object evictor position */
-    private CursorableLinkedList<ObjectTimestampPair<T>>.Cursor _evictionCursor = null;
+    private Iterator<PooledObject<T>> _evictionIterator = null;
 
     /** My {@link PoolableObjectFactory}. */
     private PoolableObjectFactory<T> _factory;
