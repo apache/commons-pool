@@ -19,6 +19,7 @@ package org.apache.commons.pool2.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -596,7 +597,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
         _softMinEvictableIdleTimeMillis = softMinEvictableIdleTimeMillis;
         _testWhileIdle = testWhileIdle;
 
-        _pool = new LinkedBlockingDeque<PooledObject<T>>();
+        _idleObjects = new LinkedBlockingDeque<PooledObject<T>>();
         startEvictor(_timeBetweenEvictionRunsMillis);
     }
 
@@ -1147,7 +1148,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
                                     } else {
                                         // Case 3: An object has been allocated
                                         _numInternalProcessing--;
-                                        _numActive++;
+                                        _numActiveOld++;
                                         returnObject(latch.getPair().getObject());
                                     }
                                 }
@@ -1205,7 +1206,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
                 }
                 synchronized(this) {
                     _numInternalProcessing--;
-                    _numActive++;
+                    _numActiveOld++;
                 }
                 return latch.getPair().getObject();
             }
@@ -1247,9 +1248,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
 
         // First use any objects in the pool to clear the queue
         for (;;) {
-            if (!_pool.isEmpty() && !_allocationQueue.isEmpty()) {
+            if (!_idleObjects.isEmpty() && !_allocationQueue.isEmpty()) {
                 Latch latch = _allocationQueue.removeFirst();
-                latch.setPair(_pool.removeFirst());
+                latch.setPair(_idleObjects.removeFirst());
                 _numInternalProcessing++;
                 synchronized (latch) {
                     latch.notify();
@@ -1261,7 +1262,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
 
         // Second utilise any spare capacity to create new objects
         for(;;) {
-            if((!_allocationQueue.isEmpty()) && (_maxActive < 0 || (_numActive + _numInternalProcessing) < _maxActive)) {
+            if((!_allocationQueue.isEmpty()) && (_maxActive < 0 || (_numActiveOld + _numInternalProcessing) < _maxActive)) {
                 Latch latch = _allocationQueue.removeFirst();
                 latch.setMayCreate(true);
                 _numInternalProcessing++;
@@ -1288,7 +1289,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
             }
         } finally {
             synchronized (this) {
-                _numActive--;
+                _numActiveOld--;
             }
             allocate();
         }
@@ -1314,9 +1315,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
         List<PooledObject<T>> toDestroy = new ArrayList<PooledObject<T>>();
 
         synchronized(this) {
-            toDestroy.addAll(_pool);
-            _numInternalProcessing = _numInternalProcessing + _pool.size();
-            _pool.clear();
+            toDestroy.addAll(_idleObjects);
+            _numInternalProcessing = _numInternalProcessing + _idleObjects.size();
+            _idleObjects.clear();
         }
         destroy(toDestroy, _factory);
     }
@@ -1352,7 +1353,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      */
     @Override
     public synchronized int getNumActive() {
-        return _numActive;
+        return _numActiveOld;
     }
 
     /**
@@ -1362,7 +1363,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      */
     @Override
     public synchronized int getNumIdle() {
-        return _pool.size();
+        return _idleObjects.size();
     }
 
     /**
@@ -1399,7 +1400,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
                 // These two methods should be refactored, removing the
                 // "behavior flag", decrementNumActive, from addObjectToPool.
                 synchronized(this) {
-                    _numActive--;
+                    _numActiveOld--;
                 }
                 allocate();
             }
@@ -1436,18 +1437,18 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
             if (isClosed()) {
                 shouldDestroy = true;
             } else {
-                if((_maxIdle >= 0) && (_pool.size() >= _maxIdle)) {
+                if((_maxIdle >= 0) && (_idleObjects.size() >= _maxIdle)) {
                     shouldDestroy = true;
                 } else if(success) {
                     // borrowObject always takes the first element from the queue,
                     // so for LIFO, push on top, FIFO add to end
                     if (_lifo) {
-                        _pool.addFirst(new PooledObject<T>(obj));
+                        _idleObjects.addFirst(new PooledObject<T>(obj));
                     } else {
-                        _pool.addLast(new PooledObject<T>(obj));
+                        _idleObjects.addLast(new PooledObject<T>(obj));
                     }
                     if (decrementNumActive) {
-                        _numActive--;
+                        _numActiveOld--;
                     }
                     doAllocate = true;
                 }
@@ -1467,7 +1468,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
             // Decrement active count *after* destroy if applicable
             if (decrementNumActive) {
                 synchronized(this) {
-                    _numActive--;
+                    _numActiveOld--;
                 }
                 allocate();
             }
@@ -1516,9 +1517,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
             if(0 < getNumActive()) {
                 throw new IllegalStateException("Objects are already active");
             } else {
-                toDestroy.addAll(_pool);
-                _numInternalProcessing = _numInternalProcessing + _pool.size();
-                _pool.clear();
+                toDestroy.addAll(_idleObjects);
+                _numInternalProcessing = _numInternalProcessing + _idleObjects.size();
+                _idleObjects.clear();
             }
             _factory = factory;
         }
@@ -1541,7 +1542,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
     public void evict() throws Exception {
         assertOpen();
 
-        if (_pool.size() == 0) {
+        if (_idleObjects.size() == 0) {
             return;
         }
         
@@ -1550,9 +1551,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
         for (int i = 0, m = getNumTests(); i < m; i++) {
             if (_evictionIterator == null || !_evictionIterator.hasNext()) {
                 if (getLifo()) {
-                    _evictionIterator = _pool.descendingIterator();
+                    _evictionIterator = _idleObjects.descendingIterator();
                 } else {
-                    _evictionIterator = _pool.iterator();
+                    _evictionIterator = _idleObjects.iterator();
                 }
             }
             if (!_evictionIterator.hasNext()) {
@@ -1583,7 +1584,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
                     (getSoftMinEvictableIdleTimeMillis() > 0 &&
                             getSoftMinEvictableIdleTimeMillis() <
                                 underTest.getIdleTimeMillis() &&
-                            getMinIdle() < _pool.size())) {
+                            getMinIdle() < _idleObjects.size())) {
                 destroy(underTest);
             } else {
                 if (getTestWhileIdle()) {
@@ -1617,7 +1618,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
     }
 
     private void destroy(PooledObject<T> toDestory) {
-        _pool.remove(toDestory);
+        _idleObjects.remove(toDestory);
         try {
             _factory.destroyObject(toDestory.getObject());
         } catch (Exception e) {
@@ -1728,7 +1729,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
         buf.append("Active: ").append(getNumActive()).append("\n");
         buf.append("Idle: ").append(getNumIdle()).append("\n");
         buf.append("Idle Objects:\n");
-        for (PooledObject<T> pair  : _pool) {
+        for (PooledObject<T> pair  : _idleObjects) {
             buf.append("\t").append(pair.toString());            
         }
         return buf.toString();
@@ -1744,9 +1745,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      */
     private int getNumTests() {
         if(_numTestsPerEvictionRun >= 0) {
-            return Math.min(_numTestsPerEvictionRun, _pool.size());
+            return Math.min(_numTestsPerEvictionRun, _idleObjects.size());
         } else {
-            return(int)(Math.ceil(_pool.size()/Math.abs((double)_numTestsPerEvictionRun)));
+            return(int)(Math.ceil(_idleObjects.size()/Math.abs((double)_numTestsPerEvictionRun)));
         }
     }
 
@@ -2048,10 +2049,6 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
     /** Whether or not the pool behaves as a LIFO queue (last in first out) */
     private boolean _lifo = DEFAULT_LIFO;
 
-    /** My pool. */
-    private LinkedBlockingDeque<PooledObject<T>> _pool = null;
-
-    private Iterator<PooledObject<T>> _evictionIterator = null;
 
     /** My {@link PoolableObjectFactory}. */
     private PoolableObjectFactory<T> _factory;
@@ -2060,7 +2057,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * The number of objects {@link #borrowObject} borrowed
      * from the pool, but not yet returned.
      */
-    private int _numActive = 0;
+    private int _numActiveOld = 0;
 
     /**
      * My idle object eviction {@link TimerTask}, if any.
@@ -2081,4 +2078,11 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      */
     private final LinkedList<Latch> _allocationQueue = new LinkedList<Latch>();
 
+
+    
+    /** The queue of idle objects */
+    private Deque<PooledObject<T>> _idleObjects = null;
+
+    /** An iterator for {@link #_idleObjects} that is used by the evictor. */
+    private Iterator<PooledObject<T>> _evictionIterator = null;
 }
