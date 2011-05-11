@@ -28,7 +28,9 @@
       Developer documentation and examples have to be updated once the 2.0 repackaging has been done
     </action>
     <action dev="markt" type="update">
-      Switch GOP to use a pooling mechanism based on java.util.concurrent.
+      Switch GOP to use a pooling mechanism based on java.util.concurrent and a
+      LinkedBlockingQueue implementation from Apache Harmony (originally by Doug
+      Lea and the JSR-166 expert group).
     </action>
   </release>
   <release version="1.5.6" date="2011-04-03" description="This is a patch release, including bugfixes only.">

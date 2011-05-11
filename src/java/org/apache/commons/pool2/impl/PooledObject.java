@@ -16,8 +16,6 @@
  */
 package org.apache.commons.pool2.impl;
 
-import java.util.concurrent.BlockingDeque;
-
 /**
  * This wrapper is used to track the additional information, such as state, for
  * the pooled objects.
@@ -71,7 +69,7 @@ public class PooledObject<T> {
     }
 
     public synchronized boolean endEvictionTest(
-            BlockingDeque<PooledObject<T>> idleQueue) {
+            LinkedBlockingDeque<PooledObject<T>> idleQueue) {
         if (_state == PooledObjectState.MAINTAIN_EVICTION) {
             _state = PooledObjectState.IDLE;
             return true;

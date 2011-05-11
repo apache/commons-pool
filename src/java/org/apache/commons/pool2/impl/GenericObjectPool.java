@@ -21,9 +21,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.TimerTask;
-import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -1823,7 +1821,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
     private AtomicInteger _numObjects = new AtomicInteger(0);
 
     /** The queue of idle objects */
-    private BlockingDeque<PooledObject<T>> _idleObjects = null;
+    private LinkedBlockingDeque<PooledObject<T>> _idleObjects = null;
 
     /** An iterator for {@link #_idleObjects} that is used by the evictor. */
     private Iterator<PooledObject<T>> _evictionIterator = null;
