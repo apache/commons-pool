@@ -36,6 +36,9 @@
       Make deprecated protected attributes private, requiring that access is via
       the appropriate getters. 
     </action>
+    <action dev="markt" type="update">
+      Code clean-up for Java 1.5 (@Override annotations).
+    </action>
   </release>
   <release version="1.5.6" date="2011-04-03" description="This is a patch release, including bugfixes only.">
     <action dev="markt" type="fix" issue="POOL-179" due-to="Axel Grossmann">
