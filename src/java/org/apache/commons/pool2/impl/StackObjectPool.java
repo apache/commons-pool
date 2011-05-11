@@ -46,52 +46,7 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  * @version $Revision$ $Date$
  * @since Pool 1.0
  */
-public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<T> {
-    /**
-     * Create a new pool using no factory. Clients must first 
-     * {@link #setFactory(PoolableObjectFactory) set the factory} or
-     * else this pool will not behave correctly. Clients may first populate the pool
-     * using {@link #returnObject(java.lang.Object)} before they can be {@link #borrowObject borrowed}
-     * but this usage is <strong>discouraged</strong>.
-     *
-     * @see #StackObjectPool(PoolableObjectFactory)
-     * @deprecated to be removed in pool 2.0 - use {@link #StackObjectPool(PoolableObjectFactory)}
-     */
-    public StackObjectPool() {
-        this((PoolableObjectFactory<T>)null,DEFAULT_MAX_SLEEPING,DEFAULT_INIT_SLEEPING_CAPACITY);
-    }
-
-    /**
-     * Create a new pool using no factory.
-     * Clients must first {@link #setFactory(PoolableObjectFactory) set the factory} or
-     * else this pool will not behave correctly. Clients may first populate the pool
-     * using {@link #returnObject(java.lang.Object)} before they can be {@link #borrowObject borrowed}
-     * but this usage is <strong>discouraged</strong>.
-     *
-     * @param maxIdle cap on the number of "sleeping" instances in the pool
-     * @see #StackObjectPool(PoolableObjectFactory, int)
-     * @deprecated to be removed in pool 2.0 - use {@link #StackObjectPool(PoolableObjectFactory, int)}
-     */
-    public StackObjectPool(int maxIdle) {
-        this((PoolableObjectFactory<T>)null,maxIdle,DEFAULT_INIT_SLEEPING_CAPACITY);
-    }
-
-    /**
-     * Create a new pool using no factory.
-     * Clients must first {@link #setFactory(PoolableObjectFactory) set the factory} or
-     * else this pool will not behave correctly. Clients may first populate the pool
-     * using {@link #returnObject(java.lang.Object)} before they can be {@link #borrowObject borrowed}
-     * but this usage is <strong>discouraged</strong>.
-     *
-     * @param maxIdle cap on the number of "sleeping" instances in the pool
-     * @param initIdleCapacity initial size of the pool (this specifies the size of the container,
-     *             it does not cause the pool to be pre-populated.)
-     * @see #StackObjectPool(PoolableObjectFactory, int, int)
-     * @deprecated to be removed in pool 2.0 - use {@link #StackObjectPool(PoolableObjectFactory, int, int)}
-     */
-    public StackObjectPool(int maxIdle, int initIdleCapacity) {
-        this((PoolableObjectFactory<T>)null,maxIdle,initIdleCapacity);
-    }
+public class StackObjectPool<T> extends BaseObjectPool<T> {
 
     /**
      * Create a new <tt>StackObjectPool</tt> using the specified <i>factory</i> to create new instances.

@@ -37,7 +37,8 @@
       the appropriate getters. 
     </action>
     <action dev="markt" type="update">
-      Code clean-up for Java 1.5 (@Override annotations).
+      Code clean-up. Add missing @Override annotations and remove deprecated
+      code.
     </action>
   </release>
   <release version="1.5.6" date="2011-04-03" description="This is a patch release, including bugfixes only.">
