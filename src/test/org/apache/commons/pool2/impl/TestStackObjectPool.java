@@ -23,14 +23,12 @@ import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PoolableObjectFactory;
 import org.apache.commons.pool2.TestBaseObjectPool;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -69,111 +67,6 @@ public class TestStackObjectPool extends TestBaseObjectPool {
             pool.returnObject(active[i]);
             assertEquals(99 - i,pool.getNumActive());
             assertEquals((i < 8 ? i+1 : 8),pool.getNumIdle());
-        }
-    }
-
-    /**
-     * @deprecated - to be removed in pool 2.0
-     */
-    @Test
-    @Ignore
-    @Deprecated
-    public void testPoolWithNullFactory() throws Exception {
-        ObjectPool<Integer> pool = new StackObjectPool<Integer>(10);
-        for(int i=0;i<10;i++) {
-            pool.returnObject(new Integer(i));
-        }
-        for(int j=0;j<3;j++) {
-            Integer[] borrowed = new Integer[10];
-            BitSet found = new BitSet();
-            for(int i=0;i<10;i++) {
-                borrowed[i] = pool.borrowObject();
-                assertNotNull(borrowed);
-                assertTrue(!found.get(borrowed[i].intValue()));
-                found.set(borrowed[i].intValue());
-            }
-            for(int i=0;i<10;i++) {
-                pool.returnObject(borrowed[i]);
-            }
-        }
-        pool.invalidateObject(pool.borrowObject());
-        pool.invalidateObject(pool.borrowObject());
-        pool.clear();        
-    }
-    
-    /**
-     * @deprecated - to be removed in pool 2.0
-     */
-    public void testBorrowFromEmptyPoolWithNullFactory() throws Exception {
-        ObjectPool<Object> pool = new StackObjectPool<Object>();
-        try {
-            pool.borrowObject();
-            fail("Expected NoSuchElementException");
-        } catch(NoSuchElementException e) {
-            // expected
-        }
-    }
-    
-    /**
-     * @deprecated - to be removed in pool 2.0
-     */
-    @Override
-    @Test
-    @Ignore
-    @Deprecated
-    public void testSetFactory() throws Exception {
-        ObjectPool<Object> pool = new StackObjectPool<Object>();
-        try {
-            pool.borrowObject();
-            fail("Expected NoSuchElementException");
-        } catch(NoSuchElementException e) {
-            // expected
-        }
-        pool.setFactory(new SimpleFactory());
-        Object obj = pool.borrowObject();
-        assertNotNull(obj);
-        pool.returnObject(obj);
-    }
-
-    /**
-     * @deprecated - to be removed in pool 2.0
-     */
-    @Test
-    @Ignore
-    @Deprecated
-    public void testCantResetFactoryWithActiveObjects() throws Exception {
-        ObjectPool<Object> pool = new StackObjectPool<Object>();
-        pool.setFactory(new SimpleFactory());
-        Object obj = pool.borrowObject();
-        assertNotNull(obj);
-
-        try {
-            pool.setFactory(new SimpleFactory());
-            fail("Expected IllegalStateException");
-        } catch(IllegalStateException e) {
-            // expected
-        }        
-    }
-    
-    /**
-     * @deprecated - to be removed in pool 2.0
-     */
-    @Test
-    @Ignore
-    @Deprecated
-    public void testCanResetFactoryWithoutActiveObjects() throws Exception {
-        ObjectPool<Object> pool = new StackObjectPool<Object>();
-        {
-            pool.setFactory(new SimpleFactory());
-            Object obj = pool.borrowObject();        
-            assertNotNull(obj);
-            pool.returnObject(obj);
-        }
-        {
-            pool.setFactory(new SimpleFactory());
-            Object obj = pool.borrowObject();        
-            assertNotNull(obj);
-            pool.returnObject(obj);
         }
     }
 
@@ -252,18 +145,6 @@ public class TestStackObjectPool extends TestBaseObjectPool {
 
     @Test
     public void testVariousConstructors() throws Exception {
-        {
-            StackObjectPool<Object> pool = new StackObjectPool<Object>();
-            assertNotNull(pool);
-        }
-        {
-            StackObjectPool<Object> pool = new StackObjectPool<Object>(10);
-            assertNotNull(pool);
-        }
-        {
-            StackObjectPool<Object> pool = new StackObjectPool<Object>(10,5);
-            assertNotNull(pool);
-        }
         {
             StackObjectPool<Object> pool = new StackObjectPool<Object>(null);
             assertNotNull(pool);
@@ -635,6 +516,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
     }
     
     static class IntegerFactoryException extends RuntimeException {
+        private static final long serialVersionUID = 1L;
         private String type;
         private int value;
         public IntegerFactoryException(String type, int value) {
