@@ -22,7 +22,7 @@
   <body>
   <release version="2.0" description="This is an APIs update and maintenance release">
     <action dev="simonetripodi" type="update" date="2011-04-28" issue="POOL-83">
-      Support Java 1.5 Generics
+      Support Java 1.5 Generics.
     </action>
     <action dev="simonetripodi" type="update" date="2011-04-28" issue="POOL-186">
       Developer documentation and examples have to be updated once the 2.0 repackaging has been done
@@ -31,6 +31,10 @@
       Switch GOP to use a pooling mechanism based on java.util.concurrent and a
       LinkedBlockingQueue implementation from Apache Harmony (originally by Doug
       Lea and the JSR-166 expert group).
+    </action>
+    <action dev="markt" type="update">
+      Make deprecated PoolFactory attributes private, requiring that access is
+      via the provided getters. 
     </action>
   </release>
   <release version="1.5.6" date="2011-04-03" description="This is a patch release, including bugfixes only.">
