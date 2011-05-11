@@ -129,7 +129,7 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
      */
     @Test
     public void testRemoveOldest() throws Exception {
-        pool._maxSleeping = 2;
+        pool.setMaxSleeping(2);
         Object obj0 = pool.borrowObject("");
         Object obj1 = pool.borrowObject("");
         Object obj2 = pool.borrowObject("");

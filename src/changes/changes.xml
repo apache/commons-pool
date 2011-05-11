@@ -33,8 +33,8 @@
       Lea and the JSR-166 expert group).
     </action>
     <action dev="markt" type="update">
-      Make deprecated PoolFactory attributes private, requiring that access is
-      via the provided getters. 
+      Make deprecated protected attributes private, requiring that access is via
+      the appropriate getters. 
     </action>
   </release>
   <release version="1.5.6" date="2011-04-03" description="This is a patch release, including bugfixes only.">

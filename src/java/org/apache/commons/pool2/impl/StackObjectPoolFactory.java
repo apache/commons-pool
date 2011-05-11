@@ -113,21 +113,18 @@ public class StackObjectPoolFactory<T> implements ObjectPoolFactory<T> {
 
     /**
      * The PoolableObjectFactory used by created pools.
-     * @deprecated to be made private in pool 2.0
      */
-    protected PoolableObjectFactory<T> _factory = null;
+    private PoolableObjectFactory<T> _factory = null;
     
     /**
      * The maximum number of idle instances in created pools.
-     * @deprecated to be made private in pool 2.0
      */
-    protected int _maxSleeping = StackObjectPool.DEFAULT_MAX_SLEEPING;
+    private int _maxSleeping = StackObjectPool.DEFAULT_MAX_SLEEPING;
     
     /**
      * The initial size of created pools.
-     * @deprecated to be made private in pool 2.0
      */
-    protected int _initCapacity = StackObjectPool.DEFAULT_INIT_SLEEPING_CAPACITY;
+    private int _initCapacity = StackObjectPool.DEFAULT_INIT_SLEEPING_CAPACITY;
 
     /**
      * Returns the factory used by created pools.
