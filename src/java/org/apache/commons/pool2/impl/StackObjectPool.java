@@ -418,27 +418,23 @@ public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<
 
     /** 
      * My pool.
-     * @deprecated to be made private in pool 2.0 
      */
-    protected Stack<T> _pool = null;
+    private Stack<T> _pool = null;
 
     /** 
      * My {@link PoolableObjectFactory}.
-     * @deprecated to be made private in pool 2.0 - use {@link #getFactory()}
      */
-    protected PoolableObjectFactory<T> _factory = null;
+    private PoolableObjectFactory<T> _factory = null;
 
     /** 
      * The cap on the number of "sleeping" instances in the pool. 
-     * @deprecated to be made private in pool 2.0 - use {@link #getMaxSleeping()}
      */
-    protected int _maxSleeping = DEFAULT_MAX_SLEEPING;
+    private int _maxSleeping = DEFAULT_MAX_SLEEPING;
     
     /**
      * Number of objects borrowed but not yet returned to the pool.
-     * @deprecated to be made private in pool 2.0 - use {@link #getNumActive()}
      */
-    protected int _numActive = 0;
+    private int _numActive = 0;
 
     /**
      * Returns the {@link PoolableObjectFactory} used by this pool to create and manage object instances.
