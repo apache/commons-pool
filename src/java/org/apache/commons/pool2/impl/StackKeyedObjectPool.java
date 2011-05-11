@@ -24,7 +24,6 @@ import java.util.NoSuchElementException;
 import java.util.Stack;
 
 import org.apache.commons.pool2.BaseKeyedObjectPool;
-import org.apache.commons.pool2.KeyedObjectPool;
 import org.apache.commons.pool2.KeyedPoolableObjectFactory;
 import org.apache.commons.pool2.PoolUtils;
 
@@ -50,7 +49,7 @@ import org.apache.commons.pool2.PoolUtils;
  * @see Stack
  * @since Pool 1.0
  */
-public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
+public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> {
     /**
      * Create a new pool using no factory.
      * Clients must first set the {@link #setFactory factory} or
@@ -148,7 +147,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
         assertOpen();
         Stack<V> stack = _pools.get(key);
         if(null == stack) {
-            stack = new Stack();
+            stack = new Stack<V>();
             stack.ensureCapacity( _initSleepingCapacity > _maxSleeping ? _maxSleeping : _initSleepingCapacity);
             _pools.put(key,stack);
         }
@@ -581,7 +580,7 @@ public class StackKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V> implemen
      * @return the _activeCount
      * @since 1.5.5
      */
-    public Map getActiveCount() {
+    public Map<K,Integer> getActiveCount() {
         return _activeCount;
     }
 

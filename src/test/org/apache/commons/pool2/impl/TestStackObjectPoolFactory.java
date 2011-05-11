@@ -40,22 +40,11 @@ public class TestStackObjectPoolFactory extends TestObjectPoolFactory {
 
     @Test
     public void testConstructors() throws Exception {
-        StackObjectPoolFactory<Object> factory = new StackObjectPoolFactory<Object>();
-        factory.createPool().close();
-
-        
-        factory = new StackObjectPoolFactory<Object>(1);
-        StackObjectPool<Object> pool = (StackObjectPool<Object>)factory.createPool();
-        pool.close();
-
-
-        factory = new StackObjectPoolFactory<Object>(1, 1);
-        pool = (StackObjectPool<Object>)factory.createPool();
-        pool.close();
-
-
-        factory = new StackObjectPoolFactory<Object>(new MethodCallPoolableObjectFactory(), 1);
-        pool = (StackObjectPool<Object>)factory.createPool();
+        StackObjectPoolFactory<Object> factory =
+            new StackObjectPoolFactory<Object>(
+                    new MethodCallPoolableObjectFactory(), 1);
+        StackObjectPool<Object> pool =
+            (StackObjectPool<Object>)factory.createPool();
         Object a = pool.borrowObject();
         Object b = pool.borrowObject();
         pool.returnObject(a);

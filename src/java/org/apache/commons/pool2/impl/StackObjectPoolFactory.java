@@ -34,39 +34,6 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  * @since Pool 1.0
  */
 public class StackObjectPoolFactory<T> implements ObjectPoolFactory<T> {
-    /**
-     * Create a new StackObjectPoolFactory.
-     *
-     * @see StackObjectPool#StackObjectPool()
-     * @deprecated to be removed in pool 2.0 - use {@link #StackObjectPoolFactory(PoolableObjectFactory)}
-     */
-    public StackObjectPoolFactory() {
-        this((PoolableObjectFactory<T>)null,StackObjectPool.DEFAULT_MAX_SLEEPING,StackObjectPool.DEFAULT_INIT_SLEEPING_CAPACITY);
-    }
-
-    /**
-     * Create a new StackObjectPoolFactory.
-     *
-     * @param maxIdle cap on the number of "sleeping" instances in the pool.
-     * @see StackObjectPool#StackObjectPool(int)
-     * @deprecated to be removed in pool 2.0 - use {@link #StackObjectPoolFactory(PoolableObjectFactory, int)}
-     */
-    public StackObjectPoolFactory(int maxIdle) {
-        this((PoolableObjectFactory<T>)null,maxIdle,StackObjectPool.DEFAULT_INIT_SLEEPING_CAPACITY);
-    }
-
-    /**
-     * Create a new StackObjectPoolFactory.
-     *
-     * @param maxIdle cap on the number of "sleeping" instances in the pool.
-     * @param initIdleCapacity - initial size of the pool (this specifies the size of the container,
-     * it does not cause the pool to be pre-populated.)
-     * @see StackObjectPool#StackObjectPool(int, int)
-     * @deprecated to be removed in pool 2.0 - use {@link #StackObjectPoolFactory(PoolableObjectFactory, int, int)}
-     */
-    public StackObjectPoolFactory(int maxIdle, int initIdleCapacity) {
-        this((PoolableObjectFactory<T>)null,maxIdle,initIdleCapacity);
-    }
 
     /**
      * Create a new StackObjectPoolFactory.
