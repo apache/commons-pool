@@ -90,6 +90,7 @@ public class PooledObject<T> {
             _state = PooledObjectState.ALLOCATED;
             return true;
         } else if (_state == PooledObjectState.MAINTAIN_EVICTION) {
+            // TODO Allocate anyway and ignore eviction test
             _state = PooledObjectState.MAINTAIN_EVICTION_RETURN_TO_HEAD;
             return false;
         }
