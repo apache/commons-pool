@@ -1223,14 +1223,12 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
 
         assertOpen();
 
-        WhenExhaustedAction whenExhaustedAction;
-        long maxWait;
         PooledObject<T> p = null;
 
-        // Get local copy of current configso it is consistent for entire method
-        // execution
-        whenExhaustedAction = _whenExhaustedAction;
-        maxWait = _maxWait;
+        // Get local copy of current config so it is consistent for entire
+        // method execution
+        WhenExhaustedAction whenExhaustedAction = _whenExhaustedAction;
+        long maxWait = _maxWait;
 
         boolean create;
 
@@ -1550,6 +1548,17 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
 
         PooledObject<T> underTest = null;
 
+        boolean testWhileIdle = getTestWhileIdle();
+        long idleEvictTime = Long.MAX_VALUE;
+        long idleSoftEvictTime = Long.MAX_VALUE;
+        
+        if (getMinEvictableIdleTimeMillis() > 0) {
+            idleEvictTime = getMinEvictableIdleTimeMillis();
+        }
+        if (getSoftMinEvictableIdleTimeMillis() > 0) {
+            idleSoftEvictTime = getSoftMinEvictableIdleTimeMillis();
+        }
+                
         for (int i = 0, m = getNumTests(); i < m; i++) {
             if (_evictionIterator == null || !_evictionIterator.hasNext()) {
                 if (getLifo()) {
@@ -1561,16 +1570,16 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
             if (!_evictionIterator.hasNext()) {
                 // Pool exhausted, nothing to do here
                 return;
-            } else {
-                try {
-                    underTest = _evictionIterator.next();
-                } catch (NoSuchElementException nsee) {
-                    // Object was borrowed in another thread
-                    // Don't count this as an eviction test so reduce i;
-                    i--;
-                    _evictionIterator = null;
-                    continue;
-                }
+            }
+
+            try {
+                underTest = _evictionIterator.next();
+            } catch (NoSuchElementException nsee) {
+                // Object was borrowed in another thread
+                // Don't count this as an eviction test so reduce i;
+                i--;
+                _evictionIterator = null;
+                continue;
             }
 
             if (!underTest.startEvictionTest()) {
@@ -1580,16 +1589,12 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
                 continue;
             }
 
-            if (getMinEvictableIdleTimeMillis() > 0 &&
-                    getMinEvictableIdleTimeMillis() <
-                            underTest.getIdleTimeMillis() ||
-                    (getSoftMinEvictableIdleTimeMillis() > 0 &&
-                            getSoftMinEvictableIdleTimeMillis() <
-                                    underTest.getIdleTimeMillis() &&
+            if (idleEvictTime < underTest.getIdleTimeMillis() ||
+                    (idleSoftEvictTime < underTest.getIdleTimeMillis() &&
                             getMinIdle() < _idleObjects.size())) {
                 destroy(underTest);
             } else {
-                if (getTestWhileIdle()) {
+                if (testWhileIdle) {
                     boolean active = false;
                     try {
                         _factory.activateObject(underTest.getObject());
@@ -1625,9 +1630,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      */
     private PooledObject<T> create(boolean force) throws Exception {
         int maxActive = getMaxActive();
-        int newNumActive = _numObjects.incrementAndGet();
+        int newNumActive = numActive.incrementAndGet();
         if (!force && maxActive > -1 && newNumActive > maxActive) {
-            _numObjects.decrementAndGet();
+            numActive.decrementAndGet();
             return null;
         }
 
@@ -1635,7 +1640,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
         try {
             t = _factory.makeObject();
         } catch (Exception e) {
-            _numObjects.decrementAndGet();
+            numActive.decrementAndGet();
             throw e;
         }
 
@@ -1650,7 +1655,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
         try {
             _factory.destroyObject(toDestory.getObject());
         } finally {
-            _numObjects.decrementAndGet();
+            numActive.decrementAndGet();
         }
     }
 
@@ -1736,7 +1741,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @return string containing debug information
      */
     synchronized String debugInfo() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("Active: ").append(getNumActive()).append("\n");
         buf.append("Idle: ").append(getNumIdle()).append("\n");
         buf.append("Idle Objects:\n");
@@ -2034,7 +2039,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * but there will never be more than {@link #_maxActive} created at any one
      * time.
      */
-    private AtomicInteger _numObjects = new AtomicInteger(0);
+    private AtomicInteger numActive = new AtomicInteger(0);
 
     /** The queue of idle objects */
     private LinkedBlockingDeque<PooledObject<T>> _idleObjects = null;
