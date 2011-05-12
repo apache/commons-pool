@@ -26,7 +26,6 @@ import java.util.NoSuchElementException;
 import junit.framework.TestCase;
 
 import org.apache.commons.pool2.impl.GenericKeyedObjectPool;
-import org.apache.commons.pool2.impl.StackKeyedObjectPool;
 import org.junit.Test;
 
 /**
@@ -111,10 +110,6 @@ public abstract class TestKeyedObjectPool {
         // addObject should make a new object, pasivate it and put it in the pool
         pool.addObject(KEY);
         expectedMethods.add(new MethodCall("makeObject", KEY).returned(ZERO));
-        if (pool instanceof StackKeyedObjectPool) {
-            expectedMethods.add(new MethodCall(
-                    "validateObject", KEY, ZERO).returned(Boolean.TRUE)); 
-        }
         expectedMethods.add(new MethodCall("passivateObject", KEY, ZERO));
         assertEquals(expectedMethods, factory.getMethodCalls());
 
@@ -144,10 +139,6 @@ public abstract class TestKeyedObjectPool {
             // expected
         }
         expectedMethods.add(new MethodCall("makeObject", KEY).returned(ONE));
-        if (pool instanceof StackKeyedObjectPool) {
-            expectedMethods.add(new MethodCall(
-                    "validateObject", KEY, ONE).returned(Boolean.TRUE)); 
-        }
         expectedMethods.add(new MethodCall("passivateObject", KEY, ONE));
         assertEquals(expectedMethods, factory.getMethodCalls());
     }
@@ -257,10 +248,6 @@ public abstract class TestKeyedObjectPool {
 
         // returned object should be passivated
         pool.returnObject(KEY, obj);
-        if (pool instanceof StackKeyedObjectPool) {
-            expectedMethods.add(new MethodCall(
-                    "validateObject", KEY, obj).returned(Boolean.TRUE)); 
-        }
         expectedMethods.add(new MethodCall("passivateObject", KEY, obj));
         assertEquals(expectedMethods, factory.getMethodCalls());
 
@@ -279,10 +266,6 @@ public abstract class TestKeyedObjectPool {
         clear(factory, expectedMethods);
         factory.setPassivateObjectFail(true);
         pool.returnObject(KEY, obj);
-        if (pool instanceof StackKeyedObjectPool) {
-            expectedMethods.add(new MethodCall(
-                    "validateObject", KEY, obj).returned(Boolean.TRUE)); 
-        }
         expectedMethods.add(new MethodCall("passivateObject", KEY, obj));
         TestObjectPool.removeDestroyObjectCall(factory.getMethodCalls()); // The exact timing of destroyObject is flexible here.
         assertEquals(expectedMethods, factory.getMethodCalls());

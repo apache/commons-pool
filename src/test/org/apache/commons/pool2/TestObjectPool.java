@@ -24,7 +24,6 @@ import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PoolableObjectFactory;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.SoftReferenceObjectPool;
-import org.apache.commons.pool2.impl.StackObjectPool;
 import org.apache.commons.pool2.PoolUtils;
 import org.junit.Test;
 
@@ -124,8 +123,7 @@ public abstract class TestObjectPool {
         assertEquals(1, pool.getNumIdle());
         expectedMethods.add(new MethodCall("makeObject").returned(ZERO));
         // StackObjectPool, SoftReferenceObjectPool also validate on add
-        if (pool instanceof StackObjectPool || 
-                pool instanceof SoftReferenceObjectPool) {
+        if (pool instanceof SoftReferenceObjectPool) {
             expectedMethods.add(new MethodCall(
                     "validateObject", ZERO).returned(Boolean.TRUE));
         }
@@ -159,8 +157,7 @@ public abstract class TestObjectPool {
         }
         expectedMethods.add(new MethodCall("makeObject").returned(ONE));
         // StackObjectPool, SofReferenceObjectPool also validate on add
-        if (pool instanceof StackObjectPool || 
-                pool instanceof SoftReferenceObjectPool) {
+        if (pool instanceof SoftReferenceObjectPool) {
             expectedMethods.add(new MethodCall(
                     "validateObject", ONE).returned(Boolean.TRUE));
         }
@@ -270,8 +267,7 @@ public abstract class TestObjectPool {
         // returned object should be passivated
         pool.returnObject(obj);
         // StackObjectPool, SoftReferenceObjectPool also validate on return
-        if (pool instanceof StackObjectPool || 
-                pool instanceof SoftReferenceObjectPool) {
+        if (pool instanceof SoftReferenceObjectPool) {
             expectedMethods.add(new MethodCall(
                     "validateObject", obj).returned(Boolean.TRUE));
         }
@@ -293,8 +289,7 @@ public abstract class TestObjectPool {
         factory.setPassivateObjectFail(true);
         pool.returnObject(obj);
         // StackObjectPool, SoftReferenceObjectPool also validate on return
-        if (pool instanceof StackObjectPool || 
-                pool instanceof SoftReferenceObjectPool) {
+        if (pool instanceof SoftReferenceObjectPool) {
             expectedMethods.add(new MethodCall(
                     "validateObject", obj).returned(Boolean.TRUE));
         }
