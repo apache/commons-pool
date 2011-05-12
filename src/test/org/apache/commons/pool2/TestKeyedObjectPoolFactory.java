@@ -40,7 +40,31 @@ public abstract class TestKeyedObjectPoolFactory {
     protected abstract KeyedObjectPoolFactory<Object,Object> makeFactory(KeyedPoolableObjectFactory<Object,Object> objectFactory) throws UnsupportedOperationException;
 
     protected static KeyedPoolableObjectFactory<Object,Object> createObjectFactory() {
-        return PoolUtils.adapt(new MethodCallPoolableObjectFactory());
+        return new KeyedPoolableObjectFactory<Object, Object>() {
+
+            private final MethodCallPoolableObjectFactory wrapped = new MethodCallPoolableObjectFactory();
+
+            public Object makeObject(Object key) throws Exception {
+                return this.wrapped.makeObject();
+            }
+
+            public void destroyObject(Object key, Object obj) throws Exception {
+                this.wrapped.destroyObject(obj);
+            }
+
+            public boolean validateObject(Object key, Object obj) {
+                return this.wrapped.validateObject(obj);
+            }
+
+            public void activateObject(Object key, Object obj) throws Exception {
+                this.wrapped.activateObject(obj);
+            }
+
+            public void passivateObject(Object key, Object obj) throws Exception {
+                this.wrapped.passivateObject(obj);
+            }
+
+        };
     }
 
     @Test
