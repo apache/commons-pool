@@ -16,18 +16,19 @@
  */
 package org.apache.commons.pool2.impl;
 
+
 /**
  * This wrapper is used to track the additional information, such as state, for
  * the pooled objects.
  */
-public class PooledObject<T> {
+public class PooledObject<T> implements Comparable<PooledObject<T>> {
 
-    private T _object = null;
-    private volatile PooledObjectState _state = PooledObjectState.IDLE;
-    private long _lastActiveTime = System.currentTimeMillis();
+    private T object = null;
+    private volatile PooledObjectState state = PooledObjectState.IDLE;
+    private long lastActiveTime = System.currentTimeMillis();
 
     public PooledObject(T object) {
-        _object = object;
+        this.object = object;
     }
     
     /**
@@ -35,14 +36,30 @@ public class PooledObject<T> {
      * {@link PooledObject}.
      */
     public T getObject() {
-        return _object;
+        return object;
     }
 
     /**
      * Obtain the time in milliseconds since this object was last active.
      */
     public long getIdleTimeMillis() {
-        return System.currentTimeMillis() - _lastActiveTime;
+        return System.currentTimeMillis() - lastActiveTime;
+    }
+    
+    public long getLastActiveTime() {
+        return lastActiveTime;
+    }
+
+    public int compareTo(PooledObject<T> other) {
+        final long lastActiveDiff =
+                this.getLastActiveTime() - other.getLastActiveTime();
+        if (lastActiveDiff == 0) {
+            // make sure the natural ordering is consistent with equals
+            // see java.lang.Comparable Javadocs
+            return System.identityHashCode(this) - System.identityHashCode(other);
+        }
+        // handle int overflow
+        return (int)Math.min(Math.max(lastActiveDiff, Integer.MIN_VALUE), Integer.MAX_VALUE);
     }
 
     /**
@@ -53,15 +70,16 @@ public class PooledObject<T> {
     public String toString() {
         StringBuilder result = new StringBuilder();
         result.append("Object: ");
-        result.append(_object.toString());
+        result.append(object.toString());
         result.append(", State: ");
-        result.append(_state.toString());
+        result.append(state.toString());
         return result.toString();
+        // TODO add other attributes
     }
 
     public synchronized boolean startEvictionTest() {
-        if (_state == PooledObjectState.IDLE) {
-            _state = PooledObjectState.MAINTAIN_EVICTION;
+        if (state == PooledObjectState.IDLE) {
+            state = PooledObjectState.MAINTAIN_EVICTION;
             return true;
         }
         
@@ -70,11 +88,11 @@ public class PooledObject<T> {
 
     public synchronized boolean endEvictionTest(
             LinkedBlockingDeque<PooledObject<T>> idleQueue) {
-        if (_state == PooledObjectState.MAINTAIN_EVICTION) {
-            _state = PooledObjectState.IDLE;
+        if (state == PooledObjectState.MAINTAIN_EVICTION) {
+            state = PooledObjectState.IDLE;
             return true;
-        } else if (_state == PooledObjectState.MAINTAIN_EVICTION_RETURN_TO_HEAD) {
-            _state = PooledObjectState.IDLE;
+        } else if (state == PooledObjectState.MAINTAIN_EVICTION_RETURN_TO_HEAD) {
+            state = PooledObjectState.IDLE;
             if (!idleQueue.offerFirst(this)) {
                 // TODO - Should never happen
             }
@@ -84,12 +102,12 @@ public class PooledObject<T> {
     }
 
     public synchronized boolean allocate() {
-        if (_state == PooledObjectState.IDLE) {
-            _state = PooledObjectState.ALLOCATED;
+        if (state == PooledObjectState.IDLE) {
+            state = PooledObjectState.ALLOCATED;
             return true;
-        } else if (_state == PooledObjectState.MAINTAIN_EVICTION) {
+        } else if (state == PooledObjectState.MAINTAIN_EVICTION) {
             // TODO Allocate anyway and ignore eviction test
-            _state = PooledObjectState.MAINTAIN_EVICTION_RETURN_TO_HEAD;
+            state = PooledObjectState.MAINTAIN_EVICTION_RETURN_TO_HEAD;
             return false;
         }
         // TODO if validating and testOnBorrow == true then pre-allocate for
@@ -98,8 +116,9 @@ public class PooledObject<T> {
     }
 
     public synchronized boolean deallocate() {
-        if (_state == PooledObjectState.ALLOCATED) {
-            _state = PooledObjectState.IDLE;
+        if (state == PooledObjectState.ALLOCATED) {
+            state = PooledObjectState.IDLE;
+            lastActiveTime = System.currentTimeMillis();
             return true;
         }
 
