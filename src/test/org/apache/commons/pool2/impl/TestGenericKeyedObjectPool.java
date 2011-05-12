@@ -109,7 +109,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     @Test
     public void testNegativeMaxActive() throws Exception {
         pool.setMaxActive(-1);
-        pool.setWhenExhaustedAction(GenericKeyedObjectPool.WHEN_EXHAUSTED_FAIL);
+        pool.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
         String obj = pool.borrowObject("");
         assertEquals("0",obj);
         pool.returnObject("",obj);
@@ -203,7 +203,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     @Test
     public void testMaxActive() throws Exception {
         pool.setMaxActive(3);
-        pool.setWhenExhaustedAction(GenericKeyedObjectPool.WHEN_EXHAUSTED_FAIL);
+        pool.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
 
         pool.borrowObject("");
         pool.borrowObject("");
@@ -219,7 +219,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     @Test
     public void testMaxActiveZero() throws Exception {
         pool.setMaxActive(0);
-        pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_FAIL);
+        pool.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
 
         try {
             pool.borrowObject("a");
@@ -233,7 +233,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     public void testWhenExhaustedGrow() throws Exception {
         pool.setMaxActive(1);
         pool.setMaxTotal(1);
-        pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_GROW);
+        pool.setWhenExhaustedAction(WhenExhaustedAction.GROW);
         for (int i = 0; i < 10; i++) {
             pool.borrowObject("a");
         }
@@ -243,7 +243,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     public void testMaxTotal() throws Exception {
         pool.setMaxActive(2);
         pool.setMaxTotal(3);
-        pool.setWhenExhaustedAction(GenericKeyedObjectPool.WHEN_EXHAUSTED_FAIL);
+        pool.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
 
         String o1 = pool.borrowObject("a");
         assertNotNull(o1);
@@ -284,7 +284,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     @Test
     public void testMaxTotalZero() throws Exception {
         pool.setMaxTotal(0);
-        pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_FAIL);
+        pool.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
 
         try {
             pool.borrowObject("a");
@@ -298,7 +298,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     public void testMaxTotalLRU() throws Exception {
         pool.setMaxActive(2);
         pool.setMaxTotal(3);
-//        pool.setWhenExhaustedAction(GenericKeyedObjectPool.WHEN_EXHAUSTED_GROW);
+//        pool.setWhenExhaustedAction(WhenExhaustedAction.GROW);
 
         String o1 = pool.borrowObject("a");
         assertNotNull(o1);
@@ -393,12 +393,12 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
             assertEquals(11235L,pool.getTimeBetweenEvictionRunsMillis());
         }
         {
-            pool.setWhenExhaustedAction(GenericKeyedObjectPool.WHEN_EXHAUSTED_BLOCK);
-            assertEquals(GenericObjectPool.WHEN_EXHAUSTED_BLOCK,pool.getWhenExhaustedAction());
-            pool.setWhenExhaustedAction(GenericKeyedObjectPool.WHEN_EXHAUSTED_FAIL);
-            assertEquals(GenericObjectPool.WHEN_EXHAUSTED_FAIL,pool.getWhenExhaustedAction());
-            pool.setWhenExhaustedAction(GenericKeyedObjectPool.WHEN_EXHAUSTED_GROW);
-            assertEquals(GenericObjectPool.WHEN_EXHAUSTED_GROW,pool.getWhenExhaustedAction());
+            pool.setWhenExhaustedAction(WhenExhaustedAction.BLOCK);
+            assertEquals(WhenExhaustedAction.BLOCK,pool.getWhenExhaustedAction());
+            pool.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
+            assertEquals(WhenExhaustedAction.FAIL,pool.getWhenExhaustedAction());
+            pool.setWhenExhaustedAction(WhenExhaustedAction.GROW);
+            assertEquals(WhenExhaustedAction.GROW,pool.getWhenExhaustedAction());
         }
     }
 
@@ -1027,7 +1027,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         boolean testOnReturn = true;
         boolean testWhileIdle = true;
         long timeBetweenEvictionRunsMillis = 8;
-        byte whenExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_GROW;
+        WhenExhaustedAction whenExhaustedAction = WhenExhaustedAction.GROW;
         boolean lifo = false;
         
         GenericKeyedObjectPool<Object,Object> pool = new GenericKeyedObjectPool<Object,Object>();
@@ -1364,7 +1364,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     public void testBlockedKeyDoesNotBlockPool() throws Exception {
         SimpleFactory<String> factory = new SimpleFactory<String>();
         GenericKeyedObjectPool<String,String> pool = new GenericKeyedObjectPool<String,String>(factory);
-        pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_BLOCK);
+        pool.setWhenExhaustedAction(WhenExhaustedAction.BLOCK);
         pool.setMaxWait(5000);
         pool.setMaxActive(1);
         pool.setMaxTotal(-1);
@@ -1409,7 +1409,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         final int threadsPerKey = 5; // number of threads to grab the key initially
         SimpleFactory<String> factory = new SimpleFactory<String>();
         GenericKeyedObjectPool<String,String> pool = new GenericKeyedObjectPool<String,String>(factory);
-        pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_BLOCK);
+        pool.setWhenExhaustedAction(WhenExhaustedAction.BLOCK);
         pool.setMaxWait(maxWait);
         pool.setMaxActive(threadsPerKey);
         // Create enough threads so half the threads will have to wait

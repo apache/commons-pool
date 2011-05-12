@@ -121,7 +121,8 @@ public class GenericObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      *      byte, long)
      */
     public GenericObjectPoolFactory(PoolableObjectFactory<T> factory,
-            int maxActive, byte whenExhaustedAction, long maxWait) {
+            int maxActive, WhenExhaustedAction whenExhaustedAction,
+            long maxWait) {
         this(factory, maxActive, whenExhaustedAction, maxWait,
                 GenericObjectPool.DEFAULT_MAX_IDLE,
                 GenericObjectPool.DEFAULT_MIN_IDLE,
@@ -156,8 +157,8 @@ public class GenericObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      *      byte, long, boolean, boolean)
      */
     public GenericObjectPoolFactory(PoolableObjectFactory<T> factory,
-            int maxActive, byte whenExhaustedAction, long maxWait,
-            boolean testOnBorrow, boolean testOnReturn) {
+            int maxActive, WhenExhaustedAction whenExhaustedAction,
+            long maxWait, boolean testOnBorrow, boolean testOnReturn) {
         this(factory, maxActive, whenExhaustedAction, maxWait,
                 GenericObjectPool.DEFAULT_MAX_IDLE,
                 GenericObjectPool.DEFAULT_MIN_IDLE, testOnBorrow, testOnReturn,
@@ -186,7 +187,8 @@ public class GenericObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      *      byte, long, int)
      */
     public GenericObjectPoolFactory(PoolableObjectFactory<T> factory,
-            int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle) {
+            int maxActive, WhenExhaustedAction whenExhaustedAction,
+            long maxWait, int maxIdle) {
         this(factory, maxActive, whenExhaustedAction, maxWait, maxIdle,
                 GenericObjectPool.DEFAULT_MIN_IDLE,
                 GenericObjectPool.DEFAULT_TEST_ON_BORROW,
@@ -222,8 +224,9 @@ public class GenericObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      *      byte, long, int, boolean, boolean)
      */
     public GenericObjectPoolFactory(PoolableObjectFactory<T> factory,
-            int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle,
-            boolean testOnBorrow, boolean testOnReturn) {
+            int maxActive, WhenExhaustedAction whenExhaustedAction,
+            long maxWait, int maxIdle, boolean testOnBorrow,
+            boolean testOnReturn) {
         this(factory, maxActive, whenExhaustedAction, maxWait, maxIdle,
                 GenericObjectPool.DEFAULT_MIN_IDLE, testOnBorrow, testOnReturn,
                 GenericObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
@@ -269,10 +272,11 @@ public class GenericObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      *      byte, long, int, boolean, boolean, long, int, long, boolean)
      */
     public GenericObjectPoolFactory(PoolableObjectFactory<T> factory,
-            int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle,
-            boolean testOnBorrow, boolean testOnReturn,
-            long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun,
-            long minEvictableIdleTimeMillis, boolean testWhileIdle) {
+            int maxActive, WhenExhaustedAction whenExhaustedAction,
+            long maxWait, int maxIdle, boolean testOnBorrow,
+            boolean testOnReturn, long timeBetweenEvictionRunsMillis,
+            int numTestsPerEvictionRun, long minEvictableIdleTimeMillis,
+            boolean testWhileIdle) {
         this(factory, maxActive, whenExhaustedAction, maxWait, maxIdle,
                 GenericObjectPool.DEFAULT_MIN_IDLE, testOnBorrow, testOnReturn,
                 timeBetweenEvictionRunsMillis, numTestsPerEvictionRun,
@@ -319,10 +323,11 @@ public class GenericObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      *      byte, long, int, int, boolean, boolean, long, int, long, boolean)
      */
     public GenericObjectPoolFactory(PoolableObjectFactory<T> factory,
-            int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle,
-            int minIdle, boolean testOnBorrow, boolean testOnReturn,
-            long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun,
-            long minEvictableIdleTimeMillis, boolean testWhileIdle) {
+            int maxActive, WhenExhaustedAction whenExhaustedAction,
+            long maxWait, int maxIdle, int minIdle, boolean testOnBorrow,
+            boolean testOnReturn, long timeBetweenEvictionRunsMillis,
+            int numTestsPerEvictionRun, long minEvictableIdleTimeMillis,
+            boolean testWhileIdle) {
         this(factory, maxActive, whenExhaustedAction, maxWait, maxIdle,
                 minIdle, testOnBorrow, testOnReturn,
                 timeBetweenEvictionRunsMillis, numTestsPerEvictionRun,
@@ -376,11 +381,11 @@ public class GenericObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      *      long)
      */
     public GenericObjectPoolFactory(PoolableObjectFactory<T> factory,
-            int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle,
-            int minIdle, boolean testOnBorrow, boolean testOnReturn,
-            long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun,
-            long minEvictableIdleTimeMillis, boolean testWhileIdle,
-            long softMinEvictableIdleTimeMillis) {
+            int maxActive, WhenExhaustedAction whenExhaustedAction,
+            long maxWait, int maxIdle, int minIdle, boolean testOnBorrow,
+            boolean testOnReturn, long timeBetweenEvictionRunsMillis,
+            int numTestsPerEvictionRun, long minEvictableIdleTimeMillis,
+            boolean testWhileIdle, long softMinEvictableIdleTimeMillis) {
         this(factory, maxActive, whenExhaustedAction, maxWait, maxIdle,
                 minIdle, testOnBorrow, testOnReturn,
                 timeBetweenEvictionRunsMillis, numTestsPerEvictionRun,
@@ -437,11 +442,12 @@ public class GenericObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      *      long, boolean)
      */
     public GenericObjectPoolFactory(PoolableObjectFactory<T> factory,
-            int maxActive, byte whenExhaustedAction, long maxWait, int maxIdle,
-            int minIdle, boolean testOnBorrow, boolean testOnReturn,
-            long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun,
-            long minEvictableIdleTimeMillis, boolean testWhileIdle,
-            long softMinEvictableIdleTimeMillis, boolean lifo) {
+            int maxActive, WhenExhaustedAction whenExhaustedAction,
+            long maxWait, int maxIdle, int minIdle, boolean testOnBorrow,
+            boolean testOnReturn, long timeBetweenEvictionRunsMillis,
+            int numTestsPerEvictionRun, long minEvictableIdleTimeMillis,
+            boolean testWhileIdle, long softMinEvictableIdleTimeMillis,
+            boolean lifo) {
         _maxIdle = maxIdle;
         _minIdle = minIdle;
         _maxActive = maxActive;
@@ -510,7 +516,7 @@ public class GenericObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      *         whenExhaustedAction} setting for pools created by this factory.
      * @since 1.5.5
      */
-    public byte getWhenExhaustedAction() {
+    public WhenExhaustedAction getWhenExhaustedAction() {
         return _whenExhaustedAction;
     }
 
@@ -626,7 +632,7 @@ public class GenericObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      * The {@link GenericObjectPool#getWhenExhaustedAction()
      * whenExhaustedAction} setting for pools created by this factory.
      */
-    private byte _whenExhaustedAction =
+    private WhenExhaustedAction _whenExhaustedAction =
         GenericObjectPool.DEFAULT_WHEN_EXHAUSTED_ACTION;
 
     /**
