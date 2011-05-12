@@ -208,42 +208,6 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V>  {
     //--- public constants -------------------------------------------
 
     /**
-     * A "when exhausted action" type indicating that when the pool is
-     * exhausted (i.e., the maximum number of active objects has
-     * been reached), the {@link #borrowObject}
-     * method should fail, throwing a {@link NoSuchElementException}.
-     * @see #WHEN_EXHAUSTED_BLOCK
-     * @see #WHEN_EXHAUSTED_GROW
-     * @see #setWhenExhaustedAction
-     */
-    public static final byte WHEN_EXHAUSTED_FAIL   = 0;
-
-    /**
-     * A "when exhausted action" type indicating that when the pool
-     * is exhausted (i.e., the maximum number
-     * of active objects has been reached), the {@link #borrowObject}
-     * method should block until a new object is available, or the
-     * {@link #getMaxWait maximum wait time} has been reached.
-     * @see #WHEN_EXHAUSTED_FAIL
-     * @see #WHEN_EXHAUSTED_GROW
-     * @see #setMaxWait
-     * @see #getMaxWait
-     * @see #setWhenExhaustedAction
-     */
-    public static final byte WHEN_EXHAUSTED_BLOCK  = 1;
-
-    /**
-     * A "when exhausted action" type indicating that when the pool is
-     * exhausted (i.e., the maximum number
-     * of active objects has been reached), the {@link #borrowObject}
-     * method should simply create a new object anyway.
-     * @see #WHEN_EXHAUSTED_FAIL
-     * @see #WHEN_EXHAUSTED_GROW
-     * @see #setWhenExhaustedAction
-     */
-    public static final byte WHEN_EXHAUSTED_GROW   = 2;
-
-    /**
      * The default cap on the number of idle instances (per key) in the pool.
      * @see #getMaxIdle
      * @see #setMaxIdle
@@ -268,12 +232,10 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V>  {
 
     /**
      * The default "when exhausted action" for the pool.
-     * @see #WHEN_EXHAUSTED_BLOCK
-     * @see #WHEN_EXHAUSTED_FAIL
-     * @see #WHEN_EXHAUSTED_GROW
      * @see #setWhenExhaustedAction
      */
-    public static final byte DEFAULT_WHEN_EXHAUSTED_ACTION = WHEN_EXHAUSTED_BLOCK;
+    public static final WhenExhaustedAction DEFAULT_WHEN_EXHAUSTED_ACTION =
+        WhenExhaustedAction.BLOCK;
 
     /**
      * The default maximum amount of time (in milliseconds) the
@@ -409,7 +371,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V>  {
      * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted and
      *  <code>whenExhaustedAction</code> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
      */
-    public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,V> factory, int maxActive, byte whenExhaustedAction,
+    public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,V> factory, int maxActive, WhenExhaustedAction whenExhaustedAction,
             long maxWait) {
         this(factory, maxActive, whenExhaustedAction, maxWait, DEFAULT_MAX_IDLE, DEFAULT_TEST_ON_BORROW,
                 DEFAULT_TEST_ON_RETURN, DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS, DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
@@ -429,7 +391,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V>  {
      * @param testOnReturn whether or not to validate objects after they are returned to the {@link #returnObject}
      * method (see {@link #setTestOnReturn})
      */
-    public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,V> factory, int maxActive, byte whenExhaustedAction,
+    public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,V> factory, int maxActive, WhenExhaustedAction whenExhaustedAction,
             long maxWait, boolean testOnBorrow, boolean testOnReturn) {
         this(factory, maxActive, whenExhaustedAction, maxWait, DEFAULT_MAX_IDLE,testOnBorrow,testOnReturn,
                 DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS, DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
@@ -447,7 +409,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V>  {
      * <code>whenExhaustedAction</code> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
      * @param maxIdle the maximum number of idle objects in my pool (see {@link #setMaxIdle})
      */
-    public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,V> factory, int maxActive, byte whenExhaustedAction,
+    public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,V> factory, int maxActive, WhenExhaustedAction whenExhaustedAction,
             long maxWait, int maxIdle) {
         this(factory, maxActive, whenExhaustedAction, maxWait, maxIdle, DEFAULT_TEST_ON_BORROW, DEFAULT_TEST_ON_RETURN,
                 DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS, DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
@@ -469,7 +431,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V>  {
      * @param testOnReturn whether or not to validate objects after they are returned to the {@link #returnObject}
      * method (see {@link #setTestOnReturn})
      */
-    public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,V> factory, int maxActive, byte whenExhaustedAction,
+    public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,V> factory, int maxActive, WhenExhaustedAction whenExhaustedAction,
             long maxWait, int maxIdle, boolean testOnBorrow, boolean testOnReturn) {
         this(factory, maxActive, whenExhaustedAction, maxWait, maxIdle, testOnBorrow, testOnReturn,
                 DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS, DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
@@ -500,7 +462,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V>  {
      * @param testWhileIdle whether or not to validate objects in the idle object eviction thread, if any
      * (see {@link #setTestWhileIdle})
      */
-    public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,V> factory, int maxActive, byte whenExhaustedAction,
+    public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,V> factory, int maxActive, WhenExhaustedAction whenExhaustedAction,
             long maxWait, int maxIdle, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis,
             int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle) {
         this(factory, maxActive, whenExhaustedAction, maxWait, maxIdle, GenericKeyedObjectPool.DEFAULT_MAX_TOTAL,
@@ -532,7 +494,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V>  {
      * @param testWhileIdle whether or not to validate objects in the idle object eviction thread, if any
      * (see {@link #setTestWhileIdle})
      */
-    public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,V> factory, int maxActive, byte whenExhaustedAction,
+    public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,V> factory, int maxActive, WhenExhaustedAction whenExhaustedAction,
             long maxWait, int maxIdle, int maxTotal, boolean testOnBorrow, boolean testOnReturn,
             long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis,
             boolean testWhileIdle) {
@@ -567,7 +529,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V>  {
      * (see {@link #setTestWhileIdle})
      * @since Pool 1.3
      */
-    public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,V> factory, int maxActive, byte whenExhaustedAction,
+    public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,V> factory, int maxActive, WhenExhaustedAction whenExhaustedAction,
             long maxWait, int maxIdle, int maxTotal, int minIdle, boolean testOnBorrow, boolean testOnReturn,
             long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis,
             boolean testWhileIdle) {
@@ -603,22 +565,14 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V>  {
      * @param lifo whether or not the pools behave as LIFO (last in first out) queues (see {@link #setLifo})
      * @since Pool 1.4
      */
-    public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,V> factory, int maxActive, byte whenExhaustedAction,
+    public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,V> factory, int maxActive, WhenExhaustedAction whenExhaustedAction,
             long maxWait, int maxIdle, int maxTotal, int minIdle, boolean testOnBorrow, boolean testOnReturn,
             long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis,
             boolean testWhileIdle, boolean lifo) {
         _factory = factory;
         _maxActive = maxActive;
         _lifo = lifo;
-        switch (whenExhaustedAction) {
-            case WHEN_EXHAUSTED_BLOCK:
-            case WHEN_EXHAUSTED_FAIL:
-            case WHEN_EXHAUSTED_GROW:
-                _whenExhaustedAction = whenExhaustedAction;
-                break;
-            default:
-                throw new IllegalArgumentException("whenExhaustedAction " + whenExhaustedAction + " not recognized.");
-        }
+        _whenExhaustedAction = whenExhaustedAction;
         _maxWait = maxWait;
         _maxIdle = maxIdle;
         _maxTotal = maxTotal;
@@ -700,11 +654,10 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V>  {
      * is invoked when the pool is exhausted (the maximum number
      * of "active" objects has been reached).
      *
-     * @return one of {@link #WHEN_EXHAUSTED_BLOCK},
-     * {@link #WHEN_EXHAUSTED_FAIL} or {@link #WHEN_EXHAUSTED_GROW}
+     * @return the action to take when exhausted
      * @see #setWhenExhaustedAction
      */
-    public synchronized byte getWhenExhaustedAction() {
+    public synchronized WhenExhaustedAction getWhenExhaustedAction() {
         return _whenExhaustedAction;
     }
 
@@ -713,22 +666,12 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V>  {
      * is invoked when the pool is exhausted (the maximum number
      * of "active" objects has been reached).
      *
-     * @param whenExhaustedAction the action code, which must be one of
-     *        {@link #WHEN_EXHAUSTED_BLOCK}, {@link #WHEN_EXHAUSTED_FAIL},
-     *        or {@link #WHEN_EXHAUSTED_GROW}
+     * @param the action to take when exhausted
      * @see #getWhenExhaustedAction
      */
-    public void setWhenExhaustedAction(byte whenExhaustedAction) {
+    public void setWhenExhaustedAction(WhenExhaustedAction whenExhaustedAction) {
         synchronized(this) {
-            switch(whenExhaustedAction) {
-                case WHEN_EXHAUSTED_BLOCK:
-                case WHEN_EXHAUSTED_FAIL:
-                case WHEN_EXHAUSTED_GROW:
-                    _whenExhaustedAction = whenExhaustedAction;
-                    break;
-                default:
-                    throw new IllegalArgumentException("whenExhaustedAction " + whenExhaustedAction + " not recognized.");
-            }
+            _whenExhaustedAction = whenExhaustedAction;
         }
         allocate();
     }
@@ -1091,7 +1034,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V>  {
     public V borrowObject(K key) throws Exception {
         long starttime = System.currentTimeMillis();
         Latch latch = new Latch(key);
-        byte whenExhaustedAction;
+        WhenExhaustedAction whenExhaustedAction;
         long maxWait;
         synchronized (this) {
             // Get local copy of current config. Can't sync when used later as
@@ -1119,7 +1062,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V>  {
                 } else {
                     // the pool is exhausted
                     switch(whenExhaustedAction) {
-                        case WHEN_EXHAUSTED_GROW:
+                        case GROW:
                             // allow new object to be created
                             synchronized (this) {
                                 // Make sure another thread didn't allocate us an object
@@ -1130,7 +1073,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V>  {
                                 }
                             }
                         break;
-                        case WHEN_EXHAUSTED_FAIL:
+                        case FAIL:
                             synchronized (this) {
                                 // Make sure allocate hasn't already assigned an object
                                 // in a different thread or permitted a new object to be created
@@ -1140,7 +1083,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V>  {
                                 _allocationQueue.remove(latch);
                             }
                             throw new NoSuchElementException("Pool exhausted");
-                        case WHEN_EXHAUSTED_BLOCK:
+                        case BLOCK:
                             try {
                                 synchronized (latch) {
                                     // Before we wait, make sure another thread didn't allocate us an object
@@ -2386,7 +2329,7 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V>  {
         /**
          * @see GenericKeyedObjectPool#setWhenExhaustedAction
          */
-        public byte whenExhaustedAction = GenericKeyedObjectPool.DEFAULT_WHEN_EXHAUSTED_ACTION;
+        public WhenExhaustedAction whenExhaustedAction = GenericKeyedObjectPool.DEFAULT_WHEN_EXHAUSTED_ACTION;
         /**
          * @see GenericKeyedObjectPool#setTestOnBorrow
          */
@@ -2568,14 +2511,11 @@ public class GenericKeyedObjectPool<K,V> extends BaseKeyedObjectPool<K,V>  {
      * is invoked when the pool is exhausted (the maximum number
      * of "active" objects has been reached).
      *
-     * @see #WHEN_EXHAUSTED_BLOCK
-     * @see #WHEN_EXHAUSTED_FAIL
-     * @see #WHEN_EXHAUSTED_GROW
      * @see #DEFAULT_WHEN_EXHAUSTED_ACTION
      * @see #setWhenExhaustedAction
      * @see #getWhenExhaustedAction
      */
-    private byte _whenExhaustedAction = DEFAULT_WHEN_EXHAUSTED_ACTION;
+    private WhenExhaustedAction _whenExhaustedAction = DEFAULT_WHEN_EXHAUSTED_ACTION;
 
     /**
      * When <code>true</code>, objects will be

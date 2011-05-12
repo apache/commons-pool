@@ -174,43 +174,6 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
     // --- public constants -------------------------------------------
 
     /**
-     * A "when exhausted action" type indicating that when the pool is exhausted
-     * (i.e., the maximum number of active objects has been reached), the
-     * {@link #borrowObject} method should fail, throwing a
-     * {@link NoSuchElementException}.
-     * 
-     * @see #WHEN_EXHAUSTED_BLOCK
-     * @see #WHEN_EXHAUSTED_GROW
-     * @see #setWhenExhaustedAction
-     */
-    public static final byte WHEN_EXHAUSTED_FAIL = 0;
-
-    /**
-     * A "when exhausted action" type indicating that when the pool is exhausted
-     * (i.e., the maximum number of active objects has been reached), the
-     * {@link #borrowObject} method should block until a new object is
-     * available, or the {@link #getMaxWait maximum wait time} has been reached.
-     * 
-     * @see #WHEN_EXHAUSTED_FAIL
-     * @see #WHEN_EXHAUSTED_GROW
-     * @see #setMaxWait
-     * @see #getMaxWait
-     * @see #setWhenExhaustedAction
-     */
-    public static final byte WHEN_EXHAUSTED_BLOCK = 1;
-
-    /**
-     * A "when exhausted action" type indicating that when the pool is exhausted
-     * (i.e., the maximum number of active objects has been reached), the
-     * {@link #borrowObject} method should simply create a new object anyway.
-     * 
-     * @see #WHEN_EXHAUSTED_FAIL
-     * @see #WHEN_EXHAUSTED_GROW
-     * @see #setWhenExhaustedAction
-     */
-    public static final byte WHEN_EXHAUSTED_GROW = 2;
-
-    /**
      * The default cap on the number of "sleeping" instances in the pool.
      * 
      * @see #getMaxIdle
@@ -237,12 +200,10 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
     /**
      * The default "when exhausted action" for the pool.
      * 
-     * @see #WHEN_EXHAUSTED_BLOCK
-     * @see #WHEN_EXHAUSTED_FAIL
-     * @see #WHEN_EXHAUSTED_GROW
      * @see #setWhenExhaustedAction
      */
-    public static final byte DEFAULT_WHEN_EXHAUSTED_ACTION = WHEN_EXHAUSTED_BLOCK;
+    public static final WhenExhaustedAction DEFAULT_WHEN_EXHAUSTED_ACTION =
+        WhenExhaustedAction.BLOCK;
 
     /**
      * The default LIFO status. True means that borrowObject returns the most
@@ -318,7 +279,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #getMinEvictableIdleTimeMillis
      * @see #setMinEvictableIdleTimeMillis
      */
-    public static final long DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS = 1000L * 60L * 30L;
+    public static final long DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS =
+            1000L * 60L * 30L;
 
     /**
      * The default value for {@link #getSoftMinEvictableIdleTimeMillis}.
@@ -339,7 +301,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
                 DEFAULT_TEST_ON_BORROW, DEFAULT_TEST_ON_RETURN,
                 DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
                 DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
-                DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS, DEFAULT_TEST_WHILE_IDLE);
+                DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
+                DEFAULT_TEST_WHILE_IDLE);
     }
 
     /**
@@ -355,7 +318,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
                 DEFAULT_TEST_ON_BORROW, DEFAULT_TEST_ON_RETURN,
                 DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
                 DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
-                DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS, DEFAULT_TEST_WHILE_IDLE);
+                DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
+                DEFAULT_TEST_WHILE_IDLE);
     }
 
     /**
@@ -395,7 +359,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
                 DEFAULT_TEST_ON_BORROW, DEFAULT_TEST_ON_RETURN,
                 DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
                 DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
-                DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS, DEFAULT_TEST_WHILE_IDLE);
+                DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
+                DEFAULT_TEST_WHILE_IDLE);
     }
 
     /**
@@ -417,13 +382,14 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      *            {@link #getMaxWait})
      */
     public GenericObjectPool(PoolableObjectFactory<T> factory, int maxActive,
-            byte whenExhaustedAction, long maxWait) {
+            WhenExhaustedAction whenExhaustedAction, long maxWait) {
         this(factory, maxActive, whenExhaustedAction, maxWait,
                 DEFAULT_MAX_IDLE, DEFAULT_MIN_IDLE, DEFAULT_TEST_ON_BORROW,
                 DEFAULT_TEST_ON_RETURN,
                 DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
                 DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
-                DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS, DEFAULT_TEST_WHILE_IDLE);
+                DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
+                DEFAULT_TEST_WHILE_IDLE);
     }
 
     /**
@@ -453,13 +419,14 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      *            )
      */
     public GenericObjectPool(PoolableObjectFactory<T> factory, int maxActive,
-            byte whenExhaustedAction, long maxWait, boolean testOnBorrow,
-            boolean testOnReturn) {
+            WhenExhaustedAction whenExhaustedAction, long maxWait,
+            boolean testOnBorrow, boolean testOnReturn) {
         this(factory, maxActive, whenExhaustedAction, maxWait,
                 DEFAULT_MAX_IDLE, DEFAULT_MIN_IDLE, testOnBorrow, testOnReturn,
                 DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
                 DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
-                DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS, DEFAULT_TEST_WHILE_IDLE);
+                DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
+                DEFAULT_TEST_WHILE_IDLE);
     }
 
     /**
@@ -484,13 +451,15 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      *            {@link #getMaxIdle})
      */
     public GenericObjectPool(PoolableObjectFactory<T> factory, int maxActive,
-            byte whenExhaustedAction, long maxWait, int maxIdle) {
+            WhenExhaustedAction whenExhaustedAction, long maxWait,
+            int maxIdle) {
         this(factory, maxActive, whenExhaustedAction, maxWait, maxIdle,
                 DEFAULT_MIN_IDLE, DEFAULT_TEST_ON_BORROW,
                 DEFAULT_TEST_ON_RETURN,
                 DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
                 DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
-                DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS, DEFAULT_TEST_WHILE_IDLE);
+                DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
+                DEFAULT_TEST_WHILE_IDLE);
     }
 
     /**
@@ -523,13 +492,14 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      *            )
      */
     public GenericObjectPool(PoolableObjectFactory<T> factory, int maxActive,
-            byte whenExhaustedAction, long maxWait, int maxIdle,
+            WhenExhaustedAction whenExhaustedAction, long maxWait, int maxIdle,
             boolean testOnBorrow, boolean testOnReturn) {
         this(factory, maxActive, whenExhaustedAction, maxWait, maxIdle,
                 DEFAULT_MIN_IDLE, testOnBorrow, testOnReturn,
                 DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
                 DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
-                DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS, DEFAULT_TEST_WHILE_IDLE);
+                DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
+                DEFAULT_TEST_WHILE_IDLE);
     }
 
     /**
@@ -577,7 +547,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      *            thread, if any (see {@link #setTestWhileIdle})
      */
     public GenericObjectPool(PoolableObjectFactory<T> factory, int maxActive,
-            byte whenExhaustedAction, long maxWait, int maxIdle,
+            WhenExhaustedAction whenExhaustedAction, long maxWait, int maxIdle,
             boolean testOnBorrow, boolean testOnReturn,
             long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun,
             long minEvictableIdleTimeMillis, boolean testWhileIdle) {
@@ -635,8 +605,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      *            thread, if any (see {@link #setTestWhileIdle})
      */
     public GenericObjectPool(PoolableObjectFactory<T> factory, int maxActive,
-            byte whenExhaustedAction, long maxWait, int maxIdle, int minIdle,
-            boolean testOnBorrow, boolean testOnReturn,
+            WhenExhaustedAction whenExhaustedAction, long maxWait, int maxIdle,
+            int minIdle, boolean testOnBorrow, boolean testOnReturn,
             long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun,
             long minEvictableIdleTimeMillis, boolean testWhileIdle) {
         this(factory, maxActive, whenExhaustedAction, maxWait, maxIdle,
@@ -700,8 +670,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @since Pool 1.3
      */
     public GenericObjectPool(PoolableObjectFactory<T> factory, int maxActive,
-            byte whenExhaustedAction, long maxWait, int maxIdle, int minIdle,
-            boolean testOnBorrow, boolean testOnReturn,
+            WhenExhaustedAction whenExhaustedAction, long maxWait, int maxIdle,
+            int minIdle, boolean testOnBorrow, boolean testOnReturn,
             long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun,
             long minEvictableIdleTimeMillis, boolean testWhileIdle,
             long softMinEvictableIdleTimeMillis) {
@@ -769,24 +739,15 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @since Pool 1.4
      */
     public GenericObjectPool(PoolableObjectFactory<T> factory, int maxActive,
-            byte whenExhaustedAction, long maxWait, int maxIdle, int minIdle,
-            boolean testOnBorrow, boolean testOnReturn,
+            WhenExhaustedAction whenExhaustedAction, long maxWait, int maxIdle,
+            int minIdle, boolean testOnBorrow, boolean testOnReturn,
             long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun,
             long minEvictableIdleTimeMillis, boolean testWhileIdle,
             long softMinEvictableIdleTimeMillis, boolean lifo) {
         _factory = factory;
         _maxActive = maxActive;
         _lifo = lifo;
-        switch (whenExhaustedAction) {
-        case WHEN_EXHAUSTED_BLOCK:
-        case WHEN_EXHAUSTED_FAIL:
-        case WHEN_EXHAUSTED_GROW:
-            _whenExhaustedAction = whenExhaustedAction;
-            break;
-        default:
-            throw new IllegalArgumentException("whenExhaustedAction " +
-                    whenExhaustedAction + " not recognized.");
-        }
+        _whenExhaustedAction = whenExhaustedAction;
         _maxWait = maxWait;
         _maxIdle = maxIdle;
         _minIdle = minIdle;
@@ -842,11 +803,10 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * invoked when the pool is exhausted (the maximum number of "active"
      * objects has been reached).
      * 
-     * @return one of {@link #WHEN_EXHAUSTED_BLOCK},
-     *         {@link #WHEN_EXHAUSTED_FAIL} or {@link #WHEN_EXHAUSTED_GROW}
+     * @return the action to take when the pool is exhuasted
      * @see #setWhenExhaustedAction
      */
-    public byte getWhenExhaustedAction() {
+    public WhenExhaustedAction getWhenExhaustedAction() {
         return _whenExhaustedAction;
     }
 
@@ -855,23 +815,12 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * when the pool is exhausted (the maximum number of "active" objects has
      * been reached).
      * 
-     * @param whenExhaustedAction
-     *            the action code, which must be one of
-     *            {@link #WHEN_EXHAUSTED_BLOCK}, {@link #WHEN_EXHAUSTED_FAIL},
-     *            or {@link #WHEN_EXHAUSTED_GROW}
+     * @param whenExhaustedAction   action to take when the pool is exhausted
      * @see #getWhenExhaustedAction
      */
-    public void setWhenExhaustedAction(byte whenExhaustedAction) {
-        switch (whenExhaustedAction) {
-        case WHEN_EXHAUSTED_BLOCK:
-        case WHEN_EXHAUSTED_FAIL:
-        case WHEN_EXHAUSTED_GROW:
-            _whenExhaustedAction = whenExhaustedAction;
-            break;
-        default:
-            throw new IllegalArgumentException("whenExhaustedAction " +
-                    whenExhaustedAction + " not recognized.");
-        }
+    public void setWhenExhaustedAction(
+            WhenExhaustedAction whenExhaustedAction) {
+        _whenExhaustedAction = whenExhaustedAction;
     }
 
     /**
@@ -1274,7 +1223,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
 
         assertOpen();
 
-        byte whenExhaustedAction;
+        WhenExhaustedAction whenExhaustedAction;
         long maxWait;
         PooledObject<T> p = null;
 
@@ -1287,7 +1236,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
 
         while (p == null) {
             create = false;
-            if (whenExhaustedAction == WHEN_EXHAUSTED_FAIL) {
+            if (whenExhaustedAction == WhenExhaustedAction.FAIL) {
                 p = _idleObjects.pollFirst();
                 if (p == null) {
                     create = true;
@@ -1299,7 +1248,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
                 if (!p.allocate()) {
                     p = null;
                 }
-            } else if (whenExhaustedAction == WHEN_EXHAUSTED_BLOCK) {
+            } else if (whenExhaustedAction == WhenExhaustedAction.BLOCK) {
                 p = _idleObjects.pollFirst();
                 if (p == null) {
                     create = true;
@@ -1320,7 +1269,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
                 if (!p.allocate()) {
                     p = null;
                 }
-            } else if (whenExhaustedAction == WHEN_EXHAUSTED_GROW) {
+            } else if (whenExhaustedAction == WhenExhaustedAction.GROW) {
                 p = _idleObjects.pollFirst();
                 if (p == null) {
                     create = true;
@@ -1875,7 +1824,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
         /**
          * @see GenericObjectPool#setWhenExhaustedAction
          */
-        public byte whenExhaustedAction =
+        public WhenExhaustedAction whenExhaustedAction =
             GenericObjectPool.DEFAULT_WHEN_EXHAUSTED_ACTION;
         /**
          * @see GenericObjectPool#setTestOnBorrow
@@ -1963,14 +1912,12 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * the pool is exhausted (the maximum number of "active" objects has been
      * reached).
      * 
-     * @see #WHEN_EXHAUSTED_BLOCK
-     * @see #WHEN_EXHAUSTED_FAIL
-     * @see #WHEN_EXHAUSTED_GROW
      * @see #DEFAULT_WHEN_EXHAUSTED_ACTION
      * @see #setWhenExhaustedAction
      * @see #getWhenExhaustedAction
      */
-    private volatile byte _whenExhaustedAction = DEFAULT_WHEN_EXHAUSTED_ACTION;
+    private volatile WhenExhaustedAction _whenExhaustedAction =
+        DEFAULT_WHEN_EXHAUSTED_ACTION;
 
     /**
      * When <tt>true</tt>, objects will be
