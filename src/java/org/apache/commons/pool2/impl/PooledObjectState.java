@@ -18,37 +18,59 @@ package org.apache.commons.pool2.impl;
 
 /**
  * Provides the possible states that a {@link PooledObject} may be in.
- * <ul>
- * <li>{@link #IDLE}: In queue, not in use.</li>
- * <li>{@link #ALLOCATED}: In use.</li>
- * <li>{@link #MAINTAIN_EVICTION}: In queue, currently being tested for possible
- *     eviction.</li>
- * <li>{@link #MAINTAIN_EVICTION_RETURN_TO_HEAD}: Not in queue, currently being
- *     tested for possible eviction. An attempt to borrow the object was made
- *     while being tested which removed it from the queue. It should be returned
- *     to the head of the queue once testing completes.</li>
- * <li>{@link #MAINTAIN_VALIDATION}: In queue, currently being validated.</li>
- * <li>{@link #MAINTAIN_VALIDATION_PREALLOCATED}: Not in queue, currently being
- *     validated. The object was borrowed while being validated which removed it
- *     from the queue. It should be allocated once validation completes.</li>
- * <li>{@link #MAINTAIN_VALIDATION_RETURN_TO_HEAD}: Not in queue, currently
- *     being validated. An attempt to borrow the object was made while
- *     previously being tested for eviction which removed it from the queue. It
- *     should be returned to the head of the queue once validation completes.
- *     </li>
- * <li>{@link #INVALID}: Failed maintenance (e.g. eviction test or validation)
- *     and will be / has been destroyed.</li>
- * </ul>
  * 
  * TODO: Find shorter names for these states without loss of meaning.
  */
 public enum PooledObjectState {
+    /**
+     * In the queue, not in use.
+     */
     IDLE,
+    
+    /**
+     * In use.
+     */
     ALLOCATED,
+    
+    /**
+     * In the queue, currently being tested for possible eviction.
+     */
     MAINTAIN_EVICTION,
+    
+    /**
+     * Not in the queue, currently being tested for possible eviction. An
+     * attempt to borrow the object was made while being tested which removed it
+     * from the queue. It should be returned to the head of the queue once
+     * eviction testing completes.
+     * TODO: Consider allocating object and ignoring the result of the eviction
+     *       test.
+     */
     MAINTAIN_EVICTION_RETURN_TO_HEAD,
+    
+    /**
+     * In the queue, currently being validated.
+     */
     MAINTAIN_VALIDATION,
+    
+    /**
+     * Not in queue, currently being validated. The object was borrowed while
+     * being validated and since testOnBorrow was configured, it was removed
+     * from the queue and pre-allocated. It should be allocated once validation
+     * completes.
+     */
     MAINTAIN_VALIDATION_PREALLOCATED,
+
+    /**
+     * Not in queue, currently being validated. An attempt to borrow the object
+     * was made while previously being tested for eviction which removed it from
+     * the queue. It should be returned to the head of the queue once validation
+     * completes.
+     */
     MAINTAIN_VALIDATION_RETURN_TO_HEAD,
+    
+    /**
+     * Failed maintenance (e.g. eviction test or validation) and will be / has
+     * been destroyed
+     */
     INVALID
 }
