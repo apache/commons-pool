@@ -298,7 +298,6 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     public void testMaxTotalLRU() throws Exception {
         pool.setMaxActive(2);
         pool.setMaxTotal(3);
-//        pool.setWhenExhaustedAction(WhenExhaustedAction.GROW);
 
         String o1 = pool.borrowObject("a");
         assertNotNull(o1);
@@ -335,6 +334,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         pool.returnObject("b", o6);
 
         assertNotSame(o1, o6);
+        assertNotSame(o2, o6);
 
         // second a is still in there
         String o7 = pool.borrowObject("a");
@@ -564,7 +564,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         //Generate a random key
         String key = "A";
 
-        pool.preparePool(key, true);
+        pool.preparePool(key);
 
         try { Thread.sleep(150L); } catch(InterruptedException e) { }
         assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
@@ -602,7 +602,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
 
         String key = "A";
 
-        pool.preparePool(key, true);
+        pool.preparePool(key);
         assertTrue("Should be 5 idle, found " + 
                 pool.getNumIdle(),pool.getNumIdle() == 5);
 
@@ -644,28 +644,6 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     }
 
     @Test
-    public void testMinIdleNoPopulateImmediately() throws Exception {
-        pool.setMaxIdle(500);
-        pool.setMinIdle(5);
-        pool.setMaxActive(10);
-        pool.setNumTestsPerEvictionRun(0);
-        pool.setMinEvictableIdleTimeMillis(50L);
-        pool.setTimeBetweenEvictionRunsMillis(1000L);
-        pool.setTestWhileIdle(true);
-
-
-        //Generate a random key
-        String key = "A";
-
-        pool.preparePool(key, false);
-
-        assertTrue("Should be 0 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 0);
-
-        try { Thread.sleep(1500L); } catch(InterruptedException e) { }
-        assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
-    }
-
-    @Test
     public void testMinIdleNoPreparePool() throws Exception {
         pool.setMaxIdle(500);
         pool.setMinIdle(5);
@@ -699,9 +677,10 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals("Oldest", "key0", pool.borrowObject(key));
         assertEquals("Middle", "key1", pool.borrowObject(key));
         assertEquals("Youngest", "key2", pool.borrowObject(key));
-        assertEquals("new-3", "key3", pool.borrowObject(key));
-        pool.returnObject(key, "r");
-        assertEquals("returned", "r", pool.borrowObject(key));
+        String s = pool.borrowObject(key);
+        assertEquals("new-3", "key3", s);
+        pool.returnObject(key, s);
+        assertEquals("returned", s, pool.borrowObject(key));
         assertEquals("new-4", "key4", pool.borrowObject(key));
     }
 
@@ -715,9 +694,10 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals("Youngest", "key2", pool.borrowObject(key));
         assertEquals("Middle", "key1", pool.borrowObject(key));
         assertEquals("Oldest", "key0", pool.borrowObject(key));
-        assertEquals("new-3", "key3", pool.borrowObject(key));
-        pool.returnObject(key, "r");
-        assertEquals("returned", "r", pool.borrowObject(key));
+        String s = pool.borrowObject(key);
+        assertEquals("new-3", "key3", s);
+        pool.returnObject(key, s);
+        assertEquals("returned", s, pool.borrowObject(key));
         assertEquals("new-4", "key4", pool.borrowObject(key));
     }
     
@@ -918,11 +898,11 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         // LIFO - 24, 25, 26
         // FIFO - 21, 22, 23
         pool.evict();
-        // LIFO - 27, skip, 10
+        // LIFO - 27, 10, 11
         // FIFO - 24, 25, 26
         for (int i = 0; i < 8; i++) {
             VisitTracker<Integer> tracker = pool.borrowObject(one);    
-            if ((lifo && tracker.getId() > 0) || 
+            if ((lifo && tracker.getId() > 1) || 
                     (!lifo && tracker.getId() > 2)) {
                 assertEquals("Instance " +  tracker.getId() + 
                         " visited wrong number of times.",
@@ -933,18 +913,27 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
                         2, tracker.getValidateCount());
             }
         } 
-        
+
         // Randomly generate some pools with random numTests
         // and make sure evictor cycles through elements appropriately
         int[] smallPrimes = {2, 3, 5, 7};
         Random random = new Random();
         random.setSeed(System.currentTimeMillis());
-        pool.setMaxIdle(-1);
         for (int i = 0; i < smallPrimes.length; i++) {
-            pool.setNumTestsPerEvictionRun(smallPrimes[i]);
             for (int j = 0; j < 5; j++) {// Try the tests a few times
-                pool.clear();
-                assertEquals("NumIdle should be zero after clearing the pool",0,pool.getNumIdle());
+                // Can't use clear as some objects are still active so create
+                // a new pool
+                factory = new VisitTrackerFactory<Integer>();
+                pool = new GenericKeyedObjectPool<Integer,VisitTracker<Integer>>(factory);
+                pool.setMaxIdle(-1);
+                pool.setMaxActive(-1);
+                pool.setNumTestsPerEvictionRun(smallPrimes[i]);
+                pool.setMinEvictableIdleTimeMillis(-1);
+                pool.setTestWhileIdle(true);
+                pool.setLifo(lifo);
+                pool.setTestOnReturn(false);
+                pool.setTestOnBorrow(false);
+
                 int zeroLength = 10 + random.nextInt(20);
                 for (int k = 0; k < zeroLength; k++) {
                     pool.addObject(zero);
