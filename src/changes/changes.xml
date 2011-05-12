@@ -37,8 +37,8 @@
       the appropriate getters. 
     </action>
     <action dev="markt" type="update">
-      Code clean-up. Add missing @Override annotations, remove unused code and
-      remove deprecated code.
+      Code clean-up. Add missing @Override annotations, remove unused code,
+      remove deprecated code and unnecessary code.
     </action>
     <action dev="markt" type="update">
       Introduce an Enum (WhenExhaustedAction) to control pool behaviour when no
