@@ -1074,7 +1074,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
                     create = true;
                     p = create(key, true);
                 }
-                if (!p.allocate()) {
+                if (p != null && !p.allocate()) {
                     p = null;
                 }
             }
