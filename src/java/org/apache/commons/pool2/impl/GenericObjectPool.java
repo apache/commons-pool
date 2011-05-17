@@ -1630,9 +1630,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      */
     private PooledObject<T> create(boolean force) throws Exception {
         int maxActive = getMaxActive();
-        int newNumActive = numActive.incrementAndGet();
+        int newNumActive = createCount.incrementAndGet();
         if (!force && maxActive > -1 && newNumActive > maxActive) {
-            numActive.decrementAndGet();
+            createCount.decrementAndGet();
             return null;
         }
 
@@ -1640,7 +1640,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
         try {
             t = _factory.makeObject();
         } catch (Exception e) {
-            numActive.decrementAndGet();
+            createCount.decrementAndGet();
             throw e;
         }
 
@@ -1655,7 +1655,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
         try {
             _factory.destroyObject(toDestory.getObject());
         } finally {
-            numActive.decrementAndGet();
+            createCount.decrementAndGet();
         }
     }
 
@@ -2034,12 +2034,13 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
     private Map<T, PooledObject<T>> _allObjects = null;
 
     /**
-     * The combined count of the currently active objects and those in the
+     * The combined count of the currently created objects and those in the
      * process of being created. Under load, it may exceed {@link #_maxActive}
-     * but there will never be more than {@link #_maxActive} created at any one
-     * time.
+     * if multiple threads try and create a new object at the same time but
+     * {@link #create(boolean)} will ensure that there are never more than
+     * {@link #_maxActive} objects created at any one time.
      */
-    private AtomicInteger numActive = new AtomicInteger(0);
+    private AtomicInteger createCount = new AtomicInteger(0);
 
     /** The queue of idle objects */
     private LinkedBlockingDeque<PooledObject<T>> _idleObjects = null;
