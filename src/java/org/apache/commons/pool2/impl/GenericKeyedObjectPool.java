@@ -1078,7 +1078,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
                         _factory.activateObject(key, p.getObject());
                     } catch (Exception e) {
                         try {
-                            destroy(key, p);
+                            destroy(key, p, true);
                         } catch (Exception e1) {
                             // Ignore - activation failure is more important
                         }
@@ -1100,7 +1100,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
                         }
                         if (!validate) {
                             try {
-                                destroy(key, p);
+                                destroy(key, p, true);
                             } catch (Exception e) {
                                 // Ignore - validation failure is more important
                             }
@@ -1155,7 +1155,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
          if (getTestOnReturn()) {
              if (!_factory.validateObject(key, t)) {
                  try {
-                     destroy(key, p);
+                     destroy(key, p, true);
                  } catch (Exception e) {
                      // TODO - Ignore?
                  }
@@ -1167,7 +1167,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
              _factory.passivateObject(key, t);
          } catch (Exception e1) {
              try {
-                 destroy(key, p);
+                 destroy(key, p, true);
              } catch (Exception e) {
                  // TODO - Ignore?
              }
@@ -1184,7 +1184,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
 
          if (isClosed() || maxIdle > -1 && maxIdle <= idleObjects.size()) {
              try {
-                 destroy(key, p);
+                 destroy(key, p, true);
              } catch (Exception e) {
                  // TODO - Ignore?
              }
@@ -1200,8 +1200,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
 
      /**
       * {@inheritDoc}
-      * <p>Activation of this method decrements the active count associated with the given keyed pool 
-      * and attempts to destroy <code>obj.</code></p>
+      * <p>Activation of this method decrements the active count associated with
+      * the given keyed pool  and attempts to destroy <code>obj.</code></p>
       * 
       * @param key pool key
       * @param obj instance to invalidate
@@ -1217,7 +1217,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
              throw new IllegalStateException(
                      "Object not currently part of this pool");
          }
-         destroy(key, p);
+         destroy(key, p, true);
      }
 
 
@@ -1247,7 +1247,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
 
 
      /**
-      * Clears the specified pool, removing all pooled instances corresponding to the given <code>key</code>.
+      * Clears the specified pool, removing all pooled instances corresponding
+      * to the given <code>key</code>.
       *
       * @param key the key to clear
       */
@@ -1268,7 +1269,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
     
              while (p != null) {
                  try {
-                     destroy(key, p);
+                     destroy(key, p, true);
                  } catch (Exception e) {
                      // TODO - Ignore?
                  }
@@ -1417,7 +1418,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
              K key = entry.getValue();
              PooledObject<T> p = entry.getKey();
              try {
-                destroy(key, p);
+                destroy(key, p, false);
             } catch (Exception e) {
                 // TODO - Ignore?
             }
@@ -1506,7 +1507,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
             }
 
             if (idleEvictTime < underTest.getIdleTimeMillis()) {
-                destroy(evictionKey, underTest);
+                destroy(evictionKey, underTest, true);
             } else {
                 if (testWhileIdle) {
                     boolean active = false;
@@ -1515,18 +1516,18 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
                                 underTest.getObject());
                         active = true;
                     } catch (Exception e) {
-                        destroy(evictionKey, underTest);
+                        destroy(evictionKey, underTest, true);
                     }
                     if (active) {
                         if (!_factory.validateObject(evictionKey,
                                 underTest.getObject())) {
-                            destroy(evictionKey, underTest);
+                            destroy(evictionKey, underTest, true);
                         } else {
                             try {
                                 _factory.passivateObject(evictionKey,
                                         underTest.getObject());
                             } catch (Exception e) {
-                                destroy(evictionKey, underTest);
+                                destroy(evictionKey, underTest, true);
                             }
                         }
                     }
@@ -1585,20 +1586,24 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
         return p;
     }
 
-    private void destroy(K key, PooledObject<T> toDestory) throws Exception {
+    private void destroy(K key, PooledObject<T> toDestory, boolean always)
+            throws Exception {
         
         register(key);
         
         try {
             ObjectDeque<T> objectDeque = poolMap.get(key);
-            objectDeque.getIdleObjects().remove(toDestory);
-            objectDeque.getAllObjects().remove(toDestory.getObject());
-    
-            try {
-                _factory.destroyObject(key, toDestory.getObject());
-            } finally {
-                objectDeque.getCreateCount().decrementAndGet();
-                numTotal.decrementAndGet();
+            boolean isIdle = objectDeque.getIdleObjects().remove(toDestory);
+            
+            if (isIdle || always) {
+                objectDeque.getAllObjects().remove(toDestory.getObject());
+        
+                try {
+                    _factory.destroyObject(key, toDestory.getObject());
+                } finally {
+                    objectDeque.getCreateCount().decrementAndGet();
+                    numTotal.decrementAndGet();
+                }
             }
         } finally {
             deregister(key);
