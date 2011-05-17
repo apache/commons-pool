@@ -1436,6 +1436,8 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     @Test
     public void testMaxActivePerKeyExceeded() {
         WaiterFactory<String> factory = new WaiterFactory<String>(0, 20, 0, 0, 0, 0, 8, 5, 0);
+        // TODO Fix this. Can't use local pool since runTestThreads uses the
+        //      protected pool field
         GenericKeyedObjectPool<String,Waiter> pool = new GenericKeyedObjectPool<String,Waiter>(factory);
         pool.setMaxActive(5);
         pool.setMaxTotal(8);
