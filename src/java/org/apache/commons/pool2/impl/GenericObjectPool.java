@@ -23,7 +23,7 @@ import java.util.NoSuchElementException;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.pool2.BaseObjectPool;
 import org.apache.commons.pool2.ObjectPool;
@@ -1238,7 +1238,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
                 p = _idleObjects.pollFirst();
                 if (p == null) {
                     create = true;
-                    p = create(false);
+                    p = create();
                 }
                 if (p == null) {
                     throw new NoSuchElementException("Pool exhausted");
@@ -1250,7 +1250,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
                 p = _idleObjects.pollFirst();
                 if (p == null) {
                     create = true;
-                    p = create(false);
+                    p = create();
                 }
                 if (p == null) {
                     if (maxWait < 1) {
@@ -1263,15 +1263,6 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
                 if (p == null) {
                     throw new NoSuchElementException(
                             "Timeout waiting for idle object");
-                }
-                if (!p.allocate()) {
-                    p = null;
-                }
-            } else if (whenExhaustedAction == WhenExhaustedAction.GROW) {
-                p = _idleObjects.pollFirst();
-                if (p == null) {
-                    create = true;
-                    p = create(true);
                 }
                 if (!p.allocate()) {
                     p = null;
@@ -1624,14 +1615,11 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
         return;
     }
 
-    /**
-     * TODO: Remove the force parameters along with support for when exhausted
-     * grow.
-     */
-    private PooledObject<T> create(boolean force) throws Exception {
+    private PooledObject<T> create() throws Exception {
         int maxActive = getMaxActive();
-        int newNumActive = createCount.incrementAndGet();
-        if (!force && maxActive > -1 && newNumActive > maxActive) {
+        long newCreateCount = createCount.incrementAndGet();
+        if (maxActive > -1 && newCreateCount > maxActive ||
+                newCreateCount > Integer.MAX_VALUE) {
             createCount.decrementAndGet();
             return null;
         }
@@ -1673,7 +1661,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
         }
 
         while (_idleObjects.size() < minIdle) {
-            PooledObject<T> p = create(false);
+            PooledObject<T> p = create();
             if (p == null) {
                 // Can't create objects, no reason to think another call to
                 // create will work. Give up.
@@ -1698,7 +1686,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
             throw new IllegalStateException(
                     "Cannot add objects without a factory.");
         }
-        PooledObject<T> p = create(false);
+        PooledObject<T> p = create();
         addIdleObject(p);
     }
 
@@ -2040,7 +2028,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * {@link #create(boolean)} will ensure that there are never more than
      * {@link #_maxActive} objects created at any one time.
      */
-    private AtomicInteger createCount = new AtomicInteger(0);
+    private AtomicLong createCount = new AtomicLong(0);
 
     /** The queue of idle objects */
     private LinkedBlockingDeque<PooledObject<T>> _idleObjects = null;

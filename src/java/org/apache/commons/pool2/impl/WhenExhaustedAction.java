@@ -38,11 +38,5 @@ public enum WhenExhaustedAction {
      * {@link GenericKeyedObjectPool#getMaxWait maximum wait time} has been
      * reached.
      */
-    BLOCK,
-
-    /**
-     * The {@code borrowObject()} method should simply create a
-     * new object anyway.
-     */
-    GROW
+    BLOCK
 }

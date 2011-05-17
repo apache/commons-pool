@@ -1040,7 +1040,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
                     }
                     if (p == null) {
                         create = true;
-                        p = create(key, false);
+                        p = create(key);
                     }
                     if (p == null) {
                         throw new NoSuchElementException("Pool exhausted");
@@ -1054,7 +1054,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
                     }
                     if (p == null) {
                         create = true;
-                        p = create(key, false);
+                        p = create(key);
                     }
                     if (p == null && objectDeque != null) {
                         if (maxWait < 1) {
@@ -1069,17 +1069,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
                                 "Timeout waiting for idle object");
                     }
                     if (!p.allocate()) {
-                        p = null;
-                    }
-                } else if (whenExhaustedAction == WhenExhaustedAction.GROW) {
-                    if (objectDeque != null) {
-                        p = objectDeque.getIdleObjects().pollFirst();
-                    }
-                    if (p == null) {
-                        create = true;
-                        p = create(key, true);
-                    }
-                    if (p != null && !p.allocate()) {
                         p = null;
                     }
                 }
@@ -1329,7 +1318,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
      public int getNumActive(K key) {
          final ObjectDeque<T> objectDeque = poolMap.get(key);
          if (objectDeque != null) {
-             return objectDeque.getNumActive().get() -
+             return objectDeque.getAllObjects().size() -
                      objectDeque.getIdleObjects().size();
          } else {
              return 0;
@@ -1451,111 +1440,107 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
       *
       * @throws Exception when there is a problem evicting idle objects.
       */
-     public void evict() throws Exception {
-         assertOpen();
+    public void evict() throws Exception {
+        assertOpen();
 
-         if (getNumIdle() == 0) {
-             return;
-         }
+        if (getNumIdle() == 0) {
+            return;
+        }
 
-         boolean testWhileIdle = _testWhileIdle;
-         long idleEvictTime = Long.MAX_VALUE;
+        boolean testWhileIdle = _testWhileIdle;
+        long idleEvictTime = Long.MAX_VALUE;
          
-         if (getMinEvictableIdleTimeMillis() > 0) {
-             idleEvictTime = getMinEvictableIdleTimeMillis();
-         }
+        if (getMinEvictableIdleTimeMillis() > 0) {
+            idleEvictTime = getMinEvictableIdleTimeMillis();
+        }
 
-         PooledObject<T> underTest = null;
-         LinkedBlockingDeque<PooledObject<T>> idleObjects = null;
+        PooledObject<T> underTest = null;
+        LinkedBlockingDeque<PooledObject<T>> idleObjects = null;
          
-         for (int i = 0, m = getNumTests(); i < m; i++) {
-             if(evictionIterator == null || !evictionIterator.hasNext()) {
-                 if (evictionKeyIterator == null ||
-                         !evictionKeyIterator.hasNext()) {
-                     List<K> keyCopy = new ArrayList<K>();
-                     keyCopy.addAll(poolKeyList);
-                     evictionKeyIterator = keyCopy.iterator();
-                 }
-                 while (evictionKeyIterator.hasNext()) {
-                     evictionKey = evictionKeyIterator.next();
-                     ObjectDeque<T> objectDeque = poolMap.get(evictionKey);
-                     if (objectDeque == null) {
-                         continue;
-                     }
-                     idleObjects = objectDeque.getIdleObjects();
-                     
-                     if (getLifo()) {
-                         evictionIterator = idleObjects.descendingIterator();
-                     } else {
-                         evictionIterator = idleObjects.iterator();
-                     }
-                     if (evictionIterator.hasNext()) {
-                         break;
-                     }
-                     evictionIterator = null;
-                 }
-             }
-             if (evictionIterator == null) {
-                 // Pools exhausted
-                 return;
-             }
-             try {
-                 underTest = evictionIterator.next();
-             } catch (NoSuchElementException nsee) {
-                 // Object was borrowed in another thread
-                 // Don't count this as an eviction test so reduce i;
-                 i--;
-                 evictionIterator = null;
-                 continue;
-             }
+        for (int i = 0, m = getNumTests(); i < m; i++) {
+            if(evictionIterator == null || !evictionIterator.hasNext()) {
+                if (evictionKeyIterator == null ||
+                        !evictionKeyIterator.hasNext()) {
+                    List<K> keyCopy = new ArrayList<K>();
+                    keyCopy.addAll(poolKeyList);
+                    evictionKeyIterator = keyCopy.iterator();
+                }
+                while (evictionKeyIterator.hasNext()) {
+                    evictionKey = evictionKeyIterator.next();
+                    ObjectDeque<T> objectDeque = poolMap.get(evictionKey);
+                    if (objectDeque == null) {
+                        continue;
+                    }
+                    idleObjects = objectDeque.getIdleObjects();
+                    
+                    if (getLifo()) {
+                        evictionIterator = idleObjects.descendingIterator();
+                    } else {
+                        evictionIterator = idleObjects.iterator();
+                    }
+                    if (evictionIterator.hasNext()) {
+                        break;
+                    }
+                    evictionIterator = null;
+                }
+            }
+            if (evictionIterator == null) {
+                // Pools exhausted
+                return;
+            }
+            try {
+                underTest = evictionIterator.next();
+            } catch (NoSuchElementException nsee) {
+                // Object was borrowed in another thread
+                // Don't count this as an eviction test so reduce i;
+                i--;
+                evictionIterator = null;
+                continue;
+            }
 
-             if (!underTest.startEvictionTest()) {
-                 // Object was borrowed in another thread
-                 // Don't count this as an eviction test so reduce i;
-                 i--;
-                 continue;
-             }
+            if (!underTest.startEvictionTest()) {
+                // Object was borrowed in another thread
+                // Don't count this as an eviction test so reduce i;
+                i--;
+                continue;
+            }
 
-             if (idleEvictTime < underTest.getIdleTimeMillis()) {
-                 destroy(evictionKey, underTest);
-             } else {
-                 if (testWhileIdle) {
-                     boolean active = false;
-                     try {
-                         _factory.activateObject(evictionKey, 
-                                 underTest.getObject());
-                         active = true;
-                     } catch (Exception e) {
-                         destroy(evictionKey, underTest);
-                     }
-                     if (active) {
-                         if (!_factory.validateObject(evictionKey,
-                                 underTest.getObject())) {
-                             destroy(evictionKey, underTest);
-                         } else {
-                             try {
-                                 _factory.passivateObject(evictionKey,
-                                         underTest.getObject());
-                             } catch (Exception e) {
-                                 destroy(evictionKey, underTest);
-                             }
-                         }
-                     }
-                 }
-                 if (!underTest.endEvictionTest(idleObjects)) {
-                     // TODO - May need to add code here once additional states
-                     // are used
-                 }
-             }
-         }
-     }
+            if (idleEvictTime < underTest.getIdleTimeMillis()) {
+                destroy(evictionKey, underTest);
+            } else {
+                if (testWhileIdle) {
+                    boolean active = false;
+                    try {
+                        _factory.activateObject(evictionKey, 
+                                underTest.getObject());
+                        active = true;
+                    } catch (Exception e) {
+                        destroy(evictionKey, underTest);
+                    }
+                    if (active) {
+                        if (!_factory.validateObject(evictionKey,
+                                underTest.getObject())) {
+                            destroy(evictionKey, underTest);
+                        } else {
+                            try {
+                                _factory.passivateObject(evictionKey,
+                                        underTest.getObject());
+                            } catch (Exception e) {
+                                destroy(evictionKey, underTest);
+                            }
+                        }
+                    }
+                }
+                if (!underTest.endEvictionTest(idleObjects)) {
+                    // TODO - May need to add code here once additional states
+                    // are used
+                }
+            }
+        }
+    }
 
      
-    /**
-     * TODO: Remove the force parameters along with support for when exhausted
-     * grow.
-     */
-    private PooledObject<T> create(K key, boolean force) throws Exception {
+    private PooledObject<T> create(K key) throws Exception {
         int maxActive = getMaxActive(); // Per key
         int maxTotal = getMaxTotal();   // All keys
 
@@ -1564,7 +1549,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
         
         while (loop) {
             int newNumTotal = numTotal.incrementAndGet();
-            if (!force && maxTotal > -1 && newNumTotal > maxTotal) {
+            if (maxTotal > -1 && newNumTotal > maxTotal) {
                 numTotal.decrementAndGet();
                 if (getNumIdle() == 0) {
                     return null;
@@ -1577,10 +1562,11 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
         }
          
         ObjectDeque<T> objectDeque = poolMap.get(key);
-        int newNumActive = objectDeque.getNumActive().incrementAndGet();
+        long newCreateCount = objectDeque.getCreateCount().incrementAndGet();
 
         // Check against the per key limit
-        if (!force && maxActive > -1 && newNumActive > maxActive) {
+        if (maxActive > -1 && newCreateCount > maxActive ||
+                newCreateCount > Integer.MAX_VALUE) {
             numTotal.decrementAndGet();
             return null;
         }
@@ -1611,7 +1597,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
             try {
                 _factory.destroyObject(key, toDestory.getObject());
             } finally {
-                objectDeque.getNumActive().decrementAndGet();
+                objectDeque.getCreateCount().decrementAndGet();
                 numTotal.decrementAndGet();
             }
         } finally {
@@ -1654,12 +1640,12 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
         // TODO Think carefully about when a read lock is required
         objectDeque = poolMap.get(k);
         long numInterested = objectDeque.getNumInterested().decrementAndGet();
-        if (numInterested == 0 && objectDeque.getNumActive().get() == 0) {
+        if (numInterested == 0 && objectDeque.getCreateCount().get() == 0) {
             // Potential to remove key
             Lock lock = keyLock.writeLock();
             lock.lock();
             try {
-                if (objectDeque.getNumActive().get() == 0 &&
+                if (objectDeque.getCreateCount().get() == 0 &&
                         objectDeque.getNumInterested().get() == 0) {
                     poolMap.remove(k);
                     poolKeyList.remove(k);
@@ -1768,7 +1754,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
         }
         register(key);
         try {
-            PooledObject<T> p = create(key, false);
+            PooledObject<T> p = create(key);
             addIdleObject(key, p);
         } finally {
             deregister(key);
@@ -1883,7 +1869,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
         private final LinkedBlockingDeque<PooledObject<S>> idleObjects =
                 new LinkedBlockingDeque<PooledObject<S>>();
 
-        private AtomicInteger numActive = new AtomicInteger(0);
+        private AtomicInteger createCount = new AtomicInteger(0);
 
         private Map<S, PooledObject<S>> allObjects =
                 new ConcurrentHashMap<S, PooledObject<S>>();
@@ -1894,8 +1880,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
             return idleObjects;
         }
         
-        public AtomicInteger getNumActive() {
-            return numActive;
+        public AtomicInteger getCreateCount() {
+            return createCount;
         }
         
         public AtomicLong getNumInterested() {
