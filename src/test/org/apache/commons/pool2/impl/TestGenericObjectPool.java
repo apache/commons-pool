@@ -76,19 +76,6 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     @Test
-    public void testWhenExhaustedGrow() throws Exception {
-        pool.setMaxActive(1);
-        pool.setWhenExhaustedAction(WhenExhaustedAction.GROW);
-        Object obj1 = pool.borrowObject();
-        assertNotNull(obj1);
-        Object obj2 = pool.borrowObject();
-        assertNotNull(obj2);
-        pool.returnObject(obj2);
-        pool.returnObject(obj1);
-        pool.close();
-    }
-
-    @Test
     public void testWhenExhaustedFail() throws Exception {
         pool.setMaxActive(1);
         pool.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
@@ -737,8 +724,6 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             assertEquals(WhenExhaustedAction.BLOCK,pool.getWhenExhaustedAction());
             pool.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
             assertEquals(WhenExhaustedAction.FAIL,pool.getWhenExhaustedAction());
-            pool.setWhenExhaustedAction(WhenExhaustedAction.GROW);
-            assertEquals(WhenExhaustedAction.GROW,pool.getWhenExhaustedAction());
         }
     }
     
@@ -769,7 +754,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             expected.testOnReturn = true;
             expected.testWhileIdle = true;
             expected.timeBetweenEvictionRunsMillis = 11L;
-            expected.whenExhaustedAction = WhenExhaustedAction.GROW;
+            expected.whenExhaustedAction = WhenExhaustedAction.FAIL;
             GenericObjectPool<Object> pool = new GenericObjectPool<Object>(null,expected);
             assertConfiguration(expected,pool);
         }
@@ -783,7 +768,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             GenericObjectPool.Config expected = new GenericObjectPool.Config();
             expected.maxActive = 2;
             expected.maxWait = 5L;
-            expected.whenExhaustedAction = WhenExhaustedAction.GROW;
+            expected.whenExhaustedAction = WhenExhaustedAction.FAIL;
             GenericObjectPool<Object> pool = new GenericObjectPool<Object>(null,expected.maxActive,expected.whenExhaustedAction,expected.maxWait);
             assertConfiguration(expected,pool);
         }
@@ -793,7 +778,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             expected.maxWait = 5L;
             expected.testOnBorrow = true;
             expected.testOnReturn = true;
-            expected.whenExhaustedAction = WhenExhaustedAction.GROW;
+            expected.whenExhaustedAction = WhenExhaustedAction.FAIL;
             GenericObjectPool<Object> pool = new GenericObjectPool<Object>(null,expected.maxActive,expected.whenExhaustedAction,expected.maxWait,expected.testOnBorrow,expected.testOnReturn);
             assertConfiguration(expected,pool);
         }
@@ -802,7 +787,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             expected.maxActive = 2;
             expected.maxIdle = 3;
             expected.maxWait = 5L;
-            expected.whenExhaustedAction = WhenExhaustedAction.GROW;
+            expected.whenExhaustedAction = WhenExhaustedAction.FAIL;
             GenericObjectPool<Object> pool = new GenericObjectPool<Object>(null,expected.maxActive,expected.whenExhaustedAction,expected.maxWait,expected.maxIdle);
             assertConfiguration(expected,pool);
         }
@@ -811,7 +796,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             expected.maxActive = 2;
             expected.maxIdle = 3;
             expected.maxWait = 5L;
-            expected.whenExhaustedAction = WhenExhaustedAction.GROW;
+            expected.whenExhaustedAction = WhenExhaustedAction.FAIL;
             expected.testOnBorrow = true;
             expected.testOnReturn = true;
             GenericObjectPool<Object> pool = new GenericObjectPool<Object>(null,expected.maxActive,expected.whenExhaustedAction,expected.maxWait,expected.maxIdle,expected.testOnBorrow,expected.testOnReturn);
@@ -828,7 +813,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             expected.testOnReturn = true;
             expected.testWhileIdle = true;
             expected.timeBetweenEvictionRunsMillis = 11L;
-            expected.whenExhaustedAction = WhenExhaustedAction.GROW;
+            expected.whenExhaustedAction = WhenExhaustedAction.FAIL;
             GenericObjectPool<Object> pool = new GenericObjectPool<Object>(null,expected.maxActive, expected.whenExhaustedAction, expected.maxWait, expected.maxIdle, expected.testOnBorrow, expected.testOnReturn, expected.timeBetweenEvictionRunsMillis, expected.numTestsPerEvictionRun, expected.minEvictableIdleTimeMillis, expected.testWhileIdle);
             assertConfiguration(expected,pool);
         }
@@ -844,7 +829,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             expected.testOnReturn = true;
             expected.testWhileIdle = true;
             expected.timeBetweenEvictionRunsMillis = 11L;
-            expected.whenExhaustedAction = WhenExhaustedAction.GROW;
+            expected.whenExhaustedAction = WhenExhaustedAction.FAIL;
             GenericObjectPool<Object> pool = new GenericObjectPool<Object>(null,expected.maxActive, expected.whenExhaustedAction, expected.maxWait, expected.maxIdle, expected.minIdle, expected.testOnBorrow, expected.testOnReturn, expected.timeBetweenEvictionRunsMillis, expected.numTestsPerEvictionRun, expected.minEvictableIdleTimeMillis, expected.testWhileIdle);
             assertConfiguration(expected,pool);
         }
@@ -864,7 +849,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         expected.testOnReturn = true;
         expected.testWhileIdle = true;
         expected.timeBetweenEvictionRunsMillis = 11L;
-        expected.whenExhaustedAction = WhenExhaustedAction.GROW;
+        expected.whenExhaustedAction = WhenExhaustedAction.FAIL;
         pool.setConfig(expected);
         assertConfiguration(expected,pool);
     }
