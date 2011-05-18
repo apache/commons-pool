@@ -26,6 +26,7 @@ import static junit.framework.Assert.fail;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Random;
@@ -488,23 +489,25 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
      * <iterations> borrow-return cycles with random delay times <= delay
      * in between.
      */
-    public void runTestThreads(int numThreads, int iterations, int delay) {
-        TestThread[] threads = new TestThread[numThreads];
+    public <T> void runTestThreads(int numThreads, int iterations, int delay, GenericKeyedObjectPool<String,T> pool) {
+        ArrayList<TestThread<T>> threads = new ArrayList<TestThread<T>>();
         for(int i=0;i<numThreads;i++) {
-            threads[i] = new TestThread(pool,iterations,delay);
-            Thread t = new Thread(threads[i]);
+            TestThread<T> testThread = new TestThread<T>(pool, iterations, delay);
+            threads.add(testThread);
+            Thread t = new Thread(testThread);
             t.start();
         }
-        for(int i=0;i<numThreads;i++) {
-            while(!(threads[i]).complete()) {
+        for (TestThread<T> testThread : threads) {
+            while(!(testThread.complete())) {
                 try {
                     Thread.sleep(500L);
                 } catch(InterruptedException e) {
                     // ignored
                 }
             }
-            if(threads[i].failed()) {
-                fail("Thread failed: "+i+"\n"+getExceptionTrace(threads[i]._exception));
+            if(testThread.failed()) {
+                fail("Thread failed: " + threads.indexOf(testThread) + "\n" + 
+                        getExceptionTrace(testThread._exception));
             }
         }
     }
@@ -514,7 +517,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         pool.setMaxActive(15);
         pool.setMaxIdle(15);
         pool.setMaxWait(1000L);
-        runTestThreads(20, 100, 50);
+        runTestThreads(20, 100, 50, pool);
     }
     
     /**
@@ -535,7 +538,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         pool.setMaxIdle(-1);
         pool.setTestOnReturn(true);
         pool.setMaxWait(10000L);
-        runTestThreads(5, 10, 50);
+        runTestThreads(5, 10, 50, pool);
     }
 
     @Test
@@ -1348,7 +1351,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         pool.borrowObject("one");
         long start = System.currentTimeMillis();
         // Needs to be in a separate thread as this will block
-        Runnable simple = new SimpleTestThread(pool, "one");
+        Runnable simple = new SimpleTestThread<String>(pool, "one");
         (new Thread(simple)).start();
         // This should be almost instant. If it isn't it means this thread got
         // stuck behind the thread created above which is bad.
@@ -1444,25 +1447,57 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         pool.setTestOnBorrow(true);
         pool.setMaxIdle(5);
         pool.setMaxWait(-1);
-        runTestThreads(20, 300, 250);
+        runTestThreads(20, 300, 250, pool);
+    }
+    
+    /**
+     * Test to make sure that clearOldest does not destroy instances that have been checked out.
+     */
+    @Test
+    public void testClearOldest() throws Exception {
+        // Make destroy have some latency so clearOldest takes some time
+        WaiterFactory<String> factory = new WaiterFactory<String>(0, 20, 0, 0, 0, 0, 50, 5, 0);
+        GenericKeyedObjectPool<String,Waiter> pool = new GenericKeyedObjectPool<String,Waiter>(factory);
+        pool.setMaxActive(5);
+        pool.setMaxTotal(50);
+        pool.setLifo(false);
+        // Load the pool with idle instances - 5 each for 10 keys
+        for (int i = 0; i < 10; i++) {
+            final String key = Integer.valueOf(i).toString();
+            for (int j = 0; j < 5; j++) {
+               pool.addObject(key);
+            }
+            // Make sure order is maintained
+            Thread.sleep(20);
+        }
+        // Now set up a race - one thread wants a new instance, triggering clearOldest
+        // Other goes after an element on death row 
+        // See if we end up with dead man walking
+        SimpleTestThread<Waiter> t2 = new SimpleTestThread<Waiter>(pool, "51");
+        Thread thread2 = new Thread(t2);
+        thread2.start();  // Triggers clearOldest, killing all of the 0's and the 2 oldest 1's
+        Thread.sleep(50); // Wait for clearOldest to kick off, but not long enough to reach the 1's 
+        Waiter waiter = pool.borrowObject("1");
+        Thread.sleep(200); // Wait for execution to happen
+        pool.returnObject("1", waiter);  // Will throw IllegalStateException if dead
     }
     
     /*
      * Very simple test thread that just tries to borrow an object from
      * the provided pool with the specified key and returns it
      */
-    static class SimpleTestThread implements Runnable {
-        private final KeyedObjectPool<String,String> _pool;
+    static class SimpleTestThread<T> implements Runnable {
+        private final KeyedObjectPool<String,T> _pool;
         private final String _key;
         
-        public SimpleTestThread(KeyedObjectPool<String,String> pool, String key) {
+        public SimpleTestThread(KeyedObjectPool<String,T> pool, String key) {
             _pool = pool;
             _key = key;
         }
 
         public void run() {
             try {
-                String obj = _pool.borrowObject(_key);
+                T obj = _pool.borrowObject(_key);
                 _pool.returnObject(_key, obj);
             } catch (Exception e) {
                 // Ignore
@@ -1511,11 +1546,11 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         }
     }
     
-    static class TestThread implements Runnable {
+    static class TestThread<T> implements Runnable {
         private final java.util.Random _random = new java.util.Random();
         
         // Thread config items
-        private final KeyedObjectPool<String,String> _pool;
+        private final KeyedObjectPool<String,T> _pool;
         private final int _iter;
         private final int _delay;
 
@@ -1523,15 +1558,15 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         private volatile boolean _failed = false;
         private volatile Exception _exception;
 
-        public TestThread(KeyedObjectPool<String,String> pool) {
+        public TestThread(KeyedObjectPool<String,T> pool) {
             this(pool, 100, 50);
         }
 
-        public TestThread(KeyedObjectPool<String,String> pool, int iter) {
+        public TestThread(KeyedObjectPool<String,T> pool, int iter) {
             this(pool, iter, 50);
         }
 
-        public TestThread(KeyedObjectPool<String,String> pool, int iter, int delay) {
+        public TestThread(KeyedObjectPool<String,T> pool, int iter, int delay) {
             _pool = pool;
             _iter = iter;
             _delay = delay;
@@ -1553,7 +1588,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
                 } catch(InterruptedException e) {
                     // ignored
                 }
-                String obj = null;
+                T obj = null;
                 try {
                     obj = _pool.borrowObject(key);
                 } catch(Exception e) {
