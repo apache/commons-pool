@@ -1331,7 +1331,7 @@ public final class PoolUtils {
             final ErodingFactor factor = getErodingFactor(key);
             synchronized (keyedPool) {
                 if (factor.getNextShrink() < now) {
-                    final int numIdle = numIdle(key);
+                    final int numIdle = getNumIdle(key);
                     if (numIdle > 0) {
                         discard = true;
                     }
@@ -1348,13 +1348,6 @@ public final class PoolUtils {
             } catch (Exception e) {
                 // swallowed
             }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        protected int numIdle(final K key) {
-            return getKeyedPool().getNumIdle();
         }
 
         /**
@@ -1487,14 +1480,6 @@ public final class PoolUtils {
         public ErodingPerKeyKeyedObjectPool(final KeyedObjectPool<K,V> keyedPool, final float factor) {
             super(keyedPool, null);
             this.factor = factor;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected int numIdle(final K key) {
-            return getKeyedPool().getNumIdle(key);
         }
 
         /**
