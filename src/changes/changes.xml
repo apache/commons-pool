@@ -48,6 +48,9 @@
       Remove WhenExhuastedAction.GROW since it is equivalent to
       WhenExhuastedAction.FAIL with a maxActive value of Integer.MAX_VALUE. 
     </action>
+    <action dev="markt" type="fix" issue="POOL-188" due-to="sebb">
+      Remove confusing method PoolUtils.ErodingKeyedObjectPool.numIdle(K key).
+    </action>
   </release>
   <release version="1.5.6" date="2011-04-03" description="This is a patch release, including bugfixes only.">
     <action dev="markt" type="fix" issue="POOL-179" due-to="Axel Grossmann">
