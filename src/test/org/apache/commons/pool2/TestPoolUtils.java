@@ -69,7 +69,7 @@ public class TestPoolUtils {
             // expected
         }
         try {
-            final ObjectPool<Object> pool = (ObjectPool<Object>)createProxy(ObjectPool.class, (List<String>)null);
+            final ObjectPool<Object> pool = createProxy(ObjectPool.class, (List<String>)null);
             PoolUtils.checkMinIdle(pool, -1, 1);
             fail("PoolUtils.checkMinIdle(ObjectPool,,) must not accept negative min idle values.");
         } catch (IllegalArgumentException iae) {
@@ -79,7 +79,7 @@ public class TestPoolUtils {
         final List<String> calledMethods = new ArrayList<String>();
 
         // Test that the minIdle check doesn't add too many idle objects
-        final PoolableObjectFactory<Object> pof = (PoolableObjectFactory<Object>)createProxy(PoolableObjectFactory.class, calledMethods);
+        final PoolableObjectFactory<Object> pof = createProxy(PoolableObjectFactory.class, calledMethods);
         final ObjectPool<Object> op = new GenericObjectPool(pof);
         PoolUtils.checkMinIdle(op, 2, 100);
         Thread.sleep(400);
@@ -102,7 +102,7 @@ public class TestPoolUtils {
             afe = null;
             try {
                 calledMethods.clear();
-                final ObjectPool pool = (ObjectPool)createProxy(ObjectPool.class, calledMethods);
+                final ObjectPool pool = createProxy(ObjectPool.class, calledMethods);
                 final TimerTask task = PoolUtils.checkMinIdle(pool, 1, CHECK_PERIOD); // checks minIdle immediately
 
                 Thread.sleep(CHECK_SLEEP_PERIOD); // will check CHECK_COUNT more times.
@@ -134,14 +134,14 @@ public class TestPoolUtils {
             // expected
         }
         try {
-            final KeyedObjectPool pool = (KeyedObjectPool)createProxy(KeyedObjectPool.class, (List)null);
+            final KeyedObjectPool pool = createProxy(KeyedObjectPool.class, (List)null);
             PoolUtils.checkMinIdle(pool, (Object)null, 1, 1);
             fail("PoolUtils.checkMinIdle(KeyedObjectPool,Object,int,long) must not accept null keys.");
         } catch (IllegalArgumentException iae) {
             // expected
         }
         try {
-            final KeyedObjectPool pool = (KeyedObjectPool)createProxy(KeyedObjectPool.class, (List)null);
+            final KeyedObjectPool pool = createProxy(KeyedObjectPool.class, (List)null);
             PoolUtils.checkMinIdle(pool, new Object(), -1, 1);
             fail("PoolUtils.checkMinIdle(KeyedObjectPool,Object,int,long) must not accept negative min idle values.");
         } catch (IllegalArgumentException iae) {
@@ -152,7 +152,7 @@ public class TestPoolUtils {
         final Object key = new Object();
 
         // Test that the minIdle check doesn't add too many idle objects
-        final KeyedPoolableObjectFactory kpof = (KeyedPoolableObjectFactory)createProxy(KeyedPoolableObjectFactory.class, calledMethods);
+        final KeyedPoolableObjectFactory kpof = createProxy(KeyedPoolableObjectFactory.class, calledMethods);
         final KeyedObjectPool kop = new GenericKeyedObjectPool(kpof);
         PoolUtils.checkMinIdle(kop, key, 2, 100);
         Thread.sleep(400);
@@ -176,7 +176,7 @@ public class TestPoolUtils {
             afe = null;
             try {
                 calledMethods.clear();
-                final KeyedObjectPool pool = (KeyedObjectPool)createProxy(KeyedObjectPool.class, calledMethods);
+                final KeyedObjectPool pool = createProxy(KeyedObjectPool.class, calledMethods);
                 final TimerTask task = PoolUtils.checkMinIdle(pool, key, 1, CHECK_PERIOD); // checks minIdle immediately
 
                 Thread.sleep(CHECK_SLEEP_PERIOD); // will check CHECK_COUNT more times.
@@ -202,7 +202,7 @@ public class TestPoolUtils {
     @Test
     public void testCheckMinIdleKeyedObjectPoolKeys() throws Exception {
         try {
-            final KeyedObjectPool<Object,Object> pool = (KeyedObjectPool<Object,Object>)createProxy(KeyedObjectPool.class, (List<String>)null);
+            final KeyedObjectPool<Object,Object> pool = createProxy(KeyedObjectPool.class, (List<String>)null);
             PoolUtils.checkMinIdle(pool, (Object)null, 1, 1);
             fail("PoolUtils.checkMinIdle(KeyedObjectPool,Collection,int,long) must not accept null keys.");
         } catch (IllegalArgumentException iae) {
@@ -216,7 +216,7 @@ public class TestPoolUtils {
             afe = null;
             try {
                 final List<String> calledMethods = new ArrayList<String>();
-                final KeyedObjectPool<String,Object> pool = (KeyedObjectPool<String,Object>)createProxy(KeyedObjectPool.class, calledMethods);
+                final KeyedObjectPool<String,Object> pool = createProxy(KeyedObjectPool.class, calledMethods);
                 final Collection<String> keys = new ArrayList<String>(2);
                 keys.add("one");
                 keys.add("two");
@@ -252,7 +252,7 @@ public class TestPoolUtils {
         }
 
         final List calledMethods = new ArrayList();
-        final ObjectPool pool = (ObjectPool)createProxy(ObjectPool.class, calledMethods);
+        final ObjectPool pool = createProxy(ObjectPool.class, calledMethods);
 
         PoolUtils.prefill(pool, 0);
         final List expectedMethods = new ArrayList();
@@ -275,7 +275,7 @@ public class TestPoolUtils {
             // expected
         }
         try {
-            final KeyedObjectPool pool = (KeyedObjectPool)createProxy(KeyedObjectPool.class, (List)null);
+            final KeyedObjectPool pool = createProxy(KeyedObjectPool.class, (List)null);
             PoolUtils.prefill(pool, (Object)null, 1);
             fail("PoolUtils.prefill(KeyedObjectPool,Object,int) must not accept null key.");
         } catch (IllegalArgumentException iae) {
@@ -283,7 +283,7 @@ public class TestPoolUtils {
         }
 
         final List calledMethods = new ArrayList();
-        final KeyedObjectPool pool = (KeyedObjectPool)createProxy(KeyedObjectPool.class, calledMethods);
+        final KeyedObjectPool pool = createProxy(KeyedObjectPool.class, calledMethods);
 
         PoolUtils.prefill(pool, new Object(), 0);
         final List expectedMethods = new ArrayList();
@@ -300,7 +300,7 @@ public class TestPoolUtils {
     @Test
     public void testPrefillKeyedObjectPoolCollection() throws Exception {
         try {
-            final KeyedObjectPool<String,String> pool = (KeyedObjectPool<String,String>)createProxy(KeyedObjectPool.class, (List)null);
+            final KeyedObjectPool<String,String> pool = createProxy(KeyedObjectPool.class, (List)null);
             PoolUtils.prefill(pool, (Collection<String>)null, 1);
             fail("PoolUtils.prefill(KeyedObjectPool,Collection,int) must not accept null keys.");
         } catch (IllegalArgumentException iae) {
@@ -308,7 +308,7 @@ public class TestPoolUtils {
         }
 
         final List<String> calledMethods = new ArrayList<String>();
-        final KeyedObjectPool<String,Object> pool = (KeyedObjectPool<String,Object>)createProxy(KeyedObjectPool.class, calledMethods);
+        final KeyedObjectPool<String,Object> pool = createProxy(KeyedObjectPool.class, calledMethods);
 
         final Set<String> keys = new HashSet<String>();
         PoolUtils.prefill(pool, keys, 0);
@@ -336,7 +336,7 @@ public class TestPoolUtils {
         }
 
         final List calledMethods = new ArrayList();
-        final ObjectPool op = (ObjectPool)createProxy(ObjectPool.class, calledMethods);
+        final ObjectPool op = createProxy(ObjectPool.class, calledMethods);
 
         final ObjectPool sop = PoolUtils.synchronizedPool(op);
         final List expectedMethods = invokeEveryMethod(sop);
