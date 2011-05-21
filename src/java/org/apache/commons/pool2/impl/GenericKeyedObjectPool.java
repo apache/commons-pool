@@ -1417,12 +1417,16 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
              // list it belongs to.
              K key = entry.getValue();
              PooledObject<T> p = entry.getKey();
+             // Assume the destruction succeeds
+             boolean destroyed = true;
              try {
-                destroy(key, p, false);
+                 destroyed = destroy(key, p, false);
             } catch (Exception e) {
                 // TODO - Ignore?
             }
-            itemsToRemove--;
+            if (destroyed) {
+                itemsToRemove--;
+            }
         }
     }
 
@@ -1586,7 +1590,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
         return p;
     }
 
-    private void destroy(K key, PooledObject<T> toDestory, boolean always)
+    private boolean destroy(K key, PooledObject<T> toDestory, boolean always)
             throws Exception {
         
         register(key);
@@ -1604,6 +1608,9 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
                     objectDeque.getCreateCount().decrementAndGet();
                     numTotal.decrementAndGet();
                 }
+                return true;
+            } else {
+                return false;
             }
         } finally {
             deregister(key);
