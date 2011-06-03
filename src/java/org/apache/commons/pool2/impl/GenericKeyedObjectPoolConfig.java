@@ -24,17 +24,17 @@ package org.apache.commons.pool2.impl;
  */
 public class GenericKeyedObjectPoolConfig extends GenericObjectPoolConfig {
 
-    public static final int MAX_TOTAL_PER_KEY = 8;
+    public static final int DEFAULT_MAX_TOTAL_PER_KEY = 8;
 
-    public static final int MAX_TOTAL = -1;
+    public static final int DEFAULT_MAX_TOTAL = -1;
 
     
-    private int maxTotalPerKey = MAX_TOTAL_PER_KEY;
+    private int maxTotalPerKey = DEFAULT_MAX_TOTAL_PER_KEY;
     
 
     public GenericKeyedObjectPoolConfig() {
         // Uses a different default for maxTotal
-        setMaxTotal(MAX_TOTAL);
+        setMaxTotal(DEFAULT_MAX_TOTAL);
     }
     
     
