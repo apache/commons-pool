@@ -219,15 +219,11 @@ public interface KeyedObjectPool<K,V> {
     /**
      * Sets the {@link KeyedPoolableObjectFactory factory} the pool uses
      * to create new instances (optional operation).
-     * Trying to change the <code>factory</code> after a pool has been used will frequently
-     * throw an {@link UnsupportedOperationException}. It is up to the pool
-     * implementation to determine when it is acceptable to call this method.
+     * Once set, the factory cannot be changed. 
      *
      * @param factory the {@link KeyedPoolableObjectFactory} used to create new instances.
-     * @throws IllegalStateException when the factory cannot be set at this time
+     * @throws IllegalStateException when the factory has already been set
      * @throws UnsupportedOperationException when this implementation doesn't support the operation
-     * @deprecated to be removed in pool 2.0
      */
-    @Deprecated
     void setFactory(KeyedPoolableObjectFactory<K,V> factory) throws IllegalStateException, UnsupportedOperationException;
 }

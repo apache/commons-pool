@@ -24,7 +24,8 @@ import org.apache.commons.pool2.KeyedPoolableObjectFactory;
  * 
  * @since Pool 2.0
  */
-public class GenericKeyedObjectPoolConfig<K,T> extends BaseObjectPoolConfig {
+public class GenericKeyedObjectPoolConfig<K,T> extends BaseObjectPoolConfig
+        implements Cloneable {
 
     public static final int DEFAULT_MAX_TOTAL_PER_KEY = 8;
 
@@ -56,5 +57,15 @@ public class GenericKeyedObjectPoolConfig<K,T> extends BaseObjectPoolConfig {
 
     public void setMaxTotalPerKey(int maxTotalPerKey) {
         this.maxTotalPerKey = maxTotalPerKey;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public GenericKeyedObjectPoolConfig<K, T> clone() {
+        try {
+            return (GenericKeyedObjectPoolConfig<K, T>) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(); // Can't happen
+        }
     }
 }
