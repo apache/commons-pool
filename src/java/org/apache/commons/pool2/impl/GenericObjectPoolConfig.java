@@ -26,7 +26,16 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  */
 public class GenericObjectPoolConfig extends BaseObjectPoolConfig {
 
+    /**
+     * The default value for {@link #getSoftMinEvictableIdleTimeMillis}.
+     */
+    public static final long DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS = -1;
+
+    
     private PoolableObjectFactory<?> factory = null;
+
+    private long softMinEvictableIdleTimeMillis =
+        DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 
 
     public PoolableObjectFactory<?> getFactory() {
@@ -35,5 +44,14 @@ public class GenericObjectPoolConfig extends BaseObjectPoolConfig {
 
     public void setFactory(PoolableObjectFactory<?> factory) {
         this.factory = factory;
+    }
+    
+    public long getSoftMinEvictableIdleTimeMillis() {
+        return softMinEvictableIdleTimeMillis;
+    }
+
+    public void setSoftMinEvictableIdleTimeMillis(
+            long softMinEvictableIdleTimeMillis) {
+        this.softMinEvictableIdleTimeMillis = softMinEvictableIdleTimeMillis;
     }
 }
