@@ -53,10 +53,10 @@ import org.apache.commons.pool2.PoolUtils;
  * parameters:</p>
  * <ul>
  *  <li>
- *    {@link #setMaxActive maxActive} controls the maximum number of objects
+ *    {@link #setMaxTotalPerKey maxTotalPerKey} controls the maximum number of objects
  *    (per key) that can allocated by the pool (checked out to client threads,
  *    or idle in the pool) at one time.  When non-positive, there is no limit
- *    to the number of objects per key. When {@link #setMaxActive maxActive} is
+ *    to the number of objects per key. When {@link #setMaxTotalPerKey maxTotalPerKey} is
  *    reached, the keyed pool is said to be exhausted.  The default setting for
  *    this parameter is 8.
  *  </li>
@@ -90,7 +90,7 @@ import org.apache.commons.pool2.PoolUtils;
  *    <li>
  *      When {@link #setWhenExhaustedAction whenExhaustedAction} is
  *      {@link #WHEN_EXHAUSTED_GROW}, {@link #borrowObject borrowObject} will create a new
- *      object and return it (essentially making {@link #setMaxActive maxActive}
+ *      object and return it (essentially making {@link #setMaxTotalPerKey maxTotalPerKey}
  *      meaningless.)
  *    </li>
  *    <li>
@@ -209,389 +209,46 @@ import org.apache.commons.pool2.PoolUtils;
  */
 public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
 
-    //--- public constants -------------------------------------------
-
-    /**
-     * The default cap on the number of idle instances (per key) in the pool.
-     * @see #getMaxIdle
-     * @see #setMaxIdle
-     */
-    public static final int DEFAULT_MAX_IDLE  = 8;
-
-    /**
-     * The default cap on the total number of active instances (per key)
-     * from the pool.
-     * @see #getMaxActive
-     * @see #setMaxActive
-     */
-    public static final int DEFAULT_MAX_ACTIVE  = 8;
-
-    /**
-     * The default cap on the the overall maximum number of objects that can
-     * exist at one time.
-     * @see #getMaxTotal
-     * @see #setMaxTotal
-     */
-    public static final int DEFAULT_MAX_TOTAL  = -1;
-
-    /**
-     * The default "when exhausted action" for the pool.
-     * @see #setWhenExhaustedAction
-     */
-    public static final WhenExhaustedAction DEFAULT_WHEN_EXHAUSTED_ACTION =
-        WhenExhaustedAction.BLOCK;
-
-    /**
-     * The default maximum amount of time (in milliseconds) the
-     * {@link #borrowObject} method should block before throwing
-     * an exception when the pool is exhausted and the
-     * {@link #getWhenExhaustedAction "when exhausted" action} is
-     * {@link #WHEN_EXHAUSTED_BLOCK}.
-     * @see #getMaxWait
-     * @see #setMaxWait
-     */
-    public static final long DEFAULT_MAX_WAIT = -1L;
-
-    /**
-     * The default "test on borrow" value.
-     * @see #getTestOnBorrow
-     * @see #setTestOnBorrow
-     */
-    public static final boolean DEFAULT_TEST_ON_BORROW = false;
-
-    /**
-     * The default "test on return" value.
-     * @see #getTestOnReturn
-     * @see #setTestOnReturn
-     */
-    public static final boolean DEFAULT_TEST_ON_RETURN = false;
-
-    /**
-     * The default "test while idle" value.
-     * @see #getTestWhileIdle
-     * @see #setTestWhileIdle
-     * @see #getTimeBetweenEvictionRunsMillis
-     * @see #setTimeBetweenEvictionRunsMillis
-     */
-    public static final boolean DEFAULT_TEST_WHILE_IDLE = false;
-
-    /**
-     * The default "time between eviction runs" value.
-     * @see #getTimeBetweenEvictionRunsMillis
-     * @see #setTimeBetweenEvictionRunsMillis
-     */
-    public static final long DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS = -1L;
-
-    /**
-     * The default number of objects to examine per run in the
-     * idle object evictor.
-     * @see #getNumTestsPerEvictionRun
-     * @see #setNumTestsPerEvictionRun
-     * @see #getTimeBetweenEvictionRunsMillis
-     * @see #setTimeBetweenEvictionRunsMillis
-     */
-    public static final int DEFAULT_NUM_TESTS_PER_EVICTION_RUN = 3;
-
-    /**
-     * The default value for {@link #getMinEvictableIdleTimeMillis}.
-     * @see #getMinEvictableIdleTimeMillis
-     * @see #setMinEvictableIdleTimeMillis
-     */
-    public static final long DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS = 1000L * 60L * 30L;
-
-    /**
-     * The default minimum level of idle objects in the pool.
-     * @since Pool 1.3
-     * @see #setMinIdle
-     * @see #getMinIdle
-     */
-    public static final int DEFAULT_MIN_IDLE = 0;
-
-    /**
-     * The default LIFO status. True means that borrowObject returns the
-     * most recently used ("last in") idle object in a pool (if there are
-     * idle instances available).  False means that pools behave as FIFO
-     * queues - objects are taken from idle object pools in the order that
-     * they are returned.
-     * @see #setLifo
-     */
-    public static final boolean DEFAULT_LIFO = true;
-
     //--- constructors -----------------------------------------------
 
     /**
-     * Create a new <code>GenericKeyedObjectPool</code> with no factory.
-     *
-     * @see #GenericKeyedObjectPool(KeyedPoolableObjectFactory)
-     * @see #setFactory(KeyedPoolableObjectFactory)
+     * Create a new <code>GenericKeyedObjectPool</code> using defaults and no
+     * factory.
      */
     public GenericKeyedObjectPool() {
-        this(null, DEFAULT_MAX_ACTIVE, DEFAULT_WHEN_EXHAUSTED_ACTION, DEFAULT_MAX_WAIT, DEFAULT_MAX_IDLE, 
-                DEFAULT_TEST_ON_BORROW, DEFAULT_TEST_ON_RETURN, DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
-                DEFAULT_NUM_TESTS_PER_EVICTION_RUN, DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS, DEFAULT_TEST_WHILE_IDLE);
+        this(new GenericKeyedObjectPoolConfig<K, T>());
     }
 
     /**
-     * Create a new <code>GenericKeyedObjectPool</code> using the specified values.
-     * @param factory the <code>KeyedPoolableObjectFactory</code> to use to create, validate, and destroy
-     * objects if not <code>null</code>
+     * Create a new <code>GenericKeyedObjectPool</code> using a specific
+     * configuration.
+     * 
+     * @param config    The configuration to use for this pool instance. The
+     *                  configuration is used by value. Subsequent changes to
+     *                  the configuration object will not be reflected in the
+     *                  pool.
      */
-    public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,T> factory) {
-        this(factory, DEFAULT_MAX_ACTIVE, DEFAULT_WHEN_EXHAUSTED_ACTION, DEFAULT_MAX_WAIT, DEFAULT_MAX_IDLE,
-                DEFAULT_TEST_ON_BORROW, DEFAULT_TEST_ON_RETURN, DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
-                DEFAULT_NUM_TESTS_PER_EVICTION_RUN, DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS, DEFAULT_TEST_WHILE_IDLE);
+    public GenericKeyedObjectPool(GenericKeyedObjectPoolConfig<K,T> config) {
+        // Copy the settings from the config
+        this._factory = config.getFactory();
+        this._lifo = config.getLifo();
+        this._maxIdle = config.getMaxIdle();
+        this._maxTotal = config.getMaxTotal();
+        this._maxTotalPerKey = config.getMaxTotalPerKey();
+        this._maxWait = config.getMaxWait();
+        this._minEvictableIdleTimeMillis =
+            config.getMinEvictableIdleTimeMillis();
+        this._minIdle = config.getMinIdle();
+        this._numTestsPerEvictionRun = config.getNumTestsPerEvictionRun();
+        this._testOnBorrow = config.getTestOnBorrow();
+        this._testOnReturn = config.getTestOnReturn();
+        this._testWhileIdle = config.getTestWhileIdle();
+        this._timeBetweenEvictionRunsMillis =
+            config.getTimeBetweenEvictionRunsMillis();
+        this._whenExhaustedAction = config.getWhenExhaustedAction();
+
+        startEvictor(getMinEvictableIdleTimeMillis());
     }
-
-    /**
-     * Create a new <code>GenericKeyedObjectPool</code> using the specified values.
-     * @param factory the <code>KeyedPoolableObjectFactory</code> to use to create, validate, and destroy objects
-     * if not <code>null</code>
-     * @param config a non-<code>null</code> {@link GenericKeyedObjectPool.Config} describing the configuration
-     */
-    public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,T> factory, GenericKeyedObjectPool.Config config) {
-        this(factory, config.maxActive, config.whenExhaustedAction, config.maxWait, config.maxIdle, config.maxTotal,
-                config.minIdle, config.testOnBorrow, config.testOnReturn, config.timeBetweenEvictionRunsMillis,
-                config.numTestsPerEvictionRun, config.minEvictableIdleTimeMillis, config.testWhileIdle, config.lifo);
-    }
-
-    /**
-     * Create a new <code>GenericKeyedObjectPool</code> using the specified values.
-     * @param factory the <code>KeyedPoolableObjectFactory</code> to use to create, validate, and destroy objects
-     * if not <code>null</code>
-     * @param maxActive the maximum number of objects that can be borrowed from me at one time (see {@link #setMaxActive})
-     */
-    public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,T> factory, int maxActive) {
-        this(factory,maxActive, DEFAULT_WHEN_EXHAUSTED_ACTION, DEFAULT_MAX_WAIT, DEFAULT_MAX_IDLE,
-                DEFAULT_TEST_ON_BORROW, DEFAULT_TEST_ON_RETURN, DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS, 
-                DEFAULT_NUM_TESTS_PER_EVICTION_RUN, DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS, DEFAULT_TEST_WHILE_IDLE);
-    }
-
-    /**
-     * Create a new <code>GenericKeyedObjectPool</code> using the specified values.
-     * @param factory the <code>KeyedPoolableObjectFactory</code> to use to create, validate, and destroy objects
-     * if not <code>null</code>
-     * @param maxActive the maximum number of objects that can be borrowed from me at one time (see {@link #setMaxActive})
-     * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #setWhenExhaustedAction})
-     * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted and
-     *  <code>whenExhaustedAction</code> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
-     */
-    public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,T> factory, int maxActive, WhenExhaustedAction whenExhaustedAction,
-            long maxWait) {
-        this(factory, maxActive, whenExhaustedAction, maxWait, DEFAULT_MAX_IDLE, DEFAULT_TEST_ON_BORROW,
-                DEFAULT_TEST_ON_RETURN, DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS, DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
-                DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS, DEFAULT_TEST_WHILE_IDLE);
-    }
-
-    /**
-     * Create a new <code>GenericKeyedObjectPool</code> using the specified values.
-     * @param factory the <code>KeyedPoolableObjectFactory</code> to use to create, validate, and destroy objects
-     * if not <code>null</code>
-     * @param maxActive the maximum number of objects that can be borrowed from me at one time (see {@link #setMaxActive})
-     * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted and
-     * <code>whenExhaustedAction</code> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
-     * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #setWhenExhaustedAction})
-     * @param testOnBorrow whether or not to validate objects before they are returned by the {@link #borrowObject}
-     * method (see {@link #setTestOnBorrow})
-     * @param testOnReturn whether or not to validate objects after they are returned to the {@link #returnObject}
-     * method (see {@link #setTestOnReturn})
-     */
-    public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,T> factory, int maxActive, WhenExhaustedAction whenExhaustedAction,
-            long maxWait, boolean testOnBorrow, boolean testOnReturn) {
-        this(factory, maxActive, whenExhaustedAction, maxWait, DEFAULT_MAX_IDLE,testOnBorrow,testOnReturn,
-                DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS, DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
-                DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS, DEFAULT_TEST_WHILE_IDLE);
-    }
-
-    /**
-     * Create a new <code>GenericKeyedObjectPool</code> using the specified values.
-     * @param factory the <code>KeyedPoolableObjectFactory</code> to use to create, validate, and destroy objects
-     * if not <code>null</code>
-     * @param maxActive the maximum number of objects that can be borrowed from me at one time
-     * (see {@link #setMaxActive})
-     * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #setWhenExhaustedAction})
-     * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted and
-     * <code>whenExhaustedAction</code> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
-     * @param maxIdle the maximum number of idle objects in my pool (see {@link #setMaxIdle})
-     */
-    public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,T> factory, int maxActive, WhenExhaustedAction whenExhaustedAction,
-            long maxWait, int maxIdle) {
-        this(factory, maxActive, whenExhaustedAction, maxWait, maxIdle, DEFAULT_TEST_ON_BORROW, DEFAULT_TEST_ON_RETURN,
-                DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS, DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
-                DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS, DEFAULT_TEST_WHILE_IDLE);
-    }
-
-    /**
-     * Create a new <code>GenericKeyedObjectPool</code> using the specified values.
-     * @param factory the <code>KeyedPoolableObjectFactory</code> to use to create, validate, and destroy objects
-     * if not <code>null</code>
-     * @param maxActive the maximum number of objects that can be borrowed from me at one time
-     * (see {@link #setMaxActive})
-     * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #setWhenExhaustedAction})
-     * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted and
-     * <code>whenExhaustedAction</code> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #getMaxWait})
-     * @param maxIdle the maximum number of idle objects in my pool (see {@link #setMaxIdle})
-     * @param testOnBorrow whether or not to validate objects before they are returned by the {@link #borrowObject}
-     * method (see {@link #setTestOnBorrow})
-     * @param testOnReturn whether or not to validate objects after they are returned to the {@link #returnObject}
-     * method (see {@link #setTestOnReturn})
-     */
-    public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,T> factory, int maxActive, WhenExhaustedAction whenExhaustedAction,
-            long maxWait, int maxIdle, boolean testOnBorrow, boolean testOnReturn) {
-        this(factory, maxActive, whenExhaustedAction, maxWait, maxIdle, testOnBorrow, testOnReturn,
-                DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS, DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
-                DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS, DEFAULT_TEST_WHILE_IDLE);
-    }
-
-    /**
-     * Create a new <code>GenericKeyedObjectPool</code> using the specified values.
-     * @param factory the <code>KeyedPoolableObjectFactory</code> to use to create, validate, and destroy objects
-     * if not <code>null</code>
-     * @param maxActive the maximum number of objects that can be borrowed from me at one time
-     * (see {@link #setMaxActive})
-     * @param whenExhaustedAction the action to take when the pool is exhausted 
-     * (see {@link #setWhenExhaustedAction})
-     * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted and
-     * <code>whenExhaustedAction</code> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
-     * @param maxIdle the maximum number of idle objects in my pool (see {@link #setMaxIdle})
-     * @param testOnBorrow whether or not to validate objects before they are returned by the {@link #borrowObject}
-     * method (see {@link #setTestOnBorrow})
-     * @param testOnReturn whether or not to validate objects after they are returned to the {@link #returnObject}
-     * method (see {@link #setTestOnReturn})
-     * @param timeBetweenEvictionRunsMillis the amount of time (in milliseconds) to sleep between examining idle
-     * objects for eviction (see {@link #setTimeBetweenEvictionRunsMillis})
-     * @param numTestsPerEvictionRun the number of idle objects to examine per run within the idle object eviction
-     * thread (if any) (see {@link #setNumTestsPerEvictionRun})
-     * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before
-     * it is eligible for eviction (see {@link #setMinEvictableIdleTimeMillis})
-     * @param testWhileIdle whether or not to validate objects in the idle object eviction thread, if any
-     * (see {@link #setTestWhileIdle})
-     */
-    public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,T> factory, int maxActive, WhenExhaustedAction whenExhaustedAction,
-            long maxWait, int maxIdle, boolean testOnBorrow, boolean testOnReturn, long timeBetweenEvictionRunsMillis,
-            int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle) {
-        this(factory, maxActive, whenExhaustedAction, maxWait, maxIdle, GenericKeyedObjectPool.DEFAULT_MAX_TOTAL,
-                testOnBorrow, testOnReturn, timeBetweenEvictionRunsMillis, numTestsPerEvictionRun,
-                minEvictableIdleTimeMillis, testWhileIdle);
-    }
-
-    /**
-     * Create a new <code>GenericKeyedObjectPool</code> using the specified values.
-     * @param factory the <code>KeyedPoolableObjectFactory</code> to use to create, validate, and destroy objects
-     * if not <code>null</code>
-     * @param maxActive the maximum number of objects that can be borrowed from me at one time
-     * (see {@link #setMaxActive})
-     * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #setWhenExhaustedAction})
-     * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted and
-     * <code>whenExhaustedAction</code> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
-     * @param maxIdle the maximum number of idle objects in my pool (see {@link #setMaxIdle})
-     * @param maxTotal the maximum number of objects that can exists at one time (see {@link #setMaxTotal})
-     * @param testOnBorrow whether or not to validate objects before they are returned by the {@link #borrowObject}
-     * method (see {@link #setTestOnBorrow})
-     * @param testOnReturn whether or not to validate objects after they are returned to the {@link #returnObject}
-     * method (see {@link #setTestOnReturn})
-     * @param timeBetweenEvictionRunsMillis the amount of time (in milliseconds) to sleep between examining idle
-     * objects for eviction (see {@link #setTimeBetweenEvictionRunsMillis})
-     * @param numTestsPerEvictionRun the number of idle objects to examine per run within the idle object eviction
-     * thread (if any) (see {@link #setNumTestsPerEvictionRun})
-     * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool
-     * before it is eligible for eviction (see {@link #setMinEvictableIdleTimeMillis})
-     * @param testWhileIdle whether or not to validate objects in the idle object eviction thread, if any
-     * (see {@link #setTestWhileIdle})
-     */
-    public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,T> factory, int maxActive, WhenExhaustedAction whenExhaustedAction,
-            long maxWait, int maxIdle, int maxTotal, boolean testOnBorrow, boolean testOnReturn,
-            long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis,
-            boolean testWhileIdle) {
-        this(factory, maxActive, whenExhaustedAction, maxWait, maxIdle, maxTotal,
-                GenericKeyedObjectPool.DEFAULT_MIN_IDLE, testOnBorrow, testOnReturn, timeBetweenEvictionRunsMillis,
-                numTestsPerEvictionRun, minEvictableIdleTimeMillis, testWhileIdle);
-    }
-
-    /**
-     * Create a new <code>GenericKeyedObjectPool</code> using the specified values.
-     * @param factory the <code>KeyedPoolableObjectFactory</code> to use to create, validate, and destroy objects
-     * if not <code>null</code>
-     * @param maxActive the maximum number of objects that can be borrowed at one time (see {@link #setMaxActive})
-     * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #setWhenExhaustedAction})
-     * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted and
-     * <code>whenExhaustedAction</code> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
-     * @param maxIdle the maximum number of idle objects in my pool (see {@link #setMaxIdle})
-     * @param maxTotal the maximum number of objects that can exists at one time (see {@link #setMaxTotal})
-     * @param minIdle the minimum number of idle objects to have in the pool at any one time (see {@link #setMinIdle})
-     * @param testOnBorrow whether or not to validate objects before they are returned by the {@link #borrowObject}
-     * method (see {@link #setTestOnBorrow})
-     * @param testOnReturn whether or not to validate objects after they are returned to the {@link #returnObject}
-     * method (see {@link #setTestOnReturn})
-     * @param timeBetweenEvictionRunsMillis the amount of time (in milliseconds) to sleep between examining idle
-     * objects
-     * for eviction (see {@link #setTimeBetweenEvictionRunsMillis})
-     * @param numTestsPerEvictionRun the number of idle objects to examine per run within the idle object eviction
-     * thread (if any) (see {@link #setNumTestsPerEvictionRun})
-     * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before
-     * it is eligible for eviction (see {@link #setMinEvictableIdleTimeMillis})
-     * @param testWhileIdle whether or not to validate objects in the idle object eviction thread, if any
-     * (see {@link #setTestWhileIdle})
-     * @since Pool 1.3
-     */
-    public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,T> factory, int maxActive, WhenExhaustedAction whenExhaustedAction,
-            long maxWait, int maxIdle, int maxTotal, int minIdle, boolean testOnBorrow, boolean testOnReturn,
-            long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis,
-            boolean testWhileIdle) {
-        this(factory, maxActive, whenExhaustedAction, maxWait, maxIdle, maxTotal, minIdle, testOnBorrow, testOnReturn,
-                timeBetweenEvictionRunsMillis, numTestsPerEvictionRun, minEvictableIdleTimeMillis, testWhileIdle,
-                DEFAULT_LIFO);
-    }
-
-    /**
-     * Create a new <code>GenericKeyedObjectPool</code> using the specified values.
-     * @param factory the <code>KeyedPoolableObjectFactory</code> to use to create, validate, and destroy objects
-     * if not <code>null</code>
-     * @param maxActive the maximum number of objects that can be borrowed at one time
-     *  (see {@link #setMaxActive})
-     * @param whenExhaustedAction the action to take when the pool is exhausted (see {@link #setWhenExhaustedAction})
-     * @param maxWait the maximum amount of time to wait for an idle object when the pool is exhausted and
-     * <code>whenExhaustedAction</code> is {@link #WHEN_EXHAUSTED_BLOCK} (otherwise ignored) (see {@link #setMaxWait})
-     * @param maxIdle the maximum number of idle objects in my pool (see {@link #setMaxIdle})
-     * @param maxTotal the maximum number of objects that can exists at one time (see {@link #setMaxTotal})
-     * @param minIdle the minimum number of idle objects to have in the pool at any one time (see {@link #setMinIdle})
-     * @param testOnBorrow whether or not to validate objects before they are returned by the {@link #borrowObject}
-     * method (see {@link #setTestOnBorrow})
-     * @param testOnReturn whether or not to validate objects after they are returned to the {@link #returnObject}
-     * method (see {@link #setTestOnReturn})
-     * @param timeBetweenEvictionRunsMillis the amount of time (in milliseconds) to sleep between examining idle
-     * objects for eviction (see {@link #setTimeBetweenEvictionRunsMillis})
-     * @param numTestsPerEvictionRun the number of idle objects to examine per run within the idle object eviction
-     * thread (if any) (see {@link #setNumTestsPerEvictionRun})
-     * @param minEvictableIdleTimeMillis the minimum number of milliseconds an object can sit idle in the pool before
-     * it is eligible for eviction (see {@link #setMinEvictableIdleTimeMillis})
-     * @param testWhileIdle whether or not to validate objects in the idle object eviction thread, if any
-     * (see {@link #setTestWhileIdle})
-     * @param lifo whether or not the pools behave as LIFO (last in first out) queues (see {@link #setLifo})
-     * @since Pool 1.4
-     */
-    public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,T> factory, int maxActive, WhenExhaustedAction whenExhaustedAction,
-            long maxWait, int maxIdle, int maxTotal, int minIdle, boolean testOnBorrow, boolean testOnReturn,
-            long timeBetweenEvictionRunsMillis, int numTestsPerEvictionRun, long minEvictableIdleTimeMillis,
-            boolean testWhileIdle, boolean lifo) {
-        _factory = factory;
-        _maxActive = maxActive;
-        _lifo = lifo;
-        _whenExhaustedAction = whenExhaustedAction;
-        _maxWait = maxWait;
-        _maxIdle = maxIdle;
-        _maxTotal = maxTotal;
-        _minIdle = minIdle;
-        _testOnBorrow = testOnBorrow;
-        _testOnReturn = testOnReturn;
-        _timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
-        _numTestsPerEvictionRun = numTestsPerEvictionRun;
-        _minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
-        _testWhileIdle = testWhileIdle;
-
-        startEvictor(_timeBetweenEvictionRunsMillis);
-    }
-
-    //--- public methods ---------------------------------------------
 
     //--- configuration methods --------------------------------------
 
@@ -601,21 +258,21 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
      * A negative value indicates no limit.
      *
      * @return the cap on the number of active instances per key.
-     * @see #setMaxActive
+     * @see #setMaxTotalPerKey
      */
-    public int getMaxActive() {
-        return _maxActive;
+    public int getMaxTotalPerKey() {
+        return _maxTotalPerKey;
     }
 
     /**
      * Sets the cap on the number of object instances managed by the pool per key.
-     * @param maxActive The cap on the number of object instances per key.
+     * @param maxTotalPerKey The cap on the number of object instances per key.
      * Use a negative value for no limit.
      *
-     * @see #getMaxActive
+     * @see #getMaxTotalPerKey
      */
-    public void setMaxActive(int maxActive) {
-        _maxActive = maxActive;
+    public void setMaxTotalPerKey(int maxTotalPerKey) {
+        _maxTotalPerKey = maxTotalPerKey;
     }
 
     /**
@@ -940,19 +597,19 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
      * @param conf the new configuration to use.
      * @see GenericKeyedObjectPool.Config
      */
-    public void setConfig(GenericKeyedObjectPool.Config conf) {
-        setMaxIdle(conf.maxIdle);
-        setMaxActive(conf.maxActive);
-        setMaxTotal(conf.maxTotal);
-        setMinIdle(conf.minIdle);
-        setMaxWait(conf.maxWait);
-        setWhenExhaustedAction(conf.whenExhaustedAction);
-        setTestOnBorrow(conf.testOnBorrow);
-        setTestOnReturn(conf.testOnReturn);
-        setTestWhileIdle(conf.testWhileIdle);
-        setNumTestsPerEvictionRun(conf.numTestsPerEvictionRun);
-        setMinEvictableIdleTimeMillis(conf.minEvictableIdleTimeMillis);
-        setTimeBetweenEvictionRunsMillis(conf.timeBetweenEvictionRunsMillis);
+    public void setConfig(GenericKeyedObjectPoolConfig<K,T> conf) {
+        setMaxIdle(conf.getMaxIdle());
+        setMaxTotalPerKey(conf.getMaxTotalPerKey());
+        setMaxTotal(conf.getMaxTotal());
+        setMinIdle(conf.getMinIdle());
+        setMaxWait(conf.getMaxWait());
+        setWhenExhaustedAction(conf.getWhenExhaustedAction());
+        setTestOnBorrow(conf.getTestOnBorrow());
+        setTestOnReturn(conf.getTestOnReturn());
+        setTestWhileIdle(conf.getTestWhileIdle());
+        setNumTestsPerEvictionRun(conf.getNumTestsPerEvictionRun());
+        setMinEvictableIdleTimeMillis(conf.getMinEvictableIdleTimeMillis());
+        setTimeBetweenEvictionRunsMillis(conf.getTimeBetweenEvictionRunsMillis());
     }
 
     /**
@@ -996,15 +653,15 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
      * are no more idle instances available.</p>
      * 
      * <p>If there are no idle instances available in the pool associated with the given key, behavior
-     * depends on the {@link #getMaxActive() maxActive}, {@link #getMaxTotal() maxTotal}, and (if applicable)
+     * depends on the {@link #getMaxTotalPerKey() maxTotalPerKey}, {@link #getMaxTotal() maxTotal}, and (if applicable)
      * {@link #getWhenExhaustedAction() whenExhaustedAction} and {@link #getMaxWait() maxWait} properties. If the
-     * number of instances checked out from the pool under the given key is less than <code>maxActive</code> and
+     * number of instances checked out from the pool under the given key is less than <code>maxTotalPerKey</code> and
      * the total number of instances in circulation (under all keys) is less than <code>maxTotal</code>, a new instance
      * is created, activated and (if applicable) validated and returned to the caller.</p>
      * 
      * <p>If the associated keyed pool is exhausted (no available idle instances and no capacity to create new ones),
      * this method will either block ({@link #WHEN_EXHAUSTED_BLOCK}), throw a <code>NoSuchElementException</code>
-     * ({@link #WHEN_EXHAUSTED_FAIL}), or grow ({@link #WHEN_EXHAUSTED_GROW} - ignoring maxActive, maxTotal properties).
+     * ({@link #WHEN_EXHAUSTED_FAIL}), or grow ({@link #WHEN_EXHAUSTED_GROW} - ignoring maxTotalPerKey, maxTotal properties).
      * The length of time that this method will block when <code>whenExhaustedAction == WHEN_EXHAUSTED_BLOCK</code>
      * is determined by the {@link #getMaxWait() maxWait} property.</p>
      * 
@@ -1362,23 +1019,27 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
      /**
       * <p>Sets the keyed poolable object factory associated with this pool.</p>
       * 
-      * <p>If this method is called when objects are checked out of any of the keyed pools,
-      * an IllegalStateException is thrown.  Calling this method also has the side effect of
-      * destroying any idle instances in existing keyed pools, using the original factory.</p>
+      * <p>If this method is called when the factory has previously been set an
+      * IllegalStateException is thrown.</p>
       * 
-      * @param factory KeyedPoolableObjectFactory to use when creating keyed object pool instances
-      * @throws IllegalStateException if there are active (checked out) instances associated with this keyed object pool
-      * @deprecated to be removed in version 2.0
+      * @param factory  KeyedPoolableObjectFactory to use when creating keyed
+      *                 object pool instances
+      * @throws IllegalStateException if the factory has already been set
       */
      @Override
-     @Deprecated
-     public void setFactory(KeyedPoolableObjectFactory<K,T> factory) throws IllegalStateException {
-         assertOpen();
-         if (0 < getNumActive()) {
-             throw new IllegalStateException("Objects are already active");
+     public void setFactory(KeyedPoolableObjectFactory<K,T> factory)
+             throws IllegalStateException {
+         if (this._factory == null) {
+             synchronized (factoryLock) {
+                 if (this._factory == null) {
+                     this._factory = factory;
+                 } else {
+                     throw new IllegalStateException("Factory already set");
+                 }
+             }
+         } else {
+             throw new IllegalStateException("Factory already set");
          }
-         clear();
-         _factory = factory;
      }
 
      
@@ -1546,7 +1207,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
 
      
     private PooledObject<T> create(K key) throws Exception {
-        int maxActive = getMaxActive(); // Per key
+        int maxTotalPerKey = getMaxTotalPerKey(); // Per key
         int maxTotal = getMaxTotal();   // All keys
 
         // Check against the overall limit
@@ -1570,7 +1231,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
         long newCreateCount = objectDeque.getCreateCount().incrementAndGet();
 
         // Check against the per key limit
-        if (maxActive > -1 && newCreateCount > maxActive ||
+        if (maxTotalPerKey > -1 && newCreateCount > maxTotalPerKey ||
                 newCreateCount > Integer.MAX_VALUE) {
             numTotal.decrementAndGet();
             return null;
@@ -1730,8 +1391,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
      * <p>Calls {@link #allocate()} on successful completion</p>
      * 
      * @param key pool key
-     * @param obj instance to add to the keyed pool
-     * @param decrementNumActive whether or not to decrement the active count associated with the keyed pool
+     * @param p instance to add to the keyed pool
      * @throws Exception
      */
     private void addIdleObject(K key, PooledObject<T> p) throws Exception {
@@ -1842,7 +1502,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
     /**
      * This returns the number of objects to create during the pool
      * sustain cycle. This will ensure that the minimum number of idle
-     * instances is maintained without going past the maxActive value.
+     * instances is maintained without going past the maxTotalPerKey value.
      * 
      * @param pool the ObjectPool to calculate the deficit for
      * @return The number of objects to be created
@@ -1854,12 +1514,12 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
         }
         int objectDefecit = 0;
         
-        //Calculate no of objects needed to be created, in order to have
-        //the number of pooled objects < maxActive();
+        // Calculate no of objects needed to be created, in order to have
+        // the number of pooled objects < maxTotalPerKey();
         objectDefecit = getMinIdle() - objectDeque.getIdleObjects().size();
-        if (getMaxActive() > 0) {
+        if (getMaxTotalPerKey() > 0) {
             int growLimit = Math.max(0,
-                    getMaxActive() - objectDeque.getIdleObjects().size());
+                    getMaxTotalPerKey() - objectDeque.getIdleObjects().size());
             objectDefecit = Math.min(objectDefecit, growLimit);
         }
 
@@ -1935,70 +1595,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
         }
     }
 
-    /**
-     * A simple "struct" encapsulating the
-     * configuration information for a <code>GenericKeyedObjectPool</code>.
-     * @see GenericKeyedObjectPool#GenericKeyedObjectPool(KeyedPoolableObjectFactory,GenericKeyedObjectPool.Config)
-     * @see GenericKeyedObjectPool#setConfig
-     */
-    public static class Config {
-        //CHECKSTYLE: stop VisibilityModifier
-        /**
-         * @see GenericKeyedObjectPool#setMaxIdle
-         */
-        public int maxIdle = GenericKeyedObjectPool.DEFAULT_MAX_IDLE;
-        /**
-         * @see GenericKeyedObjectPool#setMaxActive
-         */
-        public int maxActive = GenericKeyedObjectPool.DEFAULT_MAX_ACTIVE;
-        /**
-         * @see GenericKeyedObjectPool#setMaxTotal
-         */
-        public int maxTotal = GenericKeyedObjectPool.DEFAULT_MAX_TOTAL;
-        /**
-         * @see GenericKeyedObjectPool#setMinIdle
-         */
-        public int minIdle = GenericKeyedObjectPool.DEFAULT_MIN_IDLE;
-        /**
-         * @see GenericKeyedObjectPool#setMaxWait
-         */
-        public long maxWait = GenericKeyedObjectPool.DEFAULT_MAX_WAIT;
-        /**
-         * @see GenericKeyedObjectPool#setWhenExhaustedAction
-         */
-        public WhenExhaustedAction whenExhaustedAction = GenericKeyedObjectPool.DEFAULT_WHEN_EXHAUSTED_ACTION;
-        /**
-         * @see GenericKeyedObjectPool#setTestOnBorrow
-         */
-        public boolean testOnBorrow = GenericKeyedObjectPool.DEFAULT_TEST_ON_BORROW;
-        /**
-         * @see GenericKeyedObjectPool#setTestOnReturn
-         */
-        public boolean testOnReturn = GenericKeyedObjectPool.DEFAULT_TEST_ON_RETURN;
-        /**
-         * @see GenericKeyedObjectPool#setTestWhileIdle
-         */
-        public boolean testWhileIdle = GenericKeyedObjectPool.DEFAULT_TEST_WHILE_IDLE;
-        /**
-         * @see GenericKeyedObjectPool#setTimeBetweenEvictionRunsMillis
-         */
-        public long timeBetweenEvictionRunsMillis = GenericKeyedObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
-        /**
-         * @see GenericKeyedObjectPool#setNumTestsPerEvictionRun
-         */
-        public int numTestsPerEvictionRun =  GenericKeyedObjectPool.DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
-        /**
-         * @see GenericKeyedObjectPool#setMinEvictableIdleTimeMillis
-         */
-        public long minEvictableIdleTimeMillis = GenericKeyedObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
-        /**
-         * @see GenericKeyedObjectPool#setLifo
-         */
-        public boolean lifo = GenericKeyedObjectPool.DEFAULT_LIFO;
-        //CHECKSTYLE: resume VisibilityModifier
-    }
-
-
     //--- protected attributes ---------------------------------------
 
     /**
@@ -2006,28 +1602,30 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
      * @see #setMaxIdle
      * @see #getMaxIdle
      */
-    private int _maxIdle = DEFAULT_MAX_IDLE;
+    private int _maxIdle = GenericKeyedObjectPoolConfig.DEFAULT_MAX_IDLE;
 
     /**
      * The minimum no of idle objects to keep in the pool.
      * @see #setMinIdle
      * @see #getMinIdle
      */
-    private volatile int _minIdle = DEFAULT_MIN_IDLE;
+    private volatile int _minIdle =
+        GenericKeyedObjectPoolConfig.DEFAULT_MIN_IDLE;
 
     /**
      * The cap on the number of active instances from the pool.
-     * @see #setMaxActive
-     * @see #getMaxActive
+     * @see #setMaxTotalPerKey
+     * @see #getMaxTotalPerKey
      */
-    private int _maxActive = DEFAULT_MAX_ACTIVE;
+    private int _maxTotalPerKey =
+        GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL_PER_KEY;
 
     /**
      * The cap on the total number of instances from the pool if non-positive.
      * @see #setMaxTotal
      * @see #getMaxTotal
      */
-    private int _maxTotal = DEFAULT_MAX_TOTAL;
+    private int _maxTotal = GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL;
 
     /**
      * The maximum amount of time (in millis) the
@@ -2045,7 +1643,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
      * @see #setWhenExhaustedAction
      * @see #getWhenExhaustedAction
      */
-    private long _maxWait = DEFAULT_MAX_WAIT;
+    private long _maxWait = GenericKeyedObjectPoolConfig.DEFAULT_MAX_WAIT;
 
     /**
      * The action to take when the {@link #borrowObject} method
@@ -2056,7 +1654,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
      * @see #setWhenExhaustedAction
      * @see #getWhenExhaustedAction
      */
-    private WhenExhaustedAction _whenExhaustedAction = DEFAULT_WHEN_EXHAUSTED_ACTION;
+    private WhenExhaustedAction _whenExhaustedAction =
+        GenericKeyedObjectPoolConfig.DEFAULT_WHEN_EXHAUSTED_ACTION;
 
     /**
      * When <code>true</code>, objects will be
@@ -2069,7 +1668,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
      * @see #setTestOnBorrow
      * @see #getTestOnBorrow
      */
-    private volatile boolean _testOnBorrow = DEFAULT_TEST_ON_BORROW;
+    private volatile boolean _testOnBorrow =
+        GenericKeyedObjectPoolConfig.DEFAULT_TEST_ON_BORROW;
 
     /**
      * When <code>true</code>, objects will be
@@ -2080,7 +1680,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
      * @see #getTestOnReturn
      * @see #setTestOnReturn
      */
-    private volatile boolean _testOnReturn = DEFAULT_TEST_ON_RETURN;
+    private volatile boolean _testOnReturn =
+        GenericKeyedObjectPoolConfig.DEFAULT_TEST_ON_RETURN;
 
     /**
      * When <code>true</code>, objects will be
@@ -2093,7 +1694,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
      * @see #getTimeBetweenEvictionRunsMillis
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    private boolean _testWhileIdle = DEFAULT_TEST_WHILE_IDLE;
+    private boolean _testWhileIdle =
+        GenericKeyedObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE;
 
     /**
      * The number of milliseconds to sleep between runs of the
@@ -2104,7 +1706,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
      * @see #setTimeBetweenEvictionRunsMillis
      * @see #getTimeBetweenEvictionRunsMillis
      */
-    private long _timeBetweenEvictionRunsMillis = DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
+    private long _timeBetweenEvictionRunsMillis =
+        GenericKeyedObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
 
     /**
      * The number of objects to examine during each run of the
@@ -2119,7 +1722,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
      * @see #getTimeBetweenEvictionRunsMillis
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    private int _numTestsPerEvictionRun =  DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
+    private int _numTestsPerEvictionRun =
+        GenericKeyedObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
 
     /**
      * The minimum amount of time an object may sit idle in the pool
@@ -2133,18 +1737,20 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
      * @see #getTimeBetweenEvictionRunsMillis
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    private long _minEvictableIdleTimeMillis = DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+    private long _minEvictableIdleTimeMillis =
+        GenericKeyedObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+
+    /** Whether or not the pools behave as LIFO queues (last in first out) */
+    private boolean _lifo = GenericKeyedObjectPoolConfig.DEFAULT_LIFO;
 
     /** My {@link KeyedPoolableObjectFactory}. */
-    private KeyedPoolableObjectFactory<K,T> _factory = null;
+    private volatile KeyedPoolableObjectFactory<K,T> _factory = null;
+    private Object factoryLock = new Object();
 
     /**
      * My idle object eviction {@link TimerTask}, if any.
      */
     private Evictor _evictor = null;
-
-    /** Whether or not the pools behave as LIFO queues (last in first out) */
-    private boolean _lifo = DEFAULT_LIFO;
 
     /** My hash of pools (ObjectQueue). */
     private Map<K,ObjectDeque<T>> poolMap =

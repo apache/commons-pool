@@ -153,7 +153,8 @@ public class TestPoolUtils {
 
         // Test that the minIdle check doesn't add too many idle objects
         final KeyedPoolableObjectFactory kpof = createProxy(KeyedPoolableObjectFactory.class, calledMethods);
-        final KeyedObjectPool kop = new GenericKeyedObjectPool(kpof);
+        final KeyedObjectPool kop = new GenericKeyedObjectPool();
+        kop.setFactory(kpof);
         PoolUtils.checkMinIdle(kop, key, 2, 100);
         Thread.sleep(400);
         assertEquals(2, kop.getNumIdle(key));
