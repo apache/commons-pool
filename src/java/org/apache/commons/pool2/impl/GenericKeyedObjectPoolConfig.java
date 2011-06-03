@@ -16,7 +16,7 @@
  */
 package org.apache.commons.pool2.impl;
 
-import org.apache.commons.pool2.KeyedObjectPoolFactory;
+import org.apache.commons.pool2.KeyedPoolableObjectFactory;
 
 /**
  * A simple "struct" encapsulating the configuration for a
@@ -33,7 +33,7 @@ public class GenericKeyedObjectPoolConfig extends BaseObjectPoolConfig {
     
     private int maxTotalPerKey = DEFAULT_MAX_TOTAL_PER_KEY;
     
-    private KeyedObjectPoolFactory<?,?> factory = null;
+    private KeyedPoolableObjectFactory<?,?> factory = null;
 
     
     public GenericKeyedObjectPoolConfig() {
@@ -42,11 +42,11 @@ public class GenericKeyedObjectPoolConfig extends BaseObjectPoolConfig {
     }
 
 
-    public KeyedObjectPoolFactory<?,?> getFactory() {
+    public KeyedPoolableObjectFactory<?,?> getFactory() {
         return factory;
     }
 
-    public void setFactory(KeyedObjectPoolFactory<?,?> factory) {
+    public void setFactory(KeyedPoolableObjectFactory<?,?> factory) {
         this.factory = factory;
     }
 
