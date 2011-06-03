@@ -68,11 +68,6 @@ public abstract class BaseObjectPoolConfig {
     public static final int DEFAULT_NUM_TESTS_PER_EVICTION_RUN = 3;
 
     /**
-     * The default value for {@link #getSoftMinEvictableIdleTimeMillis}.
-     */
-    public static final long DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS = -1;
-
-    /**
      * The default "test on borrow" value.
      */
     public static final boolean DEFAULT_TEST_ON_BORROW = false;
@@ -114,9 +109,6 @@ public abstract class BaseObjectPoolConfig {
 
     private int numTestsPerEvictionRun =
         DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
-
-    private long softMinEvictableIdleTimeMillis =
-        DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 
     private boolean testOnBorrow = DEFAULT_TEST_ON_BORROW;
 
@@ -185,15 +177,6 @@ public abstract class BaseObjectPoolConfig {
 
     public void setNumTestsPerEvictionRun(int numTestsPerEvictionRun) {
         this.numTestsPerEvictionRun = numTestsPerEvictionRun;
-    }
-
-    public long getSoftMinEvictableIdleTimeMillis() {
-        return softMinEvictableIdleTimeMillis;
-    }
-
-    public void setSoftMinEvictableIdleTimeMillis(
-            long softMinEvictableIdleTimeMillis) {
-        this.softMinEvictableIdleTimeMillis = softMinEvictableIdleTimeMillis;
     }
 
     public boolean getTestOnBorrow() {
