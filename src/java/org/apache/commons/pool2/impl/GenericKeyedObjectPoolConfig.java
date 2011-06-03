@@ -16,13 +16,15 @@
  */
 package org.apache.commons.pool2.impl;
 
+import org.apache.commons.pool2.KeyedObjectPoolFactory;
+
 /**
  * A simple "struct" encapsulating the configuration for a
- * {@link GenericKeyedObjectPool} excluding the factory used to create objects.
+ * {@link GenericKeyedObjectPool}.
  * 
  * @since Pool 2.0
  */
-public class GenericKeyedObjectPoolConfig extends GenericObjectPoolConfig {
+public class GenericKeyedObjectPoolConfig extends BaseObjectPoolConfig {
 
     public static final int DEFAULT_MAX_TOTAL_PER_KEY = 8;
 
@@ -31,13 +33,23 @@ public class GenericKeyedObjectPoolConfig extends GenericObjectPoolConfig {
     
     private int maxTotalPerKey = DEFAULT_MAX_TOTAL_PER_KEY;
     
+    private KeyedObjectPoolFactory<?,?> factory = null;
 
+    
     public GenericKeyedObjectPoolConfig() {
         // Uses a different default for maxTotal
         setMaxTotal(DEFAULT_MAX_TOTAL);
     }
-    
-    
+
+
+    public KeyedObjectPoolFactory<?,?> getFactory() {
+        return factory;
+    }
+
+    public void setFactory(KeyedObjectPoolFactory<?,?> factory) {
+        this.factory = factory;
+    }
+
     public int getMaxTotalPerKey() {
         return maxTotalPerKey;
     }
