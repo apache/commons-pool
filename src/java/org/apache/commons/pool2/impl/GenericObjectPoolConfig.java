@@ -16,7 +16,7 @@
  */
 package org.apache.commons.pool2.impl;
 
-import org.apache.commons.pool2.ObjectPoolFactory;
+import org.apache.commons.pool2.PoolableObjectFactory;
 
 /**
  * A simple "struct" encapsulating the configuration for a
@@ -26,14 +26,14 @@ import org.apache.commons.pool2.ObjectPoolFactory;
  */
 public class GenericObjectPoolConfig extends BaseObjectPoolConfig {
 
-    private ObjectPoolFactory<?> factory = null;
+    private PoolableObjectFactory<?> factory = null;
 
 
-    public ObjectPoolFactory<?> getFactory() {
+    public PoolableObjectFactory<?> getFactory() {
         return factory;
     }
 
-    public void setFactory(ObjectPoolFactory<?> factory) {
+    public void setFactory(PoolableObjectFactory<?> factory) {
         this.factory = factory;
     }
 }
