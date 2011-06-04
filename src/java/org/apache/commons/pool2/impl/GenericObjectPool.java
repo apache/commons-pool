@@ -56,14 +56,10 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  * behavior of the {@link #borrowObject} method when the pool is exhausted:
  * <ul>
  * <li>When {@link #setWhenExhaustedAction <i>whenExhaustedAction</i>} is
- * {@link #WHEN_EXHAUSTED_FAIL}, {@link #borrowObject} will throw a
+ * {@link WhenExhaustedAction#FAIL}, {@link #borrowObject} will throw a
  * {@link NoSuchElementException}</li>
  * <li>When {@link #setWhenExhaustedAction <i>whenExhaustedAction</i>} is
- * {@link #WHEN_EXHAUSTED_GROW}, {@link #borrowObject} will create a new object
- * and return it (essentially making {@link #setMaxActive <i>maxActive</i>}
- * meaningless.)</li>
- * <li>When {@link #setWhenExhaustedAction <i>whenExhaustedAction</i>} is
- * {@link #WHEN_EXHAUSTED_BLOCK}, {@link #borrowObject} will block (invoke
+ * {@link WhenExhaustedAction#BLOCK}, {@link #borrowObject} will block (invoke
  * {@link Object#wait()}) until a new or idle object is available. If a positive
  * {@link #setMaxWait <i>maxWait</i>} value is supplied, then
  * {@link #borrowObject} will block for at most that many milliseconds, after
@@ -72,7 +68,7 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  * indefinitely.</li>
  * </ul>
  * The default <code>whenExhaustedAction</code> setting is
- * {@link #WHEN_EXHAUSTED_BLOCK} and the default <code>maxWait</code> setting is
+ * {@link WhenExhaustedAction#BLOCK} and the default <code>maxWait</code> setting is
  * -1. By default, therefore, <code>borrowObject</code> will block indefinitely
  * until an idle instance becomes available.</li>
  * <li>When {@link #setTestOnBorrow <i>testOnBorrow</i>} is set, the pool will

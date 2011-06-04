@@ -38,9 +38,9 @@ public abstract class BaseObjectPoolConfig {
 
     /**
      * The default maximum amount of time (in milliseconds) the
-     * {@link #borrowObject} method should block before throwing an exception
+     * {@code borrowObject} method should block before throwing an exception
      * when the pool is exhausted and the {@link #getWhenExhaustedAction
-     * "when exhausted" action} is {@link #WHEN_EXHAUSTED_BLOCK}.
+     * "when exhausted" action} is {@link WhenExhaustedAction#BLOCK}.
      */
     public static final long DEFAULT_MAX_WAIT = -1L;
 
