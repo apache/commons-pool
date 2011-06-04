@@ -24,19 +24,6 @@
          Object pooling API implementations.
       </p>
       <p>
-         {@link org.apache.commons.pool2.impl.StackObjectPool StackObjectPool}
-         ({@link org.apache.commons.pool2.impl.StackKeyedObjectPool StackKeyedObjectPool})
-         provides a simple, {@link java.util.Stack Stack}-based
-         implementation of {@link org.apache.commons.pool2.ObjectPool ObjectPool}
-         ({@link org.apache.commons.pool2.KeyedObjectPool KeyedObjectPool}).
-         {@link org.apache.commons.pool2.impl.StackObjectPoolFactory StackObjectPoolFactory}
-         ({@link org.apache.commons.pool2.impl.StackKeyedObjectPoolFactory StackKeyedObjectPoolFactory})
-         provides an implementation of the
-         {@link org.apache.commons.pool2.ObjectPoolFactory ObjectPoolFactory}
-         ({@link org.apache.commons.pool2.KeyedObjectPoolFactory KeyedObjectPoolFactory})
-         factory interface for this class.
-      </p>
-      <p>
          {@link org.apache.commons.pool2.impl.GenericObjectPool GenericObjectPool}
          ({@link org.apache.commons.pool2.impl.GenericKeyedObjectPool GenericKeyedObjectPool})
          provides a more robust (but also more complicated)
@@ -48,6 +35,11 @@
          {@link org.apache.commons.pool2.ObjectPoolFactory ObjectPoolFactory}
          ({@link org.apache.commons.pool2.KeyedObjectPoolFactory KeyedObjectPoolFactory})
          factory interface for this class.
+      </p>
+      <p>
+         {@link org.apache.commons.pool2.impl.SoftReferenceObjectPool SoftReferenceObjectPool}
+         provides a {@link java.lang.ref.SoftReference SoftReference} based
+         {@link org.apache.commons.pool2.ObjectPool ObjectPool}.
       </p>
       <p>
          See also the {@link org.apache.commons.pool2} package.
