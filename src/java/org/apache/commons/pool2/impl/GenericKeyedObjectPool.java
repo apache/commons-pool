@@ -1592,14 +1592,14 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
     //--- protected attributes ---------------------------------------
 
     /**
-     * The cap on the number of idle instances in the pool.
+     * The cap on the number of idle instances per key.
      * @see #setMaxIdle
      * @see #getMaxIdle
      */
     private int _maxIdle = GenericKeyedObjectPoolConfig.DEFAULT_MAX_IDLE;
 
     /**
-     * The minimum no of idle objects to keep in the pool.
+     * The minimum no of idle objects per key.
      * @see #setMinIdle
      * @see #getMinIdle
      */
