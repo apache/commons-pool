@@ -29,19 +29,36 @@ public class GenericKeyedObjectPoolConfig<K,T> extends BaseObjectPoolConfig
 
     public static final int DEFAULT_MAX_TOTAL_PER_KEY = 8;
 
+    /**
+     * The default maximum number of instances under management
+     * (idle or checked out) across all keyed pools.
+     */
     public static final int DEFAULT_MAX_TOTAL = -1;
-
+    
+    /**
+     * The default minimum number of idle instances that the maintenance
+     * thread (if enabled) will try to maintain per key.
+     */
+    public static final int DEFAULT_MIN_IDLE_PER_KEY = 0;
+    
+    /**
+     * The default maximum number of idle instances per key.
+     */
+    public static final int DEFAULT_MAX_IDLE_PER_KEY = 8;
+    
+    
+    private int minIdlePerKey = DEFAULT_MIN_IDLE_PER_KEY;
+    
+    private int maxIdlePerKey = DEFAULT_MAX_IDLE_PER_KEY;
     
     private int maxTotalPerKey = DEFAULT_MAX_TOTAL_PER_KEY;
     
+    private int maxTotal = DEFAULT_MAX_TOTAL;
+    
     private KeyedPoolableObjectFactory<K,T> factory = null;
-
     
     public GenericKeyedObjectPoolConfig() {
-        // Uses a different default for maxTotal
-        setMaxTotal(DEFAULT_MAX_TOTAL);
     }
-
 
     public KeyedPoolableObjectFactory<K,T> getFactory() {
         return factory;
@@ -49,6 +66,14 @@ public class GenericKeyedObjectPoolConfig<K,T> extends BaseObjectPoolConfig
 
     public void setFactory(KeyedPoolableObjectFactory<K,T> factory) {
         this.factory = factory;
+    }
+
+    public int getMaxTotal() {
+        return maxTotal;
+    }
+
+    public void setMaxTotal(int maxTotal) {
+        this.maxTotal = maxTotal;
     }
 
     public int getMaxTotalPerKey() {
@@ -59,6 +84,22 @@ public class GenericKeyedObjectPoolConfig<K,T> extends BaseObjectPoolConfig
         this.maxTotalPerKey = maxTotalPerKey;
     }
     
+    public int getMinIdlePerKey() {
+        return minIdlePerKey;
+    }
+
+    public void setMinIdlePerKey(int minIdlePerKey) {
+        this.minIdlePerKey = minIdlePerKey;
+    }
+
+    public int getMaxIdlePerKey() {
+        return maxIdlePerKey;
+    }
+
+    public void setMaxIdlePerKey(int maxIdlePerKey) {
+        this.maxIdlePerKey = maxIdlePerKey;
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public GenericKeyedObjectPoolConfig<K, T> clone() {

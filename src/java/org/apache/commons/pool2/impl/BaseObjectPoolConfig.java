@@ -23,11 +23,6 @@ package org.apache.commons.pool2.impl;
 public abstract class BaseObjectPoolConfig {
 
     /**
-     * The default cap on the total number of active instances from the pool.
-     */
-    public static final int DEFAULT_MAX_TOTAL = 8;
-
-    /**
      * The default LIFO status. True means that borrowObject returns the most
      * recently used ("last in") idle object in the pool (if there are idle
      * instances available). False means that the pool behaves as a FIFO queue -
@@ -44,22 +39,12 @@ public abstract class BaseObjectPoolConfig {
      */
     public static final long DEFAULT_MAX_WAIT = -1L;
 
-    /**
-     * The default cap on the number of "sleeping" instances in the pool.
-     */
-    public static final int DEFAULT_MAX_IDLE = 8;
 
     /**
      * The default value for {@link #getMinEvictableIdleTimeMillis}.
      */
     public static final long DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS =
             1000L * 60L * 30L;
-
-    /**
-     * The default minimum number of "sleeping" instances in the pool before
-     * before the evictor thread (if active) spawns new objects.
-     */
-    public static final int DEFAULT_MIN_IDLE = 0;
 
     /**
      * The default number of objects to examine per run in the idle object
@@ -93,19 +78,12 @@ public abstract class BaseObjectPoolConfig {
     public static final WhenExhaustedAction DEFAULT_WHEN_EXHAUSTED_ACTION =
         WhenExhaustedAction.BLOCK;
     
-
-    private int maxTotal = DEFAULT_MAX_TOTAL;
-
     private boolean lifo = DEFAULT_LIFO;
-
-    private int maxIdle = DEFAULT_MAX_IDLE;
 
     private long maxWait = DEFAULT_MAX_WAIT;
 
     private long minEvictableIdleTimeMillis =
         DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
-
-    private int minIdle = DEFAULT_MIN_IDLE;
 
     private int numTestsPerEvictionRun =
         DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
@@ -122,29 +100,12 @@ public abstract class BaseObjectPoolConfig {
     private WhenExhaustedAction whenExhaustedAction =
         DEFAULT_WHEN_EXHAUSTED_ACTION;
 
-
-    public int getMaxTotal() {
-        return maxTotal;
-    }
-
-    public void setMaxTotal(int maxTotal) {
-        this.maxTotal = maxTotal;
-    }
-
     public boolean getLifo() {
         return lifo;
     }
 
     public void setLifo(boolean lifo) {
         this.lifo = lifo;
-    }
-
-    public int getMaxIdle() {
-        return maxIdle;
-    }
-
-    public void setMaxIdle(int maxIdle) {
-        this.maxIdle = maxIdle;
     }
 
     public long getMaxWait() {
@@ -161,14 +122,6 @@ public abstract class BaseObjectPoolConfig {
 
     public void setMinEvictableIdleTimeMillis(long minEvictableIdleTimeMillis) {
         this.minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
-    }
-
-    public int getMinIdle() {
-        return minIdle;
-    }
-
-    public void setMinIdle(int minIdle) {
-        this.minIdle = minIdle;
     }
 
     public int getNumTestsPerEvictionRun() {
