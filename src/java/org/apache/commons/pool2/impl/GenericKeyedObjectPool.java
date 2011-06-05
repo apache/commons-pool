@@ -72,7 +72,7 @@ import org.apache.commons.pool2.PoolUtils;
  *    pools. The default setting for this parameter is -1 (no limit).
  *  </li>
  *  <li>
- *    {@link #setMaxIdle maxIdle} controls the maximum number of objects that can
+ *    {@link #setMaxIdlePerKey maxIdlePerKey} controls the maximum number of objects that can
  *    sit idle in the pool (per key) at any time.  When negative, there
  *    is no limit to the number of objects that may be idle per key. The
  *    default setting for this parameter is 8.
@@ -155,7 +155,7 @@ import org.apache.commons.pool2.PoolUtils;
  *   for this parameter is <code>false.</code>
  *  </li>
  *  <li>
- *    {@link #setMinIdle minIdle} sets a target value for the minimum number of
+ *    {@link #setMinIdlePerKey minIdlePerKey} sets a target value for the minimum number of
  *    idle objects (per key) that should always be available. If this parameter
  *    is set to a positive number and
  *    <code>timeBetweenEvictionRunsMillis > 0,</code> each time the idle object
@@ -226,13 +226,13 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
         // Copy the settings from the config
         this._factory = config.getFactory();
         this._lifo = config.getLifo();
-        this._maxIdle = config.getMaxIdle();
+        this.maxIdlePerKey = config.getMaxIdlePerKey();
         this._maxTotal = config.getMaxTotal();
         this._maxTotalPerKey = config.getMaxTotalPerKey();
         this._maxWait = config.getMaxWait();
         this._minEvictableIdleTimeMillis =
             config.getMinEvictableIdleTimeMillis();
-        this._minIdle = config.getMinIdle();
+        this.minIdlePerKey = config.getMinIdlePerKey();
         this._numTestsPerEvictionRun = config.getNumTestsPerEvictionRun();
         this._testOnBorrow = config.getTestOnBorrow();
         this._testOnReturn = config.getTestOnReturn();
@@ -362,10 +362,10 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
      * Returns the cap on the number of "idle" instances per key.
      * @return the maximum number of "idle" instances that can be held
      * in a given keyed pool.
-     * @see #setMaxIdle
+     * @see #setMaxIdlePerKey
      */
-    public int getMaxIdle() {
-        return _maxIdle;
+    public int getMaxIdlePerKey() {
+        return maxIdlePerKey;
     }
 
     /**
@@ -379,11 +379,10 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
      * point.
      * @param maxIdle the maximum number of "idle" instances that can be held
      * in a given keyed pool. Use a negative value for no limit.
-     * @see #getMaxIdle
-     * @see BaseObjectPoolConfig#DEFAULT_MAX_IDLE
+     * @see #getMaxIdlePerKey
      */
-    public void setMaxIdle(int maxIdle) {
-        _maxIdle = maxIdle;
+    public void setMaxIdlePerKey(int maxIdle) {
+        maxIdlePerKey = maxIdle;
     }
 
     /**
@@ -394,11 +393,11 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
      * made during idle object eviction runs.
      * @param poolSize - The minimum size of the each keyed pool
      * @since Pool 1.3
-     * @see #getMinIdle
+     * @see #getMinIdlePerKey
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    public void setMinIdle(int poolSize) {
-        _minIdle = poolSize;
+    public void setMinIdlePerKey(int poolSize) {
+        minIdlePerKey = poolSize;
     }
 
     /**
@@ -411,8 +410,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
      * @since Pool 1.3
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    public int getMinIdle() {
-        return _minIdle;
+    public int getMinIdlePerKey() {
+        return minIdlePerKey;
     }
 
     /**
@@ -592,10 +591,10 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
      * @see GenericKeyedObjectPoolConfig
      */
     public void setConfig(GenericKeyedObjectPoolConfig<K,T> conf) {
-        setMaxIdle(conf.getMaxIdle());
+        setMaxIdlePerKey(conf.getMaxIdlePerKey());
         setMaxTotalPerKey(conf.getMaxTotalPerKey());
         setMaxTotal(conf.getMaxTotal());
-        setMinIdle(conf.getMinIdle());
+        setMinIdlePerKey(conf.getMinIdlePerKey());
         setMaxWait(conf.getMaxWait());
         setWhenExhaustedAction(conf.getWhenExhaustedAction());
         setTestOnBorrow(conf.getTestOnBorrow());
@@ -781,7 +780,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
       * the same object/key pair (with no <code>borrowObject</code> calls in between) will result in multiple
       * references to the object in the idle instance pool.</p>
       * 
-      * <p>If {@link #getMaxIdle() maxIdle} is set to a positive value and the number of idle instances under the given
+      * <p>If {@link #getMaxIdlePerKey() maxIdle} is set to a positive value and the number of idle instances under the given
       * key has reached this value, the returning instance is destroyed.</p>
       * 
       * <p>If {@link #getTestOnReturn() testOnReturn} == true, the returning instance is validated before being returned
@@ -829,7 +828,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
              // TODO - Should not happen;
          }
 
-         int maxIdle = getMaxIdle();
+         int maxIdle = getMaxIdlePerKey();
          LinkedBlockingDeque<PooledObject<T>> idleObjects =
              objectDeque.getIdleObjects();
 
@@ -1331,7 +1330,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
      * @throws Exception If there was an error whilst creating the pooled objects.
      */
     private void ensureMinIdle() throws Exception {
-        int minIdle = getMinIdle();
+        int minIdle = getMinIdlePerKey();
         if (minIdle < 1) {
             return;
         }
@@ -1354,7 +1353,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
      * @throws Exception If there was an error whilst creating the pooled objects
      */
     private void ensureMinIdle(K key) throws Exception {
-        int minIdle = getMinIdle();
+        int minIdle = getMinIdlePerKey();
         if (minIdle < 1) {
             return;
         }
@@ -1428,7 +1427,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
     }
 
     /**
-     * Registers a key for pool control and ensures that {@link #getMinIdle()}
+     * Registers a key for pool control and ensures that {@link #getMinIdlePerKey()}
      * idle instances are created.
      *
      * @param key - The key to register for pool control.
@@ -1504,13 +1503,13 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
     private synchronized int calculateDeficit(ObjectDeque<T> objectDeque) {
         
         if (objectDeque == null) {
-            return getMinIdle();
+            return getMinIdlePerKey();
         }
         int objectDefecit = 0;
         
         // Calculate no of objects needed to be created, in order to have
         // the number of pooled objects < maxTotalPerKey();
-        objectDefecit = getMinIdle() - objectDeque.getIdleObjects().size();
+        objectDefecit = getMinIdlePerKey() - objectDeque.getIdleObjects().size();
         if (getMaxTotalPerKey() > 0) {
             int growLimit = Math.max(0,
                     getMaxTotalPerKey() - objectDeque.getIdleObjects().size());
@@ -1596,15 +1595,15 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
      * @see #setMaxIdle
      * @see #getMaxIdle
      */
-    private int _maxIdle = GenericKeyedObjectPoolConfig.DEFAULT_MAX_IDLE;
+    private int maxIdlePerKey = GenericKeyedObjectPoolConfig.DEFAULT_MAX_IDLE_PER_KEY;
 
     /**
      * The minimum no of idle objects per key.
      * @see #setMinIdle
      * @see #getMinIdle
      */
-    private volatile int _minIdle =
-        GenericKeyedObjectPoolConfig.DEFAULT_MIN_IDLE;
+    private volatile int minIdlePerKey =
+        GenericKeyedObjectPoolConfig.DEFAULT_MIN_IDLE_PER_KEY;
 
     /**
      * The cap on the number of active instances from the pool.

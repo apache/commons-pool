@@ -46,9 +46,9 @@ public class TestGenericKeyedObjectPoolFactory extends TestKeyedObjectPoolFactor
         final GenericKeyedObjectPoolConfig<Object,Object> config =
             new GenericKeyedObjectPoolConfig<Object,Object>();
         config.setMaxTotalPerKey(1);
-        config.setMaxIdle(2);
+        config.setMaxIdlePerKey(2);
         config.setMaxWait(3);
-        config.setMinIdle(4);
+        config.setMinIdlePerKey(4);
         config.setMinEvictableIdleTimeMillis(5);
         config.setNumTestsPerEvictionRun(6);
         config.setTestOnBorrow(true);
@@ -63,9 +63,9 @@ public class TestGenericKeyedObjectPoolFactory extends TestKeyedObjectPoolFactor
         GenericKeyedObjectPool<Object,Object> pool =
             (GenericKeyedObjectPool<Object,Object>)factory.createPool();
         assertEquals(1, pool.getMaxTotalPerKey());
-        assertEquals(2, pool.getMaxIdle());
+        assertEquals(2, pool.getMaxIdlePerKey());
         assertEquals(3, pool.getMaxWait());
-        assertEquals(4, pool.getMinIdle());
+        assertEquals(4, pool.getMinIdlePerKey());
         assertEquals(5, pool.getMinEvictableIdleTimeMillis());
         assertEquals(6, pool.getNumTestsPerEvictionRun());
         assertEquals(true, pool.getTestOnBorrow());
