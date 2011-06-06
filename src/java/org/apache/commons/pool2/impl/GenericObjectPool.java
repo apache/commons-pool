@@ -119,10 +119,9 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  * <i>softMinEvictableIdleTimeMillis</i>} specifies the minimum amount of time
  * an object may sit idle in the pool before it is eligible for eviction by the
  * idle object evictor (if any), with the extra condition that at least
- * "minIdle" object instances remain in the pool. When non-positive, no objects
- * will be evicted from the pool due to idle time alone. This setting has no
+ * "minIdle" object instances remain in the pool. This setting has no
  * effect unless <code>timeBetweenEvictionRunsMillis > 0.</code> and it is
- * superceded by {@link #setMinEvictableIdleTimeMillis
+ * superseded by {@link #setMinEvictableIdleTimeMillis
  * <i>minEvictableIdleTimeMillis</i>} (that is, if
  * <code>minEvictableIdleTimeMillis</code> is positive, then
  * <code>softMinEvictableIdleTimeMillis</code> is ignored). The default setting
@@ -1056,15 +1055,20 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
     }
 
     /**
-     * Returns the minimum amount of time an object may sit idle in the pool
-     * before it is eligible for eviction by the idle object evictor (if any),
-     * with the extra condition that at least "minIdle" amount of object remain
-     * in the pool.
+     * Returns the minimum amount of time
+     * an object may sit idle in the pool before it is eligible for eviction by the
+     * idle object evictor (if any), with the extra condition that at least
+     * "minIdle" object instances remain in the pool. This setting has no
+     * effect unless {@code timeBetweenEvictionRunsMillis > 0.} and it is
+     * superseded by {@link #setMinEvictableIdleTimeMillis
+     * <i>minEvictableIdleTimeMillis</i>} (that is, if
+     * {@code minEvictableIdleTimeMillis} is positive, then
+     * {@code softMinEvictableIdleTimeMillis} is ignored). The default setting
+     * for this parameter is -1 (disabled).
      * 
      * @return minimum amount of time an object may sit idle in the pool before
-     *         it is eligible for eviction.
+     *         it is eligible for eviction if minIdle instances are available
      * @since Pool 1.3
-     * @see #setSoftMinEvictableIdleTimeMillis
      */
     public long getSoftMinEvictableIdleTimeMillis() {
         return _softMinEvictableIdleTimeMillis;
