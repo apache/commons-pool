@@ -825,7 +825,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
          }
 
          if (!p.deallocate()) {
-             // TODO - Should not happen;
+             throw new IllegalStateException(
+                     "Object has already been retured to this pool");
          }
 
          int maxIdle = getMaxIdlePerKey();

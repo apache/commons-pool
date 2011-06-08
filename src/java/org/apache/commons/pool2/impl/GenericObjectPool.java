@@ -1328,15 +1328,6 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * instance is validated before being returned to the idle instance pool. In
      * this case, if validation fails, the instance is destroyed.
      * </p>
-     * <p>
-     * <strong>Note: </strong> There is no guard to prevent an object being
-     * returned to the pool multiple times. Clients are expected to discard
-     * references to returned objects and ensure that an object is not returned
-     * to the pool multiple times in sequence (i.e., without being borrowed
-     * again between returns). Violating this contract will result in the same
-     * object appearing multiple times in the pool and pool counters (numActive,
-     * numIdle) returning incorrect values.
-     * </p>
      * 
      * @param obj
      *            instance to return to the pool
@@ -1374,7 +1365,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
         }
 
         if (!p.deallocate()) {
-            // TODO - Should not happen;
+            throw new IllegalStateException(
+                    "Object has already been retured to this pool");
         }
 
         int maxIdle = getMaxIdle();
