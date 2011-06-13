@@ -58,7 +58,7 @@
       Ensure GKOP.preparePool() throws an exception if no factory has been
       defined.
     </action>
-    <action dev=markt" type="fix" issue="POOL-134">
+    <action dev="markt" type="fix" issue="POOL-134">
       Add the ability to specify a per call wait time when borrowing an object.
     </action>
   </release>
