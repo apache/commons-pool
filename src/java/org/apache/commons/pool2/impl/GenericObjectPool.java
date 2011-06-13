@@ -176,7 +176,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
     }
 
     public GenericObjectPool(GenericObjectPoolConfig<T> config) {
-        this._factory = config.getFactory();
+        this.factory = config.getFactory();
         this._lifo = config.getLifo();
         this.maxTotal = config.getMaxTotal();
         this._maxIdle = config.getMaxIdle();
@@ -722,7 +722,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
 
             if (p != null) {
                 try {
-                    _factory.activateObject(p.getObject());
+                    factory.activateObject(p.getObject());
                 } catch (Exception e) {
                     try {
                         destroy(p);
@@ -741,7 +741,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
                     boolean validate = false;
                     Throwable validationThrowable = null;
                     try {
-                        validate = _factory.validateObject(p.getObject());
+                        validate = factory.validateObject(p.getObject());
                     } catch (Throwable t) {
                         PoolUtils.checkRethrow(t);
                     }
@@ -787,7 +787,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
     @Override
     public void returnObject(T obj) {
 
-        PooledObject<T> p = _allObjects.get(obj);
+        PooledObject<T> p = allObjects.get(obj);
 
         if (p == null) {
             throw new IllegalStateException(
@@ -795,7 +795,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
         }
 
         if (getTestOnReturn()) {
-            if (!_factory.validateObject(obj)) {
+            if (!factory.validateObject(obj)) {
                 try {
                     destroy(p);
                 } catch (Exception e) {
@@ -806,7 +806,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
         }
 
         try {
-            _factory.passivateObject(obj);
+            factory.passivateObject(obj);
         } catch (Exception e1) {
             try {
                 destroy(p);
@@ -850,7 +850,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      */
     @Override
     public void invalidateObject(T obj) throws Exception {
-        PooledObject<T> p = _allObjects.get(obj);
+        PooledObject<T> p = allObjects.get(obj);
         if (p == null) {
             throw new IllegalStateException(
                     "Object not currently part of this pool");
@@ -897,7 +897,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      */
     @Override
     public int getNumActive() {
-        return _allObjects.size() - _idleObjects.size();
+        return allObjects.size() - _idleObjects.size();
     }
 
     /**
@@ -944,10 +944,10 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
     @Override
     public void setFactory(PoolableObjectFactory<T> factory)
             throws IllegalStateException {
-        if (this._factory == null) {
+        if (this.factory == null) {
             synchronized (factoryLock) {
-                if (this._factory == null) {
-                    this._factory = factory;
+                if (this.factory == null) {
+                    this.factory = factory;
                 } else {
                     throw new IllegalStateException("Factory already set");
                 }
@@ -994,25 +994,25 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
         }
                 
         for (int i = 0, m = getNumTests(); i < m; i++) {
-            if (_evictionIterator == null || !_evictionIterator.hasNext()) {
+            if (evictionIterator == null || !evictionIterator.hasNext()) {
                 if (getLifo()) {
-                    _evictionIterator = _idleObjects.descendingIterator();
+                    evictionIterator = _idleObjects.descendingIterator();
                 } else {
-                    _evictionIterator = _idleObjects.iterator();
+                    evictionIterator = _idleObjects.iterator();
                 }
             }
-            if (!_evictionIterator.hasNext()) {
+            if (!evictionIterator.hasNext()) {
                 // Pool exhausted, nothing to do here
                 return;
             }
 
             try {
-                underTest = _evictionIterator.next();
+                underTest = evictionIterator.next();
             } catch (NoSuchElementException nsee) {
                 // Object was borrowed in another thread
                 // Don't count this as an eviction test so reduce i;
                 i--;
-                _evictionIterator = null;
+                evictionIterator = null;
                 continue;
             }
 
@@ -1031,17 +1031,17 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
                 if (testWhileIdle) {
                     boolean active = false;
                     try {
-                        _factory.activateObject(underTest.getObject());
+                        factory.activateObject(underTest.getObject());
                         active = true;
                     } catch (Exception e) {
                         destroy(underTest);
                     }
                     if (active) {
-                        if (!_factory.validateObject(underTest.getObject())) {
+                        if (!factory.validateObject(underTest.getObject())) {
                             destroy(underTest);
                         } else {
                             try {
-                                _factory.passivateObject(underTest.getObject());
+                                factory.passivateObject(underTest.getObject());
                             } catch (Exception e) {
                                 destroy(underTest);
                             }
@@ -1069,22 +1069,22 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
 
         T t = null;
         try {
-            t = _factory.makeObject();
+            t = factory.makeObject();
         } catch (Exception e) {
             createCount.decrementAndGet();
             throw e;
         }
 
         PooledObject<T> p = new PooledObject<T>(t);
-        _allObjects.put(t, p);
+        allObjects.put(t, p);
         return p;
     }
 
     private void destroy(PooledObject<T> toDestory) throws Exception {
         _idleObjects.remove(toDestory);
-        _allObjects.remove(toDestory.getObject());
+        allObjects.remove(toDestory.getObject());
         try {
-            _factory.destroyObject(toDestory.getObject());
+            factory.destroyObject(toDestory.getObject());
         } finally {
             createCount.decrementAndGet();
         }
@@ -1125,7 +1125,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
     @Override
     public void addObject() throws Exception {
         assertOpen();
-        if (_factory == null) {
+        if (factory == null) {
             throw new IllegalStateException(
                     "Cannot add objects without a factory.");
         }
@@ -1137,7 +1137,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
 
     private void addIdleObject(PooledObject<T> p) throws Exception {
         if (p != null) {
-            _factory.passivateObject(p.getObject());
+            factory.passivateObject(p.getObject());
             if (getLifo()) {
                 _idleObjects.addFirst(p);
             } else {
@@ -1154,13 +1154,13 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      *            milliseconds between evictor runs.
      */
     protected void startEvictor(long delay) {
-        if (null != _evictor) {
-            EvictionTimer.cancel(_evictor);
-            _evictor = null;
+        if (null != evictor) {
+            EvictionTimer.cancel(evictor);
+            evictor = null;
         }
         if (delay > 0) {
-            _evictor = new Evictor();
-            EvictionTimer.schedule(_evictor, delay, delay);
+            evictor = new Evictor();
+            EvictionTimer.schedule(evictor, delay, delay);
         }
     }
 
@@ -1381,21 +1381,21 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
     private volatile boolean _lifo = GenericObjectPoolConfig.DEFAULT_LIFO;
 
     /** My {@link PoolableObjectFactory}. */
-    private volatile PoolableObjectFactory<T> _factory;
+    private volatile PoolableObjectFactory<T> factory;
     final private Object factoryLock = new Object();
 
     /**
      * My idle object eviction {@link TimerTask}, if any.
      */
-    private Evictor _evictor = null;
+    private Evictor evictor = null;
 
     /**
      * All of the objects currently associated with this pool in any state. It
      * excludes objects that have been destroyed. The size of
-     * {@link #_allObjects} will always be less than or equal to {@link
+     * {@link #allObjects} will always be less than or equal to {@link
      * #_maxActive}.
      */
-    private final Map<T, PooledObject<T>> _allObjects =
+    private final Map<T, PooledObject<T>> allObjects =
         new ConcurrentHashMap<T, PooledObject<T>>();
 
     /**
@@ -1412,5 +1412,5 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
         new LinkedBlockingDeque<PooledObject<T>>();
 
     /** An iterator for {@link #_idleObjects} that is used by the evictor. */
-    private Iterator<PooledObject<T>> _evictionIterator = null;
+    private Iterator<PooledObject<T>> evictionIterator = null;
 }
