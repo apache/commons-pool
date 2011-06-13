@@ -56,6 +56,7 @@ public class TestPoolUtils {
     /** Sleep time to let the minIdle tests run CHECK_COUNT times. */
     private static final int CHECK_SLEEP_PERIOD = CHECK_PERIOD * (CHECK_COUNT - 1) + CHECK_PERIOD / 2;
 
+    @SuppressWarnings("unused")
     public void testJavaBeanInstantiation() {
         new PoolUtils();
     }
@@ -80,16 +81,16 @@ public class TestPoolUtils {
 
         // Test that the minIdle check doesn't add too many idle objects
         final PoolableObjectFactory<Object> pof = createProxy(PoolableObjectFactory.class, calledMethods);
-        final ObjectPool<Object> op = new GenericObjectPool();
+        final ObjectPool<Object> op = new GenericObjectPool<Object>();
         op.setFactory(pof);
         PoolUtils.checkMinIdle(op, 2, 100);
         Thread.sleep(400);
         assertEquals(2, op.getNumIdle());
         op.close();
         int makeObjectCount = 0;
-        final Iterator iter = calledMethods.iterator();
+        final Iterator<String> iter = calledMethods.iterator();
         while (iter.hasNext()) {
-            final String methodName = (String)iter.next();
+            final String methodName = iter.next();
             if ("makeObject".equals(methodName)) {
                 makeObjectCount++;
             }
@@ -103,14 +104,14 @@ public class TestPoolUtils {
             afe = null;
             try {
                 calledMethods.clear();
-                final ObjectPool pool = createProxy(ObjectPool.class, calledMethods);
+                final ObjectPool<Object> pool = createProxy(ObjectPool.class, calledMethods);
                 final TimerTask task = PoolUtils.checkMinIdle(pool, 1, CHECK_PERIOD); // checks minIdle immediately
 
                 Thread.sleep(CHECK_SLEEP_PERIOD); // will check CHECK_COUNT more times.
                 task.cancel();
                 task.toString();
 
-                final List expectedMethods = new ArrayList();
+                final List<String> expectedMethods = new ArrayList<String>();
                 for (int i=0; i < CHECK_COUNT; i++) {
                     expectedMethods.add("getNumIdle");
                     expectedMethods.add("addObject");
@@ -135,26 +136,26 @@ public class TestPoolUtils {
             // expected
         }
         try {
-            final KeyedObjectPool pool = createProxy(KeyedObjectPool.class, (List)null);
+            final KeyedObjectPool<Object,Object> pool = createProxy(KeyedObjectPool.class, (List<String>)null);
             PoolUtils.checkMinIdle(pool, (Object)null, 1, 1);
             fail("PoolUtils.checkMinIdle(KeyedObjectPool,Object,int,long) must not accept null keys.");
         } catch (IllegalArgumentException iae) {
             // expected
         }
         try {
-            final KeyedObjectPool pool = createProxy(KeyedObjectPool.class, (List)null);
+            final KeyedObjectPool<Object,Object> pool = createProxy(KeyedObjectPool.class, (List<String>)null);
             PoolUtils.checkMinIdle(pool, new Object(), -1, 1);
             fail("PoolUtils.checkMinIdle(KeyedObjectPool,Object,int,long) must not accept negative min idle values.");
         } catch (IllegalArgumentException iae) {
             // expected
         }
 
-        final List calledMethods = new ArrayList();
+        final List<String> calledMethods = new ArrayList<String>();
         final Object key = new Object();
 
         // Test that the minIdle check doesn't add too many idle objects
-        final KeyedPoolableObjectFactory kpof = createProxy(KeyedPoolableObjectFactory.class, calledMethods);
-        final KeyedObjectPool kop = new GenericKeyedObjectPool();
+        final KeyedPoolableObjectFactory<Object,Object> kpof = createProxy(KeyedPoolableObjectFactory.class, calledMethods);
+        final KeyedObjectPool<Object,Object> kop = new GenericKeyedObjectPool<Object,Object>();
         kop.setFactory(kpof);
         PoolUtils.checkMinIdle(kop, key, 2, 100);
         Thread.sleep(400);
@@ -162,9 +163,9 @@ public class TestPoolUtils {
         assertEquals(2, kop.getNumIdle());
         kop.close();
         int makeObjectCount = 0;
-        final Iterator iter = calledMethods.iterator();
+        final Iterator<String> iter = calledMethods.iterator();
         while (iter.hasNext()) {
-            final String methodName = (String)iter.next();
+            final String methodName = iter.next();
             if ("makeObject".equals(methodName)) {
                 makeObjectCount++;
             }
@@ -178,14 +179,14 @@ public class TestPoolUtils {
             afe = null;
             try {
                 calledMethods.clear();
-                final KeyedObjectPool pool = createProxy(KeyedObjectPool.class, calledMethods);
+                final KeyedObjectPool<Object,Object> pool = createProxy(KeyedObjectPool.class, calledMethods);
                 final TimerTask task = PoolUtils.checkMinIdle(pool, key, 1, CHECK_PERIOD); // checks minIdle immediately
 
                 Thread.sleep(CHECK_SLEEP_PERIOD); // will check CHECK_COUNT more times.
                 task.cancel();
                 task.toString();
 
-                final List expectedMethods = new ArrayList();
+                final List<String> expectedMethods = new ArrayList<String>();
                 for (int i=0; i < CHECK_COUNT; i++) {
                     expectedMethods.add("getNumIdle");
                     expectedMethods.add("addObject");
@@ -253,11 +254,11 @@ public class TestPoolUtils {
             // expected
         }
 
-        final List calledMethods = new ArrayList();
-        final ObjectPool pool = createProxy(ObjectPool.class, calledMethods);
+        final List<String> calledMethods = new ArrayList<String>();
+        final ObjectPool<Object> pool = createProxy(ObjectPool.class, calledMethods);
 
         PoolUtils.prefill(pool, 0);
-        final List expectedMethods = new ArrayList();
+        final List<String> expectedMethods = new ArrayList<String>();
         assertEquals(expectedMethods, calledMethods);
 
         calledMethods.clear();
@@ -277,18 +278,18 @@ public class TestPoolUtils {
             // expected
         }
         try {
-            final KeyedObjectPool pool = createProxy(KeyedObjectPool.class, (List)null);
+            final KeyedObjectPool<Object,Object> pool = createProxy(KeyedObjectPool.class, (List<String>)null);
             PoolUtils.prefill(pool, (Object)null, 1);
             fail("PoolUtils.prefill(KeyedObjectPool,Object,int) must not accept null key.");
         } catch (IllegalArgumentException iae) {
             // expected
         }
 
-        final List calledMethods = new ArrayList();
-        final KeyedObjectPool pool = createProxy(KeyedObjectPool.class, calledMethods);
+        final List<String> calledMethods = new ArrayList<String>();
+        final KeyedObjectPool<Object,Object> pool = createProxy(KeyedObjectPool.class, calledMethods);
 
         PoolUtils.prefill(pool, new Object(), 0);
-        final List expectedMethods = new ArrayList();
+        final List<String> expectedMethods = new ArrayList<String>();
         assertEquals(expectedMethods, calledMethods);
 
         calledMethods.clear();
@@ -302,7 +303,7 @@ public class TestPoolUtils {
     @Test
     public void testPrefillKeyedObjectPoolCollection() throws Exception {
         try {
-            final KeyedObjectPool<String,String> pool = createProxy(KeyedObjectPool.class, (List)null);
+            final KeyedObjectPool<String,String> pool = createProxy(KeyedObjectPool.class, (List<String>)null);
             PoolUtils.prefill(pool, (Collection<String>)null, 1);
             fail("PoolUtils.prefill(KeyedObjectPool,Collection,int) must not accept null keys.");
         } catch (IllegalArgumentException iae) {
@@ -314,7 +315,7 @@ public class TestPoolUtils {
 
         final Set<String> keys = new HashSet<String>();
         PoolUtils.prefill(pool, keys, 0);
-        final List expectedMethods = new ArrayList();
+        final List<String> expectedMethods = new ArrayList<String>();
         assertEquals(expectedMethods, calledMethods);
 
         calledMethods.clear();
@@ -331,17 +332,17 @@ public class TestPoolUtils {
     @Test
     public void testSynchronizedPoolObjectPool() throws Exception {
         try {
-            PoolUtils.synchronizedPool((ObjectPool)null);
+            PoolUtils.synchronizedPool((ObjectPool<Object>)null);
             fail("PoolUtils.synchronizedPool(ObjectPool) must not allow a null pool.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
-        final List calledMethods = new ArrayList();
-        final ObjectPool op = createProxy(ObjectPool.class, calledMethods);
+        final List<String> calledMethods = new ArrayList<String>();
+        final ObjectPool<Object> op = createProxy(ObjectPool.class, calledMethods);
 
-        final ObjectPool sop = PoolUtils.synchronizedPool(op);
-        final List expectedMethods = invokeEveryMethod(sop);
+        final ObjectPool<Object> sop = PoolUtils.synchronizedPool(op);
+        final List<String> expectedMethods = invokeEveryMethod(sop);
         assertEquals(expectedMethods, calledMethods);
 
         // TODO: Anyone feel motivated to construct a test that verifies proper synchronization?
@@ -350,17 +351,17 @@ public class TestPoolUtils {
     @Test
     public void testSynchronizedPoolKeyedObjectPool() throws Exception {
         try {
-            PoolUtils.synchronizedPool((KeyedObjectPool)null);
+            PoolUtils.synchronizedPool((KeyedObjectPool<Object,Object>)null);
             fail("PoolUtils.synchronizedPool(KeyedObjectPool) must not allow a null pool.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
-        final List calledMethods = new ArrayList();
-        final KeyedObjectPool kop = (KeyedObjectPool)createProxy(KeyedObjectPool.class, calledMethods);
+        final List<String> calledMethods = new ArrayList<String>();
+        final KeyedObjectPool<Object,Object> kop = createProxy(KeyedObjectPool.class, calledMethods);
 
-        final KeyedObjectPool skop = PoolUtils.synchronizedPool(kop);
-        final List expectedMethods = invokeEveryMethod(skop);
+        final KeyedObjectPool<Object,Object> skop = PoolUtils.synchronizedPool(kop);
+        final List<String> expectedMethods = invokeEveryMethod(skop);
         assertEquals(expectedMethods, calledMethods);
 
         // TODO: Anyone feel motivated to construct a test that verifies proper synchronization?
@@ -369,18 +370,18 @@ public class TestPoolUtils {
     @Test
     public void testSynchronizedPoolableFactoryPoolableObjectFactory() throws Exception {
         try {
-            PoolUtils.synchronizedPoolableFactory((PoolableObjectFactory)null);
+            PoolUtils.synchronizedPoolableFactory((PoolableObjectFactory<Object>)null);
             fail("PoolUtils.synchronizedPoolableFactory(PoolableObjectFactory) must not allow a null factory.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
-        final List calledMethods = new ArrayList();
-        final PoolableObjectFactory pof =
-                (PoolableObjectFactory)createProxy(PoolableObjectFactory.class, calledMethods);
+        final List<String> calledMethods = new ArrayList<String>();
+        final PoolableObjectFactory<Object> pof =
+                createProxy(PoolableObjectFactory.class, calledMethods);
 
-        final PoolableObjectFactory spof = PoolUtils.synchronizedPoolableFactory(pof);
-        final List expectedMethods = invokeEveryMethod(spof);
+        final PoolableObjectFactory<Object> spof = PoolUtils.synchronizedPoolableFactory(pof);
+        final List<String> expectedMethods = invokeEveryMethod(spof);
         assertEquals(expectedMethods, calledMethods);
 
         // TODO: Anyone feel motivated to construct a test that verifies proper synchronization?
@@ -389,18 +390,18 @@ public class TestPoolUtils {
     @Test
     public void testSynchronizedPoolableFactoryKeyedPoolableObjectFactory() throws Exception {
         try {
-            PoolUtils.synchronizedPoolableFactory((KeyedPoolableObjectFactory)null);
+            PoolUtils.synchronizedPoolableFactory((KeyedPoolableObjectFactory<Object,Object>)null);
             fail("PoolUtils.synchronizedPoolableFactory(KeyedPoolableObjectFactory) must not allow a null factory.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
-        final List calledMethods = new ArrayList();
-        final KeyedPoolableObjectFactory kpof =
-                (KeyedPoolableObjectFactory)createProxy(KeyedPoolableObjectFactory.class, calledMethods);
+        final List<String> calledMethods = new ArrayList<String>();
+        final KeyedPoolableObjectFactory<Object,Object> kpof =
+                createProxy(KeyedPoolableObjectFactory.class, calledMethods);
 
-        final KeyedPoolableObjectFactory skpof = PoolUtils.synchronizedPoolableFactory(kpof);
-        final List expectedMethods = invokeEveryMethod(skpof);
+        final KeyedPoolableObjectFactory<Object,Object> skpof = PoolUtils.synchronizedPoolableFactory(kpof);
+        final List<String> expectedMethods = invokeEveryMethod(skpof);
         assertEquals(expectedMethods, calledMethods);
 
         // TODO: Anyone feel motivated to construct a test that verifies proper synchronization?
@@ -409,28 +410,29 @@ public class TestPoolUtils {
     @Test
     public void testErodingPoolObjectPool() throws Exception {
         try {
-            PoolUtils.erodingPool((ObjectPool)null);
+            PoolUtils.erodingPool((ObjectPool<Object>)null);
             fail("PoolUtils.erodingPool(ObjectPool) must not allow a null pool.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
         try {
-            PoolUtils.erodingPool((ObjectPool)null, 1f);
+            PoolUtils.erodingPool((ObjectPool<Object>)null, 1f);
             fail("PoolUtils.erodingPool(ObjectPool, float) must not allow a null pool.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
         try {
-            PoolUtils.erodingPool((ObjectPool)null, 0);
+            PoolUtils.erodingPool((ObjectPool<Object>)null, 0);
             fail("PoolUtils.erodingPool(ObjectPool, float) must not allow a non-positive factor.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
-        final List calledMethods = new ArrayList();
+        final List<String> calledMethods = new ArrayList<String>();
         final InvocationHandler handler = new MethodCallLogger(calledMethods) {
+            @Override
             public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
                 Object o = super.invoke(proxy, method, args);
                 if (o instanceof Integer) {
@@ -443,9 +445,9 @@ public class TestPoolUtils {
 
         // If the logic behind PoolUtils.erodingPool changes then this will need to be tweaked.
         float factor = 0.01f; // about ~9 seconds until first discard
-        final ObjectPool pool = PoolUtils.erodingPool((ObjectPool)createProxy(ObjectPool.class, handler), factor);
+        final ObjectPool<Object> pool = PoolUtils.erodingPool(createProxy(ObjectPool.class, handler), factor);
 
-        final List expectedMethods = new ArrayList();
+        final List<String> expectedMethods = new ArrayList<String>();
         assertEquals(expectedMethods, calledMethods);
 
         Object o = pool.borrowObject();
@@ -486,42 +488,43 @@ public class TestPoolUtils {
     @Test
     public void testErodingPoolKeyedObjectPool() throws Exception {
         try {
-            PoolUtils.erodingPool((KeyedObjectPool)null);
+            PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null);
             fail("PoolUtils.erodingPool(KeyedObjectPool) must not allow a null pool.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
         try {
-            PoolUtils.erodingPool((KeyedObjectPool)null, 1f);
+            PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null, 1f);
             fail("PoolUtils.erodingPool(KeyedObjectPool, float) must not allow a null pool.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
         try {
-            PoolUtils.erodingPool((KeyedObjectPool)null, 0);
+            PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null, 0);
             fail("PoolUtils.erodingPool(ObjectPool, float) must not allow a non-positive factor.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
         try {
-            PoolUtils.erodingPool((KeyedObjectPool)null, 1f, true);
+            PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null, 1f, true);
             fail("PoolUtils.erodingPool(KeyedObjectPool, float, boolean) must not allow a null pool.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
         try {
-            PoolUtils.erodingPool((KeyedObjectPool)null, 0, false);
+            PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null, 0, false);
             fail("PoolUtils.erodingPool(ObjectPool, float, boolean) must not allow a non-positive factor.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
-        final List calledMethods = new ArrayList();
+        final List<String> calledMethods = new ArrayList<String>();
         final InvocationHandler handler = new MethodCallLogger(calledMethods) {
+            @Override
             public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
                 Object o = super.invoke(proxy, method, args);
                 if (o instanceof Integer) {
@@ -534,9 +537,10 @@ public class TestPoolUtils {
 
         // If the logic behind PoolUtils.erodingPool changes then this will need to be tweaked.
         float factor = 0.01f; // about ~9 seconds until first discard
-        final KeyedObjectPool pool = PoolUtils.erodingPool((KeyedObjectPool)createProxy(KeyedObjectPool.class, handler), factor);
+        final KeyedObjectPool<Object,Object> pool =
+            PoolUtils.erodingPool(createProxy(KeyedObjectPool.class, handler), factor);
 
-        final List expectedMethods = new ArrayList();
+        final List<String> expectedMethods = new ArrayList<String>();
         assertEquals(expectedMethods, calledMethods);
 
         final Object key = "key";
@@ -579,28 +583,29 @@ public class TestPoolUtils {
     @Test
     public void testErodingPerKeyKeyedObjectPool() throws Exception {
         try {
-            PoolUtils.erodingPool((KeyedObjectPool)null, 1, true);
+            PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null, 1, true);
             fail("PoolUtils.erodingPool(KeyedObjectPool) must not allow a null pool.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
         try {
-            PoolUtils.erodingPool((KeyedObjectPool)null, 0, true);
+            PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null, 0, true);
             fail("PoolUtils.erodingPool(ObjectPool, float) must not allow a non-positive factor.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
         try {
-            PoolUtils.erodingPool((KeyedObjectPool)null, 1f, true);
+            PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null, 1f, true);
             fail("PoolUtils.erodingPool(KeyedObjectPool, float, boolean) must not allow a null pool.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
-        final List calledMethods = new ArrayList();
+        final List<String> calledMethods = new ArrayList<String>();
         final InvocationHandler handler = new MethodCallLogger(calledMethods) {
+            @Override
             public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
                 Object o = super.invoke(proxy, method, args);
                 if (o instanceof Integer) {
@@ -613,9 +618,9 @@ public class TestPoolUtils {
 
         // If the logic behind PoolUtils.erodingPool changes then this will need to be tweaked.
         float factor = 0.01f; // about ~9 seconds until first discard
-        final KeyedObjectPool pool = PoolUtils.erodingPool((KeyedObjectPool)createProxy(KeyedObjectPool.class, handler), factor, true);
+        final KeyedObjectPool<Object,Object> pool = PoolUtils.erodingPool(createProxy(KeyedObjectPool.class, handler), factor, true);
 
-        final List expectedMethods = new ArrayList();
+        final List<String> expectedMethods = new ArrayList<String>();
         assertEquals(expectedMethods, calledMethods);
 
         final Object key = "key";
@@ -664,7 +669,7 @@ public class TestPoolUtils {
         op.getNumIdle();
         op.invalidateObject(new Object());
         op.returnObject(new Object());
-        op.setFactory((PoolableObjectFactory<Object>)createProxy(PoolableObjectFactory.class, (List<String>)null));
+        op.setFactory(createProxy(PoolableObjectFactory.class, (List<String>)null));
         op.toString();
 
         final List<String> expectedMethods = Arrays.asList(new String[] {
@@ -687,7 +692,7 @@ public class TestPoolUtils {
         kop.getNumIdle(null);
         kop.invalidateObject(null, new Object());
         kop.returnObject(null, new Object());
-        kop.setFactory((KeyedPoolableObjectFactory)createProxy(KeyedPoolableObjectFactory.class, (List)null));
+        kop.setFactory(createProxy(KeyedPoolableObjectFactory.class, (List<String>)null));
         kop.toString();
 
         final List<String> expectedMethods = Arrays.asList(new String[] {
