@@ -20,7 +20,7 @@ package org.apache.commons.pool2.impl;
  * Provides the common configuration attributes used by object pool
  * configurations.
  */
-public abstract class BaseObjectPoolConfig {
+public abstract class BaseObjectPoolConfig implements Cloneable {
 
     /**
      * The default LIFO status. True means that borrowObject returns the most

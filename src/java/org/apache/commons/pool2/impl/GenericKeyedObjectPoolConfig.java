@@ -24,8 +24,7 @@ import org.apache.commons.pool2.KeyedPoolableObjectFactory;
  * 
  * @since Pool 2.0
  */
-public class GenericKeyedObjectPoolConfig<K,T> extends BaseObjectPoolConfig
-        implements Cloneable {
+public class GenericKeyedObjectPoolConfig<K,T> extends BaseObjectPoolConfig {
 
     public static final int DEFAULT_MAX_TOTAL_PER_KEY = 8;
 
