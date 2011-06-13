@@ -1739,7 +1739,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
 
     /** My {@link KeyedPoolableObjectFactory}. */
     private volatile KeyedPoolableObjectFactory<K,T> _factory = null;
-    private Object factoryLock = new Object();
+    final private Object factoryLock = new Object();
 
     /**
      * My idle object eviction {@link TimerTask}, if any.

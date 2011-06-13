@@ -1997,8 +1997,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
     private volatile boolean _lifo = DEFAULT_LIFO;
 
     /** My {@link PoolableObjectFactory}. */
-    private PoolableObjectFactory<T> _factory;
-    private Object factoryLock = new Object();
+    private volatile PoolableObjectFactory<T> _factory;
+    final private Object factoryLock = new Object();
 
     /**
      * My idle object eviction {@link TimerTask}, if any.
