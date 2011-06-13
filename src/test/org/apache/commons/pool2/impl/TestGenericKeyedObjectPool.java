@@ -1317,6 +1317,23 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         pool.returnObject("1", waiter);  // Will throw IllegalStateException if dead
     }
     
+    /**
+     * Test case for POOL-150.
+     */
+    @Test
+    public void testPreparePoolNullFactory() throws Exception {
+        GenericKeyedObjectPool<Object, Object> gkop =
+            new GenericKeyedObjectPool<Object, Object>();
+        gkop.setMinIdlePerKey(1);
+        Exception e = null;
+        try {
+            gkop.preparePool("foo");
+        } catch (IllegalStateException ise) {
+            e = ise;
+        }
+        assertNotNull(e);
+    }
+
     /*
      * Very simple test thread that just tries to borrow an object from
      * the provided pool with the specified key and returns it
