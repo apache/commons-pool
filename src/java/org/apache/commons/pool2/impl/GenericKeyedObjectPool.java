@@ -1747,14 +1747,14 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
     private Evictor _evictor = null;
 
     /** My hash of pools (ObjectQueue). */
-    private Map<K,ObjectDeque<T>> poolMap =
+    private final Map<K,ObjectDeque<T>> poolMap =
             new ConcurrentHashMap<K,ObjectDeque<T>>();
     
     /** List of pool keys - used to control eviction order */
-    private List<K> poolKeyList = new ArrayList<K>();
+    private final List<K> poolKeyList = new ArrayList<K>();
 
     /** Lock used to manage adding/removing of keys */
-    private ReadWriteLock keyLock = new ReentrantReadWriteLock(true);
+    private final ReadWriteLock keyLock = new ReentrantReadWriteLock(true);
 
     /**
      * The combined count of the currently active objects for all keys and those
@@ -1762,7 +1762,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
      * {@link #_maxTotal} but there will never be more than {@link #_maxTotal}
      * created at any one time.
      */
-    private AtomicInteger numTotal = new AtomicInteger(0);
+    private final AtomicInteger numTotal = new AtomicInteger(0);
     
     /**
      * An iterator for {@link ObjectDeque#getIdleObjects()} that is used by the
