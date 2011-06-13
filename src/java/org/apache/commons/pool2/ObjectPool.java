@@ -186,8 +186,6 @@ public interface ObjectPool<T> {
      * @param factory the {@link PoolableObjectFactory} used to create new instances.
      * @throws IllegalStateException when the factory cannot be set at this time
      * @throws UnsupportedOperationException if this implementation does not support the operation
-     * @deprecated to be removed in pool 2.0
      */
-    @Deprecated
     void setFactory(PoolableObjectFactory<T> factory) throws IllegalStateException, UnsupportedOperationException;
 }
