@@ -666,8 +666,22 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
      * @return object instance from the keyed pool
      * @throws NoSuchElementException if a keyed object instance cannot be returned.
      */
-     @Override
+    @Override
     public T borrowObject(K key) throws Exception {
+        return borrowObject(key, _maxWait);
+    }
+     
+    /**
+     * <p>Borrows an object from the keyed pool associated with the given key
+     * using a user specific waiting time which only applies if
+     * {@link WhenExhaustedAction#BLOCK} is used.</p>
+     * 
+     * @param key pool key
+     * @param borrowMaxWait
+     * @return object instance from the keyed pool
+     * @throws NoSuchElementException if a keyed object instance cannot be returned.
+     */
+    public T borrowObject(K key, long borrowMaxWait) throws Exception {
 
         assertOpen();
 
@@ -676,7 +690,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
         // Get local copy of current config so it is consistent for entire
         // method execution
         WhenExhaustedAction whenExhaustedAction = _whenExhaustedAction;
-        long maxWait = _maxWait;
 
         boolean create;
         ObjectDeque<T> objectDeque = register(key);
@@ -707,11 +720,11 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
                         p = create(key);
                     }
                     if (p == null && objectDeque != null) {
-                        if (maxWait < 1) {
+                        if (borrowMaxWait < 1) {
                             p = objectDeque.getIdleObjects().takeFirst();
                         } else {
-                            p = objectDeque.getIdleObjects().pollFirst(maxWait,
-                                    TimeUnit.MILLISECONDS);
+                            p = objectDeque.getIdleObjects().pollFirst(
+                                    borrowMaxWait, TimeUnit.MILLISECONDS);
                         }
                     }
                     if (p == null) {
