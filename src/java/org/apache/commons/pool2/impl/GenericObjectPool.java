@@ -1479,30 +1479,30 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
     }
 
     /**
-     * Sets the {@link PoolableObjectFactory factory} this pool uses to create
-     * new instances. Trying to change the <code>factory</code> while there are
-     * borrowed objects will throw an {@link IllegalStateException}. If there
-     * are instances idle in the pool when this method is invoked, these will be
-     * destroyed using the original factory.
+      * <p>Sets the poolable object factory associated with this pool.</p>
+      * 
+      * <p>If this method is called when the factory has previously been set an
+      * IllegalStateException is thrown.</p>
      * 
      * @param factory
      *            the {@link PoolableObjectFactory} used to create new
      *            instances.
-     * @throws IllegalStateException
-     *             when the factory cannot be set at this time
-     * @deprecated to be removed in version 2.0
+      * @throws IllegalStateException if the factory has already been set
      */
     @Override
-    @Deprecated
     public void setFactory(PoolableObjectFactory<T> factory)
             throws IllegalStateException {
-        assertOpen();
-        if (0 < getNumActive()) {
-            throw new IllegalStateException("Objects are already active");
+        if (this._factory == null) {
+            synchronized (factoryLock) {
+                if (this._factory == null) {
+                    this._factory = factory;
+                } else {
+                    throw new IllegalStateException("Factory already set");
+                }
+            }
         } else {
-            clear();
+            throw new IllegalStateException("Factory already set");
         }
-        _factory = factory;
     }
 
     /**
@@ -1998,6 +1998,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
 
     /** My {@link PoolableObjectFactory}. */
     private PoolableObjectFactory<T> _factory;
+    private Object factoryLock = new Object();
 
     /**
      * My idle object eviction {@link TimerTask}, if any.
@@ -2007,7 +2008,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
     /**
      * All of the objects currently associated with this pool in any state. It
      * excludes objects that have been destroyed. The size of
-     * {@link #_allObjects} will always be less than or equal to {@linl
+     * {@link #_allObjects} will always be less than or equal to {@link
      * #_maxActive}.
      */
     private Map<T, PooledObject<T>> _allObjects = null;
