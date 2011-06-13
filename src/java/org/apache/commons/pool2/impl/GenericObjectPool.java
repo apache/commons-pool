@@ -178,7 +178,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
     public GenericObjectPool(GenericObjectPoolConfig<T> config) {
         this._factory = config.getFactory();
         this._lifo = config.getLifo();
-        this._maxActive = config.getMaxTotal();
+        this.maxTotal = config.getMaxTotal();
         this._maxIdle = config.getMaxIdle();
         this._maxWait = config.getMaxWait();
         this._minEvictableIdleTimeMillis =
@@ -210,10 +210,10 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * 
      * @return the cap on the total number of object instances managed by the
      *         pool.
-     * @see #setMaxActive
+     * @see #setMaxTotal
      */
-    public int getMaxActive() {
-        return _maxActive;
+    public int getMaxTotal() {
+        return maxTotal;
     }
 
     /**
@@ -221,14 +221,14 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * (checked out to clients, or idle awaiting checkout) at a given time. Use
      * a negative value for no limit.
      * 
-     * @param maxActive
+     * @param maxTotal
      *            The cap on the total number of object instances managed by the
      *            pool. Negative values mean that there is no limit to the
      *            number of objects allocated by the pool.
-     * @see #getMaxActive
+     * @see #getMaxTotal
      */
-    public void setMaxActive(int maxActive) {
-        _maxActive = maxActive;
+    public void setMaxTotal(int maxTotal) {
+        this.maxTotal = maxTotal;
     }
 
     /**
@@ -598,7 +598,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
     public void setConfig(GenericObjectPoolConfig<T> conf) {
         setMaxIdle(conf.getMaxIdle());
         setMinIdle(conf.getMinIdle());
-        setMaxActive(conf.getMaxTotal());
+        setMaxTotal(conf.getMaxTotal());
         setMaxWait(conf.getMaxWait());
         setWhenExhaustedAction(conf.getWhenExhaustedAction());
         setTestOnBorrow(conf.getTestOnBorrow());
@@ -1047,9 +1047,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
     }
 
     private PooledObject<T> create() throws Exception {
-        int maxActive = getMaxActive();
+        int localMaxTotal = getMaxTotal();
         long newCreateCount = createCount.incrementAndGet();
-        if (maxActive > -1 && newCreateCount > maxActive ||
+        if (localMaxTotal > -1 && newCreateCount > localMaxTotal ||
                 newCreateCount > Integer.MAX_VALUE) {
             createCount.decrementAndGet();
             return null;
@@ -1239,10 +1239,10 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
     /**
      * The cap on the total number of active instances from the pool.
      * 
-     * @see #setMaxActive
-     * @see #getMaxActive
+     * @see #setMaxTotal
+     * @see #getMaxTotal
      */
-    private volatile int _maxActive =
+    private volatile int maxTotal =
         GenericObjectPoolConfig.DEFAULT_MAX_TOTAL;
 
     /**
