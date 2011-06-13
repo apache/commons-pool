@@ -659,7 +659,20 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      */
     @Override
     public T borrowObject() throws Exception {
-
+        return borrowObject(_maxWait);
+    }
+    
+    /**
+     * Borrow an object from the pool using a user specific waiting time which
+     * only applies if {@link WhenExhaustedAction#BLOCK} is used.
+     * 
+     * @param borrowMaxWait The time to wait in milliseconds for an object to
+     *                      become available
+     * @return object instance
+     * @throws NoSuchElementException
+     *             if an instance cannot be returned
+     */
+    public T borrowObject(long borrowMaxWait) throws Exception {
         assertOpen();
 
         PooledObject<T> p = null;
@@ -667,7 +680,6 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
         // Get local copy of current config so it is consistent for entire
         // method execution
         WhenExhaustedAction whenExhaustedAction = _whenExhaustedAction;
-        long maxWait = _maxWait;
 
         boolean create;
 
@@ -692,10 +704,10 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
                     p = create();
                 }
                 if (p == null) {
-                    if (maxWait < 1) {
+                    if (borrowMaxWait < 1) {
                         p = _idleObjects.takeFirst();
                     } else {
-                        p = _idleObjects.pollFirst(maxWait,
+                        p = _idleObjects.pollFirst(borrowMaxWait,
                                 TimeUnit.MILLISECONDS);
                     }
                 }
