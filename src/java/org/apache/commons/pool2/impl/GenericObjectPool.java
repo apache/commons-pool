@@ -40,11 +40,11 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  * A <tt>GenericObjectPool</tt> provides a number of configurable parameters:
  * <ul>
  * <li>
- *    {@link #setMaxActive <i>maxActive</i>} controls the maximum number of
+ *    {@link #setMaxTotal <i>maxTotal</i>} controls the maximum number of
  * objects that can be allocated by the pool (checked out to clients, or idle
  * awaiting checkout) at a given time. When non-positive, there is no limit to
  * the number of objects that can be managed by the pool at one time. When
- * {@link #setMaxActive <i>maxActive</i>} is reached, the pool is said to be
+ * {@link #setMaxTotal <i>maxTotal</i>} is reached, the pool is said to be
  * exhausted. The default setting for this parameter is 8.</li>
  * <li>
  *    {@link #setMaxIdle <i>maxIdle</i>} controls the maximum number of objects
@@ -593,7 +593,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * 
      * @param conf
      *            configuration to use.
-     * @see GenericObjectPool.Config
+     * @see GenericObjectPoolConfig
      */
     public void setConfig(GenericObjectPoolConfig<T> conf) {
         setMaxIdle(conf.getMaxIdle());
@@ -630,7 +630,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * </p>
      * <p>
      * If there are no idle instances available in the pool, behavior depends on
-     * the {@link #getMaxActive() maxActive} and (if applicable)
+     * the {@link #getMaxTotal() maxTotal} and (if applicable)
      * {@link #getWhenExhaustedAction() whenExhaustedAction} and
      * {@link #getMaxWait() maxWait} properties. If the number of instances
      * checked out from the pool is less than <code>maxActive,</code> a new
