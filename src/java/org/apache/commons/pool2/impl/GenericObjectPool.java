@@ -166,125 +166,6 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  */
 public class GenericObjectPool<T> extends BaseObjectPool<T> {
 
-    // --- public constants -------------------------------------------
-
-    /**
-     * The default cap on the number of "sleeping" instances in the pool.
-     * 
-     * @see #getMaxIdle
-     * @see #setMaxIdle
-     */
-    public static final int DEFAULT_MAX_IDLE = 8;
-
-    /**
-     * The default minimum number of "sleeping" instances in the pool before
-     * before the evictor thread (if active) spawns new objects.
-     * 
-     * @see #getMinIdle
-     * @see #setMinIdle
-     */
-    public static final int DEFAULT_MIN_IDLE = 0;
-
-    /**
-     * The default cap on the total number of active instances from the pool.
-     * 
-     * @see #getMaxActive
-     */
-    public static final int DEFAULT_MAX_ACTIVE = 8;
-
-    /**
-     * The default "when exhausted action" for the pool.
-     * 
-     * @see #setWhenExhaustedAction
-     */
-    public static final WhenExhaustedAction DEFAULT_WHEN_EXHAUSTED_ACTION =
-        WhenExhaustedAction.BLOCK;
-
-    /**
-     * The default LIFO status. True means that borrowObject returns the most
-     * recently used ("last in") idle object in the pool (if there are idle
-     * instances available). False means that the pool behaves as a FIFO queue -
-     * objects are taken from the idle object pool in the order that they are
-     * returned to the pool.
-     * 
-     * @see #setLifo
-     * @since 1.4
-     */
-    public static final boolean DEFAULT_LIFO = true;
-
-    /**
-     * The default maximum amount of time (in milliseconds) the
-     * {@link #borrowObject} method should block before throwing an exception
-     * when the pool is exhausted and the {@link #getWhenExhaustedAction
-     * "when exhausted" action} is {@link WhenExhaustedAction#BLOCK}.
-     * 
-     * @see #getMaxWait
-     * @see #setMaxWait
-     */
-    public static final long DEFAULT_MAX_WAIT = -1L;
-
-    /**
-     * The default "test on borrow" value.
-     * 
-     * @see #getTestOnBorrow
-     * @see #setTestOnBorrow
-     */
-    public static final boolean DEFAULT_TEST_ON_BORROW = false;
-
-    /**
-     * The default "test on return" value.
-     * 
-     * @see #getTestOnReturn
-     * @see #setTestOnReturn
-     */
-    public static final boolean DEFAULT_TEST_ON_RETURN = false;
-
-    /**
-     * The default "test while idle" value.
-     * 
-     * @see #getTestWhileIdle
-     * @see #setTestWhileIdle
-     * @see #getTimeBetweenEvictionRunsMillis
-     * @see #setTimeBetweenEvictionRunsMillis
-     */
-    public static final boolean DEFAULT_TEST_WHILE_IDLE = false;
-
-    /**
-     * The default "time between eviction runs" value.
-     * 
-     * @see #getTimeBetweenEvictionRunsMillis
-     * @see #setTimeBetweenEvictionRunsMillis
-     */
-    public static final long DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS = -1L;
-
-    /**
-     * The default number of objects to examine per run in the idle object
-     * evictor.
-     * 
-     * @see #getNumTestsPerEvictionRun
-     * @see #setNumTestsPerEvictionRun
-     * @see #getTimeBetweenEvictionRunsMillis
-     * @see #setTimeBetweenEvictionRunsMillis
-     */
-    public static final int DEFAULT_NUM_TESTS_PER_EVICTION_RUN = 3;
-
-    /**
-     * The default value for {@link #getMinEvictableIdleTimeMillis}.
-     * 
-     * @see #getMinEvictableIdleTimeMillis
-     * @see #setMinEvictableIdleTimeMillis
-     */
-    public static final long DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS =
-            1000L * 60L * 30L;
-
-    /**
-     * The default value for {@link #getSoftMinEvictableIdleTimeMillis}.
-     * 
-     * @see #getSoftMinEvictableIdleTimeMillis
-     * @see #setSoftMinEvictableIdleTimeMillis
-     */
-    public static final long DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS = -1;
-
     // --- constructors -----------------------------------------------
 
     /**
@@ -714,20 +595,22 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      *            configuration to use.
      * @see GenericObjectPool.Config
      */
-    public void setConfig(GenericObjectPool.Config conf) {
-        setMaxIdle(conf.maxIdle);
-        setMinIdle(conf.minIdle);
-        setMaxActive(conf.maxActive);
-        setMaxWait(conf.maxWait);
-        setWhenExhaustedAction(conf.whenExhaustedAction);
-        setTestOnBorrow(conf.testOnBorrow);
-        setTestOnReturn(conf.testOnReturn);
-        setTestWhileIdle(conf.testWhileIdle);
-        setNumTestsPerEvictionRun(conf.numTestsPerEvictionRun);
-        setMinEvictableIdleTimeMillis(conf.minEvictableIdleTimeMillis);
-        setTimeBetweenEvictionRunsMillis(conf.timeBetweenEvictionRunsMillis);
-        setSoftMinEvictableIdleTimeMillis(conf.softMinEvictableIdleTimeMillis);
-        setLifo(conf.lifo);
+    public void setConfig(GenericObjectPoolConfig<T> conf) {
+        setMaxIdle(conf.getMaxIdle());
+        setMinIdle(conf.getMinIdle());
+        setMaxActive(conf.getMaxTotal());
+        setMaxWait(conf.getMaxWait());
+        setWhenExhaustedAction(conf.getWhenExhaustedAction());
+        setTestOnBorrow(conf.getTestOnBorrow());
+        setTestOnReturn(conf.getTestOnReturn());
+        setTestWhileIdle(conf.getTestWhileIdle());
+        setNumTestsPerEvictionRun(conf.getNumTestsPerEvictionRun());
+        setMinEvictableIdleTimeMillis(conf.getMinEvictableIdleTimeMillis());
+        setTimeBetweenEvictionRunsMillis(
+                conf.getTimeBetweenEvictionRunsMillis());
+        setSoftMinEvictableIdleTimeMillis(
+                conf.getSoftMinEvictableIdleTimeMillis());
+        setLifo(conf.getLifo());
     }
 
     // -- ObjectPool methods ------------------------------------------
@@ -1335,78 +1218,6 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
         }
     }
 
-    /**
-     * A simple "struct" encapsulating the configuration information for a
-     * {@link GenericObjectPool}.
-     * 
-     * @see GenericObjectPool#GenericObjectPool(
-     *      org.apache.commons.pool2.PoolableObjectFactory,
-     *      org.apache.commons.pool2.impl.GenericObjectPool.Config)
-     * @see GenericObjectPool#setConfig
-     */
-    public static class Config {
-        // CHECKSTYLE: stop VisibilityModifier
-        /**
-         * @see GenericObjectPool#setMaxIdle
-         */
-        public int maxIdle = GenericObjectPool.DEFAULT_MAX_IDLE;
-        /**
-         * @see GenericObjectPool#setMinIdle
-         */
-        public int minIdle = GenericObjectPool.DEFAULT_MIN_IDLE;
-        /**
-         * @see GenericObjectPool#setMaxActive
-         */
-        public int maxActive = GenericObjectPool.DEFAULT_MAX_ACTIVE;
-        /**
-         * @see GenericObjectPool#setMaxWait
-         */
-        public long maxWait = GenericObjectPool.DEFAULT_MAX_WAIT;
-        /**
-         * @see GenericObjectPool#setWhenExhaustedAction
-         */
-        public WhenExhaustedAction whenExhaustedAction =
-            GenericObjectPool.DEFAULT_WHEN_EXHAUSTED_ACTION;
-        /**
-         * @see GenericObjectPool#setTestOnBorrow
-         */
-        public boolean testOnBorrow = GenericObjectPool.DEFAULT_TEST_ON_BORROW;
-        /**
-         * @see GenericObjectPool#setTestOnReturn
-         */
-        public boolean testOnReturn = GenericObjectPool.DEFAULT_TEST_ON_RETURN;
-        /**
-         * @see GenericObjectPool#setTestWhileIdle
-         */
-        public boolean testWhileIdle =
-            GenericObjectPool.DEFAULT_TEST_WHILE_IDLE;
-        /**
-         * @see GenericObjectPool#setTimeBetweenEvictionRunsMillis
-         */
-        public long timeBetweenEvictionRunsMillis =
-            GenericObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
-        /**
-         * @see GenericObjectPool#setNumTestsPerEvictionRun
-         */
-        public int numTestsPerEvictionRun =
-            GenericObjectPool.DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
-        /**
-         * @see GenericObjectPool#setMinEvictableIdleTimeMillis
-         */
-        public long minEvictableIdleTimeMillis =
-            GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
-        /**
-         * @see GenericObjectPool#setSoftMinEvictableIdleTimeMillis
-         */
-        public long softMinEvictableIdleTimeMillis =
-            GenericObjectPool.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
-        /**
-         * @see GenericObjectPool#setLifo
-         */
-        public boolean lifo = GenericObjectPool.DEFAULT_LIFO;
-        // CHECKSTYLE: resume VisibilityModifier
-    }
-
     // --- private attributes ---------------------------------------
 
     /**
@@ -1415,7 +1226,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #setMaxIdle
      * @see #getMaxIdle
      */
-    private volatile int _maxIdle = DEFAULT_MAX_IDLE;
+    private volatile int _maxIdle = GenericObjectPoolConfig.DEFAULT_MAX_IDLE;
 
     /**
      * The cap on the minimum number of idle instances in the pool.
@@ -1423,7 +1234,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #setMinIdle
      * @see #getMinIdle
      */
-    private volatile int _minIdle = DEFAULT_MIN_IDLE;
+    private volatile int _minIdle = GenericObjectPoolConfig.DEFAULT_MIN_IDLE;
 
     /**
      * The cap on the total number of active instances from the pool.
@@ -1431,7 +1242,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #setMaxActive
      * @see #getMaxActive
      */
-    private volatile int _maxActive = DEFAULT_MAX_ACTIVE;
+    private volatile int _maxActive =
+        GenericObjectPoolConfig.DEFAULT_MAX_TOTAL;
 
     /**
      * The maximum amount of time (in millis) the {@link #borrowObject} method
@@ -1446,7 +1258,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #setWhenExhaustedAction
      * @see #getWhenExhaustedAction
      */
-    private volatile long _maxWait = DEFAULT_MAX_WAIT;
+    private volatile long _maxWait = GenericObjectPoolConfig.DEFAULT_MAX_WAIT;
 
     /**
      * The action to take when the {@link #borrowObject} method is invoked when
@@ -1458,7 +1270,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #getWhenExhaustedAction
      */
     private volatile WhenExhaustedAction _whenExhaustedAction =
-        DEFAULT_WHEN_EXHAUSTED_ACTION;
+        GenericObjectPoolConfig.DEFAULT_WHEN_EXHAUSTED_ACTION;
 
     /**
      * When <tt>true</tt>, objects will be
@@ -1470,7 +1282,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #setTestOnBorrow
      * @see #getTestOnBorrow
      */
-    private volatile boolean _testOnBorrow = DEFAULT_TEST_ON_BORROW;
+    private volatile boolean _testOnBorrow =
+        GenericObjectPoolConfig.DEFAULT_TEST_ON_BORROW;
 
     /**
      * When <tt>true</tt>, objects will be
@@ -1480,7 +1293,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #getTestOnReturn
      * @see #setTestOnReturn
      */
-    private volatile boolean _testOnReturn = DEFAULT_TEST_ON_RETURN;
+    private volatile boolean _testOnReturn =
+        GenericObjectPoolConfig.DEFAULT_TEST_ON_RETURN;
 
     /**
      * When <tt>true</tt>, objects will be
@@ -1493,7 +1307,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #getTimeBetweenEvictionRunsMillis
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    private volatile boolean _testWhileIdle = DEFAULT_TEST_WHILE_IDLE;
+    private volatile boolean _testWhileIdle =
+        GenericObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE;
 
     /**
      * The number of milliseconds to sleep between runs of the idle object
@@ -1504,7 +1319,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #getTimeBetweenEvictionRunsMillis
      */
     private volatile long _timeBetweenEvictionRunsMillis =
-        DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
+        GenericObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
 
     /**
      * The max number of objects to examine during each run of the idle object
@@ -1521,7 +1336,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #setTimeBetweenEvictionRunsMillis
      */
     private volatile int _numTestsPerEvictionRun =
-        DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
+        GenericObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
 
     /**
      * The minimum amount of time an object may sit idle in the pool before it
@@ -1535,7 +1350,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #setTimeBetweenEvictionRunsMillis
      */
     private volatile long _minEvictableIdleTimeMillis =
-        DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+        GenericObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 
     /**
      * The minimum amount of time an object may sit idle in the pool before it
@@ -1548,10 +1363,10 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #getSoftMinEvictableIdleTimeMillis
      */
     private volatile long _softMinEvictableIdleTimeMillis =
-        DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+        GenericObjectPoolConfig.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 
     /** Whether or not the pool behaves as a LIFO queue (last in first out) */
-    private volatile boolean _lifo = DEFAULT_LIFO;
+    private volatile boolean _lifo = GenericObjectPoolConfig.DEFAULT_LIFO;
 
     /** My {@link PoolableObjectFactory}. */
     private volatile PoolableObjectFactory<T> _factory;
