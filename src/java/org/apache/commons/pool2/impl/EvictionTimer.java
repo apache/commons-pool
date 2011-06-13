@@ -67,7 +67,7 @@ class EvictionTimer {
             try {
                 AccessController.doPrivileged(new PrivilegedSetTccl(
                         EvictionTimer.class.getClassLoader()));
-                _timer = new Timer(true);
+                _timer = new Timer("commons-pool-EvictionTimer", true);
             } finally {
                 AccessController.doPrivileged(new PrivilegedSetTccl(ccl));
             }

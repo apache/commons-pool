@@ -61,6 +61,9 @@
     <action dev="markt" type="fix" issue="POOL-134">
       Add the ability to specify a per call wait time when borrowing an object.
     </action>
+    <action dev="markt" type="fix" issue="POOL-121">
+      Provide a name for the eviction timer thread.
+    </action>
   </release>
   <release version="1.5.6" date="2011-04-03" description="This is a patch release, including bugfixes only.">
     <action dev="markt" type="fix" issue="POOL-179" due-to="Axel Grossmann">
