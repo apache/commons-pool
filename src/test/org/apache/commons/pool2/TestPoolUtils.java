@@ -80,7 +80,8 @@ public class TestPoolUtils {
 
         // Test that the minIdle check doesn't add too many idle objects
         final PoolableObjectFactory<Object> pof = createProxy(PoolableObjectFactory.class, calledMethods);
-        final ObjectPool<Object> op = new GenericObjectPool(pof);
+        final ObjectPool<Object> op = new GenericObjectPool();
+        op.setFactory(pof);
         PoolUtils.checkMinIdle(op, 2, 100);
         Thread.sleep(400);
         assertEquals(2, op.getNumIdle());

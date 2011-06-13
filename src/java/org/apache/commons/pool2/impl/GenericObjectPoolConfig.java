@@ -24,7 +24,7 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  * 
  * @since Pool 2.0
  */
-public class GenericObjectPoolConfig extends BaseObjectPoolConfig {
+public class GenericObjectPoolConfig<T> extends BaseObjectPoolConfig {
 
     /**
      * The default value for {@link #getSoftMinEvictableIdleTimeMillis}.
@@ -37,20 +37,35 @@ public class GenericObjectPoolConfig extends BaseObjectPoolConfig {
      */
     public static final int DEFAULT_MAX_TOTAL = 8;
 
+    /**
+     * The default cap on the number of "sleeping" instances in the pool.
+     */
+    public static final int DEFAULT_MAX_IDLE = 8;
 
-    private PoolableObjectFactory<?> factory = null;
+    /**
+     * The default minimum number of "sleeping" instances in the pool before
+     * before the evictor thread (if active) spawns new objects.
+     */
+    public static final int DEFAULT_MIN_IDLE = 0;
+
+    
+    private PoolableObjectFactory<T> factory = null;
 
     private long softMinEvictableIdleTimeMillis =
         DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 
     private int maxTotal = DEFAULT_MAX_TOTAL;
 
+    private int maxIdle = DEFAULT_MAX_IDLE;
+    
+    private int minIdle = DEFAULT_MIN_IDLE;
 
-    public PoolableObjectFactory<?> getFactory() {
+
+    public PoolableObjectFactory<T> getFactory() {
         return factory;
     }
 
-    public void setFactory(PoolableObjectFactory<?> factory) {
+    public void setFactory(PoolableObjectFactory<T> factory) {
         this.factory = factory;
     }
 
@@ -71,5 +86,33 @@ public class GenericObjectPoolConfig extends BaseObjectPoolConfig {
 
     public void setMaxTotal(int maxTotal) {
         this.maxTotal = maxTotal;
+    }
+
+
+    public int getMaxIdle() {
+        return maxIdle;
+    }
+
+    public void setMaxIdle(int maxIdle) {
+        this.maxIdle = maxIdle;
+    }
+
+        
+    public int getMinIdle() {
+        return minIdle;
+    }
+
+    public void setMinIdle(int minIdle) {
+        this.minIdle = minIdle;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public GenericObjectPoolConfig<T> clone() {
+        try {
+            return (GenericObjectPoolConfig<T>) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(); // Can't happen
+        }
     }
 }
