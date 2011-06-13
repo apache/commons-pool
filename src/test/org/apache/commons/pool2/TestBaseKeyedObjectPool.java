@@ -46,6 +46,7 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
      * idle and active objects, or
      * throw {@link IllegalArgumentException}
      * if such a pool cannot be created.
+     * @param mincapacity 
      */
     protected KeyedObjectPool<Object,Object> makeEmptyPool(int mincapacity) {
         if (this.getClass() != TestBaseKeyedObjectPool.class) {
@@ -58,6 +59,8 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
      * Return what we expect to be the n<sup>th</sup>
      * object (zero indexed) created by the pool
      * for the given key.
+     * @param key 
+     * @param n 
      */
     protected Object getNthObject(Object key, int n) {
         if (this.getClass() != TestBaseKeyedObjectPool.class) {
@@ -66,6 +69,9 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
         throw new UnsupportedOperationException("BaseKeyedObjectPool isn't a complete implementation.");
     }
 
+    /**
+     * @param n  
+     */
     protected Object makeKey(int n) {
         if (this.getClass() != TestBaseKeyedObjectPool.class) {
             fail("Subclasses of TestBaseKeyedObjectPool must reimplement this method.");

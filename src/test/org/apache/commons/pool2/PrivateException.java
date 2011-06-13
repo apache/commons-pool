@@ -21,6 +21,8 @@ package org.apache.commons.pool2;
  * An exception that only is thrown by these tests.
  */
 public class PrivateException extends RuntimeException {
+    private static final long serialVersionUID = 1L;
+
     public PrivateException(final String message) {
         super(message);
     }

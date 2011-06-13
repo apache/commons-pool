@@ -31,6 +31,9 @@ import org.junit.Test;
 public class TestBaseObjectPool extends TestObjectPool {
     private ObjectPool<Object> _pool = null;
 
+    /**
+     * @param mincapacity  
+     */
     protected ObjectPool<Object> makeEmptyPool(int mincapacity) {
         if (this.getClass() != TestBaseObjectPool.class) {
             fail("Subclasses of TestBaseObjectPool must reimplement this method.");
@@ -46,6 +49,9 @@ public class TestBaseObjectPool extends TestObjectPool {
         throw new UnsupportedOperationException("BaseObjectPool isn't a complete implementation.");
     }
 
+    /**
+     * @param n  
+     */
     protected Object getNthObject(final int n) {
         if (this.getClass() != TestBaseObjectPool.class) {
             fail("Subclasses of TestBaseObjectPool must reimplement this method.");
