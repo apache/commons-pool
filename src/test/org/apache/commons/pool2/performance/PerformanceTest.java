@@ -105,7 +105,7 @@ public class PerformanceTest {
         }
     }
 
-    private void run(int nrIterations, int nrThreads, int maxActive, int maxIdle) {
+    private void run(int nrIterations, int nrThreads, int maxTotal, int maxIdle) {
         this.nrIterations = nrIterations;
         init();
         
@@ -113,7 +113,7 @@ public class PerformanceTest {
         if (logLevel >= 4) { factory.setDebug(true); } 
         pool = new GenericObjectPool<Integer>();
         pool.setFactory(factory);
-        pool.setMaxActive(maxActive);
+        pool.setMaxTotal(maxTotal);
         pool.setMaxIdle(maxIdle);
         pool.setTestOnBorrow(true);
 
@@ -147,7 +147,7 @@ public class PerformanceTest {
         System.out.println("-----------------------------------------");
         System.out.println("nrIterations: " + nrIterations);
         System.out.println("nrThreads: " + nrThreads);
-        System.out.println("maxActive: " + maxActive);
+        System.out.println("maxTotal: " + maxTotal);
         System.out.println("maxIdle: " + maxIdle);
         System.out.println("nrSamples: " + nrSamples);
         System.out.println("totalBorrowTime: " + totalBorrowTime);

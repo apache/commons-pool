@@ -70,7 +70,7 @@ public class TestGenericObjectPoolFactory extends TestObjectPoolFactory {
         GenericObjectPool<Object> pool =
             (GenericObjectPool<Object>) factory.createPool();
 
-        assertEquals(1, pool.getMaxActive());
+        assertEquals(1, pool.getMaxTotal());
         assertEquals(2, pool.getMaxIdle());
         assertEquals(3, pool.getMaxWait());
         assertEquals(4, pool.getMinIdle());
