@@ -1489,16 +1489,10 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Test
     public void testBorrowObjectFairness() {
         
-        // TODO - Restore fairness in GOP
-
-        /*
         // Config
         int numThreads = 30;
         int maxTotal = 10;
 
-        SimpleFactory factory = new SimpleFactory();
-        factory.setMaxTotal(maxTotal);
-        pool.setFactory(factory);
         pool.setMaxTotal(maxTotal);
         pool.setWhenExhaustedAction(WhenExhaustedAction.BLOCK);
         pool.setTimeBetweenEvictionRunsMillis(-1);
@@ -1530,7 +1524,6 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 fail("Thread "+i+" failed: "+threads[i]._error.toString());
             }
         }
-        */
     }
     
     /**
