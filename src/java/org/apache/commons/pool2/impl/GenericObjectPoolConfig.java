@@ -31,11 +31,19 @@ public class GenericObjectPoolConfig extends BaseObjectPoolConfig {
      */
     public static final long DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS = -1;
 
-    
+    /**
+     * The default maximum number of instances under management
+     * (idle or checked out).
+     */
+    public static final int DEFAULT_MAX_TOTAL = 8;
+
+
     private PoolableObjectFactory<?> factory = null;
 
     private long softMinEvictableIdleTimeMillis =
         DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+
+    private int maxTotal = DEFAULT_MAX_TOTAL;
 
 
     public PoolableObjectFactory<?> getFactory() {
@@ -45,7 +53,8 @@ public class GenericObjectPoolConfig extends BaseObjectPoolConfig {
     public void setFactory(PoolableObjectFactory<?> factory) {
         this.factory = factory;
     }
-    
+
+
     public long getSoftMinEvictableIdleTimeMillis() {
         return softMinEvictableIdleTimeMillis;
     }
@@ -53,5 +62,14 @@ public class GenericObjectPoolConfig extends BaseObjectPoolConfig {
     public void setSoftMinEvictableIdleTimeMillis(
             long softMinEvictableIdleTimeMillis) {
         this.softMinEvictableIdleTimeMillis = softMinEvictableIdleTimeMillis;
+    }
+
+
+    public int getMaxTotal() {
+        return maxTotal;
+    }
+
+    public void setMaxTotal(int maxTotal) {
+        this.maxTotal = maxTotal;
     }
 }
