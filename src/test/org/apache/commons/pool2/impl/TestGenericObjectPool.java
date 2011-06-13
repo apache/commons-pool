@@ -745,37 +745,37 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Test
     public void testDefaultConfiguration() throws Exception {
         GenericObjectPool<Object> pool = new GenericObjectPool<Object>();
-        assertConfiguration(new GenericObjectPool.Config(),pool);
+        assertConfiguration(new GenericObjectPoolConfig(),pool);
     }
 
     @Test
     public void testConstructors() throws Exception {
         {
             GenericObjectPool<Object> pool = new GenericObjectPool<Object>();
-            assertConfiguration(new GenericObjectPool.Config(),pool);
+            assertConfiguration(new GenericObjectPoolConfig(),pool);
         }
         {
             GenericObjectPool<Object> pool = new GenericObjectPool<Object>();
             pool.setFactory(new SimpleFactory());
-            assertConfiguration(new GenericObjectPool.Config(),pool);
+            assertConfiguration(new GenericObjectPoolConfig(),pool);
         }
     }
 
     @Test
     public void testSetConfig() throws Exception {
-        GenericObjectPool.Config expected = new GenericObjectPool.Config();
+        GenericObjectPoolConfig expected = new GenericObjectPoolConfig();
         GenericObjectPool<Object> pool = new GenericObjectPool<Object>();
         assertConfiguration(expected,pool);
-        expected.maxActive = 2;
-        expected.maxIdle = 3;
-        expected.maxWait = 5L;
-        expected.minEvictableIdleTimeMillis = 7L;
-        expected.numTestsPerEvictionRun = 9;
-        expected.testOnBorrow = true;
-        expected.testOnReturn = true;
-        expected.testWhileIdle = true;
-        expected.timeBetweenEvictionRunsMillis = 11L;
-        expected.whenExhaustedAction = WhenExhaustedAction.FAIL;
+        expected.setMaxTotal(2);
+        expected.setMaxIdle(3);
+        expected.setMaxWait(5L);
+        expected.setMinEvictableIdleTimeMillis(7L);
+        expected.setNumTestsPerEvictionRun(9);
+        expected.setTestOnBorrow(true);
+        expected.setTestOnReturn(true);
+        expected.setTestWhileIdle(true);
+        expected.setTimeBetweenEvictionRunsMillis(11L);
+        expected.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
         pool.setConfig(expected);
         assertConfiguration(expected,pool);
     }
@@ -1290,17 +1290,17 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     
     protected GenericObjectPool<Object> pool = null;
 
-    private void assertConfiguration(GenericObjectPool.Config expected, GenericObjectPool<?> actual) throws Exception {
-        assertEquals("testOnBorrow",expected.testOnBorrow,actual.getTestOnBorrow());
-        assertEquals("testOnReturn",expected.testOnReturn,actual.getTestOnReturn());
-        assertEquals("testWhileIdle",expected.testWhileIdle,actual.getTestWhileIdle());
-        assertEquals("whenExhaustedAction",expected.whenExhaustedAction,actual.getWhenExhaustedAction());
-        assertEquals("maxActive",expected.maxActive,actual.getMaxActive());
-        assertEquals("maxIdle",expected.maxIdle,actual.getMaxIdle());
-        assertEquals("maxWait",expected.maxWait,actual.getMaxWait());
-        assertEquals("minEvictableIdleTimeMillis",expected.minEvictableIdleTimeMillis,actual.getMinEvictableIdleTimeMillis());
-        assertEquals("numTestsPerEvictionRun",expected.numTestsPerEvictionRun,actual.getNumTestsPerEvictionRun());
-        assertEquals("timeBetweenEvictionRunsMillis",expected.timeBetweenEvictionRunsMillis,actual.getTimeBetweenEvictionRunsMillis());
+    private void assertConfiguration(GenericObjectPoolConfig<?> expected, GenericObjectPool<?> actual) throws Exception {
+        assertEquals("testOnBorrow",expected.getTestOnBorrow(),actual.getTestOnBorrow());
+        assertEquals("testOnReturn",expected.getTestOnReturn(),actual.getTestOnReturn());
+        assertEquals("testWhileIdle",expected.getTestWhileIdle(),actual.getTestWhileIdle());
+        assertEquals("whenExhaustedAction",expected.getWhenExhaustedAction(),actual.getWhenExhaustedAction());
+        assertEquals("maxActive",expected.getMaxTotal(),actual.getMaxActive());
+        assertEquals("maxIdle",expected.getMaxIdle(),actual.getMaxIdle());
+        assertEquals("maxWait",expected.getMaxWait(),actual.getMaxWait());
+        assertEquals("minEvictableIdleTimeMillis",expected.getMinEvictableIdleTimeMillis(),actual.getMinEvictableIdleTimeMillis());
+        assertEquals("numTestsPerEvictionRun",expected.getNumTestsPerEvictionRun(),actual.getNumTestsPerEvictionRun());
+        assertEquals("timeBetweenEvictionRunsMillis",expected.getTimeBetweenEvictionRunsMillis(),actual.getTimeBetweenEvictionRunsMillis());
     }
 
     public class SimpleFactory implements PoolableObjectFactory<Object> {
