@@ -479,36 +479,19 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     @Test
-    public void testSetFactoryWithActiveObjects() throws Exception {
+    /**
+     * Verify that once the factory is set, it cannot be reset.
+     * This is a change in behavior as of Pool 2.0
+     */
+    public void testSetFactoryAlreadySet() throws Exception {
         GenericObjectPool<Object> pool = new GenericObjectPool<Object>();
-        pool.setMaxIdle(10);
         pool.setFactory(new SimpleFactory());
-        Object obj = pool.borrowObject();
-        assertNotNull(obj);
-        try {
-            pool.setFactory(null);
-            fail("Expected IllegalStateException");
-        } catch(IllegalStateException e) {
-            // expected
-        }
         try {
             pool.setFactory(new SimpleFactory());
             fail("Expected IllegalStateException");
         } catch(IllegalStateException e) {
             // expected
         }
-    }
-
-    @Test
-    public void testSetFactoryWithNoActiveObjects() throws Exception {
-        GenericObjectPool<Object> pool = new GenericObjectPool<Object>();
-        pool.setMaxIdle(10);
-        pool.setFactory(new SimpleFactory());
-        Object obj = pool.borrowObject();
-        pool.returnObject(obj);
-        assertEquals(1,pool.getNumIdle());
-        pool.setFactory(new SimpleFactory());
-        assertEquals(0,pool.getNumIdle());
     }
 
     @Test
@@ -613,6 +596,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         
         SimpleFactory factory = new SimpleFactory();
         factory.setMaxTotal(maxTotal);
+        GenericObjectPool<Object> pool = new GenericObjectPool<Object>();
         pool.setFactory(factory);
         pool.setMaxTotal(maxTotal);
         pool.setWhenExhaustedAction(WhenExhaustedAction.BLOCK);
@@ -1534,6 +1518,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     public void testBrokenFactoryShouldNotBlockPool() {
         int maxTotal = 1;
         
+        GenericObjectPool<Object> pool = new GenericObjectPool<Object>();
         SimpleFactory factory = new SimpleFactory();
         factory.setMaxTotal(maxTotal);
         pool.setFactory(factory);
