@@ -397,22 +397,6 @@ public abstract class TestObjectPool {
     }
 
     @Test
-    public void testSetFactory() throws Exception {
-        ObjectPool<Object> pool;
-        try {
-            pool = makeEmptyPool(new MethodCallPoolableObjectFactory());
-        } catch (UnsupportedOperationException uoe) {
-            return; // test not supported
-        }
-        final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
-        try {
-            pool.setFactory(factory);
-        } catch (UnsupportedOperationException uoe) {
-            return;
-        }
-    }
-
-    @Test
     public void testToString() {
         ObjectPool<Object> pool;
         try {
