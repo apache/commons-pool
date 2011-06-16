@@ -177,24 +177,24 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
 
     public GenericObjectPool(GenericObjectPoolConfig<T> config) {
         this.factory = config.getFactory();
-        this._lifo = config.getLifo();
+        this.lifo = config.getLifo();
         this.maxTotal = config.getMaxTotal();
-        this._maxIdle = config.getMaxIdle();
-        this._maxWait = config.getMaxWait();
-        this._minEvictableIdleTimeMillis =
+        this.maxIdle = config.getMaxIdle();
+        this.maxWait = config.getMaxWait();
+        this.minEvictableIdleTimeMillis =
                 config.getMinEvictableIdleTimeMillis();
-        this._minIdle = config.getMinIdle();
-        this._numTestsPerEvictionRun = config.getNumTestsPerEvictionRun();
-        this._softMinEvictableIdleTimeMillis =
+        this.minIdle = config.getMinIdle();
+        this.numTestsPerEvictionRun = config.getNumTestsPerEvictionRun();
+        this.softMinEvictableIdleTimeMillis =
                 config.getSoftMinEvictableIdleTimeMillis();
-        this._testOnBorrow = config.getTestOnBorrow();
-        this._testOnReturn = config.getTestOnReturn();
-        this._testWhileIdle = config.getTestWhileIdle();
-        this._timeBetweenEvictionRunsMillis =
+        this.testOnBorrow = config.getTestOnBorrow();
+        this.testOnReturn = config.getTestOnReturn();
+        this.testWhileIdle = config.getTestWhileIdle();
+        this.timeBetweenEvictionRunsMillis =
                 config.getTimeBetweenEvictionRunsMillis();
-        this._whenExhaustedAction = config.getWhenExhaustedAction();
+        this.whenExhaustedAction = config.getWhenExhaustedAction();
 
-        startEvictor(_timeBetweenEvictionRunsMillis);
+        startEvictor(timeBetweenEvictionRunsMillis);
     }
 
 
@@ -240,7 +240,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #setWhenExhaustedAction
      */
     public WhenExhaustedAction getWhenExhaustedAction() {
-        return _whenExhaustedAction;
+        return whenExhaustedAction;
     }
 
     /**
@@ -253,7 +253,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      */
     public void setWhenExhaustedAction(
             WhenExhaustedAction whenExhaustedAction) {
-        _whenExhaustedAction = whenExhaustedAction;
+        this.whenExhaustedAction = whenExhaustedAction;
     }
 
     /**
@@ -269,7 +269,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see WhenExhaustedAction#BLOCK
      */
     public long getMaxWait() {
-        return _maxWait;
+        return maxWait;
     }
 
     /**
@@ -287,7 +287,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see WhenExhaustedAction#BLOCK
      */
     public void setMaxWait(long maxWait) {
-        _maxWait = maxWait;
+        this.maxWait = maxWait;
     }
 
     /**
@@ -297,7 +297,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #setMaxIdle
      */
     public int getMaxIdle() {
-        return _maxIdle;
+        return maxIdle;
     }
 
     /**
@@ -316,7 +316,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #getMaxIdle
      */
     public void setMaxIdle(int maxIdle) {
-        _maxIdle = maxIdle;
+        this.maxIdle = maxIdle;
     }
 
     /**
@@ -332,7 +332,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #getTimeBetweenEvictionRunsMillis()
      */
     public void setMinIdle(int minIdle) {
-        _minIdle = minIdle;
+        this.minIdle = minIdle;
     }
 
     /**
@@ -344,7 +344,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #setMinIdle
      */
     public int getMinIdle() {
-        return _minIdle;
+        return minIdle;
     }
 
     /**
@@ -358,7 +358,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #setTestOnBorrow
      */
     public boolean getTestOnBorrow() {
-        return _testOnBorrow;
+        return testOnBorrow;
     }
 
     /**
@@ -374,7 +374,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #getTestOnBorrow
      */
     public void setTestOnBorrow(boolean testOnBorrow) {
-        _testOnBorrow = testOnBorrow;
+        this.testOnBorrow = testOnBorrow;
     }
 
     /**
@@ -387,7 +387,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #setTestOnReturn
      */
     public boolean getTestOnReturn() {
-        return _testOnReturn;
+        return testOnReturn;
     }
 
     /**
@@ -401,7 +401,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #getTestOnReturn
      */
     public void setTestOnReturn(boolean testOnReturn) {
-        _testOnReturn = testOnReturn;
+        this.testOnReturn = testOnReturn;
     }
 
     /**
@@ -413,7 +413,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #setTimeBetweenEvictionRunsMillis
      */
     public long getTimeBetweenEvictionRunsMillis() {
-        return _timeBetweenEvictionRunsMillis;
+        return timeBetweenEvictionRunsMillis;
     }
 
     /**
@@ -427,8 +427,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      */
     public void setTimeBetweenEvictionRunsMillis(
             long timeBetweenEvictionRunsMillis) {
-        _timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
-        startEvictor(_timeBetweenEvictionRunsMillis);
+        this.timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
+        startEvictor(timeBetweenEvictionRunsMillis);
     }
 
     /**
@@ -440,7 +440,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #setTimeBetweenEvictionRunsMillis
      */
     public int getNumTestsPerEvictionRun() {
-        return _numTestsPerEvictionRun;
+        return numTestsPerEvictionRun;
     }
 
     /**
@@ -460,7 +460,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #setTimeBetweenEvictionRunsMillis
      */
     public void setNumTestsPerEvictionRun(int numTestsPerEvictionRun) {
-        _numTestsPerEvictionRun = numTestsPerEvictionRun;
+        this.numTestsPerEvictionRun = numTestsPerEvictionRun;
     }
 
     /**
@@ -473,7 +473,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #setTimeBetweenEvictionRunsMillis
      */
     public long getMinEvictableIdleTimeMillis() {
-        return _minEvictableIdleTimeMillis;
+        return minEvictableIdleTimeMillis;
     }
 
     /**
@@ -489,7 +489,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #setTimeBetweenEvictionRunsMillis
      */
     public void setMinEvictableIdleTimeMillis(long minEvictableIdleTimeMillis) {
-        _minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
+        this.minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
     }
 
     /**
@@ -509,7 +509,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @since Pool 1.3
      */
     public long getSoftMinEvictableIdleTimeMillis() {
-        return _softMinEvictableIdleTimeMillis;
+        return softMinEvictableIdleTimeMillis;
     }
 
     /**
@@ -527,7 +527,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      */
     public void setSoftMinEvictableIdleTimeMillis(
             long softMinEvictableIdleTimeMillis) {
-        _softMinEvictableIdleTimeMillis = softMinEvictableIdleTimeMillis;
+        this.softMinEvictableIdleTimeMillis = softMinEvictableIdleTimeMillis;
     }
 
     /**
@@ -541,7 +541,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #setTimeBetweenEvictionRunsMillis
      */
     public boolean getTestWhileIdle() {
-        return _testWhileIdle;
+        return testWhileIdle;
     }
 
     /**
@@ -556,7 +556,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #setTimeBetweenEvictionRunsMillis
      */
     public void setTestWhileIdle(boolean testWhileIdle) {
-        _testWhileIdle = testWhileIdle;
+        this.testWhileIdle = testWhileIdle;
     }
 
     /**
@@ -570,7 +570,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @since 1.4
      */
     public boolean getLifo() {
-        return _lifo;
+        return lifo;
     }
 
     /**
@@ -585,7 +585,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @since 1.4
      */
     public void setLifo(boolean lifo) {
-        this._lifo = lifo;
+        this.lifo = lifo;
     }
 
     /**
@@ -659,7 +659,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      */
     @Override
     public T borrowObject() throws Exception {
-        return borrowObject(_maxWait);
+        return borrowObject(maxWait);
     }
     
     /**
@@ -679,14 +679,14 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
 
         // Get local copy of current config so it is consistent for entire
         // method execution
-        WhenExhaustedAction whenExhaustedAction = _whenExhaustedAction;
+        WhenExhaustedAction exhaustedAction = whenExhaustedAction;
 
         boolean create;
 
         while (p == null) {
             create = false;
-            if (whenExhaustedAction == WhenExhaustedAction.FAIL) {
-                p = _idleObjects.pollFirst();
+            if (exhaustedAction == WhenExhaustedAction.FAIL) {
+                p = idleObjects.pollFirst();
                 if (p == null) {
                     create = true;
                     p = create();
@@ -697,17 +697,17 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
                 if (!p.allocate()) {
                     p = null;
                 }
-            } else if (whenExhaustedAction == WhenExhaustedAction.BLOCK) {
-                p = _idleObjects.pollFirst();
+            } else if (exhaustedAction == WhenExhaustedAction.BLOCK) {
+                p = idleObjects.pollFirst();
                 if (p == null) {
                     create = true;
                     p = create();
                 }
                 if (p == null) {
                     if (borrowMaxWait < 1) {
-                        p = _idleObjects.takeFirst();
+                        p = idleObjects.takeFirst();
                     } else {
-                        p = _idleObjects.pollFirst(borrowMaxWait,
+                        p = idleObjects.pollFirst(borrowMaxWait,
                                 TimeUnit.MILLISECONDS);
                     }
                 }
@@ -822,7 +822,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
         }
 
         int maxIdle = getMaxIdle();
-        if (isClosed() || maxIdle > -1 && maxIdle <= _idleObjects.size()) {
+        if (isClosed() || maxIdle > -1 && maxIdle <= idleObjects.size()) {
             try {
                 destroy(p);
             } catch (Exception e) {
@@ -830,9 +830,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
             }
         } else {
             if (getLifo()) {
-                _idleObjects.addFirst(p);
+                idleObjects.addFirst(p);
             } else {
-                _idleObjects.addLast(p);
+                idleObjects.addLast(p);
             }
         }
     }
@@ -878,7 +878,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      */
     @Override
     public void clear() {
-        PooledObject<T> p = _idleObjects.poll();
+        PooledObject<T> p = idleObjects.poll();
 
         while (p != null) {
             try {
@@ -886,7 +886,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
             } catch (Exception e) {
                 // TODO - Ignore?
             }
-            p = _idleObjects.poll();
+            p = idleObjects.poll();
         }
     }
 
@@ -897,7 +897,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      */
     @Override
     public int getNumActive() {
-        return allObjects.size() - _idleObjects.size();
+        return allObjects.size() - idleObjects.size();
     }
 
     /**
@@ -907,7 +907,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      */
     @Override
     public int getNumIdle() {
-        return _idleObjects.size();
+        return idleObjects.size();
     }
 
     /**
@@ -976,7 +976,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
     public void evict() throws Exception {
         assertOpen();
 
-        if (_idleObjects.size() == 0) {
+        if (idleObjects.size() == 0) {
             return;
         }
 
@@ -996,9 +996,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
         for (int i = 0, m = getNumTests(); i < m; i++) {
             if (evictionIterator == null || !evictionIterator.hasNext()) {
                 if (getLifo()) {
-                    evictionIterator = _idleObjects.descendingIterator();
+                    evictionIterator = idleObjects.descendingIterator();
                 } else {
-                    evictionIterator = _idleObjects.iterator();
+                    evictionIterator = idleObjects.iterator();
                 }
             }
             if (!evictionIterator.hasNext()) {
@@ -1025,7 +1025,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
 
             if (idleEvictTime < underTest.getIdleTimeMillis() ||
                     (idleSoftEvictTime < underTest.getIdleTimeMillis() &&
-                            getMinIdle() < _idleObjects.size())) {
+                            getMinIdle() < idleObjects.size())) {
                 destroy(underTest);
             } else {
                 if (testWhileIdle) {
@@ -1048,7 +1048,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
                         }
                     }
                 }
-                if (!underTest.endEvictionTest(_idleObjects)) {
+                if (!underTest.endEvictionTest(idleObjects)) {
                     // TODO - May need to add code here once additional states
                     // are used
                 }
@@ -1081,7 +1081,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
     }
 
     private void destroy(PooledObject<T> toDestory) throws Exception {
-        _idleObjects.remove(toDestory);
+        idleObjects.remove(toDestory);
         allObjects.remove(toDestory.getObject());
         try {
             factory.destroyObject(toDestory.getObject());
@@ -1103,7 +1103,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
             return;
         }
 
-        while (_idleObjects.size() < minIdle) {
+        while (idleObjects.size() < minIdle) {
             PooledObject<T> p = create();
             if (p == null) {
                 // Can't create objects, no reason to think another call to
@@ -1111,9 +1111,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
                 break;
             }
             if (getLifo()) {
-                _idleObjects.addFirst(p);
+                idleObjects.addFirst(p);
             } else {
-                _idleObjects.addLast(p);
+                idleObjects.addLast(p);
             }
         }
     }
@@ -1139,9 +1139,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
         if (p != null) {
             factory.passivateObject(p.getObject());
             if (getLifo()) {
-                _idleObjects.addFirst(p);
+                idleObjects.addFirst(p);
             } else {
-                _idleObjects.addLast(p);
+                idleObjects.addLast(p);
             }
         }
     }
@@ -1176,7 +1176,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
         buf.append("Active: ").append(getNumActive()).append("\n");
         buf.append("Idle: ").append(getNumIdle()).append("\n");
         buf.append("Idle Objects:\n");
-        for (PooledObject<T> pair : _idleObjects) {
+        for (PooledObject<T> pair : idleObjects) {
             buf.append("\t").append(pair.toString());
         }
         return buf.toString();
@@ -1191,11 +1191,11 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @return the number of tests for the Evictor to run
      */
     private int getNumTests() {
-        if (_numTestsPerEvictionRun >= 0) {
-            return Math.min(_numTestsPerEvictionRun, _idleObjects.size());
+        if (numTestsPerEvictionRun >= 0) {
+            return Math.min(numTestsPerEvictionRun, idleObjects.size());
         } else {
-            return (int) (Math.ceil(_idleObjects.size() /
-                    Math.abs((double) _numTestsPerEvictionRun)));
+            return (int) (Math.ceil(idleObjects.size() /
+                    Math.abs((double) numTestsPerEvictionRun)));
         }
     }
 
@@ -1238,7 +1238,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #setMaxIdle
      * @see #getMaxIdle
      */
-    private volatile int _maxIdle = GenericObjectPoolConfig.DEFAULT_MAX_IDLE;
+    private volatile int maxIdle = GenericObjectPoolConfig.DEFAULT_MAX_IDLE;
 
     /**
      * The cap on the minimum number of idle instances in the pool.
@@ -1246,7 +1246,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #setMinIdle
      * @see #getMinIdle
      */
-    private volatile int _minIdle = GenericObjectPoolConfig.DEFAULT_MIN_IDLE;
+    private volatile int minIdle = GenericObjectPoolConfig.DEFAULT_MIN_IDLE;
 
     /**
      * The cap on the total number of active instances from the pool.
@@ -1270,7 +1270,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #setWhenExhaustedAction
      * @see #getWhenExhaustedAction
      */
-    private volatile long _maxWait = GenericObjectPoolConfig.DEFAULT_MAX_WAIT;
+    private volatile long maxWait = GenericObjectPoolConfig.DEFAULT_MAX_WAIT;
 
     /**
      * The action to take when the {@link #borrowObject} method is invoked when
@@ -1281,7 +1281,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #setWhenExhaustedAction
      * @see #getWhenExhaustedAction
      */
-    private volatile WhenExhaustedAction _whenExhaustedAction =
+    private volatile WhenExhaustedAction whenExhaustedAction =
         GenericObjectPoolConfig.DEFAULT_WHEN_EXHAUSTED_ACTION;
 
     /**
@@ -1294,7 +1294,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #setTestOnBorrow
      * @see #getTestOnBorrow
      */
-    private volatile boolean _testOnBorrow =
+    private volatile boolean testOnBorrow =
         GenericObjectPoolConfig.DEFAULT_TEST_ON_BORROW;
 
     /**
@@ -1305,7 +1305,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #getTestOnReturn
      * @see #setTestOnReturn
      */
-    private volatile boolean _testOnReturn =
+    private volatile boolean testOnReturn =
         GenericObjectPoolConfig.DEFAULT_TEST_ON_RETURN;
 
     /**
@@ -1319,7 +1319,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #getTimeBetweenEvictionRunsMillis
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    private volatile boolean _testWhileIdle =
+    private volatile boolean testWhileIdle =
         GenericObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE;
 
     /**
@@ -1330,7 +1330,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #setTimeBetweenEvictionRunsMillis
      * @see #getTimeBetweenEvictionRunsMillis
      */
-    private volatile long _timeBetweenEvictionRunsMillis =
+    private volatile long timeBetweenEvictionRunsMillis =
         GenericObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
 
     /**
@@ -1347,7 +1347,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #getTimeBetweenEvictionRunsMillis
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    private volatile int _numTestsPerEvictionRun =
+    private volatile int numTestsPerEvictionRun =
         GenericObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
 
     /**
@@ -1361,7 +1361,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #getTimeBetweenEvictionRunsMillis
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    private volatile long _minEvictableIdleTimeMillis =
+    private volatile long minEvictableIdleTimeMillis =
         GenericObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 
     /**
@@ -1374,11 +1374,11 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @see #setSoftMinEvictableIdleTimeMillis
      * @see #getSoftMinEvictableIdleTimeMillis
      */
-    private volatile long _softMinEvictableIdleTimeMillis =
+    private volatile long softMinEvictableIdleTimeMillis =
         GenericObjectPoolConfig.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 
     /** Whether or not the pool behaves as a LIFO queue (last in first out) */
-    private volatile boolean _lifo = GenericObjectPoolConfig.DEFAULT_LIFO;
+    private volatile boolean lifo = GenericObjectPoolConfig.DEFAULT_LIFO;
 
     /** My {@link PoolableObjectFactory}. */
     private volatile PoolableObjectFactory<T> factory;
@@ -1408,9 +1408,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
     private final AtomicLong createCount = new AtomicLong(0);
 
     /** The queue of idle objects */
-    private final LinkedBlockingDeque<PooledObject<T>> _idleObjects =
+    private final LinkedBlockingDeque<PooledObject<T>> idleObjects =
         new LinkedBlockingDeque<PooledObject<T>>();
 
-    /** An iterator for {@link #_idleObjects} that is used by the evictor. */
+    /** An iterator for {@link #idleObjects} that is used by the evictor. */
     private Iterator<PooledObject<T>> evictionIterator = null;
 }
