@@ -43,21 +43,6 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  */
 public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
     /**
-     * Create a <code>SoftReferenceObjectPool</code> without a factory.
-     * {@link #setFactory(PoolableObjectFactory) setFactory} should be called
-     * before any attempts to use the pool are made.
-     * Generally speaking you should prefer the {@link #SoftReferenceObjectPool(PoolableObjectFactory)} constructor.
-     *
-     * @see #SoftReferenceObjectPool(PoolableObjectFactory)
-     * @deprecated to be removed in pool 2.0.  Use {@link #SoftReferenceObjectPool(PoolableObjectFactory)}.
-     */
-    @Deprecated
-    public SoftReferenceObjectPool() {
-        _pool = new ArrayList<SoftReference<T>>();
-        _factory = null;
-    }
-
-    /**
      * Create a <code>SoftReferenceObjectPool</code> with the specified factory.
      *
      * @param factory object factory to use.
@@ -67,25 +52,6 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
         _factory = factory;
     }
 
-    /**
-     * Create a <code>SoftReferenceObjectPool</code> with the specified factory and initial idle object count.
-     *
-     * @param factory object factory to use.
-     * @param initSize initial size to attempt to prefill the pool.
-     * @throws Exception when there is a problem prefilling the pool.
-     * @throws IllegalArgumentException when <code>factory</code> is <code>null</code>.
-     * @deprecated because this is a SoftReference pool, prefilled idle obejects may be garbage collected before they are used.
-     *      To be removed in Pool 2.0.
-     */
-    @Deprecated
-    public SoftReferenceObjectPool(PoolableObjectFactory<T> factory, int initSize) throws Exception, IllegalArgumentException {
-        if (factory == null) {
-            throw new IllegalArgumentException("factory required to prefill the pool.");
-        }
-        _pool = new ArrayList<SoftReference<T>>(initSize);
-        _factory = factory;
-        PoolUtils.prefill(this, initSize);
-    }
 
     /**
      * <p>Borrow an object from the pool.  If there are no idle instances available in the pool, the configured
@@ -314,29 +280,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
         clear();
     }
 
-    /**
-     * Sets the {@link PoolableObjectFactory factory} this pool uses
-     * to create new instances. Trying to change
-     * the <code>factory</code> while there are borrowed objects will
-     * throw an {@link IllegalStateException}.
-     *
-     * @param factory the {@link PoolableObjectFactory} used to create new instances.
-     * @throws IllegalStateException when the factory cannot be set at this time
-     * @deprecated to be removed in pool 2.0
-     */
-    @Override
-    @Deprecated
-    public synchronized void setFactory(PoolableObjectFactory<T> factory) throws IllegalStateException {
-        assertOpen();
-        if(0 < getNumActive()) {
-            throw new IllegalStateException("Objects are already active");
-        } else {
-            clear();
-            _factory = factory;
-        }
-    }
-
-    /**
+     /**
      * If any idle objects were garbage collected, remove their
      * {@link Reference} wrappers from the idle object pool.
      */

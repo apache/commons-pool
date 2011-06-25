@@ -175,17 +175,4 @@ public interface ObjectPool<T> {
      * @throws Exception <strong>deprecated</strong>: implementations should silently fail if not all resources can be freed.
      */
     void close() throws Exception;
-
-    /**
-     * Sets the {@link PoolableObjectFactory factory} this pool uses
-     * to create new instances (optional operation). Trying to change
-     * the <code>factory</code> after a pool has been used will frequently
-     * throw an {@link UnsupportedOperationException}. It is up to the pool
-     * implementation to determine when it is acceptable to call this method.
-     *
-     * @param factory the {@link PoolableObjectFactory} used to create new instances.
-     * @throws IllegalStateException when the factory cannot be set at this time
-     * @throws UnsupportedOperationException if this implementation does not support the operation
-     */
-    void setFactory(PoolableObjectFactory<T> factory) throws IllegalStateException, UnsupportedOperationException;
 }

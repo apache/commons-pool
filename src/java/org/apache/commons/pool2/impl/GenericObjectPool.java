@@ -171,12 +171,13 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
     /**
      * Create a new <tt>GenericObjectPool</tt> with default properties.
      */
-    public GenericObjectPool() {
-        this(new GenericObjectPoolConfig<T>());
+    public GenericObjectPool(PoolableObjectFactory<T> factory) {
+        this(factory, new GenericObjectPoolConfig<T>());
     }
 
-    public GenericObjectPool(GenericObjectPoolConfig<T> config) {
-        this.factory = config.getFactory();
+    public GenericObjectPool(PoolableObjectFactory<T> factory,
+            GenericObjectPoolConfig<T> config) {
+        this.factory = factory;
         this.lifo = config.getLifo();
         this.maxTotal = config.getMaxTotal();
         this.maxIdle = config.getMaxIdle();
@@ -931,33 +932,6 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
     }
 
     /**
-      * <p>Sets the poolable object factory associated with this pool.</p>
-      * 
-      * <p>If this method is called when the factory has previously been set an
-      * IllegalStateException is thrown.</p>
-     * 
-     * @param factory
-     *            the {@link PoolableObjectFactory} used to create new
-     *            instances.
-      * @throws IllegalStateException if the factory has already been set
-     */
-    @Override
-    public void setFactory(PoolableObjectFactory<T> factory)
-            throws IllegalStateException {
-        if (this.factory == null) {
-            synchronized (factoryLock) {
-                if (this.factory == null) {
-                    this.factory = factory;
-                } else {
-                    throw new IllegalStateException("Factory already set");
-                }
-            }
-        } else {
-            throw new IllegalStateException("Factory already set");
-        }
-    }
-
-    /**
      * <p>
      * Perform <code>numTests</code> idle object eviction tests, evicting
      * examined objects that meet the criteria for eviction. If
@@ -1381,8 +1355,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
     private volatile boolean lifo = GenericObjectPoolConfig.DEFAULT_LIFO;
 
     /** My {@link PoolableObjectFactory}. */
-    private volatile PoolableObjectFactory<T> factory;
-    final private Object factoryLock = new Object();
+    final private PoolableObjectFactory<T> factory;
 
     /**
      * My idle object eviction {@link TimerTask}, if any.

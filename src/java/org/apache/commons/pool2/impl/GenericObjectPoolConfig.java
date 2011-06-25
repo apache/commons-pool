@@ -16,8 +16,6 @@
  */
 package org.apache.commons.pool2.impl;
 
-import org.apache.commons.pool2.PoolableObjectFactory;
-
 /**
  * A simple "struct" encapsulating the configuration for a
  * {@link GenericObjectPool}.
@@ -49,8 +47,6 @@ public class GenericObjectPoolConfig<T> extends BaseObjectPoolConfig {
     public static final int DEFAULT_MIN_IDLE = 0;
 
     
-    private PoolableObjectFactory<T> factory = null;
-
     private long softMinEvictableIdleTimeMillis =
         DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 
@@ -59,15 +55,6 @@ public class GenericObjectPoolConfig<T> extends BaseObjectPoolConfig {
     private int maxIdle = DEFAULT_MAX_IDLE;
     
     private int minIdle = DEFAULT_MIN_IDLE;
-
-
-    public PoolableObjectFactory<T> getFactory() {
-        return factory;
-    }
-
-    public void setFactory(PoolableObjectFactory<T> factory) {
-        this.factory = factory;
-    }
 
 
     public long getSoftMinEvictableIdleTimeMillis() {
