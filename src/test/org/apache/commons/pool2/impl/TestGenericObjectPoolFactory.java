@@ -42,8 +42,7 @@ public class TestGenericObjectPoolFactory extends TestObjectPoolFactory {
         
         GenericObjectPoolConfig<Object> config =
             new GenericObjectPoolConfig<Object>();
-        config.setFactory(objectFactory);
-        return new GenericObjectPoolFactory<Object>(config);
+        return new GenericObjectPoolFactory<Object>(objectFactory, config);
     }
 
     @Test
@@ -63,10 +62,10 @@ public class TestGenericObjectPoolFactory extends TestObjectPoolFactory {
         config.setLifo(false);
         config.setTimeBetweenEvictionRunsMillis(8);
         config.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
-        config.setFactory(new MethodCallPoolableObjectFactory());
 
         GenericObjectPoolFactory<Object> factory =
-            new GenericObjectPoolFactory<Object>(config);
+            new GenericObjectPoolFactory<Object>(
+                    new MethodCallPoolableObjectFactory(), config);
         GenericObjectPool<Object> pool =
             (GenericObjectPool<Object>) factory.createPool();
 

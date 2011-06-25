@@ -19,6 +19,7 @@ package org.apache.commons.pool2.impl;
 
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.ObjectPoolFactory;
+import org.apache.commons.pool2.PoolableObjectFactory;
 
 /**
  * A factory for creating {@link GenericObjectPool} instances from a provided
@@ -31,6 +32,7 @@ import org.apache.commons.pool2.ObjectPoolFactory;
 
 public class GenericObjectPoolFactory<T> implements ObjectPoolFactory<T> {
 
+    private PoolableObjectFactory<T> factory;
     private GenericObjectPoolConfig<T> config;
 
 
@@ -42,11 +44,21 @@ public class GenericObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      *                  passed by value. Subsequent changes to config will not
      *                  be reflected in this factory or the pools it creates.
      */
-    public GenericObjectPoolFactory(GenericObjectPoolConfig<T> config) {
+    public GenericObjectPoolFactory(PoolableObjectFactory<T> factory,
+            GenericObjectPoolConfig<T> config) {
+        this.factory = factory;
         this.config = config.clone();
     }
 
     
+    public PoolableObjectFactory<T> getFactory() {
+        return factory;
+    }
+    
+    public void setFactory(PoolableObjectFactory<T> factory) {
+        this.factory = factory;
+    }
+
     /**
      * Obtain the configuration currently used by the factory allowing the
      * current settings to be viewed and changed.
@@ -75,6 +87,6 @@ public class GenericObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      * @return A pool configured with the current property settings
      */
     public ObjectPool<T> createPool() {
-        return new GenericObjectPool<T>(config);
+        return new GenericObjectPool<T>(factory, config);
     }
 }

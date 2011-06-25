@@ -111,8 +111,7 @@ public class PerformanceTest {
         
         SleepingObjectFactory factory = new SleepingObjectFactory();
         if (logLevel >= 4) { factory.setDebug(true); } 
-        pool = new GenericObjectPool<Integer>();
-        pool.setFactory(factory);
+        pool = new GenericObjectPool<Integer>(factory);
         pool.setMaxTotal(maxTotal);
         pool.setMaxIdle(maxIdle);
         pool.setTestOnBorrow(true);

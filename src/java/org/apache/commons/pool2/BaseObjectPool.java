@@ -108,21 +108,6 @@ public abstract class BaseObjectPool<T> implements ObjectPool<T> {
     }
 
     /**
-     * Not supported in this base implementation.
-     * Always throws an {@link UnsupportedOperationException},
-     * subclasses should override this behavior.
-     * 
-     * @param factory the PoolableObjectFactory
-     * @throws UnsupportedOperationException
-     * @throws IllegalStateException
-     * @deprecated to be removed in pool 2.0
-     */
-    @Deprecated
-    public void setFactory(PoolableObjectFactory<T> factory) throws IllegalStateException, UnsupportedOperationException {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
      * Has this pool instance been closed.
      * @return <code>true</code> when this pool has been closed.
      */
