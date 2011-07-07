@@ -856,19 +856,6 @@ public final class PoolUtils {
         }
 
         /**
-         * Sets the object factory used by the pool.
-         * 
-         * @param factory KeyedPoolableObjectFactory used by the pool
-         * @deprecated to be removed in pool 2.0
-         */
-        @Deprecated
-        public void setFactory(final KeyedPoolableObjectFactory<K,V> factory) throws IllegalStateException, UnsupportedOperationException {
-            synchronized (lock) {
-                keyedPool.setFactory(factory);
-            }
-        }
-
-        /**
          * {@inheritDoc}
          */
         @Override
@@ -1406,15 +1393,6 @@ public final class PoolUtils {
             } catch (Exception e) {
                 // swallowed
             }
-        }
-
-        /**
-         * {@inheritDoc}
-         * @deprecated to be removed in pool 2.0
-         */
-        @Deprecated
-        public void setFactory(final KeyedPoolableObjectFactory<K,V> factory) throws IllegalStateException, UnsupportedOperationException {
-            keyedPool.setFactory(factory);
         }
 
         /**

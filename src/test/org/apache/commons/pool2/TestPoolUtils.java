@@ -70,6 +70,7 @@ public class TestPoolUtils {
             // expected
         }
         try {
+            @SuppressWarnings("unchecked")
             final ObjectPool<Object> pool = createProxy(ObjectPool.class, (List<String>)null);
             PoolUtils.checkMinIdle(pool, -1, 1);
             fail("PoolUtils.checkMinIdle(ObjectPool,,) must not accept negative min idle values.");
@@ -80,6 +81,7 @@ public class TestPoolUtils {
         final List<String> calledMethods = new ArrayList<String>();
 
         // Test that the minIdle check doesn't add too many idle objects
+        @SuppressWarnings("unchecked")
         final PoolableObjectFactory<Object> pof = createProxy(PoolableObjectFactory.class, calledMethods);
         final ObjectPool<Object> op = new GenericObjectPool<Object>(pof);
         PoolUtils.checkMinIdle(op, 2, 100);
@@ -103,6 +105,7 @@ public class TestPoolUtils {
             afe = null;
             try {
                 calledMethods.clear();
+                @SuppressWarnings("unchecked")
                 final ObjectPool<Object> pool = createProxy(ObjectPool.class, calledMethods);
                 final TimerTask task = PoolUtils.checkMinIdle(pool, 1, CHECK_PERIOD); // checks minIdle immediately
 
@@ -135,6 +138,7 @@ public class TestPoolUtils {
             // expected
         }
         try {
+            @SuppressWarnings("unchecked")
             final KeyedObjectPool<Object,Object> pool = createProxy(KeyedObjectPool.class, (List<String>)null);
             PoolUtils.checkMinIdle(pool, (Object)null, 1, 1);
             fail("PoolUtils.checkMinIdle(KeyedObjectPool,Object,int,long) must not accept null keys.");
@@ -142,6 +146,7 @@ public class TestPoolUtils {
             // expected
         }
         try {
+            @SuppressWarnings("unchecked")
             final KeyedObjectPool<Object,Object> pool = createProxy(KeyedObjectPool.class, (List<String>)null);
             PoolUtils.checkMinIdle(pool, new Object(), -1, 1);
             fail("PoolUtils.checkMinIdle(KeyedObjectPool,Object,int,long) must not accept negative min idle values.");
@@ -153,9 +158,11 @@ public class TestPoolUtils {
         final Object key = new Object();
 
         // Test that the minIdle check doesn't add too many idle objects
-        final KeyedPoolableObjectFactory<Object,Object> kpof = createProxy(KeyedPoolableObjectFactory.class, calledMethods);
-        final KeyedObjectPool<Object,Object> kop = new GenericKeyedObjectPool<Object,Object>();
-        kop.setFactory(kpof);
+        @SuppressWarnings("unchecked")
+        final KeyedPoolableObjectFactory<Object,Object> kpof =
+            createProxy(KeyedPoolableObjectFactory.class, calledMethods);
+        final KeyedObjectPool<Object,Object> kop =
+            new GenericKeyedObjectPool<Object,Object>(kpof);
         PoolUtils.checkMinIdle(kop, key, 2, 100);
         Thread.sleep(400);
         assertEquals(2, kop.getNumIdle(key));
@@ -178,6 +185,7 @@ public class TestPoolUtils {
             afe = null;
             try {
                 calledMethods.clear();
+                @SuppressWarnings("unchecked")
                 final KeyedObjectPool<Object,Object> pool = createProxy(KeyedObjectPool.class, calledMethods);
                 final TimerTask task = PoolUtils.checkMinIdle(pool, key, 1, CHECK_PERIOD); // checks minIdle immediately
 
@@ -204,6 +212,7 @@ public class TestPoolUtils {
     @Test
     public void testCheckMinIdleKeyedObjectPoolKeys() throws Exception {
         try {
+            @SuppressWarnings("unchecked")
             final KeyedObjectPool<Object,Object> pool = createProxy(KeyedObjectPool.class, (List<String>)null);
             PoolUtils.checkMinIdle(pool, (Object)null, 1, 1);
             fail("PoolUtils.checkMinIdle(KeyedObjectPool,Collection,int,long) must not accept null keys.");
@@ -218,6 +227,7 @@ public class TestPoolUtils {
             afe = null;
             try {
                 final List<String> calledMethods = new ArrayList<String>();
+                @SuppressWarnings("unchecked")
                 final KeyedObjectPool<String,Object> pool = createProxy(KeyedObjectPool.class, calledMethods);
                 final Collection<String> keys = new ArrayList<String>(2);
                 keys.add("one");
@@ -254,6 +264,7 @@ public class TestPoolUtils {
         }
 
         final List<String> calledMethods = new ArrayList<String>();
+        @SuppressWarnings("unchecked")
         final ObjectPool<Object> pool = createProxy(ObjectPool.class, calledMethods);
 
         PoolUtils.prefill(pool, 0);
@@ -277,6 +288,7 @@ public class TestPoolUtils {
             // expected
         }
         try {
+            @SuppressWarnings("unchecked")
             final KeyedObjectPool<Object,Object> pool = createProxy(KeyedObjectPool.class, (List<String>)null);
             PoolUtils.prefill(pool, (Object)null, 1);
             fail("PoolUtils.prefill(KeyedObjectPool,Object,int) must not accept null key.");
@@ -285,6 +297,7 @@ public class TestPoolUtils {
         }
 
         final List<String> calledMethods = new ArrayList<String>();
+        @SuppressWarnings("unchecked")
         final KeyedObjectPool<Object,Object> pool = createProxy(KeyedObjectPool.class, calledMethods);
 
         PoolUtils.prefill(pool, new Object(), 0);
@@ -302,6 +315,7 @@ public class TestPoolUtils {
     @Test
     public void testPrefillKeyedObjectPoolCollection() throws Exception {
         try {
+            @SuppressWarnings("unchecked")
             final KeyedObjectPool<String,String> pool = createProxy(KeyedObjectPool.class, (List<String>)null);
             PoolUtils.prefill(pool, (Collection<String>)null, 1);
             fail("PoolUtils.prefill(KeyedObjectPool,Collection,int) must not accept null keys.");
@@ -310,6 +324,7 @@ public class TestPoolUtils {
         }
 
         final List<String> calledMethods = new ArrayList<String>();
+        @SuppressWarnings("unchecked")
         final KeyedObjectPool<String,Object> pool = createProxy(KeyedObjectPool.class, calledMethods);
 
         final Set<String> keys = new HashSet<String>();
@@ -338,6 +353,7 @@ public class TestPoolUtils {
         }
 
         final List<String> calledMethods = new ArrayList<String>();
+        @SuppressWarnings("unchecked")
         final ObjectPool<Object> op = createProxy(ObjectPool.class, calledMethods);
 
         final ObjectPool<Object> sop = PoolUtils.synchronizedPool(op);
@@ -357,6 +373,7 @@ public class TestPoolUtils {
         }
 
         final List<String> calledMethods = new ArrayList<String>();
+        @SuppressWarnings("unchecked")
         final KeyedObjectPool<Object,Object> kop = createProxy(KeyedObjectPool.class, calledMethods);
 
         final KeyedObjectPool<Object,Object> skop = PoolUtils.synchronizedPool(kop);
@@ -376,6 +393,7 @@ public class TestPoolUtils {
         }
 
         final List<String> calledMethods = new ArrayList<String>();
+        @SuppressWarnings("unchecked")
         final PoolableObjectFactory<Object> pof =
                 createProxy(PoolableObjectFactory.class, calledMethods);
 
@@ -396,6 +414,7 @@ public class TestPoolUtils {
         }
 
         final List<String> calledMethods = new ArrayList<String>();
+        @SuppressWarnings("unchecked")
         final KeyedPoolableObjectFactory<Object,Object> kpof =
                 createProxy(KeyedPoolableObjectFactory.class, calledMethods);
 
@@ -444,7 +463,9 @@ public class TestPoolUtils {
 
         // If the logic behind PoolUtils.erodingPool changes then this will need to be tweaked.
         float factor = 0.01f; // about ~9 seconds until first discard
-        final ObjectPool<Object> pool = PoolUtils.erodingPool(createProxy(ObjectPool.class, handler), factor);
+        @SuppressWarnings("unchecked")
+        final ObjectPool<Object> pool = PoolUtils.erodingPool(
+                createProxy(ObjectPool.class, handler), factor);
 
         final List<String> expectedMethods = new ArrayList<String>();
         assertEquals(expectedMethods, calledMethods);
@@ -536,6 +557,7 @@ public class TestPoolUtils {
 
         // If the logic behind PoolUtils.erodingPool changes then this will need to be tweaked.
         float factor = 0.01f; // about ~9 seconds until first discard
+        @SuppressWarnings("unchecked")
         final KeyedObjectPool<Object,Object> pool =
             PoolUtils.erodingPool(createProxy(KeyedObjectPool.class, handler), factor);
 
@@ -617,7 +639,9 @@ public class TestPoolUtils {
 
         // If the logic behind PoolUtils.erodingPool changes then this will need to be tweaked.
         float factor = 0.01f; // about ~9 seconds until first discard
-        final KeyedObjectPool<Object,Object> pool = PoolUtils.erodingPool(createProxy(KeyedObjectPool.class, handler), factor, true);
+        @SuppressWarnings("unchecked")
+        final KeyedObjectPool<Object,Object> pool = PoolUtils.erodingPool(
+                createProxy(KeyedObjectPool.class, handler), factor, true);
 
         final List<String> expectedMethods = new ArrayList<String>();
         assertEquals(expectedMethods, calledMethods);
@@ -690,13 +714,12 @@ public class TestPoolUtils {
         kop.getNumIdle(null);
         kop.invalidateObject(null, new Object());
         kop.returnObject(null, new Object());
-        kop.setFactory(createProxy(KeyedPoolableObjectFactory.class, (List<String>)null));
         kop.toString();
 
         final List<String> expectedMethods = Arrays.asList(new String[] {
                 "addObject", "borrowObject", "clear", "clear", "close",
                 "getNumActive", "getNumActive", "getNumIdle", "getNumIdle", "invalidateObject",
-                "returnObject", "setFactory", "toString"
+                "returnObject", "toString"
         });
         return expectedMethods;
     }
@@ -736,7 +759,9 @@ public class TestPoolUtils {
     }
 
     private static <T> T createProxy(final Class<T> clazz, final InvocationHandler handler) {
-        T ret = (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class[] { clazz }, handler);
+        @SuppressWarnings("unchecked")
+        T ret = (T) Proxy.newProxyInstance(
+                clazz.getClassLoader(), new Class[] { clazz }, handler);
         return ret;
     }
 

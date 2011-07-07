@@ -19,6 +19,7 @@ package org.apache.commons.pool2.impl;
 
 import org.apache.commons.pool2.KeyedObjectPool;
 import org.apache.commons.pool2.KeyedObjectPoolFactory;
+import org.apache.commons.pool2.KeyedPoolableObjectFactory;
 
 /**
  * A factory for creating {@link GenericKeyedObjectPool} instances from a
@@ -32,6 +33,7 @@ import org.apache.commons.pool2.KeyedObjectPoolFactory;
 public class GenericKeyedObjectPoolFactory<K,T>
         implements KeyedObjectPoolFactory<K,T> {
 
+    private KeyedPoolableObjectFactory<K,T> factory;
     private GenericKeyedObjectPoolConfig<K, T> config;
 
     /**
@@ -43,11 +45,21 @@ public class GenericKeyedObjectPoolFactory<K,T>
      *                  be reflected in this factory or the pools it creates.
      */
     public GenericKeyedObjectPoolFactory(
+            KeyedPoolableObjectFactory<K,T> factory,
             GenericKeyedObjectPoolConfig<K,T> config) {
+        this.factory = factory;
         this.config = config.clone();
     }
 
     
+    public KeyedPoolableObjectFactory<K,T> getFactory() {
+        return factory;
+    }
+    
+    public void setFactory(KeyedPoolableObjectFactory<K,T> factory) {
+        this.factory = factory;
+    }
+
     /**
      * Obtain the configuration currently used by the factory allowing the
      * current settings to be viewed and changed.
@@ -76,6 +88,6 @@ public class GenericKeyedObjectPoolFactory<K,T>
      * @return A pool configured with the current property settings
      */
     public KeyedObjectPool<K,T> createPool() {
-        return new GenericKeyedObjectPool<K,T>(config);
+        return new GenericKeyedObjectPool<K,T>(factory, config);
     }
 }
