@@ -37,8 +37,8 @@ public class TestGenericKeyedObjectPoolFactory extends TestKeyedObjectPoolFactor
             final KeyedPoolableObjectFactory<Object,Object> objectFactory) {
         GenericKeyedObjectPoolConfig<Object,Object> config =
             new GenericKeyedObjectPoolConfig<Object,Object>();
-        config.setFactory(objectFactory);
-        return new GenericKeyedObjectPoolFactory<Object,Object>(config);
+        return new GenericKeyedObjectPoolFactory<Object,Object>(objectFactory,
+                config);
     }
 
     @Test
@@ -57,9 +57,9 @@ public class TestGenericKeyedObjectPoolFactory extends TestKeyedObjectPoolFactor
         config.setTimeBetweenEvictionRunsMillis(8);
         config.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
         config.setLifo(false);
-        config.setFactory(createObjectFactory());
         GenericKeyedObjectPoolFactory<Object,Object> factory =
-            new GenericKeyedObjectPoolFactory<Object,Object>(config);
+            new GenericKeyedObjectPoolFactory<Object,Object>(
+                    createObjectFactory(), config);
         GenericKeyedObjectPool<Object,Object> pool =
             (GenericKeyedObjectPool<Object,Object>)factory.createPool();
         assertEquals(1, pool.getMaxTotalPerKey());

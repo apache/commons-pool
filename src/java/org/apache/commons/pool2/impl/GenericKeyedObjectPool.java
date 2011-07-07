@@ -209,8 +209,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
      * Create a new <code>GenericKeyedObjectPool</code> using defaults and no
      * factory.
      */
-    public GenericKeyedObjectPool() {
-        this(new GenericKeyedObjectPoolConfig<K, T>());
+    public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,T> factory) {
+        this(factory, new GenericKeyedObjectPoolConfig<K, T>());
     }
 
     /**
@@ -222,9 +222,10 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
      *                  the configuration object will not be reflected in the
      *                  pool.
      */
-    public GenericKeyedObjectPool(GenericKeyedObjectPoolConfig<K,T> config) {
+    public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,T> factory,
+            GenericKeyedObjectPoolConfig<K,T> config) {
         // Copy the settings from the config
-        this._factory = config.getFactory();
+        this._factory = factory;
         this._lifo = config.getLifo();
         this.maxIdlePerKey = config.getMaxIdlePerKey();
         this._maxTotal = config.getMaxTotal();
@@ -1022,33 +1023,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
          startEvictor(-1L);
      }
 
-
-     /**
-      * <p>Sets the keyed poolable object factory associated with this pool.</p>
-      * 
-      * <p>If this method is called when the factory has previously been set an
-      * IllegalStateException is thrown.</p>
-      * 
-      * @param factory  KeyedPoolableObjectFactory to use when creating keyed
-      *                 object pool instances
-      * @throws IllegalStateException if the factory has already been set
-      */
-     @Override
-     public void setFactory(KeyedPoolableObjectFactory<K,T> factory)
-             throws IllegalStateException {
-         if (this._factory == null) {
-             synchronized (factoryLock) {
-                 if (this._factory == null) {
-                     this._factory = factory;
-                 } else {
-                     throw new IllegalStateException("Factory already set");
-                 }
-             }
-         } else {
-             throw new IllegalStateException("Factory already set");
-         }
-     }
-
      
      /**
       * Clears oldest 15% of objects in pool.  The method sorts the
@@ -1751,8 +1725,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
     private boolean _lifo = GenericKeyedObjectPoolConfig.DEFAULT_LIFO;
 
     /** My {@link KeyedPoolableObjectFactory}. */
-    private volatile KeyedPoolableObjectFactory<K,T> _factory = null;
-    final private Object factoryLock = new Object();
+    final private KeyedPoolableObjectFactory<K,T> _factory;
 
     /**
      * My idle object eviction {@link TimerTask}, if any.
