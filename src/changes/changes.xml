@@ -51,8 +51,9 @@
     <action dev="markt" type="fix" issue="POOL-188" due-to="sebb">
       Remove confusing method PoolUtils.ErodingKeyedObjectPool.numIdle(K key).
     </action>
-    <action dev="markt" type="update">
-      Guard against multiple returns of the same object to the pool.
+    <action dev="markt" type="update" issue="POOL-155">
+      Guard against multiple returns of the same object to the pool and ensure
+      that only objects borrowed from the pool are returned to it.
     </action>
     <action dev="markt" type="fix" issue="POOL-150">
       Ensure GKOP.preparePool() throws an exception if no factory has been
