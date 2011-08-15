@@ -1206,7 +1206,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     @Test
     public void testMaxWaitMultiThreaded() throws Exception {
         final long maxWait = 500; // wait for connection
-        final long holdTime = 2 * maxWait; // how long to hold connection
+        final long holdTime = 4 * maxWait; // how long to hold connection
         final int keyCount = 4; // number of different keys
         final int threadsPerKey = 5; // number of threads to grab the key initially
         SimpleFactory<String> factory = new SimpleFactory<String>();
