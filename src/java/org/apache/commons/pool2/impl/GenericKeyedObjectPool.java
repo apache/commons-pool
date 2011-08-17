@@ -240,7 +240,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
         this._testWhileIdle = config.getTestWhileIdle();
         this._timeBetweenEvictionRunsMillis =
             config.getTimeBetweenEvictionRunsMillis();
-        this._whenExhaustedAction = config.getWhenExhaustedAction();
+        this.blockWhenExhausted = config.getBlockWhenExhausted();
 
         startEvictor(getMinEvictableIdleTimeMillis());
     }
@@ -304,8 +304,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
      * @return the action to take when exhausted
      * @see #setWhenExhaustedAction
      */
-    public WhenExhaustedAction getWhenExhaustedAction() {
-        return _whenExhaustedAction;
+    public boolean getBlockWhenExhausted() {
+        return blockWhenExhausted;
     }
 
     /**
@@ -316,8 +316,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
      * @param whenExhaustedAction the action to take when exhausted
      * @see #getWhenExhaustedAction
      */
-    public void setWhenExhaustedAction(WhenExhaustedAction whenExhaustedAction) {
-        _whenExhaustedAction = whenExhaustedAction;
+    public void setBlockWhenExhausted(boolean whenExhaustedAction) {
+        blockWhenExhausted = whenExhaustedAction;
     }
 
 
@@ -597,7 +597,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
         setMaxTotal(conf.getMaxTotal());
         setMinIdlePerKey(conf.getMinIdlePerKey());
         setMaxWait(conf.getMaxWait());
-        setWhenExhaustedAction(conf.getWhenExhaustedAction());
+        setBlockWhenExhausted(conf.getBlockWhenExhausted());
         setTestOnBorrow(conf.getTestOnBorrow());
         setTestOnReturn(conf.getTestOnReturn());
         setTestWhileIdle(conf.getTestWhileIdle());
@@ -690,7 +690,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
 
         // Get local copy of current config so it is consistent for entire
         // method execution
-        WhenExhaustedAction whenExhaustedAction = _whenExhaustedAction;
+        boolean blockWhenExhausted = this.blockWhenExhausted;
 
         boolean create;
         ObjectDeque<T> objectDeque = register(key);
@@ -698,21 +698,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
         try {
             while (p == null) {
                 create = false;
-                if (whenExhaustedAction == WhenExhaustedAction.FAIL) {
-                    if (objectDeque != null) {
-                        p = objectDeque.getIdleObjects().pollFirst();
-                    }
-                    if (p == null) {
-                        create = true;
-                        p = create(key);
-                    }
-                    if (p == null) {
-                        throw new NoSuchElementException("Pool exhausted");
-                    }
-                    if (!p.allocate()) {
-                        p = null;
-                    }
-                } else if (whenExhaustedAction == WhenExhaustedAction.BLOCK) {
+                if (blockWhenExhausted) {
                     if (objectDeque != null) {
                         p = objectDeque.getIdleObjects().pollFirst();
                     }
@@ -731,6 +717,20 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
                     if (p == null) {
                         throw new NoSuchElementException(
                                 "Timeout waiting for idle object");
+                    }
+                    if (!p.allocate()) {
+                        p = null;
+                    }
+                } else {
+                    if (objectDeque != null) {
+                        p = objectDeque.getIdleObjects().pollFirst();
+                    }
+                    if (p == null) {
+                        create = true;
+                        p = create(key);
+                    }
+                    if (p == null) {
+                        throw new NoSuchElementException("Pool exhausted");
                     }
                     if (!p.allocate()) {
                         p = null;
@@ -1627,16 +1627,15 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
     private long _maxWait = GenericKeyedObjectPoolConfig.DEFAULT_MAX_WAIT;
 
     /**
-     * The action to take when the {@link #borrowObject} method
-     * is invoked when the pool is exhausted (the maximum number
-     * of "active" objects has been reached).
+     * When the {@link #borrowObject} method is invoked when the pool is
+     * exhausted (the maximum number of "active" objects has been reached)
+     * should the {@link #borrowObject} method block or not?
      *
-     * @see #DEFAULT_WHEN_EXHAUSTED_ACTION
      * @see #setWhenExhaustedAction
      * @see #getWhenExhaustedAction
      */
-    private WhenExhaustedAction _whenExhaustedAction =
-        GenericKeyedObjectPoolConfig.DEFAULT_WHEN_EXHAUSTED_ACTION;
+    private boolean blockWhenExhausted =
+        GenericKeyedObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED;
 
     /**
      * When <code>true</code>, objects will be

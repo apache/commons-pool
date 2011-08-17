@@ -61,7 +61,7 @@ public class TestGenericObjectPoolFactory extends TestObjectPoolFactory {
         config.setTestWhileIdle(true);
         config.setLifo(false);
         config.setTimeBetweenEvictionRunsMillis(8);
-        config.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
+        config.setBlockWhenExhausted(false);
 
         GenericObjectPoolFactory<Object> factory =
             new GenericObjectPoolFactory<Object>(
@@ -81,7 +81,7 @@ public class TestGenericObjectPoolFactory extends TestObjectPoolFactory {
         assertEquals(true, pool.getTestWhileIdle());
         assertEquals(false, pool.getLifo());
         assertEquals(8, pool.getTimeBetweenEvictionRunsMillis());
-        assertEquals(WhenExhaustedAction.FAIL, pool.getWhenExhaustedAction());
+        assertEquals(false, pool.getBlockWhenExhausted());
         pool.borrowObject();
         pool.close();
     }
