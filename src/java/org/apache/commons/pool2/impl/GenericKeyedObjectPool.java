@@ -268,6 +268,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
                     ObjectName oname =
                         new ObjectName(ONAME_BASE + jmxNamePrefix + i);
                     mbs.registerMBean(this, oname);
+                    this.oname = oname;
                     registered = true;
                 } catch (MalformedObjectNameException e) {
                     if (GenericObjectPoolConfig.DEFAULT_JMX_NAME_PREFIX.equals(
@@ -1098,6 +1099,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
          evictionIterator = null;
          evictionKeyIterator = null;
          startEvictor(-1L);
+         ManagementFactory.getPlatformMBeanServer().unregisterMBean(oname);
      }
 
      
@@ -1949,6 +1951,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
     private final Deque<Long> waitTimes = new LinkedList<Long>();
     private Object maxBorrowWaitTimeMillisLock = new Object();
     private volatile long maxBorrowWaitTimeMillis = 0;
+
+    private ObjectName oname = null;
 
     private static final String ONAME_BASE =
         "org.apache.commoms.pool2:type=GenericKeyedObjectPool,name=";
