@@ -17,6 +17,7 @@
 
 package org.apache.commons.pool2.impl;
 
+import java.lang.management.ManagementFactory;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -24,6 +25,13 @@ import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.MBeanRegistrationException;
+import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.NotCompliantMBeanException;
+import javax.management.ObjectName;
 
 import org.apache.commons.pool2.BaseObjectPool;
 import org.apache.commons.pool2.ObjectPool;
@@ -164,7 +172,8 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  *          2011) $
  * @since Pool 1.0
  */
-public class GenericObjectPool<T> extends BaseObjectPool<T> {
+public class GenericObjectPool<T> extends BaseObjectPool<T>
+        implements GenericObjectPoolMBean {
 
     // --- constructors -----------------------------------------------
 
@@ -196,6 +205,42 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
         this.blockWhenExhausted = config.getBlockWhenExhausted();
 
         startEvictor(timeBetweenEvictionRunsMillis);
+
+        // JMX Registration
+        if (config.isJmxEnabled()) {
+            MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+            String jmxNamePrefix = config.getJmxNamePrefix();
+            int i = 1;
+            boolean registered = false;
+            while (!registered) {
+                try {
+                    ObjectName oname =
+                        new ObjectName(ONAME_BASE + jmxNamePrefix + i);
+                    mbs.registerMBean(this, oname);
+                    registered = true;
+                } catch (MalformedObjectNameException e) {
+                    if (GenericObjectPoolConfig.DEFAULT_JMX_NAME_PREFIX.equals(
+                            jmxNamePrefix)) {
+                        // Shouldn't happen. Skip registration if it does.
+                        registered = true;
+                    } else {
+                        // Must be an invalid name prefix. Use the default
+                        // instead.
+                        jmxNamePrefix =
+                            GenericObjectPoolConfig.DEFAULT_JMX_NAME_PREFIX;
+                    }
+                } catch (InstanceAlreadyExistsException e) {
+                    // Increment the index and try again
+                    i++;
+                } catch (MBeanRegistrationException e) {
+                    // Shouldn't happen. Skip registration if it does.
+                    registered = true;
+                } catch (NotCompliantMBeanException e) {
+                    // Shouldn't happen. Skip registration if it does.
+                    registered = true;
+                }
+            }
+        }
     }
 
 
@@ -1384,4 +1429,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
 
     /** An iterator for {@link #idleObjects} that is used by the evictor. */
     private Iterator<PooledObject<T>> evictionIterator = null;
+
+    private static final String ONAME_BASE =
+        "org.apache.commoms.pool2:type=GenericObjectPool,name=";
 }

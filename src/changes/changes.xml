@@ -74,6 +74,9 @@
     <action dev="markt" type="fix" issue="POOL-178">
       Re-factor common code into common base classes.
     </action>
+    <action dev="markt" type="update" issue="POOL-172">
+      Expose GOP and GKOP attributes via JMX.
+    </action>
   </release>
   <release version="1.5.6" date="2011-04-03" description="This is a patch release, including bugfixes only.">
     <action dev="markt" type="fix" issue="POOL-179" due-to="Axel Grossmann">

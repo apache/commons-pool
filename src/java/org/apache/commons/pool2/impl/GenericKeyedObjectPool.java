@@ -17,7 +17,9 @@
 
 package org.apache.commons.pool2.impl;
 
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +34,13 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.MBeanRegistrationException;
+import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.NotCompliantMBeanException;
+import javax.management.ObjectName;
 
 import org.apache.commons.pool2.BaseKeyedObjectPool;
 import org.apache.commons.pool2.KeyedPoolableObjectFactory;
@@ -200,7 +209,8 @@ import org.apache.commons.pool2.PoolUtils;
  * @version $Revision$ $Date$
  * @since Pool 1.0
  */
-public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
+public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
+        implements GenericKeyedObjectPoolMBean<K> {
 
     //--- constructors -----------------------------------------------
 
@@ -242,6 +252,42 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
         this.blockWhenExhausted = config.getBlockWhenExhausted();
 
         startEvictor(getMinEvictableIdleTimeMillis());
+
+        // JMX Registration
+        if (config.isJmxEnabled()) {
+            MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+            String jmxNamePrefix = config.getJmxNamePrefix();
+            int i = 1;
+            boolean registered = false;
+            while (!registered) {
+                try {
+                    ObjectName oname =
+                        new ObjectName(ONAME_BASE + jmxNamePrefix + i);
+                    mbs.registerMBean(this, oname);
+                    registered = true;
+                } catch (MalformedObjectNameException e) {
+                    if (GenericObjectPoolConfig.DEFAULT_JMX_NAME_PREFIX.equals(
+                            jmxNamePrefix)) {
+                        // Shouldn't happen. Skip registration if it does.
+                        registered = true;
+                    } else {
+                        // Must be an invalid name prefix. Use the default
+                        // instead.
+                        jmxNamePrefix =
+                            GenericObjectPoolConfig.DEFAULT_JMX_NAME_PREFIX;
+                    }
+                } catch (InstanceAlreadyExistsException e) {
+                    // Increment the index and try again
+                    i++;
+                } catch (MBeanRegistrationException e) {
+                    // Shouldn't happen. Skip registration if it does.
+                    registered = true;
+                } catch (NotCompliantMBeanException e) {
+                    // Shouldn't happen. Skip registration if it does.
+                    registered = true;
+                }
+            }
+        }
     }
 
     //--- configuration methods --------------------------------------
@@ -1508,6 +1554,27 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
         return objectDefecit;
     }
 
+    
+    //--- JMX specific attributes ----------------------------------------------
+    public Map<String,Integer> getNumActivePerKey() {
+        HashMap<String,Integer> result = new HashMap<String,Integer>();
+
+        Iterator<Entry<K,ObjectDeque<T>>> iter = poolMap.entrySet().iterator();
+        while (iter.hasNext()) {
+            Entry<K,ObjectDeque<T>> entry = iter.next();
+            if (entry != null) {
+                K key = entry.getKey();
+                ObjectDeque<T> objectDequeue = entry.getValue();
+                if (key != null && objectDequeue != null) {
+                    result.put(key.toString(), Integer.valueOf(
+                            objectDequeue.getAllObjects().size() -
+                            objectDequeue.getIdleObjects().size()));
+                }
+            }
+        }
+        return result;
+    }
+    
     //--- inner classes ----------------------------------------------
 
     /**
@@ -1758,4 +1825,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>  {
      * currently being evicted.
      */
     private K evictionKey = null;
+
+    private static final String ONAME_BASE =
+        "org.apache.commoms.pool2:type=GenericKeyedObjectPool,name=";
 }
