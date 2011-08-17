@@ -38,4 +38,14 @@ public interface GenericKeyedObjectPoolMBean<K> {
     boolean isClosed();
     // JMX specific attributes
     Map<String,Integer> getNumActivePerKey();
+    long getBorrowedCount();
+    long getReturnedCount();
+    long getCreatedCount();
+    long getDestroyedCount();
+    long getDestroyedByEvictorCount();
+    long getDestroyedByBorrowValidationCount();
+    long getMeanActiveTimeMillis();
+    long getMeanIdleTimeMillis();
+    long getMeanBorrowWaitTimeMillis();
+    long getMaxBorrowWaitTimeMillis();
 }

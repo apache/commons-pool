@@ -33,4 +33,15 @@ public interface GenericObjectPoolMBean {
     boolean getTestWhileIdle();
     long getTimeBetweenEvictionRunsMillis();
     boolean isClosed();
+    // JMX specific attributes
+    long getBorrowedCount();
+    long getReturnedCount();
+    long getCreatedCount();
+    long getDestroyedCount();
+    long getDestroyedByEvictorCount();
+    long getDestroyedByBorrowValidationCount();
+    long getMeanActiveTimeMillis();
+    long getMeanIdleTimeMillis();
+    long getMeanBorrowWaitTimeMillis();
+    long getMaxBorrowWaitTimeMillis();
 }

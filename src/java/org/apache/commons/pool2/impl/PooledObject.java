@@ -25,7 +25,8 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
 
     private T object = null;
     private volatile PooledObjectState state = PooledObjectState.IDLE;
-    private long lastActiveTime = System.currentTimeMillis();
+    private long lastBorrowTime = System.currentTimeMillis();
+    private long lastReturnTime = System.currentTimeMillis();
 
     public PooledObject(T object) {
         this.object = object;
@@ -40,19 +41,38 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
     }
 
     /**
-     * Obtain the time in milliseconds since this object was last active.
+     * Obtain the time in milliseconds that this object last spend in the the
+     * active state (it may still be active in which case subsequent calls will
+     * return an increased value).
      */
-    public long getIdleTimeMillis() {
-        return System.currentTimeMillis() - lastActiveTime;
+    public long getActiveTimeMillis() {
+        if (lastReturnTime > lastBorrowTime) {
+            return lastReturnTime - lastBorrowTime;
+        } else {
+            return System.currentTimeMillis() - lastBorrowTime;
+        }
     }
     
-    public long getLastActiveTime() {
-        return lastActiveTime;
+    /**
+     * Obtain the time in milliseconds that this object last spend in the the
+     * idle state (it may still be idle in which case subsequent calls will
+     * return an increased value).
+     */
+    public long getIdleTimeMillis() {
+        return System.currentTimeMillis() - lastReturnTime;
+    }
+    
+    public long getLastBorrowTime() {
+        return lastBorrowTime;
+    }
+
+    public long getLastReturnTime() {
+        return lastReturnTime;
     }
 
     public int compareTo(PooledObject<T> other) {
         final long lastActiveDiff =
-                this.getLastActiveTime() - other.getLastActiveTime();
+                this.getLastReturnTime() - other.getLastReturnTime();
         if (lastActiveDiff == 0) {
             // make sure the natural ordering is consistent with equals
             // see java.lang.Comparable Javadocs
@@ -104,6 +124,7 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
     public synchronized boolean allocate() {
         if (state == PooledObjectState.IDLE) {
             state = PooledObjectState.ALLOCATED;
+            lastBorrowTime = System.currentTimeMillis();
             return true;
         } else if (state == PooledObjectState.MAINTAIN_EVICTION) {
             // TODO Allocate anyway and ignore eviction test
@@ -118,7 +139,7 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
     public synchronized boolean deallocate() {
         if (state == PooledObjectState.ALLOCATED) {
             state = PooledObjectState.IDLE;
-            lastActiveTime = System.currentTimeMillis();
+            lastReturnTime = System.currentTimeMillis();
             return true;
         }
 
