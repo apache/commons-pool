@@ -19,8 +19,10 @@ package org.apache.commons.pool2.impl;
 
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -252,6 +254,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
         this.blockWhenExhausted = config.getBlockWhenExhausted();
 
         startEvictor(getMinEvictableIdleTimeMillis());
+
+        initStats();
 
         // JMX Registration
         if (config.isJmxEnabled()) {
@@ -734,6 +738,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
         boolean blockWhenExhausted = this.blockWhenExhausted;
 
         boolean create;
+        long waitTime = 0;
         ObjectDeque<T> objectDeque = register(key);
         
         try {
@@ -751,8 +756,10 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
                         if (borrowMaxWait < 1) {
                             p = objectDeque.getIdleObjects().takeFirst();
                         } else {
+                            waitTime = System.currentTimeMillis();
                             p = objectDeque.getIdleObjects().pollFirst(
                                     borrowMaxWait, TimeUnit.MILLISECONDS);
+                            waitTime = System.currentTimeMillis() - waitTime;
                         }
                     }
                     if (p == null) {
@@ -806,6 +813,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
                         if (!validate) {
                             try {
                                 destroy(key, p, true);
+                                destroyedByBorrowValidationCount.incrementAndGet();
                             } catch (Exception e) {
                                 // Ignore - validation failure is more important
                             }
@@ -823,7 +831,21 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
         } finally {
             deregister(key);
         }
-        return p.getObject();
+        
+        borrowedCount.incrementAndGet();
+        synchronized (idleTimes) {
+            idleTimes.add(Long.valueOf(p.getIdleTimeMillis()));
+            idleTimes.poll();
+        }
+        synchronized (waitTimes) {
+            waitTimes.add(Long.valueOf(waitTime));
+            waitTimes.poll();
+        }
+        synchronized (maxBorrowWaitTimeMillisLock) {
+            if (waitTime > maxBorrowWaitTimeMillis) {
+                maxBorrowWaitTimeMillis = waitTime;
+            }
+        }        return p.getObject();
     }
 
 
@@ -857,6 +879,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
                      "Returned object not currently part of this pool");
          }
 
+         long activeTime = p.getActiveTimeMillis();
+
          if (getTestOnReturn()) {
              if (!_factory.validateObject(key, t)) {
                  try {
@@ -864,6 +888,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
                  } catch (Exception e) {
                      // TODO - Ignore?
                  }
+                 updateStatsReturn(activeTime);
                  return;
              }
          }
@@ -876,6 +901,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
              } catch (Exception e) {
                  // TODO - Ignore?
              }
+             updateStatsReturn(activeTime);
              return;
          }
 
@@ -901,9 +927,19 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
                  idleObjects.addLast(p);
              }
          }
+         updateStatsReturn(activeTime);
      }
 
 
+     private void updateStatsReturn(long activeTime) {
+         returnedCount.incrementAndGet();
+         synchronized (activeTimes) {
+             activeTimes.add(Long.valueOf(activeTime));
+             activeTimes.poll();
+         }
+     }
+
+     
      /**
       * {@inheritDoc}
       * <p>Activation of this method decrements the active count associated with
@@ -1195,6 +1231,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
 
             if (idleEvictTime < underTest.getIdleTimeMillis()) {
                 destroy(evictionKey, underTest, true);
+                destroyedByEvictorCount.incrementAndGet();
             } else {
                 if (testWhileIdle) {
                     boolean active = false;
@@ -1204,17 +1241,20 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
                         active = true;
                     } catch (Exception e) {
                         destroy(evictionKey, underTest, true);
+                        destroyedByEvictorCount.incrementAndGet();
                     }
                     if (active) {
                         if (!_factory.validateObject(evictionKey,
                                 underTest.getObject())) {
                             destroy(evictionKey, underTest, true);
+                            destroyedByEvictorCount.incrementAndGet();
                         } else {
                             try {
                                 _factory.passivateObject(evictionKey,
                                         underTest.getObject());
                             } catch (Exception e) {
                                 destroy(evictionKey, underTest, true);
+                                destroyedByEvictorCount.incrementAndGet();
                             }
                         }
                     }
@@ -1269,6 +1309,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
         }
 
         PooledObject<T> p = new PooledObject<T>(t);
+        createdCount.incrementAndGet();
         objectDeque.getAllObjects().put(t, p);
         return p;
     }
@@ -1289,6 +1330,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
                     _factory.destroyObject(key, toDestory.getObject());
                 } finally {
                     objectDeque.getCreateCount().decrementAndGet();
+                    destroyedCount.incrementAndGet();
                     numTotal.decrementAndGet();
                 }
                 return true;
@@ -1556,6 +1598,34 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
 
     
     //--- JMX specific attributes ----------------------------------------------
+
+    private void initStats() {
+        for (int i = 0; i < AVERAGE_TIMING_STATS_CACHE_SIZE; i++) {
+            activeTimes.add(null);
+            idleTimes.add(null);
+            waitTimes.add(null);
+        }
+    }
+
+    private long getMeanFromStatsCache(Deque<Long> cache) {
+        List<Long> times = new ArrayList<Long>(AVERAGE_TIMING_STATS_CACHE_SIZE);
+        synchronized (cache) {
+            times.addAll(cache);
+        }
+        double result = 0;
+        int counter = 0;
+        Iterator<Long> iter = times.iterator();
+        while (iter.hasNext()) {
+            Long time = iter.next();
+            if (time != null) {
+                counter++;
+                result = result * ((counter - 1) / counter) +
+                        time.longValue()/counter;
+            }
+        }
+        return (long) result;
+    }
+
     public Map<String,Integer> getNumActivePerKey() {
         HashMap<String,Integer> result = new HashMap<String,Integer>();
 
@@ -1574,7 +1644,47 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
         }
         return result;
     }
-    
+
+    public long getBorrowedCount() {
+        return borrowedCount.get();
+    }
+
+    public long getReturnedCount() {
+        return returnedCount.get();
+    }
+
+    public long getCreatedCount() {
+        return createdCount.get();
+    }
+
+    public long getDestroyedCount() {
+        return destroyedCount.get();
+    }
+
+    public long getDestroyedByEvictorCount() {
+        return destroyedByEvictorCount.get();
+    }
+
+    public long getDestroyedByBorrowValidationCount() {
+        return destroyedByBorrowValidationCount.get();
+    }
+
+    public long getMeanActiveTimeMillis() {
+        return getMeanFromStatsCache(activeTimes);
+    }
+
+    public long getMeanIdleTimeMillis() {
+        return getMeanFromStatsCache(idleTimes);
+    }
+
+    public long getMeanBorrowWaitTimeMillis() {
+        return getMeanFromStatsCache(waitTimes);
+    }
+
+    public long getMaxBorrowWaitTimeMillis() {
+        return maxBorrowWaitTimeMillis;
+    }
+
     //--- inner classes ----------------------------------------------
 
     /**
@@ -1825,6 +1935,20 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
      * currently being evicted.
      */
     private K evictionKey = null;
+
+    // JMX specific attributes
+    private static final int AVERAGE_TIMING_STATS_CACHE_SIZE = 100;
+    private AtomicLong borrowedCount = new AtomicLong(0);
+    private AtomicLong returnedCount = new AtomicLong(0);
+    private AtomicLong createdCount = new AtomicLong(0);
+    private AtomicLong destroyedCount = new AtomicLong(0);
+    private AtomicLong destroyedByEvictorCount = new AtomicLong(0);
+    private AtomicLong destroyedByBorrowValidationCount = new AtomicLong(0);
+    private final Deque<Long> activeTimes = new LinkedList<Long>();
+    private final Deque<Long> idleTimes = new LinkedList<Long>();
+    private final Deque<Long> waitTimes = new LinkedList<Long>();
+    private Object maxBorrowWaitTimeMillisLock = new Object();
+    private volatile long maxBorrowWaitTimeMillis = 0;
 
     private static final String ONAME_BASE =
         "org.apache.commoms.pool2:type=GenericKeyedObjectPool,name=";
