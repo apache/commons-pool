@@ -193,7 +193,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
         this.testWhileIdle = config.getTestWhileIdle();
         this.timeBetweenEvictionRunsMillis =
                 config.getTimeBetweenEvictionRunsMillis();
-        this.whenExhaustedAction = config.getWhenExhaustedAction();
+        this.blockWhenExhausted = config.getBlockWhenExhausted();
 
         startEvictor(timeBetweenEvictionRunsMillis);
     }
@@ -240,8 +240,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @return the action to take when the pool is exhuasted
      * @see #setWhenExhaustedAction
      */
-    public WhenExhaustedAction getWhenExhaustedAction() {
-        return whenExhaustedAction;
+    public boolean getBlockWhenExhausted() {
+        return blockWhenExhausted;
     }
 
     /**
@@ -252,9 +252,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
      * @param whenExhaustedAction   action to take when the pool is exhausted
      * @see #getWhenExhaustedAction
      */
-    public void setWhenExhaustedAction(
-            WhenExhaustedAction whenExhaustedAction) {
-        this.whenExhaustedAction = whenExhaustedAction;
+    public void setBlockWhenExhausted(boolean blockWhenExhausted) {
+        this.blockWhenExhausted = blockWhenExhausted;
     }
 
     /**
@@ -601,7 +600,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
         setMinIdle(conf.getMinIdle());
         setMaxTotal(conf.getMaxTotal());
         setMaxWait(conf.getMaxWait());
-        setWhenExhaustedAction(conf.getWhenExhaustedAction());
+        setBlockWhenExhausted(conf.getBlockWhenExhausted());
         setTestOnBorrow(conf.getTestOnBorrow());
         setTestOnReturn(conf.getTestOnReturn());
         setTestWhileIdle(conf.getTestWhileIdle());
@@ -680,25 +679,13 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
 
         // Get local copy of current config so it is consistent for entire
         // method execution
-        WhenExhaustedAction exhaustedAction = whenExhaustedAction;
+        boolean blockWhenExhausted = this.blockWhenExhausted;
 
         boolean create;
 
         while (p == null) {
             create = false;
-            if (exhaustedAction == WhenExhaustedAction.FAIL) {
-                p = idleObjects.pollFirst();
-                if (p == null) {
-                    create = true;
-                    p = create();
-                }
-                if (p == null) {
-                    throw new NoSuchElementException("Pool exhausted");
-                }
-                if (!p.allocate()) {
-                    p = null;
-                }
-            } else if (exhaustedAction == WhenExhaustedAction.BLOCK) {
+            if (blockWhenExhausted) {
                 p = idleObjects.pollFirst();
                 if (p == null) {
                     create = true;
@@ -715,6 +702,18 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
                 if (p == null) {
                     throw new NoSuchElementException(
                             "Timeout waiting for idle object");
+                }
+                if (!p.allocate()) {
+                    p = null;
+                }
+            } else {
+                p = idleObjects.pollFirst();
+                if (p == null) {
+                    create = true;
+                    p = create();
+                }
+                if (p == null) {
+                    throw new NoSuchElementException("Pool exhausted");
                 }
                 if (!p.allocate()) {
                     p = null;
@@ -1247,16 +1246,15 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> {
     private volatile long maxWait = GenericObjectPoolConfig.DEFAULT_MAX_WAIT;
 
     /**
-     * The action to take when the {@link #borrowObject} method is invoked when
-     * the pool is exhausted (the maximum number of "active" objects has been
-     * reached).
+     * When the {@link #borrowObject} method is invoked when the pool is
+     * exhausted (the maximum number of "active" objects has been reached)
+     * should the {@link #borrowObject} method block or not?
      * 
-     * @see #DEFAULT_WHEN_EXHAUSTED_ACTION
      * @see #setWhenExhaustedAction
      * @see #getWhenExhaustedAction
      */
-    private volatile WhenExhaustedAction whenExhaustedAction =
-        GenericObjectPoolConfig.DEFAULT_WHEN_EXHAUSTED_ACTION;
+    private volatile boolean blockWhenExhausted =
+        GenericObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED;
 
     /**
      * When <tt>true</tt>, objects will be

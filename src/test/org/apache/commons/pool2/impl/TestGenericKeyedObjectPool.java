@@ -116,7 +116,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     @Test
     public void testNegativeMaxTotalPerKey() throws Exception {
         pool.setMaxTotalPerKey(-1);
-        pool.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
+        pool.setBlockWhenExhausted(false);
         String obj = pool.borrowObject("");
         assertEquals("0",obj);
         pool.returnObject("",obj);
@@ -210,7 +210,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     @Test
     public void testMaxTotalPerKey() throws Exception {
         pool.setMaxTotalPerKey(3);
-        pool.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
+        pool.setBlockWhenExhausted(false);
 
         pool.borrowObject("");
         pool.borrowObject("");
@@ -226,7 +226,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     @Test
     public void testMaxTotalPerKeyZero() throws Exception {
         pool.setMaxTotalPerKey(0);
-        pool.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
+        pool.setBlockWhenExhausted(false);
 
         try {
             pool.borrowObject("a");
@@ -240,7 +240,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     public void testMaxTotal() throws Exception {
         pool.setMaxTotalPerKey(2);
         pool.setMaxTotal(3);
-        pool.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
+        pool.setBlockWhenExhausted(false);
 
         String o1 = pool.borrowObject("a");
         assertNotNull(o1);
@@ -281,7 +281,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     @Test
     public void testMaxTotalZero() throws Exception {
         pool.setMaxTotal(0);
-        pool.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
+        pool.setBlockWhenExhausted(false);
 
         try {
             pool.borrowObject("a");
@@ -389,10 +389,10 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
             assertEquals(11235L,pool.getTimeBetweenEvictionRunsMillis());
         }
         {
-            pool.setWhenExhaustedAction(WhenExhaustedAction.BLOCK);
-            assertEquals(WhenExhaustedAction.BLOCK,pool.getWhenExhaustedAction());
-            pool.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
-            assertEquals(WhenExhaustedAction.FAIL,pool.getWhenExhaustedAction());
+            pool.setBlockWhenExhausted(true);
+            assertEquals(true,pool.getBlockWhenExhausted());
+            pool.setBlockWhenExhausted(false);
+            assertEquals(false,pool.getBlockWhenExhausted());
         }
     }
 
@@ -1015,7 +1015,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         boolean testOnReturn = true;
         boolean testWhileIdle = true;
         long timeBetweenEvictionRunsMillis = 8;
-        WhenExhaustedAction whenExhaustedAction = WhenExhaustedAction.FAIL;
+        boolean blockWhenExhausted = false;
         boolean lifo = false;
         
         GenericKeyedObjectPool<Object,Object> pool =
@@ -1037,8 +1037,8 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
                 pool.getTestWhileIdle());
         assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
                 pool.getTimeBetweenEvictionRunsMillis());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_WHEN_EXHAUSTED_ACTION,
-                pool.getWhenExhaustedAction());
+        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED,
+                pool.getBlockWhenExhausted());
         assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_LIFO, pool.getLifo());
         
         GenericKeyedObjectPoolConfig<Object,Object> config =
@@ -1055,7 +1055,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         config.setTestOnReturn(testOnReturn);
         config.setTestWhileIdle(testWhileIdle);
         config.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
-        config.setWhenExhaustedAction(whenExhaustedAction);
+        config.setBlockWhenExhausted(blockWhenExhausted);
         pool = new GenericKeyedObjectPool<Object,Object>(null, config);
         assertEquals(maxTotalPerKey, pool.getMaxTotalPerKey());
         assertEquals(maxIdle, pool.getMaxIdlePerKey());
@@ -1070,7 +1070,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals(testWhileIdle,pool.getTestWhileIdle());
         assertEquals(timeBetweenEvictionRunsMillis,
                 pool.getTimeBetweenEvictionRunsMillis());
-        assertEquals(whenExhaustedAction,pool.getWhenExhaustedAction());
+        assertEquals(blockWhenExhausted,pool.getBlockWhenExhausted());
         assertEquals(lifo, pool.getLifo());
     }
 
@@ -1166,7 +1166,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         SimpleFactory<String> factory = new SimpleFactory<String>();
         GenericKeyedObjectPool<String,String> pool =
             new GenericKeyedObjectPool<String,String>(factory);
-        pool.setWhenExhaustedAction(WhenExhaustedAction.BLOCK);
+        pool.setBlockWhenExhausted(true);
         pool.setMaxWait(5000);
         pool.setMaxTotalPerKey(1);
         pool.setMaxTotal(-1);
@@ -1212,7 +1212,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         SimpleFactory<String> factory = new SimpleFactory<String>();
         GenericKeyedObjectPool<String,String> pool =
             new GenericKeyedObjectPool<String,String>(factory);
-        pool.setWhenExhaustedAction(WhenExhaustedAction.BLOCK);
+        pool.setBlockWhenExhausted(true);
         pool.setMaxWait(maxWait);
         pool.setMaxTotalPerKey(threadsPerKey);
         // Create enough threads so half the threads will have to wait

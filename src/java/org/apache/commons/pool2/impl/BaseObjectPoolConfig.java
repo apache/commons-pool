@@ -73,10 +73,9 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
     public static final long DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS = -1L;
 
     /**
-     * The default "when exhausted action" for the pool.
+     * The default "block when exhausted" value for the pool.
      */
-    public static final WhenExhaustedAction DEFAULT_WHEN_EXHAUSTED_ACTION =
-        WhenExhaustedAction.BLOCK;
+    public static final boolean DEFAULT_BLOCK_WHEN_EXHAUSTED = true;
     
     private boolean lifo = DEFAULT_LIFO;
 
@@ -97,8 +96,7 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
     private long timeBetweenEvictionRunsMillis =
         DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
 
-    private WhenExhaustedAction whenExhaustedAction =
-        DEFAULT_WHEN_EXHAUSTED_ACTION;
+    private boolean blockWhenExhausted = DEFAULT_BLOCK_WHEN_EXHAUSTED;
 
     public boolean getLifo() {
         return lifo;
@@ -164,11 +162,11 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
         this.timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
     }
 
-    public WhenExhaustedAction getWhenExhaustedAction() {
-        return whenExhaustedAction;
+    public boolean getBlockWhenExhausted() {
+        return blockWhenExhausted;
     }
 
-    public void setWhenExhaustedAction(WhenExhaustedAction whenExhaustedAction) {
-        this.whenExhaustedAction = whenExhaustedAction;
+    public void setBlockWhenExhausted(boolean blockWhenExhausted) {
+        this.blockWhenExhausted = blockWhenExhausted;
     }
 }

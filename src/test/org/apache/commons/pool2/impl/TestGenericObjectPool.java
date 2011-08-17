@@ -81,7 +81,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Test
     public void testWhenExhaustedFail() throws Exception {
         pool.setMaxTotal(1);
-        pool.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
+        pool.setBlockWhenExhausted(false);
         Object obj1 = pool.borrowObject();
         assertNotNull(obj1);
         try {
@@ -98,7 +98,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Test
     public void testWhenExhaustedBlock() throws Exception {
         pool.setMaxTotal(1);
-        pool.setWhenExhaustedAction(WhenExhaustedAction.BLOCK);
+        pool.setBlockWhenExhausted(true);
         pool.setMaxWait(10L);
         Object obj1 = pool.borrowObject();
         assertNotNull(obj1);
@@ -115,7 +115,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Test
     public void testWhenExhaustedBlockInterupt() throws Exception {
         pool.setMaxTotal(1);
-        pool.setWhenExhaustedAction(WhenExhaustedAction.BLOCK);
+        pool.setBlockWhenExhausted(true);
         pool.setMaxWait(0);
         Object obj1 = pool.borrowObject();
         
@@ -472,7 +472,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Test
     public void testNegativeMaxTotal() throws Exception {
         pool.setMaxTotal(-1);
-        pool.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
+        pool.setBlockWhenExhausted(false);
         Object obj = pool.borrowObject();
         assertEquals(getNthObject(0),obj);
         pool.returnObject(obj);
@@ -515,7 +515,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Test
     public void testMaxTotal() throws Exception {
         pool.setMaxTotal(3);
-        pool.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
+        pool.setBlockWhenExhausted(false);
 
         pool.borrowObject();
         pool.borrowObject();
@@ -532,7 +532,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     public void testTimeoutNoLeak() throws Exception {
         pool.setMaxTotal(2);
         pool.setMaxWait(10);
-        pool.setWhenExhaustedAction(WhenExhaustedAction.BLOCK);
+        pool.setBlockWhenExhausted(true);
         Object obj = pool.borrowObject();
         Object obj2 = pool.borrowObject();
         try {
@@ -551,7 +551,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Test
     public void testMaxTotalZero() throws Exception {
         pool.setMaxTotal(0);
-        pool.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
+        pool.setBlockWhenExhausted(false);
 
         try {
             pool.borrowObject();
@@ -573,7 +573,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         factory.setMaxTotal(maxTotal);
         GenericObjectPool<Object> pool = new GenericObjectPool<Object>(factory);
         pool.setMaxTotal(maxTotal);
-        pool.setWhenExhaustedAction(WhenExhaustedAction.BLOCK);
+        pool.setBlockWhenExhausted(true);
         pool.setTimeBetweenEvictionRunsMillis(-1);
         
         // Start threads to borrow objects
@@ -691,10 +691,10 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             assertEquals(12135L,pool.getSoftMinEvictableIdleTimeMillis());
         }
         {
-            pool.setWhenExhaustedAction(WhenExhaustedAction.BLOCK);
-            assertEquals(WhenExhaustedAction.BLOCK,pool.getWhenExhaustedAction());
-            pool.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
-            assertEquals(WhenExhaustedAction.FAIL,pool.getWhenExhaustedAction());
+            pool.setBlockWhenExhausted(true);
+            assertEquals(true,pool.getBlockWhenExhausted());
+            pool.setBlockWhenExhausted(false);
+            assertEquals(false,pool.getBlockWhenExhausted());
         }
     }
     
@@ -722,7 +722,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         expected.setTestOnReturn(true);
         expected.setTestWhileIdle(true);
         expected.setTimeBetweenEvictionRunsMillis(11L);
-        expected.setWhenExhaustedAction(WhenExhaustedAction.FAIL);
+        expected.setBlockWhenExhausted(false);
         pool.setConfig(expected);
         assertConfiguration(expected,pool);
     }
@@ -1231,7 +1231,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertEquals("testOnBorrow",expected.getTestOnBorrow(),actual.getTestOnBorrow());
         assertEquals("testOnReturn",expected.getTestOnReturn(),actual.getTestOnReturn());
         assertEquals("testWhileIdle",expected.getTestWhileIdle(),actual.getTestWhileIdle());
-        assertEquals("whenExhaustedAction",expected.getWhenExhaustedAction(),actual.getWhenExhaustedAction());
+        assertEquals("whenExhaustedAction",expected.getBlockWhenExhausted(),actual.getBlockWhenExhausted());
         assertEquals("maxTotal",expected.getMaxTotal(),actual.getMaxTotal());
         assertEquals("maxIdle",expected.getMaxIdle(),actual.getMaxIdle());
         assertEquals("maxWait",expected.getMaxWait(),actual.getMaxWait());
@@ -1430,7 +1430,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         int maxTotal = 10;
 
         pool.setMaxTotal(maxTotal);
-        pool.setWhenExhaustedAction(WhenExhaustedAction.BLOCK);
+        pool.setBlockWhenExhausted(true);
         pool.setTimeBetweenEvictionRunsMillis(-1);
 
         // Start threads to borrow objects
@@ -1474,7 +1474,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         factory.setMaxTotal(maxTotal);
         GenericObjectPool<Object> pool = new GenericObjectPool<Object>(factory);
         pool.setMaxTotal(maxTotal);
-        pool.setWhenExhaustedAction(WhenExhaustedAction.BLOCK);
+        pool.setBlockWhenExhausted(true);
         pool.setTestOnBorrow(true);
         
         // First borrow object will need to create a new object which will fail
@@ -1570,7 +1570,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         final int threads = 10; // number of threads to grab the object initially
         SimpleFactory factory = new SimpleFactory();
         GenericObjectPool<Object> pool = new GenericObjectPool<Object>(factory);
-        pool.setWhenExhaustedAction(WhenExhaustedAction.BLOCK);
+        pool.setBlockWhenExhausted(true);
         pool.setMaxWait(maxWait);
         pool.setMaxTotal(threads);
         // Create enough threads so half the threads will have to wait
