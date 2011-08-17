@@ -75,7 +75,15 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
      * The default "block when exhausted" value for the pool.
      */
     public static final boolean DEFAULT_BLOCK_WHEN_EXHAUSTED = true;
-    
+
+    public static final boolean DEFAULT_JMX_ENABLE = true;
+
+    /**
+     * The default prefix to use for the name component of the JMX object name
+     * under which the pool will be registered.
+     */
+    public static final String DEFAULT_JMX_NAME_PREFIX = "pool";
+
     private boolean lifo = DEFAULT_LIFO;
 
     private long maxWait = DEFAULT_MAX_WAIT;
@@ -96,6 +104,10 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
         DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
 
     private boolean blockWhenExhausted = DEFAULT_BLOCK_WHEN_EXHAUSTED;
+
+    private boolean jmxEnabled = DEFAULT_JMX_ENABLE;
+
+    private String jmxNamePrefix = DEFAULT_JMX_NAME_PREFIX;
 
     public boolean getLifo() {
         return lifo;
@@ -167,5 +179,21 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
 
     public void setBlockWhenExhausted(boolean blockWhenExhausted) {
         this.blockWhenExhausted = blockWhenExhausted;
+    }
+
+    public boolean isJmxEnabled() {
+        return jmxEnabled;
+    }
+
+    public void setJmxEnabled(boolean jmxEnabled) {
+        this.jmxEnabled = jmxEnabled;
+    }
+
+    public String getJmxNamePrefix() {
+        return jmxNamePrefix;
+    }
+
+    public void setJmxNamePrefix(String jmxNamePrefix) {
+        this.jmxNamePrefix = jmxNamePrefix;
     }
 }
