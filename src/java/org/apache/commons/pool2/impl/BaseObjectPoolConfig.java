@@ -34,8 +34,7 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
     /**
      * The default maximum amount of time (in milliseconds) the
      * {@code borrowObject} method should block before throwing an exception
-     * when the pool is exhausted and the {@link #getWhenExhaustedAction
-     * "when exhausted" action} is {@link WhenExhaustedAction#BLOCK}.
+     * when the pool is exhausted and {@link #getBlockWhenExhausted} is true.
      */
     public static final long DEFAULT_MAX_WAIT = -1L;
 
