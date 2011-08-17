@@ -132,7 +132,7 @@ public abstract class BaseKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
      * @return <code>true</code> when this pool has been closed.
      * @since Pool 1.4
      */
-    protected final boolean isClosed() {
+    public final boolean isClosed() {
         return closed;
     }
 
