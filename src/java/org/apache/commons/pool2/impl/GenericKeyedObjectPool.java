@@ -1319,7 +1319,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
             throws Exception {
         
         register(key);
-        
+        toDestory.invalidate();
+
         try {
             ObjectDeque<T> objectDeque = poolMap.get(key);
             boolean isIdle = objectDeque.getIdleObjects().remove(toDestory);
