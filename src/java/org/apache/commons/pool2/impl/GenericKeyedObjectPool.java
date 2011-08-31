@@ -1098,7 +1098,10 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
          evictionIterator = null;
          evictionKeyIterator = null;
          startEvictor(-1L);
-         ManagementFactory.getPlatformMBeanServer().unregisterMBean(oname);
+         if (oname != null) {
+             ManagementFactory.getPlatformMBeanServer().unregisterMBean(oname);
+             oname = null;
+         }
      }
 
      
