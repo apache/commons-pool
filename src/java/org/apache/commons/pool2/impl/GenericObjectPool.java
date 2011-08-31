@@ -1138,6 +1138,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
     }
 
     private void destroy(PooledObject<T> toDestory) throws Exception {
+        toDestory.invalidate();
         idleObjects.remove(toDestory);
         allObjects.remove(toDestory.getObject());
         try {

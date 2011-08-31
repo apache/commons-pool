@@ -145,4 +145,8 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
 
         return false;
     }
+
+    public synchronized void invalidate() {
+        state = PooledObjectState.INVALID;
+    }
 }
