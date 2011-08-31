@@ -903,6 +903,70 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     @Test
+    public void testEvictionInvalid() throws Exception {
+        class InvalidFactory extends BasePoolableObjectFactory<Object> {
+
+            @Override
+            public Object makeObject() throws Exception {
+                return new Object();
+            }
+
+            @Override
+            public boolean validateObject(Object obj) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    // Ignore
+                }
+                return false;
+            }
+        }
+        
+        final GenericObjectPool<Object> pool =
+            new GenericObjectPool<Object>(new InvalidFactory());
+        
+        pool.setMaxIdle(1);
+        pool.setMaxTotal(1);
+        pool.setTestOnBorrow(false);
+        pool.setTestOnReturn(false);
+        pool.setTestWhileIdle(true);
+        pool.setMinEvictableIdleTimeMillis(100000);
+        pool.setNumTestsPerEvictionRun(1);
+
+        Object p = pool.borrowObject();
+        pool.returnObject(p);
+        
+        // Run eviction in a separate thread
+        Thread t = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    pool.evict();
+                } catch (Exception e) {
+                    // Ignore
+                }
+            }
+        };
+        t.start();
+
+        // Sleep to make sure evictor has started
+        Thread.sleep(300);
+        
+        try {
+            p = pool.borrowObject(1);
+        } catch (NoSuchElementException nsee) {
+            // Ignore
+        }
+
+        // Make sure evictor has finished
+        Thread.sleep(1000);
+        
+        // Should have an empty pool
+        assertEquals("Idle count different than expected.", 0, pool.getNumIdle());
+        assertEquals("Total count different than expected.", 0, pool.getNumActive());
+    }
+
+    @Test
     public void testMinIdle() throws Exception {
         pool.setMaxIdle(500);
         pool.setMinIdle(5);
