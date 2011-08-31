@@ -70,11 +70,11 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  * {@link #borrowObject} will throw a {@link NoSuchElementException}</li>
  * <li>When {@link #getBlockWhenExhausted} is true,
  * {@link #borrowObject} will block (invoke
- * {@link Object#wait()}) until a new or idle object is available. If a positive
- * {@link #setMaxWait <i>maxWait</i>} value is supplied, then
+ * {@link Object#wait()}) until a new or idle object is available. If a
+ * non-negative {@link #setMaxWait <i>maxWait</i>} value is supplied, then
  * {@link #borrowObject} will block for at most that many milliseconds, after
  * which a {@link NoSuchElementException} will be thrown. If {@link #setMaxWait
- * <i>maxWait</i>} is non-positive, the {@link #borrowObject} method will block
+ * <i>maxWait</i>} is negative, the {@link #borrowObject} method will block
  * indefinitely.</li>
  * </ul>
  * The default {@link #getBlockWhenExhausted} is true
@@ -310,7 +310,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * Returns the maximum amount of time (in milliseconds) the
      * {@link #borrowObject} method should block before throwing an exception
      * when the pool is exhausted and the {@link #getBlockWhenExhausted} is true.
-     * When less than or equal to 0, the {@link #borrowObject} method may block indefinitely.
+     * When less than 0, the {@link #borrowObject} method may block indefinitely.
      * 
      * @return maximum number of milliseconds to block when borrowing an object.
      * @see #setMaxWait
@@ -324,7 +324,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * Sets the maximum amount of time (in milliseconds) the
      * {@link #borrowObject} method should block before throwing an exception
      * when the pool is exhausted and the {@link #getBlockWhenExhausted} is true.
-     * When less than or equal to 0, the {@link #borrowObject} method may block indefinitely.
+     * When less than 0, the {@link #borrowObject} method may block indefinitely.
      * 
      * @param maxWait
      *            maximum number of milliseconds to block when borrowing an
@@ -739,7 +739,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
                     p = create();
                 }
                 if (p == null) {
-                    if (borrowMaxWait < 1) {
+                    if (borrowMaxWait < 0) {
                         p = idleObjects.takeFirst();
                     } else {
                         waitTime = System.currentTimeMillis();
@@ -1388,7 +1388,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * The maximum amount of time (in millis) the {@link #borrowObject} method
      * should block before throwing an exception when the pool is exhausted and
      * {@link #getBlockWhenExhausted()} is true.
-     * When less than or equal to 0, the
+     * When less than 0, the
      * {@link #borrowObject} method may block indefinitely.
      * 
      * @see #setMaxWait

@@ -80,6 +80,10 @@
     <action dev="markt" type="update" issue="POOL-98">
       Add additional attributes (also accessible via JMX) for monitoring.
     </action>
+    <action dev="markt" type="update">
+      Change meaning of zero for maxWait to a maximum wait of zero milliseconds
+      rather than the unexpected infinite wait.
+    </action>
   </release>
   <release version="1.5.6" date="2011-04-03" description="This is a patch release, including bugfixes only.">
     <action dev="markt" type="fix" issue="POOL-179" due-to="Axel Grossmann">
