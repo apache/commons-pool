@@ -19,7 +19,6 @@ package org.apache.commons.pool2.impl;
 
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -1609,7 +1608,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
         }
     }
 
-    private long getMeanFromStatsCache(Deque<Long> cache) {
+    private long getMeanFromStatsCache(LinkedList<Long> cache) {
         List<Long> times = new ArrayList<Long>(AVERAGE_TIMING_STATS_CACHE_SIZE);
         synchronized (cache) {
             times.addAll(cache);
@@ -1946,9 +1945,9 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
     private AtomicLong destroyedCount = new AtomicLong(0);
     private AtomicLong destroyedByEvictorCount = new AtomicLong(0);
     private AtomicLong destroyedByBorrowValidationCount = new AtomicLong(0);
-    private final Deque<Long> activeTimes = new LinkedList<Long>();
-    private final Deque<Long> idleTimes = new LinkedList<Long>();
-    private final Deque<Long> waitTimes = new LinkedList<Long>();
+    private final LinkedList<Long> activeTimes = new LinkedList<Long>();
+    private final LinkedList<Long> idleTimes = new LinkedList<Long>();
+    private final LinkedList<Long> waitTimes = new LinkedList<Long>();
     private Object maxBorrowWaitTimeMillisLock = new Object();
     private volatile long maxBorrowWaitTimeMillis = 0;
 
