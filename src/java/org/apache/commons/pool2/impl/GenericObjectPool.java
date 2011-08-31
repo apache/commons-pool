@@ -1005,7 +1005,10 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
         super.close();
         clear();
         startEvictor(-1L);
-        ManagementFactory.getPlatformMBeanServer().unregisterMBean(oname);
+        if (oname != null) {
+            ManagementFactory.getPlatformMBeanServer().unregisterMBean(oname);
+            oname = null;
+        }
     }
 
     /**
