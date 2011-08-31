@@ -116,7 +116,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     public void testWhenExhaustedBlockInterupt() throws Exception {
         pool.setMaxTotal(1);
         pool.setBlockWhenExhausted(true);
-        pool.setMaxWait(0);
+        pool.setMaxWait(-1);
         Object obj1 = pool.borrowObject();
         
         // Make sure on object was obtained

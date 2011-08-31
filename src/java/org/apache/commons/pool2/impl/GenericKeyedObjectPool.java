@@ -101,10 +101,10 @@ import org.apache.commons.pool2.PoolUtils;
  *      When {@link #getBlockWhenExhausted} is true,
  *      {@link #borrowObject borrowObject} will block
  *      (invoke {@link Object#wait() wait} until a new or idle object is available.
- *      If a positive {@link #setMaxWait maxWait}
+ *      If a non-negative {@link #setMaxWait maxWait}
  *      value is supplied, the {@link #borrowObject borrowObject} will block for at
  *      most that many milliseconds, after which a {@link NoSuchElementException}
- *      will be thrown.  If {@link #setMaxWait maxWait} is non-positive,
+ *      will be thrown.  If {@link #setMaxWait maxWait} is negative,
  *      the {@link #borrowObject borrowObject} method will block indefinitely.
  *    </li>
  *    </ul>
@@ -376,7 +376,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
      * an exception when the pool is exhausted and the
      * {@link #getBlockWhenExhausted} is true.
      *
-     * When less than or equal to 0, the {@link #borrowObject} method
+     * When less than 0, the {@link #borrowObject} method
      * may block indefinitely.
      *
      * @return the maximum number of milliseconds borrowObject will block.
@@ -393,7 +393,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
      * an exception when the pool is exhausted and the
      * {@link #getBlockWhenExhausted} is true.
      *
-     * When less than or equal to 0, the {@link #borrowObject} method
+     * When less than 0, the {@link #borrowObject} method
      * may block indefinitely.
      *
      * @param maxWait the maximum number of milliseconds borrowObject will block or negative for indefinitely.
@@ -753,7 +753,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
                         p = create(key);
                     }
                     if (p == null && objectDeque != null) {
-                        if (borrowMaxWait < 1) {
+                        if (borrowMaxWait < 0) {
                             p = objectDeque.getIdleObjects().takeFirst();
                         } else {
                             waitTime = System.currentTimeMillis();
@@ -1788,7 +1788,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
      * an exception when the pool is exhausted and the
      * {@link #getBlockWhenExhausted} is true.
      *
-     * When less than or equal to 0, the {@link #borrowObject} method
+     * When less than 0, the {@link #borrowObject} method
      * may block indefinitely.
      *
      * @see #setMaxWait
