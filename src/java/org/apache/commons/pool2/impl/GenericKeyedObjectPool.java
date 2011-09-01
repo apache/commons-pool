@@ -1539,7 +1539,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
      * 
      * @return string containing debug information
      */
-    synchronized String debugInfo() {
+    String debugInfo() {
         StringBuilder buf = new StringBuilder();
         buf.append("Active: ").append(getNumActive()).append("\n");
         buf.append("Idle: ").append(getNumIdle()).append("\n");
