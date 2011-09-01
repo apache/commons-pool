@@ -1560,12 +1560,13 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
      * @see #setNumTestsPerEvictionRun
      * @return the number of tests for the Evictor to run
      */
-    private synchronized int getNumTests() {
+    private int getNumTests() {
         int totalIdle = getNumIdle();
-        if (_numTestsPerEvictionRun >= 0) {
-            return Math.min(_numTestsPerEvictionRun, totalIdle);
+        int numTests = _numTestsPerEvictionRun;
+        if (numTests >= 0) {
+            return Math.min(numTests, totalIdle);
         }
-        return(int)(Math.ceil(totalIdle/Math.abs((double)_numTestsPerEvictionRun)));
+        return(int)(Math.ceil(totalIdle/Math.abs((double)numTests)));
     }
 
     /**
