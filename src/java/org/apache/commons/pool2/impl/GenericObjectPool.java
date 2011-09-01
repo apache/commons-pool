@@ -1002,12 +1002,22 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      */
     @Override
     public void close() throws Exception {
-        super.close();
-        clear();
-        startEvictor(-1L);
-        if (oname != null) {
-            ManagementFactory.getPlatformMBeanServer().unregisterMBean(oname);
-            oname = null;
+        if (isClosed()) {
+            return;
+        }
+
+        synchronized (closeLock) {
+            if (isClosed()) {
+                return;
+            }
+
+            super.close();
+            clear();
+            startEvictor(-1L);
+            if (oname != null) {
+                ManagementFactory.getPlatformMBeanServer().unregisterMBean(
+                        oname);
+            }
         }
     }
 
@@ -1540,6 +1550,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
 
     /** An iterator for {@link #idleObjects} that is used by the evictor. */
     private Iterator<PooledObject<T>> evictionIterator = null;
+
+    /** Object used to ensure closed() is only called once. */
+    private final Object closeLock = new Object();
 
     // JMX specific attributes
     private static final int AVERAGE_TIMING_STATS_CACHE_SIZE = 100;
