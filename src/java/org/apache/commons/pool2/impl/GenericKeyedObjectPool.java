@@ -1075,7 +1075,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
       * @return the number of instances corresponding to the given <code>key</code> currently idle in this pool
       */
      @Override
-     public synchronized int getNumIdle(K key) {
+     public int getNumIdle(K key) {
          final ObjectDeque<T> objectDeque = poolMap.get(key);
          return objectDeque != null ? objectDeque.getIdleObjects().size() : 0;
      }
