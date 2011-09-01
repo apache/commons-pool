@@ -1577,25 +1577,30 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
      * @param pool the ObjectPool to calculate the deficit for
      * @return The number of objects to be created
      */
-    private synchronized int calculateDeficit(ObjectDeque<T> objectDeque) {
+    private int calculateDeficit(ObjectDeque<T> objectDeque) {
         
         if (objectDeque == null) {
             return getMinIdlePerKey();
         }
+
+        // Used more than once so keep a local copy so the value is consistent
+        int maxTotal = getMaxTotal();
+        int maxTotalPerKey = getMaxTotalPerKey();
+
         int objectDefecit = 0;
-        
+
         // Calculate no of objects needed to be created, in order to have
         // the number of pooled objects < maxTotalPerKey();
         objectDefecit = getMinIdlePerKey() - objectDeque.getIdleObjects().size();
-        if (getMaxTotalPerKey() > 0) {
+        if (maxTotalPerKey > 0) {
             int growLimit = Math.max(0,
-                    getMaxTotalPerKey() - objectDeque.getIdleObjects().size());
+                    maxTotalPerKey - objectDeque.getIdleObjects().size());
             objectDefecit = Math.min(objectDefecit, growLimit);
         }
 
         // Take the maxTotal limit into account
-        if (getMaxTotal() > 0) {
-            int growLimit = Math.max(0, getMaxTotal() - getNumActive() - getNumIdle());
+        if (maxTotal > 0) {
+            int growLimit = Math.max(0, maxTotal - getNumActive() - getNumIdle());
             objectDefecit = Math.min(objectDefecit, growLimit);
         }
 
