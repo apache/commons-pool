@@ -1093,15 +1093,26 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
       */
      @Override
      public void close() throws Exception {
-         super.close();
-         clear();
-         evictionIterator = null;
-         evictionKeyIterator = null;
-         startEvictor(-1L);
-         if (oname != null) {
-             ManagementFactory.getPlatformMBeanServer().unregisterMBean(oname);
-             oname = null;
+         if (isClosed()) {
+             return;
          }
+
+         synchronized (closeLock) {
+             if (isClosed()) {
+                 return;
+             }
+
+             super.close();
+             clear();
+             evictionIterator = null;
+             evictionKeyIterator = null;
+             startEvictor(-1L);
+             if (oname != null) {
+                 ManagementFactory.getPlatformMBeanServer().unregisterMBean(
+                         oname);
+             }
+         }
+
      }
 
      
@@ -1946,6 +1957,9 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
      * currently being evicted.
      */
     private K evictionKey = null;
+
+    /** Object used to ensure closed() is only called once. */
+    private final Object closeLock = new Object();
 
     // JMX specific attributes
     private static final int AVERAGE_TIMING_STATS_CACHE_SIZE = 100;
