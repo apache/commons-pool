@@ -1329,21 +1329,21 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
         return p;
     }
 
-    private boolean destroy(K key, PooledObject<T> toDestory, boolean always)
+    private boolean destroy(K key, PooledObject<T> toDestroy, boolean always)
             throws Exception {
         
         register(key);
-        toDestory.invalidate();
+        toDestroy.invalidate();
 
         try {
             ObjectDeque<T> objectDeque = poolMap.get(key);
-            boolean isIdle = objectDeque.getIdleObjects().remove(toDestory);
+            boolean isIdle = objectDeque.getIdleObjects().remove(toDestroy);
             
             if (isIdle || always) {
-                objectDeque.getAllObjects().remove(toDestory.getObject());
+                objectDeque.getAllObjects().remove(toDestroy.getObject());
         
                 try {
-                    _factory.destroyObject(key, toDestory.getObject());
+                    _factory.destroyObject(key, toDestroy.getObject());
                 } finally {
                     objectDeque.getCreateCount().decrementAndGet();
                     destroyedCount.incrementAndGet();
