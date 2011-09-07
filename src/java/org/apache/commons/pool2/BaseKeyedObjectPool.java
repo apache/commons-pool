@@ -148,6 +148,6 @@ public abstract class BaseKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
         }
     }
 
-    /** Whether or not the pool is close */
+    /** Whether or not the pool is closed */
     private volatile boolean closed = false;
 }
