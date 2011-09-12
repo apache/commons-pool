@@ -165,7 +165,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
-             <!-- Don't allow test to run for more that 30 minutes -->
+             <!-- Don't allow test to run for more than 30 minutes -->
               <forkedProcessTimeoutInSeconds>1800</forkedProcessTimeoutInSeconds>
               <includes>
                 <include>**/Test*.java</include>
@@ -173,7 +173,8 @@
               <excludes>
                 <!-- nested classes are not handled properly by Surefire -->
                 <exclude>**/Test*$*.java</exclude>
-                <exclude>org/apache/commons/pool/impl/TestSoftRefOutOfMemory.java</exclude>
+                <!-- Don't run this test by default - it uses lots of memory -->
+                <exclude>**/TestSoftRefOutOfMemory.java</exclude>
               </excludes>
             </configuration>
           </plugin>
