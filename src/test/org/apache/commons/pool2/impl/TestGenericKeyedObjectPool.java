@@ -113,7 +113,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         pool = null;
     }
 
-    @Test
+    @Test(timeout=60000)
     public void testNegativeMaxTotalPerKey() throws Exception {
         pool.setMaxTotalPerKey(-1);
         pool.setBlockWhenExhausted(false);
@@ -122,7 +122,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         pool.returnObject("",obj);
     }
 
-    @Test
+    @Test(timeout=60000)
     public void testNumActiveNumIdle2() throws Exception {
         assertEquals(0,pool.getNumActive());
         assertEquals(0,pool.getNumIdle());
@@ -172,7 +172,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals(2,pool.getNumIdle("B"));
     }
 
-    @Test
+    @Test(timeout=60000)
     public void testMaxIdle() throws Exception {
         pool.setMaxTotalPerKey(100);
         pool.setMaxIdlePerKey(8);
@@ -207,7 +207,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
              
     }
 
-    @Test
+    @Test(timeout=60000)
     public void testMaxTotalPerKey() throws Exception {
         pool.setMaxTotalPerKey(3);
         pool.setBlockWhenExhausted(false);
@@ -223,7 +223,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         }
     }
 
-    @Test
+    @Test(timeout=60000)
     public void testMaxTotalPerKeyZero() throws Exception {
         pool.setMaxTotalPerKey(0);
         pool.setBlockWhenExhausted(false);
@@ -236,7 +236,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         }
     }
 
-    @Test
+    @Test(timeout=60000)
     public void testMaxTotal() throws Exception {
         pool.setMaxTotalPerKey(2);
         pool.setMaxTotal(3);
@@ -278,7 +278,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
                 pool.getMaxTotal());
     }
 
-    @Test
+    @Test(timeout=60000)
     public void testMaxTotalZero() throws Exception {
         pool.setMaxTotal(0);
         pool.setBlockWhenExhausted(false);
@@ -291,7 +291,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         }
     }
 
-    @Test
+    @Test(timeout=60000)
     public void testMaxTotalLRU() throws Exception {
         pool.setMaxTotalPerKey(2);
         pool.setMaxTotal(3);
@@ -341,7 +341,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertSame(o4, o7);
     }
 
-    @Test
+    @Test(timeout=60000)
     public void testSettersAndGetters() throws Exception {
         GenericKeyedObjectPool<String,String> pool =
             new GenericKeyedObjectPool<String,String>(
@@ -396,7 +396,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         }
     }
 
-    @Test
+    @Test(timeout=60000)
     public void testEviction() throws Exception {
         pool.setMaxIdlePerKey(500);
         pool.setMaxTotalPerKey(500);
@@ -446,7 +446,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals("Should be zero idle, found " + pool.getNumIdle(""),0,pool.getNumIdle(""));
     }
 
-    @Test
+    @Test(timeout=60000)
     public void testEviction2() throws Exception {
         pool.setMaxIdlePerKey(500);
         pool.setMaxTotalPerKey(500);
@@ -517,7 +517,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         }
     }
 
-    @Test
+    @Test(timeout=60000)
     public void testThreaded1() throws Exception {
         pool.setMaxTotalPerKey(15);
         pool.setMaxIdlePerKey(15);
@@ -530,7 +530,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
      * has high latency, testOnReturn is set and there is high incidence of
      * validation failures. 
      */
-    @Test
+    @Test(timeout=60000)
     public void testMaxTotalInvariant() throws Exception {
         int maxTotal = 15;
         SimpleFactory<String> factory = new SimpleFactory<String>();
@@ -546,7 +546,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         runTestThreads(5, 10, 50, pool);
     }
 
-    @Test
+    @Test(timeout=60000)
     public void testMinIdle() throws Exception {
         pool.setMaxIdlePerKey(500);
         pool.setMinIdlePerKey(5);
@@ -586,7 +586,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertTrue("Should be 10 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 10);
     }
 
-    @Test
+    @Test(timeout=60000)
     public void testMinIdleMaxTotalPerKey() throws Exception {
         pool.setMaxIdlePerKey(500);
         pool.setMinIdlePerKey(5);
@@ -639,7 +639,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertTrue("Should be 10 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 10);
     }
 
-    @Test
+    @Test(timeout=60000)
     public void testMinIdleNoPreparePool() throws Exception {
         pool.setMaxIdlePerKey(500);
         pool.setMinIdlePerKey(5);
@@ -663,7 +663,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
     }
 
-    @Test
+    @Test(timeout=60000)
     public void testFIFO() throws Exception {
         pool.setLifo(false);
         final String key = "key";
@@ -680,7 +680,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals("new-4", "key4", pool.borrowObject(key));
     }
 
-    @Test
+    @Test(timeout=60000)
     public void testLIFO() throws Exception {
         pool.setLifo(true);
         final String key = "key";
@@ -703,7 +703,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
      * 
      * JIRA: POOL-86
      */ 
-    @Test
+    @Test(timeout=60000)
     public void testEvictionOrder() throws Exception {
         checkEvictionOrder(false);
         checkEvictionOrder(true);
@@ -826,7 +826,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
      * Verifies that the evictor visits objects in expected order
      * and frequency. 
      */
-    @Test
+    @Test(timeout=60000)
     public void testEvictorVisiting() throws Exception {
         checkEvictorVisiting(true);
         checkEvictorVisiting(false);  
@@ -1000,7 +1000,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         }
     }
 
-    @Test
+    @Test(timeout=60000)
     public void testConstructors() {
         
         // Make constructor arguments all different from defaults
@@ -1074,7 +1074,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals(lifo, pool.getLifo());
     }
 
-    @Test
+    @Test(timeout=60000)
     public void testExceptionOnPassivateDuringReturn() throws Exception {
         SimpleFactory<String> factory = new SimpleFactory<String>();
         GenericKeyedObjectPool<String,String> pool =
@@ -1086,7 +1086,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         pool.close();
     }
 
-    @Test
+    @Test(timeout=60000)
     public void testExceptionOnDestroyDuringBorrow() throws Exception {
         SimpleFactory<String> factory = new SimpleFactory<String>(); 
         factory.setThrowExceptionOnDestroy(true);
@@ -1108,7 +1108,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals(0, pool.getNumIdle());
     }
 
-    @Test
+    @Test(timeout=60000)
     public void testExceptionOnDestroyDuringReturn() throws Exception {
         SimpleFactory<String> factory = new SimpleFactory<String>(); 
         factory.setThrowExceptionOnDestroy(true);
@@ -1126,7 +1126,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals(0, pool.getNumIdle());
     }
 
-    @Test
+    @Test(timeout=60000)
     public void testExceptionOnActivateDuringBorrow() throws Exception {
         SimpleFactory<String> factory = new SimpleFactory<String>(); 
         GenericKeyedObjectPool<String,String> pool =
@@ -1161,7 +1161,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals(0, pool.getNumIdle());
     }
     
-    @Test
+    @Test(timeout=60000)
     public void testBlockedKeyDoesNotBlockPool() throws Exception {
         SimpleFactory<String> factory = new SimpleFactory<String>();
         GenericKeyedObjectPool<String,String> pool =
@@ -1203,7 +1203,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
      * TestSharedPoolDataSource.testMultipleThreads2()
      * Let's see if the this fails on Continuum too!
      */
-    @Test
+    @Test(timeout=60000)
     public void testMaxWaitMultiThreaded() throws Exception {
         final long maxWait = 500; // wait for connection
         final long holdTime = 4 * maxWait; // how long to hold connection
@@ -1259,7 +1259,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     /**
      * Test case for POOL-180.
      */
-    @Test
+    @Test(timeout=60000)
     public void testMaxActivePerKeyExceeded() {
         WaiterFactory<String> factory = new WaiterFactory<String>(0, 20, 0, 0, 0, 0, 8, 5, 0);
         // TODO Fix this. Can't use local pool since runTestThreads uses the
@@ -1277,7 +1277,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     /**
      * Test to make sure that clearOldest does not destroy instances that have been checked out.
      */
-    @Test
+    @Test(timeout=60000)
     public void testClearOldest() throws Exception {
         // Make destroy have some latency so clearOldest takes some time
         WaiterFactory<String> factory = new WaiterFactory<String>(0, 20, 0, 0, 0, 0, 50, 5, 0);
