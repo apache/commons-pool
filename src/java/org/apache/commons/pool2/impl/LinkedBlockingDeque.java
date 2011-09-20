@@ -145,6 +145,10 @@ public class LinkedBlockingDeque<E>
 
     /** Condition for waiting puts */
     private final Condition notFull = lock.newCondition();
+    
+    public boolean hasTakeWaiters() {
+        return lock.hasWaiters(notEmpty);
+    }
 
     /**
      * Creates a {@code LinkedBlockingDeque} with a capacity of

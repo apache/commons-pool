@@ -1329,6 +1329,16 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
         return p;
     }
 
+    /**
+     * Invalidate toDestroy and if it is idle under key or always is true, destroy it.
+     * Return true if toDestroy is destroyed.
+     * 
+     * @param key pool key
+     * @param toDestroy instance to invalidate and destroy if conditions are met
+     * @param always true means instance will be destroyed regardless of idle pool membership
+     * @return true iff toDestroy is destroyed
+     * @throws Exception
+     */
     private boolean destroy(K key, PooledObject<T> toDestroy, boolean always)
             throws Exception {
         
