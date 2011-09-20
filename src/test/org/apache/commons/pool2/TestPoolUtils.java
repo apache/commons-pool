@@ -56,7 +56,7 @@ public class TestPoolUtils {
     /** Sleep time to let the minIdle tests run CHECK_COUNT times. */
     private static final int CHECK_SLEEP_PERIOD = CHECK_PERIOD * (CHECK_COUNT - 1) + CHECK_PERIOD / 2;
 
-    @Test
+    @SuppressWarnings("unused")
     public void testJavaBeanInstantiation() {
         new PoolUtils();
     }
