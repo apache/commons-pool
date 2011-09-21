@@ -17,6 +17,8 @@
 
 package org.apache.commons.pool2;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * <p>Object created by {@link WaiterFactory}. Maintains active / valid state,
  * last passivated and idle times.  Waits with configurable latency when 
@@ -25,11 +27,13 @@ package org.apache.commons.pool2;
  * <p>This class is *not* threadsafe.</p>
  */
 public class Waiter {
+    private static AtomicInteger instanceCount = new AtomicInteger();
     private boolean active = false;
     private boolean valid = true;
     private long latency = 0;
     private long lastPassivated = 0;
     private long lastIdleTimeMs = 0;
+    private int id = instanceCount.getAndIncrement();
     
     public Waiter(boolean active, boolean valid, long latency) {
         this.active = active;
@@ -129,4 +133,28 @@ public class Waiter {
         return lastIdleTimeMs;
     }
     
+    @Override
+    public int hashCode() {
+        return id;     
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Waiter)) {
+            return false;
+        }
+        return obj.hashCode() == id;
+    }
+    
+    @Override
+    public String toString() {
+        StringBuffer buff = new StringBuffer();
+        buff.append("ID = " + id + "\n");
+        buff.append("valid = " + valid + "\n");
+        buff.append("active = " + active + "\n");
+        buff.append("lastPassivated = " + lastPassivated + "\n");
+        buff.append("lastIdleTimeMs = " + lastIdleTimeMs + "\n");
+        buff.append("latency = " + latency + "\n");
+        return buff.toString();
+    } 
 }
