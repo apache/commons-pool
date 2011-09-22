@@ -1262,7 +1262,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
     /**
      * Test case for POOL-180.
      */
-    @Test(timeout=60000)
+    @Test(timeout=200000)
     public void testMaxActivePerKeyExceeded() {
         WaiterFactory<String> factory = new WaiterFactory<String>(0, 20, 0, 0, 0, 0, 8, 5, 0);
         // TODO Fix this. Can't use local pool since runTestThreads uses the
