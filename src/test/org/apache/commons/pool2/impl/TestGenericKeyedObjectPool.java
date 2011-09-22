@@ -27,9 +27,10 @@ import static junit.framework.Assert.fail;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.pool2.KeyedObjectPool;
 import org.apache.commons.pool2.KeyedPoolableObjectFactory;
@@ -53,14 +54,16 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
 
         KeyedPoolableObjectFactory<Object,Object> factory =
                 new KeyedPoolableObjectFactory<Object,Object>()  {
-            HashMap<Object,Integer> map = new HashMap<Object,Integer>();
+            ConcurrentHashMap<Object,AtomicInteger> map = new ConcurrentHashMap<Object,AtomicInteger>();
             public Object makeObject(Object key) {
                 int counter = 0;
-                Integer Counter = map.get(key);
+                AtomicInteger Counter = map.get(key);
                 if(null != Counter) {
-                    counter = Counter.intValue();
+                    counter = Counter.incrementAndGet();
+                } else {
+                    map.put(key, new AtomicInteger(0));
+                    counter = 0;
                 }
-                map.put(key,new Integer(counter + 1));
                 return String.valueOf(key) + String.valueOf(counter);
             }
             public void destroyObject(Object key, Object obj) { }
@@ -1449,14 +1452,16 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
             this.valid = valid;
         }
         public String makeObject(K key) {
+            String out = null;
             synchronized(this) {
                 activeCount++;
                 if (activeCount > maxTotalPerKey) {
                     throw new IllegalStateException(
                         "Too many active instances: " + activeCount);
                 }
+                out = String.valueOf(key) + String.valueOf(counter++);
             }
-            return String.valueOf(key) + String.valueOf(counter++);
+            return out;
         }
         public void destroyObject(K key, String obj) throws Exception {
             doWait(destroyLatency);
