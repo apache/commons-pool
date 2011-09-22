@@ -1311,6 +1311,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
         if (maxTotalPerKey > -1 && newCreateCount > maxTotalPerKey ||
                 newCreateCount > Integer.MAX_VALUE) {
             numTotal.decrementAndGet();
+            objectDeque.getCreateCount().decrementAndGet();
             return null;
         }
          
