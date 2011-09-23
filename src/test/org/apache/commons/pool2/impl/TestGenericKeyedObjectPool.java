@@ -1310,6 +1310,34 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         pool.returnObject("1", waiter);  // Will throw IllegalStateException if dead
     }
     
+    
+    /**
+     * Verifies that threads that get parked waiting for keys not in use
+     * when the pool is at maxTotal eventually get served.
+     */
+    //@Test
+    public void testLivenessPerKey() throws Exception {
+        SimpleFactory<String> factory = new SimpleFactory<String>();
+        GenericKeyedObjectPool<String,String> pool =
+            new GenericKeyedObjectPool<String,String>(factory);
+        pool.setMaxIdlePerKey(3);
+        pool.setMaxTotal(3);
+        pool.setMaxTotalPerKey(3);
+        pool.setMaxWait(3000);  // Really a timeout for the test
+        
+        // Check out and briefly hold 3 "1"s
+        WaitingTestThread t1 = new WaitingTestThread(pool, "1", 100);
+        WaitingTestThread t2 = new WaitingTestThread(pool, "1", 100);
+        WaitingTestThread t3 = new WaitingTestThread(pool, "1", 100);
+        t1.start();
+        t2.start();
+        t3.start();
+        
+        // Try to get a "2" while all capacity is in use.
+        // Thread will park waiting on empty queue. Verify it gets served.
+        pool.borrowObject("2");   
+    }
+    
     /*
      * Very simple test thread that just tries to borrow an object from
      * the provided pool with the specified key and returns it
