@@ -1732,8 +1732,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
             Long time = iter.next();
             if (time != null) {
                 counter++;
-                result = result * ((counter - 1) / counter) +
-                        time.longValue()/counter;
+                result = result * ((counter - 1) / (double) counter) +
+                        time.longValue()/(double) counter;
             }
         }
         return (long) result;
