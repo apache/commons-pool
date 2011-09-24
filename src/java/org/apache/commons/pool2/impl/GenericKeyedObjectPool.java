@@ -927,6 +927,11 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
                  idleObjects.addLast(p);
              }
          }
+ 
+         if (hasBorrowWaiters()) {
+             reuseCapacity();
+         }
+
          updateStatsReturn(activeTime);
      }
 
@@ -1162,6 +1167,80 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
                 itemsToRemove--;
             }
         }
+    }
+    
+    /**
+     * Attempt to create one new instance to serve from the most heavily
+     * loaded pool that can add a new instance.
+     * 
+     * This method exists to ensure liveness in the pool when threads are
+     * parked waiting and capacity to create instances under the requested keys
+     * subsequently becomes available.
+     * 
+     * This method is not guaranteed to create an instance and its selection
+     * of the most loaded pool that can create an instance may not always be
+     * correct, since it does not lock the pool and instances may be created,
+     * borrowed, returned or destroyed by other threads while it is executing.
+     * 
+     * @return true if an instance is created and added to a pool
+     */
+    private boolean reuseCapacity() {
+        final int maxTotalPerKey = getMaxTotalPerKey();
+   
+        // Find the most loaded pool that could take a new instance
+        int maxQueueLength = 0;
+        LinkedBlockingDeque<PooledObject<T>> mostLoaded = null;
+        K loadedKey = null;
+        for (K k : poolMap.keySet()) {
+            final ObjectDeque<T> deque = poolMap.get(k);
+            if (deque != null) {
+                final LinkedBlockingDeque<PooledObject<T>> pool = deque.getIdleObjects();
+                final int queueLength = pool.getTakeQueueLength();
+                if (getNumActive(k) < maxTotalPerKey && queueLength > maxQueueLength) {
+                    maxQueueLength = queueLength;
+                    mostLoaded = pool; 
+                    loadedKey = k;
+                }
+            }
+        }
+        
+        // Attempt to add an instance to the most loaded pool
+        boolean success = false;
+        if (mostLoaded != null) {
+            register(loadedKey);
+            try {
+                PooledObject<T> p = create(loadedKey);
+                if (p != null) {
+                    addIdleObject(loadedKey, p);
+                    success = true;
+                }
+            } catch (Exception ex) {
+                // Swallow and return false
+            } finally {
+                deregister(loadedKey);
+            }
+        }
+        return success;   
+    }
+    
+    /**
+     * Returns true if there are threads parked waiting to borrow instances
+     * from at least one of the keyed pools.
+     * 
+     * @return true if {@link #reuseCapacity()} would be useful
+     */
+    private boolean hasBorrowWaiters() {
+        for (K k : poolMap.keySet()) {
+            final ObjectDeque<T> deque = poolMap.get(k);
+            if (deque != null) {
+                final LinkedBlockingDeque<PooledObject<T>> pool =
+                    deque.getIdleObjects();
+                if(pool.hasTakeWaiters()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 
