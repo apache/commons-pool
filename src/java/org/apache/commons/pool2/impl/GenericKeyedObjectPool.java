@@ -43,7 +43,7 @@ import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
 
-import org.apache.commons.pool2.BaseKeyedObjectPool;
+import org.apache.commons.pool2.KeyedObjectPool;
 import org.apache.commons.pool2.KeyedPoolableObjectFactory;
 import org.apache.commons.pool2.PoolUtils;
 
@@ -210,8 +210,8 @@ import org.apache.commons.pool2.PoolUtils;
  * @version $Revision$ $Date$
  * @since Pool 1.0
  */
-public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
-        implements GenericKeyedObjectPoolMBean<K> {
+public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
+    GenericKeyedObjectPoolMBean<K> {
 
     //--- constructors -----------------------------------------------
 
@@ -712,7 +712,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
      * @return object instance from the keyed pool
      * @throws NoSuchElementException if a keyed object instance cannot be returned.
      */
-    @Override
     public T borrowObject(K key) throws Exception {
         return borrowObject(key, _maxWait);
     }
@@ -868,7 +867,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
       * @param t instance to return to the keyed pool
       * @throws Exception
       */
-     @Override
      public void returnObject(K key, T t) throws Exception {
          
          ObjectDeque<T> objectDeque = poolMap.get(key);
@@ -955,7 +953,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
       * @param obj instance to invalidate
       * @throws Exception if an exception occurs destroying the object
       */
-     @Override
      public void invalidateObject(K key, T obj) throws Exception {
          
          ObjectDeque<T> objectDeque = poolMap.get(key);
@@ -984,7 +981,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
       * while removed items are being destroyed.</li>
       * <li>Exceptions encountered destroying idle instances are swallowed.</li></ul></p>
       */
-     @Override
      public void clear() {
          Iterator<K> iter = poolMap.keySet().iterator();
          
@@ -1000,7 +996,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
       *
       * @param key the key to clear
       */
-     @Override
      public void clear(K key) {
          
          register(key);
@@ -1034,7 +1029,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
       *
       * @return the total number of instances currently borrowed from this pool
       */
-     @Override
      public int getNumActive() {
          return numTotal.get() - getNumIdle();
      }
@@ -1044,7 +1038,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
       *
       * @return the total number of instances currently idle in this pool
       */
-     @Override
      public int getNumIdle() {
          Iterator<ObjectDeque<T>> iter = poolMap.values().iterator();
          int result = 0;
@@ -1063,7 +1056,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
       * @param key the key to query
       * @return the number of instances corresponding to the given <code>key</code> currently borrowed in this pool
       */
-     @Override
      public int getNumActive(K key) {
          final ObjectDeque<T> objectDeque = poolMap.get(key);
          if (objectDeque != null) {
@@ -1080,7 +1072,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
       * @param key the key to query
       * @return the number of instances corresponding to the given <code>key</code> currently idle in this pool
       */
-     @Override
      public int getNumIdle(K key) {
          final ObjectDeque<T> objectDeque = poolMap.get(key);
          return objectDeque != null ? objectDeque.getIdleObjects().size() : 0;
@@ -1097,7 +1088,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
       * 
       * @throws Exception
       */
-     @Override
      public void close() throws Exception {
          if (isClosed()) {
              return;
@@ -1108,7 +1098,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
                  return;
              }
 
-             super.close();
+             closed = true;
              clear();
              evictionIterator = null;
              evictionKeyIterator = null;
@@ -1120,6 +1110,30 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
          }
 
      }
+
+     /**
+      * Has this pool instance been closed.
+      * @return <code>true</code> when this pool has been closed.
+      * @since Pool 1.4
+      */
+     public boolean isClosed() {
+         return closed;
+     }
+
+     /**
+      * Throws an <code>IllegalStateException</code> when this pool has been closed.
+      * @throws IllegalStateException when this pool has been closed.
+      * @see #isClosed()
+      * @since Pool 1.4
+      */
+     protected void assertOpen() throws IllegalStateException {
+         if(isClosed()) {
+             throw new IllegalStateException("Pool not open");
+         }
+     }
+
+     /** Whether or not the pool is closed */
+     private volatile boolean closed = false;
 
      
      /**
@@ -1589,7 +1603,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
      * @throws IllegalStateException when no factory has been set or after {@link #close} has been
      * called on this pool.
      */
-    @Override
     public void addObject(K key) throws Exception {
         assertOpen();
         if (_factory == null) {

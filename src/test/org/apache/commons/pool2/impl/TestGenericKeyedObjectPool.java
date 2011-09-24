@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.pool2.KeyedObjectPool;
 import org.apache.commons.pool2.KeyedPoolableObjectFactory;
-import org.apache.commons.pool2.TestBaseKeyedObjectPool;
+import org.apache.commons.pool2.TestKeyedObjectPool;
 import org.apache.commons.pool2.VisitTracker;
 import org.apache.commons.pool2.VisitTrackerFactory;
 import org.apache.commons.pool2.Waiter;
@@ -47,9 +47,8 @@ import org.junit.Test;
  * @author Rodney Waldhoff
  * @version $Revision$ $Date$
  */
-public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
+public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
-    @Override
     protected KeyedObjectPool<Object,Object> makeEmptyPool(int mincapacity) {
 
         KeyedPoolableObjectFactory<Object,Object> factory =
@@ -79,19 +78,16 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         return pool;
     }
 
-    @Override
     protected KeyedObjectPool<Object,Object> makeEmptyPool(KeyedPoolableObjectFactory<Object,Object> factory) {
         GenericKeyedObjectPool<Object,Object> pool =
             new GenericKeyedObjectPool<Object,Object>(factory);
         return pool;
     }
 
-    @Override
     protected Object getNthObject(Object key, int n) {
         return String.valueOf(key) + String.valueOf(n);
     }
 
-    @Override
     protected Object makeKey(int n) {
         return String.valueOf(n);
     }
