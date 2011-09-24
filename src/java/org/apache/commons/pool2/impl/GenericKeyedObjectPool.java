@@ -1804,28 +1804,67 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
      * Maintains information on the per key queue for a given key.
      */
     private class ObjectDeque<S> {
+        /** Idle instances */
         private final LinkedBlockingDeque<PooledObject<S>> idleObjects =
                 new LinkedBlockingDeque<PooledObject<S>>();
 
+        /** 
+         * Number of instances created - number destroyed.
+         * Invariant: createCount <= maxTotalPerKey
+         */
         private AtomicInteger createCount = new AtomicInteger(0);
 
+        /** All instances under management - checked out our idle in the pool. */
         private Map<S, PooledObject<S>> allObjects =
                 new ConcurrentHashMap<S, PooledObject<S>>();
 
+        /** 
+         * Number of threads with registered interest in this key. 
+         * register(K) increments this counter and deRegister(K) decrements it.
+         * Invariant: empty keyed pool will not be dropped unless numInterested is 0.
+         */
         private AtomicLong numInterested = new AtomicLong(0);
         
+        /**
+         * Returns the idle instance pool.
+         * 
+         * @return deque of idle instances
+         */
         public LinkedBlockingDeque<PooledObject<S>> getIdleObjects() {
             return idleObjects;
         }
         
+        /**
+         * Returns the number of instances that have been created under this
+         * this key minus the number that have been destroyed.
+         * 
+         * @return the number of instances (active or idle) currently being
+         * managed by the pool under this key
+         */
         public AtomicInteger getCreateCount() {
             return createCount;
         }
         
+        /**
+         * Returns the number of threads with registered interest in this key.
+         * This keyed pool will not be dropped if empty unless this method returns 0.
+         * 
+         * @return number of threads that have registered, but not deregistered this key
+         */
         public AtomicLong getNumInterested() {
             return numInterested;
         }
         
+        /**
+         * The full set of objects under management by this keyed pool.
+         * 
+         * Includes both idle instances and those checked out to clients.
+         * The map is keyed on pooled instances.  Note: pooled instances
+         * <em>must</em> be distinguishable by equals for this structure to
+         * work properly.
+         * 
+         * @return map of pooled instances
+         */
         public Map<S, PooledObject<S>> getAllObjects() {
             return allObjects;
         }
