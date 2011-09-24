@@ -1160,5 +1160,38 @@ public class LinkedBlockingDeque<E>
             add(item);
         }
     }
+    
+    // Monitoring methods
+    
+    /**
+     * Returns true if there are threads waiting to take instances from this deque.
+     * See disclaimer on accuracy in {@link ReentrantLock#hasWaiters(Condition)}.
+     * 
+     * @return true if there is at least one thread waiting on this deque's notEmpty condition.
+     */
+    public boolean hasTakeWaiters() {
+        lock.lock();
+        try {
+            return lock.hasWaiters(notEmpty);
+        } finally {
+            lock.unlock();
+        }
+    }
+    
+    /**
+     * Returns the length of the queue of threads waiting to take instances from this deque.
+     * See disclaimer on accuracy in {@link ReentrantLock#getWaitQueueLength(Condition)}.
+     * 
+     * @return number of threads waiting on this deque's notEmpty condition.
+     */
+    public int getTakeQueueLength() {
+        lock.lock();
+        try {
+           return lock.getWaitQueueLength(notEmpty);
+        } finally {
+            lock.unlock();
+        }     
+        
+    }
 
 }

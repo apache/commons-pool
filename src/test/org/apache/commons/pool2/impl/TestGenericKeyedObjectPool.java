@@ -1315,7 +1315,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
      * Verifies that threads that get parked waiting for keys not in use
      * when the pool is at maxTotal eventually get served.
      */
-    //@Test
+    @Test
     public void testLivenessPerKey() throws Exception {
         SimpleFactory<String> factory = new SimpleFactory<String>();
         GenericKeyedObjectPool<String,String> pool =
