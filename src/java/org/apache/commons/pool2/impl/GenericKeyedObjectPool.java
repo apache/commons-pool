@@ -845,7 +845,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseKeyedObjectPool<K,T>
             if (waitTime > maxBorrowWaitTimeMillis) {
                 maxBorrowWaitTimeMillis = waitTime;
             }
-        }        return p.getObject();
+        }
+        return p.getObject();
     }
 
 
