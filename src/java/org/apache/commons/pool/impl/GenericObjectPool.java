@@ -1127,6 +1127,10 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
                                         break;
                                     }
                                 }
+                                // see if we were awakened by a closing pool
+                                if(isClosed() == true) {
+                                    throw new IllegalStateException("Pool closed");
+                                }
                             } catch(InterruptedException e) {
                                 boolean doAllocate = false;
                                 synchronized(this) {
@@ -1481,6 +1485,15 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
         synchronized (this) {
             clear();
             startEvictor(-1L);
+
+            while(_allocationQueue.size() > 0) {
+                Latch l = (Latch) _allocationQueue.remove();
+                
+                synchronized (l) {
+                    // notify the waiting thread
+                    l.notify();
+                }
+            }
         }
     }
 

@@ -116,7 +116,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.setMaxWait(0);
         Object obj1 = pool.borrowObject();
         
-        // Make sure on object was obtained
+        // Make sure an object was obtained
         assertNotNull(obj1);
         
         // Create a separate thread to try and borrow another object
@@ -147,7 +147,31 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
         pool.returnObject(obj2);
         pool.close();
+    }
+
+    public void testWhenExhaustedBlockClosePool() throws Exception {
+        pool.setMaxActive(1);
+        pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_BLOCK);
+        pool.setMaxWait(0);
+        Object obj1 = pool.borrowObject();
         
+        // Make sure an object was obtained
+        assertNotNull(obj1);
+        
+        // Create a separate thread to try and borrow another object
+        WaitingTestThread wtt = new WaitingTestThread(pool, 200);
+        wtt.start();
+        // Give wtt time to start
+        Thread.sleep(200);
+        
+        // close the pool (Bug POOL-189)
+        pool.close();
+        
+        // Give interrupt time to take effect
+        Thread.sleep(200);
+        
+        // Check thread was interrupted
+        assertTrue(wtt._thrown instanceof IllegalStateException);
     }
 
     public void testEvictWhileEmpty() throws Exception {

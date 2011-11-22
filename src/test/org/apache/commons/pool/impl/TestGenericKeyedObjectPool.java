@@ -29,6 +29,7 @@ import org.apache.commons.pool.TestBaseKeyedObjectPool;
 import org.apache.commons.pool.VisitTracker;
 import org.apache.commons.pool.VisitTrackerFactory;
 import org.apache.commons.pool.WaiterFactory;
+import org.apache.commons.pool.impl.TestGenericObjectPool.WaitingTestThread;
 
 /**
  * @author Rodney Waldhoff
@@ -217,6 +218,31 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         for (int i = 0; i < 10; i++) {
             pool.borrowObject("a");
         }
+    }
+
+    public void testWhenExhaustedBlockClosePool() throws Exception {
+        pool.setMaxActive(1);
+        pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_BLOCK);
+        pool.setMaxWait(0);
+        Object obj1 = pool.borrowObject("a");
+        
+        // Make sure an object was obtained
+        assertNotNull(obj1);
+        
+        // Create a separate thread to try and borrow another object
+        WaitingTestThread wtt = new WaitingTestThread(pool, "a", 200);
+        wtt.start();
+        // Give wtt time to start
+        Thread.sleep(200);
+        
+        // close the pool (Bug POOL-189)
+        pool.close();
+        
+        // Give interrupt time to take effect
+        Thread.sleep(200);
+        
+        // Check thread was interrupted
+        assertTrue(wtt._thrown instanceof IllegalStateException);
     }
 
     public void testMaxTotal() throws Exception {
