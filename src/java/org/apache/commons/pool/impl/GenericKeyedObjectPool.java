@@ -1501,6 +1501,8 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
                                 _poolMap.remove(key);
                                 _poolList.remove(key);
                             }
+                        } else {
+                            _totalInternalProcessing--;
                         }
                     }
                     allocate();

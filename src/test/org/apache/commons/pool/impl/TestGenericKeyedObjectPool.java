@@ -1450,6 +1450,35 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         runTestThreads(20, 300, 250);
     }
     
+    /**
+     * POOL-192
+     * Verify that clear(key) does not leak capacity due to _numInternalProcessing
+     * not being decremented.
+     */
+    public void testClear() throws Exception {
+        SimpleFactory factory = new SimpleFactory();
+        GenericKeyedObjectPool pool = new GenericKeyedObjectPool(factory);
+        pool.setMaxTotal(2);
+        pool.setMaxActive(2);
+        pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_FAIL);
+        pool.addObject("one");
+        pool.addObject("one");
+        assertEquals(2, pool.getNumIdle());
+        pool.clear("one");
+        assertEquals(0, pool.getNumIdle());
+        assertEquals(0, pool.getNumIdle("one"));
+        Object obj1 = pool.borrowObject("one");
+        Object obj2 = pool.borrowObject("one");
+        pool.returnObject("one", obj1);
+        pool.returnObject("one", obj2);
+        pool.clear();
+        assertEquals(0, pool.getNumIdle());
+        assertEquals(0, pool.getNumIdle("one"));
+        pool.borrowObject("one");
+        pool.borrowObject("one");
+        pool.close();
+    }
+    
     /*
      * Very simple test thread that just tries to borrow an object from
      * the provided pool with the specified key and returns it

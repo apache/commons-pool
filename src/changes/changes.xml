@@ -26,6 +26,11 @@
       IllegalStateException.  Prior to the fix for this issue, threads waiting in borrowObject when
       close was invoked on GOP or GKOP would block indefinitely.
     </action>
+    <action dev="psteitz" type="fix" issue="POOL-192" due-to="Helge Dannenberg">
+      Corrected total internal processing counter update in destroy.  Prior to the fix
+      for this issue, clear(key) was leaking capacity associated with elements in the
+      pool being cleared.
+    </action>
   <release version="1.5.6" date="2011-04-03" description="This is a patch release, including bugfixes only.">
     <action dev="markt" type="fix" issue="POOL-179" due-to="Axel Grossmann">
       Correctly handle an InterruptedException when waiting for an object from
