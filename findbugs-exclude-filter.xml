@@ -22,10 +22,20 @@
   put here to instruct findbugs to ignore them.
 -->
 <FindBugsFilter>
-  <!-- findbugs thinks this is naked, but it is not -->
+  <!-- findbugs thinks these is naked, but they are not -->
   <Match>
     <Class name="org.apache.commons.pool.impl.GenericKeyedObjectPool" />
     <Method name="allocate"/>
+    <Bug pattern="NN_NAKED_NOTIFY" />
+  </Match>
+  <Match>
+    <Class name="org.apache.commons.pool.impl.GenericKeyedObjectPool" />
+    <Method name="close"/>
+    <Bug pattern="NN_NAKED_NOTIFY" />
+  </Match>
+  <Match>
+    <Class name="org.apache.commons.pool.impl.GenericObjectPool" />
+    <Method name="close"/>
     <Bug pattern="NN_NAKED_NOTIFY" />
   </Match>
   <!-- Iteration has to be over keys here -->
