@@ -23,7 +23,7 @@
 # -----------------------------------------------------------------------------
 # Set script variables
 version=1.5.7
-rc=1
+rc=2
 repo_path=~/.m2/repository/commons-pool/commons-pool/${version}
 release_path=~/pool-${version}-rc${rc}
 #
