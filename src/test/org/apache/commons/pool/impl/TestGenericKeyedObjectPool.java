@@ -29,7 +29,6 @@ import org.apache.commons.pool.TestBaseKeyedObjectPool;
 import org.apache.commons.pool.VisitTracker;
 import org.apache.commons.pool.VisitTrackerFactory;
 import org.apache.commons.pool.WaiterFactory;
-import org.apache.commons.pool.impl.TestGenericObjectPool.WaitingTestThread;
 
 /**
  * @author Rodney Waldhoff
