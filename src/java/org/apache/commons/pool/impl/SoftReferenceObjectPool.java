@@ -348,7 +348,7 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
     }
 
     /** My pool. */
-    private List _pool = null;
+    private final List _pool;
 
     /** My {@link PoolableObjectFactory}. */
     private PoolableObjectFactory _factory = null;
@@ -361,5 +361,5 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
     private final ReferenceQueue refQueue = new ReferenceQueue();
 
     /** Number of active objects. */
-    private int _numActive = 0;
+    private int _numActive = 0; //@GuardeBy("this")
 }
