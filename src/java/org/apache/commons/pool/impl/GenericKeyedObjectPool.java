@@ -1802,7 +1802,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
             startEvictor(-1L);
             
             while(_allocationQueue.size() > 0) {
-                Latch l = (Latch) _allocationQueue.remove();
+                Latch l = (Latch) _allocationQueue.removeFirst();
                 
                 synchronized (l) {
                     // notify the waiting thread
