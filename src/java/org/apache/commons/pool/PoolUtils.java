@@ -2235,9 +2235,6 @@ public final class PoolUtils {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         protected int numIdle(final Object key) {
             return getKeyedPool().getNumIdle();
         }
