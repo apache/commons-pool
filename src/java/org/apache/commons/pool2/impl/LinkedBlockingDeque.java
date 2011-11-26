@@ -301,8 +301,8 @@ public class LinkedBlockingDeque<E>
     // BlockingDeque methods
 
     /**
-     * @throws IllegalStateException {@inheritDoc}
-     * @throws NullPointerException  {@inheritDoc}
+     * @throws IllegalStateException
+     * @throws NullPointerException
      */
     public void addFirst(E e) {
         if (!offerFirst(e))
@@ -310,8 +310,8 @@ public class LinkedBlockingDeque<E>
     }
 
     /**
-     * @throws IllegalStateException {@inheritDoc}
-     * @throws NullPointerException  {@inheritDoc}
+     * @throws IllegalStateException
+     * @throws NullPointerException
      */
     public void addLast(E e) {
         if (!offerLast(e))
@@ -319,7 +319,7 @@ public class LinkedBlockingDeque<E>
     }
 
     /**
-     * @throws NullPointerException {@inheritDoc}
+     * @throws NullPointerException
      */
     public boolean offerFirst(E e) {
         if (e == null) throw new NullPointerException();
@@ -333,7 +333,7 @@ public class LinkedBlockingDeque<E>
     }
 
     /**
-     * @throws NullPointerException {@inheritDoc}
+     * @throws NullPointerException
      */
     public boolean offerLast(E e) {
         if (e == null) throw new NullPointerException();
@@ -347,8 +347,8 @@ public class LinkedBlockingDeque<E>
     }
 
     /**
-     * @throws NullPointerException {@inheritDoc}
-     * @throws InterruptedException {@inheritDoc}
+     * @throws NullPointerException
+     * @throws InterruptedException
      */
     public void putFirst(E e) throws InterruptedException {
         if (e == null) throw new NullPointerException();
@@ -363,8 +363,8 @@ public class LinkedBlockingDeque<E>
     }
 
     /**
-     * @throws NullPointerException {@inheritDoc}
-     * @throws InterruptedException {@inheritDoc}
+     * @throws NullPointerException
+     * @throws InterruptedException
      */
     public void putLast(E e) throws InterruptedException {
         if (e == null) throw new NullPointerException();
@@ -379,8 +379,8 @@ public class LinkedBlockingDeque<E>
     }
 
     /**
-     * @throws NullPointerException {@inheritDoc}
-     * @throws InterruptedException {@inheritDoc}
+     * @throws NullPointerException
+     * @throws InterruptedException
      */
     public boolean offerFirst(E e, long timeout, TimeUnit unit)
         throws InterruptedException {
@@ -401,8 +401,8 @@ public class LinkedBlockingDeque<E>
     }
 
     /**
-     * @throws NullPointerException {@inheritDoc}
-     * @throws InterruptedException {@inheritDoc}
+     * @throws NullPointerException
+     * @throws InterruptedException
      */
     public boolean offerLast(E e, long timeout, TimeUnit unit)
         throws InterruptedException {
@@ -423,7 +423,7 @@ public class LinkedBlockingDeque<E>
     }
 
     /**
-     * @throws NoSuchElementException {@inheritDoc}
+     * @throws NoSuchElementException
      */
     public E removeFirst() {
         E x = pollFirst();
@@ -432,7 +432,7 @@ public class LinkedBlockingDeque<E>
     }
 
     /**
-     * @throws NoSuchElementException {@inheritDoc}
+     * @throws NoSuchElementException
      */
     public E removeLast() {
         E x = pollLast();
@@ -523,7 +523,7 @@ public class LinkedBlockingDeque<E>
     }
 
     /**
-     * @throws NoSuchElementException {@inheritDoc}
+     * @throws NoSuchElementException
      */
     public E getFirst() {
         E x = peekFirst();
@@ -532,7 +532,7 @@ public class LinkedBlockingDeque<E>
     }
 
     /**
-     * @throws NoSuchElementException {@inheritDoc}
+     * @throws NoSuchElementException
      */
     public E getLast() {
         E x = peekLast();
@@ -621,16 +621,16 @@ public class LinkedBlockingDeque<E>
     }
 
     /**
-     * @throws NullPointerException {@inheritDoc}
-     * @throws InterruptedException {@inheritDoc}
+     * @throws NullPointerException
+     * @throws InterruptedException
      */
     public void put(E e) throws InterruptedException {
         putLast(e);
     }
 
     /**
-     * @throws NullPointerException {@inheritDoc}
-     * @throws InterruptedException {@inheritDoc}
+     * @throws NullPointerException
+     * @throws InterruptedException
      */
     public boolean offer(E e, long timeout, TimeUnit unit)
         throws InterruptedException {
@@ -705,20 +705,20 @@ public class LinkedBlockingDeque<E>
     }
 
     /**
-     * @throws UnsupportedOperationException {@inheritDoc}
-     * @throws ClassCastException            {@inheritDoc}
-     * @throws NullPointerException          {@inheritDoc}
-     * @throws IllegalArgumentException      {@inheritDoc}
+     * @throws UnsupportedOperationException
+     * @throws ClassCastException
+     * @throws NullPointerException
+     * @throws IllegalArgumentException
      */
     public int drainTo(Collection<? super E> c) {
         return drainTo(c, Integer.MAX_VALUE);
     }
 
     /**
-     * @throws UnsupportedOperationException {@inheritDoc}
-     * @throws ClassCastException            {@inheritDoc}
-     * @throws NullPointerException          {@inheritDoc}
-     * @throws IllegalArgumentException      {@inheritDoc}
+     * @throws UnsupportedOperationException
+     * @throws ClassCastException
+     * @throws NullPointerException
+     * @throws IllegalArgumentException
      */
     public int drainTo(Collection<? super E> c, int maxElements) {
         if (c == null)
@@ -742,15 +742,15 @@ public class LinkedBlockingDeque<E>
     // Stack methods
 
     /**
-     * @throws IllegalStateException {@inheritDoc}
-     * @throws NullPointerException  {@inheritDoc}
+     * @throws IllegalStateException
+     * @throws NullPointerException
      */
     public void push(E e) {
         addFirst(e);
     }
 
     /**
-     * @throws NoSuchElementException {@inheritDoc}
+     * @throws NoSuchElementException
      */
     public E pop() {
         return removeFirst();
@@ -833,10 +833,10 @@ public class LinkedBlockingDeque<E>
 //      *
 //      * @param c collection containing elements to be added to this queue
 //      * @return {@code true} if this queue changed as a result of the call
-//      * @throws ClassCastException            {@inheritDoc}
-//      * @throws NullPointerException          {@inheritDoc}
-//      * @throws IllegalArgumentException      {@inheritDoc}
-//      * @throws IllegalStateException         {@inheritDoc}
+//      * @throws ClassCastException
+//      * @throws NullPointerException
+//      * @throws IllegalArgumentException
+//      * @throws IllegalStateException
 //      * @see #add(Object)
 //      */
 //     public boolean addAll(Collection<? extends E> c) {
