@@ -20,7 +20,7 @@
     <title>Commons Pool Changes</title>
   </properties>
   <body>
-  <release version="1.5.7" date="TBD" "This is a patch release, including bugfixes only.">
+  <release version="1.5.7" date="2011-11-30" description="This is a patch release, including bugfixes only.">
     <action dev="psteitz" type="fix" issue="POOL-189" due-to="Bill Speirs">
       Awaken threads waiting on borrowObject when a pool has been closed and have them throw
       IllegalStateException.  Prior to the fix for this issue, threads waiting in borrowObject when
@@ -31,6 +31,7 @@
       for this issue, clear(key) was leaking capacity associated with elements in the
       pool being cleared.
     </action>
+  </release>
   <release version="1.5.6" date="2011-04-03" description="This is a patch release, including bugfixes only.">
     <action dev="markt" type="fix" issue="POOL-179" due-to="Axel Grossmann">
       Correctly handle an InterruptedException when waiting for an object from
