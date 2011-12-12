@@ -25,6 +25,9 @@ import java.util.NoSuchElementException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Collections;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
 /**
  * This class consists exclusively of static methods that operate on or return ObjectPool
@@ -450,19 +453,19 @@ public final class PoolUtils {
      * Timer task that adds objects to the pool until the number of idle
      * instances reaches the configured minIdle.  Note that this is not the
      * same as the pool's minIdle setting.
-     * 
+     *
      */
     private static class ObjectPoolMinIdleTimerTask<T> extends TimerTask {
-        
+
         /** Minimum number of idle instances.  Not the same as pool.getMinIdle(). */
         private final int minIdle;
-        
+
         /** Object pool */
         private final ObjectPool<T> pool;
 
         /**
          * Create a new ObjectPoolMinIdleTimerTask for the given pool with the given minIdle setting.
-         * 
+         *
          * @param pool object pool
          * @param minIdle number of idle instances to maintain
          * @throws IllegalArgumentException if the pool is null
@@ -516,24 +519,24 @@ public final class PoolUtils {
      * Timer task that adds objects to the pool until the number of idle
      * instances for the given key reaches the configured minIdle.  Note that this is not the
      * same as the pool's minIdle setting.
-     * 
+     *
      */
     private static class KeyedObjectPoolMinIdleTimerTask<K,V> extends TimerTask {
         /** Minimum number of idle instances.  Not the same as pool.getMinIdle(). */
         private final int minIdle;
-        
+
         /** Key to ensure minIdle for */
         private final K key;
-        
+
         /** Keyed object pool */
         private final KeyedObjectPool<K,V> keyedPool;
 
         /**
          * Create a new KeyedObjecPoolMinIdleTimerTask.
-         * 
+         *
          * @param keyedPool keyed object pool
          * @param key key to ensure minimum number of idle instances
-         * @param minIdle minimum number of idle instances 
+         * @param minIdle minimum number of idle instances
          * @throws IllegalArgumentException if the key is null
          */
         KeyedObjectPoolMinIdleTimerTask(final KeyedObjectPool<K,V> keyedPool, final K key, final int minIdle) throws IllegalArgumentException {
@@ -594,16 +597,16 @@ public final class PoolUtils {
      * </p>
      */
     private static class SynchronizedObjectPool<T> implements ObjectPool<T> {
-        
+
         /** Object whose monitor is used to synchronize methods on the wrapped pool. */
-        private final Object lock;
-        
+        private final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+
         /** the underlying object pool */
         private final ObjectPool<T> pool;
 
         /**
          * Create a new SynchronizedObjectPool wrapping the given pool.
-         * 
+         *
          * @param pool the ObjectPool to be "wrapped" in a synchronized ObjectPool.
          * @throws IllegalArgumentException if the pool is null
          */
@@ -612,15 +615,18 @@ public final class PoolUtils {
                 throw new IllegalArgumentException("pool must not be null.");
             }
             this.pool = pool;
-            lock = new Object();
         }
 
         /**
          * {@inheritDoc}
          */
         public T borrowObject() throws Exception, NoSuchElementException, IllegalStateException {
-            synchronized (lock) {
+            WriteLock writeLock = readWriteLock.writeLock();
+            writeLock.tryLock();
+            try {
                 return pool.borrowObject();
+            } finally {
+                writeLock.unlock();
             }
         }
 
@@ -628,12 +634,14 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         public void returnObject(final T obj) {
-            synchronized (lock) {
-                try {
-                    pool.returnObject(obj);
-                } catch (Exception e) {
-                    // swallowed as of Pool 2
-                }
+            WriteLock writeLock = readWriteLock.writeLock();
+            writeLock.tryLock();
+            try {
+                pool.returnObject(obj);
+            } catch (Exception e) {
+                // swallowed as of Pool 2
+            } finally {
+                writeLock.unlock();
             }
         }
 
@@ -641,12 +649,14 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         public void invalidateObject(final T obj) {
-            synchronized (lock) {
-                try {
-                    pool.invalidateObject(obj);
-                } catch (Exception e) {
-                    // swallowed as of Pool 2
-                }
+            WriteLock writeLock = readWriteLock.writeLock();
+            writeLock.tryLock();
+            try {
+                pool.invalidateObject(obj);
+            } catch (Exception e) {
+                // swallowed as of Pool 2
+            } finally {
+                writeLock.unlock();
             }
         }
 
@@ -654,8 +664,12 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         public void addObject() throws Exception, IllegalStateException, UnsupportedOperationException {
-            synchronized (lock) {
+            WriteLock writeLock = readWriteLock.writeLock();
+            writeLock.tryLock();
+            try {
                 pool.addObject();
+            } finally {
+                writeLock.unlock();
             }
         }
 
@@ -663,8 +677,12 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         public int getNumIdle() throws UnsupportedOperationException {
-            synchronized (lock) {
+            ReadLock readLock = readWriteLock.readLock();
+            readLock.tryLock();
+            try {
                 return pool.getNumIdle();
+            } finally {
+                readLock.unlock();
             }
         }
 
@@ -672,8 +690,12 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         public int getNumActive() throws UnsupportedOperationException {
-            synchronized (lock) {
+            ReadLock readLock = readWriteLock.readLock();
+            readLock.tryLock();
+            try {
                 return pool.getNumActive();
+            } finally {
+                readLock.unlock();
             }
         }
 
@@ -681,8 +703,12 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         public void clear() throws Exception, UnsupportedOperationException {
-            synchronized (lock) {
+            WriteLock writeLock = readWriteLock.writeLock();
+            writeLock.tryLock();
+            try {
                 pool.clear();
+            } finally {
+                writeLock.unlock();
             }
         }
 
@@ -690,12 +716,14 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         public void close() {
+            WriteLock writeLock = readWriteLock.writeLock();
+            writeLock.tryLock();
             try {
-                synchronized (lock) {
-                    pool.close();
-                }
+                pool.close();
             } catch (Exception e) {
                 // swallowed as of Pool 2
+            } finally {
+                writeLock.unlock();
             }
         }
 
@@ -723,16 +751,16 @@ public final class PoolUtils {
      * </p>
      */
     private static class SynchronizedKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
-        
+
         /** Object whose monitor is used to synchronize methods on the wrapped pool. */
-        private final Object lock;
-        
+        private final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+
         /** Underlying object pool */
         private final KeyedObjectPool<K,V> keyedPool;
 
         /**
          * Create a new SynchronizedKeyedObjectPool wrapping the given pool
-         * 
+         *
          * @param keyedPool KeyedObjectPool to wrap
          * @throws IllegalArgumentException if keyedPool is null
          */
@@ -741,15 +769,18 @@ public final class PoolUtils {
                 throw new IllegalArgumentException("keyedPool must not be null.");
             }
             this.keyedPool = keyedPool;
-            lock = new Object();
         }
 
         /**
          * {@inheritDoc}
          */
         public V borrowObject(final K key) throws Exception, NoSuchElementException, IllegalStateException {
-            synchronized (lock) {
+            WriteLock writeLock = readWriteLock.writeLock();
+            writeLock.tryLock();
+            try {
                 return keyedPool.borrowObject(key);
+            } finally {
+                writeLock.unlock();
             }
         }
 
@@ -757,12 +788,14 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         public void returnObject(final K key, final V obj) {
-            synchronized (lock) {
-                try {
-                    keyedPool.returnObject(key, obj);
-                } catch (Exception e) {
-                    // swallowed
-                }
+            WriteLock writeLock = readWriteLock.writeLock();
+            writeLock.tryLock();
+            try {
+                keyedPool.returnObject(key, obj);
+            } catch (Exception e) {
+                // swallowed
+            } finally {
+                writeLock.unlock();
             }
         }
 
@@ -770,12 +803,14 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         public void invalidateObject(final K key, final V obj) {
-            synchronized (lock) {
-                try {
-                    keyedPool.invalidateObject(key, obj);
-                } catch (Exception e) {
-                    // swallowed as of Pool 2
-                }
+            WriteLock writeLock = readWriteLock.writeLock();
+            writeLock.tryLock();
+            try {
+                keyedPool.invalidateObject(key, obj);
+            } catch (Exception e) {
+                // swallowed as of Pool 2
+            } finally {
+                writeLock.unlock();
             }
         }
 
@@ -783,8 +818,12 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         public void addObject(final K key) throws Exception, IllegalStateException, UnsupportedOperationException {
-            synchronized (lock) {
+            WriteLock writeLock = readWriteLock.writeLock();
+            writeLock.tryLock();
+            try {
                 keyedPool.addObject(key);
+            } finally {
+                writeLock.unlock();
             }
         }
 
@@ -792,8 +831,12 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         public int getNumIdle(final K key) throws UnsupportedOperationException {
-            synchronized (lock) {
+            ReadLock readLock = readWriteLock.readLock();
+            readLock.tryLock();
+            try {
                 return keyedPool.getNumIdle(key);
+            } finally {
+                readLock.unlock();
             }
         }
 
@@ -801,8 +844,12 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         public int getNumActive(final K key) throws UnsupportedOperationException {
-            synchronized (lock) {
+            ReadLock readLock = readWriteLock.readLock();
+            readLock.tryLock();
+            try {
                 return keyedPool.getNumActive(key);
+            } finally {
+                readLock.unlock();
             }
         }
 
@@ -810,8 +857,12 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         public int getNumIdle() throws UnsupportedOperationException {
-            synchronized (lock) {
+            ReadLock readLock = readWriteLock.readLock();
+            readLock.tryLock();
+            try {
                 return keyedPool.getNumIdle();
+            } finally {
+                readLock.unlock();
             }
         }
 
@@ -819,8 +870,12 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         public int getNumActive() throws UnsupportedOperationException {
-            synchronized (lock) {
+            ReadLock readLock = readWriteLock.readLock();
+            readLock.tryLock();
+            try {
                 return keyedPool.getNumActive();
+            } finally {
+                readLock.unlock();
             }
         }
 
@@ -828,8 +883,12 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         public void clear() throws Exception, UnsupportedOperationException {
-            synchronized (lock) {
+            WriteLock writeLock = readWriteLock.writeLock();
+            writeLock.tryLock();
+            try {
                 keyedPool.clear();
+            } finally {
+                writeLock.unlock();
             }
         }
 
@@ -837,8 +896,12 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         public void clear(final K key) throws Exception, UnsupportedOperationException {
-            synchronized (lock) {
+            WriteLock writeLock = readWriteLock.writeLock();
+            writeLock.tryLock();
+            try {
                 keyedPool.clear(key);
+            } finally {
+                writeLock.unlock();
             }
         }
 
@@ -846,12 +909,14 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         public void close() {
+            WriteLock writeLock = readWriteLock.writeLock();
+            writeLock.tryLock();
             try {
-                synchronized (lock) {
-                    keyedPool.close();
-                }
+                keyedPool.close();
             } catch (Exception e) {
                 // swallowed as of Pool 2
+            } finally {
+                writeLock.unlock();
             }
         }
 
@@ -878,14 +943,14 @@ public final class PoolUtils {
      */
     private static class SynchronizedPoolableObjectFactory<T> implements PoolableObjectFactory<T> {
         /** Synchronization lock */
-        private final Object lock;
-        
+        private final WriteLock writeLock = new ReentrantReadWriteLock().writeLock();
+
         /** Wrapped factory */
         private final PoolableObjectFactory<T> factory;
 
-        /** 
+        /**
          * Create a SynchronizedPoolableObjectFactory wrapping the given factory.
-         * 
+         *
          * @param factory underlying factory to wrap
          * @throws IllegalArgumentException if the factory is null
          */
@@ -894,15 +959,17 @@ public final class PoolUtils {
                 throw new IllegalArgumentException("factory must not be null.");
             }
             this.factory = factory;
-            lock = new Object();
         }
 
         /**
          * {@inheritDoc}
          */
         public T makeObject() throws Exception {
-            synchronized (lock) {
+            writeLock.tryLock();
+            try {
                 return factory.makeObject();
+            } finally {
+                writeLock.unlock();
             }
         }
 
@@ -910,8 +977,11 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         public void destroyObject(final T obj) throws Exception {
-            synchronized (lock) {
+            writeLock.tryLock();
+            try {
                 factory.destroyObject(obj);
+            } finally {
+                writeLock.unlock();
             }
         }
 
@@ -919,8 +989,11 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         public boolean validateObject(final T obj) {
-            synchronized (lock) {
+            writeLock.tryLock();
+            try {
                 return factory.validateObject(obj);
+            } finally {
+                writeLock.unlock();
             }
         }
 
@@ -928,8 +1001,11 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         public void activateObject(final T obj) throws Exception {
-            synchronized (lock) {
+            writeLock.tryLock();
+            try {
                 factory.activateObject(obj);
+            } finally {
+                writeLock.unlock();
             }
         }
 
@@ -937,8 +1013,11 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         public void passivateObject(final T obj) throws Exception {
-            synchronized (lock) {
+            writeLock.tryLock();
+            try {
                 factory.passivateObject(obj);
+            } finally {
+                writeLock.unlock();
             }
         }
 
@@ -965,14 +1044,14 @@ public final class PoolUtils {
      */
     private static class SynchronizedKeyedPoolableObjectFactory<K,V> implements KeyedPoolableObjectFactory<K,V> {
         /** Synchronization lock */
-        private final Object lock;
-        
+        private final WriteLock writeLock = new ReentrantReadWriteLock().writeLock();
+
         /** Wrapped factory */
         private final KeyedPoolableObjectFactory<K,V> keyedFactory;
 
-        /** 
+        /**
          * Create a SynchronizedKeyedPoolableObjectFactory wrapping the given factory.
-         * 
+         *
          * @param keyedFactory underlying factory to wrap
          * @throws IllegalArgumentException if the factory is null
          */
@@ -981,15 +1060,17 @@ public final class PoolUtils {
                 throw new IllegalArgumentException("keyedFactory must not be null.");
             }
             this.keyedFactory = keyedFactory;
-            lock = new Object();
         }
 
         /**
          * {@inheritDoc}
          */
         public V makeObject(final K key) throws Exception {
-            synchronized (lock) {
+            writeLock.tryLock();
+            try {
                 return keyedFactory.makeObject(key);
+            } finally {
+                writeLock.unlock();
             }
         }
 
@@ -997,8 +1078,11 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         public void destroyObject(final K key, final V obj) throws Exception {
-            synchronized (lock) {
+            writeLock.tryLock();
+            try {
                 keyedFactory.destroyObject(key, obj);
+            } finally {
+                writeLock.unlock();
             }
         }
 
@@ -1006,8 +1090,11 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         public boolean validateObject(final K key, final V obj) {
-            synchronized (lock) {
+            writeLock.tryLock();
+            try {
                 return keyedFactory.validateObject(key, obj);
+            } finally {
+                writeLock.unlock();
             }
         }
 
@@ -1015,8 +1102,11 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         public void activateObject(final K key, final V obj) throws Exception {
-            synchronized (lock) {
+            writeLock.tryLock();
+            try {
                 keyedFactory.activateObject(key, obj);
+            } finally {
+                writeLock.unlock();
             }
         }
 
@@ -1024,8 +1114,11 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         public void passivateObject(final K key, final V obj) throws Exception {
-            synchronized (lock) {
+            writeLock.tryLock();
+            try {
                 keyedFactory.passivateObject(key, obj);
+            } finally {
+                writeLock.unlock();
             }
         }
 
@@ -1054,16 +1147,16 @@ public final class PoolUtils {
     private static class ErodingFactor {
         /** Determines frequency of "erosion" events */
         private final float factor;
-        
+
         /** Time of next shrink event */
         private transient volatile long nextShrink;
-        
+
         /** High water mark - largest numIdle encountered */
         private transient volatile int idleHighWaterMark;
 
         /**
          * Create a new ErodingFactor with the given erosion factor.
-         * 
+         *
          * @param factor erosion factor
          */
         public ErodingFactor(final float factor) {
@@ -1074,7 +1167,7 @@ public final class PoolUtils {
 
         /**
          * Updates internal state using the supplied time and numIdle.
-         * 
+         *
          * @param now current time
          * @param numIdle number of idle elements in the pool
          */
@@ -1088,7 +1181,7 @@ public final class PoolUtils {
 
         /**
          * Returns the time of the next erosion event.
-         * 
+         *
          * @return next shrink time
          */
         public long getNextShrink() {
@@ -1116,13 +1209,13 @@ public final class PoolUtils {
     private static class ErodingObjectPool<T> implements ObjectPool<T> {
         /** Underlying object pool */
         private final ObjectPool<T> pool;
-        
+
         /** Erosion factor */
         private final ErodingFactor factor;
 
-        /** 
+        /**
          * Create an ErodingObjectPool wrapping the given pool using the specified erosion factor.
-         * 
+         *
          * @param pool underlying pool
          * @param factor erosion factor - determines the frequency of erosion events
          * @see #factor
@@ -1141,10 +1234,10 @@ public final class PoolUtils {
 
         /**
          * Returns obj to the pool, unless erosion is triggered, in which
-         * case obj is invalidated.  Erosion is triggered when there are idle instances in 
+         * case obj is invalidated.  Erosion is triggered when there are idle instances in
          * the pool and more than the {@link #factor erosion factor}-determined time has elapsed
-         * since the last returnObject activation. 
-         * 
+         * since the last returnObject activation.
+         *
          * @param obj object to return or invalidate
          * @see #factor
          */
@@ -1243,13 +1336,13 @@ public final class PoolUtils {
     private static class ErodingKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
         /** Underlying pool */
         private final KeyedObjectPool<K,V> keyedPool;
-        
+
         /** Erosion factor */
         private final ErodingFactor erodingFactor;
 
-        /** 
+        /**
          * Create an ErodingObjectPool wrapping the given pool using the specified erosion factor.
-         * 
+         *
          * @param keyedPool underlying pool
          * @param factor erosion factor - determines the frequency of erosion events
          * @see #erodingFactor
@@ -1258,9 +1351,9 @@ public final class PoolUtils {
             this(keyedPool, new ErodingFactor(factor));
         }
 
-        /** 
+        /**
          * Create an ErodingObjectPool wrapping the given pool using the specified erosion factor.
-         * 
+         *
          * @param keyedPool underlying pool - must not be null
          * @param erodingFactor erosion factor - determines the frequency of erosion events
          * @see #factor
@@ -1282,10 +1375,10 @@ public final class PoolUtils {
 
         /**
          * Returns obj to the pool, unless erosion is triggered, in which
-         * case obj is invalidated.  Erosion is triggered when there are idle instances in 
+         * case obj is invalidated.  Erosion is triggered when there are idle instances in
          * the pool associated with the given key and more than the configured {@link #erodingFactor erosion factor}
-         * time has elapsed since the last returnObject activation. 
-         * 
+         * time has elapsed since the last returnObject activation.
+         *
          * @param obj object to return or invalidate
          * @param key key
          * @see #erodingFactor
@@ -1397,7 +1490,7 @@ public final class PoolUtils {
 
         /**
          * Returns the underlying pool
-         * 
+         *
          * @return the keyed pool that this ErodingKeyedObjectPool wraps
          */
         protected KeyedObjectPool<K,V> getKeyedPool() {
@@ -1423,7 +1516,7 @@ public final class PoolUtils {
     private static class ErodingPerKeyKeyedObjectPool<K,V> extends ErodingKeyedObjectPool<K,V> {
         /** Erosion factor - same for all pools */
         private final float factor;
-        
+
         /** Map of ErodingFactor instances keyed on pool keys */
         private final Map<K,ErodingFactor> factors = Collections.synchronizedMap(new HashMap<K,ErodingFactor>());
 
