@@ -26,7 +26,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * An optionally-bounded {@linkplain BlockingDeque blocking deque} based on
+ * An optionally-bounded {@linkplain java.util.concurrent.BlockingDeque blocking deque} based on
  * linked nodes.
  *
  * <p> The optional capacity bound constructor argument serves as a
