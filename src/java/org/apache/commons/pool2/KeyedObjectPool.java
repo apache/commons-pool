@@ -53,7 +53,7 @@ import java.util.NoSuchElementException;
  * {@link ObjectPool pools}).
  * </p>
  *
- * <p>See {@link BaseKeyedObjectPool} for a simple base implementation.</p>
+ * <p>See {@link org.apache.commons.pool2.impl.GenericKeyedObjectPool GenericKeyedObjectPool} for an implementation.</p>
  *
  * @param <K> The type of keys maintained by this pool.
  * @param <V> Type of element pooled in this pool.
@@ -64,7 +64,7 @@ import java.util.NoSuchElementException;
  * @see KeyedPoolableObjectFactory
  * @see KeyedObjectPoolFactory
  * @see ObjectPool
- * @see BaseKeyedObjectPool
+ * @see org.apache.commons.pool2.impl.GenericKeyedObjectPool GenericKeyedObjectPool
  * @since Pool 1.0
  */
 public interface KeyedObjectPool<K,V> {
