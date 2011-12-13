@@ -679,6 +679,17 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
          this._lifo = lifo;
      }
 
+     /**
+      * Obtain a reference to the factory used to create, destroy and validate
+      * the objects used by this pool.
+      *  
+      * @return the factory
+      */
+     public KeyedPoolableObjectFactory<K, T> getFactory() {
+         return _factory;
+     }
+     
+     
     //-- ObjectPool methods ------------------------------------------
 
     /**
