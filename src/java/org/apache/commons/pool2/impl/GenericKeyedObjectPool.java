@@ -2118,12 +2118,12 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
 
     // JMX specific attributes
     private static final int AVERAGE_TIMING_STATS_CACHE_SIZE = 100;
-    private AtomicLong borrowedCount = new AtomicLong(0);
-    private AtomicLong returnedCount = new AtomicLong(0);
-    private AtomicLong createdCount = new AtomicLong(0);
-    private AtomicLong destroyedCount = new AtomicLong(0);
-    private AtomicLong destroyedByEvictorCount = new AtomicLong(0);
-    private AtomicLong destroyedByBorrowValidationCount = new AtomicLong(0);
+    private final AtomicLong borrowedCount = new AtomicLong(0);
+    private final AtomicLong returnedCount = new AtomicLong(0);
+    private final AtomicLong createdCount = new AtomicLong(0);
+    private final AtomicLong destroyedCount = new AtomicLong(0);
+    private final AtomicLong destroyedByEvictorCount = new AtomicLong(0);
+    private final AtomicLong destroyedByBorrowValidationCount = new AtomicLong(0);
     private final LinkedList<Long> activeTimes = new LinkedList<Long>();
     private final LinkedList<Long> idleTimes = new LinkedList<Long>();
     private final LinkedList<Long> waitTimes = new LinkedList<Long>();
