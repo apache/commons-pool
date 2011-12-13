@@ -1224,6 +1224,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * @param delay
      *            milliseconds between evictor runs.
      */
+    // Needs to be final; see POOL-195. Make protected method final as it is called from constructor.
     protected final synchronized void startEvictor(long delay) {
         if (null != evictor) {
             EvictionTimer.cancel(evictor);
