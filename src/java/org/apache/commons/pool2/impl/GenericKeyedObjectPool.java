@@ -1638,13 +1638,13 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @param delay milliseconds between evictor runs.
      */
     protected final synchronized void startEvictor(long delay) {
-        if (null != _evictor) {
-            EvictionTimer.cancel(_evictor);
-            _evictor = null;
+        if (null != evictor) {
+            EvictionTimer.cancel(evictor);
+            evictor = null;
         }
         if (delay > 0) {
-            _evictor = new Evictor();
-            EvictionTimer.schedule(_evictor, delay, delay);
+            evictor = new Evictor();
+            EvictionTimer.schedule(evictor, delay, delay);
         }
     }
 
@@ -2064,7 +2064,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
     /**
      * My idle object eviction {@link TimerTask}, if any.
      */
-    private Evictor _evictor = null;
+    private Evictor evictor = null;
 
     /** My hash of pools (ObjectQueue). */
     private final Map<K,ObjectDeque<T>> poolMap =
