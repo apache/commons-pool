@@ -19,6 +19,9 @@ package org.apache.commons.pool2.impl;
 /**
  * Provides the common configuration attributes used by object pool
  * configurations.
+ * <p>
+ * This class is not thread-safe; it is only intended to be used to provide
+ * attributes used when creating a pool.
  */
 public abstract class BaseObjectPoolConfig implements Cloneable {
 

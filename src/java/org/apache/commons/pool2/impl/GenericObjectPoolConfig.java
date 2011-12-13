@@ -20,6 +20,10 @@ package org.apache.commons.pool2.impl;
  * A simple "struct" encapsulating the configuration for a
  * {@link GenericObjectPool}.
  * 
+ * <p>
+ * This class is not thread-safe; it is only intended to be used to provide
+ * attributes used when creating a pool.
+ *
  * @since Pool 2.0
  */
 public class GenericObjectPoolConfig<T> extends BaseObjectPoolConfig {
