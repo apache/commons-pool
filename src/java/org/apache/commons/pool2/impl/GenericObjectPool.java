@@ -659,6 +659,17 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
         setLifo(conf.getLifo());
     }
 
+    /**
+     * Obtain a reference to the factory used to create, destroy and validate
+     * the objects used by this pool.
+     *  
+     * @return the factory
+     */
+    public PoolableObjectFactory<T> getFactory() {
+        return factory;
+    }
+
+
     // -- ObjectPool methods ------------------------------------------
 
     /**
