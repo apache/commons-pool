@@ -24,7 +24,9 @@ import org.apache.commons.pool2.PoolableObjectFactory;
 /**
  * A factory for creating {@link GenericObjectPool} instances from a provided
  * {@link GenericObjectPoolConfig configuration}.
- *
+ * <p>
+ * This class is intended to be thread-safe.
+ * 
  * @param <T> Type of element pooled in the built pool.
  *
  * @since Pool 1.0
@@ -32,8 +34,8 @@ import org.apache.commons.pool2.PoolableObjectFactory;
 
 public class GenericObjectPoolFactory<T> implements ObjectPoolFactory<T> {
 
-    private PoolableObjectFactory<T> factory;
-    private GenericObjectPoolConfig<T> config;
+    private final PoolableObjectFactory<T> factory;
+    private final GenericObjectPoolConfig<T> config;
 
 
     /**
@@ -55,10 +57,6 @@ public class GenericObjectPoolFactory<T> implements ObjectPoolFactory<T> {
         return factory;
     }
     
-    public void setFactory(PoolableObjectFactory<T> factory) {
-        this.factory = factory;
-    }
-
     /**
      * Obtain the configuration currently used by the factory allowing the
      * current settings to be viewed and changed.
@@ -70,16 +68,6 @@ public class GenericObjectPoolFactory<T> implements ObjectPoolFactory<T> {
     }
 
 
-    /**
-     * Replace the configuration settings used by this factory.
-     *  
-     * @param config    The new settings which will be passed by value
-     */
-    public void setConfig(GenericObjectPoolConfig<T> config) {
-        this.config = config.clone();
-    }
-
-    
     /**
      * Create a new GenericKeyedObjectPool with the currently configured
      * properties.
