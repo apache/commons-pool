@@ -2078,7 +2078,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
     /**
      * My idle object eviction {@link TimerTask}, if any.
      */
-    private Evictor evictor = null;
+    private Evictor evictor = null; // @GuardedBy("this")
 
     /** My hash of pools (ObjectQueue). */
     private final Map<K,ObjectDeque<T>> poolMap =

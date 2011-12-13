@@ -1538,7 +1538,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
     /**
      * My idle object eviction {@link TimerTask}, if any.
      */
-    private Evictor evictor = null;
+    private Evictor evictor = null; // @GuardedBy("this")
 
     /**
      * All of the objects currently associated with this pool in any state. It
