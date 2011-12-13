@@ -61,10 +61,10 @@ public class GenericObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      * Obtain the configuration currently used by the factory allowing the
      * current settings to be viewed and changed.
      *  
-     * @return  The config object currently used by the factory
+     * @return  a copy of the config object currently used by the factory
      */
     public GenericObjectPoolConfig<T> getConfig() {
-        return config;
+        return config.clone(); // does not make sense to clone in the ctor but not here
     }
 
 
