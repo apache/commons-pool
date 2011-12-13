@@ -26,8 +26,8 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
     private T object = null;
     private volatile PooledObjectState state = PooledObjectState.IDLE; // @GuardedBy("this") to ensure transitions are valid
     private final long createTime = System.currentTimeMillis();
-    private long lastBorrowTime = createTime;
-    private long lastReturnTime = createTime;
+    private volatile long lastBorrowTime = createTime;
+    private volatile long lastReturnTime = createTime;
 
     public PooledObject(T object) {
         this.object = object;
@@ -50,15 +50,19 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
     }
 
     /**
-     * Obtain the time in milliseconds that this object last spend in the the
+     * Obtain the time in milliseconds that this object last spent in the the
      * active state (it may still be active in which case subsequent calls will
      * return an increased value).
      */
     public long getActiveTimeMillis() {
-        if (lastReturnTime > lastBorrowTime) {
-            return lastReturnTime - lastBorrowTime;
+        // Take copies to avoid threading issues
+        long rTime = lastReturnTime;
+        long bTime = lastBorrowTime;
+        
+        if (rTime > bTime) {
+            return rTime - bTime;
         } else {
-            return System.currentTimeMillis() - lastBorrowTime;
+            return System.currentTimeMillis() - bTime;
         }
     }
     
