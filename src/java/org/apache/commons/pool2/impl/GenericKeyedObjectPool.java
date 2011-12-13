@@ -1637,7 +1637,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      *
      * @param delay milliseconds between evictor runs.
      */
-    protected synchronized void startEvictor(long delay) {
+    protected final synchronized void startEvictor(long delay) {
         if (null != _evictor) {
             EvictionTimer.cancel(_evictor);
             _evictor = null;
