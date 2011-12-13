@@ -210,6 +210,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
 
         initStats();
 
+        ObjectName onameTemp = null;
         // JMX Registration
         if (config.isJmxEnabled()) {
             MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
@@ -221,7 +222,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
                     ObjectName oname =
                         new ObjectName(ONAME_BASE + jmxNamePrefix + i);
                     mbs.registerMBean(this, oname);
-                    this.oname = oname;
+                    onameTemp = oname;
                     registered = true;
                 } catch (MalformedObjectNameException e) {
                     if (GenericObjectPoolConfig.DEFAULT_JMX_NAME_PREFIX.equals(
@@ -246,6 +247,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
                 }
             }
         }
+        this.oname = onameTemp;
     }
 
 
@@ -1581,7 +1583,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
     private final Object maxBorrowWaitTimeMillisLock = new Object();
     private volatile long maxBorrowWaitTimeMillis = 0; // @GuardedBy("maxBorrowWaitTimeMillisLock")
 
-    private ObjectName oname = null;
+    private final ObjectName oname;
 
     private static final String ONAME_BASE =
         "org.apache.commoms.pool2:type=GenericObjectPool,name=";
