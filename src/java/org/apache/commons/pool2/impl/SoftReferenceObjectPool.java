@@ -306,10 +306,10 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
     }
 
     /** My pool. */
-    private List<SoftReference<T>> _pool = null;
+    private final List<SoftReference<T>> _pool;
 
     /** My {@link PoolableObjectFactory}. */
-    private PoolableObjectFactory<T> _factory = null;
+    private final PoolableObjectFactory<T> _factory;
 
     /**
      * Queue of broken references that might be able to be removed from <code>_pool</code>.
@@ -319,5 +319,5 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
     private final ReferenceQueue<T> refQueue = new ReferenceQueue<T>();
 
     /** Number of active objects. */
-    private int _numActive = 0;
+    private int _numActive = 0;  // @GuardedBy("this")
 }
