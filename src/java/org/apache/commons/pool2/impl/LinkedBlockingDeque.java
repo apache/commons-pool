@@ -88,7 +88,7 @@ public class LinkedBlockingDeque<E>
     private static final long serialVersionUID = -387911632671998426L;
 
     /** Doubly-linked list node class */
-    static final class Node<E> {
+    private static final class Node<E> {
         /**
          * The item, or null if this node has been removed.
          */
@@ -122,14 +122,14 @@ public class LinkedBlockingDeque<E>
      * Invariant: (first == null && last == null) ||
      *            (first.prev == null && first.item != null)
      */
-    transient Node<E> first;
+    private transient Node<E> first;
 
     /**
      * Pointer to last node.
      * Invariant: (first == null && last == null) ||
      *            (last.next == null && last.item != null)
      */
-    transient Node<E> last;
+    private transient Node<E> last;
 
     /** Number of items in the deque */
     private transient int count;
@@ -138,7 +138,7 @@ public class LinkedBlockingDeque<E>
     private final int capacity;
 
     /** Main lock guarding all access */
-    final ReentrantLock lock = new ReentrantLock();
+    private final ReentrantLock lock = new ReentrantLock();
 
     /** Condition for waiting takes */
     private final Condition notEmpty = lock.newCondition();
@@ -279,7 +279,7 @@ public class LinkedBlockingDeque<E>
     /**
      * Unlinks x.
      */
-    void unlink(Node<E> x) {
+    private void unlink(Node<E> x) {
         // assert lock.isHeldByCurrentThread();
         Node<E> p = x.prev;
         Node<E> n = x.next;
