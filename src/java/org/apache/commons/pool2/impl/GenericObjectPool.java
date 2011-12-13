@@ -1576,9 +1576,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
     private final AtomicLong destroyedCount = new AtomicLong(0);
     private final AtomicLong destroyedByEvictorCount = new AtomicLong(0);
     private final AtomicLong destroyedByBorrowValidationCount = new AtomicLong(0);
-    private final LinkedList<Long> activeTimes = new LinkedList<Long>();
-    private final LinkedList<Long> idleTimes = new LinkedList<Long>();
-    private final LinkedList<Long> waitTimes = new LinkedList<Long>();
+    private final LinkedList<Long> activeTimes = new LinkedList<Long>(); // @GuardedBy("activeTimes") - except in initStats()
+    private final LinkedList<Long> idleTimes = new LinkedList<Long>(); // @GuardedBy("activeTimes") - except in initStats()
+    private final LinkedList<Long> waitTimes = new LinkedList<Long>(); // @GuardedBy("activeTimes") - except in initStats()
 
     private final Object maxBorrowWaitTimeMillisLock = new Object();
     private volatile long maxBorrowWaitTimeMillis = 0; // @GuardedBy("maxBorrowWaitTimeMillisLock")
