@@ -2127,8 +2127,9 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
     private final LinkedList<Long> activeTimes = new LinkedList<Long>();
     private final LinkedList<Long> idleTimes = new LinkedList<Long>();
     private final LinkedList<Long> waitTimes = new LinkedList<Long>();
-    private Object maxBorrowWaitTimeMillisLock = new Object();
-    private volatile long maxBorrowWaitTimeMillis = 0;
+
+    private final Object maxBorrowWaitTimeMillisLock = new Object();
+    private volatile long maxBorrowWaitTimeMillis = 0; // @GuardedBy("maxBorrowWaitTimeMillisLock")
 
     private ObjectName oname = null;
 
