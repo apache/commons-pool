@@ -20,10 +20,12 @@ package org.apache.commons.pool2.impl;
 /**
  * This wrapper is used to track the additional information, such as state, for
  * the pooled objects.
+ * <p>
+ * This class is intended to be thread-safe.
  */
 public class PooledObject<T> implements Comparable<PooledObject<T>> {
 
-    private T object = null;
+    private final T object;
     private volatile PooledObjectState state = PooledObjectState.IDLE; // @GuardedBy("this") to ensure transitions are valid
     private final long createTime = System.currentTimeMillis();
     private volatile long lastBorrowTime = createTime;
