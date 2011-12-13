@@ -21,7 +21,9 @@ package org.apache.commons.pool2;
  * A simple base implementation of {@link ObjectPool}.
  * Optional operations are implemented to either do nothing, return a value
  * indicating it is unsupported or throw {@link UnsupportedOperationException}.
- *
+ * <p>
+ * This class is intended to be thread-safe.
+ * 
  * @param <T> Type of element pooled in this pool.
  *
  * @author Rodney Waldhoff

@@ -21,7 +21,9 @@ package org.apache.commons.pool2;
  * A base implementation of <code>PoolableObjectFactory</code>.
  * <p>
  * All operations defined here are essentially no-op's.
- *
+ * <p>
+ * This class is immutable, and therefore thread-safe
+ * 
  * @param <T> Type of element managed in this factory.
  *
  * @see PoolableObjectFactory
