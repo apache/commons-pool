@@ -1341,6 +1341,22 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
         return maxBorrowWaitTimeMillis;
     }
 
+    /**
+     * Return an estimate of the number of threads currently blocked waiting for
+     * an object from the pool. This is intended for monitoring only, not for
+     * synchronization control.
+     * 
+     * @return  An estimate of the number of threads currently blocked waiting
+     *          for an object from the pool 
+     */
+    public int getNumWaiters() {
+        if (getBlockWhenExhausted()) {
+            return idleObjects.getTakeQueueLength();
+        } else {
+            return 0;
+        }
+    }
+
     // --- inner classes ----------------------------------------------
 
     /**
