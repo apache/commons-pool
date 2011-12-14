@@ -189,24 +189,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
     public GenericObjectPool(PoolableObjectFactory<T> factory,
             GenericObjectPoolConfig<T> config) {
         this.factory = factory;
-        this.lifo = config.getLifo();
-        this.maxTotal = config.getMaxTotal();
-        this.maxIdle = config.getMaxIdle();
-        this.maxWait = config.getMaxWait();
-        this.minEvictableIdleTimeMillis =
-                config.getMinEvictableIdleTimeMillis();
-        this.minIdle = config.getMinIdle();
-        this.numTestsPerEvictionRun = config.getNumTestsPerEvictionRun();
-        this.softMinEvictableIdleTimeMillis =
-                config.getSoftMinEvictableIdleTimeMillis();
-        this.testOnBorrow = config.getTestOnBorrow();
-        this.testOnReturn = config.getTestOnReturn();
-        this.testWhileIdle = config.getTestWhileIdle();
-        this.timeBetweenEvictionRunsMillis =
-                config.getTimeBetweenEvictionRunsMillis();
-        this.blockWhenExhausted = config.getBlockWhenExhausted();
+        setConfig(config);
 
-        startEvictor(timeBetweenEvictionRunsMillis);
+        startEvictor(getTimeBetweenEvictionRunsMillis());
 
         initStats();
 
@@ -644,6 +629,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * @see GenericObjectPoolConfig
      */
     public void setConfig(GenericObjectPoolConfig<T> conf) {
+        setLifo(conf.getLifo());
         setMaxIdle(conf.getMaxIdle());
         setMinIdle(conf.getMinIdle());
         setMaxTotal(conf.getMaxTotal());
@@ -658,7 +644,6 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
                 conf.getTimeBetweenEvictionRunsMillis());
         setSoftMinEvictableIdleTimeMillis(
                 conf.getSoftMinEvictableIdleTimeMillis());
-        setLifo(conf.getLifo());
     }
 
     /**
@@ -718,7 +703,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      */
     @Override
     public T borrowObject() throws Exception {
-        return borrowObject(maxWait);
+        return borrowObject(getMaxWait());
     }
     
     /**
@@ -738,7 +723,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
 
         // Get local copy of current config so it is consistent for entire
         // method execution
-        boolean blockWhenExhausted = this.blockWhenExhausted;
+        boolean blockWhenExhausted = getBlockWhenExhausted();
 
         boolean create;
         long waitTime = 0;
@@ -1276,6 +1261,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * @return the number of tests for the Evictor to run
      */
     private int getNumTests() {
+        int numTestsPerEvictionRun = getNumTestsPerEvictionRun();
         if (numTestsPerEvictionRun >= 0) {
             return Math.min(numTestsPerEvictionRun, idleObjects.size());
         } else {
