@@ -236,21 +236,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
             GenericKeyedObjectPoolConfig<K,T> config) {
         // Copy the settings from the config
         this._factory = factory;
-        this._lifo = config.getLifo();
-        this.maxIdlePerKey = config.getMaxIdlePerKey();
-        this._maxTotal = config.getMaxTotal();
-        this._maxTotalPerKey = config.getMaxTotalPerKey();
-        this._maxWait = config.getMaxWait();
-        this._minEvictableIdleTimeMillis =
-            config.getMinEvictableIdleTimeMillis();
-        this.minIdlePerKey = config.getMinIdlePerKey();
-        this._numTestsPerEvictionRun = config.getNumTestsPerEvictionRun();
-        this._testOnBorrow = config.getTestOnBorrow();
-        this._testOnReturn = config.getTestOnReturn();
-        this._testWhileIdle = config.getTestWhileIdle();
-        this._timeBetweenEvictionRunsMillis =
-            config.getTimeBetweenEvictionRunsMillis();
-        this.blockWhenExhausted = config.getBlockWhenExhausted();
+        setConfig(config);
 
         startEvictor(getMinEvictableIdleTimeMillis());
 
@@ -639,6 +625,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @see GenericKeyedObjectPoolConfig
      */
     public void setConfig(GenericKeyedObjectPoolConfig<K,T> conf) {
+        setLifo(conf.getLifo());
         setMaxIdlePerKey(conf.getMaxIdlePerKey());
         setMaxTotalPerKey(conf.getMaxTotalPerKey());
         setMaxTotal(conf.getMaxTotal());
@@ -726,7 +713,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @throws NoSuchElementException if a keyed object instance cannot be returned.
      */
     public T borrowObject(K key) throws Exception {
-        return borrowObject(key, _maxWait);
+        return borrowObject(key, getMaxWait());
     }
      
     /**
@@ -747,7 +734,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
 
         // Get local copy of current config so it is consistent for entire
         // method execution
-        boolean blockWhenExhausted = this.blockWhenExhausted;
+        boolean blockWhenExhausted = getBlockWhenExhausted();
 
         boolean create;
         long waitTime = 0;
@@ -1293,7 +1280,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
             return;
         }
 
-        boolean testWhileIdle = _testWhileIdle;
+        boolean testWhileIdle = getTestWhileIdle();
         long idleEvictTime = Long.MAX_VALUE;
          
         if (getMinEvictableIdleTimeMillis() > 0) {
@@ -1691,7 +1678,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      */
     private int getNumTests() {
         int totalIdle = getNumIdle();
-        int numTests = _numTestsPerEvictionRun;
+        int numTests = getNumTestsPerEvictionRun();
         if (numTests >= 0) {
             return Math.min(numTests, totalIdle);
         }
@@ -1927,7 +1914,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         }
     }
 
-    //--- protected attributes ---------------------------------------
+    //--- attributes -----------------------------------------------------------
 
     /**
      * The cap on the number of idle instances per key.
