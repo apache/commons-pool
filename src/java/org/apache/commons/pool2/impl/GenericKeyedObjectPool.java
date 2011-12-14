@@ -1816,6 +1816,50 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         return maxBorrowWaitTimeMillis;
     }
 
+    /**
+     * Return an estimate of the number of threads currently blocked waiting for
+     * an object from the pool. This is intended for monitoring only, not for
+     * synchronization control.
+     * 
+     * @return  An estimate of the number of threads currently blocked waiting
+     *          for an object from the pool 
+     */
+    public int getNumWaiters() {
+        int result = 0;
+        
+        if (getBlockWhenExhausted()) {
+            Iterator<ObjectDeque<T>> iter = poolMap.values().iterator();
+            
+            while (iter.hasNext()) {
+                // Assume no overflow
+                result += iter.next().getIdleObjects().getTakeQueueLength();
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Return an estimate of the number of threads currently blocked waiting for
+     * an object from the pool for the given key. This is intended for
+     * monitoring only, not for synchronization control.
+     * 
+     * @return  An estimate of the number of threads currently blocked waiting
+     *          for an object from the pool for the given key
+     */
+    public int getNumWaiters(K key) {
+        if (getBlockWhenExhausted()) {
+            final ObjectDeque<T> objectDeque = poolMap.get(key);
+            if (objectDeque == null) {
+                return 0;
+            } else {
+                return objectDeque.getIdleObjects().getTakeQueueLength();
+            }
+        } else {
+            return 0;
+        }
+    }
+
     //--- inner classes ----------------------------------------------
 
     /**
