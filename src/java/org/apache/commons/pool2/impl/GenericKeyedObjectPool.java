@@ -1280,97 +1280,99 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
             return;
         }
 
-        boolean testWhileIdle = getTestWhileIdle();
-        long idleEvictTime = Long.MAX_VALUE;
-         
-        if (getMinEvictableIdleTimeMillis() > 0) {
-            idleEvictTime = getMinEvictableIdleTimeMillis();
-        }
-
-        PooledObject<T> underTest = null;
-        LinkedBlockingDeque<PooledObject<T>> idleObjects = null;
-         
-        for (int i = 0, m = getNumTests(); i < m; i++) {
-            if(evictionIterator == null || !evictionIterator.hasNext()) {
-                if (evictionKeyIterator == null ||
-                        !evictionKeyIterator.hasNext()) {
-                    List<K> keyCopy = new ArrayList<K>();
-                    keyCopy.addAll(poolKeyList);
-                    evictionKeyIterator = keyCopy.iterator();
+        synchronized (evictionLock) {
+            boolean testWhileIdle = getTestWhileIdle();
+            long idleEvictTime = Long.MAX_VALUE;
+             
+            if (getMinEvictableIdleTimeMillis() > 0) {
+                idleEvictTime = getMinEvictableIdleTimeMillis();
+            }
+    
+            PooledObject<T> underTest = null;
+            LinkedBlockingDeque<PooledObject<T>> idleObjects = null;
+             
+            for (int i = 0, m = getNumTests(); i < m; i++) {
+                if(evictionIterator == null || !evictionIterator.hasNext()) {
+                    if (evictionKeyIterator == null ||
+                            !evictionKeyIterator.hasNext()) {
+                        List<K> keyCopy = new ArrayList<K>();
+                        keyCopy.addAll(poolKeyList);
+                        evictionKeyIterator = keyCopy.iterator();
+                    }
+                    while (evictionKeyIterator.hasNext()) {
+                        evictionKey = evictionKeyIterator.next();
+                        ObjectDeque<T> objectDeque = poolMap.get(evictionKey);
+                        if (objectDeque == null) {
+                            continue;
+                        }
+                        idleObjects = objectDeque.getIdleObjects();
+                        
+                        if (getLifo()) {
+                            evictionIterator = idleObjects.descendingIterator();
+                        } else {
+                            evictionIterator = idleObjects.iterator();
+                        }
+                        if (evictionIterator.hasNext()) {
+                            break;
+                        }
+                        evictionIterator = null;
+                    }
                 }
-                while (evictionKeyIterator.hasNext()) {
-                    evictionKey = evictionKeyIterator.next();
-                    ObjectDeque<T> objectDeque = poolMap.get(evictionKey);
-                    if (objectDeque == null) {
-                        continue;
-                    }
-                    idleObjects = objectDeque.getIdleObjects();
-                    
-                    if (getLifo()) {
-                        evictionIterator = idleObjects.descendingIterator();
-                    } else {
-                        evictionIterator = idleObjects.iterator();
-                    }
-                    if (evictionIterator.hasNext()) {
-                        break;
-                    }
+                if (evictionIterator == null) {
+                    // Pools exhausted
+                    return;
+                }
+                try {
+                    underTest = evictionIterator.next();
+                } catch (NoSuchElementException nsee) {
+                    // Object was borrowed in another thread
+                    // Don't count this as an eviction test so reduce i;
+                    i--;
                     evictionIterator = null;
+                    continue;
                 }
-            }
-            if (evictionIterator == null) {
-                // Pools exhausted
-                return;
-            }
-            try {
-                underTest = evictionIterator.next();
-            } catch (NoSuchElementException nsee) {
-                // Object was borrowed in another thread
-                // Don't count this as an eviction test so reduce i;
-                i--;
-                evictionIterator = null;
-                continue;
-            }
-
-            if (!underTest.startEvictionTest()) {
-                // Object was borrowed in another thread
-                // Don't count this as an eviction test so reduce i;
-                i--;
-                continue;
-            }
-
-            if (idleEvictTime < underTest.getIdleTimeMillis()) {
-                destroy(evictionKey, underTest, true);
-                destroyedByEvictorCount.incrementAndGet();
-            } else {
-                if (testWhileIdle) {
-                    boolean active = false;
-                    try {
-                        factory.activateObject(evictionKey, 
-                                underTest.getObject());
-                        active = true;
-                    } catch (Exception e) {
-                        destroy(evictionKey, underTest, true);
-                        destroyedByEvictorCount.incrementAndGet();
-                    }
-                    if (active) {
-                        if (!factory.validateObject(evictionKey,
-                                underTest.getObject())) {
+    
+                if (!underTest.startEvictionTest()) {
+                    // Object was borrowed in another thread
+                    // Don't count this as an eviction test so reduce i;
+                    i--;
+                    continue;
+                }
+    
+                if (idleEvictTime < underTest.getIdleTimeMillis()) {
+                    destroy(evictionKey, underTest, true);
+                    destroyedByEvictorCount.incrementAndGet();
+                } else {
+                    if (testWhileIdle) {
+                        boolean active = false;
+                        try {
+                            factory.activateObject(evictionKey, 
+                                    underTest.getObject());
+                            active = true;
+                        } catch (Exception e) {
                             destroy(evictionKey, underTest, true);
                             destroyedByEvictorCount.incrementAndGet();
-                        } else {
-                            try {
-                                factory.passivateObject(evictionKey,
-                                        underTest.getObject());
-                            } catch (Exception e) {
+                        }
+                        if (active) {
+                            if (!factory.validateObject(evictionKey,
+                                    underTest.getObject())) {
                                 destroy(evictionKey, underTest, true);
                                 destroyedByEvictorCount.incrementAndGet();
+                            } else {
+                                try {
+                                    factory.passivateObject(evictionKey,
+                                            underTest.getObject());
+                                } catch (Exception e) {
+                                    destroy(evictionKey, underTest, true);
+                                    destroyedByEvictorCount.incrementAndGet();
+                                }
                             }
                         }
                     }
-                }
-                if (!underTest.endEvictionTest(idleObjects)) {
-                    // TODO - May need to add code here once additional states
-                    // are used
+                    if (!underTest.endEvictionTest(idleObjects)) {
+                        // TODO - May need to add code here once additional states
+                        // are used
+                    }
                 }
             }
         }
@@ -1638,14 +1640,16 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @param delay milliseconds between evictor runs.
      */
     // Needs to be final; see POOL-195. Make protected method final as it is called from constructor.
-    protected final synchronized void startEvictor(long delay) {
-        if (null != evictor) {
-            EvictionTimer.cancel(evictor);
-            evictor = null;
-        }
-        if (delay > 0) {
-            evictor = new Evictor();
-            EvictionTimer.schedule(evictor, delay, delay);
+    protected final void startEvictor(long delay) {
+        synchronized (evictionLock) {
+            if (null != evictor) {
+                EvictionTimer.cancel(evictor);
+                evictor = null;
+            }
+            if (delay > 0) {
+                evictor = new Evictor();
+                EvictionTimer.schedule(evictor, delay, delay);
+            }
         }
     }
 
@@ -2062,11 +2066,6 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
     /** My {@link KeyedPoolableObjectFactory}. */
     final private KeyedPoolableObjectFactory<K,T> factory;
 
-    /**
-     * My idle object eviction {@link TimerTask}, if any.
-     */
-    private Evictor evictor = null; // @GuardedBy("this")
-
     /** My hash of pools (ObjectQueue). */
     private final Map<K,ObjectDeque<T>> poolMap =
             new ConcurrentHashMap<K,ObjectDeque<T>>();
@@ -2086,21 +2085,29 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
     private final AtomicInteger numTotal = new AtomicInteger(0);
     
     /**
+     * My idle object eviction {@link TimerTask}, if any.
+     */
+    private Evictor evictor = null; // @GuardedBy("evictionLock")
+
+    /**
      * An iterator for {@link ObjectDeque#getIdleObjects()} that is used by the
      * evictor.
      */
-    private Iterator<PooledObject<T>> evictionIterator = null;
+    private Iterator<PooledObject<T>> evictionIterator = null; // @GuardedBy("evictionLock") - except close()
 
     /**
      * An iterator for {@link #poolMap} entries.
      */
-    private Iterator<K> evictionKeyIterator = null;
+    private Iterator<K> evictionKeyIterator = null; // @GuardedBy("evictionLock") - except close()
     
     /**
      * The key associated with the {@link ObjectDeque#getIdleObjects()}
      * currently being evicted.
      */
-    private K evictionKey = null;
+    private K evictionKey = null; // @GuardedBy("evictionLock")
+
+    /** Object used to ensure thread safety of eviction process */ 
+    private final Object evictionLock = new Object();
 
     /** Object used to ensure closed() is only called once. */
     private final Object closeLock = new Object();

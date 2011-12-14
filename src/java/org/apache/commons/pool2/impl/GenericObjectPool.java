@@ -1044,84 +1044,84 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
 
         PooledObject<T> underTest = null;
 
-        boolean testWhileIdle = getTestWhileIdle();
-        long idleEvictTime = Long.MAX_VALUE;
-        long idleSoftEvictTime = Long.MAX_VALUE;
-        
-        if (getMinEvictableIdleTimeMillis() > 0) {
-            idleEvictTime = getMinEvictableIdleTimeMillis();
-        }
-        if (getSoftMinEvictableIdleTimeMillis() > 0) {
-            idleSoftEvictTime = getSoftMinEvictableIdleTimeMillis();
-        }
-                
-        for (int i = 0, m = getNumTests(); i < m; i++) {
-            if (evictionIterator == null || !evictionIterator.hasNext()) {
-                if (getLifo()) {
-                    evictionIterator = idleObjects.descendingIterator();
-                } else {
-                    evictionIterator = idleObjects.iterator();
-                }
+        synchronized (evictionLock) {
+            boolean testWhileIdle = getTestWhileIdle();
+            long idleEvictTime = Long.MAX_VALUE;
+            long idleSoftEvictTime = Long.MAX_VALUE;
+            
+            if (getMinEvictableIdleTimeMillis() > 0) {
+                idleEvictTime = getMinEvictableIdleTimeMillis();
             }
-            if (!evictionIterator.hasNext()) {
-                // Pool exhausted, nothing to do here
-                return;
+            if (getSoftMinEvictableIdleTimeMillis() > 0) {
+                idleSoftEvictTime = getSoftMinEvictableIdleTimeMillis();
             }
-
-            try {
-                underTest = evictionIterator.next();
-            } catch (NoSuchElementException nsee) {
-                // Object was borrowed in another thread
-                // Don't count this as an eviction test so reduce i;
-                i--;
-                evictionIterator = null;
-                continue;
-            }
-
-            if (!underTest.startEvictionTest()) {
-                // Object was borrowed in another thread
-                // Don't count this as an eviction test so reduce i;
-                i--;
-                continue;
-            }
-
-            if (idleEvictTime < underTest.getIdleTimeMillis() ||
-                    (idleSoftEvictTime < underTest.getIdleTimeMillis() &&
-                            getMinIdle() < idleObjects.size())) {
-                destroy(underTest);
-                destroyedByEvictorCount.incrementAndGet();
-            } else {
-                if (testWhileIdle) {
-                    boolean active = false;
-                    try {
-                        factory.activateObject(underTest.getObject());
-                        active = true;
-                    } catch (Exception e) {
-                        destroy(underTest);
-                        destroyedByEvictorCount.incrementAndGet();
+                    
+            for (int i = 0, m = getNumTests(); i < m; i++) {
+                if (evictionIterator == null || !evictionIterator.hasNext()) {
+                    if (getLifo()) {
+                        evictionIterator = idleObjects.descendingIterator();
+                    } else {
+                        evictionIterator = idleObjects.iterator();
                     }
-                    if (active) {
-                        if (!factory.validateObject(underTest.getObject())) {
+                }
+                if (!evictionIterator.hasNext()) {
+                    // Pool exhausted, nothing to do here
+                    return;
+                }
+    
+                try {
+                    underTest = evictionIterator.next();
+                } catch (NoSuchElementException nsee) {
+                    // Object was borrowed in another thread
+                    // Don't count this as an eviction test so reduce i;
+                    i--;
+                    evictionIterator = null;
+                    continue;
+                }
+    
+                if (!underTest.startEvictionTest()) {
+                    // Object was borrowed in another thread
+                    // Don't count this as an eviction test so reduce i;
+                    i--;
+                    continue;
+                }
+    
+                if (idleEvictTime < underTest.getIdleTimeMillis() ||
+                        (idleSoftEvictTime < underTest.getIdleTimeMillis() &&
+                                getMinIdle() < idleObjects.size())) {
+                    destroy(underTest);
+                    destroyedByEvictorCount.incrementAndGet();
+                } else {
+                    if (testWhileIdle) {
+                        boolean active = false;
+                        try {
+                            factory.activateObject(underTest.getObject());
+                            active = true;
+                        } catch (Exception e) {
                             destroy(underTest);
                             destroyedByEvictorCount.incrementAndGet();
-                        } else {
-                            try {
-                                factory.passivateObject(underTest.getObject());
-                            } catch (Exception e) {
+                        }
+                        if (active) {
+                            if (!factory.validateObject(underTest.getObject())) {
                                 destroy(underTest);
                                 destroyedByEvictorCount.incrementAndGet();
+                            } else {
+                                try {
+                                    factory.passivateObject(underTest.getObject());
+                                } catch (Exception e) {
+                                    destroy(underTest);
+                                    destroyedByEvictorCount.incrementAndGet();
+                                }
                             }
                         }
                     }
-                }
-                if (!underTest.endEvictionTest(idleObjects)) {
-                    // TODO - May need to add code here once additional states
-                    // are used
+                    if (!underTest.endEvictionTest(idleObjects)) {
+                        // TODO - May need to add code here once additional states
+                        // are used
+                    }
                 }
             }
         }
-
-        return;
     }
 
     private PooledObject<T> create() throws Exception {
@@ -1223,14 +1223,16 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      *            milliseconds between evictor runs.
      */
     // Needs to be final; see POOL-195. Make protected method final as it is called from constructor.
-    protected final synchronized void startEvictor(long delay) {
-        if (null != evictor) {
-            EvictionTimer.cancel(evictor);
-            evictor = null;
-        }
-        if (delay > 0) {
-            evictor = new Evictor();
-            EvictionTimer.schedule(evictor, delay, delay);
+    protected final void startEvictor(long delay) {
+        synchronized (evictionLock) {
+            if (null != evictor) {
+                EvictionTimer.cancel(evictor);
+                evictor = null;
+            }
+            if (delay > 0) {
+                evictor = new Evictor();
+                EvictionTimer.schedule(evictor, delay, delay);
+            }
         }
     }
 
@@ -1522,11 +1524,6 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
     final private PoolableObjectFactory<T> factory;
 
     /**
-     * My idle object eviction {@link TimerTask}, if any.
-     */
-    private Evictor evictor = null; // @GuardedBy("this")
-
-    /**
      * All of the objects currently associated with this pool in any state. It
      * excludes objects that have been destroyed. The size of
      * {@link #allObjects} will always be less than or equal to {@link
@@ -1548,9 +1545,17 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
     private final LinkedBlockingDeque<PooledObject<T>> idleObjects =
         new LinkedBlockingDeque<PooledObject<T>>();
 
-    /** An iterator for {@link #idleObjects} that is used by the evictor. */
-    private Iterator<PooledObject<T>> evictionIterator = null;
+    /**
+     * My idle object eviction {@link TimerTask}, if any.
+     */
+    private Evictor evictor = null; // @GuardedBy("evictionLock")
 
+    /** An iterator for {@link #idleObjects} that is used by the evictor. */
+    private Iterator<PooledObject<T>> evictionIterator = null; // @GuardedBy("evictionLock")
+
+    /** Object used to ensure thread safety of eviction process */ 
+    private final Object evictionLock = new Object();
+    
     /** Object used to ensure closed() is only called once. */
     private final Object closeLock = new Object();
 
