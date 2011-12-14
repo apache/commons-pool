@@ -1044,8 +1044,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                 pool.getBlockWhenExhausted());
         assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_LIFO, pool.getLifo());
         
-        GenericKeyedObjectPoolConfig<Object,Object> config =
-            new GenericKeyedObjectPoolConfig<Object,Object>();
+        GenericKeyedObjectPoolConfig config =
+                new GenericKeyedObjectPoolConfig();
         config.setLifo(lifo);
         config.setMaxTotalPerKey(maxTotalPerKey);
         config.setMaxIdlePerKey(maxIdle);

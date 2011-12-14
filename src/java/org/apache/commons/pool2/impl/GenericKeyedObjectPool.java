@@ -220,7 +220,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * factory.
      */
     public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,T> factory) {
-        this(factory, new GenericKeyedObjectPoolConfig<K, T>());
+        this(factory, new GenericKeyedObjectPoolConfig());
     }
 
     /**
@@ -233,7 +233,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      *                  pool.
      */
     public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,T> factory,
-            GenericKeyedObjectPoolConfig<K,T> config) {
+            GenericKeyedObjectPoolConfig config) {
         // Copy the settings from the config
         this.factory = factory;
         setConfig(config);
@@ -624,7 +624,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @param conf the new configuration to use.
      * @see GenericKeyedObjectPoolConfig
      */
-    public void setConfig(GenericKeyedObjectPoolConfig<K,T> conf) {
+    public void setConfig(GenericKeyedObjectPoolConfig conf) {
         setLifo(conf.getLifo());
         setMaxIdlePerKey(conf.getMaxIdlePerKey());
         setMaxTotalPerKey(conf.getMaxTotalPerKey());
