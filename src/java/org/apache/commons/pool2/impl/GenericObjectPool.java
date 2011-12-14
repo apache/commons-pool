@@ -183,11 +183,11 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * Create a new <tt>GenericObjectPool</tt> with default properties.
      */
     public GenericObjectPool(PoolableObjectFactory<T> factory) {
-        this(factory, new GenericObjectPoolConfig<T>());
+        this(factory, new GenericObjectPoolConfig());
     }
 
     public GenericObjectPool(PoolableObjectFactory<T> factory,
-            GenericObjectPoolConfig<T> config) {
+            GenericObjectPoolConfig config) {
         this.factory = factory;
         setConfig(config);
 
@@ -628,7 +628,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      *            configuration to use.
      * @see GenericObjectPoolConfig
      */
-    public void setConfig(GenericObjectPoolConfig<T> conf) {
+    public void setConfig(GenericObjectPoolConfig conf) {
         setLifo(conf.getLifo());
         setMaxIdle(conf.getMaxIdle());
         setMinIdle(conf.getMinIdle());

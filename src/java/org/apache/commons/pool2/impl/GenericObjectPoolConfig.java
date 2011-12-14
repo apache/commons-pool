@@ -26,7 +26,7 @@ package org.apache.commons.pool2.impl;
  *
  * @since Pool 2.0
  */
-public class GenericObjectPoolConfig<T> extends BaseObjectPoolConfig {
+public class GenericObjectPoolConfig extends BaseObjectPoolConfig {
 
     /**
      * The default value for {@link #getSoftMinEvictableIdleTimeMillis}.
@@ -97,11 +97,10 @@ public class GenericObjectPoolConfig<T> extends BaseObjectPoolConfig {
         this.minIdle = minIdle;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public GenericObjectPoolConfig<T> clone() {
+    public GenericObjectPoolConfig clone() {
         try {
-            return (GenericObjectPoolConfig<T>) super.clone();
+            return (GenericObjectPoolConfig) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new AssertionError(); // Can't happen
         }

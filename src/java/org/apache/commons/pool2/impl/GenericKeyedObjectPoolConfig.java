@@ -26,7 +26,7 @@ package org.apache.commons.pool2.impl;
  * 
  * @since Pool 2.0
  */
-public class GenericKeyedObjectPoolConfig<K,T> extends BaseObjectPoolConfig {
+public class GenericKeyedObjectPoolConfig extends BaseObjectPoolConfig {
 
     public static final int DEFAULT_MAX_TOTAL_PER_KEY = 8;
 
@@ -91,11 +91,10 @@ public class GenericKeyedObjectPoolConfig<K,T> extends BaseObjectPoolConfig {
         this.maxIdlePerKey = maxIdlePerKey;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public GenericKeyedObjectPoolConfig<K, T> clone() {
+    public GenericKeyedObjectPoolConfig clone() {
         try {
-            return (GenericKeyedObjectPoolConfig<K, T>) super.clone();
+            return (GenericKeyedObjectPoolConfig) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new AssertionError(); // Can't happen
         }

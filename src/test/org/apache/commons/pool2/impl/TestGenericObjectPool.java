@@ -703,13 +703,12 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         SimpleFactory factory = new SimpleFactory();
         GenericObjectPool<Object> pool =
             new GenericObjectPool<Object>(factory);
-        assertConfiguration(new GenericObjectPoolConfig<Object>(),pool);
+        assertConfiguration(new GenericObjectPoolConfig(),pool);
     }
 
     @Test(timeout=60000)
     public void testSetConfig() throws Exception {
-        GenericObjectPoolConfig<Object> expected =
-            new GenericObjectPoolConfig<Object>();
+        GenericObjectPoolConfig expected = new GenericObjectPoolConfig();
         GenericObjectPool<Object> pool =
             new GenericObjectPool<Object>(new SimpleFactory());
         assertConfiguration(expected,pool);
@@ -1291,7 +1290,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     
     protected GenericObjectPool<Object> pool = null;
 
-    private void assertConfiguration(GenericObjectPoolConfig<?> expected, GenericObjectPool<?> actual) throws Exception {
+    private void assertConfiguration(GenericObjectPoolConfig expected, GenericObjectPool<?> actual) throws Exception {
         assertEquals("testOnBorrow",expected.getTestOnBorrow(),actual.getTestOnBorrow());
         assertEquals("testOnReturn",expected.getTestOnReturn(),actual.getTestOnReturn());
         assertEquals("testWhileIdle",expected.getTestWhileIdle(),actual.getTestWhileIdle());
