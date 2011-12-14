@@ -235,7 +235,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
     public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,T> factory,
             GenericKeyedObjectPoolConfig<K,T> config) {
         // Copy the settings from the config
-        this._factory = factory;
+        this.factory = factory;
         setConfig(config);
 
         startEvictor(getMinEvictableIdleTimeMillis());
@@ -293,7 +293,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @see #setMaxTotalPerKey
      */
     public int getMaxTotalPerKey() {
-        return _maxTotalPerKey;
+        return maxTotalPerKey;
     }
 
     /**
@@ -304,7 +304,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @see #getMaxTotalPerKey
      */
     public void setMaxTotalPerKey(int maxTotalPerKey) {
-        _maxTotalPerKey = maxTotalPerKey;
+        this.maxTotalPerKey = maxTotalPerKey;
     }
 
     /**
@@ -314,7 +314,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @see #setMaxTotal
      */
     public int getMaxTotal() {
-        return _maxTotal;
+        return maxTotal;
     }
 
     /**
@@ -330,7 +330,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @see #getMaxTotal
      */
     public void setMaxTotal(int maxTotal) {
-        _maxTotal = maxTotal;
+        this.maxTotal = maxTotal;
     }
 
     /**
@@ -372,7 +372,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @see #setBlockWhenExhausted
      */
     public long getMaxWait() {
-        return _maxWait;
+        return maxWait;
     }
 
     /**
@@ -389,7 +389,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @see #setBlockWhenExhausted
      */
     public void setMaxWait(long maxWait) {
-        _maxWait = maxWait;
+        this.maxWait = maxWait;
     }
 
     /**
@@ -460,7 +460,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @see #setTestOnBorrow
      */
     public boolean getTestOnBorrow() {
-        return _testOnBorrow;
+        return testOnBorrow;
     }
 
     /**
@@ -475,7 +475,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @see #getTestOnBorrow
      */
     public void setTestOnBorrow(boolean testOnBorrow) {
-        _testOnBorrow = testOnBorrow;
+        this.testOnBorrow = testOnBorrow;
     }
 
     /**
@@ -488,7 +488,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @see #setTestOnReturn
      */
     public boolean getTestOnReturn() {
-        return _testOnReturn;
+        return testOnReturn;
     }
 
     /**
@@ -501,7 +501,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @see #getTestOnReturn
      */
     public void setTestOnReturn(boolean testOnReturn) {
-        _testOnReturn = testOnReturn;
+        this.testOnReturn = testOnReturn;
     }
 
     /**
@@ -514,7 +514,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @see #setTimeBetweenEvictionRunsMillis
      */
     public long getTimeBetweenEvictionRunsMillis() {
-        return _timeBetweenEvictionRunsMillis;
+        return timeBetweenEvictionRunsMillis;
     }
 
     /**
@@ -527,8 +527,8 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @see #getTimeBetweenEvictionRunsMillis
      */
     public void setTimeBetweenEvictionRunsMillis(long timeBetweenEvictionRunsMillis) {
-        _timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
-        startEvictor(_timeBetweenEvictionRunsMillis);
+        this.timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
+        startEvictor(timeBetweenEvictionRunsMillis);
     }
 
     /**
@@ -540,7 +540,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @see #setTimeBetweenEvictionRunsMillis
      */
     public int getNumTestsPerEvictionRun() {
-        return _numTestsPerEvictionRun;
+        return numTestsPerEvictionRun;
     }
 
     /**
@@ -559,7 +559,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @see #setTimeBetweenEvictionRunsMillis
      */
     public void setNumTestsPerEvictionRun(int numTestsPerEvictionRun) {
-        _numTestsPerEvictionRun = numTestsPerEvictionRun;
+        this.numTestsPerEvictionRun = numTestsPerEvictionRun;
     }
 
     /**
@@ -572,7 +572,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @see #setTimeBetweenEvictionRunsMillis
      */
     public long getMinEvictableIdleTimeMillis() {
-        return _minEvictableIdleTimeMillis;
+        return minEvictableIdleTimeMillis;
     }
 
     /**
@@ -588,7 +588,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @see #setTimeBetweenEvictionRunsMillis
      */
     public void setMinEvictableIdleTimeMillis(long minEvictableIdleTimeMillis) {
-        _minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
+        this.minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
     }
 
     /**
@@ -602,7 +602,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @see #setTimeBetweenEvictionRunsMillis
      */
     public boolean getTestWhileIdle() {
-        return _testWhileIdle;
+        return testWhileIdle;
     }
 
     /**
@@ -616,7 +616,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @see #setTimeBetweenEvictionRunsMillis
      */
     public void setTestWhileIdle(boolean testWhileIdle) {
-        _testWhileIdle = testWhileIdle;
+        this.testWhileIdle = testWhileIdle;
     }
 
     /**
@@ -651,7 +651,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @since 1.4
      */
      public boolean getLifo() {
-         return _lifo;
+         return lifo;
      }
 
      /**
@@ -665,7 +665,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
       * @since 1.4
       */
      public void setLifo(boolean lifo) {
-         this._lifo = lifo;
+         this.lifo = lifo;
      }
 
      /**
@@ -675,7 +675,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
       * @return the factory
       */
      public KeyedPoolableObjectFactory<K, T> getFactory() {
-         return _factory;
+         return factory;
      }
      
      
@@ -786,7 +786,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
     
                 if (p != null) {
                     try {
-                        _factory.activateObject(key, p.getObject());
+                        factory.activateObject(key, p.getObject());
                     } catch (Exception e) {
                         try {
                             destroy(key, p, true);
@@ -805,7 +805,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
                         boolean validate = false;
                         Throwable validationThrowable = null;
                         try {
-                            validate = _factory.validateObject(key, p.getObject());
+                            validate = factory.validateObject(key, p.getObject());
                         } catch (Throwable t) {
                             PoolUtils.checkRethrow(t);
                         }
@@ -881,7 +881,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
          long activeTime = p.getActiveTimeMillis();
 
          if (getTestOnReturn()) {
-             if (!_factory.validateObject(key, t)) {
+             if (!factory.validateObject(key, t)) {
                  try {
                      destroy(key, p, true);
                  } catch (Exception e) {
@@ -893,7 +893,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
          }
 
          try {
-             _factory.passivateObject(key, t);
+             factory.passivateObject(key, t);
          } catch (Exception e1) {
              try {
                  destroy(key, p, true);
@@ -1345,7 +1345,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
                 if (testWhileIdle) {
                     boolean active = false;
                     try {
-                        _factory.activateObject(evictionKey, 
+                        factory.activateObject(evictionKey, 
                                 underTest.getObject());
                         active = true;
                     } catch (Exception e) {
@@ -1353,13 +1353,13 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
                         destroyedByEvictorCount.incrementAndGet();
                     }
                     if (active) {
-                        if (!_factory.validateObject(evictionKey,
+                        if (!factory.validateObject(evictionKey,
                                 underTest.getObject())) {
                             destroy(evictionKey, underTest, true);
                             destroyedByEvictorCount.incrementAndGet();
                         } else {
                             try {
-                                _factory.passivateObject(evictionKey,
+                                factory.passivateObject(evictionKey,
                                         underTest.getObject());
                             } catch (Exception e) {
                                 destroy(evictionKey, underTest, true);
@@ -1412,7 +1412,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
 
         T t = null;
         try {
-            t = _factory.makeObject(key);
+            t = factory.makeObject(key);
         } catch (Exception e) {
             numTotal.decrementAndGet();
             throw e;
@@ -1448,7 +1448,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
                 toDestroy.invalidate();
         
                 try {
-                    _factory.destroyObject(key, toDestroy.getObject());
+                    factory.destroyObject(key, toDestroy.getObject());
                 } finally {
                     objectDeque.getCreateCount().decrementAndGet();
                     destroyedCount.incrementAndGet();
@@ -1582,7 +1582,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
     private void addIdleObject(K key, PooledObject<T> p) throws Exception {
 
         if (p != null) {
-            _factory.passivateObject(key, p.getObject());
+            factory.passivateObject(key, p.getObject());
             LinkedBlockingDeque<PooledObject<T>> idleObjects =
                     poolMap.get(key).getIdleObjects();
             if (getLifo()) {
@@ -1605,7 +1605,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      */
     public void addObject(K key) throws Exception {
         assertOpen();
-        if (_factory == null) {
+        if (factory == null) {
             throw new IllegalStateException("Cannot add objects without a factory.");
         }
         register(key);
@@ -1936,7 +1936,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @see #setMaxTotalPerKey
      * @see #getMaxTotalPerKey
      */
-    private int _maxTotalPerKey =
+    private int maxTotalPerKey =
         GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL_PER_KEY;
 
     /**
@@ -1944,7 +1944,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @see #setMaxTotal
      * @see #getMaxTotal
      */
-    private int _maxTotal = GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL;
+    private int maxTotal = GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL;
 
     /**
      * The maximum amount of time (in millis) the
@@ -1960,7 +1960,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @see #setBlockWhenExhausted
      * @see #getBlockWhenExhausted
      */
-    private long _maxWait = GenericKeyedObjectPoolConfig.DEFAULT_MAX_WAIT;
+    private long maxWait = GenericKeyedObjectPoolConfig.DEFAULT_MAX_WAIT;
 
     /**
      * When the {@link #borrowObject} method is invoked when the pool is
@@ -1984,7 +1984,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @see #setTestOnBorrow
      * @see #getTestOnBorrow
      */
-    private volatile boolean _testOnBorrow =
+    private volatile boolean testOnBorrow =
         GenericKeyedObjectPoolConfig.DEFAULT_TEST_ON_BORROW;
 
     /**
@@ -1996,7 +1996,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @see #getTestOnReturn
      * @see #setTestOnReturn
      */
-    private volatile boolean _testOnReturn =
+    private volatile boolean testOnReturn =
         GenericKeyedObjectPoolConfig.DEFAULT_TEST_ON_RETURN;
 
     /**
@@ -2010,7 +2010,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @see #getTimeBetweenEvictionRunsMillis
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    private boolean _testWhileIdle =
+    private boolean testWhileIdle =
         GenericKeyedObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE;
 
     /**
@@ -2022,7 +2022,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @see #setTimeBetweenEvictionRunsMillis
      * @see #getTimeBetweenEvictionRunsMillis
      */
-    private long _timeBetweenEvictionRunsMillis =
+    private long timeBetweenEvictionRunsMillis =
         GenericKeyedObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
 
     /**
@@ -2038,7 +2038,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @see #getTimeBetweenEvictionRunsMillis
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    private int _numTestsPerEvictionRun =
+    private int numTestsPerEvictionRun =
         GenericKeyedObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
 
     /**
@@ -2053,14 +2053,14 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @see #getTimeBetweenEvictionRunsMillis
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    private long _minEvictableIdleTimeMillis =
+    private long minEvictableIdleTimeMillis =
         GenericKeyedObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 
     /** Whether or not the pools behave as LIFO queues (last in first out) */
-    private boolean _lifo = GenericKeyedObjectPoolConfig.DEFAULT_LIFO;
+    private boolean lifo = GenericKeyedObjectPoolConfig.DEFAULT_LIFO;
 
     /** My {@link KeyedPoolableObjectFactory}. */
-    final private KeyedPoolableObjectFactory<K,T> _factory;
+    final private KeyedPoolableObjectFactory<K,T> factory;
 
     /**
      * My idle object eviction {@link TimerTask}, if any.
@@ -2080,7 +2080,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
     /**
      * The combined count of the currently active objects for all keys and those
      * in the process of being created. Under load, it may exceed
-     * {@link #_maxTotal} but there will never be more than {@link #_maxTotal}
+     * {@link #maxTotal} but there will never be more than {@link #maxTotal}
      * created at any one time.
      */
     private final AtomicInteger numTotal = new AtomicInteger(0);
