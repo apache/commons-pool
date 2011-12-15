@@ -1465,6 +1465,17 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         }
     }
 
+    /**
+     * Registers a new key in the {@link poolMap} and {@link poolKeyList}
+     * and returns the key queue details.
+     * If the key is already in the map, increments the interest count and 
+     * returns the existing details.
+     * <p>
+     * register and deregister must be used as a pair.
+     * @param k the key to register
+     * @return the key queue details
+     * @see #deregister(Object)
+     */
     private ObjectDeque<T> register(K k) {
         Lock lock = keyLock.readLock();
         ObjectDeque<T> objectDeque = null;
@@ -1494,6 +1505,17 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         return objectDeque;
     }
     
+    /**
+     * Deregisters an unused key from {@link poolMap} and {@link poolKeyList}.
+     * Fetches the key and decrements the interest count; if this is zero,
+     * and the number of managed instances is zero, then the key is removed.
+     * <p>
+     * register and deregister must be used as a pair.
+     * 
+     * @param k the key to deregister
+     * @throws NullPointerException if the key is not in the {@link poolMap}
+     * @see #register(Object)
+     */
     private void deregister(K k) {
         ObjectDeque<T> objectDeque;
 
