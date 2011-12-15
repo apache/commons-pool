@@ -1896,10 +1896,10 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
          * Number of instances created - number destroyed.
          * Invariant: createCount <= maxTotalPerKey
          */
-        private AtomicInteger createCount = new AtomicInteger(0);
+        private final AtomicInteger createCount = new AtomicInteger(0);
 
         /** All instances under management - checked out our idle in the pool. */
-        private Map<S, PooledObject<S>> allObjects =
+        private final Map<S, PooledObject<S>> allObjects =
                 new ConcurrentHashMap<S, PooledObject<S>>();
 
         /** 
@@ -1907,7 +1907,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
          * register(K) increments this counter and deRegister(K) decrements it.
          * Invariant: empty keyed pool will not be dropped unless numInterested is 0.
          */
-        private AtomicLong numInterested = new AtomicLong(0);
+        private final AtomicLong numInterested = new AtomicLong(0);
         
         /**
          * Returns the idle instance pool.
