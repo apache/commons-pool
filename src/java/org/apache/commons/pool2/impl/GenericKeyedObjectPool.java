@@ -1898,7 +1898,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
          */
         private final AtomicInteger createCount = new AtomicInteger(0);
 
-        /** All instances under management - checked out our idle in the pool. */
+        /** All instances under management - checked out or idle in the pool. */
         private final Map<S, PooledObject<S>> allObjects =
                 new ConcurrentHashMap<S, PooledObject<S>>();
 
