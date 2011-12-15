@@ -2134,10 +2134,10 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
 
     /** My hash of pools (ObjectQueue). */
     private final Map<K,ObjectDeque<T>> poolMap =
-            new ConcurrentHashMap<K,ObjectDeque<T>>();
+            new ConcurrentHashMap<K,ObjectDeque<T>>(); // @GuardedBy("keyLock") for write access (and some read access)
     
     /** List of pool keys - used to control eviction order */
-    private final List<K> poolKeyList = new ArrayList<K>();
+    private final List<K> poolKeyList = new ArrayList<K>(); // @GuardedBy("keyLock") - except in evict() !?
 
     /** Lock used to manage adding/removing of keys */
     private final ReadWriteLock keyLock = new ReentrantReadWriteLock(true);
