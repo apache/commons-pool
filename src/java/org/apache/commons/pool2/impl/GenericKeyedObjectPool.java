@@ -1500,6 +1500,9 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
                 if (objectDeque == null) {
                     objectDeque = new ObjectDeque<T>();
                     objectDeque.getNumInterested().incrementAndGet();
+                    // NOTE: Keys must always be added to both poolMap and
+                    //       poolKeyList at the same time while protected by
+                    //       keyLock.writeLock()
                     poolMap.put(k, objectDeque);
                     poolKeyList.add(k);
                 } else {
@@ -1538,6 +1541,9 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
             try {
                 if (objectDeque.getCreateCount().get() == 0 &&
                         objectDeque.getNumInterested().get() == 0) {
+                    // NOTE: Keys must always be removed from both poolMap and
+                    //       poolKeyList at the same time while protected by
+                    //       keyLock.writeLock()
                     poolMap.remove(k);
                     poolKeyList.remove(k);
                 }
@@ -2141,14 +2147,23 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
     /** My {@link KeyedPoolableObjectFactory}. */
     final private KeyedPoolableObjectFactory<K,T> factory;
 
-    /** My hash of pools (ObjectQueue). */
+    /**
+     * My hash of pools (ObjectQueue). The list of keys <b>must</b> be kept in
+     * step with {@link #poolKeyList} using {@link #keyLock} to ensure any
+     * changes to the list of current keys is made in a thread-safe manner.
+     */
     private final Map<K,ObjectDeque<T>> poolMap =
             new ConcurrentHashMap<K,ObjectDeque<T>>(); // @GuardedBy("keyLock") for write access (and some read access)
     
-    /** List of pool keys - used to control eviction order */
+    /**
+     * List of pool keys - used to control eviction order. The list of keys
+     * <b>must</b> be kept in step with {@link #poolMap} using {@link #keyLock}
+     * to ensure any changes to the list of current keys is made in a
+     * thread-safe manner.
+     */
     private final List<K> poolKeyList = new ArrayList<K>(); // @GuardedBy("keyLock")
 
-    /** Lock used to manage adding/removing of keys */
+    /** Lock used to manage adding/removing of keys. */
     private final ReadWriteLock keyLock = new ReentrantReadWriteLock(true);
 
     /**
