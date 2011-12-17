@@ -1231,6 +1231,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
             if (null != evictor) {
                 EvictionTimer.cancel(evictor);
                 evictor = null;
+                evictionIterator = null;
             }
             if (delay > 0) {
                 evictor = new Evictor();
