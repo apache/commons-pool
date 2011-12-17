@@ -1299,7 +1299,13 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
                     if (evictionKeyIterator == null ||
                             !evictionKeyIterator.hasNext()) {
                         List<K> keyCopy = new ArrayList<K>();
-                        keyCopy.addAll(poolKeyList);
+                        Lock lock = keyLock.readLock();
+                        lock .lock();
+                        try {
+                            keyCopy.addAll(poolKeyList);
+                        } finally {
+                            lock.unlock();
+                        }
                         evictionKeyIterator = keyCopy.iterator();
                     }
                     while (evictionKeyIterator.hasNext()) {
@@ -2140,7 +2146,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
             new ConcurrentHashMap<K,ObjectDeque<T>>(); // @GuardedBy("keyLock") for write access (and some read access)
     
     /** List of pool keys - used to control eviction order */
-    private final List<K> poolKeyList = new ArrayList<K>(); // @GuardedBy("keyLock") - except in evict() !?
+    private final List<K> poolKeyList = new ArrayList<K>(); // @GuardedBy("keyLock")
 
     /** Lock used to manage adding/removing of keys */
     private final ReadWriteLock keyLock = new ReentrantReadWriteLock(true);
