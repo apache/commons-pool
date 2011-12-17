@@ -1009,9 +1009,12 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
                 return;
             }
 
+            // Stop the evictor before the pool is closed since evict() calls
+            // assertOpen() 
+            startEvictor(-1L);
+
             super.close();
             clear();
-            startEvictor(-1L);
             if (oname != null) {
                 ManagementFactory.getPlatformMBeanServer().unregisterMBean(
                         oname);
