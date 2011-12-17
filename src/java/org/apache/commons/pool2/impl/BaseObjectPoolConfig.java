@@ -49,6 +49,11 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
             1000L * 60L * 30L;
 
     /**
+     * The default value for {@link #getSoftMinEvictableIdleTimeMillis}.
+     */
+    public static final long DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS = -1;
+
+    /**
      * The default number of objects to examine per run in the idle object
      * evictor.
      */
@@ -94,6 +99,9 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
     private long minEvictableIdleTimeMillis =
         DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 
+    private long softMinEvictableIdleTimeMillis =
+            DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+
     private int numTestsPerEvictionRun =
         DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
 
@@ -134,6 +142,15 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
 
     public void setMinEvictableIdleTimeMillis(long minEvictableIdleTimeMillis) {
         this.minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
+    }
+
+    public long getSoftMinEvictableIdleTimeMillis() {
+        return softMinEvictableIdleTimeMillis;
+    }
+
+    public void setSoftMinEvictableIdleTimeMillis(
+            long softMinEvictableIdleTimeMillis) {
+        this.softMinEvictableIdleTimeMillis = softMinEvictableIdleTimeMillis;
     }
 
     public int getNumTestsPerEvictionRun() {
