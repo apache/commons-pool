@@ -1098,11 +1098,14 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
                  return;
              }
 
+             // Stop the evictor before the pool is closed since evict() calls
+             // assertOpen() 
+             startEvictor(-1L);
+
              closed = true;
              clear();
              evictionIterator = null;
              evictionKeyIterator = null;
-             startEvictor(-1L);
              if (oname != null) {
                  ManagementFactory.getPlatformMBeanServer().unregisterMBean(
                          oname);
