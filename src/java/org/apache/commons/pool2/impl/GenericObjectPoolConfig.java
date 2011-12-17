@@ -29,11 +29,6 @@ package org.apache.commons.pool2.impl;
 public class GenericObjectPoolConfig extends BaseObjectPoolConfig {
 
     /**
-     * The default value for {@link #getSoftMinEvictableIdleTimeMillis}.
-     */
-    public static final long DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS = -1;
-
-    /**
      * The default maximum number of instances under management
      * (idle or checked out).
      */
@@ -51,24 +46,11 @@ public class GenericObjectPoolConfig extends BaseObjectPoolConfig {
     public static final int DEFAULT_MIN_IDLE = 0;
 
     
-    private long softMinEvictableIdleTimeMillis =
-        DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
-
     private int maxTotal = DEFAULT_MAX_TOTAL;
 
     private int maxIdle = DEFAULT_MAX_IDLE;
     
     private int minIdle = DEFAULT_MIN_IDLE;
-
-
-    public long getSoftMinEvictableIdleTimeMillis() {
-        return softMinEvictableIdleTimeMillis;
-    }
-
-    public void setSoftMinEvictableIdleTimeMillis(
-            long softMinEvictableIdleTimeMillis) {
-        this.softMinEvictableIdleTimeMillis = softMinEvictableIdleTimeMillis;
-    }
 
 
     public int getMaxTotal() {
