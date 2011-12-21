@@ -26,29 +26,29 @@ import org.apache.commons.pool.TestBaseObjectPool;
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  */
-public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
+public class TestSoftReferenceObjectPool extends TestBaseObjectPool<String> {
     public TestSoftReferenceObjectPool(String testName) {
         super(testName);
     }
 
-    protected ObjectPool makeEmptyPool(int cap) {
-        return new SoftReferenceObjectPool(
-            new PoolableObjectFactory()  {
+    protected ObjectPool<String> makeEmptyPool(int cap) {
+        return new SoftReferenceObjectPool<String>(
+            new PoolableObjectFactory<String>()  {
                 int counter = 0;
-                public Object makeObject() { return String.valueOf(counter++); }
-                public void destroyObject(Object obj) { }
-                public boolean validateObject(Object obj) { return true; }
-                public void activateObject(Object obj) { }
-                public void passivateObject(Object obj) { }
+                public String makeObject() { return String.valueOf(counter++); }
+                public void destroyObject(String obj) { }
+                public boolean validateObject(String obj) { return true; }
+                public void activateObject(String obj) { }
+                public void passivateObject(String obj) { }
             }
             );
     }
 
-    protected ObjectPool makeEmptyPool(final PoolableObjectFactory factory) {
-        return new SoftReferenceObjectPool(factory);
+    protected ObjectPool<Integer> makeEmptyPool(final PoolableObjectFactory<Integer> factory) {
+        return new SoftReferenceObjectPool<Integer>(factory);
     }
 
-    protected Object getNthObject(int n) {
+    protected String getNthObject(int n) {
         return String.valueOf(n);
     }
 

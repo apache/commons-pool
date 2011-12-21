@@ -62,7 +62,7 @@ import java.util.NoSuchElementException;
  * @see BaseObjectPool
  * @since Pool 1.0
  */
-public interface ObjectPool {
+public interface ObjectPool<T> {
     /**
      * Obtains an instance from this pool.
      * <p>
@@ -88,7 +88,7 @@ public interface ObjectPool {
      * @throws Exception when {@link PoolableObjectFactory#makeObject makeObject} throws an exception.
      * @throws NoSuchElementException when the pool is exhausted and cannot or will not return another instance.
      */
-    Object borrowObject() throws Exception, NoSuchElementException, IllegalStateException;
+    T borrowObject() throws Exception, NoSuchElementException, IllegalStateException;
 
     /**
      * Return an instance to the pool.
@@ -100,7 +100,7 @@ public interface ObjectPool {
      * @param obj a {@link #borrowObject borrowed} instance to be returned.
      * @throws Exception 
      */
-    void returnObject(Object obj) throws Exception;
+    void returnObject(T obj) throws Exception;
 
     /**
      * <p>Invalidates an object from the pool.</p>
@@ -115,7 +115,7 @@ public interface ObjectPool {
      * @param obj a {@link #borrowObject borrowed} instance to be disposed.
      * @throws Exception
      */
-    void invalidateObject(Object obj) throws Exception;
+    void invalidateObject(T obj) throws Exception;
 
     /**
      * Create an object using the {@link PoolableObjectFactory factory} or other
@@ -186,5 +186,5 @@ public interface ObjectPool {
      * @throws UnsupportedOperationException if this implementation does not support the operation
      * @deprecated to be removed in pool 2.0
      */
-    void setFactory(PoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException;
+    void setFactory(PoolableObjectFactory<T> factory) throws IllegalStateException, UnsupportedOperationException;
 }

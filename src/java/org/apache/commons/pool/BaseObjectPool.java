@@ -27,21 +27,21 @@ package org.apache.commons.pool;
  * @version $Revision$ $Date$
  * @since Pool 1.0
  */
-public abstract class BaseObjectPool implements ObjectPool {
+public abstract class BaseObjectPool<T> implements ObjectPool<T> {
     /**
      * Obtains an instance from the pool.
      * 
      * @return an instance from the pool
      * @throws Exception if an instance cannot be obtained from the pool
      */
-    public abstract Object borrowObject() throws Exception;
+    public abstract T borrowObject() throws Exception;
     
     /**
      * Returns an instance to the pool.
      * 
      * @param obj instance to return to the pool
      */
-    public abstract void returnObject(Object obj) throws Exception;
+    public abstract void returnObject(T obj) throws Exception;
     
     /**
      * <p>Invalidates an object from the pool.</p>
@@ -55,7 +55,7 @@ public abstract class BaseObjectPool implements ObjectPool {
      * @param obj a {@link #borrowObject borrowed} instance to be disposed.
      * @throws Exception 
      */
-    public abstract void invalidateObject(Object obj) throws Exception;
+    public abstract void invalidateObject(T obj) throws Exception;
 
     /**
      * Not supported in this base implementation.
@@ -115,7 +115,7 @@ public abstract class BaseObjectPool implements ObjectPool {
      * @throws IllegalStateException
      * @deprecated to be removed in pool 2.0
      */
-    public void setFactory(PoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException {
+    public void setFactory(PoolableObjectFactory<T> factory) throws IllegalStateException, UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 

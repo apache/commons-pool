@@ -29,40 +29,40 @@ import org.apache.commons.pool.TestBaseKeyedObjectPool;
  * @author Rodney Waldhoff
  * @version $Revision$ $Date$
  */
-public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
+public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool<String, String> {
     public TestStackKeyedObjectPool(String testName) {
         super(testName);
     }
 
-    protected KeyedObjectPool makeEmptyPool(int mincapacity) {
-        StackKeyedObjectPool pool = new StackKeyedObjectPool(new SimpleFactory(),mincapacity);
+    protected KeyedObjectPool<String, String> makeEmptyPool(int mincapacity) {
+        StackKeyedObjectPool<String, String> pool = new StackKeyedObjectPool<String, String>(new SimpleFactory(),mincapacity);
         return pool;
     }
 
-    protected KeyedObjectPool makeEmptyPool(KeyedPoolableObjectFactory factory) {
-        return new StackKeyedObjectPool(factory);
+    protected KeyedObjectPool<Object, Integer> makeEmptyPool(KeyedPoolableObjectFactory<Object, Integer> factory) {
+        return new StackKeyedObjectPool<Object, Integer>(factory);
     }
 
-    protected Object getNthObject(Object key, int n) {
+    protected String getNthObject(Object key, int n) {
         return String.valueOf(key) + String.valueOf(n);
     }
 
-    protected Object makeKey(int n) {
+    protected String makeKey(int n) {
         return String.valueOf(n);
     }
 
-    private StackKeyedObjectPool pool = null;
+    private StackKeyedObjectPool<String, String> pool = null;
 
     public void setUp() throws Exception {
         super.setUp();
-        pool = new StackKeyedObjectPool(
-            new KeyedPoolableObjectFactory()  {
+        pool = new StackKeyedObjectPool<String, String>(
+            new KeyedPoolableObjectFactory<String, String>()  {
                 int counter = 0;
-                public Object makeObject(Object key) { return String.valueOf(key) + String.valueOf(counter++); }
-                public void destroyObject(Object key, Object obj) { }
-                public boolean validateObject(Object key, Object obj) { return true; }
-                public void activateObject(Object key, Object obj) { }
-                public void passivateObject(Object key, Object obj) { }
+                public String makeObject(String key) { return String.valueOf(key) + String.valueOf(counter++); }
+                public void destroyObject(String key, String obj) { }
+                public boolean validateObject(String key, String obj) { return true; }
+                public void activateObject(String key, String obj) { }
+                public void passivateObject(String key, String obj) { }
             }
             );
     }
@@ -75,8 +75,8 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
 
     public void testCloseBug() throws Exception {
         {
-            Object obj0 = pool.borrowObject("");
-            Object obj1 = pool.borrowObject("");
+            String obj0 = pool.borrowObject("");
+            String obj1 = pool.borrowObject("");
             assertEquals(2,pool.getNumActive(""));
             assertEquals(0,pool.getNumIdle(""));
             pool.returnObject("",obj1);
@@ -85,8 +85,8 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
             assertEquals(2,pool.getNumIdle(""));
         }
         {
-            Object obj0 = pool.borrowObject("2");
-            Object obj1 = pool.borrowObject("2");
+            String obj0 = pool.borrowObject("2");
+            String obj1 = pool.borrowObject("2");
             assertEquals(2,pool.getNumActive("2"));
             assertEquals(0,pool.getNumIdle("2"));
             pool.returnObject("2",obj1);
@@ -98,7 +98,7 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
     }
 
     public void testIdleCap() throws Exception {
-        Object[] active = new Object[100];
+        String[] active = new String[100];
         for(int i=0;i<100;i++) {
             active[i] = pool.borrowObject("");
         }
@@ -118,9 +118,9 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
      */
     public void testRemoveOldest() throws Exception {
         pool._maxSleeping = 2;
-        Object obj0 = pool.borrowObject("");
-        Object obj1 = pool.borrowObject("");
-        Object obj2 = pool.borrowObject("");
+        String obj0 = pool.borrowObject("");
+        String obj1 = pool.borrowObject("");
+        String obj2 = pool.borrowObject("");
         pool.returnObject("", obj0); // Push 0 onto bottom of stack
         pool.returnObject("", obj1); // Push 1
         pool.returnObject("", obj2); // maxSleeping exceeded -> 0 destroyed, 2 pushed
@@ -130,7 +130,7 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
     }
 
     public void testPoolWithNullFactory() throws Exception {
-        KeyedObjectPool pool = new StackKeyedObjectPool(10);
+        KeyedObjectPool<String, Integer> pool = new StackKeyedObjectPool<String, Integer>(10);
         for(int i=0;i<10;i++) {
             pool.returnObject("X",new Integer(i));
         }
@@ -138,7 +138,7 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
             Integer[] borrowed = new Integer[10];
             BitSet found = new BitSet();
             for(int i=0;i<10;i++) {
-                borrowed[i] = (Integer)(pool.borrowObject("X"));
+                borrowed[i] = pool.borrowObject("X");
                 assertNotNull(borrowed);
                 assertTrue(!found.get(borrowed[i].intValue()));
                 found.set(borrowed[i].intValue());
@@ -155,42 +155,42 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
 
     public void testVariousConstructors() throws Exception {
         {
-            StackKeyedObjectPool pool = new StackKeyedObjectPool();
+            StackKeyedObjectPool<Object, Object> pool = new StackKeyedObjectPool<Object, Object>();
             assertNotNull(pool);
         }
         {
-            StackKeyedObjectPool pool = new StackKeyedObjectPool(10);
+            StackKeyedObjectPool<Object, Object> pool = new StackKeyedObjectPool<Object, Object>(10);
             assertNotNull(pool);
         }
         {
-            StackKeyedObjectPool pool = new StackKeyedObjectPool(10,5);
+            StackKeyedObjectPool<Object, Object> pool = new StackKeyedObjectPool<Object, Object>(10,5);
             assertNotNull(pool);
         }
         {
-            StackKeyedObjectPool pool = new StackKeyedObjectPool(null);
+            StackKeyedObjectPool<Object, Object> pool = new StackKeyedObjectPool<Object, Object>(null);
             assertNotNull(pool);
         }
         {
-            StackKeyedObjectPool pool = new StackKeyedObjectPool(null,10);
+            StackKeyedObjectPool<Object, Object> pool = new StackKeyedObjectPool<Object, Object>(null,10);
             assertNotNull(pool);
         }
         {
-            StackKeyedObjectPool pool = new StackKeyedObjectPool(null,10,5);
+            StackKeyedObjectPool<Object, Object> pool = new StackKeyedObjectPool<Object, Object>(null,10,5);
             assertNotNull(pool);
         }
     }
 
     public void testToString() throws Exception {
-        StackKeyedObjectPool pool = new StackKeyedObjectPool(new SimpleFactory());
+        StackKeyedObjectPool<String, String> pool = new StackKeyedObjectPool<String, String>(new SimpleFactory());
         assertNotNull(pool.toString());
-        Object obj = pool.borrowObject("key");
+        String obj = pool.borrowObject("key");
         assertNotNull(pool.toString());
         pool.returnObject("key",obj);
         assertNotNull(pool.toString());
     }
 
     public void testBorrowFromEmptyPoolWithNullFactory() throws Exception {
-        KeyedObjectPool pool = new StackKeyedObjectPool();
+        KeyedObjectPool<String, Object> pool = new StackKeyedObjectPool<String, Object>();
         try {
             pool.borrowObject("x");
             fail("Expected NoSuchElementException");
@@ -200,7 +200,7 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
     }
 
     public void testSetFactory() throws Exception {
-        KeyedObjectPool pool = new StackKeyedObjectPool();
+        KeyedObjectPool<String, String> pool = new StackKeyedObjectPool<String, String>();
         try {
             pool.borrowObject("x");
             fail("Expected NoSuchElementException");
@@ -208,13 +208,13 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
             // expected
         }
         pool.setFactory(new SimpleFactory());
-        Object obj = pool.borrowObject("x");
+        String obj = pool.borrowObject("x");
         assertNotNull(obj);
         pool.returnObject("x",obj);
     }
 
     public void testCantResetFactoryWithActiveObjects() throws Exception {
-        KeyedObjectPool pool = new StackKeyedObjectPool();
+        KeyedObjectPool<String, String> pool = new StackKeyedObjectPool<String, String>();
         pool.setFactory(new SimpleFactory());
         Object obj = pool.borrowObject("x");
         assertNotNull(obj);
@@ -228,50 +228,42 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
     }
 
     public void testCanResetFactoryWithoutActiveObjects() throws Exception {
-        KeyedObjectPool pool = new StackKeyedObjectPool();
+        KeyedObjectPool<String, String> pool = new StackKeyedObjectPool<String, String>();
         {
             pool.setFactory(new SimpleFactory());
-            Object obj = pool.borrowObject("x");
+            String obj = pool.borrowObject("x");
             assertNotNull(obj);
             pool.returnObject("x",obj);
         }
         {
             pool.setFactory(new SimpleFactory());
-            Object obj = pool.borrowObject("x");
+            String obj = pool.borrowObject("x");
             assertNotNull(obj);
             pool.returnObject("x",obj);
         }
     }
 
     public void testBorrowReturnWithSometimesInvalidObjects() throws Exception {
-        KeyedObjectPool pool = new StackKeyedObjectPool(
-            new KeyedPoolableObjectFactory() {
+        KeyedObjectPool<String, Integer> pool = new StackKeyedObjectPool<String, Integer>(
+            new KeyedPoolableObjectFactory<String, Integer>() {
                 int counter = 0;
-                public Object makeObject(Object key) { return new Integer(counter++); }
-                public void destroyObject(Object key, Object obj) { }
-                public boolean validateObject(Object key, Object obj) {
-                    if(obj instanceof Integer) {
-                        return ((((Integer)obj).intValue() % 2) == 1);
-                    } else {
-                        return false;
-                    }
+                public Integer makeObject(String key) { return new Integer(counter++); }
+                public void destroyObject(String key, Integer obj) { }
+                public boolean validateObject(String key, Integer obj) {
+                    return ((obj.intValue() % 2) == 1);
                 }
-                public void activateObject(Object key, Object obj) { }
-                public void passivateObject(Object key, Object obj) {
-                    if(obj instanceof Integer) {
-                        if((((Integer)obj).intValue() % 3) == 0) {
-                            throw new RuntimeException("Couldn't passivate");
-                        }
-                    } else {
+                public void activateObject(String key, Integer obj) { }
+                public void passivateObject(String key, Integer obj) {
+                    if((obj.intValue() % 3) == 0) {
                         throw new RuntimeException("Couldn't passivate");
                     }
                 }
             }
         );
 
-        Object[] obj = new Object[10];
+        Integer[] obj = new Integer[10];
         for(int i=0;i<10;i++) {
-            Object object = null;
+            Integer object = null;
             int k = 0;
             while (object == null && k < 100) { // bound not really needed
                 try {
@@ -300,21 +292,21 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool {
         assertEquals(new Integer(1), pool.borrowObject("key"));   
     }
 
-    class SimpleFactory implements KeyedPoolableObjectFactory {
-        HashMap map = new HashMap();
-        public Object makeObject(Object key) {
+    class SimpleFactory implements KeyedPoolableObjectFactory<String, String> {
+        HashMap<String, Integer> map = new HashMap<String, Integer>();
+        public String makeObject(String key) {
             int counter = 0;
-            Integer Counter = (Integer)(map.get(key));
+            Integer Counter = map.get(key);
             if(null != Counter) {
                 counter = Counter.intValue();
             }
             map.put(key,new Integer(counter + 1));
             return String.valueOf(key) + String.valueOf(counter);
         }
-        public void destroyObject(Object key, Object obj) { }
-        public boolean validateObject(Object key, Object obj) { return true; }
-        public void activateObject(Object key, Object obj) { }
-        public void passivateObject(Object key, Object obj) { }
+        public void destroyObject(String key, String obj) { }
+        public boolean validateObject(String key, String obj) { return true; }
+        public void activateObject(String key, String obj) { }
+        public void passivateObject(String key, String obj) { }
     }
 
     protected boolean isLifo() {

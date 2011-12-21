@@ -32,26 +32,26 @@ import org.apache.commons.pool.TestBaseObjectPool;
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  */
-public class TestStackObjectPool extends TestBaseObjectPool {
+public class TestStackObjectPool extends TestBaseObjectPool<String> {
     public TestStackObjectPool(String testName) {
         super(testName);
     }
 
-    protected ObjectPool makeEmptyPool(int mincap) {
-        return new StackObjectPool(new SimpleFactory());
+    protected ObjectPool<String> makeEmptyPool(int mincap) {
+        return new StackObjectPool<String>(new SimpleFactory());
     }
 
-    protected ObjectPool makeEmptyPool(final PoolableObjectFactory factory) {
-        return new StackObjectPool(factory);
+    protected ObjectPool<Integer> makeEmptyPool(final PoolableObjectFactory<Integer> factory) {
+        return new StackObjectPool<Integer>(factory);
     }
 
-    protected Object getNthObject(int n) {
+    protected String getNthObject(int n) {
         return String.valueOf(n);
     }
 
     public void testIdleCap() throws Exception {
-        ObjectPool pool = makeEmptyPool(8);
-        Object[] active = new Object[100];
+        ObjectPool<String> pool = makeEmptyPool(8);
+        String[] active = new String[100];
         for(int i=0;i<100;i++) {
             active[i] = pool.borrowObject();
         }
@@ -68,7 +68,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
      * @deprecated - to be removed in pool 2.0
      */
     public void testPoolWithNullFactory() throws Exception {
-        ObjectPool pool = new StackObjectPool(10);
+        ObjectPool<Integer> pool = new StackObjectPool<Integer>(10);
         for(int i=0;i<10;i++) {
             pool.returnObject(new Integer(i));
         }
@@ -76,7 +76,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
             Integer[] borrowed = new Integer[10];
             BitSet found = new BitSet();
             for(int i=0;i<10;i++) {
-                borrowed[i] = (Integer)(pool.borrowObject());
+                borrowed[i] = pool.borrowObject();
                 assertNotNull(borrowed);
                 assertTrue(!found.get(borrowed[i].intValue()));
                 found.set(borrowed[i].intValue());
@@ -94,7 +94,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
      * @deprecated - to be removed in pool 2.0
      */
     public void testBorrowFromEmptyPoolWithNullFactory() throws Exception {
-        ObjectPool pool = new StackObjectPool();
+        ObjectPool<Object> pool = new StackObjectPool<Object>();
         try {
             pool.borrowObject();
             fail("Expected NoSuchElementException");
@@ -107,7 +107,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
      * @deprecated - to be removed in pool 2.0
      */
     public void testSetFactory() throws Exception {
-        ObjectPool pool = new StackObjectPool();
+        ObjectPool<String> pool = new StackObjectPool<String>();
         try {
             pool.borrowObject();
             fail("Expected NoSuchElementException");
@@ -115,7 +115,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
             // expected
         }
         pool.setFactory(new SimpleFactory());
-        Object obj = pool.borrowObject();
+        String obj = pool.borrowObject();
         assertNotNull(obj);
         pool.returnObject(obj);
     }
@@ -124,9 +124,9 @@ public class TestStackObjectPool extends TestBaseObjectPool {
      * @deprecated - to be removed in pool 2.0
      */
     public void testCantResetFactoryWithActiveObjects() throws Exception {
-        ObjectPool pool = new StackObjectPool();
+        ObjectPool<String> pool = new StackObjectPool<String>();
         pool.setFactory(new SimpleFactory());
-        Object obj = pool.borrowObject();
+        String obj = pool.borrowObject();
         assertNotNull(obj);
 
         try {
@@ -141,16 +141,16 @@ public class TestStackObjectPool extends TestBaseObjectPool {
      * @deprecated - to be removed in pool 2.0
      */
     public void testCanResetFactoryWithoutActiveObjects() throws Exception {
-        ObjectPool pool = new StackObjectPool();
+        ObjectPool<String> pool = new StackObjectPool<String>();
         {
             pool.setFactory(new SimpleFactory());
-            Object obj = pool.borrowObject();        
+            String obj = pool.borrowObject();        
             assertNotNull(obj);
             pool.returnObject(obj);
         }
         {
             pool.setFactory(new SimpleFactory());
-            Object obj = pool.borrowObject();        
+            String obj = pool.borrowObject();        
             assertNotNull(obj);
             pool.returnObject(obj);
         }
@@ -165,16 +165,16 @@ public class TestStackObjectPool extends TestBaseObjectPool {
         SelectiveFactory factory = new SelectiveFactory();
         factory.setValidateSelectively(true);  // Even numbers fail validation
         factory.setPassivateSelectively(true); // Multiples of 3 fail passivation
-        ObjectPool pool = new StackObjectPool(factory, 20);
-        Object[] obj = new Object[10];
+        ObjectPool<Integer> pool = new StackObjectPool<Integer>(factory, 20);
+        Integer[] obj = new Integer[10];
         for(int i=0;i<10;i++) {
-            Object object = null;
+            Integer object = null;
             int k = 0;
             while (object == null && k < 100) { // bound not really needed
                 try {
                     k++;
                     object = pool.borrowObject();
-                    if (((Integer) object).intValue() % 2 == 0) {
+                    if (object.intValue() % 2 == 0) {
                         fail("Expecting NoSuchElementException");
                     } else {
                         obj[i] = object; 
@@ -207,9 +207,9 @@ public class TestStackObjectPool extends TestBaseObjectPool {
      */
     public void testBorrowReturnWithSometimesInvalidObjects() throws Exception {
         SelectiveFactory factory = new SelectiveFactory();
-        ObjectPool pool = new StackObjectPool(factory, 20);
+        ObjectPool<Integer> pool = new StackObjectPool<Integer>(factory, 20);
 
-        Object[] obj = new Object[10];
+        Integer[] obj = new Integer[10];
         for(int i=0;i<10;i++) {
             obj[i] = pool.borrowObject();
             assertEquals("Each time we borrow, get one more active.", i+1, pool.getNumActive());
@@ -229,27 +229,27 @@ public class TestStackObjectPool extends TestBaseObjectPool {
      
     public void testVariousConstructors() throws Exception {
         {
-            StackObjectPool pool = new StackObjectPool();
+            StackObjectPool<Object> pool = new StackObjectPool<Object>();
             assertNotNull(pool);
         }
         {
-            StackObjectPool pool = new StackObjectPool(10);
+            StackObjectPool<Object> pool = new StackObjectPool<Object>(10);
             assertNotNull(pool);
         }
         {
-            StackObjectPool pool = new StackObjectPool(10,5);
+            StackObjectPool<Object> pool = new StackObjectPool<Object>(10,5);
             assertNotNull(pool);
         }
         {
-            StackObjectPool pool = new StackObjectPool(null);
+            StackObjectPool<Object> pool = new StackObjectPool<Object>(null);
             assertNotNull(pool);
         }
         {
-            StackObjectPool pool = new StackObjectPool(null,10);
+            StackObjectPool<Object> pool = new StackObjectPool<Object>(null,10);
             assertNotNull(pool);
         }
         {
-            StackObjectPool pool = new StackObjectPool(null,10,5);
+            StackObjectPool<Object> pool = new StackObjectPool<Object>(null,10,5);
             assertNotNull(pool);
         }
     }
@@ -259,7 +259,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
      */
     public void testMaxIdleInitCapacityOutOfRange() throws Exception {
         SimpleFactory factory = new SimpleFactory();
-        StackObjectPool pool = new StackObjectPool(factory, -1, 0);
+        StackObjectPool<String> pool = new StackObjectPool<String>(factory, -1, 0);
         assertEquals(pool.getMaxSleeping(), StackObjectPool.DEFAULT_MAX_SLEEPING);
         pool.addObject();
         pool.close();
@@ -271,13 +271,13 @@ public class TestStackObjectPool extends TestBaseObjectPool {
      */
     public void testReturnObjectDiscardOrder() throws Exception {
         SelectiveFactory factory = new SelectiveFactory();
-        ObjectPool pool = new StackObjectPool(factory, 3);
+        ObjectPool<Integer> pool = new StackObjectPool<Integer>(factory, 3);
 
         // borrow more objects than the pool can hold
-        Integer i0 = (Integer)pool.borrowObject();
-        Integer i1 = (Integer)pool.borrowObject();
-        Integer i2 = (Integer)pool.borrowObject();
-        Integer i3 = (Integer)pool.borrowObject();
+        Integer i0 = pool.borrowObject();
+        Integer i1 = pool.borrowObject();
+        Integer i2 = pool.borrowObject();
+        Integer i3 = pool.borrowObject();
 
         // tests
         // return as many as the pool will hold.
@@ -293,7 +293,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
         assertEquals("One object should have been destroyed.", 1, factory.getDestroyed().size());
 
         // check to see what object was destroyed
-        Integer d = (Integer)factory.getDestroyed().get(0);
+        Integer d = factory.getDestroyed().get(0);
         assertEquals("Destoryed object should be the stalest object.", i0, d);
     }
     
@@ -304,7 +304,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
      */
     public void testExceptionOnActivate() throws Exception {
         SelectiveFactory factory = new SelectiveFactory();
-        ObjectPool pool = new StackObjectPool(factory);
+        ObjectPool<Integer> pool = new StackObjectPool<Integer>(factory);
         pool.addObject();
         pool.addObject();
         factory.setThrowOnActivate(true);
@@ -324,14 +324,14 @@ public class TestStackObjectPool extends TestBaseObjectPool {
      */
     public void testExceptionOnDestroy() throws Exception {
         SelectiveFactory factory = new SelectiveFactory();
-        ObjectPool pool = new StackObjectPool(factory, 2);
+        ObjectPool<Integer> pool = new StackObjectPool<Integer>(factory, 2);
         factory.setThrowOnDestroy(true);
         for (int i = 0; i < 3; i++) {
             pool.addObject(); // Third one will destroy, exception should be swallowed
         }
         assertEquals(2, pool.getNumIdle());
         
-        Object[] objects = new Object[3];
+        Integer[] objects = new Integer[3];
         for (int i = 0; i < 3; i++) {
             objects[i] = pool.borrowObject();
         }
@@ -347,7 +347,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
      */
     public void testExceptionOnPassivate() throws Exception {
         SelectiveFactory factory = new SelectiveFactory();
-        ObjectPool pool = new StackObjectPool(factory, 2);
+        ObjectPool<Integer> pool = new StackObjectPool<Integer>(factory, 2);
         factory.setThrowOnPassivate(true);
         
         // addObject propagates
@@ -361,7 +361,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
         assertEquals(0, pool.getNumIdle());
         
         // returnObject swallows 
-        Object obj = pool.borrowObject();
+        Integer obj = pool.borrowObject();
         pool.returnObject(obj);
         assertEquals(0, pool.getNumIdle());
     }
@@ -371,7 +371,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
      */
     public void testExceptionOnValidate() throws Exception {
         SelectiveFactory factory = new SelectiveFactory();
-        ObjectPool pool = new StackObjectPool(factory, 2);
+        ObjectPool<Integer> pool = new StackObjectPool<Integer>(factory, 2);
         factory.setThrowOnValidate(true);
         
         // addObject
@@ -385,7 +385,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
         
         // returnObject 
         factory.setThrowOnValidate(false);
-        Object obj = pool.borrowObject();
+        Integer obj = pool.borrowObject();
         factory.setThrowOnValidate(true);
         try {
             pool.returnObject(obj);
@@ -410,7 +410,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
     public void testExceptionOnMake() throws Exception {
         SelectiveFactory factory = new SelectiveFactory();
         factory.setThrowOnMake(true);
-        ObjectPool pool = new StackObjectPool(factory);
+        ObjectPool<Integer> pool = new StackObjectPool<Integer>(factory);
         try {
             pool.borrowObject();
             fail("Expecting IntegerFactoryException");
@@ -430,7 +430,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
      */
     public void testMakeNull() throws Exception {
         SelectiveFactory factory = new SelectiveFactory();
-        ObjectPool pool = new StackObjectPool(factory);
+        ObjectPool<Integer> pool = new StackObjectPool<Integer>(factory);
         factory.setMakeNull(true);
         try {
             pool.borrowObject();
@@ -444,13 +444,13 @@ public class TestStackObjectPool extends TestBaseObjectPool {
      * Verifies that initIdleCapacity is not a hard limit, but maxIdle is.
      */
     public void testInitIdleCapacityExceeded() throws Exception {
-        PoolableObjectFactory factory = new SimpleFactory();
-        ObjectPool pool = new StackObjectPool(factory, 2, 1);
+        PoolableObjectFactory<String> factory = new SimpleFactory();
+        ObjectPool<String> pool = new StackObjectPool<String>(factory, 2, 1);
         pool.addObject();
         pool.addObject();
         assertEquals(2, pool.getNumIdle());
         pool.close();
-        pool = new StackObjectPool(factory, 1, 2);
+        pool = new StackObjectPool<String>(factory, 1, 2);
         pool.addObject();
         pool.addObject();
         assertEquals(1, pool.getNumIdle());
@@ -462,16 +462,16 @@ public class TestStackObjectPool extends TestBaseObjectPool {
      */
     public void testClose() throws Exception {
         SelectiveFactory factory = new SelectiveFactory();
-        ObjectPool pool = new StackObjectPool(factory);
+        ObjectPool<Integer> pool = new StackObjectPool<Integer>(factory);
         pool.addObject(); // 0
         pool.addObject(); // 1
         pool.addObject(); // 2
-        Integer two = (Integer) pool.borrowObject();
+        Integer two = pool.borrowObject();
         assertEquals(2, two.intValue());
         pool.close();
         assertEquals(0, pool.getNumIdle());
         assertEquals(1, pool.getNumActive());
-        List destroyed = factory.getDestroyed();
+        List<Integer> destroyed = factory.getDestroyed();
         assertEquals(2, destroyed.size());
         assertTrue(destroyed.contains(new Integer(0)));
         assertTrue(destroyed.contains(new Integer(0)));
@@ -495,21 +495,21 @@ public class TestStackObjectPool extends TestBaseObjectPool {
      * Simple factory that creates Integers. Validation and other factory methods
      * always succeed.
      */
-    static class SimpleFactory implements PoolableObjectFactory {
+    static class SimpleFactory implements PoolableObjectFactory<String> {
         int counter = 0;
-        public Object makeObject() { return String.valueOf(counter++); }
-        public void destroyObject(Object obj) { }
-        public boolean validateObject(Object obj) { return true; }
-        public void activateObject(Object obj) { }
-        public void passivateObject(Object obj) { }
+        public String makeObject() { return String.valueOf(counter++); }
+        public void destroyObject(String obj) { }
+        public boolean validateObject(String obj) { return true; }
+        public void activateObject(String obj) { }
+        public void passivateObject(String obj) { }
     }
     
     /**
      * Integer factory that fails validation and other factory methods "selectively" and
      * tracks object destruction.
      */
-    static class SelectiveFactory implements PoolableObjectFactory {
-        private List destroyed = new ArrayList();
+    static class SelectiveFactory implements PoolableObjectFactory<Integer> {
+        private List<Integer> destroyed = new ArrayList<Integer>();
         private int counter = 0;
         private boolean validateSelectively = false;  // true <-> validate returns false for even Integers
         private boolean passivateSelectively = false; // true <-> passivate throws RTE if Integer = 0 mod 3
@@ -519,7 +519,7 @@ public class TestStackObjectPool extends TestBaseObjectPool {
         private boolean throwOnValidate= false;       // true <-> validate throws RTE (always)
         private boolean throwOnPassivate = false;     // true <-> passivate throws RTE (always)
         private boolean makeNull = false;             // true <-> make returns null
-        public Object makeObject() {
+        public Integer makeObject() {
             if (throwOnMake) {
                 final int next = counter + 1;
                 throw new IntegerFactoryException("makeObject", next);
@@ -527,47 +527,43 @@ public class TestStackObjectPool extends TestBaseObjectPool {
                 return makeNull? null : new Integer(counter++);
             }
         }
-        public void destroyObject(Object obj) {
+        public void destroyObject(Integer obj) {
             if (throwOnDestroy) {
-                final Integer integer = (Integer)obj;
+                final Integer integer = obj;
                 throw new IntegerFactoryException("destroyObject", integer.intValue());
             }
             destroyed.add(obj);
         }
-        public boolean validateObject(Object obj) {
+        public boolean validateObject(Integer obj) {
             if (throwOnValidate) {
-                final Integer integer = (Integer)obj;
+                final Integer integer = obj;
                 throw new IntegerFactoryException("validateObject", integer.intValue());
             }
             if (validateSelectively) {
                 // only odd objects are valid
-                if(obj instanceof Integer) {
-                    return ((((Integer)obj).intValue() % 2) == 1);
-                } else {
-                    return false;
-                }
+                return ((obj.intValue() % 2) == 1);
             }
             return true;
         }
-        public void activateObject(Object obj) {
+        public void activateObject(Integer obj) {
             if (throwOnActivate) {
-                final Integer integer = (Integer)obj;
+                final Integer integer = obj;
                 throw new IntegerFactoryException("activateObject", integer.intValue());
             }
         }
-        public void passivateObject(Object obj) { 
+        public void passivateObject(Integer obj) { 
             if (throwOnPassivate) {
-                final Integer integer = (Integer)obj;
+                final Integer integer = obj;
                 throw new IntegerFactoryException("passivateObject", integer.intValue());
             }
             if (passivateSelectively) {
-                final Integer integer = (Integer)obj;
+                final Integer integer = obj;
                 if (integer.intValue() % 3 == 0) {
                     throw new IntegerFactoryException("passivateObject", integer.intValue());
                 }
             }
         }
-        public List getDestroyed() {
+        public List<Integer> getDestroyed() {
             return destroyed;
         }
         public void setCounter(int counter) {

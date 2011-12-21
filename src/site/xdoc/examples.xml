@@ -80,9 +80,9 @@ import java.io.Reader;
 import java.io.IOException; 
  
 public class ReaderUtil { 
-    private ObjectPool pool;
+    private ObjectPool&lt;StringBuffer&gt; pool;
  
-    public ReaderUtil(ObjectPool pool) { 
+    public ReaderUtil(ObjectPool&lt;StringBuffer&gt; pool) { 
         this.pool = pool;
     } 
  
@@ -93,7 +93,7 @@ public class ReaderUtil {
     public String readToString(Reader in) throws IOException { 
         StringBuffer buf = null;
         try { 
-            buf = (StringBuffer)(pool.borrowObject());
+            buf = pool.borrowObject();
             for(int c = in.read(); c != -1; c = in.read()) { 
                 buf.append((char)c); 
             } 
@@ -148,16 +148,15 @@ public class ReaderUtil {
 <source>
 import org.apache.commons.pool.BasePoolableObjectFactory; 
  
-public class StringBufferFactory extends BasePoolableObjectFactory { 
+public class StringBufferFactory extends BasePoolableObjectFactory&lt;StringBuffer&gt; { 
     // for makeObject we'll simply return a new buffer 
-    public Object makeObject() { 
+    public StringBuffer makeObject() { 
         return new StringBuffer(); 
     } 
      
     // when an object is returned to the pool,  
     // we'll clear it out 
-    public void passivateObject(Object obj) { 
-        StringBuffer buf = (StringBuffer)obj; 
+    public void passivateObject(StringBuffer buf) { 
         buf.setLength(0); 
     } 
      
@@ -170,7 +169,7 @@ public class StringBufferFactory extends BasePoolableObjectFactory {
        We can, for example, use this factory with the <code>StackObjectPool</code> to instantiate our
        <code>ReaderUtil</code> as follows:
       </p>
-<source>new ReaderUtil(new StackObjectPool(new StringBufferFactory()))</source>
+<source>new ReaderUtil(new StackObjectPool&lt;StringBuffer&gt;(new StringBufferFactory()))</source>
       </section>
    </body>
 </document>

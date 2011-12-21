@@ -67,8 +67,8 @@ public class Waiter {
      * changing from active to inactive, lastPassivated is updated with the
      * current time.</p>
      * 
-     * <p>{@link WaiterFactory#activateObject(Object)} and
-     * {@link WaiterFactory#passivateObject(Object)} invoke this method on their
+     * <p>{@link WaiterFactory#activateObject(Waiter)} and
+     * {@link WaiterFactory#passivateObject(Waiter)} invoke this method on their
      * actual parameter, passing <code>true</code> and <code>false</code>,
      * respectively.</p>
      * 

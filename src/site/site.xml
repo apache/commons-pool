@@ -42,7 +42,7 @@
             <item name="Mailing Lists"                 href="/mail-lists.html"/>
             <item name="Issue Tracking"                href="/issue-tracking.html"/>
             <item name="Source Repository"             href="/source-repository.html"/>
-            <item name="Javadoc (1.5.8-SNAPSHOT)"      href="apidocs/index.html"/>
+            <item name="Javadoc (1.6-SNAPSHOT)"      href="apidocs/index.html"/>
         </menu>
     </body>
 

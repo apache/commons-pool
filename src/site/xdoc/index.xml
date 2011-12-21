@@ -61,9 +61,9 @@
              defines a trivially simple pooling interface:
           </p>
 <source>
-public interface ObjectPool {
-    Object borrowObject();
-    void returnObject(Object borrowed);
+public interface ObjectPool&lt;T&gt; {
+    T borrowObject();
+    void returnObject(T borrowed);
 }
 </source>           
           <p>
@@ -82,9 +82,9 @@ public interface ObjectPool {
              defines a similar interface for pools composed of heterogeneous objects:
           </p>
 <source>
-public interface KeyedObjectPool {
-    Object borrowObject(Object key);
-    void returnObject(Object key, Object borrowed);
+public interface KeyedObjectPool&lt;K, V&gt; {
+    V borrowObject(K key);
+    void returnObject(K key, V borrowed);
 }
 </source>           
         </subsection>
@@ -96,12 +96,12 @@ public interface KeyedObjectPool {
              supports this by providing a generic interface for the lifecycle of a pooled object:
           </p>
 <source>
-public interface PoolableObjectFactory {
-    Object makeObject();
-    void activateObject(Object obj);
-    void passivateObject(Object obj);
-    boolean validateObject(Object obj);
-    void destroyObject(Object obj);
+public interface PoolableObjectFactory&lt;T&gt; {
+    T makeObject();
+    void activateObject(T obj);
+    void passivateObject(T obj);
+    boolean validateObject(T obj);
+    void destroyObject(T obj);
 }
 </source>           
           <p>
@@ -120,12 +120,12 @@ public interface PoolableObjectFactory {
              defines a similar interface for <code>KeyedObjectPool</code>s:
           </p>
 <source>
-public interface KeyedPoolableObjectFactory {
-    Object makeObject(Object key);
-    void activateObject(Object key, Object obj);
-    void passivateObject(Object key, Object obj);
-    boolean validateObject(Object key, Object obj);
-    void destroyObject(Object key, Object obj);
+public interface KeyedPoolableObjectFactory&lt;K, V&gt; {
+    V makeObject(K key);
+    void activateObject(K key, V obj);
+    void passivateObject(K key, V obj);
+    boolean validateObject(K key, V obj);
+    void destroyObject(K key, V obj);
 }
 </source>           
           <p>

@@ -26,11 +26,11 @@ package org.apache.commons.pool;
  * @version $Revision$ $Date$
  * @since Pool 1.0
  */
-public interface KeyedObjectPoolFactory {
+public interface KeyedObjectPoolFactory<K, V> {
     /**
      * Create a new {@link KeyedObjectPool}.
      * @return a new {@link KeyedObjectPool}
      * @throws IllegalStateException when this pool factory is not configured properly
      */
-    KeyedObjectPool createPool() throws IllegalStateException;
+    KeyedObjectPool<K, V> createPool() throws IllegalStateException;
 }

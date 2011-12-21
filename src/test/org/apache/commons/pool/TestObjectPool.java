@@ -44,17 +44,17 @@ public abstract class TestObjectPool extends TestCase {
      * Generally speaking there should be no limits on the various object counts.
      * @throws UnsupportedOperationException if the pool being tested does not follow pool contracts.
      */
-    protected abstract ObjectPool makeEmptyPool(PoolableObjectFactory factory) throws UnsupportedOperationException;
+    protected abstract ObjectPool<Integer> makeEmptyPool(PoolableObjectFactory<Integer> factory) throws UnsupportedOperationException;
 
     public void testClosedPoolBehavior() throws Exception {
-        final ObjectPool pool;
+        final ObjectPool<Integer> pool;
         try {
             pool = makeEmptyPool(new MethodCallPoolableObjectFactory());
         } catch (UnsupportedOperationException uoe) {
             return; // test not supported
         }
-        Object o1 = pool.borrowObject();
-        Object o2 = pool.borrowObject();
+        Integer o1 = pool.borrowObject();
+        Integer o2 = pool.borrowObject();
 
         pool.close();
 
@@ -102,13 +102,13 @@ public abstract class TestObjectPool extends TestCase {
 
     public void testPOFAddObjectUsage() throws Exception {
         final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
-        final ObjectPool pool;
+        final ObjectPool<Integer> pool;
         try {
             pool = makeEmptyPool(factory);
         } catch(UnsupportedOperationException uoe) {
             return; // test not supported
         }
-        final List expectedMethods = new ArrayList();
+        final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
 
         assertEquals(0, pool.getNumActive());
         assertEquals(0, pool.getNumIdle());
@@ -164,17 +164,17 @@ public abstract class TestObjectPool extends TestCase {
 
     public void testPOFBorrowObjectUsages() throws Exception {
         final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
-        final ObjectPool pool;
+        final ObjectPool<Integer> pool;
         try {
             pool = makeEmptyPool(factory);
         } catch (UnsupportedOperationException uoe) {
             return; // test not supported
         }
         if (pool instanceof GenericObjectPool) {
-            ((GenericObjectPool) pool).setTestOnBorrow(true);
+            ((GenericObjectPool<Integer>) pool).setTestOnBorrow(true);
         }
-        final List expectedMethods = new ArrayList();
-        Object obj;
+        final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
+        Integer obj;
 
         /// Test correct behavior code paths
 
@@ -246,14 +246,14 @@ public abstract class TestObjectPool extends TestCase {
 
     public void testPOFReturnObjectUsages() throws Exception {
         final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
-        final ObjectPool pool;
+        final ObjectPool<Integer> pool;
         try {
             pool = makeEmptyPool(factory);
         } catch (UnsupportedOperationException uoe) {
             return; // test not supported
         }
-        final List expectedMethods = new ArrayList();
-        Object obj;
+        final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
+        Integer obj;
 
         /// Test correct behavior code paths
         obj = pool.borrowObject();
@@ -307,14 +307,14 @@ public abstract class TestObjectPool extends TestCase {
 
     public void testPOFInvalidateObjectUsages() throws Exception {
         final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
-        final ObjectPool pool;
+        final ObjectPool<Integer> pool;
         try {
             pool = makeEmptyPool(factory);
         } catch (UnsupportedOperationException uoe) {
             return; // test not supported
         }
-        final List expectedMethods = new ArrayList();
-        Object obj;
+        final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
+        Integer obj;
 
         /// Test correct behavior code paths
 
@@ -344,13 +344,13 @@ public abstract class TestObjectPool extends TestCase {
 
     public void testPOFClearUsages() throws Exception {
         final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
-        final ObjectPool pool;
+        final ObjectPool<Integer> pool;
         try {
             pool = makeEmptyPool(factory);
         } catch (UnsupportedOperationException uoe) {
             return; // test not supported
         }
-        final List expectedMethods = new ArrayList();
+        final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
 
         /// Test correct behavior code paths
         PoolUtils.prefill(pool, 5);
@@ -365,13 +365,13 @@ public abstract class TestObjectPool extends TestCase {
 
     public void testPOFCloseUsages() throws Exception {
         final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
-        ObjectPool pool;
+        ObjectPool<Integer> pool;
         try {
             pool = makeEmptyPool(factory);
         } catch (UnsupportedOperationException uoe) {
             return; // test not supported
         }
-        final List expectedMethods = new ArrayList();
+        final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
 
         /// Test correct behavior code paths
         PoolUtils.prefill(pool, 5);
@@ -391,7 +391,7 @@ public abstract class TestObjectPool extends TestCase {
     }
 
     public void testSetFactory() throws Exception {
-        ObjectPool pool;
+        ObjectPool<Integer> pool;
         try {
             pool = makeEmptyPool(new MethodCallPoolableObjectFactory());
         } catch (UnsupportedOperationException uoe) {
@@ -406,7 +406,7 @@ public abstract class TestObjectPool extends TestCase {
     }
 
     public void testToString() {
-        ObjectPool pool;
+        ObjectPool<Integer> pool;
         try {
             pool = makeEmptyPool(new MethodCallPoolableObjectFactory());
         } catch (UnsupportedOperationException uoe) {
@@ -415,23 +415,23 @@ public abstract class TestObjectPool extends TestCase {
         pool.toString();
     }
 
-    static void removeDestroyObjectCall(List calls) {
-        Iterator iter = calls.iterator();
+    static void removeDestroyObjectCall(List<MethodCall> calls) {
+        Iterator<MethodCall> iter = calls.iterator();
         while (iter.hasNext()) {
-            MethodCall call = (MethodCall)iter.next();
+            MethodCall call = iter.next();
             if ("destroyObject".equals(call.getName())) {
                 iter.remove();
             }
         }
     }
 
-    private static void reset(final ObjectPool pool, final MethodCallPoolableObjectFactory factory, final List expectedMethods) throws Exception {
+    private static void reset(final ObjectPool<?> pool, final MethodCallPoolableObjectFactory factory, final List<MethodCall> expectedMethods) throws Exception {
         pool.clear();
         clear(factory, expectedMethods);
         factory.reset();
     }
 
-    private static void clear(final MethodCallPoolableObjectFactory factory, final List expectedMethods) {
+    private static void clear(final MethodCallPoolableObjectFactory factory, final List<MethodCall> expectedMethods) {
         factory.getMethodCalls().clear();
         expectedMethods.clear();
     }

@@ -64,7 +64,7 @@ import java.util.NoSuchElementException;
  * @see BaseKeyedObjectPool
  * @since Pool 1.0
  */
-public interface KeyedObjectPool {
+public interface KeyedObjectPool<K, V> {
     /**
      * Obtains an instance from this pool for the specified <code>key</code>.
      * <p>
@@ -90,7 +90,7 @@ public interface KeyedObjectPool {
      * @throws Exception when {@link KeyedPoolableObjectFactory#makeObject makeObject} throws an exception
      * @throws NoSuchElementException when the pool is exhausted and cannot or will not return another instance
      */
-    Object borrowObject(Object key) throws Exception, NoSuchElementException, IllegalStateException;
+    V borrowObject(K key) throws Exception, NoSuchElementException, IllegalStateException;
 
     /**
      * Return an instance to the pool.
@@ -105,7 +105,7 @@ public interface KeyedObjectPool {
      * @param obj a {@link #borrowObject borrowed} instance to be returned.
      * @throws Exception 
      */
-    void returnObject(Object key, Object obj) throws Exception;
+    void returnObject(K key, V obj) throws Exception;
 
     /**
      * <p>Invalidates an object from the pool.</p>
@@ -122,7 +122,7 @@ public interface KeyedObjectPool {
      * @param obj a {@link #borrowObject borrowed} instance to be returned.
      * @throws Exception 
      */
-    void invalidateObject(Object key, Object obj) throws Exception;
+    void invalidateObject(K key, V obj) throws Exception;
 
     /**
      * Create an object using the {@link KeyedPoolableObjectFactory factory} or other
@@ -135,7 +135,7 @@ public interface KeyedObjectPool {
      * @throws IllegalStateException after {@link #close} has been called on this pool.
      * @throws UnsupportedOperationException when this pool cannot add new idle objects.
      */
-    void addObject(Object key) throws Exception, IllegalStateException, UnsupportedOperationException;
+    void addObject(K key) throws Exception, IllegalStateException, UnsupportedOperationException;
 
     /**
      * Returns the number of instances
@@ -147,7 +147,7 @@ public interface KeyedObjectPool {
      * @return the number of instances corresponding to the given <code>key</code> currently idle in this pool or a negative value if unsupported
      * @throws UnsupportedOperationException <strong>deprecated</strong>: when this implementation doesn't support the operation
      */
-    int getNumIdle(Object key) throws UnsupportedOperationException;
+    int getNumIdle(K key) throws UnsupportedOperationException;
 
     /**
      * Returns the number of instances
@@ -160,7 +160,7 @@ public interface KeyedObjectPool {
      * @return the number of instances corresponding to the given <code>key</code> currently borrowed in this pool or a negative value if unsupported
      * @throws UnsupportedOperationException <strong>deprecated</strong>: when this implementation doesn't support the operation
      */
-    int getNumActive(Object key) throws UnsupportedOperationException;
+    int getNumActive(K key) throws UnsupportedOperationException;
 
     /**
      * Returns the total number of instances
@@ -200,7 +200,7 @@ public interface KeyedObjectPool {
      * @param key the key to clear
      * @throws UnsupportedOperationException when this implementation doesn't support the operation
      */
-    void clear(Object key) throws Exception, UnsupportedOperationException;
+    void clear(K key) throws Exception, UnsupportedOperationException;
 
     /**
      * Close this pool, and free any resources associated with it.
@@ -225,5 +225,5 @@ public interface KeyedObjectPool {
      * @throws UnsupportedOperationException when this implementation doesn't support the operation
      * @deprecated to be removed in pool 2.0
      */
-    void setFactory(KeyedPoolableObjectFactory factory) throws IllegalStateException, UnsupportedOperationException;
+    void setFactory(KeyedPoolableObjectFactory<K, V> factory) throws IllegalStateException, UnsupportedOperationException;
 }

@@ -26,11 +26,11 @@ package org.apache.commons.pool;
  * @version $Revision$ $Date$
  * @since Pool 1.0
  */
-public interface ObjectPoolFactory {
+public interface ObjectPoolFactory<T> {
     /**
      * Create and return a new {@link ObjectPool}.
      * @return a new {@link ObjectPool}
      * @throws IllegalStateException when this pool factory is not configured properly
      */
-    ObjectPool createPool() throws IllegalStateException;
+    ObjectPool<T> createPool() throws IllegalStateException;
 }

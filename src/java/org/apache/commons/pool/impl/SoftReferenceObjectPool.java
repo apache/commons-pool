@@ -39,7 +39,7 @@ import org.apache.commons.pool.PoolUtils;
  * @version $Revision$ $Date$
  * @since Pool 1.0
  */
-public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPool {
+public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<T> {
     /**
      * Create a <code>SoftReferenceObjectPool</code> without a factory.
      * {@link #setFactory(PoolableObjectFactory) setFactory} should be called
@@ -50,7 +50,7 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
      * @deprecated to be removed in pool 2.0.  Use {@link #SoftReferenceObjectPool(PoolableObjectFactory)}.
      */
     public SoftReferenceObjectPool() {
-        _pool = new ArrayList();
+        _pool = new ArrayList<SoftReference<T>>();
         _factory = null;
     }
 
@@ -59,8 +59,8 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
      *
      * @param factory object factory to use.
      */
-    public SoftReferenceObjectPool(PoolableObjectFactory factory) {
-        _pool = new ArrayList();
+    public SoftReferenceObjectPool(PoolableObjectFactory<T> factory) {
+        _pool = new ArrayList<SoftReference<T>>();
         _factory = factory;
     }
 
@@ -74,11 +74,11 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
      * @deprecated because this is a SoftReference pool, prefilled idle obejects may be garbage collected before they are used.
      *      To be removed in Pool 2.0.
      */
-    public SoftReferenceObjectPool(PoolableObjectFactory factory, int initSize) throws Exception, IllegalArgumentException {
+    public SoftReferenceObjectPool(PoolableObjectFactory<T> factory, int initSize) throws Exception, IllegalArgumentException {
         if (factory == null) {
             throw new IllegalArgumentException("factory required to prefill the pool.");
         }
-        _pool = new ArrayList(initSize);
+        _pool = new ArrayList<SoftReference<T>>(initSize);
         _factory = factory;
         PoolUtils.prefill(this, initSize);
     }
@@ -104,9 +104,9 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
      * @throws Exception if an exception occurs creating a new instance
      * @return a valid, activated object instance
      */
-    public synchronized Object borrowObject() throws Exception {
+    public synchronized T borrowObject() throws Exception {
         assertOpen();
-        Object obj = null;
+        T obj = null;
         boolean newlyCreated = false;
         while(null == obj) {
             if(_pool.isEmpty()) {
@@ -117,7 +117,7 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
                     obj = _factory.makeObject();
                 }
             } else {
-                SoftReference ref = (SoftReference)(_pool.remove(_pool.size() - 1));
+                SoftReference<T> ref = _pool.remove(_pool.size() - 1);
                 obj = ref.get();
                 ref.clear(); // prevent this ref from being enqueued with refQueue.
             }
@@ -163,7 +163,7 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
      * 
      * @param obj instance to return to the pool
      */
-    public synchronized void returnObject(Object obj) throws Exception {
+    public synchronized void returnObject(T obj) throws Exception {
         boolean success = !isClosed();
         if (_factory != null) {
             if(!_factory.validateObject(obj)) {
@@ -180,7 +180,7 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
         boolean shouldDestroy = !success;
         _numActive--;
         if(success) {
-            _pool.add(new SoftReference(obj, refQueue));
+            _pool.add(new SoftReference<T>(obj, refQueue));
         }
         notifyAll(); // _numActive has changed
 
@@ -196,7 +196,7 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
     /**
      * {@inheritDoc}
      */
-    public synchronized void invalidateObject(Object obj) throws Exception {
+    public synchronized void invalidateObject(T obj) throws Exception {
         _numActive--;
         if (_factory != null) {
             _factory.destroyObject(obj);
@@ -223,7 +223,7 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
         if (_factory == null) {
             throw new IllegalStateException("Cannot add objects without a factory.");
         }
-        Object obj = _factory.makeObject();
+        T obj = _factory.makeObject();
 
         boolean success = true;
         if(!_factory.validateObject(obj)) {
@@ -234,7 +234,7 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
 
         boolean shouldDestroy = !success;
         if(success) {
-            _pool.add(new SoftReference(obj, refQueue));
+            _pool.add(new SoftReference<T>(obj, refQueue));
             notifyAll(); // _numActive has changed
         }
 
@@ -271,10 +271,10 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
      */
     public synchronized void clear() {
         if(null != _factory) {
-            Iterator iter = _pool.iterator();
+            Iterator<SoftReference<T>> iter = _pool.iterator();
             while(iter.hasNext()) {
                 try {
-                    Object obj = ((SoftReference)iter.next()).get();
+                    T obj = iter.next().get();
                     if(null != obj) {
                         _factory.destroyObject(obj);
                     }
@@ -312,7 +312,7 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
      * @throws IllegalStateException when the factory cannot be set at this time
      * @deprecated to be removed in pool 2.0
      */
-    public synchronized void setFactory(PoolableObjectFactory factory) throws IllegalStateException {
+    public synchronized void setFactory(PoolableObjectFactory<T> factory) throws IllegalStateException {
         assertOpen();
         if(0 < getNumActive()) {
             throw new IllegalStateException("Objects are already active");
@@ -327,7 +327,7 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
      * {@link Reference} wrappers from the idle object pool.
      */
     private void pruneClearedReferences() {
-        Reference ref;
+        Reference<? extends T> ref;
         while ((ref = refQueue.poll()) != null) {
             try {
                 _pool.remove(ref);
@@ -343,22 +343,22 @@ public class SoftReferenceObjectPool extends BaseObjectPool implements ObjectPoo
      * @return the factory
      * @since 1.5.5
      */
-    public synchronized PoolableObjectFactory getFactory() { 
+    public synchronized PoolableObjectFactory<T> getFactory() { 
         return _factory;
     }
 
     /** My pool. */
-    private final List _pool;
+    private final List<SoftReference<T>> _pool;
 
     /** My {@link PoolableObjectFactory}. */
-    private PoolableObjectFactory _factory = null;
+    private PoolableObjectFactory<T> _factory = null;
 
     /**
      * Queue of broken references that might be able to be removed from <code>_pool</code>.
      * This is used to help {@link #getNumIdle()} be more accurate with minimial
      * performance overhead.
      */
-    private final ReferenceQueue refQueue = new ReferenceQueue();
+    private final ReferenceQueue<T> refQueue = new ReferenceQueue<T>();
 
     /** Number of active objects. */
     private int _numActive = 0; //@GuardeBy("this")

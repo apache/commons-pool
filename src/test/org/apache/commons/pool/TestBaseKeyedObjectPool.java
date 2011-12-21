@@ -22,14 +22,14 @@ package org.apache.commons.pool;
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  */
-public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
-    private KeyedObjectPool _pool = null;
+public class TestBaseKeyedObjectPool<K, V> extends TestKeyedObjectPool {
+    private KeyedObjectPool<K, V> _pool = null;
 
     public TestBaseKeyedObjectPool(final String testName) {
         super(testName);
     }
 
-    protected KeyedObjectPool makeEmptyPool(KeyedPoolableObjectFactory factory) {
+    protected KeyedObjectPool<Object, Integer> makeEmptyPool(KeyedPoolableObjectFactory<Object, Integer> factory) {
         if (this.getClass() != TestBaseKeyedObjectPool.class) {
             fail("Subclasses of TestBaseKeyedObjectPool must reimplement this method.");
         }
@@ -43,7 +43,7 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
      * throw {@link IllegalArgumentException}
      * if such a pool cannot be created.
      */
-    protected KeyedObjectPool makeEmptyPool(int mincapacity) {
+    protected KeyedObjectPool<K, V> makeEmptyPool(int mincapacity) {
         if (this.getClass() != TestBaseKeyedObjectPool.class) {
             fail("Subclasses of TestBaseKeyedObjectPool must reimplement this method.");
         }
@@ -55,14 +55,14 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
      * object (zero indexed) created by the pool
      * for the given key.
      */
-    protected Object getNthObject(Object key, int n) {
+    protected V getNthObject(Object key, int n) {
         if (this.getClass() != TestBaseKeyedObjectPool.class) {
             fail("Subclasses of TestBaseKeyedObjectPool must reimplement this method.");
         }
         throw new UnsupportedOperationException("BaseKeyedObjectPool isn't a complete implementation.");
     }
 
-    protected Object makeKey(int n) {
+    protected K makeKey(int n) {
         if (this.getClass() != TestBaseKeyedObjectPool.class) {
             fail("Subclasses of TestBaseKeyedObjectPool must reimplement this method.");
         }
@@ -82,13 +82,13 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
         if (!getClass().equals(TestBaseKeyedObjectPool.class)) {
             return; // skip redundant tests
         }
-        KeyedObjectPool pool = new BaseKeyedObjectPool() { 
-            public Object borrowObject(Object key) {
+        KeyedObjectPool<String, String> pool = new BaseKeyedObjectPool<String, String>() { 
+            public String borrowObject(String key) {
                 return null;
             }
-            public void returnObject(Object key, Object obj) {
+            public void returnObject(String key, String obj) {
             }
-            public void invalidateObject(Object key, Object obj) {
+            public void invalidateObject(String key, String obj) {
             }            
         };
         
@@ -149,12 +149,12 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
         } catch(UnsupportedOperationException uoe) {
             return; // skip this test if unsupported
         }
-        Object keya = makeKey(0);
-        Object obj0 = _pool.borrowObject(keya);
+        K keya = makeKey(0);
+        V obj0 = _pool.borrowObject(keya);
         assertEquals(getNthObject(keya,0),obj0);
-        Object obj1 = _pool.borrowObject(keya);
+        V obj1 = _pool.borrowObject(keya);
         assertEquals(getNthObject(keya,1),obj1);
-        Object obj2 = _pool.borrowObject(keya);
+        V obj2 = _pool.borrowObject(keya);
         assertEquals(getNthObject(keya,2),obj2);
         _pool.returnObject(keya,obj2);
         obj2 = _pool.borrowObject(keya);
@@ -186,8 +186,8 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
         } catch(UnsupportedOperationException uoe) {
             return; // skip this test if unsupported
         }
-        Object keya = makeKey(0);
-        Object keyb = makeKey(1);
+        K keya = makeKey(0);
+        K keyb = makeKey(1);
         assertEquals("1",getNthObject(keya,0),_pool.borrowObject(keya));
         assertEquals("2",getNthObject(keyb,0),_pool.borrowObject(keyb));
         assertEquals("3",getNthObject(keyb,1),_pool.borrowObject(keyb));
@@ -202,13 +202,13 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
         } catch(UnsupportedOperationException uoe) {
             return; // skip this test if unsupported
         }
-        Object keya = makeKey(0);
+        K keya = makeKey(0);
         assertEquals(0,_pool.getNumActive(keya));
         assertEquals(0,_pool.getNumIdle(keya));
-        Object obj0 = _pool.borrowObject(keya);
+        V obj0 = _pool.borrowObject(keya);
         assertEquals(1,_pool.getNumActive(keya));
         assertEquals(0,_pool.getNumIdle(keya));
-        Object obj1 = _pool.borrowObject(keya);
+        V obj1 = _pool.borrowObject(keya);
         assertEquals(2,_pool.getNumActive(keya));
         assertEquals(0,_pool.getNumIdle(keya));
         _pool.returnObject(keya,obj1);
@@ -218,8 +218,11 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
         assertEquals(0,_pool.getNumActive(keya));
         assertEquals(2,_pool.getNumIdle(keya));
 
-        assertEquals(0,_pool.getNumActive("xyzzy12345"));
-        assertEquals(0,_pool.getNumIdle("xyzzy12345"));
+        // cast to KeyedObjectPool to use the wrong key type.
+        @SuppressWarnings("unchecked")
+        final KeyedObjectPool<Object, V> rawPool = (KeyedObjectPool<Object, V>)_pool;
+        assertEquals(0,rawPool.getNumActive("xyzzy12345"));
+        assertEquals(0,rawPool.getNumIdle("xyzzy12345"));
     }
 
     public void testBaseNumActiveNumIdle2() throws Exception {
@@ -228,8 +231,8 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
         } catch(UnsupportedOperationException uoe) {
             return; // skip this test if unsupported
         }
-        Object keya = makeKey(0);
-        Object keyb = makeKey(1);
+        K keya = makeKey(0);
+        K keyb = makeKey(1);
         assertEquals(0,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
         assertEquals(0,_pool.getNumActive(keya));
@@ -237,8 +240,8 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
         assertEquals(0,_pool.getNumActive(keyb));
         assertEquals(0,_pool.getNumIdle(keyb));
 
-        Object objA0 = _pool.borrowObject(keya);
-        Object objB0 = _pool.borrowObject(keyb);
+        V objA0 = _pool.borrowObject(keya);
+        V objB0 = _pool.borrowObject(keyb);
 
         assertEquals(2,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
@@ -247,8 +250,8 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
         assertEquals(1,_pool.getNumActive(keyb));
         assertEquals(0,_pool.getNumIdle(keyb));
 
-        Object objA1 = _pool.borrowObject(keya);
-        Object objB1 = _pool.borrowObject(keyb);
+        V objA1 = _pool.borrowObject(keya);
+        V objB1 = _pool.borrowObject(keyb);
 
         assertEquals(4,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
@@ -284,11 +287,11 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
         } catch(UnsupportedOperationException uoe) {
             return; // skip this test if unsupported
         }
-        Object keya = makeKey(0);
+        K keya = makeKey(0);
         assertEquals(0,_pool.getNumActive(keya));
         assertEquals(0,_pool.getNumIdle(keya));
-        Object obj0 = _pool.borrowObject(keya);
-        Object obj1 = _pool.borrowObject(keya);
+        V obj0 = _pool.borrowObject(keya);
+        V obj1 = _pool.borrowObject(keya);
         assertEquals(2,_pool.getNumActive(keya));
         assertEquals(0,_pool.getNumIdle(keya));
         _pool.returnObject(keya,obj1);
@@ -308,11 +311,11 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
         } catch(UnsupportedOperationException uoe) {
             return; // skip this test if unsupported
         }
-        Object keya = makeKey(0);
+        K keya = makeKey(0);
         assertEquals(0,_pool.getNumActive(keya));
         assertEquals(0,_pool.getNumIdle(keya));
-        Object obj0 = _pool.borrowObject(keya);
-        Object obj1 = _pool.borrowObject(keya);
+        V obj0 = _pool.borrowObject(keya);
+        V obj1 = _pool.borrowObject(keya);
         assertEquals(2,_pool.getNumActive(keya));
         assertEquals(0,_pool.getNumIdle(keya));
         _pool.invalidateObject(keya,obj0);
@@ -329,7 +332,7 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
         } catch(UnsupportedOperationException uoe) {
             return; // skip this test if unsupported
         }
-        Object key = makeKey(0);
+        K key = makeKey(0);
         try {
             assertEquals(0,_pool.getNumIdle());
             assertEquals(0,_pool.getNumActive());
@@ -340,7 +343,7 @@ public class TestBaseKeyedObjectPool extends TestKeyedObjectPool {
             assertEquals(0,_pool.getNumActive());
             assertEquals(1,_pool.getNumIdle(key));
             assertEquals(0,_pool.getNumActive(key));
-            Object obj = _pool.borrowObject(key);
+            V obj = _pool.borrowObject(key);
             assertEquals(getNthObject(key,0),obj);
             assertEquals(0,_pool.getNumIdle());
             assertEquals(1,_pool.getNumActive());

@@ -28,8 +28,8 @@ public class TestBaseKeyedPoolableObjectFactory extends TestCase {
     }
 
     public void testDefaultMethods() throws Exception {
-        KeyedPoolableObjectFactory factory = new BaseKeyedPoolableObjectFactory() { 
-            public Object makeObject(Object key) throws Exception {
+        KeyedPoolableObjectFactory<String, Object> factory = new BaseKeyedPoolableObjectFactory<String, Object>() { 
+            public Object makeObject(String key) throws Exception {
                 return null;
             }
         };   

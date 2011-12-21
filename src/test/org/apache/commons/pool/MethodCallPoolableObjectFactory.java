@@ -27,8 +27,8 @@ import java.util.ArrayList;
  * @version $Revision$ $Date$
  * @see MethodCall
  */
-public class MethodCallPoolableObjectFactory implements PoolableObjectFactory {
-    private final List methodCalls = new ArrayList();
+public class MethodCallPoolableObjectFactory implements PoolableObjectFactory<Integer> {
+    private final List<MethodCall> methodCalls = new ArrayList<MethodCall>();
     private int count = 0;
     private boolean valid = true;
     private boolean makeObjectFail;
@@ -48,7 +48,7 @@ public class MethodCallPoolableObjectFactory implements PoolableObjectFactory {
         setDestroyObjectFail(false);
     }
 
-    public List getMethodCalls() {
+    public List<MethodCall> getMethodCalls() {
         return methodCalls;
     }
 
@@ -108,7 +108,7 @@ public class MethodCallPoolableObjectFactory implements PoolableObjectFactory {
         this.passivateObjectFail = passivateObjectFail;
     }
 
-    public Object makeObject() throws Exception {
+    public Integer makeObject() throws Exception {
         final MethodCall call = new MethodCall("makeObject");
         methodCalls.add(call);
         int count = this.count++;
@@ -120,14 +120,14 @@ public class MethodCallPoolableObjectFactory implements PoolableObjectFactory {
         return obj;
     }
 
-    public void activateObject(final Object obj) throws Exception {
+    public void activateObject(final Integer obj) throws Exception {
         methodCalls.add(new MethodCall("activateObject", obj));
         if (activateObjectFail) {
             throw new PrivateException("activateObject");
         }
     }
 
-    public boolean validateObject(final Object obj) {
+    public boolean validateObject(final Integer obj) {
         final MethodCall call = new MethodCall("validateObject", obj);
         methodCalls.add(call);
         if (validateObjectFail) {
@@ -138,14 +138,14 @@ public class MethodCallPoolableObjectFactory implements PoolableObjectFactory {
         return r;
     }
 
-    public void passivateObject(final Object obj) throws Exception {
+    public void passivateObject(final Integer obj) throws Exception {
         methodCalls.add(new MethodCall("passivateObject", obj));
         if (passivateObjectFail) {
             throw new PrivateException("passivateObject");
         }
     }
 
-    public void destroyObject(final Object obj) throws Exception {
+    public void destroyObject(final Integer obj) throws Exception {
         methodCalls.add(new MethodCall("destroyObject", obj));
         if (destroyObjectFail) {
             throw new PrivateException("destroyObject");
