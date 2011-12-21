@@ -1367,6 +1367,37 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         pool.close();
     }
     
+    /**
+     * POOL-189
+     */
+    public void testWhenExhaustedBlockClosePool() throws Exception {
+        SimpleFactory<String> factory = new SimpleFactory<String>();
+        GenericKeyedObjectPool<String,String> pool =
+            new GenericKeyedObjectPool<String,String>(factory);
+        pool.setMaxTotalPerKey(1);
+        pool.setBlockWhenExhausted(true);
+        pool.setMaxWait(0);
+        String obj1 = pool.borrowObject("a");
+        
+        // Make sure an object was obtained
+        assertNotNull(obj1);
+        
+        // Create a separate thread to try and borrow another object
+        WaitingTestThread wtt = new WaitingTestThread(pool, "a", 200);
+        wtt.start();
+        // Give wtt time to start
+        Thread.sleep(200);
+        
+        // close the pool (Bug POOL-189)
+        pool.close();
+        
+        // Give interrupt time to take effect
+        Thread.sleep(200);
+        
+        // Check thread was interrupted
+        assertTrue(wtt._thrown instanceof IllegalStateException);
+    }
+    
     /*
      * Very simple test thread that just tries to borrow an object from
      * the provided pool with the specified key and returns it
