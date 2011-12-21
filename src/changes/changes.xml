@@ -20,72 +20,16 @@
     <title>Commons Pool Changes</title>
   </properties>
   <body>
-  <release version="2.0" description="This is an APIs update and maintenance release">
-    <action dev="simonetripodi" type="update" date="2011-12-12" issue="POOL-194">
-      Replace synchronized blocks in PoolUtils with Read/Write locks.
+  <release version="1.5.7" date="2011-12-20" description="This is a patch release, including bugfixes only.">
+    <action dev="psteitz" type="fix" issue="POOL-189" due-to="Bill Speirs">
+      Awaken threads waiting on borrowObject when a pool has been closed and have them throw
+      IllegalStateException.  Prior to the fix for this issue, threads waiting in borrowObject when
+      close was invoked on GOP or GKOP would block indefinitely.
     </action>
-    <action dev="simonetripodi" type="update" date="2011-04-28" issue="POOL-83">
-      Support Java 1.5 Generics.
-    </action>
-    <action dev="simonetripodi" type="update" date="2011-04-28" issue="POOL-186">
-      Developer documentation and examples have to be updated once the 2.0 repackaging has been done
-    </action>
-    <action dev="markt" type="update">
-      Switch GOP to use a pooling mechanism based on java.util.concurrent and a
-      LinkedBlockingQueue implementation from Apache Harmony (originally by Doug
-      Lea and the JSR-166 expert group).
-    </action>
-    <action dev="markt" type="update">
-      Make deprecated protected attributes private, requiring that access is via
-      the appropriate getters. 
-    </action>
-    <action dev="markt" type="update">
-      Code clean-up. Add missing @Override annotations, remove unused code,
-      remove deprecated code and unnecessary code.
-    </action>
-    <action dev="markt" type="update">
-      Introduce an Enum (WhenExhaustedAction) to control pool behaviour when no
-      more objects are available to allocate.
-    </action>
-    <action dev="markt" type="update">
-      Remove WhenExhuastedAction.GROW since it is equivalent to
-      WhenExhuastedAction.FAIL with a maxActive value of Integer.MAX_VALUE. 
-    </action>
-    <action dev="markt" type="fix" issue="POOL-188" due-to="sebb">
-      Remove confusing method PoolUtils.ErodingKeyedObjectPool.numIdle(K key).
-    </action>
-    <action dev="markt" type="update" issue="POOL-155">
-      Guard against multiple returns of the same object to the pool and ensure
-      that only objects borrowed from the pool are returned to it.
-    </action>
-    <action dev="markt" type="fix" issue="POOL-150">
-      Ensure GKOP.preparePool() throws an exception if no factory has been
-      defined.
-    </action>
-    <action dev="markt" type="fix" issue="POOL-134">
-      Add the ability to specify a per call wait time when borrowing an object.
-    </action>
-    <action dev="markt" type="fix" issue="POOL-121">
-      Provide a name for the eviction timer thread.
-    </action>
-    <action dev="markt" type="update">
-      Remove setFactory() method from GOP.
-    </action>
-    <action dev="markt" type="fix" issue="POOL-173">
-      Reduce duplication in configuration code.
-    </action>
-    <action dev="markt" type="fix" issue="POOL-178">
-      Re-factor common code into common base classes.
-    </action>
-    <action dev="markt" type="update" issue="POOL-172">
-      Expose GOP and GKOP attributes via JMX.
-    </action>
-    <action dev="markt" type="update" issue="POOL-98">
-      Add additional attributes (also accessible via JMX) for monitoring.
-    </action>
-    <action dev="markt" type="update">
-      Change meaning of zero for maxWait to a maximum wait of zero milliseconds
-      rather than the unexpected infinite wait.
+    <action dev="psteitz" type="fix" issue="POOL-192" due-to="Helge Dannenberg">
+      Corrected total internal processing counter update in destroy.  Prior to the fix
+      for this issue, clear(key) was leaking capacity associated with elements in the
+      pool being cleared.
     </action>
   </release>
   <release version="1.5.6" date="2011-04-03" description="This is a patch release, including bugfixes only.">
@@ -100,7 +44,7 @@
     <action dev="markt" type="update" issue="POOL-181">
       Make BaseObjectPool.isClosed() public.
     </action>
-    <action dev="markt" type="fix" issue="POOL-184" due-to="Adrian Nistor">
+    <action dev="markt" type="fix" issue="POOL-184" dut-to="Adrian Nistor">
       Correct bug that could lead to inappropriate pool starvation when evict()
       and borrowObject() are called concurrently.
     </action>

@@ -1,6 +1,6 @@
                         
 
-              commons-pool-1.5.6 RELEASE NOTES
+              commons-pool-1.5.7 RELEASE NOTES
 
 This is a patch release, including bugfixes only.
 
@@ -8,16 +8,13 @@ Changes in this version include:
 
 
 Fixed Bugs:
-o  POOL-179:  Correctly handle an InterruptedException when waiting for an object from
-      the pool. Thanks to Axel Grossmann. 
-o  POOL-180:  Only stop tracking objects for a key when there are no idle objects, no
-      active objects and no objects being processed. 
-o  POOL-184:  Correct bug that could lead to inappropriate pool starvation when evict()
-      and borrowObject() are called concurrently. 
-o  Fix performance issues when object destruction has latency. Thanks to psteitz. 
+o  POOL-189:  Awaken threads waiting on borrowObject when a pool has been closed and have them throw
+      IllegalStateException.  Prior to the fix for this issue, threads waiting in borrowObject when
+      close was invoked on GOP or GKOP would block indefinitely. Thanks to Bill Speirs. 
+o  POOL-192:  Corrected total internal processing counter update in destroy.  Prior to the fix
+      for this issue, clear(key) was leaking capacity associated with elements in the
+      pool being cleared. Thanks to Helge Dannenberg. 
 
-Changes:
-o  POOL-181:  Make BaseObjectPool.isClosed() public. 
 
  
 For complete information on commons-pool, including instructions on how to submit bug reports,
