@@ -20,7 +20,7 @@
     <title>Commons Pool Changes</title>
   </properties>
   <body>
-  <release version="1.5.7" date="TBD" description="This is a patch release, including bugfixes only.">
+  <release version="1.5.7" date="2011-12-20" description="This is a patch release, including bugfixes only.">
     <action dev="psteitz" type="fix" issue="POOL-189" due-to="Bill Speirs">
       Awaken threads waiting on borrowObject when a pool has been closed and have them throw
       IllegalStateException.  Prior to the fix for this issue, threads waiting in borrowObject when
