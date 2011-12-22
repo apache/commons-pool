@@ -64,6 +64,8 @@ package org.apache.commons.pool;
  * at a time.
  * </p>
  *
+ * @param <T> the type of objects held in this pool
+ * 
  * @see ObjectPool
  *
  * @author Rodney Waldhoff

@@ -55,6 +55,9 @@ import java.util.NoSuchElementException;
  *
  * <p>See {@link BaseKeyedObjectPool} for a simple base implementation.</p>
  *
+ * @param <K> the type of keys in this pool
+ * @param <V> the type of objects held in this pool
+ * 
  * @author Rodney Waldhoff
  * @author Sandy McArthur
  * @version $Revision$ $Date$

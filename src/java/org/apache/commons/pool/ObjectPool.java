@@ -53,6 +53,8 @@ import java.util.NoSuchElementException;
  *
  * <p>See {@link BaseObjectPool} for a simple base implementation.</p>
  *
+ * @param <T> the type of objects held in this pool
+ * 
  * @author Rodney Waldhoff
  * @author Sandy McArthur
  * @version $Revision$ $Date$

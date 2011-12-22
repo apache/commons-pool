@@ -24,6 +24,9 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
 /**
  * A factory for creating {@link StackKeyedObjectPool} instances.
  *
+ * @param <K> the type of keys in this pool
+ * @param <V> the type of objects held in this pool
+ * 
  * @see StackKeyedObjectPool
  * @see KeyedObjectPoolFactory
  *

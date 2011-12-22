@@ -22,6 +22,8 @@ package org.apache.commons.pool;
  * <p>
  * All operations defined here are essentially no-op's.
  *
+ * @param <T> the type of objects held in this pool
+ * 
  * @see PoolableObjectFactory
  * @see BaseKeyedPoolableObjectFactory
  *

@@ -38,6 +38,8 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * re-using <tt>Object</tt>s without introducing
  * artificial limits.
  *
+ * @param <T> the type of objects held in this pool
+ * 
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
  * @author Sandy McArthur

@@ -24,6 +24,8 @@ import org.apache.commons.pool.PoolableObjectFactory;
 /**
  * A factory for creating {@link StackObjectPool} instances.
  *
+ * @param <T> the type of objects held in this pool
+ * 
  * @see StackObjectPool
  * @see StackKeyedObjectPoolFactory
  *

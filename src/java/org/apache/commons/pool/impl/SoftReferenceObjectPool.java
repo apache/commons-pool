@@ -34,6 +34,8 @@ import org.apache.commons.pool.PoolUtils;
  * A {@link java.lang.ref.SoftReference SoftReference} based
  * {@link ObjectPool}.
  *
+ * @param <T> the type of objects held in this pool
+ * 
  * @author Rodney Waldhoff
  * @author Sandy McArthur
  * @version $Revision$ $Date$

@@ -193,6 +193,10 @@ import org.apache.commons.pool.PoolUtils;
  * ensure that no call to a factory method will occur within a synchronization
  * block. See POOL-125 and DBCP-44 for more information.
  * </p>
+ * 
+ * @param <K> the type of keys in this pool
+ * @param <V> the type of objects held in this pool
+ * 
  * @see GenericObjectPool
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck

@@ -22,6 +22,9 @@ package org.apache.commons.pool;
  * Optional operations are implemented to either do nothing, return a value
  * indicating it is unsupported or throw {@link UnsupportedOperationException}.
  *
+ * @param <K> the type of keys in this pool
+ * @param <V> the type of objects held in this pool
+ * 
  * @author Rodney Waldhoff
  * @author Sandy McArthur
  * @version $Revision$ $Date$

@@ -75,6 +75,7 @@ public final class PoolUtils {
      * needed. This method is the equivalent of calling
      * {@link #adapt(KeyedPoolableObjectFactory, Object) PoolUtils.adapt(aKeyedPoolableObjectFactory, new Object())}.
      *
+     * @param <V> the type of object
      * @param keyedFactory the {@link KeyedPoolableObjectFactory} to delegate to.
      * @return a {@link PoolableObjectFactory} that delegates to <code>keyedFactory</code> with an internal key.
      * @throws IllegalArgumentException when <code>keyedFactory</code> is <code>null</code>.
@@ -89,6 +90,8 @@ public final class PoolUtils {
      * Adapt a <code>KeyedPoolableObjectFactory</code> instance to work where a <code>PoolableObjectFactory</code> is
      * needed using the specified <code>key</code> when delegating.
      *
+     * @param <K> the type of key
+     * @param <V> the type of object
      * @param keyedFactory the {@link KeyedPoolableObjectFactory} to delegate to.
      * @param key the key to use when delegating.
      * @return a {@link PoolableObjectFactory} that delegates to <code>keyedFactory</code> with the specified key.
@@ -104,6 +107,8 @@ public final class PoolUtils {
      * Adapt a <code>PoolableObjectFactory</code> instance to work where a <code>KeyedPoolableObjectFactory</code> is
      * needed. The key is ignored.
      *
+     * @param <K> the type of key
+     * @param <V> the type of object
      * @param factory the {@link PoolableObjectFactory} to delegate to.
      * @return a {@link KeyedPoolableObjectFactory} that delegates to <code>factory</code> ignoring the key.
      * @throws IllegalArgumentException when <code>factory</code> is <code>null</code>.
@@ -117,6 +122,7 @@ public final class PoolUtils {
      * Adapt a <code>KeyedObjectPool</code> instance to work where an <code>ObjectPool</code> is needed. This is the
      * equivalent of calling {@link #adapt(KeyedObjectPool, Object) PoolUtils.adapt(aKeyedObjectPool, new Object())}.
      *
+     * @param <V> the type of object
      * @param keyedPool the {@link KeyedObjectPool} to delegate to.
      * @return an {@link ObjectPool} that delegates to <code>keyedPool</code> with an internal key.
      * @throws IllegalArgumentException when <code>keyedPool</code> is <code>null</code>.
@@ -131,6 +137,7 @@ public final class PoolUtils {
      * Adapt a <code>KeyedObjectPool</code> instance to work where an <code>ObjectPool</code> is needed using the
      * specified <code>key</code> when delegating.
      *
+     * @param <V> the type of object
      * @param keyedPool the {@link KeyedObjectPool} to delegate to.
      * @param key the key to use when delegating.
      * @return an {@link ObjectPool} that delegates to <code>keyedPool</code> with the specified key.
@@ -146,6 +153,8 @@ public final class PoolUtils {
      * Adapt an <code>ObjectPool</code> to work where an <code>KeyedObjectPool</code> is needed.
      * The key is ignored.
      *
+     * @param <K> the type of key
+     * @param <V> the type of object
      * @param pool the {@link ObjectPool} to delegate to.
      * @return a {@link KeyedObjectPool} that delegates to <code>pool</code> ignoring the key.
      * @throws IllegalArgumentException when <code>pool</code> is <code>null</code>.
@@ -159,6 +168,7 @@ public final class PoolUtils {
      * Wraps an <code>ObjectPool</code> and dynamically checks the type of objects borrowed and returned to the pool.
      * If an object is passed to the pool that isn't of type <code>type</code> a {@link ClassCastException} will be thrown.
      *
+     * @param <T> the type of object
      * @param pool the pool to enforce type safety on
      * @param type the class type to enforce.
      * @return an <code>ObjectPool</code> that will only allow objects of <code>type</code>
@@ -178,6 +188,8 @@ public final class PoolUtils {
      * Wraps a <code>KeyedObjectPool</code> and dynamically checks the type of objects borrowed and returned to the keyedPool.
      * If an object is passed to the keyedPool that isn't of type <code>type</code> a {@link ClassCastException} will be thrown.
      *
+     * @param <K> the type of key
+     * @param <V> the type of object
      * @param keyedPool the keyedPool to enforce type safety on
      * @param type the class type to enforce.
      * @return a <code>KeyedObjectPool</code> that will only allow objects of <code>type</code>
@@ -197,6 +209,7 @@ public final class PoolUtils {
      * Periodically check the idle object count for the pool. At most one idle object will be added per period.
      * If there is an exception when calling {@link ObjectPool#addObject()} then no more checks will be performed.
      *
+     * @param <T> the type of object
      * @param pool the pool to check periodically.
      * @param minIdle if the {@link ObjectPool#getNumIdle()} is less than this then add an idle object.
      * @param period the frequency to check the number of idle objects in a pool, see
@@ -224,6 +237,8 @@ public final class PoolUtils {
      * If there is an exception when calling {@link KeyedObjectPool#addObject(Object)} then no more checks for that key
      * will be performed.
      *
+     * @param <K> the type of key
+     * @param <V> the type of object
      * @param keyedPool the keyedPool to check periodically.
      * @param key the key to check the idle count of.
      * @param minIdle if the {@link KeyedObjectPool#getNumIdle(Object)} is less than this then add an idle object.
@@ -254,6 +269,8 @@ public final class PoolUtils {
      * Periodically check the idle object count for each key in the <code>Collection</code> <code>keys</code> in the keyedPool.
      * At most one idle object will be added per period.
      *
+     * @param <K> the type of key
+     * @param <V> the type of object
      * @param keyedPool the keyedPool to check periodically.
      * @param keys a collection of keys to check the idle object count.
      * @param minIdle if the {@link KeyedObjectPool#getNumIdle(Object)} is less than this then add an idle object.
@@ -283,6 +300,7 @@ public final class PoolUtils {
     /**
      * Call <code>addObject()</code> on <code>pool</code> <code>count</code> number of times.
      *
+     * @param <T> the type of object
      * @param pool the pool to prefill.
      * @param count the number of idle objects to add.
      * @throws Exception when {@link ObjectPool#addObject()} fails.
@@ -302,6 +320,8 @@ public final class PoolUtils {
      * Call <code>addObject(Object)</code> on <code>keyedPool</code> with <code>key</code> <code>count</code>
      * number of times.
      *
+     * @param <K> the type of key
+     * @param <V> the type of object
      * @param keyedPool the keyedPool to prefill.
      * @param key the key to add objects for.
      * @param count the number of idle objects to add for <code>key</code>.
@@ -326,6 +346,8 @@ public final class PoolUtils {
      * <code>count</code> number of times. This has the same effect as calling
      * {@link #prefill(KeyedObjectPool, Object, int)} for each key in the <code>keys</code> collection.
      *
+     * @param <K> the type of key
+     * @param <V> the type of object
      * @param keyedPool the keyedPool to prefill.
      * @param keys {@link Collection} of keys to add objects for.
      * @param count the number of idle objects to add for each <code>key</code>.
@@ -355,6 +377,7 @@ public final class PoolUtils {
      * borrowed with another layer of synchronization will cause liveliness issues or a deadlock.
      * </p>
      *
+     * @param <T> the type of object
      * @param pool the ObjectPool to be "wrapped" in a synchronized ObjectPool.
      * @return a synchronized view of the specified ObjectPool.
      * @since Pool 1.3
@@ -386,6 +409,8 @@ public final class PoolUtils {
      * borrowed with another layer of synchronization will cause liveliness issues or a deadlock.
      * </p>
      *
+     * @param <K> the type of key
+     * @param <V> the type of object
      * @param keyedPool the KeyedObjectPool to be "wrapped" in a synchronized KeyedObjectPool.
      * @return a synchronized view of the specified KeyedObjectPool.
      * @since Pool 1.3
@@ -408,6 +433,7 @@ public final class PoolUtils {
     /**
      * Returns a synchronized (thread-safe) PoolableObjectFactory backed by the specified PoolableObjectFactory.
      *
+     * @param <T> the type of object
      * @param factory the PoolableObjectFactory to be "wrapped" in a synchronized PoolableObjectFactory.
      * @return a synchronized view of the specified PoolableObjectFactory.
      * @since Pool 1.3
@@ -419,6 +445,8 @@ public final class PoolUtils {
     /**
      * Returns a synchronized (thread-safe) KeyedPoolableObjectFactory backed by the specified KeyedPoolableObjectFactory.
      *
+     * @param <K> the type of key
+     * @param <V> the type of object
      * @param keyedFactory the KeyedPoolableObjectFactory to be "wrapped" in a synchronized KeyedPoolableObjectFactory.
      * @return a synchronized view of the specified KeyedPoolableObjectFactory.
      * @since Pool 1.3
@@ -433,6 +461,7 @@ public final class PoolUtils {
      * provided by many pool implementations. This is also an effective way to shrink FIFO ordered
      * pools that experience load spikes.
      *
+     * @param <T> the type of object
      * @param pool the ObjectPool to be decorated so it shrinks it's idle count when possible.
      * @return a pool that adaptively decreases it's size when idle objects are no longer needed.
      * @see #erodingPool(ObjectPool, float)
@@ -454,6 +483,7 @@ public final class PoolUtils {
      * Values greater than 1 cause the pool to less frequently try to shrink it's size.
      * </p>
      *
+     * @param <T> the type of object
      * @param pool the ObjectPool to be decorated so it shrinks it's idle count when possible.
      * @param factor a positive value to scale the rate at which the pool tries to reduce it's size.
      * If 0 &lt; factor &lt; 1 then the pool shrinks more aggressively.
@@ -478,6 +508,8 @@ public final class PoolUtils {
      * provided by many pool implementations. This is also an effective way to shrink FIFO ordered
      * pools that experience load spikes.
      *
+     * @param <K> the type of key
+     * @param <V> the type of object
      * @param keyedPool the KeyedObjectPool to be decorated so it shrinks it's idle count when
      * possible.
      * @return a pool that adaptively decreases it's size when idle objects are no longer needed.
@@ -501,6 +533,8 @@ public final class PoolUtils {
      * Values greater than 1 cause the pool to less frequently try to shrink it's size.
      * </p>
      *
+     * @param <K> the type of key
+     * @param <V> the type of object
      * @param keyedPool the KeyedObjectPool to be decorated so it shrinks it's idle count when
      * possible.
      * @param factor a positive value to scale the rate at which the pool tries to reduce it's size.
@@ -532,6 +566,8 @@ public final class PoolUtils {
      * shrink it's size. When perKey is true, each key is shrunk independently.
      * </p>
      *
+     * @param <K> the type of key
+     * @param <V> the type of object
      * @param keyedPool the KeyedObjectPool to be decorated so it shrinks it's idle count when
      * possible.
      * @param factor a positive value to scale the rate at which the pool tries to reduce it's size.

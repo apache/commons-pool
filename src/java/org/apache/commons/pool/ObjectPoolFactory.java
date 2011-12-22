@@ -20,6 +20,8 @@ package org.apache.commons.pool;
 /**
  * A factory interface for creating {@link ObjectPool}s.
  *
+ * @param <T> the type of objects held in this pool
+ * 
  * @see ObjectPool
  *
  * @author Rodney Waldhoff

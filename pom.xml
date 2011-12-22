@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
-    <version>20</version>
+    <version>22</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>commons-pool</groupId>
@@ -124,15 +124,6 @@
     </dependency>
   </dependencies>
 
-  <distributionManagement>
-    <!-- Cannot define in parent ATM, see COMMONSSITE-26 -->
-    <site>
-      <id>apache.website</id>
-      <name>Apache Commons Site</name>
-      <url>${commons.deployment.protocol}://people.apache.org/www/commons.apache.org/pool</url>
-    </site>
-  </distributionManagement>
-  
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -144,21 +135,16 @@
     <commons.jira.pid>12310488</commons.jira.pid>
   </properties> 
 
+  <distributionManagement>
+    <!-- Cannot define in parent ATM, see COMMONSSITE-26 -->
+    <site>
+      <id>apache.website</id>
+      <name>Apache Commons Site</name>
+      <url>${commons.deployment.protocol}://people.apache.org/www/commons.apache.org/${commons.componentid}</url>
+    </site>
+  </distributionManagement>
+  
   <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <!-- Override plugin versions in parent Pom, which are too old to support manifests -->
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-source-plugin</artifactId>
-          <version>2.1.2</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-assembly-plugin</artifactId>
-          <version>2.2.2</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
     <sourceDirectory>src/java</sourceDirectory>
     <testSourceDirectory>src/test</testSourceDirectory>
       <plugins>

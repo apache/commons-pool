@@ -64,6 +64,9 @@ package org.apache.commons.pool;
  * at a time.
  * </p>
  *
+ * @param <K> the type of keys in this pool
+ * @param <V> the type of objects held in this pool
+ * 
  * @see KeyedObjectPool
  *
  * @author Rodney Waldhoff
