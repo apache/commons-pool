@@ -32,6 +32,7 @@ public class TestGenericKeyedObjectPoolFactory extends TestKeyedObjectPoolFactor
         super(name);
     }
 
+    @Override
     protected KeyedObjectPoolFactory<Object, Integer> makeFactory(final KeyedPoolableObjectFactory<Object, Integer> objectFactory) {
         return new GenericKeyedObjectPoolFactory<Object, Integer>(objectFactory);
     }

@@ -51,6 +51,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements Obj
      * @see #SoftReferenceObjectPool(PoolableObjectFactory)
      * @deprecated to be removed in pool 2.0.  Use {@link #SoftReferenceObjectPool(PoolableObjectFactory)}.
      */
+    @Deprecated
     public SoftReferenceObjectPool() {
         _pool = new ArrayList<SoftReference<T>>();
         _factory = null;
@@ -76,6 +77,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements Obj
      * @deprecated because this is a SoftReference pool, prefilled idle obejects may be garbage collected before they are used.
      *      To be removed in Pool 2.0.
      */
+    @Deprecated
     public SoftReferenceObjectPool(PoolableObjectFactory<T> factory, int initSize) throws Exception, IllegalArgumentException {
         if (factory == null) {
             throw new IllegalArgumentException("factory required to prefill the pool.");
@@ -106,6 +108,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements Obj
      * @throws Exception if an exception occurs creating a new instance
      * @return a valid, activated object instance
      */
+    @Override
     public synchronized T borrowObject() throws Exception {
         assertOpen();
         T obj = null;
@@ -165,6 +168,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements Obj
      * 
      * @param obj instance to return to the pool
      */
+    @Override
     public synchronized void returnObject(T obj) throws Exception {
         boolean success = !isClosed();
         if (_factory != null) {
@@ -198,6 +202,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements Obj
     /**
      * {@inheritDoc}
      */
+    @Override
     public synchronized void invalidateObject(T obj) throws Exception {
         _numActive--;
         if (_factory != null) {
@@ -220,6 +225,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements Obj
      * @throws IllegalStateException if invoked on a {@link #close() closed} pool
      * @throws Exception when the {@link #getFactory() factory} has a problem creating or passivating an object.
      */
+    @Override
     public synchronized void addObject() throws Exception {
         assertOpen();
         if (_factory == null) {
@@ -254,6 +260,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements Obj
      * 
      * @return estimated number of idle instances in the pool
      */
+    @Override
     public synchronized int getNumIdle() {
         pruneClearedReferences();
         return _pool.size();
@@ -264,6 +271,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements Obj
      *
      * @return the number of instances currently borrowed from this pool
      */
+    @Override
     public synchronized int getNumActive() {
         return _numActive;
     }
@@ -271,6 +279,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements Obj
     /**
      * Clears any objects sitting idle in the pool.
      */
+    @Override
     public synchronized void clear() {
         if(null != _factory) {
             Iterator<SoftReference<T>> iter = _pool.iterator();
@@ -299,6 +308,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements Obj
      *
      * @throws Exception never - exceptions clearing the pool are swallowed
      */
+    @Override
     public void close() throws Exception {
         super.close();
         clear();
@@ -314,6 +324,8 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements Obj
      * @throws IllegalStateException when the factory cannot be set at this time
      * @deprecated to be removed in pool 2.0
      */
+    @Deprecated
+    @Override
     public synchronized void setFactory(PoolableObjectFactory<T> factory) throws IllegalStateException {
         assertOpen();
         if(0 < getNumActive()) {

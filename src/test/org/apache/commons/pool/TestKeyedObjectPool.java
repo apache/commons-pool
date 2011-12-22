@@ -50,6 +50,7 @@ public abstract class TestKeyedObjectPool extends TestCase {
         final KeyedObjectPool<Object, Integer> pool;
         try {
             pool = makeEmptyPool(new BaseKeyedPoolableObjectFactory<Object, Integer>() {
+                @Override
                 public Integer makeObject(final Object key) throws Exception {
                     return new Integer(1234567890);
                 }

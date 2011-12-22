@@ -1054,6 +1054,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @return object instance
      * @throws NoSuchElementException if an instance cannot be returned
      */
+    @Override
     public T borrowObject() throws Exception {
         long starttime = System.currentTimeMillis();
         Latch<T> latch = new Latch<T>();
@@ -1282,6 +1283,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * 
      * @throws Exception if the configured {@link PoolableObjectFactory} throws an exception destroying obj
      */
+    @Override
     public void invalidateObject(T obj) throws Exception {
         try {
             if (_factory != null) {
@@ -1310,6 +1312,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * while removed items are being destroyed.</li>
      * <li>Exceptions encountered destroying idle instances are swallowed.</li></ul></p>
      */
+    @Override
     public void clear() {
         List<ObjectTimestampPair<T>> toDestroy = new ArrayList<ObjectTimestampPair<T>>();
 
@@ -1350,6 +1353,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      *
      * @return the number of instances currently borrowed from this pool
      */
+    @Override
     public synchronized int getNumActive() {
         return _numActive;
     }
@@ -1359,6 +1363,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      *
      * @return the number of instances currently idle in this pool
      */
+    @Override
     public synchronized int getNumIdle() {
         return _pool.size();
     }
@@ -1382,6 +1387,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * 
      * @param obj instance to return to the pool
      */
+    @Override
     public void returnObject(T obj) throws Exception {
         try {
             addObjectToPool(obj, true);
@@ -1482,6 +1488,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * 
      * @throws Exception
      */
+    @Override
     public void close() throws Exception {
         super.close();
         synchronized (this) {
@@ -1511,6 +1518,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * @throws IllegalStateException when the factory cannot be set at this time
      * @deprecated to be removed in version 2.0
      */
+    @Deprecated
+    @Override
     public void setFactory(PoolableObjectFactory<T> factory) throws IllegalStateException {
         List<ObjectTimestampPair<T>> toDestroy = new ArrayList<ObjectTimestampPair<T>>();
         final PoolableObjectFactory<T> oldFactory = _factory;
@@ -1673,6 +1682,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * Create an object, and place it into the pool.
      * addObject() is useful for "pre-loading" a pool with idle objects.
      */
+    @Override
     public void addObject() throws Exception {
         assertOpen();
         if (_factory == null) {
@@ -1759,6 +1769,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
          * Run pool maintenance.  Evict objects qualifying for eviction and then
          * invoke {@link GenericObjectPool#ensureMinIdle()}.
          */
+        @Override
         public void run() {
             try {
                 evict();

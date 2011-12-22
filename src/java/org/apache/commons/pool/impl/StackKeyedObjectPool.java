@@ -143,6 +143,7 @@ public class StackKeyedObjectPool<K, V> extends BaseKeyedObjectPool<K, V> implem
      * @param key the pool key
      * @return keyed poolable object instance
      */
+    @Override
     public synchronized V borrowObject(K key) throws Exception {
         assertOpen();
         Stack<V> stack = (_pools.get(key));
@@ -202,6 +203,7 @@ public class StackKeyedObjectPool<K, V> extends BaseKeyedObjectPool<K, V> implem
      * @param key the pool key
      * @param obj returning instance
      */
+    @Override
     public synchronized void returnObject(K key, V obj) throws Exception {
         decrementActiveCount(key);
         if (null != _factory) {
@@ -258,6 +260,7 @@ public class StackKeyedObjectPool<K, V> extends BaseKeyedObjectPool<K, V> implem
     /**
      * {@inheritDoc}
      */
+    @Override
     public synchronized void invalidateObject(K key, V obj) throws Exception {
         decrementActiveCount(key);
         if(null != _factory) {
@@ -275,6 +278,7 @@ public class StackKeyedObjectPool<K, V> extends BaseKeyedObjectPool<K, V> implem
      * @throws Exception when {@link KeyedPoolableObjectFactory#makeObject} fails.
      * @throws IllegalStateException when no {@link #setFactory factory} has been set or after {@link #close} has been called on this pool.
      */
+    @Override
     public synchronized void addObject(K key) throws Exception {
         assertOpen();
         if (_factory == null) {
@@ -330,6 +334,7 @@ public class StackKeyedObjectPool<K, V> extends BaseKeyedObjectPool<K, V> implem
      *
      * @return the total number of instances currently idle in this pool
      */
+    @Override
     public synchronized int getNumIdle() {
         return _totIdle;
     }
@@ -339,6 +344,7 @@ public class StackKeyedObjectPool<K, V> extends BaseKeyedObjectPool<K, V> implem
      *
      * @return the total number of instances currently borrowed from this pool
      */
+    @Override
     public synchronized int getNumActive() {
         return _totActive;
     }
@@ -350,6 +356,7 @@ public class StackKeyedObjectPool<K, V> extends BaseKeyedObjectPool<K, V> implem
      * @param key the key to query
      * @return the number of instances corresponding to the given <code>key</code> currently borrowed in this pool
      */
+    @Override
     public synchronized int getNumActive(K key) {
         return getActiveCount(key);
     }
@@ -360,6 +367,7 @@ public class StackKeyedObjectPool<K, V> extends BaseKeyedObjectPool<K, V> implem
      * @param key the key to query
      * @return the number of instances corresponding to the given <code>key</code> currently idle in this pool
      */
+    @Override
     public synchronized int getNumIdle(K key) {
         try {
             return(_pools.get(key)).size();
@@ -371,6 +379,7 @@ public class StackKeyedObjectPool<K, V> extends BaseKeyedObjectPool<K, V> implem
     /**
      * Clears the pool, removing all pooled instances.
      */
+    @Override
     public synchronized void clear() {
         Iterator<K> it = _pools.keySet().iterator();
         while(it.hasNext()) {
@@ -388,6 +397,7 @@ public class StackKeyedObjectPool<K, V> extends BaseKeyedObjectPool<K, V> implem
      *
      * @param key the key to clear
      */
+    @Override
     public synchronized void clear(K key) {
         Stack<V> stack = _pools.remove(key);
         destroyStack(key,stack);
@@ -425,6 +435,7 @@ public class StackKeyedObjectPool<K, V> extends BaseKeyedObjectPool<K, V> implem
      * 
      * @return Keys and pool sizes
      */
+    @Override
     public synchronized String toString() {
         StringBuffer buf = new StringBuffer();
         buf.append(getClass().getName());
@@ -448,6 +459,7 @@ public class StackKeyedObjectPool<K, V> extends BaseKeyedObjectPool<K, V> implem
      *
      * @throws Exception <strong>deprecated</strong>: implementations should silently fail if not all resources can be freed.
      */
+    @Override
     public void close() throws Exception {
         super.close();
         clear();
@@ -463,6 +475,8 @@ public class StackKeyedObjectPool<K, V> extends BaseKeyedObjectPool<K, V> implem
      * @throws IllegalStateException when the factory cannot be set at this time
      * @deprecated to be removed in pool 2.0
      */
+    @Deprecated
+    @Override
     public synchronized void setFactory(KeyedPoolableObjectFactory<K, V> factory) throws IllegalStateException {
         if(0 < getNumActive()) {
             throw new IllegalStateException("Objects are already active");
@@ -592,42 +606,49 @@ public class StackKeyedObjectPool<K, V> extends BaseKeyedObjectPool<K, V> implem
      *  My named-set of pools.
      *  @deprecated to be removed in pool 2.0.  Use {@link #getPools()}
      */
+    @Deprecated
     protected HashMap<K, Stack<V>> _pools = null;
 
     /**
      * My {@link KeyedPoolableObjectFactory}.
      * @deprecated to be removed in pool 2.0.  Use {@link #getFactory()}
      */
+    @Deprecated
     protected KeyedPoolableObjectFactory<K, V> _factory = null;
 
     /**
      *  The cap on the number of "sleeping" instances in <code>each</code> pool.
      *  @deprecated to be removed in pool 2.0.  Use {@link #getMaxSleeping()}
      */
+    @Deprecated
     protected int _maxSleeping = DEFAULT_MAX_SLEEPING;
 
     /**
      * The initial capacity of each pool.
      * @deprecated to be removed in pool 2.0.  Use {@link #getInitSleepingCapacity()}.
      */
+    @Deprecated
     protected int _initSleepingCapacity = DEFAULT_INIT_SLEEPING_CAPACITY;
 
     /**
      * Total number of object borrowed and not yet returned for all pools.
      * @deprecated to be removed in pool 2.0.  Use {@link #getTotActive()}.
      */
+    @Deprecated
     protected int _totActive = 0;
 
     /**
      * Total number of objects "sleeping" for all pools
      * @deprecated to be removed in pool 2.0.  Use {@link #getTotIdle()}.
      */
+    @Deprecated
     protected int _totIdle = 0;
 
     /**
      * Number of active objects borrowed and not yet returned by pool
      * @deprecated to be removed in pool 2.0.  Use {@link #getActiveCount()}.
      */
+    @Deprecated
     protected HashMap<K, Integer> _activeCount = null;
 
 }

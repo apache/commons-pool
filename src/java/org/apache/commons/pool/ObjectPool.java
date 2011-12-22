@@ -188,5 +188,6 @@ public interface ObjectPool<T> {
      * @throws UnsupportedOperationException if this implementation does not support the operation
      * @deprecated to be removed in pool 2.0
      */
+    @Deprecated
     void setFactory(PoolableObjectFactory<T> factory) throws IllegalStateException, UnsupportedOperationException;
 }

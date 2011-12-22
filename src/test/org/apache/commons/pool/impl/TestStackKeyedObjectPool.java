@@ -34,25 +34,30 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool<String, St
         super(testName);
     }
 
+    @Override
     protected KeyedObjectPool<String, String> makeEmptyPool(int mincapacity) {
         StackKeyedObjectPool<String, String> pool = new StackKeyedObjectPool<String, String>(new SimpleFactory(),mincapacity);
         return pool;
     }
 
+    @Override
     protected KeyedObjectPool<Object, Integer> makeEmptyPool(KeyedPoolableObjectFactory<Object, Integer> factory) {
         return new StackKeyedObjectPool<Object, Integer>(factory);
     }
 
+    @Override
     protected String getNthObject(Object key, int n) {
         return String.valueOf(key) + String.valueOf(n);
     }
 
+    @Override
     protected String makeKey(int n) {
         return String.valueOf(n);
     }
 
     private StackKeyedObjectPool<String, String> pool = null;
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         pool = new StackKeyedObjectPool<String, String>(
@@ -68,6 +73,7 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool<String, St
     }
 
 
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
         pool = null;
@@ -180,6 +186,7 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool<String, St
         }
     }
 
+    @Override
     public void testToString() throws Exception {
         StackKeyedObjectPool<String, String> pool = new StackKeyedObjectPool<String, String>(new SimpleFactory());
         assertNotNull(pool.toString());
@@ -309,10 +316,12 @@ public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool<String, St
         public void passivateObject(String key, String obj) { }
     }
 
+    @Override
     protected boolean isLifo() {
         return true;
     }
 
+    @Override
     protected boolean isFifo() {
         return false;
     }

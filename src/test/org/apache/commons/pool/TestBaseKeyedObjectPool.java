@@ -29,6 +29,7 @@ public class TestBaseKeyedObjectPool<K, V> extends TestKeyedObjectPool {
         super(testName);
     }
 
+    @Override
     protected KeyedObjectPool<Object, Integer> makeEmptyPool(KeyedPoolableObjectFactory<Object, Integer> factory) {
         if (this.getClass() != TestBaseKeyedObjectPool.class) {
             fail("Subclasses of TestBaseKeyedObjectPool must reimplement this method.");
@@ -69,10 +70,12 @@ public class TestBaseKeyedObjectPool<K, V> extends TestKeyedObjectPool {
         throw new UnsupportedOperationException("BaseKeyedObjectPool isn't a complete implementation.");
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
     }
 
+    @Override
     public void tearDown() throws Exception {
         _pool = null;
         super.tearDown();
@@ -83,11 +86,14 @@ public class TestBaseKeyedObjectPool<K, V> extends TestKeyedObjectPool {
             return; // skip redundant tests
         }
         KeyedObjectPool<String, String> pool = new BaseKeyedObjectPool<String, String>() { 
+            @Override
             public String borrowObject(String key) {
                 return null;
             }
+            @Override
             public void returnObject(String key, String obj) {
             }
+            @Override
             public void invalidateObject(String key, String obj) {
             }            
         };

@@ -319,6 +319,7 @@ class CursorableLinkedList<E> implements List<E>, Serializable {
      * @param o the object to be compared for equality with this list.
      * @return <tt>true</tt> if the specified object is equal to this list.
      */
+    @Override
     public boolean equals(Object o) {
         if(o == this) {
             return true;
@@ -390,6 +391,7 @@ class CursorableLinkedList<E> implements List<E>, Serializable {
      * @see Object#equals(Object)
      * @see #equals(Object)
      */
+    @Override
     public int hashCode() {
         int hash = 1;
         for(Listable<E> elt = _head.next(), past = null; null != elt && past != _head.prev(); elt = (past = elt).next()) {
@@ -696,6 +698,7 @@ class CursorableLinkedList<E> implements List<E>, Serializable {
      * Returns a {@link String} representation of this list, suitable for debugging.
      * @return a {@link String} representation of this list, suitable for debugging.
      */
+    @Override
     public String toString() {
         StringBuffer buf = new StringBuffer();
         buf.append("[");
@@ -1123,14 +1126,17 @@ class CursorableLinkedList<E> implements List<E>, Serializable {
             registerCursor(this);
         }
 
+        @Override
         public int previousIndex() {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public int nextIndex() {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void add(E o) {
             checkForComod();
             Listable<E> elt = insertListable(_cur.prev(),_cur.next(),o);
@@ -1177,6 +1183,7 @@ class CursorableLinkedList<E> implements List<E>, Serializable {
             }
         }
 
+        @Override
         protected void checkForComod() {
             if(!_valid) {
                 throw new ConcurrentModificationException();
@@ -1240,6 +1247,7 @@ class CursorableSubList<E> extends CursorableLinkedList<E> implements List<E> {
 
     //--- public methods ------------------------------------------
 
+    @Override
     public void clear() {
         checkForComod();
         Iterator<E> it = iterator();
@@ -1249,151 +1257,181 @@ class CursorableSubList<E> extends CursorableLinkedList<E> implements List<E> {
         }
     }
 
+    @Override
     public Iterator<E> iterator() {
         checkForComod();
         return super.iterator();
     }
 
+    @Override
     public int size() {
         checkForComod();
         return super.size();
     }
 
+    @Override
     public boolean isEmpty() {
         checkForComod();
         return super.isEmpty();
     }
 
+    @Override
     public Object[] toArray() {
         checkForComod();
         return super.toArray();
     }
 
+    @Override
     public <T> T[] toArray(T a[]) {
         checkForComod();
         return super.toArray(a);
     }
 
+    @Override
     public boolean contains(Object o) {
         checkForComod();
         return super.contains(o);
     }
 
+    @Override
     public boolean remove(Object o) {
         checkForComod();
         return super.remove(o);
     }
 
+    @Override
     public E removeFirst() {
         checkForComod();
         return super.removeFirst();
     }
 
+    @Override
     public E removeLast() {
         checkForComod();
         return super.removeLast();
     }
 
+    @Override
     public boolean addAll(Collection<? extends E> c) {
         checkForComod();
         return super.addAll(c);
     }
 
+    @Override
     public boolean add(E o) {
         checkForComod();
         return super.add(o);
     }
 
+    @Override
     public boolean addFirst(E o) {
         checkForComod();
         return super.addFirst(o);
     }
 
+    @Override
     public boolean addLast(E o) {
         checkForComod();
         return super.addLast(o);
     }
 
+    @Override
     public boolean removeAll(Collection<?> c) {
         checkForComod();
         return super.removeAll(c);
     }
 
+    @Override
     public boolean containsAll(Collection<?> c) {
         checkForComod();
         return super.containsAll(c);
     }
 
+    @Override
     public boolean addAll(int index, Collection<? extends E> c) {
         checkForComod();
         return super.addAll(index,c);
     }
 
+    @Override
     public int hashCode() {
         checkForComod();
         return super.hashCode();
     }
 
+    @Override
     public boolean retainAll(Collection<?> c) {
         checkForComod();
         return super.retainAll(c);
     }
 
+    @Override
     public E set(int index, E element) {
         checkForComod();
         return super.set(index,element);
     }
 
+    @Override
     public boolean equals(Object o) {
         checkForComod();
         return super.equals(o);
     }
 
+    @Override
     public E get(int index) {
         checkForComod();
         return super.get(index);
     }
 
+    @Override
     public E getFirst() {
         checkForComod();
         return super.getFirst();
     }
 
+    @Override
     public E getLast() {
         checkForComod();
         return super.getLast();
     }
 
+    @Override
     public void add(int index, E element) {
         checkForComod();
         super.add(index,element);
     }
 
+    @Override
     public ListIterator<E> listIterator(int index) {
         checkForComod();
         return super.listIterator(index);
     }
 
+    @Override
     public E remove(int index) {
         checkForComod();
         return super.remove(index);
     }
 
+    @Override
     public int indexOf(Object o) {
         checkForComod();
         return super.indexOf(o);
     }
 
+    @Override
     public int lastIndexOf(Object o) {
         checkForComod();
         return super.lastIndexOf(o);
     }
 
+    @Override
     public ListIterator<E> listIterator() {
         checkForComod();
         return super.listIterator();
     }
 
+    @Override
     public List<E> subList(int fromIndex, int toIndex) {
         checkForComod();
         return super.subList(fromIndex,toIndex);
@@ -1408,6 +1446,7 @@ class CursorableSubList<E> extends CursorableLinkedList<E> implements List<E> {
      *
      * @return the newly created {@link CursorableLinkedList.Listable}
      */
+    @Override
     protected Listable<E> insertListable(Listable<E> before, Listable<E> after, E value) {
         _modCount++;
         _size++;
@@ -1429,6 +1468,7 @@ class CursorableSubList<E> extends CursorableLinkedList<E> implements List<E> {
     /**
      * Removes the given {@link CursorableLinkedList.Listable} from my list.
      */
+    @Override
     protected void removeListable(Listable<E> elt) {
         _modCount++;
         _size--;

@@ -32,6 +32,7 @@ public class TestStackKeyedObjectPoolFactory extends TestKeyedObjectPoolFactory 
         super(name);
     }
 
+    @Override
     protected KeyedObjectPoolFactory<Object, Integer> makeFactory(final KeyedPoolableObjectFactory<Object, Integer> objectFactory) throws UnsupportedOperationException {
         return new StackKeyedObjectPoolFactory<Object, Integer>(objectFactory);
     }

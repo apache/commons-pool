@@ -40,6 +40,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool<Object, 
         super(testName);
     }
 
+    @Override
     protected KeyedObjectPool<Object, String> makeEmptyPool(int mincapacity) {
         GenericKeyedObjectPool<Object, String> pool = new GenericKeyedObjectPool<Object, String>(
             new KeyedPoolableObjectFactory<Object, String>()  {
@@ -64,14 +65,17 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool<Object, 
         return pool;
     }
 
+    @Override
     protected KeyedObjectPool<Object, Integer> makeEmptyPool(KeyedPoolableObjectFactory<Object, Integer> factory) {
         return new GenericKeyedObjectPool<Object, Integer>(factory);
     }
 
+    @Override
     protected String getNthObject(Object key, int n) {
         return String.valueOf(key) + String.valueOf(n);
     }
 
+    @Override
     protected Object makeKey(int n) {
         return String.valueOf(n);
     }
@@ -81,11 +85,13 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool<Object, 
     private final Integer one = new Integer(1);
     private final Integer two = new Integer(2);
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         pool = new GenericKeyedObjectPool<String, String>(new SimpleFactory<String>());
     }
 
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
         pool.clear();
@@ -1527,6 +1533,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool<Object, 
             _thrown = null;
         }
 
+        @Override
         public void run() {
             try {
                 preborrow = System.currentTimeMillis();
@@ -1712,10 +1719,12 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool<Object, 
         }
     }
 
+    @Override
     protected boolean isLifo() {
         return true;
     }
 
+    @Override
     protected boolean isFifo() {
         return false;
     }

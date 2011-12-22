@@ -37,14 +37,17 @@ public class TestStackObjectPool extends TestBaseObjectPool<String> {
         super(testName);
     }
 
+    @Override
     protected ObjectPool<String> makeEmptyPool(int mincap) {
         return new StackObjectPool<String>(new SimpleFactory());
     }
 
+    @Override
     protected ObjectPool<Integer> makeEmptyPool(final PoolableObjectFactory<Integer> factory) {
         return new StackObjectPool<Integer>(factory);
     }
 
+    @Override
     protected String getNthObject(int n) {
         return String.valueOf(n);
     }
@@ -67,6 +70,7 @@ public class TestStackObjectPool extends TestBaseObjectPool<String> {
     /**
      * @deprecated - to be removed in pool 2.0
      */
+    @Deprecated
     public void testPoolWithNullFactory() throws Exception {
         ObjectPool<Integer> pool = new StackObjectPool<Integer>(10);
         for(int i=0;i<10;i++) {
@@ -93,6 +97,7 @@ public class TestStackObjectPool extends TestBaseObjectPool<String> {
     /**
      * @deprecated - to be removed in pool 2.0
      */
+    @Deprecated
     public void testBorrowFromEmptyPoolWithNullFactory() throws Exception {
         ObjectPool<Object> pool = new StackObjectPool<Object>();
         try {
@@ -106,6 +111,8 @@ public class TestStackObjectPool extends TestBaseObjectPool<String> {
     /**
      * @deprecated - to be removed in pool 2.0
      */
+    @Deprecated
+    @Override
     public void testSetFactory() throws Exception {
         ObjectPool<String> pool = new StackObjectPool<String>();
         try {
@@ -123,6 +130,7 @@ public class TestStackObjectPool extends TestBaseObjectPool<String> {
     /**
      * @deprecated - to be removed in pool 2.0
      */
+    @Deprecated
     public void testCantResetFactoryWithActiveObjects() throws Exception {
         ObjectPool<String> pool = new StackObjectPool<String>();
         pool.setFactory(new SimpleFactory());
@@ -140,6 +148,7 @@ public class TestStackObjectPool extends TestBaseObjectPool<String> {
     /**
      * @deprecated - to be removed in pool 2.0
      */
+    @Deprecated
     public void testCanResetFactoryWithoutActiveObjects() throws Exception {
         ObjectPool<String> pool = new StackObjectPool<String>();
         {
@@ -460,6 +469,7 @@ public class TestStackObjectPool extends TestBaseObjectPool<String> {
      * Verifies close contract - idle instances are destroyed, returning instances
      * are destroyed, add/borrowObject throw IllegalStateException.
      */
+    @Override
     public void testClose() throws Exception {
         SelectiveFactory factory = new SelectiveFactory();
         ObjectPool<Integer> pool = new StackObjectPool<Integer>(factory);
@@ -611,10 +621,12 @@ public class TestStackObjectPool extends TestBaseObjectPool<String> {
         }
     }
 
+    @Override
     protected boolean isLifo() {
         return true;
     }
 
+    @Override
     protected boolean isFifo() {
         return false;
     }

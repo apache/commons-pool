@@ -77,6 +77,7 @@ public class MethodCall {
         return this;
     }
 
+    @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -90,6 +91,7 @@ public class MethodCall {
         return true;
     }
 
+    @Override
     public int hashCode() {
         int result;
         result = (name != null ? name.hashCode() : 0);
@@ -98,6 +100,7 @@ public class MethodCall {
         return result;
     }
 
+    @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer();
         sb.append("MethodCall");

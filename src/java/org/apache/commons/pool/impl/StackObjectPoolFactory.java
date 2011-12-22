@@ -40,6 +40,7 @@ public class StackObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      * @see StackObjectPool#StackObjectPool()
      * @deprecated to be removed in pool 2.0 - use {@link #StackObjectPoolFactory(PoolableObjectFactory)}
      */
+    @Deprecated
     public StackObjectPoolFactory() {
         this(null,StackObjectPool.DEFAULT_MAX_SLEEPING,StackObjectPool.DEFAULT_INIT_SLEEPING_CAPACITY);
     }
@@ -51,6 +52,7 @@ public class StackObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      * @see StackObjectPool#StackObjectPool(int)
      * @deprecated to be removed in pool 2.0 - use {@link #StackObjectPoolFactory(PoolableObjectFactory, int)}
      */
+    @Deprecated
     public StackObjectPoolFactory(int maxIdle) {
         this(null,maxIdle,StackObjectPool.DEFAULT_INIT_SLEEPING_CAPACITY);
     }
@@ -64,6 +66,7 @@ public class StackObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      * @see StackObjectPool#StackObjectPool(int, int)
      * @deprecated to be removed in pool 2.0 - use {@link #StackObjectPoolFactory(PoolableObjectFactory, int, int)}
      */
+    @Deprecated
     public StackObjectPoolFactory(int maxIdle, int initIdleCapacity) {
         this(null,maxIdle,initIdleCapacity);
     }
@@ -115,18 +118,21 @@ public class StackObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      * The PoolableObjectFactory used by created pools.
      * @deprecated to be made private in pool 2.0
      */
+    @Deprecated
     protected PoolableObjectFactory<T> _factory = null;
     
     /**
      * The maximum number of idle instances in created pools.
      * @deprecated to be made private in pool 2.0
      */
+    @Deprecated
     protected int _maxSleeping = StackObjectPool.DEFAULT_MAX_SLEEPING;
     
     /**
      * The initial size of created pools.
      * @deprecated to be made private in pool 2.0
      */
+    @Deprecated
     protected int _initCapacity = StackObjectPool.DEFAULT_INIT_SLEEPING_CAPACITY;
 
     /**

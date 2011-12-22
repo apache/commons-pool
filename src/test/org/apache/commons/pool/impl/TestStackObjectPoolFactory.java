@@ -33,6 +33,7 @@ public class TestStackObjectPoolFactory extends TestObjectPoolFactory {
         super(name);
     }
 
+    @Override
     protected ObjectPoolFactory<Integer> makeFactory(final PoolableObjectFactory<Integer> objectFactory) throws UnsupportedOperationException {
         return new StackObjectPoolFactory<Integer>(objectFactory);
     }

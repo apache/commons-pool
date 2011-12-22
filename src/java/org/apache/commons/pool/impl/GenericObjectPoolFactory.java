@@ -357,24 +357,28 @@ public class GenericObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      * The {@link GenericObjectPool#getMaxIdle() maxIdle} setting for pools created by this factory.
      * @deprecated to be removed in pool 2.0.  Use {@link #getMaxIdle()}.
      */
+    @Deprecated
     protected int _maxIdle = GenericObjectPool.DEFAULT_MAX_IDLE;
     
     /**
      * The {@link GenericObjectPool#getMinIdle() minIdle} setting for pools created by this factory.
      * @deprecated to be removed in pool 2.0.  Use {@link #getMinIdle()}.
      */
+    @Deprecated
     protected int _minIdle = GenericObjectPool.DEFAULT_MIN_IDLE;
     
     /**
      * The {@link GenericObjectPool#getMaxActive() maxActive} setting for pools created by this factory.
      * @deprecated to be removed in pool 2.0.  Use {@link #getMaxActive()}.
      */
+    @Deprecated
     protected int _maxActive = GenericObjectPool.DEFAULT_MAX_ACTIVE;
     
     /**
      * The {@link GenericObjectPool#getMaxWait() maxWait} setting for pools created by this factory.
      * @deprecated to be removed in pool 2.0.  Use {@link #getMaxWait()}.
      */
+    @Deprecated
     protected long _maxWait = GenericObjectPool.DEFAULT_MAX_WAIT;
     
     /**
@@ -382,24 +386,28 @@ public class GenericObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      * created by this factory.
      * @deprecated to be removed in pool 2.0.  Use {@link #getWhenExhaustedAction()}.
      */
+    @Deprecated
     protected byte _whenExhaustedAction = GenericObjectPool.DEFAULT_WHEN_EXHAUSTED_ACTION;
     
     /**
      * The {@link GenericObjectPool#getTestOnBorrow() testOnBorrow} setting for pools created by this factory.
      * @deprecated to be removed in pool 2.0.  Use {@link #getTestOnBorrow()}.
      */
+    @Deprecated
     protected boolean _testOnBorrow = GenericObjectPool.DEFAULT_TEST_ON_BORROW;
     
     /**
      * The {@link GenericObjectPool#getTestOnReturn() testOnReturn} setting for pools created by this factory.
      * @deprecated to be removed in pool 2.0.  Use {@link #getTestOnReturn()}.
      */
+    @Deprecated
     protected boolean _testOnReturn = GenericObjectPool.DEFAULT_TEST_ON_RETURN;
     
     /**
      * The {@link GenericObjectPool#getTestWhileIdle() testWhileIdle} setting for pools created by this factory.
      * @deprecated to be removed in pool 2.0.  Use {@link #getTestWhileIdle()}.
      */
+    @Deprecated
     protected boolean _testWhileIdle = GenericObjectPool.DEFAULT_TEST_WHILE_IDLE;
     
     /**
@@ -407,6 +415,7 @@ public class GenericObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      * setting for pools created by this factory.
      * @deprecated to be removed in pool 2.0.  Use {@link #getTimeBetweenEvictionRunsMillis()}.
      */
+    @Deprecated
     protected long _timeBetweenEvictionRunsMillis = GenericObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
     
     /**
@@ -414,6 +423,7 @@ public class GenericObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      * for pools created by this factory.
      * @deprecated to be removed in pool 2.0.  Use {@link #getNumTestsPerEvictionRun()}.
      */
+    @Deprecated
     protected int _numTestsPerEvictionRun =  GenericObjectPool.DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
     
     /**
@@ -421,6 +431,7 @@ public class GenericObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      * setting for pools created by this factory.
      * @deprecated to be removed in pool 2.0.  Use {@link #getMinEvictableIdleTimeMillis()}.
      */
+    @Deprecated
     protected long _minEvictableIdleTimeMillis = GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
     
     /**
@@ -428,18 +439,21 @@ public class GenericObjectPoolFactory<T> implements ObjectPoolFactory<T> {
      * setting for pools created by this factory.
      * @deprecated to be removed in pool 2.0.  Use {@link #getSoftMinEvictableIdleTimeMillis()}.
      */
+    @Deprecated
     protected long _softMinEvictableIdleTimeMillis = GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
     
     /**
      * The {@link GenericObjectPool#getLifo() lifo} setting for pools created by this factory.
      * @deprecated to be removed in pool 2.0.  Use {@link #getLifo()}.
      */
+    @Deprecated
     protected boolean _lifo = GenericObjectPool.DEFAULT_LIFO;
     
     /**
      * The {@link PoolableObjectFactory} used by pools created by this factory.
      * @deprecated to be removed in pool 2.0.  Use {@link #getFactory()}.
      */
+    @Deprecated
     protected PoolableObjectFactory<T> _factory = null;
 
 }

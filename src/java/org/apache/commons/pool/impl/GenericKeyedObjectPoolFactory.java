@@ -373,54 +373,63 @@ public class GenericKeyedObjectPoolFactory<K, V> implements KeyedObjectPoolFacto
      * The {@link GenericKeyedObjectPool#getMaxIdle() maxIdle} setting for pools created by this factory.
      * @deprecated to be removed in pool 2.0. Use {@link #getMaxIdle()}.
      */
+    @Deprecated
     protected int _maxIdle = GenericKeyedObjectPool.DEFAULT_MAX_IDLE;
     
     /**
      * The {@link GenericKeyedObjectPool#getMaxActive() maxActive} setting for pools created by this factory.
      * @deprecated to be removed in pool 2.0. Use {@link #getMaxActive()}.
      */
+    @Deprecated
     protected int _maxActive = GenericKeyedObjectPool.DEFAULT_MAX_ACTIVE;
     
     /**
      * The {@link GenericKeyedObjectPool#getMaxTotal() maxTotal} setting for pools created by this factory.
      * @deprecated to be removed in pool 2.0. Use {@link #getMaxTotal()}.
      */
+    @Deprecated
     protected int _maxTotal = GenericKeyedObjectPool.DEFAULT_MAX_TOTAL;
     
     /**
      * The {@link GenericKeyedObjectPool#getMinIdle() minIdle} setting for pools created by this factory.
      * @deprecated to be removed in pool 2.0. Use {@link #getMinIdle()}.
      */
+    @Deprecated
     protected int _minIdle = GenericKeyedObjectPool.DEFAULT_MIN_IDLE;
     
     /**
      * The {@link GenericKeyedObjectPool#getMaxWait() maxWait} setting for pools created by this factory.
      * @deprecated to be removed in pool 2.0. Use {@link #getMaxWait()}.
      */
+    @Deprecated
     protected long _maxWait = GenericKeyedObjectPool.DEFAULT_MAX_WAIT;
     
     /**
      * The {@link GenericKeyedObjectPool#getWhenExhaustedAction() whenExhaustedAction} setting for pools created by this factory.
      * @deprecated to be removed in pool 2.0. Use {@link #getWhenExhaustedAction()}.
      */
+    @Deprecated
     protected byte _whenExhaustedAction = GenericKeyedObjectPool.DEFAULT_WHEN_EXHAUSTED_ACTION;
     
     /**
      * The {@link GenericKeyedObjectPool#getTestOnBorrow() testOnBorrow} setting for pools created by this factory.
      * @deprecated to be removed in pool 2.0. Use {@link #getTestOnBorrow()}.
      */
+    @Deprecated
     protected boolean _testOnBorrow = GenericKeyedObjectPool.DEFAULT_TEST_ON_BORROW;
     
     /**
      * The {@link GenericKeyedObjectPool#getTestOnReturn() testOnReturn} setting for pools created by this factory.
      * @deprecated to be removed in pool 2.0. Use {@link #getTestOnReturn()}.
      */
+    @Deprecated
     protected boolean _testOnReturn = GenericKeyedObjectPool.DEFAULT_TEST_ON_RETURN;
     
     /**
      * The {@link GenericKeyedObjectPool#getTestWhileIdle() testWhileIdle} setting for pools created by this factory.
      * @deprecated to be removed in pool 2.0. Use {@link #getTestWhileIdle()}.
      */
+    @Deprecated
     protected boolean _testWhileIdle = GenericKeyedObjectPool.DEFAULT_TEST_WHILE_IDLE;
     
     /**
@@ -428,6 +437,7 @@ public class GenericKeyedObjectPoolFactory<K, V> implements KeyedObjectPoolFacto
      * pools created by this factory.
      * @deprecated to be removed in pool 2.0. Use {@link #getTimeBetweenEvictionRunsMillis()}.
      */
+    @Deprecated
     protected long _timeBetweenEvictionRunsMillis = GenericKeyedObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
     
     /**
@@ -435,6 +445,7 @@ public class GenericKeyedObjectPoolFactory<K, V> implements KeyedObjectPoolFacto
      * pools created by this factory.
      * @deprecated to be removed in pool 2.0. Use {@link #getNumTestsPerEvictionRun()}.
      */
+    @Deprecated
     protected int _numTestsPerEvictionRun =  GenericKeyedObjectPool.DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
     
     /**
@@ -442,18 +453,21 @@ public class GenericKeyedObjectPoolFactory<K, V> implements KeyedObjectPoolFacto
      * pools created by this factory.
      * @deprecated to be removed in pool 2.0. Use {@link #getMinEvictableIdleTimeMillis()}.
      */
+    @Deprecated
     protected long _minEvictableIdleTimeMillis = GenericKeyedObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
     
     /**
      * The {@link KeyedPoolableObjectFactory} used by pools created by this factory.
      * @deprecated to be removed in pool 2.0. Use {@link #getFactory()}.
      */
+    @Deprecated
     protected KeyedPoolableObjectFactory<K, V> _factory = null;
     
     /**
      * The {@link GenericKeyedObjectPool#getLifo() lifo} setting for pools created by this factory.
      * @deprecated to be removed in pool 2.0. Use {@link #getLifo()}.
      */
+    @Deprecated
     protected boolean _lifo = GenericKeyedObjectPool.DEFAULT_LIFO;
 
 }

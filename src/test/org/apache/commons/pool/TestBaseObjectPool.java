@@ -36,6 +36,7 @@ public class TestBaseObjectPool<T> extends TestObjectPool {
         throw new UnsupportedOperationException("BaseObjectPool isn't a complete implementation.");
     }
 
+    @Override
     protected ObjectPool<Integer> makeEmptyPool(final PoolableObjectFactory<Integer> factory) {
         if (this.getClass() != TestBaseObjectPool.class) {
             fail("Subclasses of TestBaseObjectPool must reimplement this method.");
@@ -70,11 +71,14 @@ public class TestBaseObjectPool<T> extends TestObjectPool {
             return; // skip redundant tests
         }
         ObjectPool<Object> pool = new BaseObjectPool<Object>() { 
+            @Override
             public Object borrowObject() {
                 return null;
             }
+            @Override
             public void returnObject(Object obj) {
             }
+            @Override
             public void invalidateObject(Object obj) {
             }            
         };   
@@ -106,11 +110,14 @@ public class TestBaseObjectPool<T> extends TestObjectPool {
 
     public void testClose() throws Exception {
         ObjectPool<Object> pool = new BaseObjectPool<Object>() {
+            @Override
             public Object borrowObject() {
                 return null;
             }
+            @Override
             public void returnObject(Object obj) {
             }
+            @Override
             public void invalidateObject(Object obj) {
             }
         };

@@ -40,6 +40,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool<String> {
         super(testName);
     }
 
+    @Override
     protected ObjectPool<String> makeEmptyPool(int mincap) {
        GenericObjectPool<String> pool = new GenericObjectPool<String>(new SimpleFactory());
        pool.setMaxActive(mincap);
@@ -47,19 +48,23 @@ public class TestGenericObjectPool extends TestBaseObjectPool<String> {
        return pool;
     }
 
+    @Override
     protected ObjectPool<Integer> makeEmptyPool(final PoolableObjectFactory<Integer> factory) {
         return new GenericObjectPool<Integer>(factory);
     }
 
+    @Override
     protected String getNthObject(int n) {
         return String.valueOf(n);
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         pool = new GenericObjectPool<String>(new SimpleFactory());
     }
 
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
         pool.clear();
@@ -1017,6 +1022,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool<String> {
             public TimeTest() {
                 createTime = System.currentTimeMillis();
             }
+            @Override
             public TimeTest makeObject() throws Exception {
                 return new TimeTest();
             }
@@ -1224,6 +1230,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool<String> {
             this.borrow = borrow;
         }
 
+        @Override
         public void run() {
             try {
                 if (borrow) {
@@ -1559,10 +1566,12 @@ public class TestGenericObjectPool extends TestBaseObjectPool<String> {
             }
         }
     }
+    @Override
     protected boolean isLifo() {
         return true;
     }
 
+    @Override
     protected boolean isFifo() {
         return false;
     }
@@ -1682,6 +1691,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool<String> {
             _thrown = null;
         }
 
+        @Override
         public void run() {
             try {
                 preborrow = System.currentTimeMillis();

@@ -38,6 +38,7 @@ public class TestSoftRefOutOfMemory extends TestCase {
         super(testName);
     }
 
+    @Override
     public void tearDown() throws Exception {
         if (pool != null) {
             pool.close();
@@ -160,6 +161,7 @@ public class TestSoftRefOutOfMemory extends TestCase {
      */
     public void testOutOfMemoryError() throws Exception {
         pool = new SoftReferenceObjectPool<String>(new BasePoolableObjectFactory<String>() {
+            @Override
             public String makeObject() throws Exception {
                 throw new OutOfMemoryError();
             }
@@ -175,10 +177,12 @@ public class TestSoftRefOutOfMemory extends TestCase {
         pool.close();
 
         pool = new SoftReferenceObjectPool<String>(new BasePoolableObjectFactory<String>() {
+            @Override
             public String makeObject() throws Exception {
                 return new String();
             }
 
+            @Override
             public boolean validateObject(String obj) {
                 throw new OutOfMemoryError();
             }
@@ -194,14 +198,17 @@ public class TestSoftRefOutOfMemory extends TestCase {
         pool.close();
         
         pool = new SoftReferenceObjectPool<String>(new BasePoolableObjectFactory<String>() {
+            @Override
             public String makeObject() throws Exception {
                 return new String();
             }
 
+            @Override
             public boolean validateObject(String obj) {
                 throw new IllegalAccessError();
             }
 
+            @Override
             public void destroyObject(String obj) throws Exception {
                 throw new OutOfMemoryError();
             }
