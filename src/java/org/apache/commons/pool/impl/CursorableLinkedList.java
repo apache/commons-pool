@@ -53,6 +53,8 @@ import java.lang.ref.WeakReference;
  *
  * @see java.util.LinkedList
  *
+ * @param <E> the type of elements held in this collection
+ *
  * @version $Revision: 480452 $ $Date: 2006-11-29 00:45:14 -0700 (Wed, 29 Nov 2006) $
  *
  * @author Rodney Waldhoff
