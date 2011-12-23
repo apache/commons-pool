@@ -763,7 +763,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * {@link #getBlockWhenExhausted()} is true.</p>
      * 
      * @param key pool key
-     * @param borrowMaxWait
+     * @param borrowMaxWait maximum amount of time to wait (in milliseconds)
      * @return object instance from the keyed pool
      * @throws NoSuchElementException if a keyed object instance cannot be returned.
      */
@@ -993,6 +993,8 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
       * @param key pool key
       * @param obj instance to invalidate
       * @throws Exception if an exception occurs destroying the object
+      * @throws IllegalStateException if obj does not belong to the pool
+      * under the given key
       */
      public void invalidateObject(K key, T obj) throws Exception {
          
