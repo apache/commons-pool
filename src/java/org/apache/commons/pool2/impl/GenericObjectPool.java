@@ -919,9 +919,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * destroy the instance.
      * </p>
      * 
-     * @throws Exception
-     *             if the configured {@link PoolableObjectFactory} throws an
-     *             exception destroying obj
+     * @throws Exception if the configured {@link PoolableObjectFactory} throws an
+     * exception destroying obj
+     * @throws IllegalStateException if obj does not belong to this pool
      */
     @Override
     public void invalidateObject(T obj) throws Exception {
