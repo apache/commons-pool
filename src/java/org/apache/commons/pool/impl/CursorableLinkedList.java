@@ -51,9 +51,9 @@ import java.lang.ref.WeakReference;
  * <p>
  * <b>Note that this implementation is not synchronized.</b>
  *
- * @see java.util.LinkedList
- *
  * @param <E> the type of elements held in this collection
+ * 
+ * @see java.util.LinkedList
  *
  * @version $Revision: 480452 $ $Date: 2006-11-29 00:45:14 -0700 (Wed, 29 Nov 2006) $
  *

@@ -2295,6 +2295,14 @@ public final class PoolUtils {
             }
         }
 
+        /**
+         * Returns the total number of instances currently idle in this pool (optional operation).
+         * Returns a negative value if this information is not available.
+         *
+         * @param key ignored
+         * @return the total number of instances currently idle in this pool or a negative value if unsupported
+         * @throws UnsupportedOperationException <strong>deprecated</strong>: when this implementation doesn't support the operation
+         */
         protected int numIdle(final K key) {
             return getKeyedPool().getNumIdle();
         }
