@@ -127,7 +127,7 @@
     <commons.release.version>1.6</commons.release.version>
     <commons.jira.id>POOL</commons.jira.id>
     <commons.jira.pid>12310488</commons.jira.pid>
-  </properties> 
+  </properties>
 
   <distributionManagement>
     <!-- Cannot define in parent ATM, see COMMONSSITE-26 -->
@@ -137,7 +137,7 @@
       <url>${commons.deployment.protocol}://people.apache.org/www/commons.apache.org/${commons.componentid}</url>
     </site>
   </distributionManagement>
-  
+
   <build>
     <sourceDirectory>src/java</sourceDirectory>
     <testSourceDirectory>src/test</testSourceDirectory>
@@ -259,7 +259,7 @@
           <configuration>
             <targetJdk>1.5</targetJdk>
           </configuration>
-        </plugin>        
+        </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>taglist-maven-plugin</artifactId>
