@@ -16,11 +16,11 @@
  */
 package org.apache.commons.pool;
 
-import junit.framework.TestCase;
-
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
+
+import junit.framework.TestCase;
 
 import org.apache.commons.pool.impl.GenericKeyedObjectPool;
 import org.apache.commons.pool.impl.StackKeyedObjectPool;

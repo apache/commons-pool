@@ -17,9 +17,9 @@
 
 package org.apache.commons.pool.impl;
 
-import java.lang.ref.SoftReference;
-import java.lang.ref.ReferenceQueue;
 import java.lang.ref.Reference;
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,8 +27,8 @@ import java.util.NoSuchElementException;
 
 import org.apache.commons.pool.BaseObjectPool;
 import org.apache.commons.pool.ObjectPool;
-import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.PoolUtils;
+import org.apache.commons.pool.PoolableObjectFactory;
 
 /**
  * A {@link java.lang.ref.SoftReference SoftReference} based

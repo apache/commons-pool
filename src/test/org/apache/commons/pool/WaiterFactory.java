@@ -18,11 +18,8 @@
 package org.apache.commons.pool;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Iterator;
-
-import org.apache.commons.pool.PoolableObjectFactory;
-import org.apache.commons.pool.KeyedPoolableObjectFactory;
+import java.util.Map;
 
 /**
  * Object factory with configurable latencies for object lifecycle methods.

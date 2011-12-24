@@ -16,15 +16,16 @@
  */
 package org.apache.commons.pool;
 
-import junit.framework.TestCase;
-import org.apache.commons.pool.impl.GenericObjectPool;
-import org.apache.commons.pool.impl.StackObjectPool;
-import org.apache.commons.pool.impl.SoftReferenceObjectPool;
-
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
+
+import junit.framework.TestCase;
+
+import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.commons.pool.impl.SoftReferenceObjectPool;
+import org.apache.commons.pool.impl.StackObjectPool;
 
 /**
  * Abstract {@link TestCase} for {@link ObjectPool} implementations.
