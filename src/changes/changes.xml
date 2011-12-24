@@ -20,7 +20,7 @@
     <title>Commons Pool Changes</title>
   </properties>
   <body>
-  <release version="1.6" date="TBD" description="Adds generics and requires Java 5.">
+  <release version="1.6" date="2011-12-31" description="Adds generics and requires Java 5.">
     <action dev="ggregory" type="add" issue="POOL-208">
       Support Java 1.5 Generics in version 1.x.
     </action>
