@@ -95,32 +95,32 @@ limitations under the License.
       </p>
     </subsection>
     </section>
-    <section name="Commons Pool 1.5.7 ">
+    <section name="Commons Pool 1.6 ">
       <subsection name="Binaries">
         <table>
           <tr>
-              <td><a href="[preferred]/commons/pool/binaries/commons-pool-1.5.7-bin.tar.gz">commons-pool-1.5.7-bin.tar.gz</a></td>
-              <td><a href="http://www.apache.org/dist/commons/pool/binaries/commons-pool-1.5.7-bin.tar.gz.md5">md5</a></td>
-              <td><a href="http://www.apache.org/dist/commons/pool/binaries/commons-pool-1.5.7-bin.tar.gz.asc">pgp</a></td>
+              <td><a href="[preferred]/commons/pool/binaries/commons-pool-1.6-bin.tar.gz">commons-pool-1.6-bin.tar.gz</a></td>
+              <td><a href="http://www.apache.org/dist/commons/pool/binaries/commons-pool-1.6-bin.tar.gz.md5">md5</a></td>
+              <td><a href="http://www.apache.org/dist/commons/pool/binaries/commons-pool-1.6-bin.tar.gz.asc">pgp</a></td>
           </tr>
           <tr>
-              <td><a href="[preferred]/commons/pool/binaries/commons-pool-1.5.7-bin.zip">commons-pool-1.5.7-bin.zip</a></td>
-              <td><a href="http://www.apache.org/dist/commons/pool/binaries/commons-pool-1.5.7-bin.zip.md5">md5</a></td>
-              <td><a href="http://www.apache.org/dist/commons/pool/binaries/commons-pool-1.5.7-bin.zip.asc">pgp</a></td>
+              <td><a href="[preferred]/commons/pool/binaries/commons-pool-1.6-bin.zip">commons-pool-1.6-bin.zip</a></td>
+              <td><a href="http://www.apache.org/dist/commons/pool/binaries/commons-pool-1.6-bin.zip.md5">md5</a></td>
+              <td><a href="http://www.apache.org/dist/commons/pool/binaries/commons-pool-1.6-bin.zip.asc">pgp</a></td>
           </tr>
         </table>
       </subsection>
       <subsection name="Source">
         <table>
           <tr>
-              <td><a href="[preferred]/commons/pool/source/commons-pool-1.5.7-src.tar.gz">commons-pool-1.5.7-src.tar.gz</a></td>
-              <td><a href="http://www.apache.org/dist/commons/pool/source/commons-pool-1.5.7-src.tar.gz.md5">md5</a></td>
-              <td><a href="http://www.apache.org/dist/commons/pool/source/commons-pool-1.5.7-src.tar.gz.asc">pgp</a></td>
+              <td><a href="[preferred]/commons/pool/source/commons-pool-1.6-src.tar.gz">commons-pool-1.6-src.tar.gz</a></td>
+              <td><a href="http://www.apache.org/dist/commons/pool/source/commons-pool-1.6-src.tar.gz.md5">md5</a></td>
+              <td><a href="http://www.apache.org/dist/commons/pool/source/commons-pool-1.6-src.tar.gz.asc">pgp</a></td>
           </tr>
           <tr>
-              <td><a href="[preferred]/commons/pool/source/commons-pool-1.5.7-src.zip">commons-pool-1.5.7-src.zip</a></td>
-              <td><a href="http://www.apache.org/dist/commons/pool/source/commons-pool-1.5.7-src.zip.md5">md5</a></td>
-              <td><a href="http://www.apache.org/dist/commons/pool/source/commons-pool-1.5.7-src.zip.asc">pgp</a></td>
+              <td><a href="[preferred]/commons/pool/source/commons-pool-1.6-src.zip">commons-pool-1.6-src.zip</a></td>
+              <td><a href="http://www.apache.org/dist/commons/pool/source/commons-pool-1.6-src.zip.md5">md5</a></td>
+              <td><a href="http://www.apache.org/dist/commons/pool/source/commons-pool-1.6-src.zip.asc">pgp</a></td>
           </tr>
         </table>
       </subsection>
