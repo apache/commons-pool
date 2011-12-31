@@ -17,16 +17,16 @@
 
 package org.apache.commons.pool.impl;
 
-import org.apache.commons.pool.BaseKeyedObjectPool;
-import org.apache.commons.pool.KeyedObjectPool;
-import org.apache.commons.pool.KeyedPoolableObjectFactory;
-import org.apache.commons.pool.PoolUtils;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Stack;
+
+import org.apache.commons.pool.BaseKeyedObjectPool;
+import org.apache.commons.pool.KeyedObjectPool;
+import org.apache.commons.pool.KeyedPoolableObjectFactory;
+import org.apache.commons.pool.PoolUtils;
 
 /**
  * A simple, <code>Stack</code>-based <code>KeyedObjectPool</code> implementation.

@@ -29,12 +29,19 @@
             <a href="http://commons.apache.org/pool/download_pool.cgi">
             Apache Commons Pool Downloads page</a>.
          </p>
-         <p>
-            Versions 1.3-1.5 depend at runtime only on a Java 1.3 or better JVM.
-         </p>
-         <p>
-            Commons-pool 1.2 depends at runtime on
+         <ul>
+           <li>
+              Versions 1.6 adds generics based on the latest 1.5.x release, 1.5.7 at press time. It requires Java 1.5.
+           </li>
+           <li>
+              Versions 1.3 through 1.5 depend at runtime only on a Java 1.3 or better JVM.
+           </li>
+           <li>
+              Version 1.2 depends at runtime on
             <a href="http://commons.apache.org/collections/">commons-collections</a>.
+           </li>
+         </ul>
+         <p>
          </p>
          <p>
             Older releases are retained by the Apache Software Foundation but are 

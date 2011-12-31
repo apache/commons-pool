@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,7 +30,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
-import java.lang.ref.WeakReference;
 
 /**
  * <p>
@@ -51,9 +51,9 @@ import java.lang.ref.WeakReference;
  * <p>
  * <b>Note that this implementation is not synchronized.</b>
  *
- * @see java.util.LinkedList
- *
  * @param <E> the type of elements held in this collection
+ * 
+ * @see java.util.LinkedList
  *
  * @version $Revision: 480452 $ $Date: 2006-11-29 00:45:14 -0700 (Wed, 29 Nov 2006) $
  *

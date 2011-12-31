@@ -27,7 +27,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>commons-pool</groupId>
   <artifactId>commons-pool</artifactId>
-  <version>1.6-SNAPSHOT</version>
+  <version>1.6</version>
   <name>Commons Pool</name>
 
   <inceptionYear>2001</inceptionYear>
@@ -139,6 +139,24 @@
   </distributionManagement>
 
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>3.0</version>
+          <dependencies>
+            <dependency>
+              <!-- add support for ssh/scp -->
+              <groupId>org.apache.maven.wagon</groupId>
+              <artifactId>wagon-ssh</artifactId>
+              <version>2.2</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  
     <sourceDirectory>src/java</sourceDirectory>
     <testSourceDirectory>src/test</testSourceDirectory>
       <plugins>
@@ -223,7 +241,7 @@
           <artifactId>clirr-maven-plugin</artifactId>
           <version>2.3</version>
           <configuration>
-            <comparisonVersion>1.5</comparisonVersion>
+            <comparisonVersion>1.5.7</comparisonVersion>
             <minSeverity>info</minSeverity>
           </configuration>
         </plugin>
