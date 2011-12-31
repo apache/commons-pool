@@ -1,20 +1,11 @@
-                        
+commons-pool-1.6 RELEASE NOTES
 
-              commons-pool-1.5.7 RELEASE NOTES
+This release adds support for Java 5 generics and therefore requires Java 5 for source compatibility.
+This release is binary compatible with 1.5.7.
 
-This is a patch release, including bugfixes only.
+The only change in this version is:
 
-Changes in this version include:
-
-
-Fixed Bugs:
-o  POOL-189:  Awaken threads waiting on borrowObject when a pool has been closed and have them throw
-      IllegalStateException.  Prior to the fix for this issue, threads waiting in borrowObject when
-      close was invoked on GOP or GKOP would block indefinitely. Thanks to Bill Speirs. 
-o  POOL-192:  Corrected total internal processing counter update in destroy.  Prior to the fix
-      for this issue, clear(key) was leaking capacity associated with elements in the
-      pool being cleared. Thanks to Helge Dannenberg. 
-
+o Support Java 1.5 Generics in version 1.x.  Issue: POOL-208. 
 
  
 For complete information on commons-pool, including instructions on how to submit bug reports,
