@@ -19,10 +19,10 @@
 # Shell script to create commons pool RCs.
 # This script should be run from a fresh checkout of the RC tag.
 #
-# $Id: $
+# $Id$
 # -----------------------------------------------------------------------------
 # Set script variables
-version=1.5.7
+version=1.6.0
 rc=3
 repo_path=~/.m2/repository/commons-pool/commons-pool/${version}
 release_path=~/pool-${version}-rc${rc}
