@@ -55,7 +55,7 @@ import java.util.NoSuchElementException;
  * 
  * @see java.util.LinkedList
  *
- * @version $Id: $
+ * @version $Id$
  *
  * @author Rodney Waldhoff
  * @author Janek Bogucki
