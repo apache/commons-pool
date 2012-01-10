@@ -40,7 +40,7 @@ import org.apache.commons.pool.impl.GenericObjectPool;
  * Unit tests for {@link PoolUtils}.
  *
  * @author Sandy McArthur
- * @version $Id: TestPoolUtils.java 1229442 2012-01-10 01:34:05Z ggregory $
+ * @version $Id$
  */
 public class TestPoolUtils extends TestCase {
 

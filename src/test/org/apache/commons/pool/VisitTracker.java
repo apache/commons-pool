@@ -20,7 +20,7 @@ package org.apache.commons.pool;
  * Test pooled object class.  Keeps track of how many times it has been
  * validated, activated, passivated.
  * 
- * @version $Id: $
+ * @version $Id$
  */
 public class VisitTracker<K> {
     private int validateCount = 0;

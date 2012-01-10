@@ -31,7 +31,7 @@ import org.apache.commons.pool.impl.StackObjectPool;
  * Abstract {@link TestCase} for {@link ObjectPool} implementations.
  * @author Rodney Waldhoff
  * @author Sandy McArthur
- * @version $Id: TestObjectPool.java 1229442 2012-01-10 01:34:05Z ggregory $
+ * @version $Id$
  */
 public abstract class TestObjectPool extends TestCase {
     public TestObjectPool(String testName) {

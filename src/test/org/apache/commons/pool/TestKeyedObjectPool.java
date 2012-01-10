@@ -29,7 +29,7 @@ import org.apache.commons.pool.impl.StackKeyedObjectPool;
  * Abstract {@link TestCase} for {@link ObjectPool} implementations.
  * @author Rodney Waldhoff
  * @author Sandy McArthur
- * @version $Id: TestKeyedObjectPool.java 1229442 2012-01-10 01:34:05Z ggregory $
+ * @version $Id$
  */
 public abstract class TestKeyedObjectPool extends TestCase {
     public TestKeyedObjectPool(String testName) {

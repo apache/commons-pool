@@ -25,7 +25,7 @@ import java.util.List;
  * Holds method names, parameters, and return values for tracing method calls.
  *
  * @author Sandy McArthur
- * @version $Id: MethodCall.java 1229442 2012-01-10 01:34:05Z ggregory $
+ * @version $Id$
  */
 public class MethodCall {
     private final String name;

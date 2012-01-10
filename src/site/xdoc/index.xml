@@ -20,7 +20,7 @@
       <title>Overview</title>
       <author email="dev@commons.apache.org">Commons Documentation Team</author>
       <author email="rwaldhoff@apache.org">Rodney Waldhoff</author>
-      <revision>$Id: index.xml 1229442 2012-01-10 01:34:05Z ggregory $</revision>
+      <revision>$Id$</revision>
    </properties>
 
    <body>

@@ -25,7 +25,7 @@ package org.apache.commons.pool;
  * @see ObjectPool
  *
  * @author Rodney Waldhoff
- * @version $Id: ObjectPoolFactory.java 1229442 2012-01-10 01:34:05Z ggregory $
+ * @version $Id$
  * @since Pool 1.0
  */
 public interface ObjectPoolFactory<T> {

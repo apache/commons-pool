@@ -24,7 +24,7 @@ package org.apache.commons.pool;
  *
  * <p>This class is *not* threadsafe.</p>
  * 
- * @version $Id: $
+ * @version $Id$
  */
 public class Waiter {
     private boolean active = false;

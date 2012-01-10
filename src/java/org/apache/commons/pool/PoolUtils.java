@@ -31,7 +31,7 @@ import java.util.TimerTask;
  * or KeyedObjectPool related interfaces.
  *
  * @author Sandy McArthur
- * @version $Id: PoolUtils.java 1229442 2012-01-10 01:34:05Z ggregory $
+ * @version $Id$
  * @since Pool 1.3
  */
 public final class PoolUtils {

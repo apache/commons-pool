@@ -55,7 +55,7 @@ import java.util.NoSuchElementException;
  * 
  * @see java.util.LinkedList
  *
- * @version $Id: CursorableLinkedList.java 1229442 2012-01-10 01:34:05Z ggregory $
+ * @version $Id$
  *
  * @author Rodney Waldhoff
  * @author Janek Bogucki

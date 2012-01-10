@@ -28,7 +28,7 @@ import org.apache.commons.pool.TestObjectPoolFactory;
  * Tests for {@link GenericObjectPoolFactory}.
  *
  * @author Sandy McArthur
- * @version $Id: TestGenericObjectPoolFactory.java 1229442 2012-01-10 01:34:05Z ggregory $
+ * @version $Id$
  */
 public class TestGenericObjectPoolFactory extends TestObjectPoolFactory {
     public TestGenericObjectPoolFactory(final String name) {

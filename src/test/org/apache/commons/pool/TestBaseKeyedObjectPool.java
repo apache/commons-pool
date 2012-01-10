@@ -20,7 +20,7 @@ package org.apache.commons.pool;
 /**
  * @author Rodney Waldhoff
  * @author Sandy McArthur
- * @version $Id: TestBaseKeyedObjectPool.java 1229442 2012-01-10 01:34:05Z ggregory $
+ * @version $Id$
  */
 public class TestBaseKeyedObjectPool<K, V> extends TestKeyedObjectPool {
     private KeyedObjectPool<K, V> _pool = null;

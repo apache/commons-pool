@@ -60,7 +60,7 @@ import java.util.NoSuchElementException;
  * 
  * @author Rodney Waldhoff
  * @author Sandy McArthur
- * @version $Id: KeyedObjectPool.java 1229442 2012-01-10 01:34:05Z ggregory $
+ * @version $Id$
  * @see KeyedPoolableObjectFactory
  * @see KeyedObjectPoolFactory
  * @see ObjectPool
