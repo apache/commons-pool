@@ -24,7 +24,7 @@ import org.apache.commons.pool.TestBaseObjectPool;
 /**
  * @author Rodney Waldhoff
  * @author Sandy McArthur
- * @version $Id$
+ * @version $Id: TestSoftReferenceObjectPool.java 1229442 2012-01-10 01:34:05Z ggregory $
  */
 public class TestSoftReferenceObjectPool extends TestBaseObjectPool<String> {
     public TestSoftReferenceObjectPool(String testName) {

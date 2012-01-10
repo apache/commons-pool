@@ -33,7 +33,7 @@ import org.apache.commons.pool.VisitTrackerFactory;
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
  * @author Sandy McArthur
- * @version $Id$
+ * @version $Id: TestGenericObjectPool.java 1229442 2012-01-10 01:34:05Z ggregory $
  */
 public class TestGenericObjectPool extends TestBaseObjectPool<String> {
     public TestGenericObjectPool(String testName) {

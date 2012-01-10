@@ -33,7 +33,7 @@ import org.apache.commons.pool.WaiterFactory;
 
 /**
  * @author Rodney Waldhoff
- * @version $Id$
+ * @version $Id: TestGenericKeyedObjectPool.java 1229442 2012-01-10 01:34:05Z ggregory $
  */
 public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool<Object, String> {
     public TestGenericKeyedObjectPool(String testName) {

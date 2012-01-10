@@ -186,7 +186,7 @@ import org.apache.commons.pool.impl.GenericKeyedObjectPool.ObjectTimestampPair;
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
  * @author Sandy McArthur
- * @version $Id$
+ * @version $Id: GenericObjectPool.java 1229442 2012-01-10 01:34:05Z ggregory $
  * @since Pool 1.0
  */
 public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<T> {

@@ -46,7 +46,7 @@ import org.apache.commons.pool.PoolUtils;
  * 
  * @author Rodney Waldhoff
  * @author Sandy McArthur
- * @version $Id$
+ * @version $Id: StackKeyedObjectPool.java 1229442 2012-01-10 01:34:05Z ggregory $
  * @see Stack
  * @since Pool 1.0
  */

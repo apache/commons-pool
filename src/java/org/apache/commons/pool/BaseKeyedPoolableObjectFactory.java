@@ -29,7 +29,7 @@ package org.apache.commons.pool;
  * @see KeyedPoolableObjectFactory
  *
  * @author Rodney Waldhoff
- * @version $Id$
+ * @version $Id: BaseKeyedPoolableObjectFactory.java 1229442 2012-01-10 01:34:05Z ggregory $
  * @since Pool 1.0
  */
 public abstract class BaseKeyedPoolableObjectFactory<K, V> implements KeyedPoolableObjectFactory<K, V> {

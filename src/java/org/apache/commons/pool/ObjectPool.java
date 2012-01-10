@@ -57,7 +57,7 @@ import java.util.NoSuchElementException;
  * 
  * @author Rodney Waldhoff
  * @author Sandy McArthur
- * @version $Id$
+ * @version $Id: ObjectPool.java 1229442 2012-01-10 01:34:05Z ggregory $
  * @see PoolableObjectFactory
  * @see ObjectPoolFactory
  * @see KeyedObjectPool
