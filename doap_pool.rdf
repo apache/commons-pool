@@ -15,6 +15,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
+<!-- $Id: -->
 <rdf:RDF xmlns="http://usefulinc.com/ns/doap#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:asfext="http://projects.apache.org/ns/asfext#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:doap="http://usefulinc.com/ns/doap#" xml:lang="en">
   <Project rdf:about="http://commons.apache.org/pool/">
     <name>Apache Commons Pool</name>
