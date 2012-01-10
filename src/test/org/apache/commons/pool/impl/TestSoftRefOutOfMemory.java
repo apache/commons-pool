@@ -29,7 +29,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
 /**
  * @author Dirk Verbeeck
  * @author Sandy McArthur
- * @version $Revision$ $Date$
+ * @version $Id$
  */
 public class TestSoftRefOutOfMemory extends TestCase {
     private SoftReferenceObjectPool<String> pool;

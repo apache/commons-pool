@@ -27,7 +27,7 @@ package org.apache.commons.pool;
  * 
  * @author Rodney Waldhoff
  * @author Sandy McArthur
- * @version $Revision$ $Date$
+ * @version $Id$
  * @since Pool 1.0
  */
 public abstract class BaseKeyedObjectPool<K, V> implements KeyedObjectPool<K, V> {

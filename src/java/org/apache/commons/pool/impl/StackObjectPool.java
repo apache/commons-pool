@@ -43,7 +43,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
  * @author Sandy McArthur
- * @version $Revision$ $Date$
+ * @version $Id$
  * @since Pool 1.0
  */
 public class StackObjectPool<T> extends BaseObjectPool<T> implements ObjectPool<T> {

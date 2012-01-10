@@ -30,7 +30,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
  * @see ObjectPoolFactory
  *
  * @author Rodney Waldhoff
- * @version $Revision$ $Date$
+ * @version $Id$
  * @since Pool 1.0
  */
 public class GenericObjectPoolFactory<T> implements ObjectPoolFactory<T> {

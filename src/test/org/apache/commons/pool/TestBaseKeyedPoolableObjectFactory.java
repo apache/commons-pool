@@ -20,7 +20,7 @@ import junit.framework.TestCase;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision$ $Date$
+ * @version $Id$
  */
 public class TestBaseKeyedPoolableObjectFactory extends TestCase {
     public TestBaseKeyedPoolableObjectFactory(String testName) {

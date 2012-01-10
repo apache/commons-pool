@@ -23,7 +23,7 @@ import junit.framework.TestCase;
  * Tests for all {@link KeyedObjectPoolFactory}s.
  *
  * @author Sandy McArthur
- * @version $Revision$ $Date$
+ * @version $Id$
  */
 public abstract class TestKeyedObjectPoolFactory extends TestCase {
     protected TestKeyedObjectPoolFactory(final String name) {

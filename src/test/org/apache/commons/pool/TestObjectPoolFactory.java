@@ -23,7 +23,7 @@ import junit.framework.TestCase;
  * Unit tests for all {@link ObjectPoolFactory}.
  *
  * @author Sandy McArthur
- * @version $Revision$ $Date$
+ * @version $Id$
  */
 public abstract class TestObjectPoolFactory extends TestCase {
     protected TestObjectPoolFactory(final String name) {

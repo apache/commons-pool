@@ -201,7 +201,7 @@ import org.apache.commons.pool.PoolUtils;
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
  * @author Sandy McArthur
- * @version $Revision$ $Date$
+ * @version $Id$
  * @since Pool 1.0
  */
 public class GenericKeyedObjectPool<K, V> extends BaseKeyedObjectPool<K, V> implements KeyedObjectPool<K, V> {

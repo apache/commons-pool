@@ -31,7 +31,7 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  * @see KeyedObjectPoolFactory
  *
  * @author Rodney Waldhoff
- * @version $Revision$ $Date$
+ * @version $Id$
  * @since Pool 1.0
  */
 public class StackKeyedObjectPoolFactory<K, V> implements KeyedObjectPoolFactory<K, V> {

@@ -25,7 +25,7 @@ package org.apache.commons.pool;
  * @see ObjectPool
  *
  * @author Rodney Waldhoff
- * @version $Revision$ $Date$
+ * @version $Id$
  * @since Pool 1.0
  */
 public interface ObjectPoolFactory<T> {

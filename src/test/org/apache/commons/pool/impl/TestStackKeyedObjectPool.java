@@ -27,7 +27,7 @@ import org.apache.commons.pool.TestBaseKeyedObjectPool;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision$ $Date$
+ * @version $Id$
  */
 public class TestStackKeyedObjectPool extends TestBaseKeyedObjectPool<String, String> {
     public TestStackKeyedObjectPool(String testName) {

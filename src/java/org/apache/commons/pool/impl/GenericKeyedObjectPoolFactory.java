@@ -32,7 +32,7 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
  *
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
- * @version $Revision$ $Date$
+ * @version $Id$
  * @since Pool 1.0
  */
 public class GenericKeyedObjectPoolFactory<K, V> implements KeyedObjectPoolFactory<K, V> {

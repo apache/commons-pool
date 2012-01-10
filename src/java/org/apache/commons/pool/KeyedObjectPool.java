@@ -60,7 +60,7 @@ import java.util.NoSuchElementException;
  * 
  * @author Rodney Waldhoff
  * @author Sandy McArthur
- * @version $Revision$ $Date$
+ * @version $Id$
  * @see KeyedPoolableObjectFactory
  * @see KeyedObjectPoolFactory
  * @see ObjectPool

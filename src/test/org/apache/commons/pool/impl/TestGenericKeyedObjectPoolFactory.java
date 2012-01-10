@@ -25,7 +25,7 @@ import org.apache.commons.pool.TestKeyedObjectPoolFactory;
  * Tests for {@link GenericKeyedObjectPoolFactory}.
  *
  * @author Sandy McArthur
- * @version $Revision$ $Date$
+ * @version $Id$
  */
 public class TestGenericKeyedObjectPoolFactory extends TestKeyedObjectPoolFactory {
     public TestGenericKeyedObjectPoolFactory(final String name) {

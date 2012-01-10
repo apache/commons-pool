@@ -26,7 +26,7 @@ import org.apache.commons.pool.TestObjectPoolFactory;
  * Tests for {@link StackObjectPoolFactory}.
  *
  * @author Sandy McArthur
- * @version $Revision$ $Date$
+ * @version $Id$
  */
 public class TestStackObjectPoolFactory extends TestObjectPoolFactory {
     public TestStackObjectPoolFactory(final String name) {

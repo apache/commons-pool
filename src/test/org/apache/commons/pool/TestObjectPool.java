@@ -31,7 +31,7 @@ import org.apache.commons.pool.impl.StackObjectPool;
  * Abstract {@link TestCase} for {@link ObjectPool} implementations.
  * @author Rodney Waldhoff
  * @author Sandy McArthur
- * @version $Revision$ $Date$
+ * @version $Id$
  */
 public abstract class TestObjectPool extends TestCase {
     public TestObjectPool(String testName) {

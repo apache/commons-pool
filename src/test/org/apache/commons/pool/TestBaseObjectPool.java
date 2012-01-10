@@ -20,7 +20,7 @@ package org.apache.commons.pool;
 /**
  * @author Rodney Waldhoff
  * @author Sandy McArthur
- * @version $Revision$ $Date$ 
+ * @version $Id$ 
  */
 public class TestBaseObjectPool<T> extends TestObjectPool {
     private ObjectPool<T> _pool = null;

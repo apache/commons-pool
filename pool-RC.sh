@@ -19,7 +19,7 @@
 # Shell script to create commons pool RCs.
 # This script should be run from a fresh checkout of the RC tag.
 #
-# $Revision$ $Date$
+# $Id: $
 # -----------------------------------------------------------------------------
 # Set script variables
 version=1.5.7

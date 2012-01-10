@@ -30,7 +30,7 @@ import org.apache.commons.pool.TestBaseObjectPool;
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
  * @author Sandy McArthur
- * @version $Revision$ $Date$
+ * @version $Id$
  */
 public class TestStackObjectPool extends TestBaseObjectPool<String> {
     public TestStackObjectPool(String testName) {
