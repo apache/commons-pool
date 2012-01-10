@@ -23,6 +23,8 @@ package org.apache.commons.pool;
  * {@link #doWait()} method is called.</p>
  *
  * <p>This class is *not* threadsafe.</p>
+ * 
+ * @version $Id: $
  */
 public class Waiter {
     private boolean active = false;

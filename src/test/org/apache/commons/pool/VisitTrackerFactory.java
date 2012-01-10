@@ -20,7 +20,8 @@ package org.apache.commons.pool;
 /**
  * Factory that creates VisitTracker instances. Used to
  * test Evictor runs.
- *
+ * 
+ * @version $Id: $
  */
 public class VisitTrackerFactory<K> implements PoolableObjectFactory<VisitTracker<K>>, 
     KeyedPoolableObjectFactory<K, VisitTracker<K>> {

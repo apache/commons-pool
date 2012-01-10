@@ -19,6 +19,8 @@ package org.apache.commons.pool;
 
 /**
  * An exception that only is thrown by these tests.
+ * 
+ * @version $Id$
  */
 public class PrivateException extends RuntimeException {
     public PrivateException(final String message) {

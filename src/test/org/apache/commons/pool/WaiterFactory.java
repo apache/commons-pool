@@ -27,7 +27,8 @@ import java.util.Map;
  * If the factory's maxActive / maxActivePerKey are set to match those of the
  * pool, makeObject will throw IllegalStateException if the number of makes - destroys
  * (per key) exceeds the configured max.
- *
+ * 
+ * @version $Id: $
  */
 public class WaiterFactory<K> implements PoolableObjectFactory<Waiter>,
 KeyedPoolableObjectFactory<K, Waiter> {
