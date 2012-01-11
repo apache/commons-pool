@@ -21,6 +21,11 @@
     <title>Commons Pool Changes</title>
   </properties>
   <body>
+  <release version="1.6.1" date="?" description="">
+    <action dev="ggregory" type="fix" issue="POOL-210">
+      Jar manifest.mf does not contain SVN information for Implementation-Build.
+    </action>
+  </release>
   <release version="1.6" date="2012-01-07" description="Adds generics and requires Java 5.">
     <action dev="ggregory" type="add" issue="POOL-208">
       Support Java 1.5 Generics in version 1.x.
