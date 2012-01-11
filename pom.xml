@@ -28,7 +28,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>commons-pool</groupId>
   <artifactId>commons-pool</artifactId>
-  <version>1.6-SNAPSHOT</version>
+  <version>1.6.1-SNAPSHOT</version>
   <name>Commons Pool</name>
 
   <inceptionYear>2001</inceptionYear>
@@ -125,7 +125,7 @@
     <maven.compile.source>1.5</maven.compile.source>
     <maven.compile.target>1.5</maven.compile.target>
     <commons.componentid>pool</commons.componentid>
-    <commons.release.version>1.6</commons.release.version>
+    <commons.release.version>1.6.1</commons.release.version>
     <commons.jira.id>POOL</commons.jira.id>
     <commons.jira.pid>12310488</commons.jira.pid>
   </properties>
