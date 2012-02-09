@@ -1041,13 +1041,9 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
       */
      public void clear(K key) {
          
-         register(key);
+         ObjectDeque<T> objectDeque = register(key);
          
          try {
-             ObjectDeque<T> objectDeque = poolMap.get(key);
-             if (objectDeque == null) {
-                 return;
-             }
              LinkedBlockingDeque<PooledObject<T>> idleObjects =
                      objectDeque.getIdleObjects();
              
@@ -1496,10 +1492,9 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
     private boolean destroy(K key, PooledObject<T> toDestroy, boolean always)
             throws Exception {
         
-        register(key);
+        ObjectDeque<T> objectDeque = register(key);
 
         try {
-            ObjectDeque<T> objectDeque = poolMap.get(key);
             boolean isIdle = objectDeque.getIdleObjects().remove(toDestroy);
             
             if (isIdle || always) {
