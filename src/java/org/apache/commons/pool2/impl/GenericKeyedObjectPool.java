@@ -238,6 +238,9 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         this.factory = factory;
         setConfig(config);
 
+        // TODO Get from config
+        this.evictionPolicy = new DefaultEvictionPolicy<T>();
+        
         startEvictor(getMinEvictableIdleTimeMillis());
 
         initStats();
@@ -1320,19 +1323,16 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
             return;
         }
 
+        PooledObject<T> underTest = null;
+
         synchronized (evictionLock) {
-            boolean testWhileIdle = getTestWhileIdle();
-            long idleEvictTime = Long.MAX_VALUE;
-            long idleSoftEvictTime = Long.MAX_VALUE;
+            EvictionConfig evictionConfig = new EvictionConfig(
+                    getMinEvictableIdleTimeMillis(),
+                    getSoftMinEvictableIdleTimeMillis(),
+                    getMinIdlePerKey());
             
-            if (getMinEvictableIdleTimeMillis() > 0) {
-                idleEvictTime = getMinEvictableIdleTimeMillis();
-            }
-            if (getSoftMinEvictableIdleTimeMillis() > 0) {
-                idleSoftEvictTime = getSoftMinEvictableIdleTimeMillis();
-            }
-    
-            PooledObject<T> underTest = null;
+            boolean testWhileIdle = getTestWhileIdle();
+            
             LinkedBlockingDeque<PooledObject<T>> idleObjects = null;
              
             for (int i = 0, m = getNumTests(); i < m; i++) {
@@ -1389,10 +1389,8 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
                     continue;
                 }
     
-                if (idleEvictTime < underTest.getIdleTimeMillis() ||
-                        (idleSoftEvictTime < underTest.getIdleTimeMillis() &&
-                                getMaxIdlePerKey() <
-                                poolMap.get(evictionKey).getIdleObjects().size())) {
+                if (evictionPolicy.evict(evictionConfig, underTest,
+                        poolMap.get(evictionKey).getIdleObjects().size())) {
                     destroy(evictionKey, underTest, true);
                     destroyedByEvictorCount.incrementAndGet();
                 } else {
@@ -2254,6 +2252,11 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      */
     private K evictionKey = null; // @GuardedBy("evictionLock")
 
+    /**
+     * Policy that determines if an object is eligible for eviction or not.
+     */
+    private EvictionPolicy<T> evictionPolicy;
+    
     /** Object used to ensure thread safety of eviction process */ 
     private final Object evictionLock = new Object();
 
