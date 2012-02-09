@@ -25,6 +25,7 @@ import static junit.framework.Assert.fail;
 
 import java.util.NoSuchElementException;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.pool2.BasePoolableObjectFactory;
 import org.apache.commons.pool2.ObjectPool;
@@ -853,6 +854,45 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertEquals("Should be zero idle, found " + pool.getNumIdle(),0,pool.getNumIdle());
     }
  
+    public static class TestEvictionPolicy<T> implements EvictionPolicy<T> {
+
+        private AtomicInteger callCount = new AtomicInteger(0);
+        
+        public boolean evict(EvictionConfig config, PooledObject<T> underTest,
+                int idleCount) {
+            if (callCount.incrementAndGet() > 1500) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+    
+    @Test(timeout=60000)
+    public void testEvictionPolicy() throws Exception {
+        pool.setMaxIdle(500);
+        pool.setMaxTotal(500);
+        pool.setNumTestsPerEvictionRun(500);
+        pool.setMinEvictableIdleTimeMillis(250L);
+        pool.setTimeBetweenEvictionRunsMillis(500L);
+        pool.setTestWhileIdle(true);
+        pool.setEvictionPolicyClassName(TestEvictionPolicy.class.getName());
+
+        Object[] active = new Object[500];
+        for(int i=0;i<500;i++) {
+            active[i] = pool.borrowObject();
+        }
+        for(int i=0;i<500;i++) {
+            pool.returnObject(active[i]);
+        }
+
+        try { Thread.sleep(1000L); } catch(InterruptedException e) { }
+        assertEquals("Should be 500 idle", 500, pool.getNumIdle());
+        try { Thread.sleep(1000L); } catch(InterruptedException e) { }
+        assertEquals("Should be 0 idle", 0, pool.getNumIdle());
+    }
+ 
+
     @Test(timeout=60000)
     public void testEvictionSoftMinIdle() throws Exception {
         class TimeTest extends BasePoolableObjectFactory<TimeTest> {

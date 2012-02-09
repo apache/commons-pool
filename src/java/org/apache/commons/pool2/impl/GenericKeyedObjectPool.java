@@ -238,9 +238,6 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         this.factory = factory;
         setConfig(config);
 
-        // TODO Get from config
-        this.evictionPolicy = new DefaultEvictionPolicy<T>();
-        
         startEvictor(getMinEvictableIdleTimeMillis());
 
         initStats();
@@ -632,6 +629,33 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         this.softMinEvictableIdleTimeMillis = softMinEvictableIdleTimeMillis;
     }
 
+    public String getEvictionPolicyClassName() {
+        return evictionPolicy.getClass().getName();
+    }
+
+    @SuppressWarnings("unchecked")
+    public void setEvictionPolicyClassName(String evictionPolicyClassName) {
+        try {
+            Class<?> clazz = Class.forName(evictionPolicyClassName);
+            Object policy = clazz.newInstance();
+            if (policy instanceof EvictionPolicy<?>) {
+                this.evictionPolicy = (EvictionPolicy<T>) policy;
+            }
+        } catch (ClassNotFoundException e) {
+            throw new IllegalArgumentException(
+                    "Unable to create EvictionPolicy instance of type " +
+                    evictionPolicyClassName, e);
+        } catch (InstantiationException e) {
+            throw new IllegalArgumentException(
+                    "Unable to create EvictionPolicy instance of type " +
+                    evictionPolicyClassName, e);
+        } catch (IllegalAccessException e) {
+            throw new IllegalArgumentException(
+                    "Unable to create EvictionPolicy instance of type " +
+                    evictionPolicyClassName, e);
+        }
+    }
+    
     /**
      * When <code>true</code>, objects will be
      * {@link org.apache.commons.pool2.PoolableObjectFactory#validateObject validated}
@@ -682,6 +706,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
                 conf.getSoftMinEvictableIdleTimeMillis());
         setTimeBetweenEvictionRunsMillis(
                 conf.getTimeBetweenEvictionRunsMillis());
+        setEvictionPolicyClassName(conf.getEvictionPolicyClassName());
     }
 
     /**

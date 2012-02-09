@@ -92,6 +92,12 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
      */
     public static final String DEFAULT_JMX_NAME_PREFIX = "pool";
 
+    /**
+     * The default policy that will be used to evict objects from the pool.
+     */
+    public static final String DEFAULT_EVICTION_POLICY_CLASS_NAME =
+            DefaultEvictionPolicy.class.getName();
+
     private boolean lifo = DEFAULT_LIFO;
 
     private long maxWait = DEFAULT_MAX_WAIT;
@@ -105,6 +111,8 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
     private int numTestsPerEvictionRun =
         DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
 
+    private String evictionPolicyClassName = DEFAULT_EVICTION_POLICY_CLASS_NAME;
+    
     private boolean testOnBorrow = DEFAULT_TEST_ON_BORROW;
 
     private boolean testOnReturn = DEFAULT_TEST_ON_RETURN;
@@ -191,6 +199,14 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
 
     public void setTimeBetweenEvictionRunsMillis(long timeBetweenEvictionRunsMillis) {
         this.timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
+    }
+
+    public String getEvictionPolicyClassName() {
+        return evictionPolicyClassName;
+    }
+
+    public void setEvictionPolicyClassName(String evictionPolicyClassName) {
+        this.evictionPolicyClassName = evictionPolicyClassName;
     }
 
     public boolean getBlockWhenExhausted() {

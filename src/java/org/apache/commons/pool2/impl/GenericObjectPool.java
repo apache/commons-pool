@@ -191,9 +191,6 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
         this.factory = factory;
         setConfig(config);
 
-        // TODO Get from config
-        this.evictionPolicy = new DefaultEvictionPolicy<T>();
-        
         startEvictor(getTimeBetweenEvictionRunsMillis());
 
         initStats();
@@ -566,6 +563,33 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
         this.softMinEvictableIdleTimeMillis = softMinEvictableIdleTimeMillis;
     }
 
+    public String getEvictionPolicyClassName() {
+        return evictionPolicy.getClass().getName();
+    }
+
+    @SuppressWarnings("unchecked")
+    public void setEvictionPolicyClassName(String evictionPolicyClassName) {
+        try {
+            Class<?> clazz = Class.forName(evictionPolicyClassName);
+            Object policy = clazz.newInstance();
+            if (policy instanceof EvictionPolicy<?>) {
+                this.evictionPolicy = (EvictionPolicy<T>) policy;
+            }
+        } catch (ClassNotFoundException e) {
+            throw new IllegalArgumentException(
+                    "Unable to create EvictionPolicy instance of type " +
+                    evictionPolicyClassName, e);
+        } catch (InstantiationException e) {
+            throw new IllegalArgumentException(
+                    "Unable to create EvictionPolicy instance of type " +
+                    evictionPolicyClassName, e);
+        } catch (IllegalAccessException e) {
+            throw new IllegalArgumentException(
+                    "Unable to create EvictionPolicy instance of type " +
+                    evictionPolicyClassName, e);
+        }
+    }
+
     /**
      * When <tt>true</tt>, objects will be
      * {@link PoolableObjectFactory#validateObject validated} by the idle object
@@ -647,6 +671,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
                 conf.getTimeBetweenEvictionRunsMillis());
         setSoftMinEvictableIdleTimeMillis(
                 conf.getSoftMinEvictableIdleTimeMillis());
+        setEvictionPolicyClassName(conf.getEvictionPolicyClassName());
     }
 
     /**
@@ -1574,7 +1599,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
     /**
      * Policy that determines if an object is eligible for eviction or not.
      */
-    private EvictionPolicy<T> evictionPolicy;
+    private EvictionPolicy<T> evictionPolicy = new DefaultEvictionPolicy<T>();
 
     /** Object used to ensure thread safety of eviction process */ 
     private final Object evictionLock = new Object();
