@@ -191,6 +191,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
         this.factory = factory;
         setConfig(config);
 
+        // TODO Get from config
+        this.evictionPolicy = new DefaultEvictionPolicy<T>();
+        
         startEvictor(getTimeBetweenEvictionRunsMillis());
 
         initStats();
@@ -1048,16 +1051,12 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
         PooledObject<T> underTest = null;
 
         synchronized (evictionLock) {
-            boolean testWhileIdle = getTestWhileIdle();
-            long idleEvictTime = Long.MAX_VALUE;
-            long idleSoftEvictTime = Long.MAX_VALUE;
+            EvictionConfig evictionConfig = new EvictionConfig(
+                    getMinEvictableIdleTimeMillis(),
+                    getSoftMinEvictableIdleTimeMillis(),
+                    getMinIdle());
             
-            if (getMinEvictableIdleTimeMillis() > 0) {
-                idleEvictTime = getMinEvictableIdleTimeMillis();
-            }
-            if (getSoftMinEvictableIdleTimeMillis() > 0) {
-                idleSoftEvictTime = getSoftMinEvictableIdleTimeMillis();
-            }
+            boolean testWhileIdle = getTestWhileIdle();
                     
             for (int i = 0, m = getNumTests(); i < m; i++) {
                 if (evictionIterator == null || !evictionIterator.hasNext()) {
@@ -1089,9 +1088,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
                     continue;
                 }
     
-                if (idleEvictTime < underTest.getIdleTimeMillis() ||
-                        (idleSoftEvictTime < underTest.getIdleTimeMillis() &&
-                                getMinIdle() < idleObjects.size())) {
+                if (evictionPolicy.evict(evictionConfig, underTest,
+                        idleObjects.size())) {
                     destroy(underTest);
                     destroyedByEvictorCount.incrementAndGet();
                 } else {
@@ -1572,6 +1570,11 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
 
     /** An iterator for {@link #idleObjects} that is used by the evictor. */
     private Iterator<PooledObject<T>> evictionIterator = null; // @GuardedBy("evictionLock")
+
+    /**
+     * Policy that determines if an object is eligible for eviction or not.
+     */
+    private EvictionPolicy<T> evictionPolicy;
 
     /** Object used to ensure thread safety of eviction process */ 
     private final Object evictionLock = new Object();
