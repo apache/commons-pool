@@ -20,7 +20,12 @@
     <title>Commons Pool Changes</title>
   </properties>
   <body>
-  <release version="2.0" description="This is an APIs update and maintenance release">
+  <release version="2.0" description=
+"This is a major new release that provides significant performance improvements
+in high concurrency environments. Pools now provide a mechanism for tracking
+objects that have been borrowed from the pool but not returned. There have been
+numerous API changes to support these and other new features as well as to
+clarify behaviour and improve consistency across the API.">
     <action dev="simonetripodi" type="update" date="2011-12-12" issue="POOL-194">
       Replace synchronized blocks in PoolUtils with Read/Write locks.
     </action>
