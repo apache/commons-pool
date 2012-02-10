@@ -30,6 +30,7 @@ public class SleepingObjectFactory implements PoolableObjectFactory<Integer> {
     private int counter = 0;
     private boolean debug = false;
 
+    @Override
     public Integer makeObject() throws Exception {
         Integer obj = new Integer(counter++);
         debug("makeObject", obj);
@@ -37,22 +38,26 @@ public class SleepingObjectFactory implements PoolableObjectFactory<Integer> {
         return obj;
     }
 
+    @Override
     public void destroyObject(Integer obj) throws Exception {
         debug("destroyObject", obj);
         sleep(250);
     }
 
+    @Override
     public boolean validateObject(Integer obj) {
         debug("validateObject", obj);
         sleep(30);
         return true;
     }
 
+    @Override
     public void activateObject(Integer obj) throws Exception {
         debug("activateObject", obj);
         sleep(10);
     }
 
+    @Override
     public void passivateObject(Integer obj) throws Exception {
         debug("passivateObject", obj);
         sleep(10);

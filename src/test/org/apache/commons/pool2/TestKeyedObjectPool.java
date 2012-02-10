@@ -720,6 +720,7 @@ public abstract class TestKeyedObjectPool {
             this.passivateObjectFail = passivateObjectFail;
         }
 
+        @Override
         public Object makeObject(final Object key) throws Exception {
             final MethodCall call = new MethodCall("makeObject", key);
             methodCalls.add(call);
@@ -732,6 +733,7 @@ public abstract class TestKeyedObjectPool {
             return obj;
         }
 
+        @Override
         public void activateObject(final Object key, final Object obj) throws Exception {
             methodCalls.add(new MethodCall("activateObject", key, obj));
             if (activateObjectFail) {
@@ -739,6 +741,7 @@ public abstract class TestKeyedObjectPool {
             }
         }
 
+        @Override
         public boolean validateObject(final Object key, final Object obj) {
             final MethodCall call = new MethodCall("validateObject", key, obj);
             methodCalls.add(call);
@@ -750,6 +753,7 @@ public abstract class TestKeyedObjectPool {
             return r;
         }
 
+        @Override
         public void passivateObject(final Object key, final Object obj) throws Exception {
             methodCalls.add(new MethodCall("passivateObject", key, obj));
             if (passivateObjectFail) {
@@ -757,6 +761,7 @@ public abstract class TestKeyedObjectPool {
             }
         }
 
+        @Override
         public void destroyObject(final Object key, final Object obj) throws Exception {
             methodCalls.add(new MethodCall("destroyObject", key, obj));
             if (destroyObjectFail) {

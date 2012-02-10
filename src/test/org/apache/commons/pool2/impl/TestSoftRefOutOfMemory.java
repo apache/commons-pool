@@ -233,6 +233,7 @@ public class TestSoftRefOutOfMemory {
     public static class SmallPoolableObjectFactory implements PoolableObjectFactory<String> {
         private int counter = 0;
 
+        @Override
         public String makeObject() {
             counter++;
             // It seems that as of Java 1.4 String.valueOf may return an
@@ -242,11 +243,15 @@ public class TestSoftRefOutOfMemory {
             // is returned eliminated false failures.
             return new String(String.valueOf(counter));
         }
+        @Override
         public boolean validateObject(String obj) {
             return true;
         }
+        @Override
         public void activateObject(String obj) { }
+        @Override
         public void passivateObject(String obj) { }
+        @Override
         public void destroyObject(String obj) { }
     }
 
@@ -260,15 +265,20 @@ public class TestSoftRefOutOfMemory {
             buffer = new String(data);
         }
 
+        @Override
         public String makeObject() {
             counter++;
             return String.valueOf(counter) + buffer;
         }
+        @Override
         public boolean validateObject(String obj) {
             return true;
         }
+        @Override
         public void activateObject(String obj) { }
+        @Override
         public void passivateObject(String obj) { }
+        @Override
         public void destroyObject(String obj) { }
     }
 }

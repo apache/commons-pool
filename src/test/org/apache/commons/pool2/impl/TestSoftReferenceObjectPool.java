@@ -33,10 +33,15 @@ public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
         return new SoftReferenceObjectPool<Object>(
             new PoolableObjectFactory<Object>()  {
                 int counter = 0;
+                @Override
                 public Object makeObject() { return String.valueOf(counter++); }
+                @Override
                 public void destroyObject(Object obj) { }
+                @Override
                 public boolean validateObject(Object obj) { return true; }
+                @Override
                 public void activateObject(Object obj) { }
+                @Override
                 public void passivateObject(Object obj) { }
             }
             );

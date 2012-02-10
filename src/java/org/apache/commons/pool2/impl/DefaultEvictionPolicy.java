@@ -29,6 +29,7 @@ package org.apache.commons.pool2.impl;
  */
 public class DefaultEvictionPolicy<T> implements EvictionPolicy<T> {
 
+    @Override
     public boolean evict(EvictionConfig config, PooledObject<T> underTest,
             int idleCount) {
         

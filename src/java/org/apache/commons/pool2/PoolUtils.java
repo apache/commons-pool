@@ -620,6 +620,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public T borrowObject() throws Exception, NoSuchElementException, IllegalStateException {
             WriteLock writeLock = readWriteLock.writeLock();
             writeLock.tryLock();
@@ -633,6 +634,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void returnObject(final T obj) {
             WriteLock writeLock = readWriteLock.writeLock();
             writeLock.tryLock();
@@ -648,6 +650,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void invalidateObject(final T obj) {
             WriteLock writeLock = readWriteLock.writeLock();
             writeLock.tryLock();
@@ -663,6 +666,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void addObject() throws Exception, IllegalStateException, UnsupportedOperationException {
             WriteLock writeLock = readWriteLock.writeLock();
             writeLock.tryLock();
@@ -676,6 +680,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public int getNumIdle() throws UnsupportedOperationException {
             ReadLock readLock = readWriteLock.readLock();
             readLock.tryLock();
@@ -689,6 +694,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public int getNumActive() throws UnsupportedOperationException {
             ReadLock readLock = readWriteLock.readLock();
             readLock.tryLock();
@@ -702,6 +708,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void clear() throws Exception, UnsupportedOperationException {
             WriteLock writeLock = readWriteLock.writeLock();
             writeLock.tryLock();
@@ -715,6 +722,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void close() {
             WriteLock writeLock = readWriteLock.writeLock();
             writeLock.tryLock();
@@ -774,6 +782,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public V borrowObject(final K key) throws Exception, NoSuchElementException, IllegalStateException {
             WriteLock writeLock = readWriteLock.writeLock();
             writeLock.tryLock();
@@ -787,6 +796,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void returnObject(final K key, final V obj) {
             WriteLock writeLock = readWriteLock.writeLock();
             writeLock.tryLock();
@@ -802,6 +812,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void invalidateObject(final K key, final V obj) {
             WriteLock writeLock = readWriteLock.writeLock();
             writeLock.tryLock();
@@ -817,6 +828,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void addObject(final K key) throws Exception, IllegalStateException, UnsupportedOperationException {
             WriteLock writeLock = readWriteLock.writeLock();
             writeLock.tryLock();
@@ -830,6 +842,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public int getNumIdle(final K key) throws UnsupportedOperationException {
             ReadLock readLock = readWriteLock.readLock();
             readLock.tryLock();
@@ -843,6 +856,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public int getNumActive(final K key) throws UnsupportedOperationException {
             ReadLock readLock = readWriteLock.readLock();
             readLock.tryLock();
@@ -856,6 +870,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public int getNumIdle() throws UnsupportedOperationException {
             ReadLock readLock = readWriteLock.readLock();
             readLock.tryLock();
@@ -869,6 +884,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public int getNumActive() throws UnsupportedOperationException {
             ReadLock readLock = readWriteLock.readLock();
             readLock.tryLock();
@@ -882,6 +898,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void clear() throws Exception, UnsupportedOperationException {
             WriteLock writeLock = readWriteLock.writeLock();
             writeLock.tryLock();
@@ -895,6 +912,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void clear(final K key) throws Exception, UnsupportedOperationException {
             WriteLock writeLock = readWriteLock.writeLock();
             writeLock.tryLock();
@@ -908,6 +926,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void close() {
             WriteLock writeLock = readWriteLock.writeLock();
             writeLock.tryLock();
@@ -964,6 +983,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public T makeObject() throws Exception {
             writeLock.tryLock();
             try {
@@ -976,6 +996,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void destroyObject(final T obj) throws Exception {
             writeLock.tryLock();
             try {
@@ -988,6 +1009,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public boolean validateObject(final T obj) {
             writeLock.tryLock();
             try {
@@ -1000,6 +1022,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void activateObject(final T obj) throws Exception {
             writeLock.tryLock();
             try {
@@ -1012,6 +1035,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void passivateObject(final T obj) throws Exception {
             writeLock.tryLock();
             try {
@@ -1065,6 +1089,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public V makeObject(final K key) throws Exception {
             writeLock.tryLock();
             try {
@@ -1077,6 +1102,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void destroyObject(final K key, final V obj) throws Exception {
             writeLock.tryLock();
             try {
@@ -1089,6 +1115,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public boolean validateObject(final K key, final V obj) {
             writeLock.tryLock();
             try {
@@ -1101,6 +1128,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void activateObject(final K key, final V obj) throws Exception {
             writeLock.tryLock();
             try {
@@ -1113,6 +1141,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void passivateObject(final K key, final V obj) throws Exception {
             writeLock.tryLock();
             try {
@@ -1228,6 +1257,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public T borrowObject() throws Exception, NoSuchElementException, IllegalStateException {
             return pool.borrowObject();
         }
@@ -1241,6 +1271,7 @@ public final class PoolUtils {
          * @param obj object to return or invalidate
          * @see #factor
          */
+        @Override
         public void returnObject(final T obj) {
             boolean discard = false;
             final long now = System.currentTimeMillis();
@@ -1268,6 +1299,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void invalidateObject(final T obj) {
             try {
                 pool.invalidateObject(obj);
@@ -1279,6 +1311,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void addObject() throws Exception, IllegalStateException, UnsupportedOperationException {
             pool.addObject();
         }
@@ -1286,6 +1319,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public int getNumIdle() throws UnsupportedOperationException {
             return pool.getNumIdle();
         }
@@ -1293,6 +1327,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public int getNumActive() throws UnsupportedOperationException {
             return pool.getNumActive();
         }
@@ -1300,6 +1335,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void clear() throws Exception, UnsupportedOperationException {
             pool.clear();
         }
@@ -1307,6 +1343,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void close() {
             try {
                 pool.close();
@@ -1369,6 +1406,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public V borrowObject(final K key) throws Exception, NoSuchElementException, IllegalStateException {
             return keyedPool.borrowObject(key);
         }
@@ -1383,6 +1421,7 @@ public final class PoolUtils {
          * @param key key
          * @see #erodingFactor
          */
+        @Override
         public void returnObject(final K key, final V obj) throws Exception {
             boolean discard = false;
             final long now = System.currentTimeMillis();
@@ -1420,6 +1459,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void invalidateObject(final K key, final V obj) {
             try {
                 keyedPool.invalidateObject(key, obj);
@@ -1431,6 +1471,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void addObject(final K key) throws Exception, IllegalStateException, UnsupportedOperationException {
             keyedPool.addObject(key);
         }
@@ -1438,6 +1479,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public int getNumIdle() throws UnsupportedOperationException {
             return keyedPool.getNumIdle();
         }
@@ -1445,6 +1487,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public int getNumIdle(final K key) throws UnsupportedOperationException {
             return keyedPool.getNumIdle(key);
         }
@@ -1452,6 +1495,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public int getNumActive() throws UnsupportedOperationException {
             return keyedPool.getNumActive();
         }
@@ -1459,6 +1503,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public int getNumActive(final K key) throws UnsupportedOperationException {
             return keyedPool.getNumActive(key);
         }
@@ -1466,6 +1511,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void clear() throws Exception, UnsupportedOperationException {
             keyedPool.clear();
         }
@@ -1473,6 +1519,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void clear(final K key) throws Exception, UnsupportedOperationException {
             keyedPool.clear(key);
         }
@@ -1480,6 +1527,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void close() {
             try {
                 keyedPool.close();

@@ -616,6 +616,7 @@ public class LinkedBlockingDeque<E>
     /**
      * @throws NullPointerException if the specified element is null
      */
+    @Override
     public boolean offer(E e) {
         return offerLast(e);
     }
@@ -652,6 +653,7 @@ public class LinkedBlockingDeque<E>
         return removeFirst();
     }
 
+    @Override
     public E poll() {
         return pollFirst();
     }
@@ -679,6 +681,7 @@ public class LinkedBlockingDeque<E>
         return getFirst();
     }
 
+    @Override
     public E peek() {
         return peekFirst();
     }
@@ -1071,10 +1074,12 @@ public class LinkedBlockingDeque<E>
             }
         }
 
+        @Override
         public boolean hasNext() {
             return next != null;
         }
 
+        @Override
         public E next() {
             if (next == null)
                 throw new NoSuchElementException();
@@ -1084,6 +1089,7 @@ public class LinkedBlockingDeque<E>
             return x;
         }
 
+        @Override
         public void remove() {
             Node<E> n = lastRet;
             if (n == null)

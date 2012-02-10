@@ -110,6 +110,7 @@ public class MethodCallPoolableObjectFactory implements PoolableObjectFactory<Ob
         this.passivateObjectFail = passivateObjectFail;
     }
 
+    @Override
     public Object makeObject() throws Exception {
         final MethodCall call = new MethodCall("makeObject");
         methodCalls.add(call);
@@ -122,6 +123,7 @@ public class MethodCallPoolableObjectFactory implements PoolableObjectFactory<Ob
         return obj;
     }
 
+    @Override
     public void activateObject(final Object obj) throws Exception {
         methodCalls.add(new MethodCall("activateObject", obj));
         if (activateObjectFail) {
@@ -129,6 +131,7 @@ public class MethodCallPoolableObjectFactory implements PoolableObjectFactory<Ob
         }
     }
 
+    @Override
     public boolean validateObject(final Object obj) {
         final MethodCall call = new MethodCall("validateObject", obj);
         methodCalls.add(call);
@@ -140,6 +143,7 @@ public class MethodCallPoolableObjectFactory implements PoolableObjectFactory<Ob
         return r;
     }
 
+    @Override
     public void passivateObject(final Object obj) throws Exception {
         methodCalls.add(new MethodCall("passivateObject", obj));
         if (passivateObjectFail) {
@@ -147,6 +151,7 @@ public class MethodCallPoolableObjectFactory implements PoolableObjectFactory<Ob
         }
     }
 
+    @Override
     public void destroyObject(final Object obj) throws Exception {
         methodCalls.add(new MethodCall("destroyObject", obj));
         if (destroyObjectFail) {

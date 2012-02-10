@@ -55,6 +55,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         KeyedPoolableObjectFactory<Object,Object> factory =
                 new KeyedPoolableObjectFactory<Object,Object>()  {
             ConcurrentHashMap<Object,AtomicInteger> map = new ConcurrentHashMap<Object,AtomicInteger>();
+            @Override
             public Object makeObject(Object key) {
                 int counter = 0;
                 AtomicInteger Counter = map.get(key);
@@ -66,9 +67,13 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                 }
                 return String.valueOf(key) + String.valueOf(counter);
             }
+            @Override
             public void destroyObject(Object key, Object obj) { }
+            @Override
             public boolean validateObject(Object key, Object obj) { return true; }
+            @Override
             public void activateObject(Object key, Object obj) { }
+            @Override
             public void passivateObject(Object key, Object obj) { }
         };
 
@@ -1411,6 +1416,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             _key = key;
         }
 
+        @Override
         public void run() {
             try {
                 T obj = _pool.borrowObject(_key);
@@ -1496,6 +1502,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             return _failed;
         }
 
+        @Override
         public void run() {
             for(int i=0;i<_iter;i++) {
                 String key = String.valueOf(_random.nextInt(3));
@@ -1539,6 +1546,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         public SimpleFactory(boolean valid) {
             this.valid = valid;
         }
+        @Override
         public String makeObject(K key) {
             String out = null;
             synchronized(this) {
@@ -1551,6 +1559,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             }
             return out;
         }
+        @Override
         public void destroyObject(K key, String obj) throws Exception {
             doWait(destroyLatency);
             synchronized(this) {
@@ -1560,6 +1569,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                 throw new Exception();
             }
         }
+        @Override
         public boolean validateObject(K key, String obj) {
             if (enableValidation) { 
                 return validateCounter++%2 == 0 ? evenValid : oddValid; 
@@ -1567,6 +1577,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                 return valid;
             }
         }
+        @Override
         public void activateObject(K key, String obj) throws Exception {
             if (exceptionOnActivate) {
                 if (!(validateCounter++%2 == 0 ? evenValid : oddValid)) {
@@ -1574,6 +1585,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                 }
             }
         }
+        @Override
         public void passivateObject(K key, String obj) throws Exception {
             if (exceptionOnPassivate) {
                 throw new Exception();

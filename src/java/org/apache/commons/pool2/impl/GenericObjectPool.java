@@ -250,6 +250,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      *         pool.
      * @see #setMaxTotal
      */
+    @Override
     public int getMaxTotal() {
         return maxTotal;
     }
@@ -277,6 +278,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * @return true if should block when the pool is exhuasted
      * @see #setBlockWhenExhausted
      */
+    @Override
     public boolean getBlockWhenExhausted() {
         return blockWhenExhausted;
     }
@@ -303,6 +305,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * @see #setMaxWait
      * @see #setBlockWhenExhausted
      */
+    @Override
     public long getMaxWait() {
         return maxWait;
     }
@@ -329,6 +332,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * @return the cap on the number of "idle" instances in the pool.
      * @see #setMaxIdle
      */
+    @Override
     public int getMaxIdle() {
         return maxIdle;
     }
@@ -376,6 +380,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * @return The minimum number of objects.
      * @see #setMinIdle
      */
+    @Override
     public int getMinIdle() {
         return minIdle;
     }
@@ -390,6 +395,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * @return <code>true</code> if objects are validated before being borrowed.
      * @see #setTestOnBorrow
      */
+    @Override
     public boolean getTestOnBorrow() {
         return testOnBorrow;
     }
@@ -419,6 +425,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      *         to {@link #returnObject}.
      * @see #setTestOnReturn
      */
+    @Override
     public boolean getTestOnReturn() {
         return testOnReturn;
     }
@@ -445,6 +452,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * @return number of milliseconds to sleep between evictor runs.
      * @see #setTimeBetweenEvictionRunsMillis
      */
+    @Override
     public long getTimeBetweenEvictionRunsMillis() {
         return timeBetweenEvictionRunsMillis;
     }
@@ -472,6 +480,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * @see #setNumTestsPerEvictionRun
      * @see #setTimeBetweenEvictionRunsMillis
      */
+    @Override
     public int getNumTestsPerEvictionRun() {
         return numTestsPerEvictionRun;
     }
@@ -505,6 +514,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * @see #setMinEvictableIdleTimeMillis
      * @see #setTimeBetweenEvictionRunsMillis
      */
+    @Override
     public long getMinEvictableIdleTimeMillis() {
         return minEvictableIdleTimeMillis;
     }
@@ -600,6 +610,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * @see #setTestWhileIdle
      * @see #setTimeBetweenEvictionRunsMillis
      */
+    @Override
     public boolean getTestWhileIdle() {
         return testWhileIdle;
     }
@@ -629,6 +640,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * @return <code>true</true> if the pool is configured to act as a LIFO queue
      * @since 1.4
      */
+    @Override
     public boolean getLifo() {
         return lifo;
     }
@@ -1328,42 +1340,52 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
         return (long) result;
     }
 
+    @Override
     public long getBorrowedCount() {
         return borrowedCount.get();
     }
 
+    @Override
     public long getReturnedCount() {
         return returnedCount.get();
     }
 
+    @Override
     public long getCreatedCount() {
         return createdCount.get();
     }
 
+    @Override
     public long getDestroyedCount() {
         return destroyedCount.get();
     }
 
+    @Override
     public long getDestroyedByEvictorCount() {
         return destroyedByEvictorCount.get();
     }
 
+    @Override
     public long getDestroyedByBorrowValidationCount() {
         return destroyedByBorrowValidationCount.get();
     }
 
+    @Override
     public long getMeanActiveTimeMillis() {
         return getMeanFromStatsCache(activeTimes);
     }
 
+    @Override
     public long getMeanIdleTimeMillis() {
         return getMeanFromStatsCache(idleTimes);
     }
 
+    @Override
     public long getMeanBorrowWaitTimeMillis() {
         return getMeanFromStatsCache(waitTimes);
     }
 
+    @Override
     public long getMaxBorrowWaitTimeMillis() {
         return maxBorrowWaitTimeMillis;
     }

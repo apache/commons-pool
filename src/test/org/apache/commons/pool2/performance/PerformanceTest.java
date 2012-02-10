@@ -89,7 +89,8 @@ public class PerformanceTest {
             }
         }
 
-       public TaskStats call() throws Exception {
+       @Override
+    public TaskStats call() throws Exception {
            runOnce(); // warmup
            for (int i = 0; i < nrIterations; i++) {
                runOnce();
