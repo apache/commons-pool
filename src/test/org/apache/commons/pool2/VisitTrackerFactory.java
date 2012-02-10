@@ -31,33 +31,43 @@ public class VisitTrackerFactory<K> implements PoolableObjectFactory<VisitTracke
     public VisitTrackerFactory() {
         super();
     }
+    @Override
     public VisitTracker<K> makeObject() {
         return new VisitTracker<K>(nextId++);
     }
+    @Override
     public VisitTracker<K> makeObject(K key) {
         return new VisitTracker<K>(nextId++, key);
     }
+    @Override
     public void destroyObject(VisitTracker<K> obj) {
         obj.destroy();
     }
+    @Override
     public void destroyObject(K key, VisitTracker<K> obj) {
         obj.destroy();
     }
+    @Override
     public boolean validateObject(VisitTracker<K> obj) {
         return obj.validate();
     }
+    @Override
     public boolean validateObject(K key, VisitTracker<K> obj) {
         return obj.validate();
     }
+    @Override
     public void activateObject(VisitTracker<K> obj) throws Exception {
         obj.activate();
     }
+    @Override
     public void activateObject(K key, VisitTracker<K> obj) throws Exception {
         obj.activate();
     }
+    @Override
     public void passivateObject(VisitTracker<K> obj) throws Exception {
         obj.passivate();
     }
+    @Override
     public void passivateObject(K key, VisitTracker<K> obj) throws Exception {
         obj.passivate();
     }

@@ -44,22 +44,27 @@ public abstract class TestKeyedObjectPoolFactory {
 
             private final MethodCallPoolableObjectFactory wrapped = new MethodCallPoolableObjectFactory();
 
+            @Override
             public Object makeObject(Object key) throws Exception {
                 return this.wrapped.makeObject();
             }
 
+            @Override
             public void destroyObject(Object key, Object obj) throws Exception {
                 this.wrapped.destroyObject(obj);
             }
 
+            @Override
             public boolean validateObject(Object key, Object obj) {
                 return this.wrapped.validateObject(obj);
             }
 
+            @Override
             public void activateObject(Object key, Object obj) throws Exception {
                 this.wrapped.activateObject(obj);
             }
 
+            @Override
             public void passivateObject(Object key, Object obj) throws Exception {
                 this.wrapped.passivateObject(obj);
             }

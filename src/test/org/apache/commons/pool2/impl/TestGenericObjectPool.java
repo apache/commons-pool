@@ -858,6 +858,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
         private AtomicInteger callCount = new AtomicInteger(0);
         
+        @Override
         public boolean evict(EvictionConfig config, PooledObject<T> underTest,
                 int idleCount) {
             if (callCount.incrementAndGet() > 1500) {
@@ -1264,6 +1265,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             return _failed;
         }
 
+        @Override
         public void run() {
             for(int i=0;i<_iter;i++) {
                 long delay = 
@@ -1407,6 +1409,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         public synchronized void setValidateLatency(long validateLatency) {
             this.validateLatency = validateLatency;
         }
+        @Override
         public Object makeObject() { 
             final long waitLatency;
             synchronized(this) {
@@ -1426,6 +1429,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             }
             return String.valueOf(counter);
         }
+        @Override
         public void destroyObject(Object obj) throws Exception {
             final long waitLatency;
             final boolean hurl;
@@ -1443,6 +1447,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 throw new Exception();
             }
         }
+        @Override
         public boolean validateObject(Object obj) {
             final boolean validate;
             final boolean evenTest;
@@ -1466,6 +1471,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 return true;
             }
         }
+        @Override
         public void activateObject(Object obj) throws Exception {
             final boolean hurl;
             final boolean evenTest;
@@ -1483,6 +1489,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 }
             }
         }
+        @Override
         public void passivateObject(Object obj) throws Exception {
             final boolean hurl;
             synchronized(this) {

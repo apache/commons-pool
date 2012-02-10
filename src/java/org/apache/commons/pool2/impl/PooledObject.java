@@ -85,6 +85,7 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
         return lastReturnTime;
     }
 
+    @Override
     public int compareTo(PooledObject<T> other) {
         final long lastActiveDiff =
                 this.getLastReturnTime() - other.getLastReturnTime();

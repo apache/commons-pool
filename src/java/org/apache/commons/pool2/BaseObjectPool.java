@@ -38,6 +38,7 @@ public abstract class BaseObjectPool<T> implements ObjectPool<T> {
      * @return an instance from the pool
      * @throws Exception if an instance cannot be obtained from the pool
      */
+    @Override
     public abstract T borrowObject() throws Exception;
 
     /**
@@ -45,6 +46,7 @@ public abstract class BaseObjectPool<T> implements ObjectPool<T> {
      * 
      * @param obj instance to return to the pool
      */
+    @Override
     public abstract void returnObject(T obj) throws Exception;
 
     /**
@@ -59,6 +61,7 @@ public abstract class BaseObjectPool<T> implements ObjectPool<T> {
      * @param obj a {@link #borrowObject borrowed} instance to be disposed.
      * @throws Exception 
      */
+    @Override
     public abstract void invalidateObject(T obj) throws Exception;
 
     /**
@@ -67,6 +70,7 @@ public abstract class BaseObjectPool<T> implements ObjectPool<T> {
      * 
      * @throws UnsupportedOperationException
      */
+    @Override
     public int getNumIdle() throws UnsupportedOperationException {
         return -1;
     }
@@ -77,6 +81,7 @@ public abstract class BaseObjectPool<T> implements ObjectPool<T> {
      * 
      * @throws UnsupportedOperationException
      */
+    @Override
     public int getNumActive() throws UnsupportedOperationException {
         return -1;
     }
@@ -86,6 +91,7 @@ public abstract class BaseObjectPool<T> implements ObjectPool<T> {
      * 
      * @throws UnsupportedOperationException
      */
+    @Override
     public void clear() throws Exception, UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
@@ -97,6 +103,7 @@ public abstract class BaseObjectPool<T> implements ObjectPool<T> {
      * 
      * @throws UnsupportedOperationException
      */
+    @Override
     public void addObject() throws Exception, UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
@@ -105,6 +112,7 @@ public abstract class BaseObjectPool<T> implements ObjectPool<T> {
      * Close this pool.
      * This affects the behavior of <code>isClosed</code> and <code>assertOpen</code>.
      */
+    @Override
     public void close() throws Exception {
         closed = true;
     }

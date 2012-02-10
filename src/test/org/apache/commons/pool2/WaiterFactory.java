@@ -97,11 +97,13 @@ KeyedPoolableObjectFactory<K,Waiter> {
                 validateLatency, waiterLatency, maxActive, Long.MAX_VALUE, 0);
     }
 
+    @Override
     public void activateObject(Waiter obj) throws Exception {
         doWait(activateLatency);
         obj.setActive(true);
     }
 
+    @Override
     public void destroyObject(Waiter obj) throws Exception {
         doWait(destroyLatency);
         obj.setValid(false);
@@ -112,6 +114,7 @@ KeyedPoolableObjectFactory<K,Waiter> {
         }
     }
 
+    @Override
     public Waiter makeObject() throws Exception {
         // Increment and test *before* make
         synchronized (this) {
@@ -126,6 +129,7 @@ KeyedPoolableObjectFactory<K,Waiter> {
         return new Waiter(false, true, waiterLatency);
     }
 
+    @Override
     public void passivateObject(Waiter arg0) throws Exception {
         arg0.setActive(false);
         doWait(passivateLatency);
@@ -134,6 +138,7 @@ KeyedPoolableObjectFactory<K,Waiter> {
         }
     }
 
+    @Override
     public boolean validateObject(Waiter arg0) {
         doWait(validateLatency);
         return arg0.isValid();
@@ -168,10 +173,12 @@ KeyedPoolableObjectFactory<K,Waiter> {
 
     // KeyedPoolableObjectFactory methods
     
+    @Override
     public void activateObject(K key, Waiter obj) throws Exception {
         activateObject(obj);
     }
 
+    @Override
     public void destroyObject(K key, Waiter obj) throws Exception {
         destroyObject(obj);
         synchronized (this) {
@@ -180,6 +187,7 @@ KeyedPoolableObjectFactory<K,Waiter> {
         }
     }
 
+    @Override
     public Waiter makeObject(K key) throws Exception {
         synchronized (this) {
             Integer count = activeCounts.get(key);
@@ -200,10 +208,12 @@ KeyedPoolableObjectFactory<K,Waiter> {
         return makeObject();
     }
 
+    @Override
     public void passivateObject(K key, Waiter obj) throws Exception {
         passivateObject(obj);
     }
 
+    @Override
     public boolean validateObject(K key, Waiter obj) {
         return validateObject(obj);
     }

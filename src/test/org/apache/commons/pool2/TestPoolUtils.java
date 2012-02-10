@@ -772,6 +772,7 @@ public class TestPoolUtils {
             this.calledMethods = calledMethods;
         }
 
+        @Override
         public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
             calledMethods.add(method.getName());
             if (boolean.class.equals(method.getReturnType())) {

@@ -37,6 +37,7 @@ public abstract class BasePoolableObjectFactory<T> implements PoolableObjectFact
     /**
      * {@inheritDoc}
      */
+    @Override
     public abstract T makeObject() throws Exception;
 
     /**
@@ -44,6 +45,7 @@ public abstract class BasePoolableObjectFactory<T> implements PoolableObjectFact
      *  
      *  @param obj ignored
      */
+    @Override
     public void destroyObject(T obj)
         throws Exception  {
     }
@@ -54,6 +56,7 @@ public abstract class BasePoolableObjectFactory<T> implements PoolableObjectFact
      * @param obj ignored
      * @return <tt>true</tt>
      */
+    @Override
     public boolean validateObject(T obj) {
         return true;
     }
@@ -63,6 +66,7 @@ public abstract class BasePoolableObjectFactory<T> implements PoolableObjectFact
      *  
      *  @param obj ignored
      */
+    @Override
     public void activateObject(T obj) throws Exception {
     }
 
@@ -71,6 +75,7 @@ public abstract class BasePoolableObjectFactory<T> implements PoolableObjectFact
      *  
      * @param obj ignored
      */
+    @Override
     public void passivateObject(T obj)
         throws Exception {
     }
