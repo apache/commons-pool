@@ -573,6 +573,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
             int numTestsPerEvictionRun, long minEvictableIdleTimeMillis, boolean testWhileIdle,
             long softMinEvictableIdleTimeMillis, boolean lifo) {
         _factory = factory;
+        // save the current CCL to be used later by the evictor Thread
+        _factoryClassLoader = Thread.currentThread().getContextClassLoader();
         _maxActive = maxActive;
         _lifo = lifo;
         switch(whenExhaustedAction) {
@@ -1533,6 +1535,8 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
                 _pool.clear();
             }
             _factory = factory;
+            // save the current CCL to be used later by the evictor Thread
+            _factoryClassLoader = Thread.currentThread().getContextClassLoader();
         }
         destroy(toDestroy, oldFactory);
     }
@@ -1768,22 +1772,34 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
         /**
          * Run pool maintenance.  Evict objects qualifying for eviction and then
          * invoke {@link GenericObjectPool#ensureMinIdle()}.
+         * Since the Timer that invokes Evictors is shared for all Pools, we try
+         * to restore the ContextClassLoader that created the pool.
          */
         @Override
         public void run() {
+            ClassLoader savedClassLoader =
+                    Thread.currentThread().getContextClassLoader();
             try {
-                evict();
-            } catch(Exception e) {
-                // ignored
-            } catch(OutOfMemoryError oome) {
-                // Log problem but give evictor thread a chance to continue in
-                // case error is recoverable
-                oome.printStackTrace(System.err);
-            }
-            try {
-                ensureMinIdle();
-            } catch(Exception e) {
-                // ignored
+                //set the classloader for the factory
+                Thread.currentThread().setContextClassLoader(
+                        _factoryClassLoader);
+                try {
+                    evict();
+                } catch(Exception e) {
+                    // ignored
+                } catch(OutOfMemoryError oome) {
+                    // Log problem but give evictor thread a chance to continue in
+                    // case error is recoverable
+                    oome.printStackTrace(System.err);
+                }
+                try {
+                    ensureMinIdle();
+                } catch(Exception e) {
+                    // ignored
+                }
+            } finally {
+                //restore the previous CCL
+                Thread.currentThread().setContextClassLoader(savedClassLoader);
             }
         }
     }
@@ -2064,6 +2080,13 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
 
     /** My {@link PoolableObjectFactory}. */
     private PoolableObjectFactory<T> _factory = null;
+
+    /**
+     * Class loader for evictor thread to use since in a J2EE or similar
+     * environment the context class loader for the evictor thread may have
+     * visibility of the correct factory. See POOL-161.
+     */
+    private ClassLoader _factoryClassLoader = null;
 
     /**
      * The number of objects {@link #borrowObject} borrowed

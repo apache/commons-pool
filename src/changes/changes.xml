@@ -22,6 +22,10 @@
   </properties>
   <body>
   <release version="1.6.1" date="?" description="">
+    <action dev="markt" type="fix" issue="POOL-161" due-to="Sylvain Laurent">
+      Ensure the evictor thread runs with the same class loader that was in use
+      when the pool was created to ensure that the factory class is visible.
+    </action>
     <action dev="ggregory" type="fix" issue="POOL-210">
       Jar manifest.mf does not contain SVN information for Implementation-Build.
     </action>
