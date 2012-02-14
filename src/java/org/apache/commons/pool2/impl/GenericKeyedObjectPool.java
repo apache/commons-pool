@@ -236,6 +236,9 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
             GenericKeyedObjectPoolConfig config) {
         // Copy the settings from the config
         this.factory = factory;
+        // save the current CCL to be used later by the evictor Thread
+        factoryClassLoader = Thread.currentThread().getContextClassLoader();
+
         setConfig(config);
 
         startEvictor(getMinEvictableIdleTimeMillis());
@@ -2081,24 +2084,37 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         /**
          * Run pool maintenance.  Evict objects qualifying for eviction and then
          * invoke {@link GenericKeyedObjectPool#ensureMinIdle()}.
+         * Since the Timer that invokes Evictors is shared for all Pools, we try
+         * to restore the ContextClassLoader that created the pool.
          */
         @Override
         public void run() {
-            //Evict from the pool
+            ClassLoader savedClassLoader =
+                    Thread.currentThread().getContextClassLoader();
             try {
-                evict();
-            } catch(Exception e) {
-                // ignored
-            } catch(OutOfMemoryError oome) {
-                // Log problem but give evictor thread a chance to continue in
-                // case error is recoverable
-                oome.printStackTrace(System.err);
-            }
-            //Re-create idle instances.
-            try {
-                ensureMinIdle();
-            } catch (Exception e) {
-                // ignored
+                //  set the class loader for the factory
+                Thread.currentThread().setContextClassLoader(
+                        factoryClassLoader);
+                
+                //Evict from the pool
+                try {
+                    evict();
+                } catch(Exception e) {
+                    // ignored
+                } catch(OutOfMemoryError oome) {
+                    // Log problem but give evictor thread a chance to continue in
+                    // case error is recoverable
+                    oome.printStackTrace(System.err);
+                }
+                //Re-create idle instances.
+                try {
+                    ensureMinIdle();
+                } catch (Exception e) {
+                    // ignored
+                }
+            } finally {
+                // restore the previous CCL
+                Thread.currentThread().setContextClassLoader(savedClassLoader);
             }
         }
     }
@@ -2263,6 +2279,13 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
 
     /** My {@link KeyedPoolableObjectFactory}. */
     final private KeyedPoolableObjectFactory<K,T> factory;
+
+    /**
+     * Class loader for evictor thread to use since in a J2EE or similar
+     * environment the context class loader for the evictor thread may have
+     * visibility of the correct factory. See POOL-161.
+     */
+    private ClassLoader factoryClassLoader = null;
 
     /**
      * My hash of pools (ObjectQueue). The list of keys <b>must</b> be kept in
