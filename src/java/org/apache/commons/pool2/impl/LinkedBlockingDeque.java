@@ -138,7 +138,8 @@ public class LinkedBlockingDeque<E>
     private final int capacity;
 
     /** Main lock guarding all access */
-    private final ReentrantLock lock = new ReentrantLock();
+    private final InterruptibleReentrantLock lock =
+            new InterruptibleReentrantLock();
 
     /** Condition for waiting takes */
     private final Condition notEmpty = lock.newCondition();
@@ -1197,7 +1198,19 @@ public class LinkedBlockingDeque<E>
         } finally {
             lock.unlock();
         }     
-        
     }
 
+    /**
+     * Interrupts the threads currently waiting to take an object from the pool.
+     * See disclaimer on accuracy in
+     * {@link ReentrantLock#getWaitingThreads(Condition)}.
+     */
+    public void interuptTakeWaiters() {
+        lock.lock();
+        try {
+           lock.interruptWaiters(notEmpty);
+        } finally {
+            lock.unlock();
+        }     
+    }
 }
