@@ -17,8 +17,12 @@
 
 package org.apache.commons.pool2.impl;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,13 +31,21 @@ import java.util.NoSuchElementException;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.management.InstanceAlreadyExistsException;
+import javax.management.ListenerNotFoundException;
+import javax.management.MBeanNotificationInfo;
 import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
+import javax.management.Notification;
+import javax.management.NotificationBroadcasterSupport;
+import javax.management.NotificationEmitter;
+import javax.management.NotificationFilter;
+import javax.management.NotificationListener;
 import javax.management.ObjectName;
 
 import org.apache.commons.pool2.BaseObjectPool;
@@ -175,7 +187,7 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  * @since Pool 1.0
  */
 public class GenericObjectPool<T> extends BaseObjectPool<T>
-        implements GenericObjectPoolMBean {
+        implements GenericObjectPoolMBean, NotificationEmitter {
 
     // --- constructors -----------------------------------------------
 
@@ -203,6 +215,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
         if (config.isJmxEnabled()) {
             MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
             String jmxNamePrefix = config.getJmxNamePrefix();
+            this.jmxNotificationSupport = new NotificationBroadcasterSupport();
             int i = 1;
             boolean registered = false;
             while (!registered) {
@@ -234,8 +247,15 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
                     registered = true;
                 }
             }
+        } else {
+            this.jmxNotificationSupport = null;
         }
         this.oname = onameTemp;
+        
+        // Populate the swallowed exceptions queue
+        for (int i = 0; i < SWALLOWED_EXCEPTION_QUEUE_SIZE; i++) {
+            swallowedExceptions.add(null);
+        }
     }
 
 
@@ -885,7 +905,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * instance is validated before being returned to the idle instance pool. In
      * this case, if validation fails, the instance is destroyed.
      * </p>
-     *
+     * <p>
+     * Exceptions encountered destroying objects for any reason are swallowed.
+     * </p>
      * @param obj
      *            instance to return to the pool
      */
@@ -906,7 +928,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
                 try {
                     destroy(p);
                 } catch (Exception e) {
-                    // TODO - Ignore?
+                    swallowException(e);
                 }
                 updateStatsReturn(activeTime);
                 return;
@@ -916,10 +938,11 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
         try {
             factory.passivateObject(obj);
         } catch (Exception e1) {
+            swallowException(e1);
             try {
                 destroy(p);
             } catch (Exception e) {
-                // TODO - Ignore?
+                swallowException(e);
             }
             updateStatsReturn(activeTime);
             return;
@@ -935,7 +958,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
             try {
                 destroy(p);
             } catch (Exception e) {
-                // TODO - Ignore?
+                swallowException(e);
             }
         } else {
             if (getLifo()) {
@@ -952,6 +975,28 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
         synchronized (activeTimes) {
             activeTimes.add(Long.valueOf(activeTime));
             activeTimes.poll();
+        }
+    }
+
+    private void swallowException (Exception e) {
+        // Need the exception in string form to prevent the retention of
+        // references to classes in the stack trace that could trigger a memory
+        // leak in a container environment
+        Writer w = new StringWriter();
+        PrintWriter pw = new PrintWriter(w);
+        e.printStackTrace(pw);
+        String msg = w.toString();
+
+        if (oname != null) {
+            Notification n = new Notification(NOTIFICATION_SWALLOWED_EXCEPTION,
+                    oname, swallowedExcpetionCount.incrementAndGet(), msg);
+            jmxNotificationSupport.sendNotification(n);
+        }
+        
+        // Add the exception the queue, removing the oldest
+        synchronized (swallowedExceptions) {
+            swallowedExceptions.addLast(msg);
+            swallowedExceptions.pollFirst();
         }
     }
 
@@ -1002,7 +1047,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
             try {
                 destroy(p);
             } catch (Exception e) {
-                // TODO - Ignore?
+                swallowException(e);
             }
             p = idleObjects.poll();
         }
@@ -1317,7 +1362,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
         }
     }
 
-    //--- JMX specific attributes ----------------------------------------------
+    //--- JMX support ----------------------------------------------------------
 
     private void initStats() {
         for (int i = 0; i < AVERAGE_TIMING_STATS_CACHE_SIZE; i++) {
@@ -1412,6 +1457,63 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
         }
     }
 
+    @Override
+    public String[] getSwallowedExceptions() {
+        List<String> temp =
+                new ArrayList<String>(SWALLOWED_EXCEPTION_QUEUE_SIZE);
+        synchronized (swallowedExceptions) {
+            temp.addAll(swallowedExceptions);
+        }
+        return temp.toArray(new String[SWALLOWED_EXCEPTION_QUEUE_SIZE]);
+    }
+
+    @Override
+    public void addNotificationListener(NotificationListener listener,
+            NotificationFilter filter, Object handback)
+            throws IllegalArgumentException {
+
+        if (jmxNotificationSupport == null) {
+            throw new UnsupportedOperationException("JMX is not enabled");
+        }
+        jmxNotificationSupport.addNotificationListener(
+                listener, filter, handback);
+    }
+
+    @Override
+    public void removeNotificationListener(NotificationListener listener)
+            throws ListenerNotFoundException {
+
+        if (jmxNotificationSupport == null) {
+            throw new UnsupportedOperationException("JMX is not enabled");
+        }
+        jmxNotificationSupport.removeNotificationListener(listener);
+    }
+
+    @Override
+    public MBeanNotificationInfo[] getNotificationInfo() {
+
+        if (jmxNotificationSupport == null) {
+            throw new UnsupportedOperationException("JMX is not enabled");
+        }
+        return jmxNotificationSupport.getNotificationInfo();
+    }
+
+    @Override
+    public void removeNotificationListener(NotificationListener listener,
+            NotificationFilter filter, Object handback)
+            throws ListenerNotFoundException {
+
+        if (jmxNotificationSupport == null) {
+            throw new UnsupportedOperationException("JMX is not enabled");
+        }
+        jmxNotificationSupport.removeNotificationListener(
+                listener, filter, handback);
+    }
+
+    public ObjectName getJmxName() {
+        return oname;
+    }
+    
     // --- inner classes ----------------------------------------------
 
     /**
@@ -1670,7 +1772,14 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
     private final Object maxBorrowWaitTimeMillisLock = new Object();
     private volatile long maxBorrowWaitTimeMillis = 0; // @GuardedBy("maxBorrowWaitTimeMillisLock")
 
+    public static final String NOTIFICATION_SWALLOWED_EXCEPTION =
+            "SWALLOWED_EXCEPTION";
+    private static final int SWALLOWED_EXCEPTION_QUEUE_SIZE = 10;
+    private final Deque<String> swallowedExceptions = new LinkedList<String>();
+    private final AtomicInteger swallowedExcpetionCount = new AtomicInteger(0);
+    
     private final ObjectName oname;
+    private final NotificationBroadcasterSupport jmxNotificationSupport;
 
     private static final String ONAME_BASE =
         "org.apache.commoms.pool2:type=GenericObjectPool,name=";

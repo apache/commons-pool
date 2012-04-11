@@ -17,8 +17,12 @@
 
 package org.apache.commons.pool2.impl;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -37,10 +41,17 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.management.InstanceAlreadyExistsException;
+import javax.management.ListenerNotFoundException;
+import javax.management.MBeanNotificationInfo;
 import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
+import javax.management.Notification;
+import javax.management.NotificationBroadcasterSupport;
+import javax.management.NotificationEmitter;
+import javax.management.NotificationFilter;
+import javax.management.NotificationListener;
 import javax.management.ObjectName;
 
 import org.apache.commons.pool2.KeyedObjectPool;
@@ -211,7 +222,7 @@ import org.apache.commons.pool2.PoolUtils;
  * @since Pool 1.0
  */
 public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
-    GenericKeyedObjectPoolMBean<K> {
+    GenericKeyedObjectPoolMBean<K>, NotificationEmitter {
 
     //--- constructors -----------------------------------------------
 
@@ -250,6 +261,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         if (config.isJmxEnabled()) {
             MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
             String jmxNamePrefix = config.getJmxNamePrefix();
+            this.jmxNotificationSupport = new NotificationBroadcasterSupport();
             int i = 1;
             boolean registered = false;
             while (!registered) {
@@ -281,8 +293,15 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
                     registered = true;
                 }
             }
+        } else {
+            this.jmxNotificationSupport = null;
         }
         this.oname = onameTemp;
+        
+        // Populate the swallowed exceptions queue
+        for (int i = 0; i < SWALLOWED_EXCEPTION_QUEUE_SIZE; i++) {
+            swallowedExceptions.add(null);
+        }
     }
 
     //--- configuration methods --------------------------------------
@@ -949,6 +968,10 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
       * <p>If {@link #getTestOnReturn() testOnReturn} == true, the returning instance is validated before being returned
       * to the idle instance pool under the given key.  In this case, if validation fails, the instance is destroyed.</p>
       *
+      * <p>
+      * Exceptions encountered destroying objects for any reason are swallowed.
+      * </p>
+      * 
       * @param key pool key
       * @param t instance to return to the keyed pool
       * @throws Exception
@@ -972,7 +995,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
                  try {
                      destroy(key, p, true);
                  } catch (Exception e) {
-                     // TODO - Ignore?
+                     swallowException(e);
                  }
                  updateStatsReturn(activeTime);
                  return;
@@ -982,10 +1005,11 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
          try {
              factory.passivateObject(key, t);
          } catch (Exception e1) {
+             swallowException(e1);
              try {
                  destroy(key, p, true);
              } catch (Exception e) {
-                 // TODO - Ignore?
+                 swallowException(e);
              }
              updateStatsReturn(activeTime);
              return;
@@ -1004,7 +1028,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
              try {
                  destroy(key, p, true);
              } catch (Exception e) {
-                 // TODO - Ignore?
+                 swallowException(e);
              }
          } else {
              if (getLifo()) {
@@ -1021,7 +1045,30 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
          updateStatsReturn(activeTime);
      }
 
+     
+    private void swallowException (Exception e) {
+        // Need the exception in string form to prevent the retention of
+        // references to classes in the stack trace that could trigger a memory
+        // leak in a container environment
+        Writer w = new StringWriter();
+        PrintWriter pw = new PrintWriter(w);
+        e.printStackTrace(pw);
+        String msg = w.toString();
 
+        if (oname != null) {
+            Notification n = new Notification(NOTIFICATION_SWALLOWED_EXCEPTION,
+                    oname, swallowedExcpetionCount.incrementAndGet(), msg);
+            jmxNotificationSupport.sendNotification(n);
+        }
+        
+        // Add the exception the queue, removing the oldest
+        synchronized (swallowedExceptions) {
+            swallowedExceptions.addLast(msg);
+            swallowedExceptions.pollFirst();
+        }
+    }
+
+         
      private void updateStatsReturn(long activeTime) {
          returnedCount.incrementAndGet();
          synchronized (activeTimes) {
@@ -1102,7 +1149,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
                  try {
                      destroy(key, p, true);
                  } catch (Exception e) {
-                     // TODO - Ignore?
+                     swallowException(e);
                  }
                  p = idleObjects.poll();
              }
@@ -1281,7 +1328,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
              try {
                  destroyed = destroy(key, p, false);
             } catch (Exception e) {
-                // TODO - Ignore?
+                swallowException(e);
             }
             if (destroyed) {
                 itemsToRemove--;
@@ -1871,7 +1918,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
     }
 
 
-    //--- JMX specific attributes ----------------------------------------------
+    //--- JMX support ----------------------------------------------------------
 
     private void initStats() {
         for (int i = 0; i < AVERAGE_TIMING_STATS_CACHE_SIZE; i++) {
@@ -2012,6 +2059,63 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         } else {
             return 0;
         }
+    }
+
+    @Override
+    public String[] getSwallowedExceptions() {
+        List<String> temp =
+                new ArrayList<String>(SWALLOWED_EXCEPTION_QUEUE_SIZE);
+        synchronized (swallowedExceptions) {
+            temp.addAll(swallowedExceptions);
+        }
+        return temp.toArray(new String[SWALLOWED_EXCEPTION_QUEUE_SIZE]);
+    }
+
+    @Override
+    public void addNotificationListener(NotificationListener listener,
+            NotificationFilter filter, Object handback)
+            throws IllegalArgumentException {
+
+        if (jmxNotificationSupport == null) {
+            throw new UnsupportedOperationException("JMX is not enabled");
+        }
+        jmxNotificationSupport.addNotificationListener(
+                listener, filter, handback);
+    }
+
+    @Override
+    public void removeNotificationListener(NotificationListener listener)
+            throws ListenerNotFoundException {
+
+        if (jmxNotificationSupport == null) {
+            throw new UnsupportedOperationException("JMX is not enabled");
+        }
+        jmxNotificationSupport.removeNotificationListener(listener);
+    }
+
+    @Override
+    public MBeanNotificationInfo[] getNotificationInfo() {
+
+        if (jmxNotificationSupport == null) {
+            throw new UnsupportedOperationException("JMX is not enabled");
+        }
+        return jmxNotificationSupport.getNotificationInfo();
+    }
+
+    @Override
+    public void removeNotificationListener(NotificationListener listener,
+            NotificationFilter filter, Object handback)
+            throws ListenerNotFoundException {
+
+        if (jmxNotificationSupport == null) {
+            throw new UnsupportedOperationException("JMX is not enabled");
+        }
+        jmxNotificationSupport.removeNotificationListener(
+                listener, filter, handback);
+    }
+    
+    public ObjectName getJmxName() {
+        return oname;
     }
 
     //--- inner classes ----------------------------------------------
@@ -2372,7 +2476,14 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
     private final Object maxBorrowWaitTimeMillisLock = new Object();
     private volatile long maxBorrowWaitTimeMillis = 0; // @GuardedBy("maxBorrowWaitTimeMillisLock")
 
+    public static final String NOTIFICATION_SWALLOWED_EXCEPTION =
+            "SWALLOWED_EXCEPTION";
+    private static final int SWALLOWED_EXCEPTION_QUEUE_SIZE = 10;
+    private final Deque<String> swallowedExceptions = new LinkedList<String>();
+    private final AtomicInteger swallowedExcpetionCount = new AtomicInteger(0);
+            
     private final ObjectName oname;
+    private final NotificationBroadcasterSupport jmxNotificationSupport;
 
     private static final String ONAME_BASE =
         "org.apache.commoms.pool2:type=GenericKeyedObjectPool,name=";

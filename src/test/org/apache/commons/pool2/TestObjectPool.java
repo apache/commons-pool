@@ -163,6 +163,7 @@ public abstract class TestObjectPool {
         }
         expectedMethods.add(new MethodCall("passivateObject", ONE));
         assertEquals(expectedMethods, factory.getMethodCalls());
+        pool.close();
     }
 
     @Test
@@ -246,6 +247,7 @@ public abstract class TestObjectPool {
         removeDestroyObjectCall(factory.getMethodCalls()); // The exact timing of destroyObject is flexible here.
         // Second activate and validate are missing from expectedMethods
         assertTrue(factory.getMethodCalls().containsAll(expectedMethods));
+        pool.close();
     }
 
     @Test
@@ -306,6 +308,7 @@ public abstract class TestObjectPool {
         factory.setPassivateObjectFail(true);
         factory.setDestroyObjectFail(true);
         pool.returnObject(obj);
+        pool.close();
     }
 
     @Test
@@ -344,6 +347,7 @@ public abstract class TestObjectPool {
         Thread.sleep(250); // could be defered
         removeDestroyObjectCall(factory.getMethodCalls());
         assertEquals(expectedMethods, factory.getMethodCalls());
+        pool.close();
     }
 
     @Test
@@ -366,6 +370,7 @@ public abstract class TestObjectPool {
         factory.setDestroyObjectFail(true);
         PoolUtils.prefill(pool, 5);
         pool.clear();
+        pool.close();
     }
 
     @Test
@@ -397,7 +402,7 @@ public abstract class TestObjectPool {
     }
 
     @Test
-    public void testToString() {
+    public void testToString() throws Exception {
         ObjectPool<Object> pool;
         try {
             pool = makeEmptyPool(new MethodCallPoolableObjectFactory());
@@ -405,6 +410,7 @@ public abstract class TestObjectPool {
             return; // test not supported
         }
         pool.toString();
+        pool.close();
     }
 
     static void removeDestroyObjectCall(List<MethodCall> calls) {
