@@ -174,6 +174,7 @@ public abstract class TestKeyedObjectPool {
         expectedMethods.add(new MethodCall("makeObject", KEY).returned(ONE));
         expectedMethods.add(new MethodCall("passivateObject", KEY, ONE));
         assertEquals(expectedMethods, factory.getMethodCalls());
+        pool.close();
     }
 
     @Test
@@ -261,6 +262,7 @@ public abstract class TestKeyedObjectPool {
         expectedMethods.add(new MethodCall("validateObject", KEY, ONE));
         TestObjectPool.removeDestroyObjectCall(factory.getMethodCalls());
         assertEquals(expectedMethods, factory.getMethodCalls());
+        pool.close();
     }
 
     @Test
@@ -318,6 +320,7 @@ public abstract class TestKeyedObjectPool {
         } catch (PrivateException ex) {
             // Expected
         }
+        pool.close();
     }
 
     @Test
@@ -356,6 +359,7 @@ public abstract class TestKeyedObjectPool {
         Thread.sleep(250); // could be defered
         TestObjectPool.removeDestroyObjectCall(factory.getMethodCalls());
         assertEquals(expectedMethods, factory.getMethodCalls());
+        pool.close();
     }
 
     @Test
@@ -378,6 +382,7 @@ public abstract class TestKeyedObjectPool {
         factory.setDestroyObjectFail(true);
         PoolUtils.prefill(pool, KEY, 5);
         pool.clear();
+        pool.close();
     }
 
     @Test
@@ -406,11 +411,15 @@ public abstract class TestKeyedObjectPool {
 
     @Test
     public void testToString() throws Exception {
-        final FailingKeyedPoolableObjectFactory factory = new FailingKeyedPoolableObjectFactory();
+        final FailingKeyedPoolableObjectFactory factory =
+                new FailingKeyedPoolableObjectFactory();
+        KeyedObjectPool<Object,Object> pool = makeEmptyPool(factory);
         try {
-            makeEmptyPool(factory).toString();
+            pool.toString();
         } catch(UnsupportedOperationException uoe) {
             return; // test not supported
+        } finally {
+            pool.close();
         }
     }
     
@@ -450,6 +459,7 @@ public abstract class TestKeyedObjectPool {
         if (isFifo()) {
             assertEquals(getNthObject(keya,2),obj0);
         }
+        _pool.close();
     }
 
     @Test
@@ -467,6 +477,7 @@ public abstract class TestKeyedObjectPool {
         assertEquals("4",getNthObject(keya,1),_pool.borrowObject(keya));
         assertEquals("5",getNthObject(keyb,2),_pool.borrowObject(keyb));
         assertEquals("6",getNthObject(keya,2),_pool.borrowObject(keya));
+        _pool.close();
     }
 
     @Test
@@ -494,6 +505,8 @@ public abstract class TestKeyedObjectPool {
 
         assertEquals(0,_pool.getNumActive("xyzzy12345"));
         assertEquals(0,_pool.getNumIdle("xyzzy12345"));
+        
+        _pool.close();
     }
 
     @Test
@@ -551,6 +564,8 @@ public abstract class TestKeyedObjectPool {
         assertEquals(2,_pool.getNumIdle(keya));
         assertEquals(0,_pool.getNumActive(keyb));
         assertEquals(2,_pool.getNumIdle(keyb));
+        
+        _pool.close();
     }
 
     @Test
@@ -576,6 +591,7 @@ public abstract class TestKeyedObjectPool {
         assertEquals(0,_pool.getNumIdle(keya));
         Object obj2 = _pool.borrowObject(keya);
         assertEquals(getNthObject(keya,2),obj2);
+        _pool.close();
     }
 
     @Test
@@ -598,6 +614,7 @@ public abstract class TestKeyedObjectPool {
         _pool.invalidateObject(keya,obj1);
         assertEquals(0,_pool.getNumActive(keya));
         assertEquals(0,_pool.getNumIdle(keya));
+        _pool.close();
     }
 
     @Test
@@ -631,6 +648,8 @@ public abstract class TestKeyedObjectPool {
             assertEquals(0,_pool.getNumActive(key));
         } catch(UnsupportedOperationException e) {
             return; // skip this test if one of those calls is unsupported
+        } finally {
+            _pool.close();
         }
     }
 

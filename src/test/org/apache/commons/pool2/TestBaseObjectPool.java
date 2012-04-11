@@ -139,6 +139,7 @@ public class TestBaseObjectPool extends TestObjectPool {
         assertEquals(getNthObject(0),_pool.borrowObject());
         assertEquals(getNthObject(1),_pool.borrowObject());
         assertEquals(getNthObject(2),_pool.borrowObject());
+        _pool.close();
     }
 
     @Test
@@ -163,6 +164,8 @@ public class TestBaseObjectPool extends TestObjectPool {
             assertEquals(0,_pool.getNumActive());
         } catch(UnsupportedOperationException e) {
             return; // skip this test if one of those calls is unsupported
+        } finally {
+            _pool.close();
         }
     }
 
@@ -202,6 +205,7 @@ public class TestBaseObjectPool extends TestObjectPool {
         if (isFifo()) {
             assertEquals(getNthObject(2),obj0);
         }
+        _pool.close();
     }
 
     @Test
@@ -225,6 +229,7 @@ public class TestBaseObjectPool extends TestObjectPool {
         _pool.returnObject(obj0);
         assertEquals(0,_pool.getNumActive());
         assertEquals(2,_pool.getNumIdle());
+        _pool.close();
     }
 
     @Test
@@ -249,6 +254,7 @@ public class TestBaseObjectPool extends TestObjectPool {
         assertEquals(0,_pool.getNumIdle());
         Object obj2 = _pool.borrowObject();
         assertEquals(getNthObject(2),obj2);
+        _pool.close();
     }
 
     @Test
@@ -270,6 +276,7 @@ public class TestBaseObjectPool extends TestObjectPool {
         _pool.invalidateObject(obj1);
         assertEquals(0,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
+        _pool.close();
     }
 
     @Test

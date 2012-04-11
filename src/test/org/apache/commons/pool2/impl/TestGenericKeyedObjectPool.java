@@ -26,11 +26,19 @@ import static junit.framework.Assert.fail;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.management.MBeanServer;
+import javax.management.Notification;
+import javax.management.NotificationListener;
+import javax.management.ObjectName;
 
 import org.apache.commons.pool2.KeyedObjectPool;
 import org.apache.commons.pool2.KeyedPoolableObjectFactory;
@@ -40,6 +48,7 @@ import org.apache.commons.pool2.VisitTrackerFactory;
 import org.apache.commons.pool2.Waiter;
 import org.apache.commons.pool2.WaiterFactory;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -102,14 +111,15 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     }
 
     private GenericKeyedObjectPool<String,String> pool = null;
+    private SimpleFactory<String> factory = null;
     private final Integer zero = new Integer(0);
     private final Integer one = new Integer(1);
     private final Integer two = new Integer(2);
 
     @Before
     public void setUp() throws Exception {
-        pool = new GenericKeyedObjectPool<String,String>(
-                new SimpleFactory<String>());
+        factory = new SimpleFactory<String>();
+        pool = new GenericKeyedObjectPool<String,String>(factory);
     }
 
     @Override
@@ -119,6 +129,19 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         pool.clear();
         pool.close();
         pool = null;
+        factory = null;
+        
+        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        Set<ObjectName> result = mbs.queryNames(new ObjectName(
+                "org.apache.commoms.pool2:type=GenericKeyedObjectPool,*"),
+                null);
+        // There should be no registered pools at this point
+        int registeredPoolCount = result.size();
+        for (ObjectName name : result) {
+            // Clean these up ready for the next test
+            mbs.unregisterMBean(name);
+        }
+        Assert.assertEquals(0, registeredPoolCount);
     }
 
     @Test(timeout=60000)
@@ -351,9 +374,6 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
     @Test(timeout=60000)
     public void testSettersAndGetters() throws Exception {
-        GenericKeyedObjectPool<String,String> pool =
-            new GenericKeyedObjectPool<String,String>(
-                    new SimpleFactory<String>());
         {
             pool.setMaxTotalPerKey(123);
             assertEquals(123,pool.getMaxTotalPerKey());
@@ -541,12 +561,10 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     @Test(timeout=60000)
     public void testMaxTotalInvariant() throws Exception {
         int maxTotal = 15;
-        SimpleFactory<String> factory = new SimpleFactory<String>();
         factory.setEvenValid(false);     // Every other validation fails
         factory.setDestroyLatency(100);  // Destroy takes 100 ms
         factory.setMaxTotalPerKey(maxTotal);  // (makes - destroys) bound
         factory.setValidationEnabled(true);
-        pool = new GenericKeyedObjectPool<String,String>(factory);
         pool.setMaxTotal(maxTotal);
         pool.setMaxIdlePerKey(-1);
         pool.setTestOnReturn(true);
@@ -827,6 +845,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         } else {
             assertEquals("15", obj);
         }
+        pool.close();
     }
 
 
@@ -919,6 +938,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                         2, tracker.getValidateCount());
             }
         }
+        pool.close();
 
         // Randomly generate some pools with random numTests
         // and make sure evictor cycles through elements appropriately
@@ -1004,12 +1024,13 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                                 "totalInstances", totalInstances, zeroLength, oneLength, twoLength));
                     }
                 }
+                pool.close();
             }
         }
     }
 
     @Test(timeout=60000)
-    public void testConstructors() {
+    public void testConstructors() throws Exception {
 
         // Make constructor arguments all different from defaults
         int maxTotalPerKey = 1;
@@ -1048,6 +1069,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED,
                 pool.getBlockWhenExhausted());
         assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_LIFO, pool.getLifo());
+        pool.close();
 
         GenericKeyedObjectPoolConfig config =
                 new GenericKeyedObjectPoolConfig();
@@ -1080,6 +1102,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                 pool.getTimeBetweenEvictionRunsMillis());
         assertEquals(blockWhenExhausted,pool.getBlockWhenExhausted());
         assertEquals(lifo, pool.getLifo());
+        pool.close();
     }
 
     @Test(timeout=60000)
@@ -1096,11 +1119,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
     @Test(timeout=60000)
     public void testExceptionOnDestroyDuringBorrow() throws Exception {
-        SimpleFactory<String> factory = new SimpleFactory<String>();
         factory.setThrowExceptionOnDestroy(true);
         factory.setValidationEnabled(true);
-        GenericKeyedObjectPool<String,String> pool =
-            new GenericKeyedObjectPool<String,String>(factory);
         pool.setTestOnBorrow(true);
         pool.borrowObject("one");
         factory.setValid(false); // Make validation fail on next borrow attempt
@@ -1118,11 +1138,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
     @Test(timeout=60000)
     public void testExceptionOnDestroyDuringReturn() throws Exception {
-        SimpleFactory<String> factory = new SimpleFactory<String>();
         factory.setThrowExceptionOnDestroy(true);
         factory.setValidationEnabled(true);
-        GenericKeyedObjectPool<String,String> pool =
-            new GenericKeyedObjectPool<String,String>(factory);
         pool.setTestOnReturn(true);
         String obj1 = pool.borrowObject("one");
         pool.borrowObject("one");
@@ -1136,9 +1153,6 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
     @Test(timeout=60000)
     public void testExceptionOnActivateDuringBorrow() throws Exception {
-        SimpleFactory<String> factory = new SimpleFactory<String>();
-        GenericKeyedObjectPool<String,String> pool =
-            new GenericKeyedObjectPool<String,String>(factory);
         String obj1 = pool.borrowObject("one");
         String obj2 = pool.borrowObject("one");
         pool.returnObject("one", obj1);
@@ -1171,9 +1185,6 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
     @Test(timeout=60000)
     public void testBlockedKeyDoesNotBlockPool() throws Exception {
-        SimpleFactory<String> factory = new SimpleFactory<String>();
-        GenericKeyedObjectPool<String,String> pool =
-            new GenericKeyedObjectPool<String,String>(factory);
         pool.setBlockWhenExhausted(true);
         pool.setMaxWait(5000);
         pool.setMaxTotalPerKey(1);
@@ -1217,9 +1228,6 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         final long holdTime = 4 * maxWait; // how long to hold connection
         final int keyCount = 4; // number of different keys
         final int threadsPerKey = 5; // number of threads to grab the key initially
-        SimpleFactory<String> factory = new SimpleFactory<String>();
-        GenericKeyedObjectPool<String,String> pool =
-            new GenericKeyedObjectPool<String,String>(factory);
         pool.setBlockWhenExhausted(true);
         pool.setMaxWait(maxWait);
         pool.setMaxTotalPerKey(threadsPerKey);
@@ -1268,7 +1276,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
      * Test case for POOL-180.
      */
     @Test(timeout=200000)
-    public void testMaxActivePerKeyExceeded() {
+    public void testMaxActivePerKeyExceeded() throws Exception {
         WaiterFactory<String> factory = new WaiterFactory<String>(0, 20, 0, 0, 0, 0, 8, 5, 0);
         // TODO Fix this. Can't use local pool since runTestThreads uses the
         //      protected pool field
@@ -1280,6 +1288,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         pool.setMaxIdlePerKey(5);
         pool.setMaxWait(-1);
         runTestThreads(20, 300, 250, pool);
+        pool.close();
     }
 
     /**
@@ -1313,6 +1322,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         Waiter waiter = pool.borrowObject("1");
         Thread.sleep(200); // Wait for execution to happen
         pool.returnObject("1", waiter);  // Will throw IllegalStateException if dead
+        pool.close();
     }
 
 
@@ -1320,11 +1330,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
      * Verifies that threads that get parked waiting for keys not in use
      * when the pool is at maxTotal eventually get served.
      */
-    @Test
+    @Test(timeout=60000)
     public void testLivenessPerKey() throws Exception {
-        SimpleFactory<String> factory = new SimpleFactory<String>();
-        GenericKeyedObjectPool<String,String> pool =
-            new GenericKeyedObjectPool<String,String>(factory);
         pool.setMaxIdlePerKey(3);
         pool.setMaxTotal(3);
         pool.setMaxTotalPerKey(3);
@@ -1347,6 +1354,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
      * POOL-192
      * Verify that clear(key) does not leak capacity.
      */
+    @Test(timeout=60000)
     public void testClear() throws Exception {
         SimpleFactory<String> factory = new SimpleFactory<String>();
         GenericKeyedObjectPool<String,String> pool =
@@ -1677,6 +1685,49 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         return sb.toString();
     }
 
+    /**
+     * Ensure the pool is registered.
+     */
+    @Test(timeout=60000)
+    public void testJmxRegistration() {
+        ObjectName oname = pool.getJmxName();
+        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        Set<ObjectName> result = mbs.queryNames(oname, null);
+        Assert.assertEquals(1, result.size());
+    }
+    
+    @Test(timeout=60000)
+    public void testJmxNotification() throws Exception {
+        factory.setThrowExceptionOnPassivate(true);
+        ObjectName oname = pool.getJmxName();
+        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        JmxNotificationListener listener = new JmxNotificationListener();
+        mbs.addNotificationListener(oname, listener, null, null);
+        
+        String obj = pool.borrowObject("one");
+        pool.returnObject("one", obj);
+        
+        List<String> messages = listener.getMessages();
+        Assert.assertEquals(1, messages.size());
+        Assert.assertNotNull(messages.get(0));
+        Assert.assertTrue(messages.get(0).length() > 0);
+    }
+    
+    private static class JmxNotificationListener
+            implements NotificationListener {
+
+        private List<String> messages = new ArrayList<String>();
+        
+        public List<String> getMessages() {
+            return messages;
+        }
+        
+        @Override
+        public void handleNotification(Notification notification,
+                Object handback) {
+            messages.add(notification.getMessage());
+        }
+    }
 }
 
 

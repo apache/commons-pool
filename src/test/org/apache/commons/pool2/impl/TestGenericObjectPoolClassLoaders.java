@@ -65,6 +65,8 @@ public class TestGenericObjectPoolClassLoaders extends TestCase {
 			assertEquals("Wrong number of  idle objects in pool2", 1,
 			        pool2.getNumIdle());
 
+			pool1.close();
+			pool2.close();
 		} finally {
 			Thread.currentThread().setContextClassLoader(savedClassloader);
 		}

@@ -44,4 +44,5 @@ public interface GenericObjectPoolMBean {
     long getMeanIdleTimeMillis();
     long getMeanBorrowWaitTimeMillis();
     long getMaxBorrowWaitTimeMillis();
+    String[] getSwallowedExceptions();
 }
