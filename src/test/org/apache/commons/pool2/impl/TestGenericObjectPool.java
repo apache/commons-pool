@@ -1177,10 +1177,11 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     /**
      * POOL-189
      */
+    @Test(timeout=60000)
     public void testWhenExhaustedBlockClosePool() throws Exception {
         pool.setMaxTotal(1);
         pool.setBlockWhenExhausted(true);
-        pool.setMaxWait(0);
+        pool.setMaxWait(-1);
         Object obj1 = pool.borrowObject();
 
         // Make sure an object was obtained
@@ -1199,7 +1200,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         Thread.sleep(200);
 
         // Check thread was interrupted
-        assertTrue(wtt._thrown instanceof IllegalStateException);
+        assertTrue(wtt._thrown instanceof InterruptedException);
     }
 
     private class ConcurrentBorrowAndEvictThread extends Thread {

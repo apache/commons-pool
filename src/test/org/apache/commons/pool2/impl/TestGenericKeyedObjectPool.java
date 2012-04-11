@@ -195,7 +195,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             assertEquals(99 - i,pool.getNumActive(""));
             assertEquals((i < 8 ? i+1 : 8),pool.getNumIdle(""));
         }
-        
+
         for(int i=0;i<100;i++) {
             active[i] = pool.borrowObject("a");
         }
@@ -206,13 +206,13 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             assertEquals(99 - i,pool.getNumActive("a"));
             assertEquals((i < 8 ? i+1 : 8),pool.getNumIdle("a"));
         }
-        
+
         // total number of idle instances is twice maxIdle
         assertEquals(16, pool.getNumIdle());
         // Each pool is at the sup
         assertEquals(8, pool.getNumIdle(""));
         assertEquals(8, pool.getNumIdle("a"));
-             
+
     }
 
     @Test(timeout=60000)
@@ -273,11 +273,11 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         assertNotNull(o4);
         assertEquals(0, pool.getNumIdle());
         assertEquals(0, pool.getNumIdle("b"));
-        
+
         pool.setMaxTotal(4);
         Object o5 = pool.borrowObject("b");
         assertNotNull(o5);
-        
+
         assertEquals(2, pool.getNumActive("a"));
         assertEquals(2, pool.getNumActive("b"));
         assertEquals(pool.getMaxTotal(),
@@ -519,7 +519,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                 }
             }
             if(testThread.failed()) {
-                fail("Thread failed: " + threads.indexOf(testThread) + "\n" + 
+                fail("Thread failed: " + threads.indexOf(testThread) + "\n" +
                         getExceptionTrace(testThread._exception));
             }
         }
@@ -532,11 +532,11 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         pool.setMaxWait(1000L);
         runTestThreads(20, 100, 50, pool);
     }
-    
+
     /**
      * Verifies that maxTotal is not exceeded when factory destroyObject
      * has high latency, testOnReturn is set and there is high incidence of
-     * validation failures. 
+     * validation failures.
      */
     @Test(timeout=60000)
     public void testMaxTotalInvariant() throws Exception {
@@ -607,7 +607,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         String key = "A";
 
         pool.preparePool(key);
-        assertTrue("Should be 5 idle, found " + 
+        assertTrue("Should be 5 idle, found " +
                 pool.getNumIdle(),pool.getNumIdle() == 5);
 
         try { Thread.sleep(150L); } catch(InterruptedException e) { }
@@ -704,19 +704,19 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         assertEquals("returned", s, pool.borrowObject(key));
         assertEquals("new-4", "key4", pool.borrowObject(key));
     }
-    
+
     /**
      * Test to make sure evictor visits least recently used objects first,
-     * regardless of FIFO/LIFO 
-     * 
+     * regardless of FIFO/LIFO
+     *
      * JIRA: POOL-86
-     */ 
+     */
     @Test(timeout=60000)
     public void testEvictionOrder() throws Exception {
         checkEvictionOrder(false);
         checkEvictionOrder(true);
     }
-    
+
     private void checkEvictionOrder(boolean lifo) throws Exception {
         SimpleFactory<Integer> factory = new SimpleFactory<Integer>();
         GenericKeyedObjectPool<Integer,String> pool =
@@ -724,25 +724,25 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         pool.setNumTestsPerEvictionRun(2);
         pool.setMinEvictableIdleTimeMillis(100);
         pool.setLifo(lifo);
-        
+
         for (int i = 0; i < 3; i ++) {
             Integer key = new Integer(i);
             for (int j = 0; j < 5; j++) {
                 pool.addObject(key);
             }
         }
-        
+
         // Make all evictable
         Thread.sleep(200);
-        
-        /* 
+
+        /*
          * Initial state (Key, Object) pairs in order of age:
-         * 
+         *
          * (0,0), (0,1), (0,2), (0,3), (0,4)
          * (1,5), (1,6), (1,7), (1,8), (1,9)
          * (2,10), (2,11), (2,12), (2,13), (2,14)
          */
-        
+
         pool.evict(); // Kill (0,0),(0,1)
         assertEquals(3, pool.getNumIdle(zero));
         String objZeroA = pool.borrowObject(zero);
@@ -751,7 +751,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         String objZeroB = pool.borrowObject(zero);
         assertTrue(objZeroB.equals("03"));
         assertEquals(1, pool.getNumIdle(zero));
-        
+
         pool.evict(); // Kill remaining 0 survivor and (1,5)
         assertEquals(0, pool.getNumIdle(zero));
         assertEquals(4, pool.getNumIdle(one));
@@ -761,7 +761,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         String objOneB = pool.borrowObject(one);
         assertTrue(lifo ? objOneB.equals("18") : objOneB.equals("17"));
         assertEquals(2, pool.getNumIdle(one));
-        
+
         pool.evict(); // Kill remaining 1 survivors
         assertEquals(0, pool.getNumIdle(one));
         pool.evict(); // Kill (2,10), (2,11)
@@ -770,8 +770,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         assertTrue(lifo ? objTwoA.equals("214") : objTwoA.equals("212"));
         assertEquals(2, pool.getNumIdle(two));
         pool.evict(); // All dead now
-        assertEquals(0, pool.getNumIdle(two));  
-        
+        assertEquals(0, pool.getNumIdle(two));
+
         pool.evict(); // Should do nothing - make sure no exception
         // Currently 2 zero, 2 one and 1 two active. Return them
         pool.returnObject(zero, objZeroA);
@@ -781,7 +781,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         pool.returnObject(two, objTwoA);
         // Remove all idle objects
         pool.clear();
-        
+
         // Reload
         pool.setMinEvictableIdleTimeMillis(500);
         factory.counter = 0; // Reset counter
@@ -792,8 +792,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             }
             Thread.sleep(200);
         }
-        
-        // 0's are evictable, others not 
+
+        // 0's are evictable, others not
         pool.evict(); // Kill (0,0),(0,1)
         assertEquals(3, pool.getNumIdle(zero));
         pool.evict(); // Kill (0,2),(0,3)
@@ -828,18 +828,18 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             assertEquals("15", obj);
         }
     }
-    
-    
+
+
     /**
      * Verifies that the evictor visits objects in expected order
-     * and frequency. 
+     * and frequency.
      */
     @Test(timeout=60000)
     public void testEvictorVisiting() throws Exception {
         checkEvictorVisiting(true);
-        checkEvictorVisiting(false);  
+        checkEvictorVisiting(false);
     }
-    
+
     private void checkEvictorVisiting(boolean lifo) throws Exception {
         VisitTrackerFactory<Integer> factory = new VisitTrackerFactory<Integer>();
         GenericKeyedObjectPool<Integer,VisitTracker<Integer>> pool =
@@ -862,35 +862,35 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         pool.returnObject(zero, obj);
         obj = pool.borrowObject(zero);
         pool.returnObject(zero, obj);
-        //  borrow, return, borrow, return 
+        //  borrow, return, borrow, return
         //  FIFO will move 0 and 1 to end - 2,3,4,5,6,7,0,1
         //  LIFO, 7 out, then in, then out, then in - 7,6,5,4,3,2,1,0
         pool.evict();  // Should visit 02 and 03 in either case
         for (int i = 0; i < 8; i++) {
-            VisitTracker<Integer> tracker = pool.borrowObject(zero);    
+            VisitTracker<Integer> tracker = pool.borrowObject(zero);
             if (tracker.getId() >= 4) {
                 assertEquals("Unexpected instance visited " + tracker.getId(),
                         0, tracker.getValidateCount());
             } else {
-                assertEquals("Instance " +  tracker.getId() + 
+                assertEquals("Instance " +  tracker.getId() +
                         " visited wrong number of times.",
                         1, tracker.getValidateCount());
             }
-        } 
+        }
         // 0's are all out
-        
+
         pool.setNumTestsPerEvictionRun(3);
-        
+
         pool.evict(); // 10, 11, 12
         pool.evict(); // 13, 14, 15
-        
+
         obj = pool.borrowObject(one);
         pool.returnObject(one, obj);
         obj = pool.borrowObject(one);
         pool.returnObject(one, obj);
         obj = pool.borrowObject(one);
         pool.returnObject(one, obj);
-        // borrow, return, borrow, return 
+        // borrow, return, borrow, return
         //  FIFO 3,4,5,^,6,7,0,1,2
         //  LIFO 7,6,^,5,4,3,2,1,0
         // In either case, pointer should be at 6
@@ -907,18 +907,18 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         // LIFO - 27, 10, 11
         // FIFO - 24, 25, 26
         for (int i = 0; i < 8; i++) {
-            VisitTracker<Integer> tracker = pool.borrowObject(one);    
-            if ((lifo && tracker.getId() > 1) || 
+            VisitTracker<Integer> tracker = pool.borrowObject(one);
+            if ((lifo && tracker.getId() > 1) ||
                     (!lifo && tracker.getId() > 2)) {
-                assertEquals("Instance " +  tracker.getId() + 
+                assertEquals("Instance " +  tracker.getId() +
                         " visited wrong number of times.",
                         1, tracker.getValidateCount());
             } else {
-                assertEquals("Instance " +  tracker.getId() + 
+                assertEquals("Instance " +  tracker.getId() +
                         " visited wrong number of times.",
                         2, tracker.getValidateCount());
             }
-        } 
+        }
 
         // Randomly generate some pools with random numTests
         // and make sure evictor cycles through elements appropriately
@@ -953,26 +953,26 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                 for (int k = 0; k < twoLength; k++) {
                     pool.addObject(two);
                 }
-                
+
                 // Choose a random number of evictor runs
                 int runs = 10 + random.nextInt(50);
                 for (int k = 0; k < runs; k++) {
                     pool.evict();
                 }
-                
+
                 // Total instances in pool
                 int totalInstances = zeroLength + oneLength + twoLength;
-                
+
                 // Number of times evictor should have cycled through pools
                 int cycleCount = (runs * pool.getNumTestsPerEvictionRun())
                     / totalInstances;
-                
+
                 // Look at elements and make sure they are visited cycleCount
                 // or cycleCount + 1 times
                 VisitTracker<Integer> tracker = null;
                 int visitCount = 0;
                 for (int k = 0; k < zeroLength; k++) {
-                    tracker = pool.borrowObject(zero); 
+                    tracker = pool.borrowObject(zero);
                     visitCount = tracker.getValidateCount();
                     if (visitCount < cycleCount || visitCount > cycleCount + 1){
                         fail(formatSettings("ZERO", "runs", runs, "lifo", lifo, "i", i, "j", j,
@@ -981,7 +981,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                     }
                 }
                 for (int k = 0; k < oneLength; k++) {
-                    tracker = pool.borrowObject(one); 
+                    tracker = pool.borrowObject(one);
                     visitCount = tracker.getValidateCount();
                     if (visitCount < cycleCount || visitCount > cycleCount + 1){
                         fail(formatSettings("ONE", "runs", runs, "lifo", lifo, "i", i, "j", j,
@@ -991,7 +991,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                 }
                 int visits[] = new int[twoLength];
                 for (int k = 0; k < twoLength; k++) {
-                    tracker = pool.borrowObject(two); 
+                    tracker = pool.borrowObject(two);
                     visitCount = tracker.getValidateCount();
                     visits[k] = visitCount;
                     if (visitCount < cycleCount || visitCount > cycleCount + 1){
@@ -1010,7 +1010,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
     @Test(timeout=60000)
     public void testConstructors() {
-        
+
         // Make constructor arguments all different from defaults
         int maxTotalPerKey = 1;
         int maxIdle = 2;
@@ -1025,7 +1025,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         long timeBetweenEvictionRunsMillis = 8;
         boolean blockWhenExhausted = false;
         boolean lifo = false;
-        
+
         GenericKeyedObjectPool<Object,Object> pool =
             new GenericKeyedObjectPool<Object,Object>(null);
         assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL_PER_KEY, pool.getMaxTotalPerKey());
@@ -1048,7 +1048,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED,
                 pool.getBlockWhenExhausted());
         assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_LIFO, pool.getLifo());
-        
+
         GenericKeyedObjectPoolConfig config =
                 new GenericKeyedObjectPoolConfig();
         config.setLifo(lifo);
@@ -1096,7 +1096,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
     @Test(timeout=60000)
     public void testExceptionOnDestroyDuringBorrow() throws Exception {
-        SimpleFactory<String> factory = new SimpleFactory<String>(); 
+        SimpleFactory<String> factory = new SimpleFactory<String>();
         factory.setThrowExceptionOnDestroy(true);
         factory.setValidationEnabled(true);
         GenericKeyedObjectPool<String,String> pool =
@@ -1118,7 +1118,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
     @Test(timeout=60000)
     public void testExceptionOnDestroyDuringReturn() throws Exception {
-        SimpleFactory<String> factory = new SimpleFactory<String>(); 
+        SimpleFactory<String> factory = new SimpleFactory<String>();
         factory.setThrowExceptionOnDestroy(true);
         factory.setValidationEnabled(true);
         GenericKeyedObjectPool<String,String> pool =
@@ -1136,7 +1136,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
     @Test(timeout=60000)
     public void testExceptionOnActivateDuringBorrow() throws Exception {
-        SimpleFactory<String> factory = new SimpleFactory<String>(); 
+        SimpleFactory<String> factory = new SimpleFactory<String>();
         GenericKeyedObjectPool<String,String> pool =
             new GenericKeyedObjectPool<String,String>(factory);
         String obj1 = pool.borrowObject("one");
@@ -1144,7 +1144,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         pool.returnObject("one", obj1);
         pool.returnObject("one", obj2);
         factory.setThrowExceptionOnActivate(true);
-        factory.setEvenValid(false);  
+        factory.setEvenValid(false);
         // Activation will now throw every other time
         // First attempt throws, but loop continues and second succeeds
         String obj = pool.borrowObject("one");
@@ -1152,7 +1152,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         assertEquals(0, pool.getNumIdle("one"));
         assertEquals(1, pool.getNumActive());
         assertEquals(0, pool.getNumIdle());
-        
+
         pool.returnObject("one", obj);
         factory.setValid(false);
         // Validation will now fail on activation when borrowObject returns
@@ -1168,7 +1168,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         assertEquals(0, pool.getNumActive());
         assertEquals(0, pool.getNumIdle());
     }
-    
+
     @Test(timeout=60000)
     public void testBlockedKeyDoesNotBlockPool() throws Exception {
         SimpleFactory<String> factory = new SimpleFactory<String>();
@@ -1194,7 +1194,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         // Use 3000ms as the threshold - should avoid timing issues on most
         // (all? platforms)
         assertTrue ("Elapsed time: "+(end-start)+" should be less than 4000",(end-start) < 4000);
-        
+
     }
 
     private static final boolean DISPLAY_THREAD_DETAILS=
@@ -1206,7 +1206,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     /*
      * Test multi-threaded pool access.
      * Multiple keys, multiple threads, but maxActive only allows half the threads to succeed.
-     * 
+     *
      * This test was prompted by Continuum build failures in the Commons DBCP test case:
      * TestSharedPoolDataSource.testMultipleThreads2()
      * Let's see if the this fails on Continuum too!
@@ -1259,7 +1259,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                         + " Key: "+(wt._key)
                         + " ObjId: "+wt.objectId
                         );
-            }            
+            }
         }
         assertEquals("Expected half the threads to fail",wtt.length/2,failed);
     }
@@ -1281,7 +1281,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         pool.setMaxWait(-1);
         runTestThreads(20, 300, 250, pool);
     }
-    
+
     /**
      * Test to make sure that clearOldest does not destroy instances that have been checked out.
      */
@@ -1304,18 +1304,18 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             Thread.sleep(20);
         }
         // Now set up a race - one thread wants a new instance, triggering clearOldest
-        // Other goes after an element on death row 
+        // Other goes after an element on death row
         // See if we end up with dead man walking
         SimpleTestThread<Waiter> t2 = new SimpleTestThread<Waiter>(pool, "51");
         Thread thread2 = new Thread(t2);
         thread2.start();  // Triggers clearOldest, killing all of the 0's and the 2 oldest 1's
-        Thread.sleep(50); // Wait for clearOldest to kick off, but not long enough to reach the 1's 
+        Thread.sleep(50); // Wait for clearOldest to kick off, but not long enough to reach the 1's
         Waiter waiter = pool.borrowObject("1");
         Thread.sleep(200); // Wait for execution to happen
         pool.returnObject("1", waiter);  // Will throw IllegalStateException if dead
     }
-    
-    
+
+
     /**
      * Verifies that threads that get parked waiting for keys not in use
      * when the pool is at maxTotal eventually get served.
@@ -1329,7 +1329,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         pool.setMaxTotal(3);
         pool.setMaxTotalPerKey(3);
         pool.setMaxWait(3000);  // Really a timeout for the test
-        
+
         // Check out and briefly hold 3 "1"s
         WaitingTestThread t1 = new WaitingTestThread(pool, "1", 100);
         WaitingTestThread t2 = new WaitingTestThread(pool, "1", 100);
@@ -1337,12 +1337,12 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         t1.start();
         t2.start();
         t3.start();
-        
+
         // Try to get a "2" while all capacity is in use.
         // Thread will park waiting on empty queue. Verify it gets served.
-        pool.borrowObject("2");   
+        pool.borrowObject("2");
     }
-    
+
     /**
      * POOL-192
      * Verify that clear(key) does not leak capacity.
@@ -1371,38 +1371,39 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         pool.borrowObject("one");
         pool.close();
     }
-    
+
     /**
      * POOL-189
      */
+    @Test(timeout=60000)
     public void testWhenExhaustedBlockClosePool() throws Exception {
         SimpleFactory<String> factory = new SimpleFactory<String>();
         GenericKeyedObjectPool<String,String> pool =
             new GenericKeyedObjectPool<String,String>(factory);
         pool.setMaxTotalPerKey(1);
         pool.setBlockWhenExhausted(true);
-        pool.setMaxWait(0);
+        pool.setMaxWait(-1);
         String obj1 = pool.borrowObject("a");
-        
+
         // Make sure an object was obtained
         assertNotNull(obj1);
-        
+
         // Create a separate thread to try and borrow another object
         WaitingTestThread wtt = new WaitingTestThread(pool, "a", 200);
         wtt.start();
         // Give wtt time to start
         Thread.sleep(200);
-        
+
         // close the pool (Bug POOL-189)
         pool.close();
-        
+
         // Give interrupt time to take effect
         Thread.sleep(200);
-        
+
         // Check thread was interrupted
-        assertTrue(wtt._thrown instanceof IllegalStateException);
+        assertTrue(wtt._thrown instanceof InterruptedException);
     }
-    
+
     /*
      * Very simple test thread that just tries to borrow an object from
      * the provided pool with the specified key and returns it
@@ -1410,7 +1411,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     static class SimpleTestThread<T> implements Runnable {
         private final KeyedObjectPool<String,T> _pool;
         private final String _key;
-        
+
         public SimpleTestThread(KeyedObjectPool<String,T> pool, String key) {
             _pool = pool;
             _key = key;
@@ -1426,7 +1427,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             }
         }
     }
-    
+
     /*
      * Very simple test thread that just tries to borrow an object from
      * the provided pool with the specified key and returns it after a wait
@@ -1436,7 +1437,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         private final String _key;
         private final long _pause;
         private Throwable _thrown;
-        
+
         private long preborrow; // just before borrow
         private long postborrow; //  borrow returned
         private long postreturn; // after object was returned
@@ -1467,10 +1468,10 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             }
         }
     }
-    
+
     static class TestThread<T> implements Runnable {
         private final java.util.Random _random = new java.util.Random();
-        
+
         // Thread config items
         private final KeyedObjectPool<String,T> _pool;
         private final int _iter;
@@ -1571,8 +1572,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         }
         @Override
         public boolean validateObject(K key, String obj) {
-            if (enableValidation) { 
-                return validateCounter++%2 == 0 ? evenValid : oddValid; 
+            if (enableValidation) {
+                return validateCounter++%2 == 0 ? evenValid : oddValid;
             } else {
                 return valid;
             }
@@ -1591,7 +1592,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                 throw new Exception();
             }
         }
-        
+
         public void setMaxTotalPerKey(int maxTotalPerKey) {
             this.maxTotalPerKey = maxTotalPerKey;
         }
@@ -1608,22 +1609,22 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             evenValid = valid;
             oddValid = valid;
         }
-        
+
         public void setThrowExceptionOnActivate(boolean b) {
             exceptionOnActivate = b;
         }
-        
+
         public void setThrowExceptionOnDestroy(boolean b) {
             exceptionOnDestroy = b;
         }
-        
+
         public void setThrowExceptionOnPassivate(boolean b) {
             exceptionOnPassivate = b;
         }
-        
+
         int counter = 0;
         boolean valid;
-        
+
         int activeCount = 0;
         int validateCounter = 0;
         boolean evenValid = true;
@@ -1634,7 +1635,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         boolean exceptionOnPassivate = false;
         boolean exceptionOnActivate = false;
         boolean exceptionOnDestroy = false;
-        
+
         private void doWait(long latency) {
             try {
                 Thread.sleep(latency);
@@ -1659,7 +1660,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         t.printStackTrace(new PrintWriter(sw));
         return sw.toString();
     }
-    
+
     private String formatSettings(String title, String s, int i, String s0, boolean b0, String s1, int i1, String s2, int i2, String s3, int i3,
             String s4, int i4, String s5, int i5, String s6, int i6, int zeroLength, int oneLength, int twoLength){
         StringBuffer sb = new StringBuffer(80);
@@ -1675,7 +1676,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         sb.append("Lengths=").append(zeroLength).append(',').append(oneLength).append(',').append(twoLength).append(' ');
         return sb.toString();
     }
-    
+
 }
 
 

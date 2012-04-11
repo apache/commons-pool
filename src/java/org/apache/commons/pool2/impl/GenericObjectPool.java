@@ -163,7 +163,7 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  * Implementation note: To prevent possible deadlocks, care has been taken to
  * ensure that no call to a factory method will occur within a synchronization
  * block. See POOL-125 and DBCP-44 for more information.
- * 
+ *
  * @see GenericKeyedObjectPool
  * @param <T>
  *            Type of element pooled in this pool.
@@ -191,7 +191,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
         this.factory = factory;
         // save the current CCL to be used later by the evictor Thread
         factoryClassLoader = Thread.currentThread().getContextClassLoader();
-        
+
         setConfig(config);
 
         startEvictor(getTimeBetweenEvictionRunsMillis());
@@ -248,7 +248,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * (checked out to clients, or idle awaiting checkout) at a given time. When
      * non-positive, there is no limit to the number of objects that can be
      * managed by the pool at one time.
-     * 
+     *
      * @return the cap on the total number of object instances managed by the
      *         pool.
      * @see #setMaxTotal
@@ -262,7 +262,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * Sets the cap on the number of objects that can be allocated by the pool
      * (checked out to clients, or idle awaiting checkout) at a given time. Use
      * a negative value for no limit.
-     * 
+     *
      * @param maxTotal
      *            The cap on the total number of object instances managed by the
      *            pool. Negative values mean that there is no limit to the
@@ -277,7 +277,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * Returns whether to block when the {@link #borrowObject} method is
      * invoked when the pool is exhausted (the maximum number of "active"
      * objects has been reached).
-     * 
+     *
      * @return true if should block when the pool is exhuasted
      * @see #setBlockWhenExhausted
      */
@@ -290,7 +290,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * Sets whether to block when the {@link #borrowObject} method is invoked
      * when the pool is exhausted (the maximum number of "active" objects has
      * been reached).
-     * 
+     *
      * @param blockWhenExhausted   true if should block when the pool is exhausted
      * @see #getBlockWhenExhausted
      */
@@ -303,7 +303,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * {@link #borrowObject} method should block before throwing an exception
      * when the pool is exhausted and the {@link #getBlockWhenExhausted} is true.
      * When less than 0, the {@link #borrowObject} method may block indefinitely.
-     * 
+     *
      * @return maximum number of milliseconds to block when borrowing an object.
      * @see #setMaxWait
      * @see #setBlockWhenExhausted
@@ -318,7 +318,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * {@link #borrowObject} method should block before throwing an exception
      * when the pool is exhausted and the {@link #getBlockWhenExhausted} is true.
      * When less than 0, the {@link #borrowObject} method may block indefinitely.
-     * 
+     *
      * @param maxWait
      *            maximum number of milliseconds to block when borrowing an
      *            object.
@@ -331,7 +331,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
 
     /**
      * Returns the cap on the number of "idle" instances in the pool.
-     * 
+     *
      * @return the cap on the number of "idle" instances in the pool.
      * @see #setMaxIdle
      */
@@ -348,7 +348,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * they are requesting them them, causing the number of idle objects to rise
      * above maxIdle. The best value for maxIdle for heavily loaded system will
      * vary but the default is a good starting point.
-     * 
+     *
      * @param maxIdle
      *            The cap on the number of "idle" instances in the pool. Use a
      *            negative value to indicate an unlimited number of idle
@@ -365,7 +365,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * when <code>numActive + numIdle >= maxActive.</code> This setting has no
      * effect if the idle object evictor is disabled (i.e. if
      * <code>timeBetweenEvictionRunsMillis <= 0</code>).
-     * 
+     *
      * @param minIdle
      *            The minimum number of objects.
      * @see #getMinIdle
@@ -379,7 +379,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * Returns the minimum number of objects allowed in the pool before the
      * evictor thread (if active) spawns new objects. (Note no objects are
      * created when: numActive + numIdle >= maxActive)
-     * 
+     *
      * @return The minimum number of objects.
      * @see #setMinIdle
      */
@@ -394,7 +394,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * returned by the {@link #borrowObject} method. If the object fails to
      * validate, it will be dropped from the pool, and we will attempt to borrow
      * another.
-     * 
+     *
      * @return <code>true</code> if objects are validated before being borrowed.
      * @see #setTestOnBorrow
      */
@@ -409,7 +409,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * returned by the {@link #borrowObject} method. If the object fails to
      * validate, it will be dropped from the pool, and we will attempt to borrow
      * another.
-     * 
+     *
      * @param testOnBorrow
      *            <code>true</code> if objects should be validated before being
      *            borrowed.
@@ -423,7 +423,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * When <tt>true</tt>, objects will be
      * {@link PoolableObjectFactory#validateObject validated} before being
      * returned to the pool within the {@link #returnObject}.
-     * 
+     *
      * @return <code>true</code> when objects will be validated after returned
      *         to {@link #returnObject}.
      * @see #setTestOnReturn
@@ -437,7 +437,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * When <tt>true</tt>, objects will be
      * {@link PoolableObjectFactory#validateObject validated} before being
      * returned to the pool within the {@link #returnObject}.
-     * 
+     *
      * @param testOnReturn
      *            <code>true</code> so objects will be validated after returned
      *            to {@link #returnObject}.
@@ -451,7 +451,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * Returns the number of milliseconds to sleep between runs of the idle
      * object evictor thread. When non-positive, no idle object evictor thread
      * will be run.
-     * 
+     *
      * @return number of milliseconds to sleep between evictor runs.
      * @see #setTimeBetweenEvictionRunsMillis
      */
@@ -464,7 +464,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * Sets the number of milliseconds to sleep between runs of the idle object
      * evictor thread. When non-positive, no idle object evictor thread will be
      * run.
-     * 
+     *
      * @param timeBetweenEvictionRunsMillis
      *            number of milliseconds to sleep between evictor runs.
      * @see #getTimeBetweenEvictionRunsMillis
@@ -478,7 +478,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
     /**
      * Returns the max number of objects to examine during each run of the idle
      * object evictor thread (if any).
-     * 
+     *
      * @return max number of objects to examine during each evictor run.
      * @see #setNumTestsPerEvictionRun
      * @see #setTimeBetweenEvictionRunsMillis
@@ -498,7 +498,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * <i>n</i>th of the idle objects will be tested per run. When the value is
      * positive, the number of tests actually performed in each run will be the
      * minimum of this value and the number of instances idle in the pool.
-     * 
+     *
      * @param numTestsPerEvictionRun
      *            max number of objects to examine during each evictor run.
      * @see #getNumTestsPerEvictionRun
@@ -511,7 +511,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
     /**
      * Returns the minimum amount of time an object may sit idle in the pool
      * before it is eligible for eviction by the idle object evictor (if any).
-     * 
+     *
      * @return minimum amount of time an object may sit idle in the pool before
      *         it is eligible for eviction.
      * @see #setMinEvictableIdleTimeMillis
@@ -527,7 +527,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * it is eligible for eviction by the idle object evictor (if any). When
      * non-positive, no objects will be evicted from the pool due to idle time
      * alone.
-     * 
+     *
      * @param minEvictableIdleTimeMillis
      *            minimum amount of time an object may sit idle in the pool
      *            before it is eligible for eviction.
@@ -549,7 +549,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * {@code minEvictableIdleTimeMillis} is positive, then
      * {@code softMinEvictableIdleTimeMillis} is ignored). The default setting
      * for this parameter is -1 (disabled).
-     * 
+     *
      * @return minimum amount of time an object may sit idle in the pool before
      *         it is eligible for eviction if minIdle instances are available
      * @since Pool 1.3
@@ -564,7 +564,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * extra condition that at least "minIdle" object instances remain in the
      * pool. When non-positive, no objects will be evicted from the pool due to
      * idle time alone.
-     * 
+     *
      * @param softMinEvictableIdleTimeMillis
      *            minimum amount of time an object may sit idle in the pool
      *            before it is eligible for eviction.
@@ -608,7 +608,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * {@link PoolableObjectFactory#validateObject validated} by the idle object
      * evictor (if any). If an object fails to validate, it will be dropped from
      * the pool.
-     * 
+     *
      * @return <code>true</code> when objects will be validated by the evictor.
      * @see #setTestWhileIdle
      * @see #setTimeBetweenEvictionRunsMillis
@@ -623,7 +623,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * {@link PoolableObjectFactory#validateObject validated} by the idle object
      * evictor (if any). If an object fails to validate, it will be dropped from
      * the pool.
-     * 
+     *
      * @param testWhileIdle
      *            <code>true</code> so objects will be validated by the evictor.
      * @see #getTestWhileIdle
@@ -639,7 +639,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * the pool (if there are idle instances available). False means that the
      * pool behaves as a FIFO queue - objects are taken from the idle object
      * pool in the order that they are returned to the pool.
-     * 
+     *
      * @return <code>true</true> if the pool is configured to act as a LIFO queue
      * @since 1.4
      */
@@ -654,7 +654,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * idle instances available). False means that the pool behaves as a FIFO
      * queue - objects are taken from the idle object pool in the order that
      * they are returned to the pool.
-     * 
+     *
      * @param lifo
      *            the new value for the LIFO property
      * @since 1.4
@@ -665,7 +665,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
 
     /**
      * Sets my configuration.
-     * 
+     *
      * @param conf
      *            configuration to use.
      * @see GenericObjectPoolConfig
@@ -692,7 +692,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
     /**
      * Obtain a reference to the factory used to create, destroy and validate
      * the objects used by this pool.
-     *  
+     *
      * @return the factory
      */
     public PoolableObjectFactory<T> getFactory() {
@@ -739,7 +739,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * pool 1.5, a "fairness" algorithm has been implemented to ensure that
      * threads receive available instances in request arrival order.
      * </p>
-     * 
+     *
      * @return object instance
      * @throws NoSuchElementException
      *             if an instance cannot be returned
@@ -748,11 +748,11 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
     public T borrowObject() throws Exception {
         return borrowObject(getMaxWait());
     }
-    
+
     /**
      * Borrow an object from the pool using a user specific waiting time which
      * only applies if {@link #getBlockWhenExhausted()} is true.
-     * 
+     *
      * @param borrowMaxWait The time to wait in milliseconds for an object to
      *                      become available
      * @return object instance
@@ -885,7 +885,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * instance is validated before being returned to the idle instance pool. In
      * this case, if validation fails, the instance is destroyed.
      * </p>
-     * 
+     *
      * @param obj
      *            instance to return to the pool
      */
@@ -961,7 +961,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * Activation of this method decrements the active count and attempts to
      * destroy the instance.
      * </p>
-     * 
+     *
      * @throws Exception if the configured {@link PoolableObjectFactory} throws an
      * exception destroying obj
      * @throws IllegalStateException if obj does not belong to this pool
@@ -1010,7 +1010,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
 
     /**
      * Return the number of instances currently borrowed from this pool.
-     * 
+     *
      * @return the number of instances currently borrowed from this pool
      */
     @Override
@@ -1020,7 +1020,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
 
     /**
      * Return the number of instances currently idle in this pool.
-     * 
+     *
      * @return the number of instances currently idle in this pool
      */
     @Override
@@ -1038,7 +1038,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * <p>
      * Destroys idle instances in the pool by invoking {@link #clear()}.
      * </p>
-     * 
+     *
      * @throws Exception
      */
     @Override
@@ -1053,7 +1053,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
             }
 
             // Stop the evictor before the pool is closed since evict() calls
-            // assertOpen() 
+            // assertOpen()
             startEvictor(-1L);
 
             super.close();
@@ -1062,6 +1062,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
                 ManagementFactory.getPlatformMBeanServer().unregisterMBean(
                         oname);
             }
+
+            // Release any threads that were waiting for an object
+            idleObjects.interuptTakeWaiters();
         }
     }
 
@@ -1077,7 +1080,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * Successive activations of this method examine objects in in sequence,
      * cycling through objects in oldest-to-youngest order.
      * </p>
-     * 
+     *
      * @throws Exception
      *             if the pool is closed or eviction fails.
      */
@@ -1095,9 +1098,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
                     getMinEvictableIdleTimeMillis(),
                     getSoftMinEvictableIdleTimeMillis(),
                     getMinIdle());
-            
+
             boolean testWhileIdle = getTestWhileIdle();
-                    
+
             for (int i = 0, m = getNumTests(); i < m; i++) {
                 if (evictionIterator == null || !evictionIterator.hasNext()) {
                     if (getLifo()) {
@@ -1110,7 +1113,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
                     // Pool exhausted, nothing to do here
                     return;
                 }
-    
+
                 try {
                     underTest = evictionIterator.next();
                 } catch (NoSuchElementException nsee) {
@@ -1120,14 +1123,14 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
                     evictionIterator = null;
                     continue;
                 }
-    
+
                 if (!underTest.startEvictionTest()) {
                     // Object was borrowed in another thread
                     // Don't count this as an eviction test so reduce i;
                     i--;
                     continue;
                 }
-    
+
                 if (evictionPolicy.evict(evictionConfig, underTest,
                         idleObjects.size())) {
                     destroy(underTest);
@@ -1203,7 +1206,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
     /**
      * Check to see if we are below our minimum number of objects if so enough
      * to bring us back to our minimum.
-     * 
+     *
      * @throws Exception
      *             when {@link #addObject()} fails.
      */
@@ -1259,7 +1262,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
     /**
      * Start the eviction thread or service, or when <i>delay</i> is
      * non-positive, stop it if it is already running.
-     * 
+     *
      * @param delay
      *            milliseconds between evictor runs.
      */
@@ -1282,7 +1285,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * Returns pool info including {@link #getNumActive()},
      * {@link #getNumIdle()} and a list of objects idle in the pool with their
      * idle times.
-     * 
+     *
      * @return string containing debug information
      */
     String debugInfo() {
@@ -1300,7 +1303,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * Returns the number of tests to be performed in an Evictor run, based on
      * the current value of <code>numTestsPerEvictionRun</code> and the number
      * of idle instances in the pool.
-     * 
+     *
      * @see #setNumTestsPerEvictionRun
      * @return the number of tests for the Evictor to run
      */
@@ -1397,9 +1400,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * Return an estimate of the number of threads currently blocked waiting for
      * an object from the pool. This is intended for monitoring only, not for
      * synchronization control.
-     * 
+     *
      * @return  An estimate of the number of threads currently blocked waiting
-     *          for an object from the pool 
+     *          for an object from the pool
      */
     public int getNumWaiters() {
         if (getBlockWhenExhausted()) {
@@ -1413,7 +1416,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
 
     /**
      * The idle object evictor {@link TimerTask}.
-     * 
+     *
      * @see GenericObjectPool#setTimeBetweenEvictionRunsMillis
      */
     private class Evictor extends TimerTask {
@@ -1457,7 +1460,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
 
     /**
      * The cap on the number of idle instances in the pool.
-     * 
+     *
      * @see #setMaxIdle
      * @see #getMaxIdle
      */
@@ -1465,7 +1468,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
 
     /**
      * The cap on the minimum number of idle instances in the pool.
-     * 
+     *
      * @see #setMinIdle
      * @see #getMinIdle
      */
@@ -1473,7 +1476,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
 
     /**
      * The cap on the total number of active instances from the pool.
-     * 
+     *
      * @see #setMaxTotal
      * @see #getMaxTotal
      */
@@ -1486,7 +1489,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * {@link #getBlockWhenExhausted()} is true.
      * When less than 0, the
      * {@link #borrowObject} method may block indefinitely.
-     * 
+     *
      * @see #setMaxWait
      * @see #getMaxWait
      * @see #setBlockWhenExhausted
@@ -1498,7 +1501,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * When the {@link #borrowObject} method is invoked when the pool is
      * exhausted (the maximum number of "active" objects has been reached)
      * should the {@link #borrowObject} method block or not?
-     * 
+     *
      * @see #setBlockWhenExhausted
      * @see #getBlockWhenExhausted
      */
@@ -1511,7 +1514,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * returned by the {@link #borrowObject} method. If the object fails to
      * validate, it will be dropped from the pool, and we will attempt to borrow
      * another.
-     * 
+     *
      * @see #setTestOnBorrow
      * @see #getTestOnBorrow
      */
@@ -1522,7 +1525,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * When <tt>true</tt>, objects will be
      * {@link PoolableObjectFactory#validateObject validated} before being
      * returned to the pool within the {@link #returnObject}.
-     * 
+     *
      * @see #getTestOnReturn
      * @see #setTestOnReturn
      */
@@ -1534,7 +1537,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * {@link PoolableObjectFactory#validateObject validated} by the idle object
      * evictor (if any). If an object fails to validate, it will be dropped from
      * the pool.
-     * 
+     *
      * @see #setTestWhileIdle
      * @see #getTestWhileIdle
      * @see #getTimeBetweenEvictionRunsMillis
@@ -1547,7 +1550,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * The number of milliseconds to sleep between runs of the idle object
      * evictor thread. When non-positive, no idle object evictor thread will be
      * run.
-     * 
+     *
      * @see #setTimeBetweenEvictionRunsMillis
      * @see #getTimeBetweenEvictionRunsMillis
      */
@@ -1562,7 +1565,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * <tt>ceil({@link #getNumIdle})/abs({@link #getNumTestsPerEvictionRun})</tt>
      * tests will be run. I.e., when the value is <i>-n</i>, roughly one
      * <i>n</i>th of the idle objects will be tested per run.
-     * 
+     *
      * @see #setNumTestsPerEvictionRun
      * @see #getNumTestsPerEvictionRun
      * @see #getTimeBetweenEvictionRunsMillis
@@ -1576,7 +1579,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * is eligible for eviction by the idle object evictor (if any). When
      * non-positive, no objects will be evicted from the pool due to idle time
      * alone.
-     * 
+     *
      * @see #setMinEvictableIdleTimeMillis
      * @see #getMinEvictableIdleTimeMillis
      * @see #getTimeBetweenEvictionRunsMillis
@@ -1591,7 +1594,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * extra condition that at least "minIdle" amount of object remain in the
      * pool. When non-positive, no objects will be evicted from the pool due to
      * idle time alone.
-     * 
+     *
      * @see #setSoftMinEvictableIdleTimeMillis
      * @see #getSoftMinEvictableIdleTimeMillis
      */
@@ -1646,9 +1649,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      */
     private EvictionPolicy<T> evictionPolicy = new DefaultEvictionPolicy<T>();
 
-    /** Object used to ensure thread safety of eviction process */ 
+    /** Object used to ensure thread safety of eviction process */
     private final Object evictionLock = new Object();
-    
+
     /** Object used to ensure closed() is only called once. */
     private final Object closeLock = new Object();
 
