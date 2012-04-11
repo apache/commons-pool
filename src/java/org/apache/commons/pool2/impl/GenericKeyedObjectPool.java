@@ -226,7 +226,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
     /**
      * Create a new <code>GenericKeyedObjectPool</code> using a specific
      * configuration.
-     * 
+     *
      * @param config    The configuration to use for this pool instance. The
      *                  configuration is used by value. Subsequent changes to
      *                  the configuration object will not be reflected in the
@@ -560,7 +560,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * Sets the max number of objects to examine during each run of the
      * idle object evictor thread (if any).
      * <p>
-     * When a negative value is supplied, 
+     * When a negative value is supplied,
      * <code>ceil({@link #getNumIdle()})/abs({@link #getNumTestsPerEvictionRun})</code>
      * tests will be run.  I.e., when the value is <code>-n</code>, roughly one <code>n</code>th of the
      * idle objects will be tested per run.  When the value is positive, the number of tests
@@ -616,7 +616,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * {@code minEvictableIdleTimeMillis} is positive, then
      * {@code softMinEvictableIdleTimeMillis} is ignored). The default setting
      * for this parameter is -1 (disabled).
-     * 
+     *
      * @return minimum amount of time an object may sit idle in the pool before
      *         it is eligible for eviction if minIdle instances are available
      * @since Pool 1.3
@@ -631,7 +631,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * extra condition that at least "minIdle" object instances remain in the
      * pool. When non-positive, no objects will be evicted from the pool due to
      * idle time alone.
-     * 
+     *
      * @param softMinEvictableIdleTimeMillis
      *            minimum amount of time an object may sit idle in the pool
      *            before it is eligible for eviction.
@@ -669,7 +669,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
                     evictionPolicyClassName, e);
         }
     }
-    
+
     /**
      * When <code>true</code>, objects will be
      * {@link org.apache.commons.pool2.PoolableObjectFactory#validateObject validated}
@@ -756,43 +756,43 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      /**
       * Obtain a reference to the factory used to create, destroy and validate
       * the objects used by this pool.
-      *  
+      *
       * @return the factory
       */
      public KeyedPoolableObjectFactory<K, T> getFactory() {
          return factory;
      }
-     
-     
+
+
     //-- ObjectPool methods ------------------------------------------
 
     /**
      * <p>Borrows an object from the keyed pool associated with the given key.</p>
-     * 
+     *
      * <p>If there is an idle instance available in the pool associated with the given key, then
      * either the most-recently returned (if {@link #getLifo() lifo} == true) or "oldest" (lifo == false)
      * instance sitting idle in the pool will be activated and returned.  If activation fails, or
      * {@link #getTestOnBorrow() testOnBorrow} is set to true and validation fails, the instance is destroyed and the
      * next available instance is examined.  This continues until either a valid instance is returned or there
      * are no more idle instances available.</p>
-     * 
+     *
      * <p>If there are no idle instances available in the pool associated with the given key, behavior
      * depends on the {@link #getMaxTotalPerKey() maxTotalPerKey}, {@link #getMaxTotal() maxTotal}, and (if applicable)
      * {@link #getBlockWhenExhausted()} and {@link #getMaxWait() maxWait} settings. If the
      * number of instances checked out from the pool under the given key is less than <code>maxTotalPerKey</code> and
      * the total number of instances in circulation (under all keys) is less than <code>maxTotal</code>, a new instance
      * is created, activated and (if applicable) validated and returned to the caller.</p>
-     * 
+     *
      * <p>If the associated keyed pool is exhausted (no available idle instances and no capacity to create new ones),
      * this method will either block ({@link #getBlockWhenExhausted()} is true) or throw a <code>NoSuchElementException</code>
      * ({@link #getBlockWhenExhausted()} is false).
      * The length of time that this method will block when {@link #getBlockWhenExhausted()} is true
      * is determined by the {@link #getMaxWait() maxWait} property.</p>
-     * 
+     *
      * <p>When the pool is exhausted, multiple calling threads may be simultaneously blocked waiting for instances
      * to become available.  As of pool 1.5, a "fairness" algorithm has been implemented to ensure that threads receive
      * available instances in request arrival order.</p>
-     * 
+     *
      * @param key pool key
      * @return object instance from the keyed pool
      * @throws NoSuchElementException if a keyed object instance cannot be returned.
@@ -801,12 +801,12 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
     public T borrowObject(K key) throws Exception {
         return borrowObject(key, getMaxWait());
     }
-     
+
     /**
      * <p>Borrows an object from the keyed pool associated with the given key
      * using a user specific waiting time which only applies if
      * {@link #getBlockWhenExhausted()} is true.</p>
-     * 
+     *
      * @param key pool key
      * @param borrowMaxWait maximum amount of time to wait (in milliseconds)
      * @return object instance from the keyed pool
@@ -825,7 +825,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         boolean create;
         long waitTime = 0;
         ObjectDeque<T> objectDeque = register(key);
-        
+
         try {
             while (p == null) {
                 create = false;
@@ -869,7 +869,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
                         p = null;
                     }
                 }
-    
+
                 if (p != null) {
                     try {
                         factory.activateObject(key, p.getObject());
@@ -916,7 +916,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         } finally {
             deregister(key);
         }
-        
+
         borrowedCount.incrementAndGet();
         synchronized (idleTimes) {
             idleTimes.add(Long.valueOf(p.getIdleTimeMillis()));
@@ -937,29 +937,29 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
 
      /**
       * <p>Returns an object to a keyed pool.</p>
-      * 
+      *
       * <p>For the pool to function correctly, the object instance <strong>must</strong> have been borrowed
       * from the pool (under the same key) and not yet returned. Repeated <code>returnObject</code> calls on
       * the same object/key pair (with no <code>borrowObject</code> calls in between) will result in multiple
       * references to the object in the idle instance pool.</p>
-      * 
+      *
       * <p>If {@link #getMaxIdlePerKey() maxIdle} is set to a positive value and the number of idle instances under the given
       * key has reached this value, the returning instance is destroyed.</p>
-      * 
+      *
       * <p>If {@link #getTestOnReturn() testOnReturn} == true, the returning instance is validated before being returned
       * to the idle instance pool under the given key.  In this case, if validation fails, the instance is destroyed.</p>
-      * 
+      *
       * @param key pool key
       * @param t instance to return to the keyed pool
       * @throws Exception
       */
      @Override
     public void returnObject(K key, T t) throws Exception {
-         
+
          ObjectDeque<T> objectDeque = poolMap.get(key);
-         
+
          PooledObject<T> p = objectDeque.getAllObjects().get(t);
-         
+
          if (p == null) {
              throw new IllegalStateException(
                      "Returned object not currently part of this pool");
@@ -1013,7 +1013,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
                  idleObjects.addLast(p);
              }
          }
- 
+
          if (hasBorrowWaiters()) {
              reuseCapacity();
          }
@@ -1030,12 +1030,12 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
          }
      }
 
-     
+
      /**
       * {@inheritDoc}
       * <p>Activation of this method decrements the active count associated with
       * the given keyed pool  and attempts to destroy <code>obj.</code></p>
-      * 
+      *
       * @param key pool key
       * @param obj instance to invalidate
       * @throws Exception if an exception occurs destroying the object
@@ -1044,9 +1044,9 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
       */
      @Override
     public void invalidateObject(K key, T obj) throws Exception {
-         
+
          ObjectDeque<T> objectDeque = poolMap.get(key);
-         
+
          PooledObject<T> p = objectDeque.getAllObjects().get(obj);
          if (p == null) {
              throw new IllegalStateException(
@@ -1061,7 +1061,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
       * idle instance pool and then invoking the configured PoolableObjectFactory's
       * {@link KeyedPoolableObjectFactory#destroyObject(Object, Object)} method on
       * each idle instance.
-      *  
+      *
       * <p> Implementation notes:
       * <ul><li>This method does not destroy or effect in any way instances that are
       * checked out when it is invoked.</li>
@@ -1074,7 +1074,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      @Override
     public void clear() {
          Iterator<K> iter = poolMap.keySet().iterator();
-         
+
          while (iter.hasNext()) {
              clear(iter.next());
          }
@@ -1089,15 +1089,15 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
       */
      @Override
     public void clear(K key) {
-         
+
          ObjectDeque<T> objectDeque = register(key);
-         
+
          try {
              LinkedBlockingDeque<PooledObject<T>> idleObjects =
                      objectDeque.getIdleObjects();
-             
+
              PooledObject<T> p = idleObjects.poll();
-    
+
              while (p != null) {
                  try {
                      destroy(key, p, true);
@@ -1131,7 +1131,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
     public int getNumIdle() {
          Iterator<ObjectDeque<T>> iter = poolMap.values().iterator();
          int result = 0;
-         
+
          while (iter.hasNext()) {
              result += iter.next().getIdleObjects().size();
          }
@@ -1175,9 +1175,9 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
       * will fail with IllegalStateException, but {@link #returnObject(Object, Object)} and
       * {@link #invalidateObject(Object, Object)} will continue to work, with returned objects
       * destroyed on return.</p>
-      * 
-      * <p>Destroys idle instances in the pool by invoking {@link #clear()}.</p> 
-      * 
+      *
+      * <p>Destroys idle instances in the pool by invoking {@link #clear()}.</p>
+      *
       * @throws Exception
       */
      @Override
@@ -1192,15 +1192,25 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
              }
 
              // Stop the evictor before the pool is closed since evict() calls
-             // assertOpen() 
+             // assertOpen()
              startEvictor(-1L);
 
              closed = true;
+             // This clear removes any idle objects
              clear();
              if (oname != null) {
                  ManagementFactory.getPlatformMBeanServer().unregisterMBean(
                          oname);
              }
+
+             // Release any threads that were waiting for an object
+             Iterator<ObjectDeque<T>> iter = poolMap.values().iterator();
+             while (iter.hasNext()) {
+                 iter.next().getIdleObjects().interuptTakeWaiters();
+             }
+             // This clear cleans up the keys now any waiting threads have been
+             // interrupted
+             clear();
          }
 
      }
@@ -1230,11 +1240,11 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      /** Whether or not the pool is closed */
      private volatile boolean closed = false;
 
-     
+
      /**
       * Clears oldest 15% of objects in pool.  The method sorts the
       * objects into a TreeMap and then iterates the first 15% for removal.
-      * 
+      *
       * @since Pool 1.3
       */
      public void clearOldest() {
@@ -1278,25 +1288,25 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
             }
         }
     }
-    
+
     /**
      * Attempt to create one new instance to serve from the most heavily
      * loaded pool that can add a new instance.
-     * 
+     *
      * This method exists to ensure liveness in the pool when threads are
      * parked waiting and capacity to create instances under the requested keys
      * subsequently becomes available.
-     * 
+     *
      * This method is not guaranteed to create an instance and its selection
      * of the most loaded pool that can create an instance may not always be
      * correct, since it does not lock the pool and instances may be created,
      * borrowed, returned or destroyed by other threads while it is executing.
-     * 
+     *
      * @return true if an instance is created and added to a pool
      */
     private boolean reuseCapacity() {
         final int maxTotalPerKey = getMaxTotalPerKey();
-   
+
         // Find the most loaded pool that could take a new instance
         int maxQueueLength = 0;
         LinkedBlockingDeque<PooledObject<T>> mostLoaded = null;
@@ -1308,12 +1318,12 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
                 final int queueLength = pool.getTakeQueueLength();
                 if (getNumActive(k) < maxTotalPerKey && queueLength > maxQueueLength) {
                     maxQueueLength = queueLength;
-                    mostLoaded = pool; 
+                    mostLoaded = pool;
                     loadedKey = k;
                 }
             }
         }
-        
+
         // Attempt to add an instance to the most loaded pool
         boolean success = false;
         if (mostLoaded != null) {
@@ -1330,13 +1340,13 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
                 deregister(loadedKey);
             }
         }
-        return success;   
+        return success;
     }
-    
+
     /**
      * Returns true if there are threads parked waiting to borrow instances
      * from at least one of the keyed pools.
-     * 
+     *
      * @return true if {@link #reuseCapacity()} would be useful
      */
     private boolean hasBorrowWaiters() {
@@ -1382,11 +1392,11 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
                     getMinEvictableIdleTimeMillis(),
                     getSoftMinEvictableIdleTimeMillis(),
                     getMinIdlePerKey());
-            
+
             boolean testWhileIdle = getTestWhileIdle();
-            
+
             LinkedBlockingDeque<PooledObject<T>> idleObjects = null;
-             
+
             for (int i = 0, m = getNumTests(); i < m; i++) {
                 if(evictionIterator == null || !evictionIterator.hasNext()) {
                     if (evictionKeyIterator == null ||
@@ -1408,7 +1418,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
                             continue;
                         }
                         idleObjects = objectDeque.getIdleObjects();
-                        
+
                         if (getLifo()) {
                             evictionIterator = idleObjects.descendingIterator();
                         } else {
@@ -1433,14 +1443,14 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
                     evictionIterator = null;
                     continue;
                 }
-    
+
                 if (!underTest.startEvictionTest()) {
                     // Object was borrowed in another thread
                     // Don't count this as an eviction test so reduce i;
                     i--;
                     continue;
                 }
-    
+
                 if (evictionPolicy.evict(evictionConfig, underTest,
                         poolMap.get(evictionKey).getIdleObjects().size())) {
                     destroy(evictionKey, underTest, true);
@@ -1449,7 +1459,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
                     if (testWhileIdle) {
                         boolean active = false;
                         try {
-                            factory.activateObject(evictionKey, 
+                            factory.activateObject(evictionKey,
                                     underTest.getObject());
                             active = true;
                         } catch (Exception e) {
@@ -1481,14 +1491,14 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         }
     }
 
-     
+
     private PooledObject<T> create(K key) throws Exception {
         int maxTotalPerKey = getMaxTotalPerKey(); // Per key
         int maxTotal = getMaxTotal();   // All keys
 
         // Check against the overall limit
         boolean loop = true;
-        
+
         while (loop) {
             int newNumTotal = numTotal.incrementAndGet();
             if (maxTotal > -1 && newNumTotal > maxTotal) {
@@ -1502,7 +1512,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
                 loop = false;
             }
         }
-         
+
         ObjectDeque<T> objectDeque = poolMap.get(key);
         long newCreateCount = objectDeque.getCreateCount().incrementAndGet();
 
@@ -1513,7 +1523,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
             objectDeque.getCreateCount().decrementAndGet();
             return null;
         }
-         
+
 
         T t = null;
         try {
@@ -1532,7 +1542,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
     /**
      * Invalidate toDestroy and if it is idle under key or always is true, destroy it.
      * Return true if toDestroy is destroyed.
-     * 
+     *
      * @param key pool key
      * @param toDestroy instance to invalidate and destroy if conditions are met
      * @param always true means instance will be destroyed regardless of idle pool membership
@@ -1541,16 +1551,16 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      */
     private boolean destroy(K key, PooledObject<T> toDestroy, boolean always)
             throws Exception {
-        
+
         ObjectDeque<T> objectDeque = register(key);
 
         try {
             boolean isIdle = objectDeque.getIdleObjects().remove(toDestroy);
-            
+
             if (isIdle || always) {
                 objectDeque.getAllObjects().remove(toDestroy.getObject());
                 toDestroy.invalidate();
-        
+
                 try {
                     factory.destroyObject(key, toDestroy.getObject());
                 } finally {
@@ -1570,7 +1580,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
     /**
      * Registers a new key in the {@link poolMap} and {@link poolKeyList}
      * and returns the key queue details.
-     * If the key is already in the map, increments the interest count and 
+     * If the key is already in the map, increments the interest count and
      * returns the existing details.
      * <p>
      * register and deregister must be used as a pair.
@@ -1609,14 +1619,14 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         }
         return objectDeque;
     }
-    
+
     /**
      * Deregisters an unused key from {@link poolMap} and {@link poolKeyList}.
      * Fetches the key and decrements the interest count; if this is zero,
      * and the number of managed instances is zero, then the key is removed.
      * <p>
      * register and deregister must be used as a pair.
-     * 
+     *
      * @param k the key to deregister
      * @throws NullPointerException if the key is not in the {@link poolMap}
      * @see #register(Object)
@@ -1697,16 +1707,16 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         }
     }
 
-    
+
     /**
      * <p>Adds an object to the keyed pool.</p>
-     * 
+     *
      * <p>Validates the object if testOnReturn == true and passivates it before returning it to the pool.
      * if validation or passivation fails, or maxIdle is set and there is no room in the pool, the instance
      * is destroyed.</p>
-     * 
+     *
      * <p>Calls {@link #allocate()} on successful completion</p>
-     * 
+     *
      * @param key pool key
      * @param p instance to add to the keyed pool
      * @throws Exception
@@ -1789,7 +1799,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
     /**
      * Returns pool info including {@link #getNumActive()}, {@link #getNumIdle()}
      * and currently defined keys.
-     * 
+     *
      * @return string containing debug information
      */
     String debugInfo() {
@@ -1805,11 +1815,11 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         return buf.toString();
     }
 
-    /** 
+    /**
      * Returns the number of tests to be performed in an Evictor run,
      * based on the current values of <code>_numTestsPerEvictionRun</code>
      * and <code>_totalIdle</code>.
-     * 
+     *
      * @see #setNumTestsPerEvictionRun
      * @return the number of tests for the Evictor to run
      */
@@ -1826,12 +1836,12 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * This returns the number of objects to create during the pool
      * sustain cycle. This will ensure that the minimum number of idle
      * instances is maintained without going past the maxTotalPerKey value.
-     * 
+     *
      * @param pool the ObjectPool to calculate the deficit for
      * @return The number of objects to be created
      */
     private int calculateDeficit(ObjectDeque<T> objectDeque) {
-        
+
         if (objectDeque == null) {
             return getMinIdlePerKey();
         }
@@ -1860,7 +1870,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         return objectDefecit;
     }
 
-    
+
     //--- JMX specific attributes ----------------------------------------------
 
     private void initStats() {
@@ -1964,30 +1974,30 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * Return an estimate of the number of threads currently blocked waiting for
      * an object from the pool. This is intended for monitoring only, not for
      * synchronization control.
-     * 
+     *
      * @return  An estimate of the number of threads currently blocked waiting
-     *          for an object from the pool 
+     *          for an object from the pool
      */
     public int getNumWaiters() {
         int result = 0;
-        
+
         if (getBlockWhenExhausted()) {
             Iterator<ObjectDeque<T>> iter = poolMap.values().iterator();
-            
+
             while (iter.hasNext()) {
                 // Assume no overflow
                 result += iter.next().getIdleObjects().getTakeQueueLength();
             }
         }
-        
+
         return result;
     }
-    
+
     /**
      * Return an estimate of the number of threads currently blocked waiting for
      * an object from the pool for the given key. This is intended for
      * monitoring only, not for synchronization control.
-     * 
+     *
      * @return  An estimate of the number of threads currently blocked waiting
      *          for an object from the pool for the given key
      */
@@ -2014,7 +2024,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         private final LinkedBlockingDeque<PooledObject<S>> idleObjects =
                 new LinkedBlockingDeque<PooledObject<S>>();
 
-        /** 
+        /**
          * Number of instances created - number destroyed.
          * Invariant: createCount <= maxTotalPerKey
          */
@@ -2024,51 +2034,51 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         private final Map<S, PooledObject<S>> allObjects =
                 new ConcurrentHashMap<S, PooledObject<S>>();
 
-        /** 
-         * Number of threads with registered interest in this key. 
+        /**
+         * Number of threads with registered interest in this key.
          * register(K) increments this counter and deRegister(K) decrements it.
          * Invariant: empty keyed pool will not be dropped unless numInterested is 0.
          */
         private final AtomicLong numInterested = new AtomicLong(0);
-        
+
         /**
          * Returns the idle instance pool.
-         * 
+         *
          * @return deque of idle instances
          */
         public LinkedBlockingDeque<PooledObject<S>> getIdleObjects() {
             return idleObjects;
         }
-        
+
         /**
          * Returns the number of instances that have been created under this
          * this key minus the number that have been destroyed.
-         * 
+         *
          * @return the number of instances (active or idle) currently being
          * managed by the pool under this key
          */
         public AtomicInteger getCreateCount() {
             return createCount;
         }
-        
+
         /**
          * Returns the number of threads with registered interest in this key.
          * This keyed pool will not be dropped if empty unless this method returns 0.
-         * 
+         *
          * @return number of threads that have registered, but not deregistered this key
          */
         public AtomicLong getNumInterested() {
             return numInterested;
         }
-        
+
         /**
          * The full set of objects under management by this keyed pool.
-         * 
+         *
          * Includes both idle instances and those checked out to clients.
          * The map is keyed on pooled instances.  Note: pooled instances
          * <em>must</em> be distinguishable by equals for this structure to
          * work properly.
-         * 
+         *
          * @return map of pooled instances
          */
         public Map<S, PooledObject<S>> getAllObjects() {
@@ -2095,7 +2105,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
                 //  set the class loader for the factory
                 Thread.currentThread().setContextClassLoader(
                         factoryClassLoader);
-                
+
                 //Evict from the pool
                 try {
                     evict();
@@ -2267,13 +2277,13 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * extra condition that at least "minIdle" amount of object remain in the
      * pool. When non-positive, no objects will be evicted from the pool due to
      * idle time alone.
-     * 
+     *
      * @see #setSoftMinEvictableIdleTimeMillis
      * @see #getSoftMinEvictableIdleTimeMillis
      */
     private volatile long softMinEvictableIdleTimeMillis =
         GenericKeyedObjectPoolConfig.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
-    
+
     /** Whether or not the pools behave as LIFO queues (last in first out) */
     private boolean lifo = GenericKeyedObjectPoolConfig.DEFAULT_LIFO;
 
@@ -2294,7 +2304,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      */
     private final Map<K,ObjectDeque<T>> poolMap =
             new ConcurrentHashMap<K,ObjectDeque<T>>(); // @GuardedBy("keyLock") for write access (and some read access)
-    
+
     /**
      * List of pool keys - used to control eviction order. The list of keys
      * <b>must</b> be kept in step with {@link #poolMap} using {@link #keyLock}
@@ -2313,7 +2323,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * created at any one time.
      */
     private final AtomicInteger numTotal = new AtomicInteger(0);
-    
+
     /**
      * My idle object eviction {@link TimerTask}, if any.
      */
@@ -2329,7 +2339,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * An iterator for {@link #poolMap} entries.
      */
     private Iterator<K> evictionKeyIterator = null; // @GuardedBy("evictionLock") - except close()
-    
+
     /**
      * The key associated with the {@link ObjectDeque#getIdleObjects()}
      * currently being evicted.
@@ -2340,8 +2350,8 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * Policy that determines if an object is eligible for eviction or not.
      */
     private EvictionPolicy<T> evictionPolicy;
-    
-    /** Object used to ensure thread safety of eviction process */ 
+
+    /** Object used to ensure thread safety of eviction process */
     private final Object evictionLock = new Object();
 
     /** Object used to ensure closed() is only called once. */
