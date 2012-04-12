@@ -812,6 +812,10 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * <code>timeBetweenEvictionRunsMillis > 0</code> and attempts to ensure
      * that each pool has the required minimum number of instances are only
      * made during idle object eviction runs.
+     * <p>
+     * If the configured value of minIdle is greater than the configured value
+     * for maxIdle then the value of maxIdle will be used instead.
+     * 
      * @param poolSize - The minimum size of the each keyed pool
      * @since Pool 1.3
      * @see #getMinIdle
@@ -827,12 +831,21 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      * <code>timeBetweenEvictionRunsMillis > 0</code> and attempts to ensure
      * that each pool has the required minimum number of instances are only
      * made during idle object eviction runs.
+     * <p>
+     * If the configured value of minIdle is greater than the configured value
+     * for maxIdle then the value of maxIdle will be used instead.
+     * 
      * @return minimum size of the each keyed pool
      * @since Pool 1.3
      * @see #setTimeBetweenEvictionRunsMillis
      */
     public int getMinIdle() {
-        return _minIdle;
+        int maxIdle = getMaxIdle();
+        if (_minIdle > maxIdle) {
+            return maxIdle;
+        } else {
+            return _minIdle;
+        }
     }
 
     /**
@@ -2064,7 +2077,7 @@ public class GenericKeyedObjectPool extends BaseKeyedObjectPool implements Keyed
      */
     private void ensureMinIdle() throws Exception {
         //Check if should sustain the pool
-        if (_minIdle > 0) {
+        if (getMinIdle() > 0) {
             Object[] keysCopy;
             synchronized(this) {
                 // Get the current set of keys

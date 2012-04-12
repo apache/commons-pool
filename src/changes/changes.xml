@@ -25,6 +25,11 @@
       Ensure the evictor thread runs with the same class loader that was in use
       when the pool was created to ensure that the factory class is visible.
     </action>
+    <action dev="markt" type="fix" issue="POOL-212">
+      If a pool is configured with maxIdle < minIdle, ensure the evictor does
+      not create minIdle instances only to have them immediately destroyed by
+      using maxIdle for minIdle in this case.
+    </action>
   </release>
   <release version="1.5.7" date="2011-12-20" description="This is a patch release, including bugfixes only.">
     <action dev="psteitz" type="fix" issue="POOL-189" due-to="Bill Speirs">
