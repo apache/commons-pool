@@ -750,6 +750,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * <code>numActive + numIdle >= maxActive.</code>
      * This setting has no effect if the idle object evictor is disabled
      * (i.e. if <code>timeBetweenEvictionRunsMillis <= 0</code>).
+     * <p>
+     * If the configured value of minIdle is greater than the configured value
+     * for maxIdle then the value of maxIdle will be used instead.
      *
      * @param minIdle The minimum number of objects.
      * @see #getMinIdle
@@ -766,12 +769,19 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * Returns the minimum number of objects allowed in the pool
      * before the evictor thread (if active) spawns new objects.
      * (Note no objects are created when: numActive + numIdle >= maxActive)
+     * <p>
+     * If the configured value of minIdle is greater than the configured value
+     * for maxIdle then the value of maxIdle will be used instead.
      *
      * @return The minimum number of objects.
      * @see #setMinIdle
      */
     public synchronized int getMinIdle() {
-        return _minIdle;
+        if (_minIdle > _maxIdle) {
+            return _maxIdle;
+        } else {
+            return _minIdle;
+        }
     }
 
     /**
