@@ -452,6 +452,11 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * <code>timeBetweenEvictionRunsMillis > 0</code> and attempts to ensure
      * that each pool has the required minimum number of instances are only
      * made during idle object eviction runs.
+     * <p>
+     * If the configured value of minIdlePerKey is greater than the configured
+     * value for maxIdlePerKey then the value of maxIdlePerKey will be used
+     * instead.
+     *   
      * @param poolSize - The minimum size of the each keyed pool
      * @since Pool 1.3
      * @see #getMinIdlePerKey
@@ -467,13 +472,23 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * <code>timeBetweenEvictionRunsMillis > 0</code> and attempts to ensure
      * that each pool has the required minimum number of instances are only
      * made during idle object eviction runs.
+     * <p>
+     * If the configured value of minIdlePerKey is greater than the configured
+     * value for maxIdlePerKey then the value of maxIdlePerKey will be used
+     * instead.
+     *   
      * @return minimum size of the each keyed pool
      * @since Pool 1.3
      * @see #setTimeBetweenEvictionRunsMillis
      */
     @Override
     public int getMinIdlePerKey() {
-        return minIdlePerKey;
+        int maxIdlePerKey = getMaxIdlePerKey();
+        if (this.minIdlePerKey > maxIdlePerKey) {
+            return maxIdlePerKey;
+        } else {
+            return minIdlePerKey;
+        }
     }
 
     /**
