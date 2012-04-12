@@ -1034,9 +1034,9 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
         // Make constructor arguments all different from defaults
         int maxTotalPerKey = 1;
-        int maxIdle = 2;
+        int minIdle = 2;
         long maxWait = 3;
-        int minIdle = 4;
+        int maxIdle = 4;
         int maxTotal = 5;
         long minEvictableIdleTimeMillis = 6;
         int numTestsPerEvictionRun = 7;
