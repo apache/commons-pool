@@ -23,7 +23,7 @@ package org.apache.commons.pool2.impl;
  *     {@link BaseObjectPoolConfig#getMinEvictableIdleTimeMillis()}</li>
  * <li>there are more than {@link GenericObjectPool#getMinIdle()} /
  *     (@link GenericKeyedObjectPoolConfig#getMinIdlePerKey()} idle objects in
- *     the pool and the object has been idle for longer tham
+ *     the pool and the object has been idle for longer than
  *     {@link BaseObjectPoolConfig#getSoftMinEvictableIdleTimeMillis()}
  * </ul>
  */
