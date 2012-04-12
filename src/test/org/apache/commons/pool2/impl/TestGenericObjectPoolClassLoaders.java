@@ -42,7 +42,11 @@ public class TestGenericObjectPoolClassLoaders extends TestCase {
 			GenericObjectPool<URL> pool1 = new GenericObjectPool<URL>(factory1);
 			pool1.setMinIdle(1);
 			pool1.setTimeBetweenEvictionRunsMillis(100);
-			Thread.sleep(200);
+			int counter = 0;
+			while (counter < 50 && pool1.getNumIdle() != 1) {
+	            Thread.sleep(100);
+	            counter++;
+			}
 			assertEquals("Wrong number of idle objects in pool1", 1,
 			        pool1.getNumIdle());
 
@@ -60,8 +64,12 @@ public class TestGenericObjectPoolClassLoaders extends TestCase {
 			pool2.clear();
 
 			pool2.setTimeBetweenEvictionRunsMillis(100);
-			Thread.sleep(200);
-
+			
+            counter = 0;
+            while (counter < 50 && pool2.getNumIdle() != 1) {
+                Thread.sleep(100);
+                counter++;
+            }
 			assertEquals("Wrong number of  idle objects in pool2", 1,
 			        pool2.getNumIdle());
 
