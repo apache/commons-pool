@@ -85,6 +85,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
     @After
     public void tearDown() throws Exception {
+        String poolName = pool.getJmxName().toString();
         pool.clear();
         pool.close();
         pool = null;
@@ -95,11 +96,16 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 "org.apache.commoms.pool2:type=GenericObjectPool,*"), null);
         // There should be no registered pools at this point
         int registeredPoolCount = result.size();
+        StringBuffer msg = new StringBuffer("Current pool is: ");
+        msg.append(poolName);
+        msg.append("  Still open pools are: ");
         for (ObjectName name : result) {
             // Clean these up ready for the next test
+            msg.append(name.toString());
+            msg.append(' ');
             mbs.unregisterMBean(name);
         }
-        Assert.assertEquals(0, registeredPoolCount);
+        Assert.assertEquals(msg.toString(), 0, registeredPoolCount);
     }
 
     @Test(timeout=60000)
