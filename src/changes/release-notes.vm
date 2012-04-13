@@ -14,21 +14,36 @@
 ## KIND, either express or implied.  See the License for the
 ## specific language governing permissions and limitations
 ## under the License.
-                        
 
-              ${finalName} RELEASE NOTES
+              Apache ${project.name} ${version} RELEASE NOTES
 
-${release.description}
+The ${developmentTeam} is pleased to announce the release of ${finalName}
+
+$introduction.replaceAll("(?<!\015)\012", "
+")
+
+## N.B. the available variables are described here:
+## http://maven.apache.org/plugins/maven-changes-plugin/examples/using-a-custom-announcement-template.html
+##
+## Hack to improve layout: replace all pairs of spaces with a single new-line
+$release.description.replaceAll("  ", "
+")
 
 #if ($release.getActions().size() == 0)
 No changes defined in this version.
 #else
 Changes in this version include:
 
+## indent to be used if there is no issue attribute.
+## should be the same as the indent in the changes.xml file
+## less 2 spaces for the 'o' and trailing space
+#set($indent='          ')
 #if ($release.getActions('add').size() !=0)
 New features:
 #foreach($actionItem in $release.getActions('add'))
-#set($action=$actionItem.getAction())
+## Use replaceAll to fix up LF-only line ends on Windows.
+#set($action=$actionItem.getAction().replaceAll("\n","
+"))
 #if ($actionItem.getIssue())
 #set($issue=$actionItem.getIssue())
 #else
@@ -39,7 +54,7 @@ New features:
 #else
 #set($dueto="")
 #end
-o #if($!issue != "") $issue: #end ${action} #if($!dueto != "")Thanks to $dueto. #end
+o#if($!issue != "") $issue: #else$indent#end ${action} #if($!dueto != "")Thanks to $dueto. #end
 
 #set($issue="")
 #set($dueto="")
@@ -49,7 +64,9 @@ o #if($!issue != "") $issue: #end ${action} #if($!dueto != "")Thanks to $dueto. 
 #if ($release.getActions('fix').size() !=0)
 Fixed Bugs:
 #foreach($actionItem in $release.getActions('fix'))
-#set($action=$actionItem.getAction())
+## Use replaceAll to fix up LF-only line ends on Windows.
+#set($action=$actionItem.getAction().replaceAll("\n","
+"))
 #if ($actionItem.getIssue())
 #set($issue=$actionItem.getIssue())
 #else
@@ -60,7 +77,7 @@ Fixed Bugs:
 #else
 #set($dueto="")
 #end
-o #if($!issue != "") $issue: #end ${action} #if($!dueto != "")Thanks to $dueto. #end
+o#if($!issue != "") $issue: #else$indent#end ${action} #if($!dueto != "")Thanks to $dueto. #end
 
 #set($issue="")
 #set($dueto="")
@@ -70,7 +87,9 @@ o #if($!issue != "") $issue: #end ${action} #if($!dueto != "")Thanks to $dueto. 
 #if ($release.getActions('update').size() !=0)
 Changes:
 #foreach($actionItem in $release.getActions('update'))
-#set($action=$actionItem.getAction())
+## Use replaceAll to fix up LF-only line ends on Windows.
+#set($action=$actionItem.getAction().replaceAll("\n","
+"))
 #if ($actionItem.getIssue())
 #set($issue=$actionItem.getIssue())
 #else
@@ -81,7 +100,7 @@ Changes:
 #else
 #set($dueto="")
 #end
-o #if($!issue != "") $issue: #end ${action} #if($!dueto != "")Thanks to $dueto. #end
+o#if($!issue != "") $issue: #else$indent#end ${action} #if($!dueto != "")Thanks to $dueto. #end
 
 #set($issue="")
 #set($dueto="")
@@ -91,7 +110,9 @@ o #if($!issue != "") $issue: #end ${action} #if($!dueto != "")Thanks to $dueto. 
 #if ($release.getActions('remove').size() !=0)
 Removed:
 #foreach($actionItem in $release.getActions('remove'))
-#set($action=$actionItem.getAction())
+## Use replaceAll to fix up LF-only line ends on Windows.
+#set($action=$actionItem.getAction().replaceAll("\n","
+"))
 #if ($actionItem.getIssue())
 #set($issue=$actionItem.getIssue())
 #else
@@ -102,7 +123,7 @@ Removed:
 #else
 #set($dueto="")
 #end
-o ${action} #if($!issue != "") Issue: $issue. #end#if($!dueto != "")Thanks to $dueto. #end
+o#if($!issue != "") $issue: #else$indent#end ${action} #if($!dueto != "")Thanks to $dueto. #end
 
 #set($issue="")
 #set($dueto="")
@@ -110,10 +131,10 @@ o ${action} #if($!issue != "") Issue: $issue. #end#if($!dueto != "")Thanks to $d
 #end
 ## End of main loop
 #end
- 
-For complete information on commons-pool, including instructions on how to submit bug reports,
-patches, or suggestions for improvement, see the commons-pool website:
 
-http://commons.apache.org/pool/
+For complete information on ${project.name}, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache ${project.name} website:
+
+${project.url}
 
 
