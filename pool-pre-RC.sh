@@ -25,6 +25,6 @@
 #
 # $Revision$ $Date$
 # ----------------------------------------------------------------------------
-mvn changes:announcement-generate
-mv target/announcement/pool-release-notes.vm RELEASE-NOTES.txt
+
+mvn changes:announcement-generate -Prelease-notes # [-Dchanges.version=nnn]
 mvn commons:download-page
