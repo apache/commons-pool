@@ -144,20 +144,6 @@
   </properties> 
 
   <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <!-- Override plugin versions in parent Pom, which are too old to support manifests -->
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-source-plugin</artifactId>
-          <version>2.1</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-assembly-plugin</artifactId>
-          <version>2.2-beta-5</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
     <sourceDirectory>src/java</sourceDirectory>
     <testSourceDirectory>src/test</testSourceDirectory>
       <plugins>
