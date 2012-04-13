@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
-    <version>20</version>
+    <version>24</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.commons</groupId>
@@ -118,7 +118,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.8.2</version>
+      <version>4.10</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -243,7 +243,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
-          <version>2.1</version>
+          <version>2.9.1</version>
           <configuration>
             <configLocation>${basedir}/checkstyle.xml</configLocation>
             <enableRulesSummary>false</enableRulesSummary>
@@ -253,7 +253,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>findbugs-maven-plugin</artifactId>
-          <version>1.2</version>
+          <version>2.4.0</version>
           <configuration>
             <threshold>Normal</threshold>
             <effort>Default</effort>
@@ -263,7 +263,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>cobertura-maven-plugin</artifactId>
-        <version>2.3</version>
+        <version>2.5.1</version>
       </plugin>
       </plugins>
     </reporting>
