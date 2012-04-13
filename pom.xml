@@ -183,7 +183,6 @@
           <version>${commons.changes.version}</version>
           <configuration>
             <xmlPath>${basedir}/src/changes/changes.xml</xmlPath>
-            <issueLinkTemplate>%URL%/%ISSUE%</issueLinkTemplate>
             <template>release-notes.vm</template>
             <templateDirectory>src/changes</templateDirectory>
           </configuration>
@@ -202,7 +201,7 @@
           <configuration>
             <configLocation>${basedir}/checkstyle.xml</configLocation>
             <enableRulesSummary>false</enableRulesSummary>
-            <headerFile>${basedir}/license-header.txt</headerFile>
+            <headerLocation>${basedir}/license-header.txt</headerLocation>
           </configuration>
         </plugin>
         <plugin>
