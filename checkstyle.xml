@@ -27,13 +27,16 @@
 
   <property name="localeLanguage" value="en"/>
 
+  <!-- Verify that EVERY source file has the appropriate license -->
+  <module name="Header">
+    <property name="headerFile" value="${checkstyle.header.file}"/>
+  </module>
+
+  <!-- No tabs allowed! -->
+  <module name="FileTabCharacter"/>
+    
   <module name="TreeWalker">
    
-    <!-- Verify that EVERY source file has the appropriate license -->
-    <module name="Header">
-      <property name="headerFile" value="${checkstyle.header.file}"/>
-    </module>
-
     <!-- Operator must be at end of wrapped line -->
     <module name="OperatorWrap">
       <property name="option" value="eol"/>
@@ -54,9 +57,6 @@
     <!-- Require field javadoc -->
     <module name="JavadocVariable"/>
         
-    <!-- No tabs allowed! -->
-    <module name="TabCharacter"/>
-    
     <!-- No public fields -->
     <module name="VisibilityModifier">
        <property name="protectedAllowed" value="true"/>
@@ -76,7 +76,7 @@
   </module>
   
   <!-- Require package javadoc -->
-  <module name="PackageHtml"/>
+  <module name="JavadocPackage"/>
 
   <!-- Setup special comments to suppress specific checks from source files -->
   <module name="SuppressionCommentFilter">
