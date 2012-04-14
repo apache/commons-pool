@@ -229,6 +229,19 @@
         <artifactId>cobertura-maven-plugin</artifactId>
         <version>2.5.1</version>
       </plugin>
-      </plugins>
+      <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>src/test/java/org/apache/commons/pool2/impl/test1</exclude>
+            <exclude>src/test/java/org/apache/commons/pool2/impl/test2</exclude>
+            <exclude>.checkstyle</exclude>
+            <exclude>.fbprefs</exclude>
+            <exclude>.pmd</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
     </reporting>
 </project>
