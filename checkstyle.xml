@@ -55,7 +55,9 @@
     </module>
         
     <!-- Require field javadoc -->
-    <module name="JavadocVariable"/>
+    <module name="JavadocVariable">
+      <property name="scope" value="protected"/>
+    </module>
         
     <!-- No public fields -->
     <module name="VisibilityModifier">
@@ -75,8 +77,11 @@
 
   </module>
   
-  <!-- Require package javadoc -->
-  <module name="JavadocPackage"/>
+  <!-- Require package Javadoc -->
+  <module name="JavadocPackage">
+    <!-- setting allowLegacy means it will check for package.html instead of just package-info.java -->
+    <property name="allowLegacy" value="true"/>
+  </module>
 
   <!-- Setup special comments to suppress specific checks from source files -->
   <module name="SuppressionCommentFilter">
