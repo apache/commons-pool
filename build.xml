@@ -46,6 +46,7 @@
       <property name="src.dir" value="${basedir}/src"/>
       <property name="src.java.dir" value="${src.dir}/main/java"/>
       <property name="src.test.dir" value="${src.dir}/test/java"/>
+      <property name="src.testresources.dir" value="${src.dir}/test/resources"/>
       <property name="build.dir" value="${basedir}/build"/>
       <property name="build.classes.dir" value="${build.dir}/classes"/>
       <property name="build.test-classes.dir" value="${build.dir}/test-classes"/>
@@ -136,6 +137,7 @@
           <pathelement location="${build.classes.dir}" /> 
           <pathelement location="${build.test-classes.dir}" /> 
           <pathelement path="${classpath}" /> 
+          <pathelement location="${src.testresources.dir}" /> 
         </classpath>
         <!-- If test.entry is defined, run a single test, otherwise run all valid tests -->
         <test name="${test.entry}" if="test.entry"/>
