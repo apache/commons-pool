@@ -198,6 +198,16 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
           <version>2.9.1</version>
+          <!-- workround for MCHECKSTYLE-172 -->
+          <inherited>false</inherited>
+          <reportSets>
+            <reportSet>
+              <reports>
+                <report>checkstyle-aggregate</report>
+              </reports>
+            </reportSet>
+          </reportSets>
+          <!-- end workround -->
           <configuration>
             <configLocation>${basedir}/checkstyle.xml</configLocation>
             <enableRulesSummary>false</enableRulesSummary>
