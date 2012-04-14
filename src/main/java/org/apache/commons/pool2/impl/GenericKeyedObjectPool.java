@@ -1899,7 +1899,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * sustain cycle. This will ensure that the minimum number of idle
      * instances is maintained without going past the maxTotalPerKey value.
      *
-     * @param pool the ObjectPool to calculate the deficit for
+     * @param objectDeque the ObjectDeque to calculate the deficit for
      * @return The number of objects to be created
      */
     private int calculateDeficit(ObjectDeque<T> objectDeque) {
