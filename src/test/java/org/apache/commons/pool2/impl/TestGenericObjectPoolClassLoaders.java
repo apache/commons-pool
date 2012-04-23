@@ -31,8 +31,8 @@ public class TestGenericObjectPoolClassLoaders extends TestCase {
 
     public void testContextClassLoader() throws Exception {
 
-        ClassLoader savedClassloader = Thread.currentThread()
-                .getContextClassLoader();
+        ClassLoader savedClassloader =
+                Thread.currentThread().getContextClassLoader();
 
         try {
             CustomClassLoader cl1 = new CustomClassLoader(1);
@@ -53,8 +53,8 @@ public class TestGenericObjectPoolClassLoaders extends TestCase {
             // ---------------
             CustomClassLoader cl2 = new CustomClassLoader(2);
             Thread.currentThread().setContextClassLoader(cl2);
-            CustomClassLoaderObjectFactory factory2 = new CustomClassLoaderObjectFactory(
-                    2);
+            CustomClassLoaderObjectFactory factory2 =
+                    new CustomClassLoaderObjectFactory(2);
             GenericObjectPool<URL> pool2 = new GenericObjectPool<URL>(factory2);
             pool2.setMinIdle(1);
 
@@ -80,7 +80,7 @@ public class TestGenericObjectPoolClassLoaders extends TestCase {
         }
     }
 
-    private class CustomClassLoaderObjectFactory extends
+    private static class CustomClassLoaderObjectFactory extends
             BasePoolableObjectFactory<URL> {
         private int n;
 
