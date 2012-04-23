@@ -31,7 +31,8 @@
          </p>
          <ul>
            <li>
-              Versions 1.6 adds generics based on the latest 1.5.x release, 1.5.7 at press time. It requires Java 1.5.
+              Version 1.6 adds generics based on the latest 1.5.x release, 1.5.7
+              at the present time. It requires Java 1.5.
            </li>
            <li>
               Versions 1.3 through 1.5 depend at runtime only on a Java 1.3 or better JVM.
