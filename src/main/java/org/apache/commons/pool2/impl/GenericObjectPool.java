@@ -256,6 +256,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
         for (int i = 0; i < SWALLOWED_EXCEPTION_QUEUE_SIZE; i++) {
             swallowedExceptions.add(null);
         }
+        
+        // Populate the creation stack trace
+        this.creationStackTrace = getStackTrace(new Exception());
     }
 
 
@@ -989,15 +992,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
         }
     }
 
-    private void swallowException (Exception e) {
-        // Need the exception in string form to prevent the retention of
-        // references to classes in the stack trace that could trigger a memory
-        // leak in a container environment
-        Writer w = new StringWriter();
-        PrintWriter pw = new PrintWriter(w);
-        e.printStackTrace(pw);
-        String msg = w.toString();
-
+    private void swallowException(Exception e) {
+        String msg = getStackTrace(e);
+        
         if (oname != null) {
             Notification n = new Notification(NOTIFICATION_SWALLOWED_EXCEPTION,
                     oname, swallowedExcpetionCount.incrementAndGet(), msg);
@@ -1009,6 +1006,16 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
             swallowedExceptions.addLast(msg);
             swallowedExceptions.pollFirst();
         }
+    }
+
+    private String getStackTrace(Exception e) {
+        // Need the exception in string form to prevent the retention of
+        // references to classes in the stack trace that could trigger a memory
+        // leak in a container environment
+        Writer w = new StringWriter();
+        PrintWriter pw = new PrintWriter(w);
+        e.printStackTrace(pw);
+        return w.toString();
     }
 
     /**
@@ -1525,6 +1532,11 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
         return oname;
     }
     
+    @Override
+    public String getCreationStackTrace() {
+        return creationStackTrace;
+    }
+
     // --- inner classes ----------------------------------------------
 
     /**
@@ -1791,6 +1803,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
     
     private final ObjectName oname;
     private final NotificationBroadcasterSupport jmxNotificationSupport;
+    private final String creationStackTrace;
 
     private static final String ONAME_BASE =
         "org.apache.commoms.pool2:type=GenericObjectPool,name=";

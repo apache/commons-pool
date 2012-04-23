@@ -49,4 +49,5 @@ public interface GenericKeyedObjectPoolMBean<K> {
     long getMeanBorrowWaitTimeMillis();
     long getMaxBorrowWaitTimeMillis();
     String[] getSwallowedExceptions();
+    String getCreationStackTrace();
 }
