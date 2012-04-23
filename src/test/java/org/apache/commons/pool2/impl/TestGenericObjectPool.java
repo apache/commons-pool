@@ -102,7 +102,9 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         for (ObjectName name : result) {
             // Clean these up ready for the next test
             msg.append(name.toString());
-            msg.append(' ');
+            msg.append(" created via\n");
+            msg.append(mbs.getAttribute(name, "creationStackTrace"));
+            msg.append('\n');
             mbs.unregisterMBean(name);
         }
         Assert.assertEquals(msg.toString(), 0, registeredPoolCount);
