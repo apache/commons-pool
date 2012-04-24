@@ -836,7 +836,6 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @throws NoSuchElementException if a keyed object instance cannot be returned.
      */
     public T borrowObject(K key, long borrowMaxWait) throws Exception {
-
         assertOpen();
 
         PooledObject<T> p = null;
@@ -977,15 +976,14 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * </p>
      * 
      * @param key pool key
-     * @param t instance to return to the keyed pool
-     * @throws Exception
+     * @param obj instance to return to the keyed pool
      */
     @Override
-    public void returnObject(K key, T t) throws Exception {
+    public void returnObject(K key, T obj) {
 
         ObjectDeque<T> objectDeque = poolMap.get(key);
 
-        PooledObject<T> p = objectDeque.getAllObjects().get(t);
+        PooledObject<T> p = objectDeque.getAllObjects().get(obj);
 
         if (p == null) {
             throw new IllegalStateException(
@@ -995,7 +993,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         long activeTime = p.getActiveTimeMillis();
 
         if (getTestOnReturn()) {
-            if (!factory.validateObject(key, t)) {
+            if (!factory.validateObject(key, obj)) {
                 try {
                     destroy(key, p, true);
                 } catch (Exception e) {
@@ -1007,7 +1005,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         }
 
         try {
-            factory.passivateObject(key, t);
+            factory.passivateObject(key, obj);
         } catch (Exception e1) {
             swallowException(e1);
             try {
@@ -1049,6 +1047,13 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         updateStatsReturn(activeTime);
     }
 
+    private void updateStatsReturn(long activeTime) {
+        returnedCount.incrementAndGet();
+        synchronized (activeTimes) {
+            activeTimes.add(Long.valueOf(activeTime));
+            activeTimes.poll();
+        }
+    }
      
     private void swallowException(Exception e) {
         String msg = getStackTrace(e);
@@ -1076,14 +1081,6 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         return w.toString();
     }
          
-    private void updateStatsReturn(long activeTime) {
-        returnedCount.incrementAndGet();
-        synchronized (activeTimes) {
-            activeTimes.add(Long.valueOf(activeTime));
-            activeTimes.poll();
-        }
-    }
-
 
     /**
      * {@inheritDoc}
