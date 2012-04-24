@@ -87,7 +87,7 @@
         public Foo()
         {
             {@link org.apache.commons.pool2.PoolableObjectFactory PoolableObjectFactory&lt;Map&lt;Object,Object&gt;&gt;} factory = new HashMapFactory();
-            pool = new StackObjectPool&lt;Map&lt;Object,Object&gt;&gt;(factory, 1000);
+            pool = new {@link org.apache.commons.pool2.impl.GenericObjectPool GenericObjectPool}&lt;Map&lt;Object,Object&gt;&gt;(factory);
         }
 
         public doSomething()
