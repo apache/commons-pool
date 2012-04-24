@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimerTask;
 
+import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
 
 import org.apache.commons.pool2.impl.GenericKeyedObjectPool;
@@ -56,10 +57,9 @@ public class TestPoolUtils {
     /** Sleep time to let the minIdle tests run CHECK_COUNT times. */
     private static final int CHECK_SLEEP_PERIOD = CHECK_PERIOD * (CHECK_COUNT - 1) + CHECK_PERIOD / 2;
 
-    @SuppressWarnings("unused")
     @Test
     public void testJavaBeanInstantiation() {
-        new PoolUtils();
+        Assert.assertNotNull(new PoolUtils());
     }
 
     @Test
