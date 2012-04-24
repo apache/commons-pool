@@ -16,9 +16,15 @@
  */
 package org.apache.commons.pool2.impl;
 
+/**
+ * Defines the methods that will be made available via JMX.
+ */
 public interface GenericObjectPoolMBean {
-    // Expose standard attributes via JMX
+    // Getters for configuration settings
     boolean getBlockWhenExhausted();
+    /**
+     * See {@link GenericObjectPool#getLifo()}
+     */
     boolean getLifo();
     int getMaxIdle();
     int getMaxTotal();
@@ -33,7 +39,7 @@ public interface GenericObjectPoolMBean {
     boolean getTestWhileIdle();
     long getTimeBetweenEvictionRunsMillis();
     boolean isClosed();
-    // JMX specific attributes
+    // Getters for monitoring attributes
     long getBorrowedCount();
     long getReturnedCount();
     long getCreatedCount();

@@ -18,9 +18,15 @@ package org.apache.commons.pool2.impl;
 
 import java.util.Map;
 
+/**
+ * Defines the methods that will be made available via JMX.
+ */
 public interface GenericKeyedObjectPoolMBean<K> {
-    // Expose standard attributes via JMX
+    // Expose getters for configuration settings
     boolean getBlockWhenExhausted();
+    /**
+     * See {@link GenericKeyedObjectPool#getLifo()}
+     */
     boolean getLifo();
     int getMaxIdlePerKey();
     int getMaxTotal();
@@ -36,7 +42,7 @@ public interface GenericKeyedObjectPoolMBean<K> {
     boolean getTestWhileIdle();
     long getTimeBetweenEvictionRunsMillis();
     boolean isClosed();
-    // JMX specific attributes
+    // Expose getters for monitoring attributes
     Map<String,Integer> getNumActivePerKey();
     long getBorrowedCount();
     long getReturnedCount();
