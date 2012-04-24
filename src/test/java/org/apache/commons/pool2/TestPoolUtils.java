@@ -56,6 +56,7 @@ public class TestPoolUtils {
     /** Sleep time to let the minIdle tests run CHECK_COUNT times. */
     private static final int CHECK_SLEEP_PERIOD = CHECK_PERIOD * (CHECK_COUNT - 1) + CHECK_PERIOD / 2;
 
+    @SuppressWarnings("unused")
     @Test
     public void testJavaBeanInstantiation() {
         new PoolUtils();
@@ -496,7 +497,7 @@ public class TestPoolUtils {
 
         Thread.sleep(10000); // 10 seconds
 
-        
+
         o = pool.borrowObject();
         expectedMethods.add("borrowObject");
         pool.returnObject(o);
