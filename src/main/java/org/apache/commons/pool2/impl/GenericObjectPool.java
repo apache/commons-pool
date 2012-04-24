@@ -1111,6 +1111,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
             startEvictor(-1L);
 
             super.close();
+            // This clear removes any idle objects
             clear();
             if (oname != null) {
                 ManagementFactory.getPlatformMBeanServer().unregisterMBean(
