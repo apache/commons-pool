@@ -62,7 +62,6 @@ import java.util.NoSuchElementException;
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  * @see KeyedPoolableObjectFactory
- * @see KeyedObjectPoolFactory
  * @see ObjectPool
  * @see org.apache.commons.pool2.impl.GenericKeyedObjectPool GenericKeyedObjectPool
  * @since Pool 1.0
