@@ -1756,7 +1756,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
     /**
      * Policy that determines if an object is eligible for eviction or not.
      */
-    private EvictionPolicy<T> evictionPolicy = new DefaultEvictionPolicy<T>();
+    private EvictionPolicy<T> evictionPolicy;
 
     /** Object used to ensure thread safety of eviction process */
     private final Object evictionLock = new Object();
