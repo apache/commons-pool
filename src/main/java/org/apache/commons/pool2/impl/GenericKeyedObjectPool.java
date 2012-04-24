@@ -735,21 +735,21 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      *         as FIFO queues 
      * @since 1.4
      */
-     @Override
+    @Override
     public boolean getLifo() {
-         return lifo;
-     }
+        return lifo;
+    }
 
-     /**
-      * Sets the LIFO property of the pools.
-      *
-      * @param lifo the new value for the lifo property
-      * @since 1.4
-      * @see #getLifo()
-      */
-     public void setLifo(boolean lifo) {
-         this.lifo = lifo;
-     }
+    /**
+     * Sets the LIFO property of the pools.
+     *
+     * @param lifo the new value for the lifo property
+     * @since 1.4
+     * @see #getLifo()
+     */
+    public void setLifo(boolean lifo) {
+        this.lifo = lifo;
+    }
 
     /**
      * Sets the configuration.
@@ -776,15 +776,15 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         setEvictionPolicyClassName(conf.getEvictionPolicyClassName());
     }
 
-     /**
-      * Obtain a reference to the factory used to create, destroy and validate
-      * the objects used by this pool.
-      *
-      * @return the factory
-      */
-     public KeyedPoolableObjectFactory<K, T> getFactory() {
-         return factory;
-     }
+    /**
+     * Obtain a reference to the factory used to create, destroy and validate
+     * the objects used by this pool.
+     *
+     * @return the factory
+     */
+    public KeyedPoolableObjectFactory<K, T> getFactory() {
+        return factory;
+    }
 
 
     //-- ObjectPool methods ------------------------------------------
@@ -960,96 +960,96 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
     }
 
 
-     /**
-      * <p>Returns an object to a keyed pool.</p>
-      *
-      * <p>For the pool to function correctly, the object instance <strong>must</strong> have been borrowed
-      * from the pool (under the same key) and not yet returned. Repeated <code>returnObject</code> calls on
-      * the same object/key pair (with no <code>borrowObject</code> calls in between) will result in multiple
-      * references to the object in the idle instance pool.</p>
-      *
-      * <p>If {@link #getMaxIdlePerKey() maxIdle} is set to a positive value and the number of idle instances under the given
-      * key has reached this value, the returning instance is destroyed.</p>
-      *
-      * <p>If {@link #getTestOnReturn() testOnReturn} == true, the returning instance is validated before being returned
-      * to the idle instance pool under the given key.  In this case, if validation fails, the instance is destroyed.</p>
-      *
-      * <p>
-      * Exceptions encountered destroying objects for any reason are swallowed.
-      * </p>
-      * 
-      * @param key pool key
-      * @param t instance to return to the keyed pool
-      * @throws Exception
-      */
-     @Override
+    /**
+     * <p>Returns an object to a keyed pool.</p>
+     *
+     * <p>For the pool to function correctly, the object instance <strong>must</strong> have been borrowed
+     * from the pool (under the same key) and not yet returned. Repeated <code>returnObject</code> calls on
+     * the same object/key pair (with no <code>borrowObject</code> calls in between) will result in multiple
+     * references to the object in the idle instance pool.</p>
+     *
+     * <p>If {@link #getMaxIdlePerKey() maxIdle} is set to a positive value and the number of idle instances under the given
+     * key has reached this value, the returning instance is destroyed.</p>
+     *
+     * <p>If {@link #getTestOnReturn() testOnReturn} == true, the returning instance is validated before being returned
+     * to the idle instance pool under the given key.  In this case, if validation fails, the instance is destroyed.</p>
+     *
+     * <p>
+     * Exceptions encountered destroying objects for any reason are swallowed.
+     * </p>
+     * 
+     * @param key pool key
+     * @param t instance to return to the keyed pool
+     * @throws Exception
+     */
+    @Override
     public void returnObject(K key, T t) throws Exception {
 
-         ObjectDeque<T> objectDeque = poolMap.get(key);
+        ObjectDeque<T> objectDeque = poolMap.get(key);
 
-         PooledObject<T> p = objectDeque.getAllObjects().get(t);
+        PooledObject<T> p = objectDeque.getAllObjects().get(t);
 
-         if (p == null) {
-             throw new IllegalStateException(
-                     "Returned object not currently part of this pool");
-         }
+        if (p == null) {
+            throw new IllegalStateException(
+                    "Returned object not currently part of this pool");
+        }
 
-         long activeTime = p.getActiveTimeMillis();
+        long activeTime = p.getActiveTimeMillis();
 
-         if (getTestOnReturn()) {
-             if (!factory.validateObject(key, t)) {
-                 try {
-                     destroy(key, p, true);
-                 } catch (Exception e) {
-                     swallowException(e);
-                 }
-                 updateStatsReturn(activeTime);
-                 return;
-             }
-         }
+        if (getTestOnReturn()) {
+            if (!factory.validateObject(key, t)) {
+                try {
+                    destroy(key, p, true);
+                } catch (Exception e) {
+                    swallowException(e);
+                }
+                updateStatsReturn(activeTime);
+                return;
+            }
+        }
 
-         try {
-             factory.passivateObject(key, t);
-         } catch (Exception e1) {
-             swallowException(e1);
-             try {
-                 destroy(key, p, true);
-             } catch (Exception e) {
-                 swallowException(e);
-             }
-             updateStatsReturn(activeTime);
-             return;
-         }
+        try {
+            factory.passivateObject(key, t);
+        } catch (Exception e1) {
+            swallowException(e1);
+            try {
+                destroy(key, p, true);
+            } catch (Exception e) {
+                swallowException(e);
+            }
+            updateStatsReturn(activeTime);
+            return;
+        }
 
-         if (!p.deallocate()) {
-             throw new IllegalStateException(
-                     "Object has already been retured to this pool");
-         }
+        if (!p.deallocate()) {
+            throw new IllegalStateException(
+                    "Object has already been retured to this pool");
+        }
 
-         int maxIdle = getMaxIdlePerKey();
-         LinkedBlockingDeque<PooledObject<T>> idleObjects =
-             objectDeque.getIdleObjects();
+        int maxIdle = getMaxIdlePerKey();
+        LinkedBlockingDeque<PooledObject<T>> idleObjects =
+            objectDeque.getIdleObjects();
 
-         if (isClosed() || maxIdle > -1 && maxIdle <= idleObjects.size()) {
-             try {
-                 destroy(key, p, true);
-             } catch (Exception e) {
-                 swallowException(e);
-             }
-         } else {
-             if (getLifo()) {
-                 idleObjects.addFirst(p);
-             } else {
-                 idleObjects.addLast(p);
-             }
-         }
+        if (isClosed() || maxIdle > -1 && maxIdle <= idleObjects.size()) {
+            try {
+                destroy(key, p, true);
+            } catch (Exception e) {
+                swallowException(e);
+            }
+        } else {
+            if (getLifo()) {
+                idleObjects.addFirst(p);
+            } else {
+                idleObjects.addLast(p);
+            }
+        }
 
-         if (hasBorrowWaiters()) {
-             reuseCapacity();
-         }
+        if (hasBorrowWaiters()) {
+            reuseCapacity();
+        }
 
-         updateStatsReturn(activeTime);
-     }
+        updateStatsReturn(activeTime);
+    }
 
      
     private void swallowException(Exception e) {
@@ -1078,264 +1078,264 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         return w.toString();
     }
          
-     private void updateStatsReturn(long activeTime) {
-         returnedCount.incrementAndGet();
-         synchronized (activeTimes) {
-             activeTimes.add(Long.valueOf(activeTime));
-             activeTimes.poll();
-         }
-     }
+    private void updateStatsReturn(long activeTime) {
+        returnedCount.incrementAndGet();
+        synchronized (activeTimes) {
+            activeTimes.add(Long.valueOf(activeTime));
+            activeTimes.poll();
+        }
+    }
 
 
-     /**
-      * {@inheritDoc}
-      * <p>Activation of this method decrements the active count associated with
-      * the given keyed pool  and attempts to destroy <code>obj.</code></p>
-      *
-      * @param key pool key
-      * @param obj instance to invalidate
-      * @throws Exception if an exception occurs destroying the object
-      * @throws IllegalStateException if obj does not belong to the pool
-      * under the given key
-      */
-     @Override
+    /**
+     * {@inheritDoc}
+     * <p>Activation of this method decrements the active count associated with
+     * the given keyed pool  and attempts to destroy <code>obj.</code></p>
+     *
+     * @param key pool key
+     * @param obj instance to invalidate
+     * @throws Exception if an exception occurs destroying the object
+     * @throws IllegalStateException if obj does not belong to the pool
+     * under the given key
+     */
+    @Override
     public void invalidateObject(K key, T obj) throws Exception {
 
-         ObjectDeque<T> objectDeque = poolMap.get(key);
+        ObjectDeque<T> objectDeque = poolMap.get(key);
 
-         PooledObject<T> p = objectDeque.getAllObjects().get(obj);
-         if (p == null) {
-             throw new IllegalStateException(
-                     "Object not currently part of this pool");
-         }
-         destroy(key, p, true);
-     }
+        PooledObject<T> p = objectDeque.getAllObjects().get(obj);
+        if (p == null) {
+            throw new IllegalStateException(
+                    "Object not currently part of this pool");
+        }
+        destroy(key, p, true);
+    }
 
 
-     /**
-      * Clears any objects sitting idle in the pool by removing them from the
-      * idle instance pool and then invoking the configured PoolableObjectFactory's
-      * {@link KeyedPoolableObjectFactory#destroyObject(Object, Object)} method on
-      * each idle instance.
-      *
-      * <p> Implementation notes:
-      * <ul><li>This method does not destroy or effect in any way instances that are
-      * checked out when it is invoked.</li>
-      * <li>Invoking this method does not prevent objects being
-      * returned to the idle instance pool, even during its execution. It locks
-      * the pool only during instance removal. Additional instances may be returned
-      * while removed items are being destroyed.</li>
-      * <li>Exceptions encountered destroying idle instances are swallowed.</li></ul></p>
-      */
-     @Override
+    /**
+     * Clears any objects sitting idle in the pool by removing them from the
+     * idle instance pool and then invoking the configured PoolableObjectFactory's
+     * {@link KeyedPoolableObjectFactory#destroyObject(Object, Object)} method on
+     * each idle instance.
+     *
+     * <p> Implementation notes:
+     * <ul><li>This method does not destroy or effect in any way instances that are
+     * checked out when it is invoked.</li>
+     * <li>Invoking this method does not prevent objects being
+     * returned to the idle instance pool, even during its execution. It locks
+     * the pool only during instance removal. Additional instances may be returned
+     * while removed items are being destroyed.</li>
+     * <li>Exceptions encountered destroying idle instances are swallowed.</li></ul></p>
+     */
+    @Override
     public void clear() {
-         Iterator<K> iter = poolMap.keySet().iterator();
+        Iterator<K> iter = poolMap.keySet().iterator();
 
-         while (iter.hasNext()) {
-             clear(iter.next());
-         }
-     }
+        while (iter.hasNext()) {
+            clear(iter.next());
+        }
+    }
 
 
-     /**
-      * Clears the specified pool, removing all pooled instances corresponding
-      * to the given <code>key</code>.
-      *
-      * @param key the key to clear
-      */
-     @Override
+    /**
+     * Clears the specified pool, removing all pooled instances corresponding
+     * to the given <code>key</code>.
+     *
+     * @param key the key to clear
+     */
+    @Override
     public void clear(K key) {
 
-         ObjectDeque<T> objectDeque = register(key);
+        ObjectDeque<T> objectDeque = register(key);
 
-         try {
-             LinkedBlockingDeque<PooledObject<T>> idleObjects =
-                     objectDeque.getIdleObjects();
+        try {
+            LinkedBlockingDeque<PooledObject<T>> idleObjects =
+                    objectDeque.getIdleObjects();
 
-             PooledObject<T> p = idleObjects.poll();
+            PooledObject<T> p = idleObjects.poll();
 
-             while (p != null) {
-                 try {
-                     destroy(key, p, true);
-                 } catch (Exception e) {
-                     swallowException(e);
-                 }
-                 p = idleObjects.poll();
-             }
-         } finally {
-             deregister(key);
-         }
-     }
+            while (p != null) {
+                try {
+                    destroy(key, p, true);
+                } catch (Exception e) {
+                    swallowException(e);
+                }
+                p = idleObjects.poll();
+            }
+        } finally {
+            deregister(key);
+        }
+    }
 
 
-     /**
-      * Returns the total number of instances current borrowed from this pool but not yet returned.
-      *
-      * @return the total number of instances currently borrowed from this pool
-      */
-     @Override
+    /**
+     * Returns the total number of instances current borrowed from this pool but not yet returned.
+     *
+     * @return the total number of instances currently borrowed from this pool
+     */
+    @Override
     public int getNumActive() {
-         return numTotal.get() - getNumIdle();
-     }
+        return numTotal.get() - getNumIdle();
+    }
 
-     /**
-      * Returns the total number of instances currently idle in this pool.
-      *
-      * @return the total number of instances currently idle in this pool
-      */
-     @Override
+    /**
+     * Returns the total number of instances currently idle in this pool.
+     *
+     * @return the total number of instances currently idle in this pool
+     */
+    @Override
     public int getNumIdle() {
-         Iterator<ObjectDeque<T>> iter = poolMap.values().iterator();
-         int result = 0;
+        Iterator<ObjectDeque<T>> iter = poolMap.values().iterator();
+        int result = 0;
 
-         while (iter.hasNext()) {
-             result += iter.next().getIdleObjects().size();
-         }
+        while (iter.hasNext()) {
+            result += iter.next().getIdleObjects().size();
+        }
 
-         return result;
-     }
+        return result;
+    }
 
-     /**
-      * Returns the number of instances currently borrowed from but not yet returned
-      * to the pool corresponding to the given <code>key</code>.
-      *
-      * @param key the key to query
-      * @return the number of instances corresponding to the given <code>key</code> currently borrowed in this pool
-      */
-     @Override
+    /**
+     * Returns the number of instances currently borrowed from but not yet returned
+     * to the pool corresponding to the given <code>key</code>.
+     *
+     * @param key the key to query
+     * @return the number of instances corresponding to the given <code>key</code> currently borrowed in this pool
+     */
+    @Override
     public int getNumActive(K key) {
-         final ObjectDeque<T> objectDeque = poolMap.get(key);
-         if (objectDeque != null) {
-             return objectDeque.getAllObjects().size() -
-                     objectDeque.getIdleObjects().size();
-         } else {
-             return 0;
-         }
-     }
+        final ObjectDeque<T> objectDeque = poolMap.get(key);
+        if (objectDeque != null) {
+            return objectDeque.getAllObjects().size() -
+                    objectDeque.getIdleObjects().size();
+        } else {
+            return 0;
+        }
+    }
 
-     /**
-      * Returns the number of instances corresponding to the given <code>key</code> currently idle in this pool.
-      *
-      * @param key the key to query
-      * @return the number of instances corresponding to the given <code>key</code> currently idle in this pool
-      */
-     @Override
+    /**
+     * Returns the number of instances corresponding to the given <code>key</code> currently idle in this pool.
+     *
+     * @param key the key to query
+     * @return the number of instances corresponding to the given <code>key</code> currently idle in this pool
+     */
+    @Override
     public int getNumIdle(K key) {
-         final ObjectDeque<T> objectDeque = poolMap.get(key);
-         return objectDeque != null ? objectDeque.getIdleObjects().size() : 0;
-     }
+        final ObjectDeque<T> objectDeque = poolMap.get(key);
+        return objectDeque != null ? objectDeque.getIdleObjects().size() : 0;
+    }
 
 
-     /**
-      * <p>Closes the keyed object pool.  Once the pool is closed, {@link #borrowObject(Object)}
-      * will fail with IllegalStateException, but {@link #returnObject(Object, Object)} and
-      * {@link #invalidateObject(Object, Object)} will continue to work, with returned objects
-      * destroyed on return.</p>
-      *
-      * <p>Destroys idle instances in the pool by invoking {@link #clear()}.</p>
-      *
-      * @throws Exception
-      */
-     @Override
+    /**
+     * <p>Closes the keyed object pool.  Once the pool is closed, {@link #borrowObject(Object)}
+     * will fail with IllegalStateException, but {@link #returnObject(Object, Object)} and
+     * {@link #invalidateObject(Object, Object)} will continue to work, with returned objects
+     * destroyed on return.</p>
+     *
+     * <p>Destroys idle instances in the pool by invoking {@link #clear()}.</p>
+     *
+     * @throws Exception
+     */
+    @Override
     public void close() throws Exception {
-         if (isClosed()) {
-             return;
-         }
+        if (isClosed()) {
+            return;
+        }
 
-         synchronized (closeLock) {
-             if (isClosed()) {
-                 return;
-             }
+        synchronized (closeLock) {
+            if (isClosed()) {
+                return;
+            }
 
-             // Stop the evictor before the pool is closed since evict() calls
-             // assertOpen()
-             startEvictor(-1L);
+            // Stop the evictor before the pool is closed since evict() calls
+            // assertOpen()
+            startEvictor(-1L);
 
-             closed = true;
-             // This clear removes any idle objects
-             clear();
-             if (oname != null) {
-                 ManagementFactory.getPlatformMBeanServer().unregisterMBean(
-                         oname);
-             }
+            closed = true;
+            // This clear removes any idle objects
+            clear();
+            if (oname != null) {
+                ManagementFactory.getPlatformMBeanServer().unregisterMBean(
+                        oname);
+            }
 
-             // Release any threads that were waiting for an object
-             Iterator<ObjectDeque<T>> iter = poolMap.values().iterator();
-             while (iter.hasNext()) {
-                 iter.next().getIdleObjects().interuptTakeWaiters();
-             }
-             // This clear cleans up the keys now any waiting threads have been
-             // interrupted
-             clear();
-         }
+            // Release any threads that were waiting for an object
+            Iterator<ObjectDeque<T>> iter = poolMap.values().iterator();
+            while (iter.hasNext()) {
+                iter.next().getIdleObjects().interuptTakeWaiters();
+            }
+            // This clear cleans up the keys now any waiting threads have been
+            // interrupted
+            clear();
+        }
 
-     }
+    }
 
-     /**
-      * Has this pool instance been closed.
-      * @return <code>true</code> when this pool has been closed.
-      * @since Pool 1.4
-      */
-     @Override
+    /**
+     * Has this pool instance been closed.
+     * @return <code>true</code> when this pool has been closed.
+     * @since Pool 1.4
+     */
+    @Override
     public boolean isClosed() {
-         return closed;
-     }
+        return closed;
+    }
 
-     /**
-      * Throws an <code>IllegalStateException</code> when this pool has been closed.
-      * @throws IllegalStateException when this pool has been closed.
-      * @see #isClosed()
-      * @since Pool 1.4
-      */
-     protected void assertOpen() throws IllegalStateException {
-         if(isClosed()) {
-             throw new IllegalStateException("Pool not open");
-         }
-     }
+    /**
+     * Throws an <code>IllegalStateException</code> when this pool has been closed.
+     * @throws IllegalStateException when this pool has been closed.
+     * @see #isClosed()
+     * @since Pool 1.4
+     */
+    protected void assertOpen() throws IllegalStateException {
+        if(isClosed()) {
+            throw new IllegalStateException("Pool not open");
+        }
+    }
 
-     /** Whether or not the pool is closed */
-     private volatile boolean closed = false;
+    /** Whether or not the pool is closed */
+    private volatile boolean closed = false;
 
 
-     /**
-      * Clears oldest 15% of objects in pool.  The method sorts the
-      * objects into a TreeMap and then iterates the first 15% for removal.
-      *
-      * @since Pool 1.3
-      */
-     public void clearOldest() {
+    /**
+     * Clears oldest 15% of objects in pool.  The method sorts the
+     * objects into a TreeMap and then iterates the first 15% for removal.
+     *
+     * @since Pool 1.3
+     */
+    public void clearOldest() {
 
-         // build sorted map of idle objects
-         final Map<PooledObject<T>, K> map = new TreeMap<PooledObject<T>, K>();
+        // build sorted map of idle objects
+        final Map<PooledObject<T>, K> map = new TreeMap<PooledObject<T>, K>();
 
-         for (K k : poolMap.keySet()) {
-             final LinkedBlockingDeque<PooledObject<T>> idleObjects =
-                 poolMap.get(k).getIdleObjects();
-             for (PooledObject<T> p : idleObjects) {
-                 // each item into the map using the PooledObject object as the
-                 // key. It then gets sorted based on the idle time
-                 map.put(p, k);
-             }
-         }
+        for (K k : poolMap.keySet()) {
+            final LinkedBlockingDeque<PooledObject<T>> idleObjects =
+                poolMap.get(k).getIdleObjects();
+            for (PooledObject<T> p : idleObjects) {
+                // each item into the map using the PooledObject object as the
+                // key. It then gets sorted based on the idle time
+                map.put(p, k);
+            }
+        }
 
-         // Now iterate created map and kill the first 15% plus one to account
-         // for zero
-         int itemsToRemove = ((int) (map.size() * 0.15)) + 1;
-         Iterator<Map.Entry<PooledObject<T>, K>> iter =
-             map.entrySet().iterator();
+        // Now iterate created map and kill the first 15% plus one to account
+        // for zero
+        int itemsToRemove = ((int) (map.size() * 0.15)) + 1;
+        Iterator<Map.Entry<PooledObject<T>, K>> iter =
+            map.entrySet().iterator();
 
-         while (iter.hasNext() && itemsToRemove > 0) {
-             Map.Entry<PooledObject<T>, K> entry = iter.next();
-             // kind of backwards on naming.  In the map, each key is the
-             // PooledObject because it has the ordering with the timestamp
-             // value.  Each value that the key references is the key of the
-             // list it belongs to.
-             K key = entry.getValue();
-             PooledObject<T> p = entry.getKey();
-             // Assume the destruction succeeds
-             boolean destroyed = true;
-             try {
-                 destroyed = destroy(key, p, false);
+        while (iter.hasNext() && itemsToRemove > 0) {
+            Map.Entry<PooledObject<T>, K> entry = iter.next();
+            // kind of backwards on naming.  In the map, each key is the
+            // PooledObject because it has the ordering with the timestamp
+            // value.  Each value that the key references is the key of the
+            // list it belongs to.
+            K key = entry.getValue();
+            PooledObject<T> p = entry.getKey();
+            // Assume the destruction succeeds
+            boolean destroyed = true;
+            try {
+                destroyed = destroy(key, p, false);
             } catch (Exception e) {
                 swallowException(e);
             }
