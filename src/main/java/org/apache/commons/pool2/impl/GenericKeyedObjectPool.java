@@ -211,8 +211,6 @@ import org.apache.commons.pool2.PoolUtils;
 public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
     GenericKeyedObjectPoolMBean<K>, NotificationEmitter {
 
-    //--- constructors -----------------------------------------------
-
     /**
      * Create a new <code>GenericKeyedObjectPool</code> using defaults.
      */
@@ -291,8 +289,6 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         // Populate the creation stack trace
         this.creationStackTrace = getStackTrace(new Exception());
     }
-
-    //--- configuration methods --------------------------------------
 
     /**
      * Returns the cap on the number of object instances allocated by the pool
@@ -784,8 +780,6 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         return factory;
     }
 
-
-    //-- ObjectPool methods ------------------------------------------
 
     /**
      * <p>Borrows an object from the keyed pool associated with the given
@@ -1758,34 +1752,6 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         }
     }
 
-
-    /**
-     * <p>Adds an object to the keyed pool.</p>
-     *
-     * <p>Validates the object if testOnReturn == true and passivates it before returning it to the pool.
-     * if validation or passivation fails, or maxIdle is set and there is no room in the pool, the instance
-     * is destroyed.</p>
-     *
-     * <p>Calls {@link #allocate()} on successful completion</p>
-     *
-     * @param key pool key
-     * @param p instance to add to the keyed pool
-     * @throws Exception
-     */
-    private void addIdleObject(K key, PooledObject<T> p) throws Exception {
-
-        if (p != null) {
-            factory.passivateObject(key, p.getObject());
-            LinkedBlockingDeque<PooledObject<T>> idleObjects =
-                    poolMap.get(key).getIdleObjects();
-            if (getLifo()) {
-                idleObjects.addFirst(p);
-            } else {
-                idleObjects.addLast(p);
-            }
-        }
-    }
-
     /**
      * Create an object using the {@link KeyedPoolableObjectFactory#makeObject factory},
      * passivate it, and then place it in the idle object pool.
@@ -1812,6 +1778,35 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
     }
 
     /**
+     * <p>Adds an object to the keyed pool.</p>
+     *
+     * <p>Validates the object if testOnReturn == true and passivates it before returning it to the pool.
+     * if validation or passivation fails, or maxIdle is set and there is no room in the pool, the instance
+     * is destroyed.</p>
+     *
+     * <p>Calls {@link #allocate()} on successful completion.</p>
+     *
+     * <p>Callers are responsible for registering and deregistering the key.</p>
+     * 
+     * @param key pool key
+     * @param p instance to add to the keyed pool
+     * @throws Exception
+     */
+    private void addIdleObject(K key, PooledObject<T> p) throws Exception {
+
+        if (p != null) {
+            factory.passivateObject(key, p.getObject());
+            LinkedBlockingDeque<PooledObject<T>> idleObjects =
+                    poolMap.get(key).getIdleObjects();
+            if (getLifo()) {
+                idleObjects.addFirst(p);
+            } else {
+                idleObjects.addLast(p);
+            }
+        }
+    }
+
+    /**
      * Registers a key for pool control and ensures that {@link #getMinIdlePerKey()}
      * idle instances are created.
      *
@@ -1821,8 +1816,6 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
     public void preparePool(K key) throws Exception {
         ensureMinIdle(key);
     }
-
-    //--- non-public methods ----------------------------------------
 
     /**
      * Start the eviction thread or service, or when
@@ -2201,6 +2194,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
 
     /**
      * The idle object evictor {@link TimerTask}.
+     * 
      * @see GenericKeyedObjectPool#setTimeBetweenEvictionRunsMillis
      */
     private class Evictor extends TimerTask {
@@ -2242,7 +2236,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         }
     }
 
-    //--- attributes -----------------------------------------------------------
+    //--- private attributes ---------------------------------------------------
 
     /**
      * The cap on the number of idle instances per key.
