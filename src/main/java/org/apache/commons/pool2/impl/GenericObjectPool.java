@@ -1565,7 +1565,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
         }
     }
 
-    // --- private attributes ---------------------------------------
+    // --- configuration attributes --------------------------------------------
 
     /**
      * The cap on the number of idle instances in the pool.
@@ -1711,9 +1711,10 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
         GenericObjectPoolConfig.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 
     private volatile boolean lifo = GenericObjectPoolConfig.DEFAULT_LIFO;
+    private final PoolableObjectFactory<T> factory;
 
-    /** My {@link PoolableObjectFactory}. */
-    final private PoolableObjectFactory<T> factory;
+
+    // --- internal attributes -------------------------------------------------
 
     /**
      * Class loader for evictor thread to use since in a J2EE or similar

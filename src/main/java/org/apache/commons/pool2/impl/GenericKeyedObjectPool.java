@@ -2236,7 +2236,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         }
     }
 
-    //--- private attributes ---------------------------------------------------
+    //--- configuration attributes ---------------------------------------------
 
     /**
      * The cap on the number of idle instances per key.
@@ -2392,9 +2392,10 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         GenericKeyedObjectPoolConfig.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 
     private boolean lifo = GenericKeyedObjectPoolConfig.DEFAULT_LIFO;
+    private final KeyedPoolableObjectFactory<K,T> factory;
 
-    /** My {@link KeyedPoolableObjectFactory}. */
-    final private KeyedPoolableObjectFactory<K,T> factory;
+
+    //--- internal attributes --------------------------------------------------
 
     /**
      * Class loader for evictor thread to use since in a J2EE or similar
