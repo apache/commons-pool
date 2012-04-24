@@ -280,12 +280,12 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
             this.jmxNotificationSupport = null;
         }
         this.oname = onameTemp;
-        
+
         // Populate the swallowed exceptions queue
         for (int i = 0; i < SWALLOWED_EXCEPTION_QUEUE_SIZE; i++) {
             swallowedExceptions.add(null);
         }
-        
+
         // Populate the creation stack trace
         this.creationStackTrace = getStackTrace(new Exception());
     }
@@ -440,7 +440,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * If the configured value of minIdlePerKey is greater than the configured
      * value for maxIdlePerKey then the value of maxIdlePerKey will be used
      * instead.
-     *   
+     *
      * @param poolSize - The minimum size of the each keyed pool
      * @since Pool 1.3
      * @see #getMinIdlePerKey
@@ -460,7 +460,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * If the configured value of minIdlePerKey is greater than the configured
      * value for maxIdlePerKey then the value of maxIdlePerKey will be used
      * instead.
-     *   
+     *
      * @return minimum size of the each keyed pool
      * @since Pool 1.3
      * @see #setTimeBetweenEvictionRunsMillis
@@ -726,7 +726,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      *
      * @return <code>true</code> if the pools are configured to act as LIFO
      *         queues or <code>false</code> if the pools are configured to act
-     *         as FIFO queues 
+     *         as FIFO queues
      * @since 1.4
      */
     @Override
@@ -968,7 +968,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * <p>
      * Exceptions encountered destroying objects for any reason are swallowed.
      * </p>
-     * 
+     *
      * @param key pool key
      * @param obj instance to return to the keyed pool
      */
@@ -1048,7 +1048,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
             activeTimes.poll();
         }
     }
-     
+
     private void swallowException(Exception e) {
         String msg = getStackTrace(e);
 
@@ -1057,7 +1057,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
                     oname, swallowedExcpetionCount.incrementAndGet(), msg);
             jmxNotificationSupport.sendNotification(n);
         }
-        
+
         // Add the exception the queue, removing the oldest
         synchronized (swallowedExceptions) {
             swallowedExceptions.addLast(msg);
@@ -1074,7 +1074,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         e.printStackTrace(pw);
         return w.toString();
     }
-         
+
 
     /**
      * {@inheritDoc}
@@ -1787,7 +1787,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * <p>Calls {@link #allocate()} on successful completion.</p>
      *
      * <p>Callers are responsible for registering and deregistering the key.</p>
-     * 
+     *
      * @param key pool key
      * @param p instance to add to the keyed pool
      * @throws Exception
@@ -2110,7 +2110,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         jmxNotificationSupport.removeNotificationListener(
                 listener, filter, handback);
     }
-    
+
     public ObjectName getJmxName() {
         return oname;
     }
@@ -2119,7 +2119,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
     public String getCreationStackTrace() {
         return creationStackTrace;
     }
-    
+
     //--- inner classes ----------------------------------------------
 
     /**
@@ -2194,7 +2194,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
 
     /**
      * The idle object evictor {@link TimerTask}.
-     * 
+     *
      * @see GenericKeyedObjectPool#setTimeBetweenEvictionRunsMillis
      */
     private class Evictor extends TimerTask {
@@ -2391,7 +2391,6 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
     private volatile long softMinEvictableIdleTimeMillis =
         GenericKeyedObjectPoolConfig.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 
-    /** Whether or not the pools behave as LIFO queues. */
     private boolean lifo = GenericKeyedObjectPoolConfig.DEFAULT_LIFO;
 
     /** My {@link KeyedPoolableObjectFactory}. */
@@ -2484,11 +2483,11 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
     private static final int SWALLOWED_EXCEPTION_QUEUE_SIZE = 10;
     private final Deque<String> swallowedExceptions = new LinkedList<String>();
     private final AtomicInteger swallowedExcpetionCount = new AtomicInteger(0);
-            
+
     private final ObjectName oname;
     private final NotificationBroadcasterSupport jmxNotificationSupport;
     private final String creationStackTrace;
-    
+
     private static final String ONAME_BASE =
         "org.apache.commoms.pool2:type=GenericKeyedObjectPool,name=";
 }
