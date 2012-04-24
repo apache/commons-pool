@@ -178,8 +178,6 @@ import org.apache.commons.pool2.PoolableObjectFactory;
 public class GenericObjectPool<T> extends BaseObjectPool<T>
         implements GenericObjectPoolMBean, NotificationEmitter {
 
-    // --- constructors -----------------------------------------------
-
     /**
      * Create a new <code>GenericObjectPool</code> using default.
      */
@@ -258,8 +256,6 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
         // Populate the creation stack trace
         this.creationStackTrace = getStackTrace(new Exception());
     }
-
-    // --- configuration methods --------------------------------------
 
     /**
      * Returns the maximum number of objects that can be allocated by the pool
@@ -726,8 +722,6 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
         return factory;
     }
 
-
-    // -- ObjectPool methods ------------------------------------------
 
     /**
      * <p>Borrows an object from the pool.</p>
@@ -1300,8 +1294,6 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
         PooledObject<T> p = create();
         addIdleObject(p);
     }
-
-    // --- non-public methods ----------------------------------------
 
     private void addIdleObject(PooledObject<T> p) throws Exception {
         if (p != null) {
