@@ -40,12 +40,16 @@
          {@link org.apache.commons.pool2.impl.SoftReferenceObjectPool
          SoftReferenceObjectPool} has no limit on the number of objects in the
          pool, but the garbage collector can remove idle objects from the pool
-         as needed.  There are also keyed versions of the first two.
+         as needed.  There is also a keyed version of
+         {@link org.apache.commons.pool2.impl.GenericObjectPool
+         GenericObjectPool},
+         {@link org.apache.commons.pool2.impl.GenericKeyedObjectPool
+         GenericKeyedObjectPool}
       </p>
       <p>
-         Here is a simple example of pooling <code>HashMap</code>'s. First
-         create an {@link org.apache.commons.pool2.ObjectPoolFactory
-         ObjectPoolFactory}
+         Here is a simple example of pooling <code>HashMap</code> instances.
+         First create an {@link org.apache.commons.pool2.PoolableObjectFactory
+         PoolableObjectFactory}
       </p>
 <pre>
     public class HashMapFactory
