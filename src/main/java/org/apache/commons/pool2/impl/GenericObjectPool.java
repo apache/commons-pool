@@ -181,12 +181,21 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
     // --- constructors -----------------------------------------------
 
     /**
-     * Create a new <tt>GenericObjectPool</tt> with default properties.
+     * Create a new <code>GenericObjectPool</code> using default.
      */
     public GenericObjectPool(PoolableObjectFactory<T> factory) {
         this(factory, new GenericObjectPoolConfig());
     }
 
+    /**
+     * Create a new <code>GenericObjectPool</code> using a specific
+     * configuration.
+     *
+     * @param config    The configuration to use for this pool instance. The
+     *                  configuration is used by value. Subsequent changes to
+     *                  the configuration object will not be reflected in the
+     *                  pool.
+     */
     public GenericObjectPool(PoolableObjectFactory<T> factory,
             GenericObjectPoolConfig config) {
         this.factory = factory;
@@ -249,9 +258,6 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
         // Populate the creation stack trace
         this.creationStackTrace = getStackTrace(new Exception());
     }
-
-
-    // --- public methods ---------------------------------------------
 
     // --- configuration methods --------------------------------------
 
