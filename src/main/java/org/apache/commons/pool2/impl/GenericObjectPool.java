@@ -247,12 +247,12 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
             this.jmxNotificationSupport = null;
         }
         this.oname = onameTemp;
-        
+
         // Populate the swallowed exceptions queue
         for (int i = 0; i < SWALLOWED_EXCEPTION_QUEUE_SIZE; i++) {
             swallowedExceptions.add(null);
         }
-        
+
         // Populate the creation stack trace
         this.creationStackTrace = getStackTrace(new Exception());
     }
@@ -381,7 +381,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * <code>timeBetweenEvictionRunsMillis <= 0</code>).
      * <p>
      * If the configured value of minIdle is greater than the configured value
-     * for maxIdle then the value of maxIdle will be used instead.  
+     * for maxIdle then the value of maxIdle will be used instead.
      *
      * @param minIdle
      *            The minimum number of objects.
@@ -398,7 +398,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
      * created when: numActive + numIdle >= maxActive)
      * <p>
      * If the configured value of minIdle is greater than the configured value
-     * for maxIdle then the value of maxIdle will be used instead.  
+     * for maxIdle then the value of maxIdle will be used instead.
      *
      * @return The minimum number of objects.
      * @see #setMinIdle
@@ -725,7 +725,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
 
     /**
      * <p>Borrows an object from the pool.</p>
-     * 
+     *
      * <p>If there is one or more idle instance available in the pool, then an
      * idle instance will be selected based on the value of {@link #getLifo()},
      * activated and returned. If activation fails, or {@link #getTestOnBorrow()
@@ -979,13 +979,13 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
 
     private void swallowException(Exception e) {
         String msg = getStackTrace(e);
-        
+
         if (oname != null) {
             Notification n = new Notification(NOTIFICATION_SWALLOWED_EXCEPTION,
                     oname, swallowedExcpetionCount.incrementAndGet(), msg);
             jmxNotificationSupport.sendNotification(n);
         }
-        
+
         // Add the exception the queue, removing the oldest
         synchronized (swallowedExceptions) {
             swallowedExceptions.addLast(msg);
@@ -1515,7 +1515,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
     public ObjectName getJmxName() {
         return oname;
     }
-    
+
     @Override
     public String getCreationStackTrace() {
         return creationStackTrace;
@@ -1710,7 +1710,6 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
     private volatile long softMinEvictableIdleTimeMillis =
         GenericObjectPoolConfig.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 
-    /** Whether or not the pool behaves as a LIFO queue. */
     private volatile boolean lifo = GenericObjectPoolConfig.DEFAULT_LIFO;
 
     /** My {@link PoolableObjectFactory}. */
@@ -1784,7 +1783,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
     private static final int SWALLOWED_EXCEPTION_QUEUE_SIZE = 10;
     private final Deque<String> swallowedExceptions = new LinkedList<String>();
     private final AtomicInteger swallowedExcpetionCount = new AtomicInteger(0);
-    
+
     private final ObjectName oname;
     private final NotificationBroadcasterSupport jmxNotificationSupport;
     private final String creationStackTrace;
