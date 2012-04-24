@@ -1727,8 +1727,8 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
     /**
      * Iterates through all the known keys and creates any necessary objects to maintain
      * the minimum level of pooled objects.
-     * @see #getMinIdle
-     * @see #setMinIdle
+     * @see #getMinIdlePerKey
+     * @see #setMinIdlePerKey
      * @throws Exception If there was an error whilst creating the pooled objects.
      */
     private void ensureMinIdle() throws Exception {
@@ -2263,15 +2263,15 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
 
     /**
      * The cap on the number of idle instances per key.
-     * @see #setMaxIdle
-     * @see #getMaxIdle
+     * @see #setMaxIdlePerKey
+     * @see #getMaxIdlePerKey
      */
     private int maxIdlePerKey = GenericKeyedObjectPoolConfig.DEFAULT_MAX_IDLE_PER_KEY;
 
     /**
      * The minimum no of idle objects per key.
-     * @see #setMinIdle
-     * @see #getMinIdle
+     * @see #setMinIdlePerKey
+     * @see #getMinIdlePerKey
      */
     private volatile int minIdlePerKey =
         GenericKeyedObjectPoolConfig.DEFAULT_MIN_IDLE_PER_KEY;
