@@ -17,20 +17,17 @@
 package org.apache.commons.pool2.impl;
 
 /**
- * Provides the common configuration attributes used by object pool
- * configurations.
+ * Provides the implementation for the common attributes shared by the
+ * sub-classes.
  * <p>
- * This class is not thread-safe; it is only intended to be used to provide
- * attributes used when creating a pool.
+ * This class is not thread-safe.
  */
 public abstract class BaseObjectPoolConfig implements Cloneable {
 
     /**
-     * The default LIFO status. True means that borrowObject returns the most
-     * recently used ("last in") idle object in the pool (if there are idle
-     * instances available). False means that the pool behaves as a FIFO queue -
-     * objects are taken from the idle object pool in the order that they are
-     * returned to the pool.
+     * The default LIFO status.
+     * @see GenericObjectPool#getLifo()
+     * @see GenericKeyedObjectPool#getLifo()
      */
     public static final boolean DEFAULT_LIFO = true;
 
@@ -96,7 +93,7 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
      * The default policy that will be used to evict objects from the pool.
      */
     public static final String DEFAULT_EVICTION_POLICY_CLASS_NAME =
-            DefaultEvictionPolicy.class.getName();
+            "org.apache.commons.pool2.impl.DefaultEvictionPolicy";
 
     private boolean lifo = DEFAULT_LIFO;
 
@@ -128,10 +125,20 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
 
     private String jmxNamePrefix = DEFAULT_JMX_NAME_PREFIX;
 
+    /**
+     * Get the LIFO status for pools created with this configuration instance.
+     * @see GenericObjectPool#getLifo()
+     * @see GenericKeyedObjectPool#getLifo()
+     */
     public boolean getLifo() {
         return lifo;
     }
 
+    /**
+     * Set the LIFO status for pools created with this configuration instance.
+     * @see GenericObjectPool#getLifo()
+     * @see GenericKeyedObjectPool#getLifo()
+     */
     public void setLifo(boolean lifo) {
         this.lifo = lifo;
     }

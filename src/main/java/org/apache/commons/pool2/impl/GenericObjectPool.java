@@ -157,17 +157,6 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  * </ul>
  * <p>
  * <p>
- * The pool can be configured to behave as a LIFO queue with respect to idle
- * objects - always returning the most recently used object from the pool, or as
- * a FIFO queue, where borrowObject always returns the oldest object in the idle
- * object pool.
- * <ul>
- * <li>
- *   {@link #setLifo <i>lifo</i>} determines whether or not the pool returns
- * idle objects in last-in-first-out order. The default setting for this
- * parameter is <code>true.</code></li>
- * </ul>
- * <p>
  * GenericObjectPool is not usable without a {@link PoolableObjectFactory}. A
  * non-<code>null</code> factory must be provided as a constructor
  * argument before the pool is used.
@@ -668,13 +657,15 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
     }
 
     /**
-     * Whether or not the idle object pool acts as a LIFO queue. True means that
-     * borrowObject returns the most recently used ("last in") idle object in
-     * the pool (if there are idle instances available). False means that the
-     * pool behaves as a FIFO queue - objects are taken from the idle object
-     * pool in the order that they are returned to the pool.
+     * The pool can be configured to behave as a LIFO (last in, first out) queue
+     * with respect to idle objects - always returning the most recently used
+     * object from the pool, or as a FIFO (first in, first out) queue, where
+     * {@link #borrowObject} always returns the oldest object in the idle object
+     * pool.
      *
-     * @return <code>true</true> if the pool is configured to act as a LIFO queue
+     * @return <code>true</true> if the pool is configured to act as a LIFO
+     *         queue or <code>false</code> if the pool is configured to act as a
+     *         FIFO queue
      * @since 1.4
      */
     @Override
@@ -683,15 +674,11 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
     }
 
     /**
-     * Sets the LIFO property of the pool. True means that borrowObject returns
-     * the most recently used ("last in") idle object in the pool (if there are
-     * idle instances available). False means that the pool behaves as a FIFO
-     * queue - objects are taken from the idle object pool in the order that
-     * they are returned to the pool.
+     * Sets the LIFO property of the pool.
      *
-     * @param lifo
-     *            the new value for the LIFO property
+     * @param lifo  the new value for the LIFO property
      * @since 1.4
+     * @see #getLifo()
      */
     public void setLifo(boolean lifo) {
         this.lifo = lifo;
@@ -737,18 +724,16 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
     // -- ObjectPool methods ------------------------------------------
 
     /**
-     * <p>
-     * Borrows an object from the pool.
-     * </p>
-     * <p>
-     * If there is an idle instance available in the pool, then either the
-     * most-recently returned (if {@link #getLifo() lifo} == true) or "oldest"
-     * (lifo == false) instance sitting idle in the pool will be activated and
-     * returned. If activation fails, or {@link #getTestOnBorrow() testOnBorrow}
-     * is set to true and validation fails, the instance is destroyed and the
-     * next available instance is examined. This continues until either a valid
-     * instance is returned or there are no more idle instances available.
-     * </p>
+     * <p>Borrows an object from the pool.</p>
+     * 
+     * <p>If there is one or more idle instance available in the pool, then an
+     * idle instance will be selected based on the value of {@link #getLifo()},
+     * activated and returned. If activation fails, or {@link #getTestOnBorrow()
+     * testOnBorrow} is set to <code>true</code> and validation fails, the
+     * instance is destroyed and the next available instance is examined. This
+     * continues until either a valid instance is returned or there are no more
+     * idle instances available.</p>
+     *
      * <p>
      * If there are no idle instances available in the pool, behavior depends on
      * the {@link #getMaxTotal() maxTotal} and (if applicable)
@@ -1726,7 +1711,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
     private volatile long softMinEvictableIdleTimeMillis =
         GenericObjectPoolConfig.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 
-    /** Whether or not the pool behaves as a LIFO queue (last in first out) */
+    /** Whether or not the pool behaves as a LIFO queue. */
     private volatile boolean lifo = GenericObjectPoolConfig.DEFAULT_LIFO;
 
     /** My {@link PoolableObjectFactory}. */

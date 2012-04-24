@@ -188,19 +188,6 @@ import org.apache.commons.pool2.PoolUtils;
  *  </li>
  * </ul>
  * <p>
- * The pools can be configured to behave as LIFO queues with respect to idle
- * objects - always returning the most recently used object from the pool,
- * or as FIFO queues, where borrowObject always returns the oldest object
- * in the idle object pool.
- * <ul>
- *  <li>
- *   {@link #setLifo <i>Lifo</i>}
- *   determines whether or not the pools return idle objects in
- *   last-in-first-out order. The default setting for this parameter is
- *   <code>true.</code>
- *  </li>
- * </ul>
- * <p>
  * GenericKeyedObjectPool is not usable without a {@link KeyedPoolableObjectFactory}.  A
  * non-<code>null</code> factory must be provided as a constructor argument
  * before the pool is used.
@@ -737,6 +724,34 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
     }
 
     /**
+     * The pools can be configured to behave as LIFO (last in, first out) queues
+     * with respect to idle objects - always returning the most recently used
+     * object from the pool, or as FIFO (first in, first out) queues, where
+     * {@link #borrowObject(Object)} and {@link #borrowObject(Object, long)}
+     * always return the oldest object in the idle object pool.
+     *
+     * @return <code>true</code> if the pools are configured to act as LIFO
+     *         queues or <code>false</code> if the pools are configured to act
+     *         as FIFO queues 
+     * @since 1.4
+     */
+     @Override
+    public boolean getLifo() {
+         return lifo;
+     }
+
+     /**
+      * Sets the LIFO property of the pools.
+      *
+      * @param lifo the new value for the lifo property
+      * @since 1.4
+      * @see #getLifo()
+      */
+     public void setLifo(boolean lifo) {
+         this.lifo = lifo;
+     }
+
+    /**
      * Sets the configuration.
      * @param conf the new configuration to use.
      * @see GenericKeyedObjectPoolConfig
@@ -761,35 +776,6 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         setEvictionPolicyClassName(conf.getEvictionPolicyClassName());
     }
 
-    /**
-     * Whether or not the idle object pools act as LIFO queues. True means
-     * that borrowObject returns the most recently used ("last in") idle object
-     * in a pool (if there are idle instances available).  False means that
-     * the pools behave as FIFO queues - objects are taken from idle object
-     * pools in the order that they are returned.
-     *
-     * @return <code>true</code> if the pools are configured to act as LIFO queues
-     * @since 1.4
-     */
-     @Override
-    public boolean getLifo() {
-         return lifo;
-     }
-
-     /**
-      * Sets the LIFO property of the pools. True means that borrowObject returns
-      * the most recently used ("last in") idle object in a pool (if there are
-      * idle instances available).  False means that the pools behave as FIFO
-      * queues - objects are taken from idle object pools in the order that
-      * they are returned.
-      *
-      * @param lifo the new value for the lifo property
-      * @since 1.4
-      */
-     public void setLifo(boolean lifo) {
-         this.lifo = lifo;
-     }
-
      /**
       * Obtain a reference to the factory used to create, destroy and validate
       * the objects used by this pool.
@@ -804,14 +790,16 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
     //-- ObjectPool methods ------------------------------------------
 
     /**
-     * <p>Borrows an object from the keyed pool associated with the given key.</p>
+     * <p>Borrows an object from the keyed pool associated with the given
+     * key.</p>
      *
-     * <p>If there is an idle instance available in the pool associated with the given key, then
-     * either the most-recently returned (if {@link #getLifo() lifo} == true) or "oldest" (lifo == false)
-     * instance sitting idle in the pool will be activated and returned.  If activation fails, or
-     * {@link #getTestOnBorrow() testOnBorrow} is set to true and validation fails, the instance is destroyed and the
-     * next available instance is examined.  This continues until either a valid instance is returned or there
-     * are no more idle instances available.</p>
+     * <p>If there is one or more idle instances available in the pool
+     * associated with the given key, then an idle instance will be selected
+     * based on the value of {@link #getLifo()}, activated and returned.  If
+     * activation fails, or {@link #getTestOnBorrow() testOnBorrow} is set to
+     * <code>true</code> and validation fails, the instance is destroyed and the
+     * next available instance is examined.  This continues until either a valid
+     * instance is returned or there are no more idle instances available.</p>
      *
      * <p>If there are no idle instances available in the pool associated with the given key, behavior
      * depends on the {@link #getMaxTotalPerKey() maxTotalPerKey}, {@link #getMaxTotal() maxTotal}, and (if applicable)
@@ -2414,7 +2402,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
     private volatile long softMinEvictableIdleTimeMillis =
         GenericKeyedObjectPoolConfig.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 
-    /** Whether or not the pools behave as LIFO queues (last in first out) */
+    /** Whether or not the pools behave as LIFO queues. */
     private boolean lifo = GenericKeyedObjectPoolConfig.DEFAULT_LIFO;
 
     /** My {@link KeyedPoolableObjectFactory}. */
