@@ -214,8 +214,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
     //--- constructors -----------------------------------------------
 
     /**
-     * Create a new <code>GenericKeyedObjectPool</code> using defaults and no
-     * factory.
+     * Create a new <code>GenericKeyedObjectPool</code> using defaults.
      */
     public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,T> factory) {
         this(factory, new GenericKeyedObjectPoolConfig());
@@ -232,7 +231,6 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      */
     public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,T> factory,
             GenericKeyedObjectPoolConfig config) {
-        // Copy the settings from the config
         this.factory = factory;
         // save the current CCL to be used later by the evictor Thread
         factoryClassLoader = Thread.currentThread().getContextClassLoader();
