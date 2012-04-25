@@ -17,7 +17,8 @@
 package org.apache.commons.pool2.impl;
 
 /**
- * Objects will be evicted if the following conditions are met:
+ * Provides the default implementation of {@link EvictionPolicy} used by the
+ * pools. Objects will be evicted if the following conditions are met:
  * <ul>
  * <li>the object has been idle longer than
  *     {@link GenericObjectPool#getMinEvictableIdleTimeMillis()} /
