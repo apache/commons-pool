@@ -28,7 +28,7 @@ public interface GenericObjectPoolMBean {
     boolean getLifo();
     int getMaxIdle();
     int getMaxTotal();
-    long getMaxWait();
+    long getMaxWaitMillis();
     long getMinEvictableIdleTimeMillis();
     int getMinIdle();
     int getNumActive();

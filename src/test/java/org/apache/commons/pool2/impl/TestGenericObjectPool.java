@@ -131,7 +131,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     public void testWhenExhaustedBlock() throws Exception {
         pool.setMaxTotal(1);
         pool.setBlockWhenExhausted(true);
-        pool.setMaxWait(10L);
+        pool.setMaxWaitMillis(10L);
         Object obj1 = pool.borrowObject();
         assertNotNull(obj1);
         try {
@@ -148,7 +148,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     public void testWhenExhaustedBlockInterupt() throws Exception {
         pool.setMaxTotal(1);
         pool.setBlockWhenExhausted(true);
-        pool.setMaxWait(-1);
+        pool.setMaxWaitMillis(-1);
         Object obj1 = pool.borrowObject();
 
         // Make sure on object was obtained
@@ -171,7 +171,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.returnObject(obj1);
 
         // Bug POOL-162 - check there is now an object in the pool
-        pool.setMaxWait(10L);
+        pool.setMaxWaitMillis(10L);
         Object obj2 = null;
         try {
              obj2 = pool.borrowObject();
@@ -558,7 +558,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Test(timeout=60000)
     public void testTimeoutNoLeak() throws Exception {
         pool.setMaxTotal(2);
-        pool.setMaxWait(10);
+        pool.setMaxWaitMillis(10);
         pool.setBlockWhenExhausted(true);
         Object obj = pool.borrowObject();
         Object obj2 = pool.borrowObject();
@@ -676,8 +676,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             assertEquals(12,pool.getMaxIdle());
         }
         {
-            pool.setMaxWait(1234L);
-            assertEquals(1234L,pool.getMaxWait());
+            pool.setMaxWaitMillis(1234L);
+            assertEquals(1234L,pool.getMaxWaitMillis());
         }
         {
             pool.setMinEvictableIdleTimeMillis(12345L);
@@ -732,7 +732,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertConfiguration(expected,pool);
         expected.setMaxTotal(2);
         expected.setMaxIdle(3);
-        expected.setMaxWait(5L);
+        expected.setMaxWaitMillis(5L);
         expected.setMinEvictableIdleTimeMillis(7L);
         expected.setNumTestsPerEvictionRun(9);
         expected.setTestOnBorrow(true);
@@ -1139,7 +1139,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     public void testThreaded1() throws Exception {
         pool.setMaxTotal(15);
         pool.setMaxIdle(15);
-        pool.setMaxWait(1000L);
+        pool.setMaxWaitMillis(1000L);
         runTestThreads(20, 100, 50);
     }
 
@@ -1158,7 +1158,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.setMaxTotal(maxTotal);
         pool.setMaxIdle(-1);
         pool.setTestOnReturn(true);
-        pool.setMaxWait(1000L);
+        pool.setMaxWaitMillis(1000L);
         runTestThreads(5, 10, 50);
     }
 
@@ -1196,7 +1196,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     public void testWhenExhaustedBlockClosePool() throws Exception {
         pool.setMaxTotal(1);
         pool.setBlockWhenExhausted(true);
-        pool.setMaxWait(-1);
+        pool.setMaxWaitMillis(-1);
         Object obj1 = pool.borrowObject();
 
         // Make sure an object was obtained
@@ -1390,7 +1390,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertEquals("whenExhaustedAction",expected.getBlockWhenExhausted(),actual.getBlockWhenExhausted());
         assertEquals("maxTotal",expected.getMaxTotal(),actual.getMaxTotal());
         assertEquals("maxIdle",expected.getMaxIdle(),actual.getMaxIdle());
-        assertEquals("maxWait",expected.getMaxWait(),actual.getMaxWait());
+        assertEquals("maxWait",expected.getMaxWaitMillis(),actual.getMaxWaitMillis());
         assertEquals("minEvictableIdleTimeMillis",expected.getMinEvictableIdleTimeMillis(),actual.getMinEvictableIdleTimeMillis());
         assertEquals("numTestsPerEvictionRun",expected.getNumTestsPerEvictionRun(),actual.getNumTestsPerEvictionRun());
         assertEquals("timeBetweenEvictionRunsMillis",expected.getTimeBetweenEvictionRunsMillis(),actual.getTimeBetweenEvictionRunsMillis());
@@ -1727,7 +1727,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         final long holdTime = 2 * maxWait; // how long to hold connection
         final int threads = 10; // number of threads to grab the object initially
         pool.setBlockWhenExhausted(true);
-        pool.setMaxWait(maxWait);
+        pool.setMaxWaitMillis(maxWait);
         pool.setMaxTotal(threads);
         // Create enough threads so half the threads will have to wait
         WaitingTestThread wtt[] = new WaitingTestThread[threads * 2];
