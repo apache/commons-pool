@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.commons.pool2.impl;
 
 import java.security.AccessController;
@@ -23,18 +22,15 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * <p>
  * Provides a shared idle object eviction timer for all pools. This class wraps
  * the standard {@link Timer} and keeps track of how many pools are using it.
- * If no pools are using the timer, it is canceled. This prevents a thread
+ * If no pools are using the timer, it is cancelled. This prevents a thread
  * being left running which, in application server environments, can lead to
  * memory leads and/or prevent applications from shutting down or reloading
  * cleanly.
- * </p>
  * <p>
  * This class has package scope to prevent its inclusion in the pool public API.
  * The class declaration below should *not* be changed to public.
- * </p>
  * <p>
  * This class is intended to be thread-safe.
  */
