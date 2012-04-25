@@ -259,66 +259,157 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
         this.numTestsPerEvictionRun = numTestsPerEvictionRun;
     }
 
+    /**
+     * Get the value for the {@code testOnBorrow} configuration attribute for
+     * pools created with this configuration instance.
+     * @see GenericObjectPool#getTestOnBorrow()
+     * @see GenericKeyedObjectPool#getTestOnBorrow()
+     */
     public boolean getTestOnBorrow() {
         return testOnBorrow;
     }
 
+    /**
+     * Set the value for the {@code testOnBorrow} configuration attribute for
+     * pools created with this configuration instance.
+     * @see GenericObjectPool#getTestOnBorrow()
+     * @see GenericKeyedObjectPool#getTestOnBorrow()
+     */
     public void setTestOnBorrow(boolean testOnBorrow) {
         this.testOnBorrow = testOnBorrow;
     }
 
+    /**
+     * Get the value for the {@code testOnReturn} configuration attribute for
+     * pools created with this configuration instance.
+     * @see GenericObjectPool#getTestOnReturn()
+     * @see GenericKeyedObjectPool#getTestOnReturn()
+     */
     public boolean getTestOnReturn() {
         return testOnReturn;
     }
 
+    /**
+     * Set the value for the {@code testOnReturn} configuration attribute for
+     * pools created with this configuration instance.
+     * @see GenericObjectPool#getTestOnReturn()
+     * @see GenericKeyedObjectPool#getTestOnReturn()
+     */
     public void setTestOnReturn(boolean testOnReturn) {
         this.testOnReturn = testOnReturn;
     }
 
+    /**
+     * Get the value for the {@code testWhileIdle} configuration attribute for
+     * pools created with this configuration instance.
+     * @see GenericObjectPool#getTestWhileIdle()
+     * @see GenericKeyedObjectPool#getTestWhileIdle()
+     */
     public boolean getTestWhileIdle() {
         return testWhileIdle;
     }
 
+    /**
+     * Set the value for the {@code testWhileIdle} configuration attribute for
+     * pools created with this configuration instance.
+     * @see GenericObjectPool#getTestWhileIdle()
+     * @see GenericKeyedObjectPool#getTestWhileIdle()
+     */
     public void setTestWhileIdle(boolean testWhileIdle) {
         this.testWhileIdle = testWhileIdle;
     }
 
+    /**
+     * Get the value for the {@code timeBetweenEvictionRunsMillis} configuration
+     * attribute for pools created with this configuration instance.
+     * @see GenericObjectPool#getTimeBetweenEvictionRunsMillis()
+     * @see GenericKeyedObjectPool#getTimeBetweenEvictionRunsMillis()
+     */
     public long getTimeBetweenEvictionRunsMillis() {
         return timeBetweenEvictionRunsMillis;
     }
 
-    public void setTimeBetweenEvictionRunsMillis(long timeBetweenEvictionRunsMillis) {
+    /**
+     * Set the value for the {@code timeBetweenEvictionRunsMillis} configuration
+     * attribute for pools created with this configuration instance.
+     * @see GenericObjectPool#getTimeBetweenEvictionRunsMillis()
+     * @see GenericKeyedObjectPool#getTimeBetweenEvictionRunsMillis()
+     */
+    public void setTimeBetweenEvictionRunsMillis(
+            long timeBetweenEvictionRunsMillis) {
         this.timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
     }
 
+    /**
+     * Get the value for the {@code evictionPolicyClassName} configuration
+     * attribute for pools created with this configuration instance.
+     * @see GenericObjectPool#getEvictionPolicyClassName()
+     * @see GenericKeyedObjectPool#getEvictionPolicyClassName()
+     */
     public String getEvictionPolicyClassName() {
         return evictionPolicyClassName;
     }
 
+    /**
+     * Set the value for the {@code evictionPolicyClassName} configuration
+     * attribute for pools created with this configuration instance.
+     * @see GenericObjectPool#getEvictionPolicyClassName()
+     * @see GenericKeyedObjectPool#getEvictionPolicyClassName()
+     */
     public void setEvictionPolicyClassName(String evictionPolicyClassName) {
         this.evictionPolicyClassName = evictionPolicyClassName;
     }
 
+    /**
+     * Get the value for the {@code blockWhenExhausted} configuration attribute
+     * for pools created with this configuration instance.
+     * @see GenericObjectPool#getBlockWhenExhausted()
+     * @see GenericKeyedObjectPool#getBlockWhenExhausted()
+     */
     public boolean getBlockWhenExhausted() {
         return blockWhenExhausted;
     }
 
+    /**
+     * Set the value for the {@code blockWhenExhausted} configuration attribute
+     * for pools created with this configuration instance.
+     * @see GenericObjectPool#getBlockWhenExhausted()
+     * @see GenericKeyedObjectPool#getBlockWhenExhausted()
+     */
     public void setBlockWhenExhausted(boolean blockWhenExhausted) {
         this.blockWhenExhausted = blockWhenExhausted;
     }
 
+    /**
+     * Gets the value of the flag that determines if JMX will be enabled for
+     * pools created with this configuration instance.
+     */
     public boolean isJmxEnabled() {
         return jmxEnabled;
     }
 
+    /**
+     * Sets the value of the flag that determines if JMX will be enabled for
+     * pools created with this configuration instance.
+     */
     public void setJmxEnabled(boolean jmxEnabled) {
         this.jmxEnabled = jmxEnabled;
     }
 
+    /**
+     * Gets the value of the JMX name prefix that will be used as part of the
+     * name assigned to JMX enabled pools created with this configuration
+     * instance.
+     */
     public String getJmxNamePrefix() {
         return jmxNamePrefix;
     }
 
+    /**
+     * Sets the value of the JMX name prefix that will be used as part of the
+     * name assigned to JMX enabled pools created with this configuration
+     * instance.
+     */
     public void setJmxNamePrefix(String jmxNamePrefix) {
         this.jmxNamePrefix = jmxNamePrefix;
     }
