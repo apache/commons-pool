@@ -756,7 +756,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
         setMaxTotalPerKey(conf.getMaxTotalPerKey());
         setMaxTotal(conf.getMaxTotal());
         setMinIdlePerKey(conf.getMinIdlePerKey());
-        setMaxWait(conf.getMaxWait());
+        setMaxWait(conf.getMaxWaitMillis());
         setBlockWhenExhausted(conf.getBlockWhenExhausted());
         setTestOnBorrow(conf.getTestOnBorrow());
         setTestOnReturn(conf.getTestOnReturn());
@@ -2282,7 +2282,7 @@ public class GenericKeyedObjectPool<K,T> implements KeyedObjectPool<K,T>,
      * @see #setBlockWhenExhausted
      * @see #getBlockWhenExhausted
      */
-    private long maxWait = GenericKeyedObjectPoolConfig.DEFAULT_MAX_WAIT;
+    private long maxWait = GenericKeyedObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS;
 
     /**
      * When the {@link #borrowObject} method is invoked when the pool is
