@@ -208,7 +208,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T>
 
         ObjectName onameTemp = null;
         // JMX Registration
-        if (config.isJmxEnabled()) {
+        if (config.getJmxEnabled()) {
             MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
             String jmxNamePrefix = config.getJmxNamePrefix();
             this.jmxNotificationSupport = new NotificationBroadcasterSupport();
