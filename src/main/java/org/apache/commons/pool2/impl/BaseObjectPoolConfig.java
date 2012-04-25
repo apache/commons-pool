@@ -384,7 +384,7 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
      * Gets the value of the flag that determines if JMX will be enabled for
      * pools created with this configuration instance.
      */
-    public boolean isJmxEnabled() {
+    public boolean getJmxEnabled() {
         return jmxEnabled;
     }
 
