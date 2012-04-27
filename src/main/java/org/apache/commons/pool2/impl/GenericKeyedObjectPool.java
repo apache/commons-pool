@@ -2319,12 +2319,12 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool
      * An iterator for {@link ObjectDeque#getIdleObjects()} that is used by the
      * evictor.
      */
-    private Iterator<PooledObject<T>> evictionIterator = null; // @GuardedBy("evictionLock") - except close()
+    private Iterator<PooledObject<T>> evictionIterator = null; // @GuardedBy("evictionLock")
 
     /**
      * An iterator for {@link #poolMap} entries.
      */
-    private Iterator<K> evictionKeyIterator = null; // @GuardedBy("evictionLock") - except close()
+    private Iterator<K> evictionKeyIterator = null; // @GuardedBy("evictionLock")
 
     /**
      * The key associated with the {@link ObjectDeque#getIdleObjects()}
