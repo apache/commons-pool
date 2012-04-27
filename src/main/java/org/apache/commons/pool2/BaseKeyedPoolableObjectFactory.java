@@ -22,7 +22,8 @@ package org.apache.commons.pool2;
  * <p>
  * All operations defined here are essentially no-op's.
  * </p>
- *
+ * This class is immutable, and therefore thread-safe.
+ * 
  * @see KeyedPoolableObjectFactory
  *
  * @param <K> The type of keys managed by this factory.
