@@ -29,6 +29,7 @@ package org.apache.commons.pool2.impl;
  *     {@link GenericObjectPool#getSoftMinEvictableIdleTimeMillis()} /
  *     {@link GenericKeyedObjectPool#getSoftMinEvictableIdleTimeMillis()}
  * </ul>
+ * This class is immutable and thread-safe
  */
 public class DefaultEvictionPolicy<T> implements EvictionPolicy<T> {
 
