@@ -20,6 +20,8 @@ package org.apache.commons.pool2.impl;
  * This class is used by pool implementations to pass configuration information
  * to {@link EvictionPolicy} instances. The {@link EvictionPolicy} may also have
  * its own specific configuration attributes.  
+ * <p>
+ * This class is immutable and thread-safe
  */
 public class EvictionConfig {
 
