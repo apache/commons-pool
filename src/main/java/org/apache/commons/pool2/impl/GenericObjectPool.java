@@ -1038,7 +1038,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool
      * Destroys idle instances in the pool by invoking {@link #clear()}.
      * </p>
      *
-     * @throws Exception
+     * @throws RuntimeException
      */
     @Override
     public void close() {
@@ -1624,7 +1624,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool
      * environment the context class loader for the evictor thread may have
      * visibility of the correct factory. See POOL-161.
      */
-    private ClassLoader factoryClassLoader = null;
+    private final ClassLoader factoryClassLoader;
 
     /**
      * All of the objects currently associated with this pool in any state. It
