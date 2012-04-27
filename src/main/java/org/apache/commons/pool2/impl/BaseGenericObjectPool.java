@@ -54,7 +54,7 @@ public abstract class BaseGenericObjectPool implements NotificationEmitter {
     // None as yet
     
     // Internal state attributes
-    protected volatile boolean closed = false;
+    volatile boolean closed = false;
     
     // Monitoring (primarily JMX) attributes
     private final NotificationBroadcasterSupport jmxNotificationSupport;
