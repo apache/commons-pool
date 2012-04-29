@@ -185,8 +185,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool
             GenericObjectPoolConfig config) {
         super(config);
         this.factory = factory;
-        // save the current CCL to be used later by the evictor Thread
-        factoryClassLoader = Thread.currentThread().getContextClassLoader();
 
         setConfig(config);
 
@@ -232,61 +230,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool
             }
         }
         this.oname = onameTemp;
-    }
-
-    /**
-     * Returns the maximum number of objects that can be allocated by the pool
-     * (checked out to clients, or idle awaiting checkout) at a given time. When
-     * non-positive, there is no limit to the number of objects that can be
-     * managed by the pool at one time.
-     *
-     * @return the cap on the total number of object instances managed by the
-     *         pool.
-     * @see #setMaxTotal
-     */
-    @Override
-    public int getMaxTotal() {
-        return maxTotal;
-    }
-
-    /**
-     * Sets the cap on the number of objects that can be allocated by the pool
-     * (checked out to clients, or idle awaiting checkout) at a given time. Use
-     * a negative value for no limit.
-     *
-     * @param maxTotal
-     *            The cap on the total number of object instances managed by the
-     *            pool. Negative values mean that there is no limit to the
-     *            number of objects allocated by the pool.
-     * @see #getMaxTotal
-     */
-    public void setMaxTotal(int maxTotal) {
-        this.maxTotal = maxTotal;
-    }
-
-    /**
-     * Returns whether to block when the {@link #borrowObject} method is
-     * invoked when the pool is exhausted (the maximum number of "active"
-     * objects has been reached).
-     *
-     * @return true if should block when the pool is exhuasted
-     * @see #setBlockWhenExhausted
-     */
-    @Override
-    public boolean getBlockWhenExhausted() {
-        return blockWhenExhausted;
-    }
-
-    /**
-     * Sets whether to block when the {@link #borrowObject} method is invoked
-     * when the pool is exhausted (the maximum number of "active" objects has
-     * been reached).
-     *
-     * @param blockWhenExhausted   true if should block when the pool is exhausted
-     * @see #getBlockWhenExhausted
-     */
-    public void setBlockWhenExhausted(boolean blockWhenExhausted) {
-        this.blockWhenExhausted = blockWhenExhausted;
     }
 
     /**
@@ -1077,21 +1020,12 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool
     }
 
     /**
-     * <p>
-     * Perform <code>numTests</code> idle object eviction tests, evicting
-     * examined objects that meet the criteria for eviction. If
-     * <code>testWhileIdle</code> is true, examined objects are validated when
-     * visited (and removed if invalid); otherwise only objects that have been
-     * idle for more than <code>minEvicableIdletimeMillis</code> are removed.
-     * </p>
+     * {@inheritDoc}
      * <p>
      * Successive activations of this method examine objects in in sequence,
      * cycling through objects in oldest-to-youngest order.
-     * </p>
-     *
-     * @throws Exception
-     *             if the pool is closed or eviction fails.
      */
+    @Override
     public void evict() throws Exception {
         assertOpen();
 
@@ -1218,7 +1152,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool
      * @throws Exception
      *             when {@link #addObject()} fails.
      */
-    private void ensureMinIdle() throws Exception {
+    @Override
+    protected void ensureMinIdle() throws Exception {
         int minIdle = getMinIdle();
         if (minIdle < 1) {
             return;
@@ -1423,49 +1358,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool
         return oname;
     }
 
-    // --- inner classes ----------------------------------------------
-
-    /**
-     * The idle object evictor {@link TimerTask}.
-     *
-     * @see GenericObjectPool#setTimeBetweenEvictionRunsMillis
-     */
-    private class Evictor extends TimerTask {
-        /**
-         * Run pool maintenance. Evict objects qualifying for eviction and then
-         * invoke {@link GenericObjectPool#ensureMinIdle()}.
-         * Since the Timer that invokes Evictors is shared for all Pools, we try
-         * to restore the ContextClassLoader that created the pool.
-         */
-        @Override
-        public void run() {
-            ClassLoader savedClassLoader =
-                    Thread.currentThread().getContextClassLoader();
-            try {
-                //  set the class loader for the factory
-                Thread.currentThread().setContextClassLoader(
-                        factoryClassLoader);
-                try {
-                    evict();
-                } catch (Exception e) {
-                    // ignored
-                } catch (OutOfMemoryError oome) {
-                    // Log problem but give evictor thread a chance to continue
-                    // in case error is recoverable
-                    oome.printStackTrace(System.err);
-                }
-                try {
-                    ensureMinIdle();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    // ignored
-                }
-            } finally {
-                // restore the previous CCL
-                Thread.currentThread().setContextClassLoader(savedClassLoader);
-            }
-        }
-    }
 
     // --- configuration attributes --------------------------------------------
 
@@ -1486,15 +1378,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool
     private volatile int minIdle = GenericObjectPoolConfig.DEFAULT_MIN_IDLE;
 
     /**
-     * The cap on the total number of active instances from the pool.
-     *
-     * @see #setMaxTotal
-     * @see #getMaxTotal
-     */
-    private volatile int maxTotal =
-        GenericObjectPoolConfig.DEFAULT_MAX_TOTAL;
-
-    /**
      * The maximum amount of time (in millis) the {@link #borrowObject} method
      * should block before throwing an exception when the pool is exhausted and
      * {@link #getBlockWhenExhausted()} is true.
@@ -1508,17 +1391,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool
      */
     private volatile long maxWaitMillis =
             GenericObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS;
-
-    /**
-     * When the {@link #borrowObject} method is invoked when the pool is
-     * exhausted (the maximum number of "active" objects has been reached)
-     * should the {@link #borrowObject} method block or not?
-     *
-     * @see #setBlockWhenExhausted
-     * @see #getBlockWhenExhausted
-     */
-    private volatile boolean blockWhenExhausted =
-        GenericObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED;
 
     /**
      * When <tt>true</tt>, objects will be
@@ -1618,13 +1490,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool
 
 
     // --- internal attributes -------------------------------------------------
-
-    /**
-     * Class loader for evictor thread to use since in a J2EE or similar
-     * environment the context class loader for the evictor thread may have
-     * visibility of the correct factory. See POOL-161.
-     */
-    private final ClassLoader factoryClassLoader;
 
     /**
      * All of the objects currently associated with this pool in any state. It
