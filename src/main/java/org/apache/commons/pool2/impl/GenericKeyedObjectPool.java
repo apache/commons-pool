@@ -220,8 +220,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool
             GenericKeyedObjectPoolConfig config) {
         super(config);
         this.factory = factory;
-        // save the current CCL to be used later by the evictor Thread
-        factoryClassLoader = Thread.currentThread().getContextClassLoader();
 
         setConfig(config);
 
@@ -292,59 +290,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool
     public void setMaxTotalPerKey(int maxTotalPerKey) {
         this.maxTotalPerKey = maxTotalPerKey;
     }
-
-    /**
-     * Returns the overall maximum number of objects (across pools) that can
-     * exist at one time. A negative value indicates no limit.
-     * @return the maximum number of instances in circulation at one time.
-     * @see #setMaxTotal
-     */
-    @Override
-    public int getMaxTotal() {
-        return maxTotal;
-    }
-
-    /**
-     * Sets the cap on the total number of instances from all pools combined.
-     * When <code>maxTotal</code> is set to a
-     * positive value and {@link #borrowObject borrowObject} is invoked
-     * when at the limit with no idle instances available, an attempt is made to
-     * create room by clearing the oldest 15% of the elements from the keyed
-     * pools.
-     *
-     * @param maxTotal The cap on the total number of instances across pools.
-     * Use a negative value for no limit.
-     * @see #getMaxTotal
-     */
-    public void setMaxTotal(int maxTotal) {
-        this.maxTotal = maxTotal;
-    }
-
-    /**
-     * Returns whether to block when the {@link #borrowObject} method
-     * is invoked when the pool is exhausted (the maximum number
-     * of "active" objects has been reached).
-     *
-     * @return true if the pool should block
-     * @see #setBlockWhenExhausted
-     */
-    @Override
-    public boolean getBlockWhenExhausted() {
-        return blockWhenExhausted;
-    }
-
-    /**
-     * Sets whether to block when the {@link #borrowObject} method
-     * is invoked when the pool is exhausted (the maximum number
-     * of "active" objects has been reached).
-     *
-     * @param shouldBlock true if the pool should block
-     * @see #getBlockWhenExhausted
-     */
-    public void setBlockWhenExhausted(boolean shouldBlock) {
-        blockWhenExhausted = shouldBlock;
-    }
-
 
     /**
      * Returns the maximum amount of time (in milliseconds) the
@@ -784,6 +729,12 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool
      * ({@link #getBlockWhenExhausted()} is false).
      * The length of time that this method will block when {@link #getBlockWhenExhausted()} is true
      * is determined by the {@link #getMaxWait() maxWait} property.</p>
+     *
+     * When <code>maxTotal</code> is set to a
+     * positive value and {@link #borrowObject borrowObject} is invoked
+     * when at the limit with no idle instances available, an attempt is made to
+     * create room by clearing the oldest 15% of the elements from the keyed
+     * pools.
      *
      * <p>When the pool is exhausted, multiple calling threads may be simultaneously blocked waiting for instances
      * to become available.  As of pool 1.5, a "fairness" algorithm has been implemented to ensure that threads receive
@@ -1346,19 +1297,13 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool
 
 
     /**
-     * <p>Perform <code>numTests</code> idle object eviction tests, evicting
-     * examined objects that meet the criteria for eviction. If
-     * <code>testWhileIdle</code> is true, examined objects are validated
-     * when visited (and removed if invalid); otherwise only objects that
-     * have been idle for more than <code>minEvicableIdletimeMillis</code>
-     * are removed.</p>
-     *
-     * <p>Successive activations of this method examine objects in keyed pools
-     * in sequence, cycling through the keys and examining objects in
-     * oldest-to-youngest order within the keyed pools.</p>
-     *
-     * @throws Exception when there is a problem evicting idle objects.
+     * {@inheritDoc}
+     * <p>
+     * Successive activations of this method examine objects in keyed pools in
+     * sequence, cycling through the keys and examining objects in
+     * oldest-to-youngest order within the keyed pools.
      */
+    @Override
     public void evict() throws Exception {
         assertOpen();
 
@@ -1644,7 +1589,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool
      * @see #setMinIdlePerKey
      * @throws Exception If there was an error whilst creating the pooled objects.
      */
-    private void ensureMinIdle() throws Exception {
+    @Override
+    protected void ensureMinIdle() throws Exception {
         int minIdle = getMinIdlePerKey();
         if (minIdle < 1) {
             return;
@@ -2071,50 +2017,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool
         }
     }
 
-    /**
-     * The idle object evictor {@link TimerTask}.
-     *
-     * @see GenericKeyedObjectPool#setTimeBetweenEvictionRunsMillis
-     */
-    private class Evictor extends TimerTask {
-        /**
-         * Run pool maintenance.  Evict objects qualifying for eviction and then
-         * invoke {@link GenericKeyedObjectPool#ensureMinIdle()}.
-         * Since the Timer that invokes Evictors is shared for all Pools, we try
-         * to restore the ContextClassLoader that created the pool.
-         */
-        @Override
-        public void run() {
-            ClassLoader savedClassLoader =
-                    Thread.currentThread().getContextClassLoader();
-            try {
-                //  set the class loader for the factory
-                Thread.currentThread().setContextClassLoader(
-                        factoryClassLoader);
-
-                //Evict from the pool
-                try {
-                    evict();
-                } catch(Exception e) {
-                    // ignored
-                } catch(OutOfMemoryError oome) {
-                    // Log problem but give evictor thread a chance to continue in
-                    // case error is recoverable
-                    oome.printStackTrace(System.err);
-                }
-                //Re-create idle instances.
-                try {
-                    ensureMinIdle();
-                } catch (Exception e) {
-                    // ignored
-                }
-            } finally {
-                // restore the previous CCL
-                Thread.currentThread().setContextClassLoader(savedClassLoader);
-            }
-        }
-    }
-
     //--- configuration attributes ---------------------------------------------
 
     /**
@@ -2141,13 +2043,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool
         GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL_PER_KEY;
 
     /**
-     * The cap on the total number of instances from the pool if non-positive.
-     * @see #setMaxTotal
-     * @see #getMaxTotal
-     */
-    private int maxTotal = GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL;
-
-    /**
      * The maximum amount of time (in millis) the
      * {@link #borrowObject} method should block before throwing
      * an exception when the pool is exhausted and the
@@ -2162,17 +2057,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool
      * @see #getBlockWhenExhausted
      */
     private long maxWait = GenericKeyedObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS;
-
-    /**
-     * When the {@link #borrowObject} method is invoked when the pool is
-     * exhausted (the maximum number of "active" objects has been reached)
-     * should the {@link #borrowObject} method block or not?
-     *
-     * @see #setBlockWhenExhausted
-     * @see #getBlockWhenExhausted
-     */
-    private boolean blockWhenExhausted =
-        GenericKeyedObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED;
 
     /**
      * When <code>true</code>, objects will be
@@ -2275,13 +2159,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool
 
 
     //--- internal attributes --------------------------------------------------
-
-    /**
-     * Class loader for evictor thread to use since in a J2EE or similar
-     * environment the context class loader for the evictor thread may have
-     * visibility of the correct factory. See POOL-161.
-     */
-    private final ClassLoader factoryClassLoader;
 
     /**
      * My hash of pools (ObjectQueue). The list of keys <b>must</b> be kept in

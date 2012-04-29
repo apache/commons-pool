@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.management.ListenerNotFoundException;
@@ -44,32 +45,43 @@ public abstract class BaseGenericObjectPool implements NotificationEmitter {
     // Constants
     /**
      * Name of the JMX notification broadcast when the pool implementation
-     * swallows an {@link Exception}. 
+     * swallows an {@link Exception}.
      */
     public static final String NOTIFICATION_SWALLOWED_EXCEPTION =
             "SWALLOWED_EXCEPTION";
     private static final int SWALLOWED_EXCEPTION_QUEUE_SIZE = 10;
-    
+
     // Configuration attributes
-    // None as yet
-    
-    // Internal state attributes
+    private int maxTotal = GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL;
+    private volatile boolean blockWhenExhausted =
+        GenericObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED;
+
+
+    // Internal (primarily state) attributes
     volatile boolean closed = false;
-    
+
+    /**
+     * Class loader for evictor thread to use since in a J2EE or similar
+     * environment the context class loader for the evictor thread may have
+     * visibility of the correct factory. See POOL-161.
+     */
+    private final ClassLoader factoryClassLoader;
+
+
     // Monitoring (primarily JMX) attributes
     private final NotificationBroadcasterSupport jmxNotificationSupport;
     private final String creationStackTrace;
     private final Deque<String> swallowedExceptions = new LinkedList<String>();
     private final AtomicInteger swallowedExcpetionCount = new AtomicInteger(0);
 
-    
+
     public BaseGenericObjectPool(BaseObjectPoolConfig config) {
         if (config.getJmxEnabled()) {
             this.jmxNotificationSupport = new NotificationBroadcasterSupport();
         } else {
             this.jmxNotificationSupport = null;
         }
-        
+
         // Populate the swallowed exceptions queue
         for (int i = 0; i < SWALLOWED_EXCEPTION_QUEUE_SIZE; i++) {
             swallowedExceptions.add(null);
@@ -77,7 +89,67 @@ public abstract class BaseGenericObjectPool implements NotificationEmitter {
 
         // Populate the creation stack trace
         this.creationStackTrace = getStackTrace(new Exception());
+
+        // save the current CCL to be used later by the evictor Thread
+        factoryClassLoader = Thread.currentThread().getContextClassLoader();
     }
+
+
+    /**
+     * Returns the maximum number of objects that can be allocated by the pool
+     * (checked out to clients, or idle awaiting checkout) at a given time. When
+     * non-positive, there is no limit to the number of objects that can be
+     * managed by the pool at one time.
+     *
+     * @return the cap on the total number of object instances managed by the
+     *         pool.
+     * @see #setMaxTotal
+     */
+    public int getMaxTotal() {
+        return maxTotal;
+    }
+
+    /**
+     * Sets the cap on the number of objects that can be allocated by the pool
+     * (checked out to clients, or idle awaiting checkout) at a given time. Use
+     * a negative value for no limit.
+     *
+     * @param maxTotal  The cap on the total number of object instances managed
+     *                  by the pool. Negative values mean that there is no limit
+     *                  to the number of objects allocated by the pool.
+     * @see #getMaxTotal
+     */
+    public void setMaxTotal(int maxTotal) {
+        this.maxTotal = maxTotal;
+    }
+
+    /**
+     * Returns whether to block when the <code>borrowObject()</code> method is
+     * invoked when the pool is exhausted (the maximum number of "active"
+     * objects has been reached).
+     *
+     * @return <code>true</code> if <code>borrowObject()</code> should block
+     *         when the pool is exhausted
+     * @see #setBlockWhenExhausted
+     */
+    public boolean getBlockWhenExhausted() {
+        return blockWhenExhausted;
+    }
+
+    /**
+     * Sets whether to block when the <code>borrowObject()</code> method is
+     * invoked when the pool is exhausted (the maximum number of "active"
+     * objects has been reached).
+     *
+     * @param blockWhenExhausted    <code>true</code> if
+     *                              <code>borrowObject()</code> should block
+     *                              when the pool is exhausted
+     * @see #getBlockWhenExhausted
+     */
+    public void setBlockWhenExhausted(boolean blockWhenExhausted) {
+        this.blockWhenExhausted = blockWhenExhausted;
+    }
+
 
     /**
      * Closes the pool destroys the remaining idle objects and, if registered in
@@ -92,12 +164,23 @@ public abstract class BaseGenericObjectPool implements NotificationEmitter {
     public final boolean isClosed() {
         return closed;
     }
-    
-    
+
+    /**
+     * <p>Perform <code>numTests</code> idle object eviction tests, evicting
+     * examined objects that meet the criteria for eviction. If
+     * <code>testWhileIdle</code> is true, examined objects are validated
+     * when visited (and removed if invalid); otherwise only objects that
+     * have been idle for more than <code>minEvicableIdleTimeMillis</code>
+     * are removed.</p>
+     *
+     * @throws Exception when there is a problem evicting idle objects.
+     */
+    public abstract void evict() throws Exception;
+
     /**
      * Throws an <code>IllegalStateException</code> if called when the pool has
      * been closed.
-     * 
+     *
      * @throws IllegalStateException if this pool has been closed.
      * @see #isClosed()
      */
@@ -107,22 +190,24 @@ public abstract class BaseGenericObjectPool implements NotificationEmitter {
         }
     }
 
-    
+    protected abstract void ensureMinIdle() throws Exception;
+
+
     // Monitoring (primarily JMX) related methods
-    
+
     /**
      * Provides the name under which the pool has been registered with the
      * platform MBean server or <code>null</code> if the pool has not been
      * registered.
      */
     public abstract ObjectName getJmxName();
-    
+
     /**
      * Provides the stack trace for the call that created this pool. JMX
      * registration may trigger a memory leak so it is important that pools are
      * deregistered when no longer used by calling the {@link #close()} method.
      * This method is provided to assist with identifying code that creates but
-     * does not close it thereby creating a memory leak.   
+     * does not close it thereby creating a memory leak.
      */
     public String getCreationStackTrace() {
         return creationStackTrace;
@@ -145,7 +230,7 @@ public abstract class BaseGenericObjectPool implements NotificationEmitter {
     protected final NotificationBroadcasterSupport getJmxNotificationSupport() {
         return jmxNotificationSupport;
     }
-    
+
     protected String getStackTrace(Exception e) {
         // Need the exception in string form to prevent the retention of
         // references to classes in the stack trace that could trigger a memory
@@ -155,7 +240,7 @@ public abstract class BaseGenericObjectPool implements NotificationEmitter {
         e.printStackTrace(pw);
         return w.toString();
     }
-    
+
     protected void swallowException(Exception e) {
         String msg = getStackTrace(e);
 
@@ -175,7 +260,7 @@ public abstract class BaseGenericObjectPool implements NotificationEmitter {
 
 
     // Implement NotificationEmitter interface
-        
+
     @Override
     public final void addNotificationListener(NotificationListener listener,
             NotificationFilter filter, Object handback)
@@ -217,5 +302,54 @@ public abstract class BaseGenericObjectPool implements NotificationEmitter {
         }
         jmxNotificationSupport.removeNotificationListener(
                 listener, filter, handback);
+    }
+
+
+    // Inner classes
+
+    /**
+     * The idle object evictor {@link TimerTask}.
+     *
+     * @see GenericKeyedObjectPool#setTimeBetweenEvictionRunsMillis
+     */
+    protected class Evictor extends TimerTask {
+        /**
+         * Run pool maintenance.  Evict objects qualifying for eviction and then
+         * ensure that the minimum number of idle instances are available.
+         * Since the Timer that invokes Evictors is shared for all Pools but
+         * pools may exist in different class loaders, the Evictor ensures that
+         * any actions taken are under the class loader of the factory
+         * associated with the pool.
+         */
+        @Override
+        public void run() {
+            ClassLoader savedClassLoader =
+                    Thread.currentThread().getContextClassLoader();
+            try {
+                //  set the class loader for the factory
+                Thread.currentThread().setContextClassLoader(
+                        factoryClassLoader);
+
+                //Evict from the pool
+                try {
+                    evict();
+                } catch(Exception e) {
+                    // ignored
+                } catch(OutOfMemoryError oome) {
+                    // Log problem but give evictor thread a chance to continue
+                    // in case error is recoverable
+                    oome.printStackTrace(System.err);
+                }
+                //Re-create idle instances.
+                try {
+                    ensureMinIdle();
+                } catch (Exception e) {
+                    // ignored
+                }
+            } finally {
+                // restore the previous CCL
+                Thread.currentThread().setContextClassLoader(savedClassLoader);
+            }
+        }
     }
 }
