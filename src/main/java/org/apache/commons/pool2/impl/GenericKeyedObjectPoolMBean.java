@@ -31,7 +31,7 @@ public interface GenericKeyedObjectPoolMBean<K> {
     int getMaxIdlePerKey();
     int getMaxTotal();
     int getMaxTotalPerKey();
-    long getMaxWait();
+    long getMaxWaitMillis();
     long getMinEvictableIdleTimeMillis();
     int getMinIdlePerKey();
     int getNumActive();
