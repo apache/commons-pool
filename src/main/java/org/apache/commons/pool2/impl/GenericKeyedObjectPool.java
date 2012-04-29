@@ -305,8 +305,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool
      * @see #setBlockWhenExhausted
      */
     @Override
-    public long getMaxWait() {
-        return maxWait;
+    public long getMaxWaitMillis() {
+        return maxWaitMillis;
     }
 
     /**
@@ -318,12 +318,13 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool
      * When less than 0, the {@link #borrowObject} method
      * may block indefinitely.
      *
-     * @param maxWait the maximum number of milliseconds borrowObject will block or negative for indefinitely.
+     * @param maxWaitMillis the maximum number of milliseconds borrowObject will
+     *                      block or negative for indefinitely.
      * @see #getMaxWait
      * @see #setBlockWhenExhausted
      */
-    public void setMaxWait(long maxWait) {
-        this.maxWait = maxWait;
+    public void setMaxWaitMillis(long maxWaitMillis) {
+        this.maxWaitMillis = maxWaitMillis;
     }
 
     /**
@@ -680,7 +681,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool
         setMaxTotalPerKey(conf.getMaxTotalPerKey());
         setMaxTotal(conf.getMaxTotal());
         setMinIdlePerKey(conf.getMinIdlePerKey());
-        setMaxWait(conf.getMaxWaitMillis());
+        setMaxWaitMillis(conf.getMaxWaitMillis());
         setBlockWhenExhausted(conf.getBlockWhenExhausted());
         setTestOnBorrow(conf.getTestOnBorrow());
         setTestOnReturn(conf.getTestOnReturn());
@@ -719,7 +720,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool
      *
      * <p>If there are no idle instances available in the pool associated with the given key, behavior
      * depends on the {@link #getMaxTotalPerKey() maxTotalPerKey}, {@link #getMaxTotal() maxTotal}, and (if applicable)
-     * {@link #getBlockWhenExhausted()} and {@link #getMaxWait() maxWait} settings. If the
+     * {@link #getBlockWhenExhausted()} and {@link #getMaxWaitMillis() maxWait} settings. If the
      * number of instances checked out from the pool under the given key is less than <code>maxTotalPerKey</code> and
      * the total number of instances in circulation (under all keys) is less than <code>maxTotal</code>, a new instance
      * is created, activated and (if applicable) validated and returned to the caller.</p>
@@ -728,7 +729,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool
      * this method will either block ({@link #getBlockWhenExhausted()} is true) or throw a <code>NoSuchElementException</code>
      * ({@link #getBlockWhenExhausted()} is false).
      * The length of time that this method will block when {@link #getBlockWhenExhausted()} is true
-     * is determined by the {@link #getMaxWait() maxWait} property.</p>
+     * is determined by the {@link #getMaxWaitMillis() maxWait} property.</p>
      *
      * When <code>maxTotal</code> is set to a
      * positive value and {@link #borrowObject borrowObject} is invoked
@@ -746,7 +747,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool
      */
     @Override
     public T borrowObject(K key) throws Exception {
-        return borrowObject(key, getMaxWait());
+        return borrowObject(key, getMaxWaitMillis());
     }
 
     /**
@@ -2056,7 +2057,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool
      * @see #setBlockWhenExhausted
      * @see #getBlockWhenExhausted
      */
-    private long maxWait = GenericKeyedObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS;
+    private long maxWaitMillis = GenericKeyedObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS;
 
     /**
      * When <code>true</code>, objects will be

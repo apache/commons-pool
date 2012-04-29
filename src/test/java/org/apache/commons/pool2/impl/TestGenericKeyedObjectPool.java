@@ -130,7 +130,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         pool.close();
         pool = null;
         factory = null;
-        
+
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         Set<ObjectName> result = mbs.queryNames(new ObjectName(
                 "org.apache.commoms.pool2:type=GenericKeyedObjectPool,*"),
@@ -383,8 +383,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             assertEquals(12,pool.getMaxIdlePerKey());
         }
         {
-            pool.setMaxWait(1234L);
-            assertEquals(1234L,pool.getMaxWait());
+            pool.setMaxWaitMillis(1234L);
+            assertEquals(1234L,pool.getMaxWaitMillis());
         }
         {
             pool.setMinEvictableIdleTimeMillis(12345L);
@@ -549,7 +549,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     public void testThreaded1() throws Exception {
         pool.setMaxTotalPerKey(15);
         pool.setMaxIdlePerKey(15);
-        pool.setMaxWait(1000L);
+        pool.setMaxWaitMillis(1000L);
         runTestThreads(20, 100, 50, pool);
     }
 
@@ -568,7 +568,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         pool.setMaxTotal(maxTotal);
         pool.setMaxIdlePerKey(-1);
         pool.setTestOnReturn(true);
-        pool.setMaxWait(10000L);
+        pool.setMaxWaitMillis(10000L);
         runTestThreads(5, 10, 50, pool);
     }
 
@@ -1051,7 +1051,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             new GenericKeyedObjectPool<Object,Object>(null);
         assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL_PER_KEY, pool.getMaxTotalPerKey());
         assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MAX_IDLE_PER_KEY, pool.getMaxIdlePerKey());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS, pool.getMaxWait());
+        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS, pool.getMaxWaitMillis());
         assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MIN_IDLE_PER_KEY, pool.getMinIdlePerKey());
         assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL, pool.getMaxTotal());
         assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
@@ -1089,7 +1089,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         pool = new GenericKeyedObjectPool<Object,Object>(null, config);
         assertEquals(maxTotalPerKey, pool.getMaxTotalPerKey());
         assertEquals(maxIdle, pool.getMaxIdlePerKey());
-        assertEquals(maxWait, pool.getMaxWait());
+        assertEquals(maxWait, pool.getMaxWaitMillis());
         assertEquals(minIdle, pool.getMinIdlePerKey());
         assertEquals(maxTotal, pool.getMaxTotal());
         assertEquals(minEvictableIdleTimeMillis,
@@ -1186,7 +1186,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     @Test(timeout=60000)
     public void testBlockedKeyDoesNotBlockPool() throws Exception {
         pool.setBlockWhenExhausted(true);
-        pool.setMaxWait(5000);
+        pool.setMaxWaitMillis(5000);
         pool.setMaxTotalPerKey(1);
         pool.setMaxTotal(-1);
         pool.borrowObject("one");
@@ -1229,7 +1229,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         final int keyCount = 4; // number of different keys
         final int threadsPerKey = 5; // number of threads to grab the key initially
         pool.setBlockWhenExhausted(true);
-        pool.setMaxWait(maxWait);
+        pool.setMaxWaitMillis(maxWait);
         pool.setMaxTotalPerKey(threadsPerKey);
         // Create enough threads so half the threads will have to wait
         WaitingTestThread wtt[] = new WaitingTestThread[keyCount * threadsPerKey * 2];
@@ -1286,7 +1286,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         pool.setMaxTotal(8);
         pool.setTestOnBorrow(true);
         pool.setMaxIdlePerKey(5);
-        pool.setMaxWait(-1);
+        pool.setMaxWaitMillis(-1);
         runTestThreads(20, 300, 250, pool);
         pool.close();
     }
@@ -1335,7 +1335,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         pool.setMaxIdlePerKey(3);
         pool.setMaxTotal(3);
         pool.setMaxTotalPerKey(3);
-        pool.setMaxWait(3000);  // Really a timeout for the test
+        pool.setMaxWaitMillis(3000);  // Really a timeout for the test
 
         // Check out and briefly hold 3 "1"s
         WaitingTestThread t1 = new WaitingTestThread(pool, "1", 100);
@@ -1390,7 +1390,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             new GenericKeyedObjectPool<String,String>(factory);
         pool.setMaxTotalPerKey(1);
         pool.setBlockWhenExhausted(true);
-        pool.setMaxWait(-1);
+        pool.setMaxWaitMillis(-1);
         String obj1 = pool.borrowObject("a");
 
         // Make sure an object was obtained
@@ -1695,7 +1695,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         Set<ObjectName> result = mbs.queryNames(oname, null);
         Assert.assertEquals(1, result.size());
     }
-    
+
     @Test(timeout=60000)
     public void testJmxNotification() throws Exception {
         factory.setThrowExceptionOnPassivate(true);
@@ -1703,25 +1703,25 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         JmxNotificationListener listener = new JmxNotificationListener();
         mbs.addNotificationListener(oname, listener, null, null);
-        
+
         String obj = pool.borrowObject("one");
         pool.returnObject("one", obj);
-        
+
         List<String> messages = listener.getMessages();
         Assert.assertEquals(1, messages.size());
         Assert.assertNotNull(messages.get(0));
         Assert.assertTrue(messages.get(0).length() > 0);
     }
-    
+
     private static class JmxNotificationListener
             implements NotificationListener {
 
         private List<String> messages = new ArrayList<String>();
-        
+
         public List<String> getMessages() {
             return messages;
         }
-        
+
         @Override
         public void handleNotification(Notification notification,
                 Object handback) {
