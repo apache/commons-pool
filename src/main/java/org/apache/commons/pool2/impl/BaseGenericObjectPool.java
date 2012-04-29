@@ -52,9 +52,12 @@ public abstract class BaseGenericObjectPool implements NotificationEmitter {
     private static final int SWALLOWED_EXCEPTION_QUEUE_SIZE = 10;
 
     // Configuration attributes
-    private int maxTotal = GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL;
+    private volatile int maxTotal =
+            GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL;
     private volatile boolean blockWhenExhausted =
-        GenericObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED;
+            GenericObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED;
+    private volatile long maxWaitMillis =
+            GenericKeyedObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS;
 
 
     // Internal (primarily state) attributes
@@ -150,10 +153,43 @@ public abstract class BaseGenericObjectPool implements NotificationEmitter {
         this.blockWhenExhausted = blockWhenExhausted;
     }
 
+    /**
+     * Returns the maximum amount of time (in milliseconds) the
+     * <code>borrowObject()</code> method should block before throwing an
+     * exception when the pool is exhausted and
+     * {@link #getBlockWhenExhausted} is true. When less than 0, the
+     * <code>borrowObject()</code> method may block indefinitely.
+     *
+     * @return the maximum number of milliseconds <code>borrowObject()</code>
+     * will block.
+     * @see #setMaxWaitMillis
+     * @see #setBlockWhenExhausted
+     */
+    public long getMaxWaitMillis() {
+        return maxWaitMillis;
+    }
 
     /**
-     * Closes the pool destroys the remaining idle objects and, if registered in
-     * JMX, deregisters it.
+     * Sets the maximum amount of time (in milliseconds) the
+     * <code>borrowObject()</code> method should block before throwing an
+     * exception when the pool is exhausted and
+     * {@link #getBlockWhenExhausted} is true. When less than 0, the
+     * <code>borrowObject()</code> method may block indefinitely.
+     *
+     * @param maxWaitMillis the maximum number of milliseconds
+     *                      <code>borrowObject()</code> will block or negative
+     *                      for indefinitely.
+     * @see #getMaxWaitMillis
+     * @see #setBlockWhenExhausted
+     */
+    public void setMaxWaitMillis(long maxWaitMillis) {
+        this.maxWaitMillis = maxWaitMillis;
+    }
+
+
+    /**
+     * Closes the pool, destroys the remaining idle objects and, if registered
+     * in JMX, deregisters it.
      */
     public abstract void close();
 
