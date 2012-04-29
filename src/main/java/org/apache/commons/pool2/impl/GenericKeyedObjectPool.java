@@ -291,41 +291,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool
         this.maxTotalPerKey = maxTotalPerKey;
     }
 
-    /**
-     * Returns the maximum amount of time (in milliseconds) the
-     * {@link #borrowObject} method should block before throwing
-     * an exception when the pool is exhausted and the
-     * {@link #getBlockWhenExhausted} is true.
-     *
-     * When less than 0, the {@link #borrowObject} method
-     * may block indefinitely.
-     *
-     * @return the maximum number of milliseconds borrowObject will block.
-     * @see #setMaxWait
-     * @see #setBlockWhenExhausted
-     */
-    @Override
-    public long getMaxWaitMillis() {
-        return maxWaitMillis;
-    }
-
-    /**
-     * Sets the maximum amount of time (in milliseconds) the
-     * {@link #borrowObject} method should block before throwing
-     * an exception when the pool is exhausted and the
-     * {@link #getBlockWhenExhausted} is true.
-     *
-     * When less than 0, the {@link #borrowObject} method
-     * may block indefinitely.
-     *
-     * @param maxWaitMillis the maximum number of milliseconds borrowObject will
-     *                      block or negative for indefinitely.
-     * @see #getMaxWait
-     * @see #setBlockWhenExhausted
-     */
-    public void setMaxWaitMillis(long maxWaitMillis) {
-        this.maxWaitMillis = maxWaitMillis;
-    }
 
     /**
      * Returns the cap on the number of "idle" instances per key.
@@ -2042,22 +2007,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool
      */
     private int maxTotalPerKey =
         GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL_PER_KEY;
-
-    /**
-     * The maximum amount of time (in millis) the
-     * {@link #borrowObject} method should block before throwing
-     * an exception when the pool is exhausted and the
-     * {@link #getBlockWhenExhausted} is true.
-     *
-     * When less than 0, the {@link #borrowObject} method
-     * may block indefinitely.
-     *
-     * @see #setMaxWait
-     * @see #getMaxWait
-     * @see #setBlockWhenExhausted
-     * @see #getBlockWhenExhausted
-     */
-    private long maxWaitMillis = GenericKeyedObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS;
 
     /**
      * When <code>true</code>, objects will be

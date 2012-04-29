@@ -233,37 +233,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool
     }
 
     /**
-     * Returns the maximum amount of time (in milliseconds) the
-     * {@link #borrowObject} method should block before throwing an exception
-     * when the pool is exhausted and the {@link #getBlockWhenExhausted} is true.
-     * When less than 0, the {@link #borrowObject} method may block indefinitely.
-     *
-     * @return maximum number of milliseconds to block when borrowing an object.
-     * @see #setMaxWaitMillis
-     * @see #setBlockWhenExhausted
-     */
-    @Override
-    public long getMaxWaitMillis() {
-        return maxWaitMillis;
-    }
-
-    /**
-     * Sets the maximum amount of time (in milliseconds) the
-     * {@link #borrowObject} method should block before throwing an exception
-     * when the pool is exhausted and the {@link #getBlockWhenExhausted} is true.
-     * When less than 0, the {@link #borrowObject} method may block indefinitely.
-     *
-     * @param maxWaitMillis
-     *            maximum number of milliseconds to block when borrowing an
-     *            object.
-     * @see #getMaxWaitMillis
-     * @see #getBlockWhenExhausted
-     */
-    public void setMaxWaitMillis(long maxWaitMillis) {
-        this.maxWaitMillis = maxWaitMillis;
-    }
-
-    /**
      * Returns the cap on the number of "idle" instances in the pool.
      *
      * @return the cap on the number of "idle" instances in the pool.
@@ -1376,21 +1345,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool
      * @see #getMinIdle
      */
     private volatile int minIdle = GenericObjectPoolConfig.DEFAULT_MIN_IDLE;
-
-    /**
-     * The maximum amount of time (in millis) the {@link #borrowObject} method
-     * should block before throwing an exception when the pool is exhausted and
-     * {@link #getBlockWhenExhausted()} is true.
-     * When less than 0, the
-     * {@link #borrowObject} method may block indefinitely.
-     *
-     * @see #setMaxWaitMillis
-     * @see #getMaxWaitMillis
-     * @see #setBlockWhenExhausted
-     * @see #getBlockWhenExhausted
-     */
-    private volatile long maxWaitMillis =
-            GenericObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS;
 
     /**
      * When <tt>true</tt>, objects will be
