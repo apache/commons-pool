@@ -53,6 +53,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      */
     public static final String NOTIFICATION_SWALLOWED_EXCEPTION =
             "SWALLOWED_EXCEPTION";
+    public static final int MEAN_TIMING_STATS_CACHE_SIZE = 100;
     private static final int SWALLOWED_EXCEPTION_QUEUE_SIZE = 10;
 
     // Configuration attributes
@@ -98,7 +99,6 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
     private final String creationStackTrace;
     private final Deque<String> swallowedExceptions = new LinkedList<String>();
     private final AtomicInteger swallowedExcpetionCount = new AtomicInteger(0);
-    public static final int MEAN_TIMING_STATS_CACHE_SIZE = 100;
     private final AtomicLong borrowedCount = new AtomicLong(0);
     private final AtomicLong returnedCount = new AtomicLong(0);
     final AtomicLong createdCount = new AtomicLong(0);
