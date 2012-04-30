@@ -959,9 +959,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     private final LinkedBlockingDeque<PooledObject<T>> idleObjects =
         new LinkedBlockingDeque<PooledObject<T>>();
 
-    /** Object used to ensure closed() is only called once. */
-    private final Object closeLock = new Object();
-
     // JMX specific attributes
     private final ObjectName oname;
 

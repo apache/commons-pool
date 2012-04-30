@@ -86,6 +86,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
 
 
     // Internal (primarily state) attributes
+    final Object closeLock = new Object();
     volatile boolean closed = false;
     final Object evictionLock = new Object();
     private Evictor evictor = null; // @GuardedBy("evictionLock")
