@@ -1002,7 +1002,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                             !evictionKeyIterator.hasNext()) {
                         List<K> keyCopy = new ArrayList<K>();
                         Lock lock = keyLock.readLock();
-                        lock .lock();
+                        lock.lock();
                         try {
                             keyCopy.addAll(poolKeyList);
                         } finally {
