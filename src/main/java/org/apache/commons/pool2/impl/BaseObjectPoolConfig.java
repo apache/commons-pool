@@ -35,7 +35,7 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
     /**
      * The default value for the {@code maxWait} configuration attribute.
      * @see GenericObjectPool#getMaxWaitMillis()
-     * @see GenericKeyedObjectPool#getMaxWait()
+     * @see GenericKeyedObjectPool#getMaxWaitMillis()
      */
     public static final long DEFAULT_MAX_WAIT_MILLIS = -1L;
 
@@ -180,7 +180,7 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
      * Get the value for the {@code maxWait} configuration attribute for pools
      * created with this configuration instance.
      * @see GenericObjectPool#getMaxWaitMillis()
-     * @see GenericKeyedObjectPool#getMaxWait()
+     * @see GenericKeyedObjectPool#getMaxWaitMillis()
      */
     public long getMaxWaitMillis() {
         return maxWaitMillis;
@@ -190,7 +190,7 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
      * Set the value for the {@code maxWait} configuration attribute for pools
      * created with this configuration instance.
      * @see GenericObjectPool#getMaxWaitMillis()
-     * @see GenericKeyedObjectPool#getMaxWait()
+     * @see GenericKeyedObjectPool#getMaxWaitMillis()
      */
     public void setMaxWaitMillis(long maxWaitMillis) {
         this.maxWaitMillis = maxWaitMillis;
