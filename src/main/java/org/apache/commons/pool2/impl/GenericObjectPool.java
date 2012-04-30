@@ -899,6 +899,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * @return  An estimate of the number of threads currently blocked waiting
      *          for an object from the pool
      */
+    @Override
     public int getNumWaiters() {
         if (getBlockWhenExhausted()) {
             return idleObjects.getTakeQueueLength();

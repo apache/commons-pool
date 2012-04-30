@@ -52,4 +52,5 @@ public interface GenericObjectPoolMBean {
     long getMaxBorrowWaitTimeMillis();
     String[] getSwallowedExceptions();
     String getCreationStackTrace();
+    int getNumWaiters();
 }
