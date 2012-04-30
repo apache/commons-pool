@@ -1655,9 +1655,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      */
     private K evictionKey = null; // @GuardedBy("evictionLock")
 
-    /** Object used to ensure closed() is only called once. */
-    private final Object closeLock = new Object();
-
     // JMX specific attributes
     private final ObjectName oname;
 
