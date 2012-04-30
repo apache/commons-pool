@@ -364,74 +364,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         }
     }
 
-    /**
-     * Returns the minimum amount of time an object may sit idle in the pool
-     * before it is eligible for eviction by the idle object evictor
-     * (if any).
-     *
-     * @return minimum amount of time an object may sit idle in the pool before it is eligible for eviction.
-     * @see #setMinEvictableIdleTimeMillis
-     * @see #setTimeBetweenEvictionRunsMillis
-     */
-    @Override
-    public long getMinEvictableIdleTimeMillis() {
-        return minEvictableIdleTimeMillis;
-    }
-
-    /**
-     * Sets the minimum amount of time an object may sit idle in the pool
-     * before it is eligible for eviction by the idle object evictor
-     * (if any).
-     * When non-positive, no objects will be evicted from the pool
-     * due to idle time alone.
-     *
-     * @param minEvictableIdleTimeMillis minimum amount of time an object may sit idle in the pool before
-     * it is eligible for eviction.
-     * @see #getMinEvictableIdleTimeMillis
-     * @see #setTimeBetweenEvictionRunsMillis
-     */
-    public void setMinEvictableIdleTimeMillis(long minEvictableIdleTimeMillis) {
-        this.minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
-    }
-
-    /**
-     * Returns the minimum amount of time
-     * an object may sit idle in the pool before it is eligible for eviction by the
-     * idle object evictor (if any), with the extra condition that at least
-     * "minIdle" object instances remain in the pool. This setting has no
-     * effect unless {@code timeBetweenEvictionRunsMillis > 0.} and it is
-     * superseded by {@link #setMinEvictableIdleTimeMillis
-     * <i>minEvictableIdleTimeMillis</i>} (that is, if
-     * {@code minEvictableIdleTimeMillis} is positive, then
-     * {@code softMinEvictableIdleTimeMillis} is ignored). The default setting
-     * for this parameter is -1 (disabled).
-     *
-     * @return minimum amount of time an object may sit idle in the pool before
-     *         it is eligible for eviction if minIdle instances are available
-     * @since Pool 1.3
-     */
-    public long getSoftMinEvictableIdleTimeMillis() {
-        return softMinEvictableIdleTimeMillis;
-    }
-
-    /**
-     * Sets the minimum amount of time an object may sit idle in the pool before
-     * it is eligible for eviction by the idle object evictor (if any), with the
-     * extra condition that at least "minIdle" object instances remain in the
-     * pool. When non-positive, no objects will be evicted from the pool due to
-     * idle time alone.
-     *
-     * @param softMinEvictableIdleTimeMillis
-     *            minimum amount of time an object may sit idle in the pool
-     *            before it is eligible for eviction.
-     * @since Pool 1.3
-     * @see #getSoftMinEvictableIdleTimeMillis
-     */
-    public void setSoftMinEvictableIdleTimeMillis(
-            long softMinEvictableIdleTimeMillis) {
-        this.softMinEvictableIdleTimeMillis = softMinEvictableIdleTimeMillis;
-    }
-
     public String getEvictionPolicyClassName() {
         return evictionPolicy.getClass().getName();
     }
@@ -457,35 +389,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                     "Unable to create EvictionPolicy instance of type " +
                     evictionPolicyClassName, e);
         }
-    }
-
-    /**
-     * When <code>true</code>, objects will be
-     * {@link org.apache.commons.pool2.PoolableObjectFactory#validateObject validated}
-     * by the idle object evictor (if any).  If an object
-     * fails to validate, it will be dropped from the pool.
-     *
-     * @return <code>true</code> when objects are validated when borrowed.
-     * @see #setTestWhileIdle
-     * @see #setTimeBetweenEvictionRunsMillis
-     */
-    @Override
-    public boolean getTestWhileIdle() {
-        return testWhileIdle;
-    }
-
-    /**
-     * When <code>true</code>, objects will be
-     * {@link org.apache.commons.pool2.PoolableObjectFactory#validateObject validated}
-     * by the idle object evictor (if any).  If an object
-     * fails to validate, it will be dropped from the pool.
-     *
-     * @param testWhileIdle <code>true</code> so objects are validated when borrowed.
-     * @see #getTestWhileIdle
-     * @see #setTimeBetweenEvictionRunsMillis
-     */
-    public void setTestWhileIdle(boolean testWhileIdle) {
-        this.testWhileIdle = testWhileIdle;
     }
 
     /**
@@ -1865,48 +1768,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      */
     private int maxTotalPerKey =
         GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL_PER_KEY;
-
-    /**
-     * When <code>true</code>, objects will be
-     * {@link org.apache.commons.pool2.PoolableObjectFactory#validateObject validated}
-     * by the idle object evictor (if any).  If an object
-     * fails to validate, it will be dropped from the pool.
-     *
-     * @see #setTestWhileIdle
-     * @see #getTestWhileIdle
-     * @see #getTimeBetweenEvictionRunsMillis
-     * @see #setTimeBetweenEvictionRunsMillis
-     */
-    private boolean testWhileIdle =
-        GenericKeyedObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE;
-
-    /**
-     * The minimum amount of time an object may sit idle in the pool
-     * before it is eligible for eviction by the idle object evictor
-     * (if any).
-     * When non-positive, no objects will be evicted from the pool
-     * due to idle time alone.
-     *
-     * @see #setMinEvictableIdleTimeMillis
-     * @see #getMinEvictableIdleTimeMillis
-     * @see #getTimeBetweenEvictionRunsMillis
-     * @see #setTimeBetweenEvictionRunsMillis
-     */
-    private long minEvictableIdleTimeMillis =
-        GenericKeyedObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
-
-    /**
-     * The minimum amount of time an object may sit idle in the pool before it
-     * is eligible for eviction by the idle object evictor (if any), with the
-     * extra condition that at least "minIdle" amount of object remain in the
-     * pool. When non-positive, no objects will be evicted from the pool due to
-     * idle time alone.
-     *
-     * @see #setSoftMinEvictableIdleTimeMillis
-     * @see #getSoftMinEvictableIdleTimeMillis
-     */
-    private volatile long softMinEvictableIdleTimeMillis =
-        GenericKeyedObjectPoolConfig.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 
     private boolean lifo = GenericKeyedObjectPoolConfig.DEFAULT_LIFO;
     private final KeyedPoolableObjectFactory<K,T> factory;

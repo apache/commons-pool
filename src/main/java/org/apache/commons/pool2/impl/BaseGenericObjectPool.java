@@ -65,10 +65,16 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
             GenericObjectPoolConfig.DEFAULT_TEST_ON_BORROW;
     private volatile boolean testOnReturn =
             GenericObjectPoolConfig.DEFAULT_TEST_ON_RETURN;
+    private volatile boolean testWhileIdle =
+            GenericObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE;
     private volatile long timeBetweenEvictionRunsMillis =
             GenericObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
     private volatile int numTestsPerEvictionRun =
             GenericObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
+    private volatile long minEvictableIdleTimeMillis =
+            GenericObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+    private volatile long softMinEvictableIdleTimeMillis =
+            GenericObjectPoolConfig.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 
 
     // Internal (primarily state) attributes
@@ -119,6 +125,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      *
      * @return the cap on the total number of object instances managed by the
      *         pool.
+     *
      * @see #setMaxTotal
      */
     public int getMaxTotal() {
@@ -133,6 +140,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * @param maxTotal  The cap on the total number of object instances managed
      *                  by the pool. Negative values mean that there is no limit
      *                  to the number of objects allocated by the pool.
+     *
      * @see #getMaxTotal
      */
     public void setMaxTotal(int maxTotal) {
@@ -146,6 +154,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      *
      * @return <code>true</code> if <code>borrowObject()</code> should block
      *         when the pool is exhausted
+     *
      * @see #setBlockWhenExhausted
      */
     public boolean getBlockWhenExhausted() {
@@ -160,6 +169,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * @param blockWhenExhausted    <code>true</code> if
      *                              <code>borrowObject()</code> should block
      *                              when the pool is exhausted
+     *
      * @see #getBlockWhenExhausted
      */
     public void setBlockWhenExhausted(boolean blockWhenExhausted) {
@@ -174,7 +184,8 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * <code>borrowObject()</code> method may block indefinitely.
      *
      * @return the maximum number of milliseconds <code>borrowObject()</code>
-     * will block.
+     *         will block.
+     *
      * @see #setMaxWaitMillis
      * @see #setBlockWhenExhausted
      */
@@ -192,6 +203,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * @param maxWaitMillis the maximum number of milliseconds
      *                      <code>borrowObject()</code> will block or negative
      *                      for indefinitely.
+     *
      * @see #getMaxWaitMillis
      * @see #setBlockWhenExhausted
      */
@@ -203,11 +215,12 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * Returns whether objects borrowed from the pool will be validated before
      * being returned from the <code>borrowObject()</code> method. Validation is
      * performed by the factory associated with the pool. If the object fails to
-     * validate, it will be dropped from the pool and destroyed, and a new
+     * validate, it will be removed from the pool and destroyed, and a new
      * attempt will be made to borrow an object from the pool.
      *
      * @return <code>true</code> if objects are validated before being returned
      *         from the <code>borrowObject()</code> method
+     *
      * @see #setTestOnBorrow
      */
     public boolean getTestOnBorrow() {
@@ -218,12 +231,13 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * Sets whether objects borrowed from the pool will be validated before
      * being returned from the <code>borrowObject()</code> method. Validation is
      * performed by the factory associated with the pool. If the object fails to
-     * validate, it will be dropped from the pool and destroyed, and a new
+     * validate, it will be removed from the pool and destroyed, and a new
      * attempt will be made to borrow an object from the pool.
      *
      * @param testOnBorrow  <code>true</code> if objects should be validated
      *                      before being returned from the
      *                      <code>borrowObject()</code> method
+     *
      * @see #getTestOnBorrow
      */
     public void setTestOnBorrow(boolean testOnBorrow) {
@@ -238,6 +252,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      *
      * @return <code>true</code> if objects are validated on being returned to
      *         the pool via the <code>returnObject()</code> method
+     *
      * @see #setTestOnReturn
      */
     public boolean getTestOnReturn() {
@@ -253,6 +268,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * @param testOnReturn <code>true</code> if objects are validated on being
      *                     returned to the pool via the
      *                     <code>returnObject()</code> method
+     *
      * @see #getTestOnReturn
      */
     public void setTestOnReturn(boolean testOnReturn) {
@@ -260,11 +276,45 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
     }
 
     /**
+     * Returns whether objects sitting idle in the pool will be validated by the
+     * idle object evictor (if any - see
+     * {@link #setTimeBetweenEvictionRunsMillis(long)}). Validation is performed
+     * by the factory associated with the pool. If the object fails to validate,
+     * it will be removed from the pool and destroyed.
+     *
+     * @return <code>true</code> if objects will be validated by the evictor
+     *
+     * @see #setTestWhileIdle
+     * @see #setTimeBetweenEvictionRunsMillis
+     */
+    public boolean getTestWhileIdle() {
+        return testWhileIdle;
+    }
+
+    /**
+     * Returns whether objects sitting idle in the pool will be validated by the
+     * idle object evictor (if any - see
+     * {@link #setTimeBetweenEvictionRunsMillis(long)}). Validation is performed
+     * by the factory associated with the pool. If the object fails to validate,
+     * it will be removed from the pool and destroyed.
+     *
+     * @param testWhileIdle
+     *            <code>true</code> so objects will be validated by the evictor
+     *
+     * @see #getTestWhileIdle
+     * @see #setTimeBetweenEvictionRunsMillis
+     */
+    public void setTestWhileIdle(boolean testWhileIdle) {
+        this.testWhileIdle = testWhileIdle;
+    }
+
+    /**
      * Returns the number of milliseconds to sleep between runs of the idle
      * object evictor thread. When non-positive, no idle object evictor thread
      * will be run.
      *
-     * @return number of milliseconds to sleep between evictor runs.
+     * @return number of milliseconds to sleep between evictor runs
+     *
      * @see #setTimeBetweenEvictionRunsMillis
      */
     public long getTimeBetweenEvictionRunsMillis() {
@@ -277,7 +327,8 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * will be run.
      *
      * @param timeBetweenEvictionRunsMillis
-     *            number of milliseconds to sleep between evictor runs.
+     *            number of milliseconds to sleep between evictor runs
+     *
      * @see #getTimeBetweenEvictionRunsMillis
      */
     public void setTimeBetweenEvictionRunsMillis(
@@ -296,7 +347,8 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * is <code>-n</code> roughly one nth of the idle objects will be tested per
      * run.
      *
-     * @return max number of objects to examine during each evictor run.
+     * @return max number of objects to examine during each evictor run
+     *
      * @see #setNumTestsPerEvictionRun
      * @see #setTimeBetweenEvictionRunsMillis
      */
@@ -315,12 +367,87 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * run.
      *
      * @param numTestsPerEvictionRun
-     *            max number of objects to examine during each evictor run.
+     *            max number of objects to examine during each evictor run
+     *
      * @see #getNumTestsPerEvictionRun
      * @see #setTimeBetweenEvictionRunsMillis
      */
     public void setNumTestsPerEvictionRun(int numTestsPerEvictionRun) {
         this.numTestsPerEvictionRun = numTestsPerEvictionRun;
+    }
+
+    /**
+     * Returns the minimum amount of time an object may sit idle in the pool
+     * before it is eligible for eviction by the idle object evictor (if any -
+     * see {@link #setTimeBetweenEvictionRunsMillis(long)}). When non-positive,
+     * no objects will be evicted from the pool due to idle time alone.
+     *
+     * @return minimum amount of time an object may sit idle in the pool before
+     *         it is eligible for eviction
+     *
+     * @see #setMinEvictableIdleTimeMillis
+     * @see #setTimeBetweenEvictionRunsMillis
+     */
+    public long getMinEvictableIdleTimeMillis() {
+        return minEvictableIdleTimeMillis;
+    }
+
+    /**
+     * Sets the minimum amount of time an object may sit idle in the pool
+     * before it is eligible for eviction by the idle object evictor (if any -
+     * see {@link #setTimeBetweenEvictionRunsMillis(long)}). When non-positive,
+     * no objects will be evicted from the pool due to idle time alone.
+     *
+     * @param minEvictableIdleTimeMillis
+     *            minimum amount of time an object may sit idle in the pool
+     *            before it is eligible for eviction
+     *
+     * @see #getMinEvictableIdleTimeMillis
+     * @see #setTimeBetweenEvictionRunsMillis
+     */
+    public void setMinEvictableIdleTimeMillis(long minEvictableIdleTimeMillis) {
+        this.minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
+    }
+
+    /**
+     * Returns the minimum amount of time an object may sit idle in the pool
+     * before it is eligible for eviction by the idle object evictor (if any -
+     * see {@link #setTimeBetweenEvictionRunsMillis(long)}),
+     * with the extra condition that at least <code>minIdle</code> object
+     * instances remain in the pool. This setting is overridden by
+     * {@link #getMinEvictableIdleTimeMillis} (that is, if
+     * {@link #getMinEvictableIdleTimeMillis} is positive, then
+     * {@link #getSoftMinEvictableIdleTimeMillis} is ignored).
+     *
+     * @return minimum amount of time an object may sit idle in the pool before
+     *         it is eligible for eviction if minIdle instances are available
+     *
+     * @see #setSoftMinEvictableIdleTimeMillis
+     */
+    public long getSoftMinEvictableIdleTimeMillis() {
+        return softMinEvictableIdleTimeMillis;
+    }
+
+    /**
+     * Sets the minimum amount of time an object may sit idle in the pool
+     * before it is eligible for eviction by the idle object evictor (if any -
+     * see {@link #setTimeBetweenEvictionRunsMillis(long)}),
+     * with the extra condition that at least <code>minIdle</code> object
+     * instances remain in the pool. This setting is overridden by
+     * {@link #getMinEvictableIdleTimeMillis} (that is, if
+     * {@link #getMinEvictableIdleTimeMillis} is positive, then
+     * {@link #getSoftMinEvictableIdleTimeMillis} is ignored).
+     *
+     * @param softMinEvictableIdleTimeMillis
+     *            minimum amount of time an object may sit idle in the pool
+     *            before it is eligible for eviction if minIdle instances are
+     *            available
+     *
+     * @see #getSoftMinEvictableIdleTimeMillis
+     */
+    public void setSoftMinEvictableIdleTimeMillis(
+            long softMinEvictableIdleTimeMillis) {
+        this.softMinEvictableIdleTimeMillis = softMinEvictableIdleTimeMillis;
     }
 
 
