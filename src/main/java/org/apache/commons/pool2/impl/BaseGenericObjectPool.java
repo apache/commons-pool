@@ -21,6 +21,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TimerTask;
@@ -39,8 +40,10 @@ import javax.management.ObjectName;
  * Base class that provides common functionality for {@link GenericObjectPool}
  * and {@link GenericKeyedObjectPool}. The primary reason this class exists is
  * reduce code duplication between the two pool implementations.
+ *
+ * @param <T> Type of element pooled in this pool.
  */
-public abstract class BaseGenericObjectPool implements NotificationEmitter {
+public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
 
     // Constants
     /**
@@ -62,12 +65,18 @@ public abstract class BaseGenericObjectPool implements NotificationEmitter {
             GenericObjectPoolConfig.DEFAULT_TEST_ON_BORROW;
     private volatile boolean testOnReturn =
             GenericObjectPoolConfig.DEFAULT_TEST_ON_RETURN;
+    private volatile long timeBetweenEvictionRunsMillis =
+            GenericObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
+    private volatile int numTestsPerEvictionRun =
+            GenericObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
 
 
     // Internal (primarily state) attributes
     volatile boolean closed = false;
-
-    /**
+    private Evictor evictor = null; // @GuardedBy("evictionLock")
+    protected final Object evictionLock = new Object();
+    protected Iterator<PooledObject<T>> evictionIterator = null; // @GuardedBy("evictionLock")
+    /*
      * Class loader for evictor thread to use since in a J2EE or similar
      * environment the context class loader for the evictor thread may have
      * visibility of the correct factory. See POOL-161.
@@ -195,7 +204,7 @@ public abstract class BaseGenericObjectPool implements NotificationEmitter {
      * being returned from the <code>borrowObject()</code> method. Validation is
      * performed by the factory associated with the pool. If the object fails to
      * validate, it will be dropped from the pool and destroyed, and a new
-     * attempt will be made to borrow an object from the pool.  
+     * attempt will be made to borrow an object from the pool.
      *
      * @return <code>true</code> if objects are validated before being returned
      *         from the <code>borrowObject()</code> method
@@ -210,7 +219,7 @@ public abstract class BaseGenericObjectPool implements NotificationEmitter {
      * being returned from the <code>borrowObject()</code> method. Validation is
      * performed by the factory associated with the pool. If the object fails to
      * validate, it will be dropped from the pool and destroyed, and a new
-     * attempt will be made to borrow an object from the pool.  
+     * attempt will be made to borrow an object from the pool.
      *
      * @param testOnBorrow  <code>true</code> if objects should be validated
      *                      before being returned from the
@@ -249,8 +258,72 @@ public abstract class BaseGenericObjectPool implements NotificationEmitter {
     public void setTestOnReturn(boolean testOnReturn) {
         this.testOnReturn = testOnReturn;
     }
-    
-    
+
+    /**
+     * Returns the number of milliseconds to sleep between runs of the idle
+     * object evictor thread. When non-positive, no idle object evictor thread
+     * will be run.
+     *
+     * @return number of milliseconds to sleep between evictor runs.
+     * @see #setTimeBetweenEvictionRunsMillis
+     */
+    public long getTimeBetweenEvictionRunsMillis() {
+        return timeBetweenEvictionRunsMillis;
+    }
+
+    /**
+     * Sets the number of milliseconds to sleep between runs of the idle
+     * object evictor thread. When non-positive, no idle object evictor thread
+     * will be run.
+     *
+     * @param timeBetweenEvictionRunsMillis
+     *            number of milliseconds to sleep between evictor runs.
+     * @see #getTimeBetweenEvictionRunsMillis
+     */
+    public void setTimeBetweenEvictionRunsMillis(
+            long timeBetweenEvictionRunsMillis) {
+        this.timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
+        startEvictor(timeBetweenEvictionRunsMillis);
+    }
+
+    /**
+     * Returns the maximum number of objects to examine during each run (if any)
+     * of the idle object evictor thread. When positive, the number of tests
+     * performed for a run will be the minimum of the configured value and the
+     * number of idle instances in the pool. When negative, the number of tests
+     * performed will be <code>ceil({@link #getNumIdle}/
+     * abs({@link #getNumTestsPerEvictionRun})) whch means that when the value
+     * is <code>-n</code> roughly one nth of the idle objects will be tested per
+     * run.
+     *
+     * @return max number of objects to examine during each evictor run.
+     * @see #setNumTestsPerEvictionRun
+     * @see #setTimeBetweenEvictionRunsMillis
+     */
+    public int getNumTestsPerEvictionRun() {
+        return numTestsPerEvictionRun;
+    }
+
+    /**
+     * Sets the maximum number of objects to examine during each run (if any)
+     * of the idle object evictor thread. When positive, the number of tests
+     * performed for a run will be the minimum of the configured value and the
+     * number of idle instances in the pool. When negative, the number of tests
+     * performed will be <code>ceil({@link #getNumIdle}/
+     * abs({@link #getNumTestsPerEvictionRun})) whch means that when the value
+     * is <code>-n</code> roughly one nth of the idle objects will be tested per
+     * run.
+     *
+     * @param numTestsPerEvictionRun
+     *            max number of objects to examine during each evictor run.
+     * @see #getNumTestsPerEvictionRun
+     * @see #setTimeBetweenEvictionRunsMillis
+     */
+    public void setNumTestsPerEvictionRun(int numTestsPerEvictionRun) {
+        this.numTestsPerEvictionRun = numTestsPerEvictionRun;
+    }
+
+
     /**
      * Closes the pool, destroys the remaining idle objects and, if registered
      * in JMX, deregisters it.
@@ -287,6 +360,29 @@ public abstract class BaseGenericObjectPool implements NotificationEmitter {
     protected final void assertOpen() throws IllegalStateException {
         if (isClosed()) {
             throw new IllegalStateException("Pool not open");
+        }
+    }
+
+    /**
+     * Start the eviction thread or service, or when <i>delay</i> is
+     * non-positive, stop it if it is already running.
+     *
+     * @param delay
+     *            milliseconds between evictor runs.
+     */
+    // Needs to be final; see POOL-195. Make protected method final as it is
+    // called from a constructor.
+    protected final void startEvictor(long delay) {
+        synchronized (evictionLock) {
+            if (null != evictor) {
+                EvictionTimer.cancel(evictor);
+                evictor = null;
+                evictionIterator = null;
+            }
+            if (delay > 0) {
+                evictor = new Evictor();
+                EvictionTimer.schedule(evictor, delay, delay);
+            }
         }
     }
 
