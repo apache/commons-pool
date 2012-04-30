@@ -90,7 +90,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.close();
         pool = null;
         factory = null;
-        
+
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         Set<ObjectName> result = mbs.queryNames(new ObjectName(
                 "org.apache.commoms.pool2:type=GenericObjectPool,*"), null);
@@ -268,7 +268,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         setUp();
         checkEvictionOrderPart2(lifo);
     }
-    
+
     private void checkEvictionOrderPart1(boolean lifo) throws Exception {
         pool.setNumTestsPerEvictionRun(2);
         pool.setMinEvictableIdleTimeMillis(100);
@@ -384,7 +384,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             }
         }
         pool.close();
-        
+
         // Randomly generate a pools with random numTests
         // and make sure evictor cycles through elements appropriately
         int[] smallPrimes = {2, 3, 5, 7};
@@ -742,16 +742,6 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         expected.setBlockWhenExhausted(false);
         pool.setConfig(expected);
         assertConfiguration(expected,pool);
-    }
-
-    @Test(timeout=60000)
-    public void testDebugInfo() throws Exception {
-        pool.setMaxIdle(3);
-        assertNotNull(pool.debugInfo());
-        Object obj = pool.borrowObject();
-        assertNotNull(pool.debugInfo());
-        pool.returnObject(obj);
-        assertNotNull(pool.debugInfo());
     }
 
     @Test(timeout=60000)
@@ -1380,7 +1370,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     protected GenericObjectPool<Object> pool = null;
-    
+
     private SimpleFactory factory = null;
 
     private void assertConfiguration(GenericObjectPoolConfig expected, GenericObjectPool<?> actual) throws Exception {
@@ -1791,7 +1781,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.returnObject(instance);
         assertEquals(factory.getMakeCounter(), pool.getNumIdle());
     }
-    
+
     /**
      * Ensure the pool is registered.
      */
@@ -1802,7 +1792,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         Set<ObjectName> result = mbs.queryNames(oname, null);
         Assert.assertEquals(1, result.size());
     }
-    
+
     @Test(timeout=60000)
     public void testJmxNotification() throws Exception {
         factory.setThrowExceptionOnPassivate(true);
@@ -1810,25 +1800,25 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         JmxNotificationListener listener = new JmxNotificationListener();
         mbs.addNotificationListener(oname, listener, null, null);
-        
+
         Object obj = pool.borrowObject();
         pool.returnObject(obj);
-        
+
         List<String> messages = listener.getMessages();
         Assert.assertEquals(1, messages.size());
         Assert.assertNotNull(messages.get(0));
         Assert.assertTrue(messages.get(0).length() > 0);
     }
-    
+
     private static class JmxNotificationListener
             implements NotificationListener {
 
         private List<String> messages = new ArrayList<String>();
-        
+
         public List<String> getMessages() {
             return messages;
         }
-        
+
         @Override
         public void handleNotification(Notification notification,
                 Object handback) {

@@ -872,24 +872,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Returns pool info including {@link #getNumActive()},
-     * {@link #getNumIdle()} and a list of objects idle in the pool with their
-     * idle times.
-     *
-     * @return string containing debug information
-     */
-    String debugInfo() {
-        StringBuilder buf = new StringBuilder();
-        buf.append("Active: ").append(getNumActive()).append("\n");
-        buf.append("Idle: ").append(getNumIdle()).append("\n");
-        buf.append("Idle Objects:\n");
-        for (PooledObject<T> pair : idleObjects) {
-            buf.append("\t").append(pair.toString());
-        }
-        return buf.toString();
-    }
-
-    /**
      * Returns the number of tests to be performed in an Evictor run, based on
      * the current value of <code>numTestsPerEvictionRun</code> and the number
      * of idle instances in the pool.

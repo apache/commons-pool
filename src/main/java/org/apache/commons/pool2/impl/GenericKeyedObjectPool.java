@@ -1373,25 +1373,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Returns pool info including {@link #getNumActive()}, {@link #getNumIdle()}
-     * and currently defined keys.
-     *
-     * @return string containing debug information
-     */
-    String debugInfo() {
-        StringBuilder buf = new StringBuilder();
-        buf.append("Active: ").append(getNumActive()).append("\n");
-        buf.append("Idle: ").append(getNumIdle()).append("\n");
-        for (Entry<K,ObjectDeque<T>> entry : poolMap.entrySet()) {
-            buf.append(entry.getKey());
-            buf.append(": ");
-            buf.append(entry.getValue());
-            buf.append("\n");
-        }
-        return buf.toString();
-    }
-
-    /**
      * Returns the number of tests to be performed in an Evictor run,
      * based on the current values of <code>_numTestsPerEvictionRun</code>
      * and <code>_totalIdle</code>.
