@@ -649,28 +649,28 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
             ClassLoader savedClassLoader =
                     Thread.currentThread().getContextClassLoader();
             try {
-                //  set the class loader for the factory
+                // Set the class loader for the factory
                 Thread.currentThread().setContextClassLoader(
                         factoryClassLoader);
 
-                //Evict from the pool
+                // Evict from the pool
                 try {
                     evict();
                 } catch(Exception e) {
-                    // ignored
+                    // Ignored
                 } catch(OutOfMemoryError oome) {
                     // Log problem but give evictor thread a chance to continue
                     // in case error is recoverable
                     oome.printStackTrace(System.err);
                 }
-                //Re-create idle instances.
+                // Re-create idle instances.
                 try {
                     ensureMinIdle();
                 } catch (Exception e) {
-                    // ignored
+                    // Ignored
                 }
             } finally {
-                // restore the previous CCL
+                // Restore the previous CCL
                 Thread.currentThread().setContextClassLoader(savedClassLoader);
             }
         }
