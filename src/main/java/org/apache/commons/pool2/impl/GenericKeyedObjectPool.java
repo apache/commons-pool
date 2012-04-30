@@ -99,10 +99,10 @@ import org.apache.commons.pool2.PoolUtils;
  *      When {@link #getBlockWhenExhausted} is true,
  *      {@link #borrowObject borrowObject} will block
  *      (invoke {@link Object#wait() wait} until a new or idle object is available.
- *      If a non-negative {@link #setMaxWait maxWait}
+ *      If a non-negative {@link #setMaxWaitMillis(long) maxWait}
  *      value is supplied, the {@link #borrowObject borrowObject} will block for at
  *      most that many milliseconds, after which a {@link NoSuchElementException}
- *      will be thrown.  If {@link #setMaxWait maxWait} is negative,
+ *      will be thrown.  If {@link #setMaxWaitMillis(long) maxWait} is negative,
  *      the {@link #borrowObject borrowObject} method will block indefinitely.
  *    </li>
  *    </ul>
