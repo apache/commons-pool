@@ -364,61 +364,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         }
     }
 
-    public String getEvictionPolicyClassName() {
-        return evictionPolicy.getClass().getName();
-    }
-
-    @SuppressWarnings("unchecked")
-    public void setEvictionPolicyClassName(String evictionPolicyClassName) {
-        try {
-            Class<?> clazz = Class.forName(evictionPolicyClassName);
-            Object policy = clazz.newInstance();
-            if (policy instanceof EvictionPolicy<?>) {
-                this.evictionPolicy = (EvictionPolicy<T>) policy;
-            }
-        } catch (ClassNotFoundException e) {
-            throw new IllegalArgumentException(
-                    "Unable to create EvictionPolicy instance of type " +
-                    evictionPolicyClassName, e);
-        } catch (InstantiationException e) {
-            throw new IllegalArgumentException(
-                    "Unable to create EvictionPolicy instance of type " +
-                    evictionPolicyClassName, e);
-        } catch (IllegalAccessException e) {
-            throw new IllegalArgumentException(
-                    "Unable to create EvictionPolicy instance of type " +
-                    evictionPolicyClassName, e);
-        }
-    }
-
-    /**
-     * The pools can be configured to behave as LIFO (last in, first out) queues
-     * with respect to idle objects - always returning the most recently used
-     * object from the pool, or as FIFO (first in, first out) queues, where
-     * {@link #borrowObject(Object)} and {@link #borrowObject(Object, long)}
-     * always return the oldest object in the idle object pool.
-     *
-     * @return <code>true</code> if the pools are configured to act as LIFO
-     *         queues or <code>false</code> if the pools are configured to act
-     *         as FIFO queues
-     * @since 1.4
-     */
-    @Override
-    public boolean getLifo() {
-        return lifo;
-    }
-
-    /**
-     * Sets the LIFO property of the pools.
-     *
-     * @param lifo the new value for the lifo property
-     * @since 1.4
-     * @see #getLifo()
-     */
-    public void setLifo(boolean lifo) {
-        this.lifo = lifo;
-    }
-
     /**
      * Sets the configuration.
      * @param conf the new configuration to use.
@@ -1062,6 +1007,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         }
 
         PooledObject<T> underTest = null;
+        EvictionPolicy<T> evictionPolicy = getEvictionPolicy();
 
         synchronized (evictionLock) {
             EvictionConfig evictionConfig = new EvictionConfig(
@@ -1769,7 +1715,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
     private int maxTotalPerKey =
         GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL_PER_KEY;
 
-    private boolean lifo = GenericKeyedObjectPoolConfig.DEFAULT_LIFO;
     private final KeyedPoolableObjectFactory<K,T> factory;
 
 
@@ -1812,11 +1757,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * currently being evicted.
      */
     private K evictionKey = null; // @GuardedBy("evictionLock")
-
-    /**
-     * Policy that determines if an object is eligible for eviction or not.
-     */
-    private EvictionPolicy<T> evictionPolicy;
 
     /** Object used to ensure closed() is only called once. */
     private final Object closeLock = new Object();

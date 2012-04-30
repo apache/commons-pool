@@ -61,6 +61,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
             GenericObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED;
     private volatile long maxWaitMillis =
             GenericKeyedObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS;
+    private volatile boolean lifo = GenericObjectPoolConfig.DEFAULT_LIFO;
     private volatile boolean testOnBorrow =
             GenericObjectPoolConfig.DEFAULT_TEST_ON_BORROW;
     private volatile boolean testOnReturn =
@@ -75,6 +76,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
             GenericObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
     private volatile long softMinEvictableIdleTimeMillis =
             GenericObjectPoolConfig.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+    private volatile EvictionPolicy<T> evictionPolicy;
 
 
     // Internal (primarily state) attributes
@@ -209,6 +211,38 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      */
     public void setMaxWaitMillis(long maxWaitMillis) {
         this.maxWaitMillis = maxWaitMillis;
+    }
+
+    /**
+     * Returns whether the pool has LIFO (last in, first out) behaviour with
+     * respect to idle objects - always returning the most recently used object
+     * from the pool, or as a FIFO (first in, first out) queue, where the pool
+     * always returns the oldest object in the idle object pool.
+     *
+     * @return <code>true</true> if the pool is configured with LIFO behaviour
+     *         or <code>false</code> if the pool is configured with FIFO
+     *         behaviour
+     *
+     * @see #setLifo
+     */
+    public boolean getLifo() {
+        return lifo;
+    }
+
+    /**
+     * Sets whether the pool has LIFO (last in, first out) behaviour with
+     * respect to idle objects - always returning the most recently used object
+     * from the pool, or as a FIFO (first in, first out) queue, where the pool
+     * always returns the oldest object in the idle object pool.
+     *
+     * @param lifo  <code>true</true> if the pool is to be configured with LIFO
+     *              behaviour or <code>false</code> if the pool is to be
+     *              configured with FIFO behaviour
+     *
+     * @see #getLifo()
+     */
+    public void setLifo(boolean lifo) {
+        this.lifo = lifo;
     }
 
     /**
@@ -450,6 +484,50 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
         this.softMinEvictableIdleTimeMillis = softMinEvictableIdleTimeMillis;
     }
 
+    /**
+     * Returns the name of the {@link EvictionPolicy} implementation that is
+     * used by this pool.
+     *
+     * @return  The fully qualified class name of the {@link EvictionPolicy}
+     *
+     * @see #setEvictionPolicyClassName(String)
+     */
+    public String getEvictionPolicyClassName() {
+        return evictionPolicy.getClass().getName();
+    }
+
+    /**
+     * Sets the name of the {@link EvictionPolicy} implementation that is
+     * used by this pool.
+     *
+     * @param evictionPolicyClassName   the fully qualified class name of the
+     *                                  new eviction policy
+     *
+     * @see #getEvictionPolicyClassName()
+     */
+    @SuppressWarnings("unchecked")
+    public void setEvictionPolicyClassName(String evictionPolicyClassName) {
+        try {
+            Class<?> clazz = Class.forName(evictionPolicyClassName);
+            Object policy = clazz.newInstance();
+            if (policy instanceof EvictionPolicy<?>) {
+                this.evictionPolicy = (EvictionPolicy<T>) policy;
+            }
+        } catch (ClassNotFoundException e) {
+            throw new IllegalArgumentException(
+                    "Unable to create EvictionPolicy instance of type " +
+                    evictionPolicyClassName, e);
+        } catch (InstantiationException e) {
+            throw new IllegalArgumentException(
+                    "Unable to create EvictionPolicy instance of type " +
+                    evictionPolicyClassName, e);
+        } catch (IllegalAccessException e) {
+            throw new IllegalArgumentException(
+                    "Unable to create EvictionPolicy instance of type " +
+                    evictionPolicyClassName, e);
+        }
+    }
+
 
     /**
      * Closes the pool, destroys the remaining idle objects and, if registered
@@ -476,6 +554,13 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * @throws Exception when there is a problem evicting idle objects.
      */
     public abstract void evict() throws Exception;
+
+    /*
+     * Make the eviction policy instance available to the sub-classes
+     */
+    EvictionPolicy<T> getEvictionPolicy() {
+        return evictionPolicy;
+    }
 
     /**
      * Throws an <code>IllegalStateException</code> if called when the pool has
