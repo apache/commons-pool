@@ -58,6 +58,10 @@ public abstract class BaseGenericObjectPool implements NotificationEmitter {
             GenericObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED;
     private volatile long maxWaitMillis =
             GenericKeyedObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS;
+    private volatile boolean testOnBorrow =
+            GenericObjectPoolConfig.DEFAULT_TEST_ON_BORROW;
+    private volatile boolean testOnReturn =
+            GenericObjectPoolConfig.DEFAULT_TEST_ON_RETURN;
 
 
     // Internal (primarily state) attributes
@@ -186,7 +190,67 @@ public abstract class BaseGenericObjectPool implements NotificationEmitter {
         this.maxWaitMillis = maxWaitMillis;
     }
 
+    /**
+     * Returns whether objects borrowed from the pool will be validated before
+     * being returned from the <code>borrowObject()</code> method. Validation is
+     * performed by the factory associated with the pool. If the object fails to
+     * validate, it will be dropped from the pool and destroyed, and a new
+     * attempt will be made to borrow an object from the pool.  
+     *
+     * @return <code>true</code> if objects are validated before being returned
+     *         from the <code>borrowObject()</code> method
+     * @see #setTestOnBorrow
+     */
+    public boolean getTestOnBorrow() {
+        return testOnBorrow;
+    }
 
+    /**
+     * Sets whether objects borrowed from the pool will be validated before
+     * being returned from the <code>borrowObject()</code> method. Validation is
+     * performed by the factory associated with the pool. If the object fails to
+     * validate, it will be dropped from the pool and destroyed, and a new
+     * attempt will be made to borrow an object from the pool.  
+     *
+     * @param testOnBorrow  <code>true</code> if objects should be validated
+     *                      before being returned from the
+     *                      <code>borrowObject()</code> method
+     * @see #getTestOnBorrow
+     */
+    public void setTestOnBorrow(boolean testOnBorrow) {
+        this.testOnBorrow = testOnBorrow;
+    }
+
+    /**
+     * Returns whether objects borrowed from the pool will be validated when
+     * they are returned to the pool via the <code>returnObject()</code> method.
+     * Validation is performed by the factory associated with the pool. If the
+     * object fails to it will be destroyed rather then returned the pool.
+     *
+     * @return <code>true</code> if objects are validated on being returned to
+     *         the pool via the <code>returnObject()</code> method
+     * @see #setTestOnReturn
+     */
+    public boolean getTestOnReturn() {
+        return testOnReturn;
+    }
+
+    /**
+     * Sets whether objects borrowed from the pool will be validated when
+     * they are returned to the pool via the <code>returnObject()</code> method.
+     * Validation is performed by the factory associated with the pool. If the
+     * object fails to it will be destroyed rather then returned the pool.
+     *
+     * @param testOnReturn <code>true</code> if objects are validated on being
+     *                     returned to the pool via the
+     *                     <code>returnObject()</code> method
+     * @see #getTestOnReturn
+     */
+    public void setTestOnReturn(boolean testOnReturn) {
+        this.testOnReturn = testOnReturn;
+    }
+    
+    
     /**
      * Closes the pool, destroys the remaining idle objects and, if registered
      * in JMX, deregisters it.

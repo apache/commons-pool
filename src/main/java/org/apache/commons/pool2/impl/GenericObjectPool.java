@@ -303,65 +303,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool
     }
 
     /**
-     * When <tt>true</tt>, objects will be
-     * {@link PoolableObjectFactory#validateObject validated} before being
-     * returned by the {@link #borrowObject} method. If the object fails to
-     * validate, it will be dropped from the pool, and we will attempt to borrow
-     * another.
-     *
-     * @return <code>true</code> if objects are validated before being borrowed.
-     * @see #setTestOnBorrow
-     */
-    @Override
-    public boolean getTestOnBorrow() {
-        return testOnBorrow;
-    }
-
-    /**
-     * When <tt>true</tt>, objects will be
-     * {@link PoolableObjectFactory#validateObject validated} before being
-     * returned by the {@link #borrowObject} method. If the object fails to
-     * validate, it will be dropped from the pool, and we will attempt to borrow
-     * another.
-     *
-     * @param testOnBorrow
-     *            <code>true</code> if objects should be validated before being
-     *            borrowed.
-     * @see #getTestOnBorrow
-     */
-    public void setTestOnBorrow(boolean testOnBorrow) {
-        this.testOnBorrow = testOnBorrow;
-    }
-
-    /**
-     * When <tt>true</tt>, objects will be
-     * {@link PoolableObjectFactory#validateObject validated} before being
-     * returned to the pool within the {@link #returnObject}.
-     *
-     * @return <code>true</code> when objects will be validated after returned
-     *         to {@link #returnObject}.
-     * @see #setTestOnReturn
-     */
-    @Override
-    public boolean getTestOnReturn() {
-        return testOnReturn;
-    }
-
-    /**
-     * When <tt>true</tt>, objects will be
-     * {@link PoolableObjectFactory#validateObject validated} before being
-     * returned to the pool within the {@link #returnObject}.
-     *
-     * @param testOnReturn
-     *            <code>true</code> so objects will be validated after returned
-     *            to {@link #returnObject}.
-     * @see #getTestOnReturn
-     */
-    public void setTestOnReturn(boolean testOnReturn) {
-        this.testOnReturn = testOnReturn;
-    }
-
-    /**
      * Returns the number of milliseconds to sleep between runs of the idle
      * object evictor thread. When non-positive, no idle object evictor thread
      * will be run.
@@ -1345,30 +1286,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool
      * @see #getMinIdle
      */
     private volatile int minIdle = GenericObjectPoolConfig.DEFAULT_MIN_IDLE;
-
-    /**
-     * When <tt>true</tt>, objects will be
-     * {@link PoolableObjectFactory#validateObject validated} before being
-     * returned by the {@link #borrowObject} method. If the object fails to
-     * validate, it will be dropped from the pool, and we will attempt to borrow
-     * another.
-     *
-     * @see #setTestOnBorrow
-     * @see #getTestOnBorrow
-     */
-    private volatile boolean testOnBorrow =
-        GenericObjectPoolConfig.DEFAULT_TEST_ON_BORROW;
-
-    /**
-     * When <tt>true</tt>, objects will be
-     * {@link PoolableObjectFactory#validateObject validated} before being
-     * returned to the pool within the {@link #returnObject}.
-     *
-     * @see #getTestOnReturn
-     * @see #setTestOnReturn
-     */
-    private volatile boolean testOnReturn =
-        GenericObjectPoolConfig.DEFAULT_TEST_ON_RETURN;
 
     /**
      * When <tt>true</tt>, objects will be
