@@ -20,7 +20,6 @@ import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -223,8 +222,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         setConfig(config);
 
         startEvictor(getMinEvictableIdleTimeMillis());
-
-        initStats();
 
         ObjectName onameTemp = null;
         // JMX Registration
@@ -558,20 +555,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
             deregister(key);
         }
 
-        borrowedCount.incrementAndGet();
-        synchronized (idleTimes) {
-            idleTimes.add(Long.valueOf(p.getIdleTimeMillis()));
-            idleTimes.poll();
-        }
-        synchronized (waitTimes) {
-            waitTimes.add(Long.valueOf(waitTime));
-            waitTimes.poll();
-        }
-        synchronized (maxBorrowWaitTimeMillisLock) {
-            if (waitTime > maxBorrowWaitTimeMillis) {
-                maxBorrowWaitTimeMillis = waitTime;
-            }
-        }
+        updateStatsBorrow(p, waitTime);
+
         return p.getObject();
     }
 
@@ -664,14 +649,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         }
 
         updateStatsReturn(activeTime);
-    }
-
-    private void updateStatsReturn(long activeTime) {
-        returnedCount.incrementAndGet();
-        synchronized (activeTimes) {
-            activeTimes.add(Long.valueOf(activeTime));
-            activeTimes.poll();
-        }
     }
 
 
@@ -1472,33 +1449,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
     //--- JMX support ----------------------------------------------------------
 
-    private void initStats() {
-        for (int i = 0; i < AVERAGE_TIMING_STATS_CACHE_SIZE; i++) {
-            activeTimes.add(null);
-            idleTimes.add(null);
-            waitTimes.add(null);
-        }
-    }
-
-    private long getMeanFromStatsCache(LinkedList<Long> cache) {
-        List<Long> times = new ArrayList<Long>(AVERAGE_TIMING_STATS_CACHE_SIZE);
-        synchronized (cache) {
-            times.addAll(cache);
-        }
-        double result = 0;
-        int counter = 0;
-        Iterator<Long> iter = times.iterator();
-        while (iter.hasNext()) {
-            Long time = iter.next();
-            if (time != null) {
-                counter++;
-                result = result * ((counter - 1) / (double) counter) +
-                        time.longValue()/(double) counter;
-            }
-        }
-        return (long) result;
-    }
-
     @Override
     public Map<String,Integer> getNumActivePerKey() {
         HashMap<String,Integer> result = new HashMap<String,Integer>();
@@ -1517,56 +1467,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
             }
         }
         return result;
-    }
-
-    @Override
-    public long getBorrowedCount() {
-        return borrowedCount.get();
-    }
-
-    @Override
-    public long getReturnedCount() {
-        return returnedCount.get();
-    }
-
-    @Override
-    public long getCreatedCount() {
-        return createdCount.get();
-    }
-
-    @Override
-    public long getDestroyedCount() {
-        return destroyedCount.get();
-    }
-
-    @Override
-    public long getDestroyedByEvictorCount() {
-        return destroyedByEvictorCount.get();
-    }
-
-    @Override
-    public long getDestroyedByBorrowValidationCount() {
-        return destroyedByBorrowValidationCount.get();
-    }
-
-    @Override
-    public long getMeanActiveTimeMillis() {
-        return getMeanFromStatsCache(activeTimes);
-    }
-
-    @Override
-    public long getMeanIdleTimeMillis() {
-        return getMeanFromStatsCache(idleTimes);
-    }
-
-    @Override
-    public long getMeanBorrowWaitTimeMillis() {
-        return getMeanFromStatsCache(waitTimes);
-    }
-
-    @Override
-    public long getMaxBorrowWaitTimeMillis() {
-        return maxBorrowWaitTimeMillis;
     }
 
     /**
@@ -1762,20 +1662,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
     private final Object closeLock = new Object();
 
     // JMX specific attributes
-    private static final int AVERAGE_TIMING_STATS_CACHE_SIZE = 100;
-    private final AtomicLong borrowedCount = new AtomicLong(0);
-    private final AtomicLong returnedCount = new AtomicLong(0);
-    private final AtomicLong createdCount = new AtomicLong(0);
-    private final AtomicLong destroyedCount = new AtomicLong(0);
-    private final AtomicLong destroyedByEvictorCount = new AtomicLong(0);
-    private final AtomicLong destroyedByBorrowValidationCount = new AtomicLong(0);
-    private final LinkedList<Long> activeTimes = new LinkedList<Long>(); // @GuardedBy("activeTimes") - except in initStats()
-    private final LinkedList<Long> idleTimes = new LinkedList<Long>(); // @GuardedBy("activeTimes") - except in initStats()
-    private final LinkedList<Long> waitTimes = new LinkedList<Long>(); // @GuardedBy("activeTimes") - except in initStats()
-
-    private final Object maxBorrowWaitTimeMillisLock = new Object();
-    private volatile long maxBorrowWaitTimeMillis = 0; // @GuardedBy("maxBorrowWaitTimeMillisLock")
-
     private final ObjectName oname;
 
     private static final String ONAME_BASE =

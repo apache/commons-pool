@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.management.ListenerNotFoundException;
 import javax.management.MBeanNotificationInfo;
@@ -81,9 +82,9 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
 
     // Internal (primarily state) attributes
     volatile boolean closed = false;
+    final Object evictionLock = new Object();
     private Evictor evictor = null; // @GuardedBy("evictionLock")
-    protected final Object evictionLock = new Object();
-    protected Iterator<PooledObject<T>> evictionIterator = null; // @GuardedBy("evictionLock")
+    Iterator<PooledObject<T>> evictionIterator = null; // @GuardedBy("evictionLock")
     /*
      * Class loader for evictor thread to use since in a J2EE or similar
      * environment the context class loader for the evictor thread may have
@@ -97,6 +98,18 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
     private final String creationStackTrace;
     private final Deque<String> swallowedExceptions = new LinkedList<String>();
     private final AtomicInteger swallowedExcpetionCount = new AtomicInteger(0);
+    public static final int MEAN_TIMING_STATS_CACHE_SIZE = 100;
+    private final AtomicLong borrowedCount = new AtomicLong(0);
+    private final AtomicLong returnedCount = new AtomicLong(0);
+    final AtomicLong createdCount = new AtomicLong(0);
+    final AtomicLong destroyedCount = new AtomicLong(0);
+    final AtomicLong destroyedByEvictorCount = new AtomicLong(0);
+    final AtomicLong destroyedByBorrowValidationCount = new AtomicLong(0);
+    private final LinkedList<Long> activeTimes = new LinkedList<Long>(); // @GuardedBy("activeTimes") - except in initStats()
+    private final LinkedList<Long> idleTimes = new LinkedList<Long>(); // @GuardedBy("activeTimes") - except in initStats()
+    private final LinkedList<Long> waitTimes = new LinkedList<Long>(); // @GuardedBy("activeTimes") - except in initStats()
+    private final Object maxBorrowWaitTimeMillisLock = new Object();
+    private volatile long maxBorrowWaitTimeMillis = 0; // @GuardedBy("maxBorrowWaitTimeMillisLock")
 
 
     public BaseGenericObjectPool(BaseObjectPoolConfig config) {
@@ -116,6 +129,9 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
 
         // save the current CCL to be used later by the evictor Thread
         factoryClassLoader = Thread.currentThread().getContextClassLoader();
+
+        // Initialise the attributes used to record rolling averages
+        initStats();
     }
 
 
@@ -569,7 +585,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * @throws IllegalStateException if this pool has been closed.
      * @see #isClosed()
      */
-    protected final void assertOpen() throws IllegalStateException {
+    final void assertOpen() throws IllegalStateException {
         if (isClosed()) {
             throw new IllegalStateException("Pool not open");
         }
@@ -582,9 +598,9 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * @param delay
      *            milliseconds between evictor runs.
      */
-    // Needs to be final; see POOL-195. Make protected method final as it is
+    // Needs to be final; see POOL-195. Make method final as it is
     // called from a constructor.
-    protected final void startEvictor(long delay) {
+    final void startEvictor(long delay) {
         synchronized (evictionLock) {
             if (null != evictor) {
                 EvictionTimer.cancel(evictor);
@@ -598,7 +614,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
         }
     }
 
-    protected abstract void ensureMinIdle() throws Exception;
+    abstract void ensureMinIdle() throws Exception;
 
 
     // Monitoring (primarily JMX) related methods
@@ -635,21 +651,92 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
         return temp.toArray(new String[SWALLOWED_EXCEPTION_QUEUE_SIZE]);
     }
 
-    protected final NotificationBroadcasterSupport getJmxNotificationSupport() {
+    /**
+     * The total number of objects successfully borrowed from this pool over the
+     * lifetime of the pool.
+     */
+    public long getBorrowedCount() {
+        return borrowedCount.get();
+    }
+
+    /**
+     * The total number of objects returned to this pool over the lifetime of
+     * the pool. This excludes attempts to return the same object multiple
+     * times.
+     */
+    public long getReturnedCount() {
+        return returnedCount.get();
+    }
+
+    /**
+     * The total number of objects created for this pool over the lifetime of
+     * the pool.
+     */
+    public long getCreatedCount() {
+        return createdCount.get();
+    }
+
+    /**
+     * The total number of objects destroyed by this pool over the lifetime of
+     * the pool.
+     */
+    public long getDestroyedCount() {
+        return destroyedCount.get();
+    }
+
+    /**
+     * The total number of objects destroyed by the evictor associated with this
+     * pool over the lifetime of the pool.
+     */
+    public long getDestroyedByEvictorCount() {
+        return destroyedByEvictorCount.get();
+    }
+
+    /**
+     * The total number of objects destroyed by this pool as a result of failing
+     * validation during <code>borrowObject()</code> over the lifetime of the
+     * pool.
+     */
+    public long getDestroyedByBorrowValidationCount() {
+        return destroyedByBorrowValidationCount.get();
+    }
+
+    /**
+     * The mean time objects are active for based on the last {@link
+     * #MEAN_TIMING_STATS_CACHE_SIZE} objects returned to the pool.
+     */
+    public long getMeanActiveTimeMillis() {
+        return getMeanFromStatsCache(activeTimes);
+    }
+
+    /**
+     * The mean time objects are idle for based on the last {@link
+     * #MEAN_TIMING_STATS_CACHE_SIZE} objects borrowed from the pool.
+     */
+    public long getMeanIdleTimeMillis() {
+        return getMeanFromStatsCache(idleTimes);
+    }
+
+    /**
+     * The mean time threads wait to borrow an object based on the last {@link
+     * #MEAN_TIMING_STATS_CACHE_SIZE} objects borrowed from the pool.
+     */
+    public long getMeanBorrowWaitTimeMillis() {
+        return getMeanFromStatsCache(waitTimes);
+    }
+
+    /**
+     * The maximum time a thread has waited to borrow objects from the pool.
+     */
+    public long getMaxBorrowWaitTimeMillis() {
+        return maxBorrowWaitTimeMillis;
+    }
+
+    final NotificationBroadcasterSupport getJmxNotificationSupport() {
         return jmxNotificationSupport;
     }
 
-    protected String getStackTrace(Exception e) {
-        // Need the exception in string form to prevent the retention of
-        // references to classes in the stack trace that could trigger a memory
-        // leak in a container environment
-        Writer w = new StringWriter();
-        PrintWriter pw = new PrintWriter(w);
-        e.printStackTrace(pw);
-        return w.toString();
-    }
-
-    protected void swallowException(Exception e) {
+    void swallowException(Exception e) {
         String msg = getStackTrace(e);
 
         ObjectName oname = getJmxName();
@@ -663,6 +750,68 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
         synchronized (swallowedExceptions) {
             swallowedExceptions.addLast(msg);
             swallowedExceptions.pollFirst();
+        }
+    }
+
+    void updateStatsBorrow(PooledObject<T> p, long waitTime) {
+        borrowedCount.incrementAndGet();
+        synchronized (idleTimes) {
+            idleTimes.add(Long.valueOf(p.getIdleTimeMillis()));
+            idleTimes.poll();
+        }
+        synchronized (waitTimes) {
+            waitTimes.add(Long.valueOf(waitTime));
+            waitTimes.poll();
+        }
+        synchronized (maxBorrowWaitTimeMillisLock) {
+            if (waitTime > maxBorrowWaitTimeMillis) {
+                maxBorrowWaitTimeMillis = waitTime;
+            }
+        }
+    }
+
+    void updateStatsReturn(long activeTime) {
+        returnedCount.incrementAndGet();
+        synchronized (activeTimes) {
+            activeTimes.add(Long.valueOf(activeTime));
+            activeTimes.poll();
+        }
+    }
+
+    private String getStackTrace(Exception e) {
+        // Need the exception in string form to prevent the retention of
+        // references to classes in the stack trace that could trigger a memory
+        // leak in a container environment
+        Writer w = new StringWriter();
+        PrintWriter pw = new PrintWriter(w);
+        e.printStackTrace(pw);
+        return w.toString();
+    }
+
+    private long getMeanFromStatsCache(LinkedList<Long> cache) {
+        List<Long> times = new ArrayList<Long>(MEAN_TIMING_STATS_CACHE_SIZE);
+        synchronized (cache) {
+            times.addAll(cache);
+        }
+        double result = 0;
+        int counter = 0;
+        Iterator<Long> iter = times.iterator();
+        while (iter.hasNext()) {
+            Long time = iter.next();
+            if (time != null) {
+                counter++;
+                result = result * ((counter - 1) / (double) counter) +
+                        time.longValue()/(double) counter;
+            }
+        }
+        return (long) result;
+    }
+
+    private void initStats() {
+        for (int i = 0; i < MEAN_TIMING_STATS_CACHE_SIZE; i++) {
+            activeTimes.add(null);
+            idleTimes.add(null);
+            waitTimes.add(null);
         }
     }
 
@@ -720,7 +869,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      *
      * @see GenericKeyedObjectPool#setTimeBetweenEvictionRunsMillis
      */
-    protected class Evictor extends TimerTask {
+    class Evictor extends TimerTask {
         /**
          * Run pool maintenance.  Evict objects qualifying for eviction and then
          * ensure that the minimum number of idle instances are available.
