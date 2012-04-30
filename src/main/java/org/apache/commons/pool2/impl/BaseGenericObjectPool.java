@@ -53,6 +53,10 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      */
     public static final String NOTIFICATION_SWALLOWED_EXCEPTION =
             "SWALLOWED_EXCEPTION";
+    /**
+     * The size of the caches used to store historical data for some attributes
+     * so that rolling means may be calculated.
+     */
     public static final int MEAN_TIMING_STATS_CACHE_SIZE = 100;
     private static final int SWALLOWED_EXCEPTION_QUEUE_SIZE = 10;
 
