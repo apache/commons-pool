@@ -1597,7 +1597,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * @see #setMaxIdlePerKey
      * @see #getMaxIdlePerKey
      */
-    private int maxIdlePerKey = GenericKeyedObjectPoolConfig.DEFAULT_MAX_IDLE_PER_KEY;
+    private volatile int maxIdlePerKey =
+            GenericKeyedObjectPoolConfig.DEFAULT_MAX_IDLE_PER_KEY;
 
     /**
      * The minimum no of idle objects per key.
@@ -1612,7 +1613,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * @see #setMaxTotalPerKey
      * @see #getMaxTotalPerKey
      */
-    private int maxTotalPerKey =
+    private volatile int maxTotalPerKey =
         GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL_PER_KEY;
 
     private final KeyedPoolableObjectFactory<K,T> factory;
