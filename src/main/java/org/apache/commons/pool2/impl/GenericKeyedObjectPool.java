@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
-import java.util.TimerTask;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -197,7 +196,7 @@ import org.apache.commons.pool2.PoolUtils;
  * @version $Revision$ $Date$
  * @since Pool 1.0
  */
-public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool
+public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMBean<K> {
 
     /**
@@ -363,66 +362,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool
         } else {
             return minIdlePerKey;
         }
-    }
-
-    /**
-     * Returns the number of milliseconds to sleep between runs of the
-     * idle object evictor thread.
-     * When non-positive, no idle object evictor thread will be
-     * run.
-     *
-     * @return milliseconds to sleep between evictor runs.
-     * @see #setTimeBetweenEvictionRunsMillis
-     */
-    @Override
-    public long getTimeBetweenEvictionRunsMillis() {
-        return timeBetweenEvictionRunsMillis;
-    }
-
-    /**
-     * Sets the number of milliseconds to sleep between runs of the
-     * idle object evictor thread.
-     * When non-positive, no idle object evictor thread will be
-     * run.
-     *
-     * @param timeBetweenEvictionRunsMillis milliseconds to sleep between evictor runs.
-     * @see #getTimeBetweenEvictionRunsMillis
-     */
-    public void setTimeBetweenEvictionRunsMillis(long timeBetweenEvictionRunsMillis) {
-        this.timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
-        startEvictor(timeBetweenEvictionRunsMillis);
-    }
-
-    /**
-     * Returns the max number of objects to examine during each run of the
-     * idle object evictor thread (if any).
-     *
-     * @return number of objects to examine each eviction run.
-     * @see #setNumTestsPerEvictionRun
-     * @see #setTimeBetweenEvictionRunsMillis
-     */
-    @Override
-    public int getNumTestsPerEvictionRun() {
-        return numTestsPerEvictionRun;
-    }
-
-    /**
-     * Sets the max number of objects to examine during each run of the
-     * idle object evictor thread (if any).
-     * <p>
-     * When a negative value is supplied,
-     * <code>ceil({@link #getNumIdle()})/abs({@link #getNumTestsPerEvictionRun})</code>
-     * tests will be run.  I.e., when the value is <code>-n</code>, roughly one <code>n</code>th of the
-     * idle objects will be tested per run.  When the value is positive, the number of tests
-     * actually performed in each run will be the minimum of this value and the number of instances
-     * idle in the pools.
-     *
-     * @param numTestsPerEvictionRun number of objects to examine each eviction run.
-     * @see #setNumTestsPerEvictionRun
-     * @see #setTimeBetweenEvictionRunsMillis
-     */
-    public void setNumTestsPerEvictionRun(int numTestsPerEvictionRun) {
-        this.numTestsPerEvictionRun = numTestsPerEvictionRun;
     }
 
     /**
@@ -1608,29 +1547,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool
     }
 
     /**
-     * Start the eviction thread or service, or when
-     * <code>delay</code> is non-positive, stop it
-     * if it is already running.
-     *
-     * @param delay milliseconds between evictor runs.
-     */
-    // Needs to be final; see POOL-195. Make protected method final as it is called from constructor.
-    protected final void startEvictor(long delay) {
-        synchronized (evictionLock) {
-            if (null != evictor) {
-                EvictionTimer.cancel(evictor);
-                evictor = null;
-                evictionIterator = null;
-                evictionKeyIterator = null;
-            }
-            if (delay > 0) {
-                evictor = new Evictor();
-                EvictionTimer.schedule(evictor, delay, delay);
-            }
-        }
-    }
-
-    /**
      * Returns pool info including {@link #getNumActive()}, {@link #getNumIdle()}
      * and currently defined keys.
      *
@@ -1965,34 +1881,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool
         GenericKeyedObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE;
 
     /**
-     * The number of milliseconds to sleep between runs of the
-     * idle object evictor thread.
-     * When non-positive, no idle object evictor thread will be
-     * run.
-     *
-     * @see #setTimeBetweenEvictionRunsMillis
-     * @see #getTimeBetweenEvictionRunsMillis
-     */
-    private long timeBetweenEvictionRunsMillis =
-        GenericKeyedObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
-
-    /**
-     * The number of objects to examine during each run of the
-     * idle object evictor thread (if any).
-     * <p>
-     * When a negative value is supplied, <code>ceil({@link #getNumIdle})/abs({@link #getNumTestsPerEvictionRun})</code>
-     * tests will be run.  I.e., when the value is <code>-n</code>, roughly one <code>n</code>th of the
-     * idle objects will be tested per run.
-     *
-     * @see #setNumTestsPerEvictionRun
-     * @see #getNumTestsPerEvictionRun
-     * @see #getTimeBetweenEvictionRunsMillis
-     * @see #setTimeBetweenEvictionRunsMillis
-     */
-    private int numTestsPerEvictionRun =
-        GenericKeyedObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
-
-    /**
      * The minimum amount of time an object may sit idle in the pool
      * before it is eligible for eviction by the idle object evictor
      * (if any).
@@ -2054,17 +1942,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool
     private final AtomicInteger numTotal = new AtomicInteger(0);
 
     /**
-     * My idle object eviction {@link TimerTask}, if any.
-     */
-    private Evictor evictor = null; // @GuardedBy("evictionLock")
-
-    /**
-     * An iterator for {@link ObjectDeque#getIdleObjects()} that is used by the
-     * evictor.
-     */
-    private Iterator<PooledObject<T>> evictionIterator = null; // @GuardedBy("evictionLock")
-
-    /**
      * An iterator for {@link #poolMap} entries.
      */
     private Iterator<K> evictionKeyIterator = null; // @GuardedBy("evictionLock")
@@ -2079,9 +1956,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool
      * Policy that determines if an object is eligible for eviction or not.
      */
     private EvictionPolicy<T> evictionPolicy;
-
-    /** Object used to ensure thread safety of eviction process */
-    private final Object evictionLock = new Object();
 
     /** Object used to ensure closed() is only called once. */
     private final Object closeLock = new Object();
