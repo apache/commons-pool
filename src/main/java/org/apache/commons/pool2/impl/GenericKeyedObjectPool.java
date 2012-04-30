@@ -1458,6 +1458,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * @return  An estimate of the number of threads currently blocked waiting
      *          for an object from the pool
      */
+    @Override
     public int getNumWaiters() {
         int result = 0;
 
@@ -1481,6 +1482,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * @return  An estimate of the number of threads currently blocked waiting
      *          for an object from the pool for the given key
      */
+    @Override
     public int getNumWaiters(K key) {
         if (getBlockWhenExhausted()) {
             final ObjectDeque<T> objectDeque = poolMap.get(key);
@@ -1492,6 +1494,19 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         } else {
             return 0;
         }
+    }
+
+    @Override
+    public List<K> getKeys() {
+        List<K> keyCopy = new ArrayList<K>();
+        Lock lock = keyLock.readLock();
+        lock.lock();
+        try {
+            keyCopy.addAll(poolKeyList);
+        } finally {
+            lock.unlock();
+        }
+        return keyCopy;
     }
 
     @Override

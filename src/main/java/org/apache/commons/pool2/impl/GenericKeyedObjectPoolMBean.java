@@ -16,6 +16,7 @@
  */
 package org.apache.commons.pool2.impl;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -56,4 +57,7 @@ public interface GenericKeyedObjectPoolMBean<K> {
     long getMaxBorrowWaitTimeMillis();
     String[] getSwallowedExceptions();
     String getCreationStackTrace();
+    int getNumWaiters();
+    int getNumWaiters(K key);
+    List<K> getKeys();
 }
