@@ -1001,12 +1001,12 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                     if (evictionKeyIterator == null ||
                             !evictionKeyIterator.hasNext()) {
                         List<K> keyCopy = new ArrayList<K>();
-                        Lock lock = keyLock.readLock();
-                        lock.lock();
+                        Lock readLock = keyLock.readLock();
+                        readLock.lock();
                         try {
                             keyCopy.addAll(poolKeyList);
                         } finally {
-                            lock.unlock();
+                            readLock.unlock();
                         }
                         evictionKeyIterator = keyCopy.iterator();
                     }
@@ -1188,16 +1188,16 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * @see #deregister(Object)
      */
     private ObjectDeque<T> register(K k) {
-        Lock lock = keyLock.readLock();
+        Lock readLock = keyLock.readLock();
         ObjectDeque<T> objectDeque = null;
         try {
-            lock.lock();
+            readLock.lock();
             objectDeque = poolMap.get(k);
             if (objectDeque == null) {
                 // Upgrade to write lock
-                lock.unlock();
-                lock = keyLock.writeLock();
-                lock.lock();
+                readLock.unlock();
+                readLock = keyLock.writeLock();
+                readLock.lock();
                 objectDeque = poolMap.get(k);
                 if (objectDeque == null) {
                     objectDeque = new ObjectDeque<T>();
@@ -1214,7 +1214,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                 objectDeque.getNumInterested().incrementAndGet();
             }
         } finally {
-            lock.unlock();
+            readLock.unlock();
         }
         return objectDeque;
     }
@@ -1238,8 +1238,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         long numInterested = objectDeque.getNumInterested().decrementAndGet();
         if (numInterested == 0 && objectDeque.getCreateCount().get() == 0) {
             // Potential to remove key
-            Lock lock = keyLock.writeLock();
-            lock.lock();
+            Lock writeLock = keyLock.writeLock();
+            writeLock.lock();
             try {
                 if (objectDeque.getCreateCount().get() == 0 &&
                         objectDeque.getNumInterested().get() == 0) {
@@ -1250,7 +1250,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                     poolKeyList.remove(k);
                 }
             } finally {
-                lock.unlock();
+                writeLock.unlock();
             }
         }
     }
@@ -1499,12 +1499,12 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
     @Override
     public List<K> getKeys() {
         List<K> keyCopy = new ArrayList<K>();
-        Lock lock = keyLock.readLock();
-        lock.lock();
+        Lock readLock = keyLock.readLock();
+        readLock.lock();
         try {
             keyCopy.addAll(poolKeyList);
         } finally {
-            lock.unlock();
+            readLock.unlock();
         }
         return keyCopy;
     }
