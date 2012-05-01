@@ -16,20 +16,11 @@
  */
 package org.apache.commons.pool2.impl;
 
-import java.lang.management.ManagementFactory;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-
-import javax.management.InstanceAlreadyExistsException;
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanRegistrationException;
-import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-import javax.management.NotCompliantMBeanException;
-import javax.management.ObjectName;
 
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PoolUtils;
@@ -178,51 +169,12 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      */
     public GenericObjectPool(PoolableObjectFactory<T> factory,
             GenericObjectPoolConfig config) {
-        super(config);
+        super(config, ONAME_BASE, config.getJmxNamePrefix());
         this.factory = factory;
 
         setConfig(config);
 
         startEvictor(getTimeBetweenEvictionRunsMillis());
-
-        ObjectName onameTemp = null;
-        // JMX Registration
-        if (config.getJmxEnabled()) {
-            MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-            String jmxNamePrefix = config.getJmxNamePrefix();
-            int i = 1;
-            boolean registered = false;
-            while (!registered) {
-                try {
-                    ObjectName oname =
-                        new ObjectName(ONAME_BASE + jmxNamePrefix + i);
-                    mbs.registerMBean(this, oname);
-                    onameTemp = oname;
-                    registered = true;
-                } catch (MalformedObjectNameException e) {
-                    if (GenericObjectPoolConfig.DEFAULT_JMX_NAME_PREFIX.equals(
-                            jmxNamePrefix)) {
-                        // Shouldn't happen. Skip registration if it does.
-                        registered = true;
-                    } else {
-                        // Must be an invalid name prefix. Use the default
-                        // instead.
-                        jmxNamePrefix =
-                            GenericObjectPoolConfig.DEFAULT_JMX_NAME_PREFIX;
-                    }
-                } catch (InstanceAlreadyExistsException e) {
-                    // Increment the index and try again
-                    i++;
-                } catch (MBeanRegistrationException e) {
-                    // Shouldn't happen. Skip registration if it does.
-                    registered = true;
-                } catch (NotCompliantMBeanException e) {
-                    // Shouldn't happen. Skip registration if it does.
-                    registered = true;
-                }
-            }
-        }
-        this.oname = onameTemp;
     }
 
     /**
@@ -666,18 +618,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             closed = true;
             // This clear removes any idle objects
             clear();
-            if (oname != null) {
-                try {
-                    ManagementFactory.getPlatformMBeanServer().unregisterMBean(
-                            oname);
-                } catch (MBeanRegistrationException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (InstanceNotFoundException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
+
+            jmxUnregister();
 
             // Release any threads that were waiting for an object
             idleObjects.interuptTakeWaiters();
@@ -903,11 +845,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         }
     }
 
-    @Override
-    public ObjectName getJmxName() {
-        return oname;
-    }
-
 
     // --- configuration attributes --------------------------------------------
 
@@ -955,8 +892,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         new LinkedBlockingDeque<PooledObject<T>>();
 
     // JMX specific attributes
-    private final ObjectName oname;
-
     private static final String ONAME_BASE =
         "org.apache.commoms.pool2:type=GenericObjectPool,name=";
 }

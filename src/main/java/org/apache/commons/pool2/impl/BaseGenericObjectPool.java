@@ -19,6 +19,7 @@ package org.apache.commons.pool2.impl;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.Iterator;
@@ -28,8 +29,14 @@ import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.InstanceNotFoundException;
 import javax.management.ListenerNotFoundException;
 import javax.management.MBeanNotificationInfo;
+import javax.management.MBeanRegistrationException;
+import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.NotCompliantMBeanException;
 import javax.management.Notification;
 import javax.management.NotificationBroadcasterSupport;
 import javax.management.NotificationEmitter;
@@ -100,6 +107,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
 
 
     // Monitoring (primarily JMX) attributes
+    private final ObjectName oname;
     private final NotificationBroadcasterSupport jmxNotificationSupport;
     private final String creationStackTrace;
     private final Deque<String> swallowedExceptions = new LinkedList<String>();
@@ -117,11 +125,14 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
     private volatile long maxBorrowWaitTimeMillis = 0; // @GuardedBy("maxBorrowWaitTimeMillisLock")
 
 
-    public BaseGenericObjectPool(BaseObjectPoolConfig config) {
+    public BaseGenericObjectPool(BaseObjectPoolConfig config,
+            String jmxNameBase, String jmxNamePrefix) {
         if (config.getJmxEnabled()) {
             this.jmxNotificationSupport = new NotificationBroadcasterSupport();
+            this.oname = jmxRegister(jmxNameBase, jmxNamePrefix);
         } else {
             this.jmxNotificationSupport = null;
+            this.oname = null;
         }
 
         // Populate the swallowed exceptions queue
@@ -629,7 +640,9 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * platform MBean server or <code>null</code> if the pool has not been
      * registered.
      */
-    public abstract ObjectName getJmxName();
+    public ObjectName getJmxName() {
+        return oname;
+    }
 
     /**
      * Provides the stack trace for the call that created this pool. JMX
@@ -750,7 +763,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
         String msg = getStackTrace(e);
 
         ObjectName oname = getJmxName();
-        if (oname != null) {
+        if (oname != null && !isClosed()) {
             Notification n = new Notification(NOTIFICATION_SWALLOWED_EXCEPTION,
                     oname, swallowedExcpetionCount.incrementAndGet(), msg);
             getJmxNotificationSupport().sendNotification(n);
@@ -786,6 +799,56 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
             activeTimes.add(Long.valueOf(activeTime));
             activeTimes.poll();
         }
+    }
+
+    void jmxUnregister() {
+        if (oname != null) {
+            try {
+                ManagementFactory.getPlatformMBeanServer().unregisterMBean(
+                        oname);
+            } catch (MBeanRegistrationException e) {
+                swallowException(e);
+            } catch (InstanceNotFoundException e) {
+                swallowException(e);
+            }
+        }
+    }
+
+    private ObjectName jmxRegister(String jmxNameBase, String jmxNamePrefix) {
+        ObjectName objectName = null;
+        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        int i = 1;
+        boolean registered = false;
+        while (!registered) {
+            try {
+                ObjectName oname =
+                    new ObjectName(jmxNameBase + jmxNamePrefix + i);
+                mbs.registerMBean(this, oname);
+                objectName = oname;
+                registered = true;
+            } catch (MalformedObjectNameException e) {
+                if (BaseObjectPoolConfig.DEFAULT_JMX_NAME_PREFIX.equals(
+                        jmxNamePrefix)) {
+                    // Shouldn't happen. Skip registration if it does.
+                    registered = true;
+                } else {
+                    // Must be an invalid name prefix. Use the default
+                    // instead.
+                    jmxNamePrefix =
+                            BaseObjectPoolConfig.DEFAULT_JMX_NAME_PREFIX;
+                }
+            } catch (InstanceAlreadyExistsException e) {
+                // Increment the index and try again
+                i++;
+            } catch (MBeanRegistrationException e) {
+                // Shouldn't happen. Skip registration if it does.
+                registered = true;
+            } catch (NotCompliantMBeanException e) {
+                // Shouldn't happen. Skip registration if it does.
+                registered = true;
+            }
+        }
+        return objectName;
     }
 
     private String getStackTrace(Exception e) {
@@ -901,7 +964,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
                 try {
                     evict();
                 } catch(Exception e) {
-                    // Ignored
+                    swallowException(e);
                 } catch(OutOfMemoryError oome) {
                     // Log problem but give evictor thread a chance to continue
                     // in case error is recoverable
@@ -911,7 +974,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
                 try {
                     ensureMinIdle();
                 } catch (Exception e) {
-                    // Ignored
+                    swallowException(e);
                 }
             } finally {
                 // Restore the previous CCL
