@@ -397,7 +397,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * of the idle object evictor thread. When positive, the number of tests
      * performed for a run will be the minimum of the configured value and the
      * number of idle instances in the pool. When negative, the number of tests
-     * performed will be <code>ceil({@link org.apache.commons.pool2.ObjectPool#getNumIdle #getNumIdle}/
+     * performed will be <code>ceil({@link #getNumIdle}/
      * abs({@link #getNumTestsPerEvictionRun})) whch means that when the value
      * is <code>-n</code> roughly one nth of the idle objects will be tested per
      * run.
@@ -416,7 +416,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * of the idle object evictor thread. When positive, the number of tests
      * performed for a run will be the minimum of the configured value and the
      * number of idle instances in the pool. When negative, the number of tests
-     * performed will be <code>ceil({@link org.apache.commons.pool2.ObjectPool#getNumIdle() #getNumIdle()}/
+     * performed will be <code>ceil({@link #getNumIdle}/
      * abs({@link #getNumTestsPerEvictionRun})) whch means that when the value
      * is <code>-n</code> roughly one nth of the idle objects will be tested per
      * run.
@@ -736,6 +736,11 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
     public long getMaxBorrowWaitTimeMillis() {
         return maxBorrowWaitTimeMillis;
     }
+
+    /**
+     * The number of instances currently idle in this pool.
+     */
+    public abstract int getNumIdle();
 
     final NotificationBroadcasterSupport getJmxNotificationSupport() {
         return jmxNotificationSupport;

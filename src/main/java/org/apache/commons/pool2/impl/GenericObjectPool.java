@@ -630,11 +630,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         return allObjects.size() - idleObjects.size();
     }
 
-    /**
-     * Return the number of instances currently idle in this pool.
-     *
-     * @return the number of instances currently idle in this pool
-     */
     @Override
     public int getNumIdle() {
         return idleObjects.size();

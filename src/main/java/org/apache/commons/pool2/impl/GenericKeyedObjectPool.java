@@ -743,11 +743,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         return numTotal.get() - getNumIdle();
     }
 
-    /**
-     * Returns the total number of instances currently idle in this pool.
-     *
-     * @return the total number of instances currently idle in this pool
-     */
     @Override
     public int getNumIdle() {
         Iterator<ObjectDeque<T>> iter = poolMap.values().iterator();
