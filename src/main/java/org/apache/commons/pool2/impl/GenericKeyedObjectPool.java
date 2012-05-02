@@ -1014,16 +1014,16 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * register() and deregister() must always be used as a pair.
      */
     private ObjectDeque<T> register(K k) {
-        Lock readLock = keyLock.readLock();
+        Lock lock = keyLock.readLock();
         ObjectDeque<T> objectDeque = null;
         try {
-            readLock.lock();
+            lock.lock();
             objectDeque = poolMap.get(k);
             if (objectDeque == null) {
                 // Upgrade to write lock
-                readLock.unlock();
-                readLock = keyLock.writeLock();
-                readLock.lock();
+                lock.unlock();
+                lock = keyLock.writeLock();
+                lock.lock();
                 objectDeque = poolMap.get(k);
                 if (objectDeque == null) {
                     objectDeque = new ObjectDeque<T>();
@@ -1040,7 +1040,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                 objectDeque.getNumInterested().incrementAndGet();
             }
         } finally {
-            readLock.unlock();
+            lock.unlock();
         }
         return objectDeque;
     }
