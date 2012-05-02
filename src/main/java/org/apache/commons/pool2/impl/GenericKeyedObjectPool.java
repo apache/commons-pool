@@ -69,6 +69,7 @@ import org.apache.commons.pool2.PoolUtils;
  * @author Dirk Verbeeck
  * @author Sandy McArthur
  * @version $Revision$ $Date$
+ * This class is intended to be thread-safe.
  */
 public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMBean<K> {

@@ -20,6 +20,9 @@ import java.util.Collection;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * This class is intended to be thread-safe.
+ */
 public class InterruptibleReentrantLock extends ReentrantLock {
 
     private static final long serialVersionUID = 1L;
