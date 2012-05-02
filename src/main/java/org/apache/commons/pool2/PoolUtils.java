@@ -36,6 +36,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
  * @author Sandy McArthur
  * @version $Revision$ $Date$
  * @since Pool 1.3
+ * 
+ * This class is intended to be thread-safe.
  */
 public final class PoolUtils {
 
@@ -43,7 +45,7 @@ public final class PoolUtils {
      * Timer used to periodically check pools idle object count.
      * Because a {@link Timer} creates a {@link Thread} this is lazily instantiated.
      */
-    private static Timer MIN_IDLE_TIMER; //@GuardedBy("this")
+    private static Timer MIN_IDLE_TIMER; //@GuardedBy("PoolUtils.class")
 
     /**
      * PoolUtils instances should NOT be constructed in standard programming.

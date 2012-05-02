@@ -147,6 +147,7 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  * @version $Revision$ $Date: 2011-05-11 13:50:33 +0100 (Wed, 11 May
  *          2011) $
  * @since Pool 1.0
+ * This class is intended to be thread-safe.
  */
 public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         implements ObjectPool<T>, GenericObjectPoolMBean {

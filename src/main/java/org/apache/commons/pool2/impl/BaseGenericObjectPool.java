@@ -50,6 +50,8 @@ import javax.management.ObjectName;
  * reduce code duplication between the two pool implementations.
  *
  * @param <T> Type of element pooled in this pool.
+ * 
+ * This class is intended to be thread-safe.
  */
 public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
 
