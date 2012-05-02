@@ -34,7 +34,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
  * or KeyedObjectPool related interfaces.
  *
  * @author Sandy McArthur
- * @version $Revision$ $Date$
+ * @version $Revision$
  * @since Pool 1.3
  * 
  * This class is intended to be thread-safe.

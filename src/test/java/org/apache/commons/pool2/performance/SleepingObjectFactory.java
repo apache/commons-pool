@@ -23,7 +23,7 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  * Sleepy ObjectFactory (everything takes a while longer)
  * 
  * @author Dirk Verbeeck
- * @version $Revision$ $Date$ 
+ * @version $Revision$ 
  */
 public class SleepingObjectFactory implements PoolableObjectFactory<Integer> {
 

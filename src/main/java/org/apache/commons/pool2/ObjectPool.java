@@ -57,7 +57,7 @@ import java.util.NoSuchElementException;
  *
  * @author Rodney Waldhoff
  * @author Sandy McArthur
- * @version $Revision$ $Date$
+ * @version $Revision$
  * @see PoolableObjectFactory
  * @see KeyedObjectPool
  * @see BaseObjectPool

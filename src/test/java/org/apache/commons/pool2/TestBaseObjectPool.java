@@ -26,7 +26,7 @@ import org.junit.Test;
 /**
  * @author Rodney Waldhoff
  * @author Sandy McArthur
- * @version $Revision$ $Date$ 
+ * @version $Revision$ 
  */
 public class TestBaseObjectPool extends TestObjectPool {
     private ObjectPool<Object> _pool = null;
