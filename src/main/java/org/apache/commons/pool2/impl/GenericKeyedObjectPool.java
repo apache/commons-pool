@@ -138,13 +138,13 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
     /**
      * Returns the cap on the number of "idle" instances per key in the pool.
-     * If maxIdle is set too low on heavily loaded systems it is possible you
-     * will see objects being destroyed and almost immediately new objects
+     * If maxIdlePerKey is set too low on heavily loaded systems it is possible
+     * you will see objects being destroyed and almost immediately new objects
      * being created. This is a result of the active threads momentarily
      * returning objects faster than they are requesting them them, causing the
-     * number of idle objects to rise above maxIdle. The best value for maxIdle
-     * for heavily loaded system will vary but the default is a good starting
-     * point.
+     * number of idle objects to rise above maxIdlePerKey. The best value for
+     * maxIdlePerKey for heavily loaded system will vary but the default is a
+     * good starting point.
      *
      * @return the maximum number of "idle" instances that can be held in a
      *         given keyed sub-pool or a negative value if there is no limit
@@ -158,13 +158,13 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
     /**
      * Sets the cap on the number of "idle" instances per key in the pool.
-     * If maxIdle is set too low on heavily loaded systems it is possible you
-     * will see objects being destroyed and almost immediately new objects
+     * If maxIdlePerKey is set too low on heavily loaded systems it is possible
+     * you will see objects being destroyed and almost immediately new objects
      * being created. This is a result of the active threads momentarily
      * returning objects faster than they are requesting them them, causing the
-     * number of idle objects to rise above maxIdle. The best value for maxIdle
-     * for heavily loaded system will vary but the default is a good starting
-     * point.
+     * number of idle objects to rise above maxIdlePerKey. The best value for
+     * maxIdlePerKey for heavily loaded system will vary but the default is a
+     * good starting point.
      *
      * @param maxIdlePerKey the maximum number of "idle" instances that can be
      *                      held in a given keyed sub-pool. Use a negative value
@@ -227,7 +227,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
     /**
      * Sets the configuration.
      *
-     * @param conf the new configuration to use.
+     * @param conf the new configuration to use. This is used by value.
      *
      * @see GenericKeyedObjectPoolConfig
      */
@@ -314,14 +314,15 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * available instances in request arrival order.
      *
      * @param key pool key
-     * @param borrowMaxWait maximum amount of time to wait (in milliseconds)
+     * @param borrowMaxWaitMillis The time to wait in milliseconds for an object
+     *                            to become available
      *
      * @return object instance from the keyed pool
      *
      * @throws NoSuchElementException if a keyed object instance cannot be
      *                                returned.
      */
-    public T borrowObject(K key, long borrowMaxWait) throws Exception {
+    public T borrowObject(K key, long borrowMaxWaitMillis) throws Exception {
         assertOpen();
 
         PooledObject<T> p = null;
@@ -346,12 +347,12 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                         p = create(key);
                     }
                     if (p == null && objectDeque != null) {
-                        if (borrowMaxWait < 0) {
+                        if (borrowMaxWaitMillis < 0) {
                             p = objectDeque.getIdleObjects().takeFirst();
                         } else {
                             waitTime = System.currentTimeMillis();
                             p = objectDeque.getIdleObjects().pollFirst(
-                                    borrowMaxWait, TimeUnit.MILLISECONDS);
+                                    borrowMaxWaitMillis, TimeUnit.MILLISECONDS);
                             waitTime = System.currentTimeMillis() - waitTime;
                         }
                     }
