@@ -362,24 +362,20 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * <p>
      * Returns an object instance to the pool.
-     * </p>
      * <p>
      * If {@link #getMaxIdle() maxIdle} is set to a positive value and the
      * number of idle instances has reached this value, the returning instance
      * is destroyed.
-     * </p>
      * <p>
      * If {@link #getTestOnReturn() testOnReturn} == true, the returning
      * instance is validated before being returned to the idle instance pool. In
      * this case, if validation fails, the instance is destroyed.
-     * </p>
      * <p>
-     * Exceptions encountered destroying objects for any reason are swallowed.
-     * </p>
-     * @param obj
-     *            instance to return to the pool
+     * Exceptions encountered destroying objects for any reason are swallowed
+     * but remain accessible via {@link #getSwallowedExceptions()}.
+     *
+     * @param obj instance to return to the pool
      */
     @Override
     public void returnObject(T obj) {
@@ -445,10 +441,9 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * <p>
      * Activation of this method decrements the active count and attempts to
      * destroy the instance.
-     * </p>
      *
-     * @throws Exception if the configured {@link PoolableObjectFactory} throws an
-     * exception destroying obj
+     * @throws Exception             if an exception occurs destroying the
+     *                               object
      * @throws IllegalStateException if obj does not belong to this pool
      */
     @Override
@@ -472,12 +467,11 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * <li>This method does not destroy or effect in any way instances that are
      * checked out of the pool when it is invoked.</li>
      * <li>Invoking this method does not prevent objects being returned to the
-     * idle instance pool, even during its execution. It locks the pool only
-     * during instance removal. Additional instances may be returned while
-     * removed items are being destroyed.</li>
-     * <li>Exceptions encountered destroying idle instances are swallowed.</li>
+     * idle instance pool, even during its execution. Additional instances may
+     * be returned while removed items are being destroyed.</li>
+     * <li>Exceptions encountered destroying idle instances are swallowed but
+     * remain accessible via {@link #getSwallowedExceptions()}.</li>
      * </ul>
-     * </p>
      */
     @Override
     public void clear() {
@@ -494,9 +488,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Return the number of instances currently borrowed from this pool.
-     *
-     * @return the number of instances currently borrowed from this pool
+     * Returns the total number of instances currently borrowed from this pool
+     * but not yet returned.
      */
     @Override
     public int getNumActive() {
@@ -509,17 +502,12 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * <p>
      * Closes the pool. Once the pool is closed, {@link #borrowObject()} will
      * fail with IllegalStateException, but {@link #returnObject(Object)} and
      * {@link #invalidateObject(Object)} will continue to work, with returned
      * objects destroyed on return.
-     * </p>
      * <p>
      * Destroys idle instances in the pool by invoking {@link #clear()}.
-     * </p>
-     *
-     * @throws RuntimeException
      */
     @Override
     public void close() {
@@ -674,15 +662,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         }
     }
 
-    /**
-     * Check to see if we are below our minimum number of objects if so enough
-     * to bring us back to our minimum.
-     *
-     * @throws Exception
-     *             when {@link #addObject()} fails.
-     */
     @Override
-    protected void ensureMinIdle() throws Exception {
+    void ensureMinIdle() throws Exception {
         int minIdle = getMinIdle();
         if (minIdle < 1) {
             return;
@@ -729,14 +710,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         }
     }
 
-    /**
-     * Returns the number of tests to be performed in an Evictor run, based on
-     * the current value of <code>numTestsPerEvictionRun</code> and the number
-     * of idle instances in the pool.
-     *
-     * @see #setNumTestsPerEvictionRun
-     * @return the number of tests for the Evictor to run
-     */
     private int getNumTests() {
         int numTestsPerEvictionRun = getNumTestsPerEvictionRun();
         if (numTestsPerEvictionRun >= 0) {
@@ -753,9 +726,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * Return an estimate of the number of threads currently blocked waiting for
      * an object from the pool. This is intended for monitoring only, not for
      * synchronization control.
-     *
-     * @return  An estimate of the number of threads currently blocked waiting
-     *          for an object from the pool
      */
     @Override
     public int getNumWaiters() {
@@ -769,28 +739,14 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
 
     // --- configuration attributes --------------------------------------------
 
-    /**
-     * The cap on the number of idle instances in the pool.
-     *
-     * @see #setMaxIdle
-     * @see #getMaxIdle
-     */
     private volatile int maxIdle = GenericObjectPoolConfig.DEFAULT_MAX_IDLE;
-
-    /**
-     * The cap on the minimum number of idle instances in the pool.
-     *
-     * @see #setMinIdle
-     * @see #getMinIdle
-     */
     private volatile int minIdle = GenericObjectPoolConfig.DEFAULT_MIN_IDLE;
-
     private final PoolableObjectFactory<T> factory;
 
 
     // --- internal attributes -------------------------------------------------
 
-    /**
+    /*
      * All of the objects currently associated with this pool in any state. It
      * excludes objects that have been destroyed. The size of
      * {@link #allObjects} will always be less than or equal to {@link
@@ -798,8 +754,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      */
     private final Map<T, PooledObject<T>> allObjects =
         new ConcurrentHashMap<T, PooledObject<T>>();
-
-    /**
+    /*
      * The combined count of the currently created objects and those in the
      * process of being created. Under load, it may exceed {@link #_maxActive}
      * if multiple threads try and create a new object at the same time but
@@ -807,8 +762,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * {@link #_maxActive} objects created at any one time.
      */
     private final AtomicLong createCount = new AtomicLong(0);
-
-    /** The queue of idle objects */
     private final LinkedBlockingDeque<PooledObject<T>> idleObjects =
         new LinkedBlockingDeque<PooledObject<T>>();
 
