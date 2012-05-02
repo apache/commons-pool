@@ -712,12 +712,17 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         final Map<PooledObject<T>, K> map = new TreeMap<PooledObject<T>, K>();
 
         for (K k : poolMap.keySet()) {
-            final LinkedBlockingDeque<PooledObject<T>> idleObjects =
-                poolMap.get(k).getIdleObjects();
-            for (PooledObject<T> p : idleObjects) {
-                // each item into the map using the PooledObject object as the
-                // key. It then gets sorted based on the idle time
-                map.put(p, k);
+            ObjectDeque<T> queue = poolMap.get(k);
+            // Protect against possible NPE if key has been removed in another
+            // thread. Not worth locking the keys while this loop completes.
+            if (queue != null) {
+                final LinkedBlockingDeque<PooledObject<T>> idleObjects =
+                    queue.getIdleObjects();
+                for (PooledObject<T> p : idleObjects) {
+                    // each item into the map using the PooledObject object as the
+                    // key. It then gets sorted based on the idle time
+                    map.put(p, k);
+                }
             }
         }
 
@@ -1051,7 +1056,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
     private void deregister(K k) {
         ObjectDeque<T> objectDeque;
 
-        // TODO Think carefully about when a read lock is required
         objectDeque = poolMap.get(k);
         long numInterested = objectDeque.getNumInterested().decrementAndGet();
         if (numInterested == 0 && objectDeque.getCreateCount().get() == 0) {
@@ -1088,6 +1092,10 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
     private void ensureMinIdle(K key) throws Exception {
         // Calculate current pool objects
         ObjectDeque<T> objectDeque = poolMap.get(key);
+        // Protect against NPEs in case the key has been removed
+        if (objectDeque == null) {
+            return;
+        }
 
         // this method isn't synchronized so the
         // calculateDeficit is done at the beginning
