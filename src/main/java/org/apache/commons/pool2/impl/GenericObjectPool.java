@@ -30,55 +30,8 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  * A configurable {@link ObjectPool} implementation.
  * <p>
  * When coupled with the appropriate {@link PoolableObjectFactory},
- * <tt>GenericObjectPool</tt> provides robust pooling functionality for
+ * <code>GenericObjectPool</code> provides robust pooling functionality for
  * arbitrary objects.
- * <p>
- * A <tt>GenericObjectPool</tt> provides a number of configurable parameters:
- * <ul>
- * <li>
- *    {@link #setMaxTotal <i>maxTotal</i>} controls the maximum number of
- * objects that can be allocated by the pool (checked out to clients, or idle
- * awaiting checkout) at a given time. When non-positive, there is no limit to
- * the number of objects that can be managed by the pool at one time. When
- * {@link #setMaxTotal <i>maxTotal</i>} is reached, the pool is said to be
- * exhausted. The default setting for this parameter is 8.</li>
- * <li>
- *    {@link #setMaxIdle <i>maxIdle</i>} controls the maximum number of objects
- * that can sit idle in the pool at any time. When negative, there is no limit
- * to the number of objects that may be idle at one time. The default setting
- * for this parameter is 8.</li>
- * <li>
- *    {@link #getBlockWhenExhausted} specifies the
- * behavior of the {@link #borrowObject} method when the pool is exhausted:
- * <ul>
- * <li>When {@link #getBlockWhenExhausted} is false,
- * {@link #borrowObject} will throw a {@link NoSuchElementException}</li>
- * <li>When {@link #getBlockWhenExhausted} is true,
- * {@link #borrowObject} will block (invoke
- * {@link Object#wait()}) until a new or idle object is available. If a
- * non-negative {@link #setMaxWaitMillis <i>maxWaitMillis</i>} value is
- * supplied, then {@link #borrowObject} will block for at most that man
- * milliseconds, after which a {@link NoSuchElementException} will be thrown. If
- * {@link #setMaxWaitMillis <i>maxWaitMillis</i>} is negative, the
- * {@link #borrowObject} method will block indefinitely.</li>
- * </ul>
- * The default {@link #getBlockWhenExhausted} is true
- * and the default <code>maxWaitMillis</code> setting is
- * -1. By default, therefore, <code>borrowObject</code> will block indefinitely
- * until an idle instance becomes available.</li>
- * <li>When {@link #setTestOnBorrow <i>testOnBorrow</i>} is set, the pool will
- * attempt to validate each object before it is returned from the
- * {@link #borrowObject} method. (Using the provided factory's
- * {@link PoolableObjectFactory#validateObject} method.) Objects that fail to
- * validate will be dropped from the pool, and a different object will be
- * borrowed. The default setting for this parameter is <code>false.</code></li>
- * <li>When {@link #setTestOnReturn <i>testOnReturn</i>} is set, the pool will
- * attempt to validate each object before it is returned to the pool in the
- * {@link #returnObject} method. (Using the provided factory's
- * {@link PoolableObjectFactory#validateObject} method.) Objects that fail to
- * validate will be dropped from the pool. The default setting for this
- * parameter is <code>false.</code></li>
- * </ul>
  * <p>
  * Optionally, one may configure the pool to examine and possibly evict objects
  * as they sit idle in the pool and to ensure that a minimum number of idle
@@ -86,74 +39,30 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  * which runs asynchronously. Caution should be used when configuring this
  * optional feature. Eviction runs contend with client threads for access to
  * objects in the pool, so if they run too frequently performance issues may
- * result. The idle object eviction thread may be configured using the following
- * attributes:
- * <ul>
- * <li>
- *   {@link #setTimeBetweenEvictionRunsMillis
- * <i>timeBetweenEvictionRunsMillis</i>} indicates how long the eviction thread
- * should sleep before "runs" of examining idle objects. When non-positive, no
- * eviction thread will be launched. The default setting for this parameter is
- * -1 (i.e., idle object eviction is disabled by default).</li>
- * <li>
- *   {@link #setMinEvictableIdleTimeMillis <i>minEvictableIdleTimeMillis</i>}
- * specifies the minimum amount of time that an object may sit idle in the pool
- * before it is eligible for eviction due to idle time. When non-positive, no
- * object will be dropped from the pool due to idle time alone. This setting has
- * no effect unless <code>timeBetweenEvictionRunsMillis > 0.</code> The default
- * setting for this parameter is 30 minutes.</li>
- * <li>
- *   {@link #setTestWhileIdle <i>testWhileIdle</i>} indicates whether or not
- * idle objects should be validated using the factory's
- * {@link PoolableObjectFactory#validateObject} method. Objects that fail to
- * validate will be dropped from the pool. This setting has no effect unless
- * <code>timeBetweenEvictionRunsMillis > 0.</code> The default setting for this
- * parameter is <code>false.</code></li>
- * <li>
- *   {@link #setSoftMinEvictableIdleTimeMillis
- * <i>softMinEvictableIdleTimeMillis</i>} specifies the minimum amount of time
- * an object may sit idle in the pool before it is eligible for eviction by the
- * idle object evictor (if any), with the extra condition that at least
- * "minIdle" object instances remain in the pool. This setting has no
- * effect unless <code>timeBetweenEvictionRunsMillis > 0.</code> and it is
- * superseded by {@link #setMinEvictableIdleTimeMillis
- * <i>minEvictableIdleTimeMillis</i>} (that is, if
- * <code>minEvictableIdleTimeMillis</code> is positive, then
- * <code>softMinEvictableIdleTimeMillis</code> is ignored). The default setting
- * for this parameter is -1 (disabled).</li>
- * <li>
- *   {@link #setNumTestsPerEvictionRun <i>numTestsPerEvictionRun</i>}
- * determines the number of objects examined in each run of the idle object
- * evictor. This setting has no effect unless
- * <code>timeBetweenEvictionRunsMillis > 0.</code> The default setting for this
- * parameter is 3.</li>
- * </ul>
- * <p>
- * <p>
- * GenericObjectPool is not usable without a {@link PoolableObjectFactory}. A
- * non-<code>null</code> factory must be provided as a constructor
- * argument before the pool is used.
+ * result.
  * <p>
  * Implementation note: To prevent possible deadlocks, care has been taken to
  * ensure that no call to a factory method will occur within a synchronization
  * block. See POOL-125 and DBCP-44 for more information.
+ * <p>
+ * This class is intended to be thread-safe.
  *
  * @see GenericKeyedObjectPool
- * @param <T>
- *            Type of element pooled in this pool.
+ *
+ * @param <T> Type of element pooled in this pool.
+ *
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
  * @author Sandy McArthur
+ *
  * @version $Revision$
- *          2011) $
- * @since Pool 1.0
- * This class is intended to be thread-safe.
  */
 public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         implements ObjectPool<T>, GenericObjectPoolMBean {
 
     /**
-     * Create a new <code>GenericObjectPool</code> using default.
+     * Create a new <code>GenericObjectPool</code> using defaults from
+     * {@link GenericObjectPoolConfig}.
      */
     public GenericObjectPool(PoolableObjectFactory<T> factory) {
         this(factory, new GenericObjectPoolConfig());
