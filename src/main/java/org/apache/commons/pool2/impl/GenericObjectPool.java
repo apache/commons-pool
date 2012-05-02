@@ -93,9 +93,17 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Returns the cap on the number of "idle" instances in the pool.
+     * Returns the cap on the number of "idle" instances in the pool. If maxIdle
+     * is set too low on heavily loaded systems it is possible you will see
+     * objects being destroyed and almost immediately new objects being created.
+     * This is a result of the active threads momentarily returning objects
+     * faster than they are requesting them them, causing the number of idle
+     * objects to rise above maxIdle. The best value for maxIdle for heavily
+     * loaded system will vary but the default is a good starting point.
      *
-     * @return the cap on the number of "idle" instances in the pool.
+     * @return the maximum number of "idle" instances that can be held in the
+     *         pool or a negative value if there is no limit
+     *
      * @see #setMaxIdle
      */
     @Override
@@ -104,18 +112,19 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Sets the cap on the number of "idle" instances in the pool. If maxIdle is
-     * set too low on heavily loaded systems it is possible you will see objects
-     * being destroyed and almost immediately new objects being created. This is
-     * a result of the active threads momentarily returning objects faster than
-     * they are requesting them them, causing the number of idle objects to rise
-     * above maxIdle. The best value for maxIdle for heavily loaded system will
-     * vary but the default is a good starting point.
+     * Returns the cap on the number of "idle" instances in the pool. If maxIdle
+     * is set too low on heavily loaded systems it is possible you will see
+     * objects being destroyed and almost immediately new objects being created.
+     * This is a result of the active threads momentarily returning objects
+     * faster than they are requesting them them, causing the number of idle
+     * objects to rise above maxIdle. The best value for maxIdle for heavily
+     * loaded system will vary but the default is a good starting point.
      *
      * @param maxIdle
      *            The cap on the number of "idle" instances in the pool. Use a
      *            negative value to indicate an unlimited number of idle
-     *            instances.
+     *            instances
+     *
      * @see #getMaxIdle
      */
     public void setMaxIdle(int maxIdle) {
@@ -123,18 +132,20 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Sets the minimum number of objects allowed in the pool before the evictor
-     * thread (if active) spawns new objects. Note that no objects are created
-     * when <code>numActive + numIdle >= maxActive.</code> This setting has no
-     * effect if the idle object evictor is disabled (i.e. if
-     * <code>timeBetweenEvictionRunsMillis <= 0</code>).
+     * Sets the target for the minimum number of idle objects to maintain in
+     * the pool. This setting only has an effect if it is positive and
+     * {@link #getTimeBetweenEvictionRunsMillis()} is greater than zero. If this
+     * is the case, an attempt is made to ensure that the pool has the required
+     * minimum number of instances during idle object eviction runs.
      * <p>
      * If the configured value of minIdle is greater than the configured value
      * for maxIdle then the value of maxIdle will be used instead.
      *
      * @param minIdle
      *            The minimum number of objects.
-     * @see #getMinIdle
+     *
+     * @see #getMinIdle()
+     * @see #getMaxIdle()
      * @see #getTimeBetweenEvictionRunsMillis()
      */
     public void setMinIdle(int minIdle) {
@@ -142,15 +153,20 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Returns the minimum number of objects allowed in the pool before the
-     * evictor thread (if active) spawns new objects. (Note no objects are
-     * created when: numActive + numIdle >= maxActive)
+     * Returns the target for the minimum number of idle objects to maintain in
+     * the pool. This setting only has an effect if it is positive and
+     * {@link #getTimeBetweenEvictionRunsMillis()} is greater than zero. If this
+     * is the case, an attempt is made to ensure that the pool has the required
+     * minimum number of instances during idle object eviction runs.
      * <p>
      * If the configured value of minIdle is greater than the configured value
      * for maxIdle then the value of maxIdle will be used instead.
      *
      * @return The minimum number of objects.
-     * @see #setMinIdle
+     *
+     * @see #setMinIdle(int)
+     * @see #setMaxIdle(int)
+     * @see #setTimeBetweenEvictionRunsMillis(long)
      */
     @Override
     public int getMinIdle() {
@@ -164,10 +180,10 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
 
 
     /**
-     * Sets my configuration.
+     * Sets the configuration.
      *
-     * @param conf
-     *            configuration to use.
+     * @param conf the new configuration to use. This is used by value.
+     *
      * @see GenericObjectPoolConfig
      */
     public void setConfig(GenericObjectPoolConfig conf) {
@@ -199,46 +215,9 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         return factory;
     }
 
-
     /**
-     * <p>Borrows an object from the pool.</p>
-     *
-     * <p>If there is one or more idle instance available in the pool, then an
-     * idle instance will be selected based on the value of {@link #getLifo()},
-     * activated and returned. If activation fails, or {@link #getTestOnBorrow()
-     * testOnBorrow} is set to <code>true</code> and validation fails, the
-     * instance is destroyed and the next available instance is examined. This
-     * continues until either a valid instance is returned or there are no more
-     * idle instances available.</p>
-     *
-     * <p>
-     * If there are no idle instances available in the pool, behavior depends on
-     * the {@link #getMaxTotal() maxTotal} and (if applicable)
-     * {@link #getBlockWhenExhausted()} and
-     * {@link #getMaxWaitMillis() maxWait} properties. If the number of instances
-     * checked out from the pool is less than <code>maxActive,</code> a new
-     * instance is created, activated and (if applicable) validated and returned
-     * to the caller.
-     * </p>
-     * <p>
-     * If the pool is exhausted (no available idle instances and no capacity to
-     * create new ones), this method will either block (
-     * {@link #getBlockWhenExhausted()} is true) or throw a
-     * <code>NoSuchElementException</code> ({@link #getBlockWhenExhausted()} is false). The
-     * length of time that this method will block when
-     * {@link #getBlockWhenExhausted()} is true is determined by
-     * the {@link #getMaxWaitMillis() maxWait} property.
-     * </p>
-     * <p>
-     * When the pool is exhausted, multiple calling threads may be
-     * simultaneously blocked waiting for instances to become available. As of
-     * pool 1.5, a "fairness" algorithm has been implemented to ensure that
-     * threads receive available instances in request arrival order.
-     * </p>
-     *
-     * @return object instance
-     * @throws NoSuchElementException
-     *             if an instance cannot be returned
+     * Equivalent to <code>{@link #borrowObject(long)
+     * borrowObject}({@link #getMaxWaitMillis()})</code>.
      */
     @Override
     public T borrowObject() throws Exception {
@@ -246,14 +225,45 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Borrow an object from the pool using a user specific waiting time which
-     * only applies if {@link #getBlockWhenExhausted()} is true.
+     * Borrow an object from the pool using the specific waiting time which only
+     * applies if {@link #getBlockWhenExhausted()} is true.
+     * <p>
+     * If there is one or more idle instance available in the pool, then an
+     * idle instance will be selected based on the value of {@link #getLifo()},
+     * activated and returned. If activation fails, or {@link #getTestOnBorrow()
+     * testOnBorrow} is set to <code>true</code> and validation fails, the
+     * instance is destroyed and the next available instance is examined. This
+     * continues until either a valid instance is returned or there are no more
+     * idle instances available.
+     * <p>
+     * If there are no idle instances available in the pool, behavior depends on
+     * the {@link #getMaxTotal() maxTotal}, (if applicable)
+     * {@link #getBlockWhenExhausted()} and the value passed in to the
+     * <code>borrowMaxWaitMillis</code> parameter. If the number of instances
+     * checked out from the pool is less than <code>maxActive,</code> a new
+     * instance is created, activated and (if applicable) validated and returned
+     * to the caller.
+     * <p>
+     * If the pool is exhausted (no available idle instances and no capacity to
+     * create new ones), this method will either block (if
+     * {@link #getBlockWhenExhausted()} is true) or throw a
+     * <code>NoSuchElementException</code> (if
+     * {@link #getBlockWhenExhausted()} is false). The length of time that this
+     * method will block when {@link #getBlockWhenExhausted()} is true is
+     * determined by the value passed in to the <code>borrowMaxWait</code>
+     * parameter.
+     * <p>
+     * When the pool is exhausted, multiple calling threads may be
+     * simultaneously blocked waiting for instances to become available. A
+     * "fairness" algorithm has been implemented to ensure that threads receive
+     * available instances in request arrival order.
      *
-     * @param borrowMaxWaitMillis   The time to wait in milliseconds for an
-     *                              object to become available
-     * @return object instance
-     * @throws NoSuchElementException
-     *             if an instance cannot be returned
+     * @param borrowMaxWaitMillis The time to wait in milliseconds for an object
+     *                            to become available
+     *
+     * @return object instance from the pool
+     *
+     * @throws NoSuchElementException if an instance cannot be returned
      */
     public T borrowObject(long borrowMaxWaitMillis) throws Exception {
         assertOpen();
