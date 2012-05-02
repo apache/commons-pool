@@ -55,8 +55,6 @@ import java.util.NoSuchElementException;
  *
  * @param <T> Type of element pooled in this pool.
  *
- * @author Rodney Waldhoff
- * @author Sandy McArthur
  * @version $Revision$
  * @see PoolableObjectFactory
  * @see KeyedObjectPool

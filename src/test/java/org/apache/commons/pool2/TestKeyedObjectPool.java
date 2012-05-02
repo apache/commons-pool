@@ -31,8 +31,6 @@ import org.junit.Test;
 
 /**
  * Abstract {@link TestCase} for {@link ObjectPool} implementations.
- * @author Rodney Waldhoff
- * @author Sandy McArthur
  * @version $Revision$
  */
 public abstract class TestKeyedObjectPool {

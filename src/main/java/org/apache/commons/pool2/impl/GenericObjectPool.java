@@ -51,10 +51,6 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  *
  * @param <T> Type of element pooled in this pool.
  *
- * @author Rodney Waldhoff
- * @author Dirk Verbeeck
- * @author Sandy McArthur
- *
  * @version $Revision$
  */
 public class GenericObjectPool<T> extends BaseGenericObjectPool<T>

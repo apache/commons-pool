@@ -25,7 +25,6 @@ import org.apache.commons.pool2.PoolableObjectFactory;
 /**
  * A poolable object factory that tracks how {@link MethodCall methods are called}.
  *
- * @author Sandy McArthur
  * @version $Revision$
  * @see MethodCall
  */

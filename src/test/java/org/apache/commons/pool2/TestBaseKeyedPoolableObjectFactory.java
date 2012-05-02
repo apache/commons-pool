@@ -21,7 +21,6 @@ import static junit.framework.Assert.assertTrue;
 import org.junit.Test;
 
 /**
- * @author Rodney Waldhoff
  * @version $Revision$
  */
 public class TestBaseKeyedPoolableObjectFactory {

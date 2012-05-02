@@ -49,9 +49,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * @author Rodney Waldhoff
- * @author Dirk Verbeeck
- * @author Sandy McArthur
  * @version $Revision$
  */
 public class TestGenericObjectPool extends TestBaseObjectPool {

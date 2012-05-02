@@ -68,8 +68,6 @@ package org.apache.commons.pool2;
  *
  * @see ObjectPool
  *
- * @author Rodney Waldhoff
- * @author Sandy McArthur
  * @version $Revision$
  * @since Pool 1.0
  */
