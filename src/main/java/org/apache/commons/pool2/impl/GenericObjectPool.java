@@ -169,7 +169,12 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      */
     public GenericObjectPool(PoolableObjectFactory<T> factory,
             GenericObjectPoolConfig config) {
+
         super(config, ONAME_BASE, config.getJmxNamePrefix());
+
+        if (factory == null) {
+            throw new IllegalArgumentException("factory may not be null");
+        }
         this.factory = factory;
 
         setConfig(config);
