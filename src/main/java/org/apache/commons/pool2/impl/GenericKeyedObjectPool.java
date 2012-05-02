@@ -517,14 +517,17 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
     /**
      * {@inheritDoc}
-     * <p>Activation of this method decrements the active count associated with
-     * the given keyed pool  and attempts to destroy <code>obj.</code></p>
+     * <p>
+     * Activation of this method decrements the active count associated with
+     * the given keyed pool and attempts to destroy <code>obj.</code>
      *
      * @param key pool key
      * @param obj instance to invalidate
-     * @throws Exception if an exception occurs destroying the object
+     *
+     * @throws Exception             if an exception occurs destroying the
+     *                               object
      * @throws IllegalStateException if obj does not belong to the pool
-     * under the given key
+     *                               under the given key
      */
     @Override
     public void invalidateObject(K key, T obj) throws Exception {
@@ -542,18 +545,21 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
     /**
      * Clears any objects sitting idle in the pool by removing them from the
-     * idle instance pool and then invoking the configured PoolableObjectFactory's
-     * {@link KeyedPoolableObjectFactory#destroyObject(Object, Object)} method on
-     * each idle instance.
-     *
-     * <p> Implementation notes:
-     * <ul><li>This method does not destroy or effect in any way instances that are
+     * idle instance sub-pools and then invoking the configured
+     * PoolableObjectFactory's
+     * {@link KeyedPoolableObjectFactory#destroyObject(Object, Object)} method
+     * on each idle instance.
+     * <p>
+     * Implementation notes:
+     * <ul>
+     * <li>This method does not destroy or effect in any way instances that are
      * checked out when it is invoked.</li>
-     * <li>Invoking this method does not prevent objects being
-     * returned to the idle instance pool, even during its execution. It locks
-     * the pool only during instance removal. Additional instances may be returned
-     * while removed items are being destroyed.</li>
-     * <li>Exceptions encountered destroying idle instances are swallowed.</li></ul></p>
+     * <li>Invoking this method does not prevent objects being returned to the
+     * idle instance pool, even during its execution. Additional instances may
+     * be returned while removed items are being destroyed.</li>
+     * <li>Exceptions encountered destroying idle instances are swallowed but
+     * remain accessible via {@link #getSwallowedExceptions()}.</li>
+     * </ul>
      */
     @Override
     public void clear() {
@@ -566,8 +572,10 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
 
     /**
-     * Clears the specified pool, removing all pooled instances corresponding
-     * to the given <code>key</code>.
+     * Clears the specified sub-pool, removing all pooled instances
+     * corresponding to the given <code>key</code>. Exceptions encountered
+     * destroying idle instances are swallowed but remain accessible via
+     * {@link #getSwallowedExceptions()}.
      *
      * @param key the key to clear
      */
@@ -597,9 +605,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
 
     /**
-     * Returns the total number of instances current borrowed from this pool but not yet returned.
-     *
-     * @return the total number of instances currently borrowed from this pool
+     * Returns the total number of instances current borrowed from this pool but
+     * not yet returned.
      */
     @Override
     public int getNumActive() {
@@ -619,11 +626,10 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Returns the number of instances currently borrowed from but not yet returned
-     * to the pool corresponding to the given <code>key</code>.
+     * Returns the number of instances currently borrowed from but not yet
+     * returned to the sub-pool corresponding to the given <code>key</code>.
      *
      * @param key the key to query
-     * @return the number of instances corresponding to the given <code>key</code> currently borrowed in this pool
      */
     @Override
     public int getNumActive(K key) {
@@ -637,10 +643,10 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Returns the number of instances corresponding to the given <code>key</code> currently idle in this pool.
+     * Returns the number of idle instances in the sub-pool corresponding to the
+     * given <code>key</code>.
      *
      * @param key the key to query
-     * @return the number of instances corresponding to the given <code>key</code> currently idle in this pool
      */
     @Override
     public int getNumIdle(K key) {
@@ -650,14 +656,13 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
 
     /**
-     * <p>Closes the keyed object pool.  Once the pool is closed, {@link #borrowObject(Object)}
-     * will fail with IllegalStateException, but {@link #returnObject(Object, Object)} and
-     * {@link #invalidateObject(Object, Object)} will continue to work, with returned objects
-     * destroyed on return.</p>
-     *
-     * <p>Destroys idle instances in the pool by invoking {@link #clear()}.</p>
-     *
-     * @throws RuntimeException
+     * Closes the keyed object pool. Once the pool is closed,
+     * {@link #borrowObject(Object)} will fail with IllegalStateException, but
+     * {@link #returnObject(Object, Object)} and
+     * {@link #invalidateObject(Object, Object)} will continue to work, with
+     * returned objects destroyed on return.
+     * <p>
+     * Destroys idle instances in the pool by invoking {@link #clear()}.
      */
     @Override
     public void close() {
@@ -693,10 +698,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
 
     /**
-     * Clears oldest 15% of objects in pool.  The method sorts the
-     * objects into a TreeMap and then iterates the first 15% for removal.
-     *
-     * @since Pool 1.3
+     * Clears oldest 15% of objects in pool.  The method sorts the objects into
+     * a TreeMap and then iterates the first 15% for removal.
      */
     public void clearOldest() {
 
@@ -752,10 +755,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * of the most loaded pool that can create an instance may not always be
      * correct, since it does not lock the pool and instances may be created,
      * borrowed, returned or destroyed by other threads while it is executing.
-     *
-     * @return true if an instance is created and added to a pool
      */
-    private boolean reuseCapacity() {
+    private void reuseCapacity() {
         final int maxTotalPerKey = getMaxTotalPerKey();
 
         // Find the most loaded pool that could take a new instance
@@ -776,30 +777,21 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         }
 
         // Attempt to add an instance to the most loaded pool
-        boolean success = false;
         if (mostLoaded != null) {
             register(loadedKey);
             try {
                 PooledObject<T> p = create(loadedKey);
                 if (p != null) {
                     addIdleObject(loadedKey, p);
-                    success = true;
                 }
-            } catch (Exception ex) {
-                // Swallow and return false
+            } catch (Exception e) {
+                swallowException(e);
             } finally {
                 deregister(loadedKey);
             }
         }
-        return success;
     }
 
-    /**
-     * Returns true if there are threads parked waiting to borrow instances
-     * from at least one of the keyed pools.
-     *
-     * @return true if {@link #reuseCapacity()} would be useful
-     */
     private boolean hasBorrowWaiters() {
         for (K k : poolMap.keySet()) {
             final ObjectDeque<T> deque = poolMap.get(k);
