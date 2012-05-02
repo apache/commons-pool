@@ -610,8 +610,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
 
     /**
-     * Returns the total number of instances current borrowed from this pool but
-     * not yet returned.
+     * Returns the total number of instances currently borrowed from this pool
+     * but not yet returned.
      */
     @Override
     public int getNumActive() {
