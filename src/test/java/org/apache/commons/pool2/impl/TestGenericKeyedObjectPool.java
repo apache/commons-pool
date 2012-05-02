@@ -54,7 +54,7 @@ import org.junit.Test;
 
 /**
  * @author Rodney Waldhoff
- * @version $Revision$ $Date$
+ * @version $Revision$
  */
 public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 

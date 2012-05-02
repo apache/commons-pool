@@ -71,7 +71,7 @@ package org.apache.commons.pool2;
  *
  * @author Rodney Waldhoff
  * @author Sandy McArthur
- * @version $Revision$ $Date$
+ * @version $Revision$
  * @since Pool 1.0
  */
 public interface KeyedPoolableObjectFactory<K,V> {

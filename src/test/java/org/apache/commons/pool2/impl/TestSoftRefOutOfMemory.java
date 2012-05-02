@@ -33,7 +33,7 @@ import org.junit.Test;
 /**
  * @author Dirk Verbeeck
  * @author Sandy McArthur
- * @version $Revision$ $Date$
+ * @version $Revision$
  */
 public class TestSoftRefOutOfMemory {
     private SoftReferenceObjectPool<String> pool;

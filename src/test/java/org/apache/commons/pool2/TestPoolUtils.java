@@ -44,7 +44,7 @@ import org.junit.Test;
  * Unit tests for {@link PoolUtils}.
  *
  * @author Sandy McArthur
- * @version $Revision$ $Date$
+ * @version $Revision$
  */
 public class TestPoolUtils {
 
