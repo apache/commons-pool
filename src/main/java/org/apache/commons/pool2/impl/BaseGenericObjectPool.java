@@ -288,9 +288,10 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
     /**
      * Returns whether objects borrowed from the pool will be validated before
      * being returned from the <code>borrowObject()</code> method. Validation is
-     * performed by the factory associated with the pool. If the object fails to
-     * validate, it will be removed from the pool and destroyed, and a new
-     * attempt will be made to borrow an object from the pool.
+     * performed by the <code>validateObject()</code> method of the factory
+     * associated with the pool. If the object fails to validate, it will be
+     * removed from the pool and destroyed, and a new attempt will be made to
+     * borrow an object from the pool.
      *
      * @return <code>true</code> if objects are validated before being returned
      *         from the <code>borrowObject()</code> method
@@ -304,9 +305,10 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
     /**
      * Sets whether objects borrowed from the pool will be validated before
      * being returned from the <code>borrowObject()</code> method. Validation is
-     * performed by the factory associated with the pool. If the object fails to
-     * validate, it will be removed from the pool and destroyed, and a new
-     * attempt will be made to borrow an object from the pool.
+     * performed by the <code>validateObject()</code> method of the factory
+     * associated with the pool. If the object fails to validate, it will be
+     * removed from the pool and destroyed, and a new attempt will be made to
+     * borrow an object from the pool.
      *
      * @param testOnBorrow  <code>true</code> if objects should be validated
      *                      before being returned from the
@@ -321,8 +323,9 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
     /**
      * Returns whether objects borrowed from the pool will be validated when
      * they are returned to the pool via the <code>returnObject()</code> method.
-     * Validation is performed by the factory associated with the pool. If the
-     * object fails to it will be destroyed rather then returned the pool.
+     * Validation is performed by the <code>validateObject()</code> method of
+     * the factory associated with the pool. If the object fails to it will be
+     * destroyed rather then returned the pool.
      *
      * @return <code>true</code> if objects are validated on being returned to
      *         the pool via the <code>returnObject()</code> method
@@ -336,8 +339,9 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
     /**
      * Sets whether objects borrowed from the pool will be validated when
      * they are returned to the pool via the <code>returnObject()</code> method.
-     * Validation is performed by the factory associated with the pool. If the
-     * object fails to it will be destroyed rather then returned the pool.
+     * Validation is performed by the <code>validateObject()</code> method of
+     * the factory associated with the pool. If the object fails to it will be
+     * destroyed rather then returned the pool.
      *
      * @param testOnReturn <code>true</code> if objects are validated on being
      *                     returned to the pool via the
@@ -353,8 +357,9 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * Returns whether objects sitting idle in the pool will be validated by the
      * idle object evictor (if any - see
      * {@link #setTimeBetweenEvictionRunsMillis(long)}). Validation is performed
-     * by the factory associated with the pool. If the object fails to validate,
-     * it will be removed from the pool and destroyed.
+     * by the <code>validateObject()</code> method of the factory associated
+     * with the pool. If the object fails to validate, it will be removed from
+     * the pool and destroyed.
      *
      * @return <code>true</code> if objects will be validated by the evictor
      *
@@ -369,8 +374,9 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * Returns whether objects sitting idle in the pool will be validated by the
      * idle object evictor (if any - see
      * {@link #setTimeBetweenEvictionRunsMillis(long)}). Validation is performed
-     * by the factory associated with the pool. If the object fails to validate,
-     * it will be removed from the pool and destroyed.
+     * by the <code>validateObject()</code> method of the factory associated
+     * with the pool. If the object fails to validate, it will be removed from
+     * the pool and destroyed.
      *
      * @param testWhileIdle
      *            <code>true</code> so objects will be validated by the evictor

@@ -42,81 +42,12 @@ import org.apache.commons.pool2.PoolUtils;
  * When coupled with the appropriate {@link KeyedPoolableObjectFactory},
  * <code>GenericKeyedObjectPool</code> provides robust pooling functionality for
  * keyed objects. A <code>GenericKeyedObjectPool</code> can be viewed as a map
- * of pools, keyed on the (unique) key values provided to the
+ * of sub-pools, keyed on the (unique) key values provided to the
  * {@link #preparePool preparePool}, {@link #addObject addObject} or
  * {@link #borrowObject borrowObject} methods. Each time a new key value is
- * provided to one of these methods, a new pool is created under the given key
- * to be managed by the containing <code>GenericKeyedObjectPool.</code>
+ * provided to one of these methods, a sub-new pool is created under the given
+ * key to be managed by the containing <code>GenericKeyedObjectPool.</code>
  * </p>
- * <p>A <code>GenericKeyedObjectPool</code> provides a number of configurable
- * parameters:</p>
- * <ul>
- *  <li>
- *    {@link #setMaxTotalPerKey maxTotalPerKey} controls the maximum number of objects
- *    (per key) that can allocated by the pool (checked out to client threads,
- *    or idle in the pool) at one time.  When non-positive, there is no limit
- *    to the number of objects per key. When {@link #setMaxTotalPerKey maxTotalPerKey} is
- *    reached, the keyed pool is said to be exhausted.  The default setting for
- *    this parameter is 8.
- *  </li>
- *  <li>
- *    {@link #setMaxTotal maxTotal} sets a global limit on the number of objects
- *    that can be in circulation (active or idle) within the combined set of
- *    pools.  When non-positive, there is no limit to the total number of
- *    objects in circulation. When {@link #setMaxTotal maxTotal} is exceeded,
- *    all keyed pools are exhausted. When <code>maxTotal</code> is set to a
- *    positive value and {@link #borrowObject borrowObject} is invoked
- *    when at the limit with no idle instances available, an attempt is made to
- *    create room by clearing the oldest 15% of the elements from the keyed
- *    pools. The default setting for this parameter is -1 (no limit).
- *  </li>
- *  <li>
- *    {@link #setMaxIdlePerKey maxIdlePerKey} controls the maximum number of objects that can
- *    sit idle in the pool (per key) at any time.  When negative, there
- *    is no limit to the number of objects that may be idle per key. The
- *    default setting for this parameter is 8.
- *  </li>
- *  <li>
- *    {@link #getBlockWhenExhausted} specifies the
- *    behavior of the {@link #borrowObject borrowObject} method when a keyed
- *    pool is exhausted:
- *    <ul>
- *    <li>
- *      When {@link #getBlockWhenExhausted} is false,
- *     {@link #borrowObject borrowObject} will throw
- *      a {@link NoSuchElementException}
- *    </li>
- *    <li>
- *      When {@link #getBlockWhenExhausted} is true,
- *      {@link #borrowObject borrowObject} will block
- *      (invoke {@link Object#wait() wait} until a new or idle object is available.
- *      If a non-negative {@link #setMaxWaitMillis(long) maxWait}
- *      value is supplied, the {@link #borrowObject borrowObject} will block for at
- *      most that many milliseconds, after which a {@link NoSuchElementException}
- *      will be thrown.  If {@link #setMaxWaitMillis(long) maxWait} is negative,
- *      the {@link #borrowObject borrowObject} method will block indefinitely.
- *    </li>
- *    </ul>
- *    The default {@link #getBlockWhenExhausted()} setting is true.
- *  </li>
- *  <li>
- *    When {@link #setTestOnBorrow testOnBorrow} is set, the pool will
- *    attempt to validate each object before it is returned from the
- *    {@link #borrowObject borrowObject} method. (Using the provided factory's
- *    {@link KeyedPoolableObjectFactory#validateObject validateObject} method.)
- *    Objects that fail to validate will be dropped from the pool, and a
- *    different object will be borrowed. The default setting for this parameter
- *    is <code>false.</code>
- *  </li>
- *  <li>
- *    When {@link #setTestOnReturn testOnReturn} is set, the pool will
- *    attempt to validate each object before it is returned to the pool in the
- *    {@link #returnObject returnObject} method. (Using the provided factory's
- *    {@link KeyedPoolableObjectFactory#validateObject validateObject}
- *    method.)  Objects that fail to validate will be dropped from the pool.
- *    The default setting for this parameter is <code>false.</code>
- *  </li>
- * </ul>
  * <p>
  * Optionally, one may configure the pool to examine and possibly evict objects
  * as they sit idle in the pool and to ensure that a minimum number of idle
@@ -126,45 +57,6 @@ import org.apache.commons.pool2.PoolUtils;
  * threads for access to objects in the pool, so if they run too frequently
  * performance issues may result.  The idle object eviction thread may be
  * configured using the following attributes:
- * <ul>
- *  <li>
- *   {@link #setTimeBetweenEvictionRunsMillis timeBetweenEvictionRunsMillis}
- *   indicates how long the eviction thread should sleep before "runs" of examining
- *   idle objects.  When non-positive, no eviction thread will be launched. The
- *   default setting for this parameter is -1 (i.e., by default, idle object
- *   eviction is disabled).
- *  </li>
- *  <li>
- *   {@link #setMinEvictableIdleTimeMillis minEvictableIdleTimeMillis}
- *   specifies the minimum amount of time that an object may sit idle in the
- *   pool before it is eligible for eviction due to idle time.  When
- *   non-positive, no object will be dropped from the pool due to idle time
- *   alone.  This setting has no effect unless
- *   <code>timeBetweenEvictionRunsMillis > 0.</code>  The default setting
- *   for this parameter is 30 minutes.
- *  </li>
- *  <li>
- *   {@link #setTestWhileIdle testWhileIdle} indicates whether or not idle
- *   objects should be validated using the factory's
- *   {@link KeyedPoolableObjectFactory#validateObject validateObject} method
- *   during idle object eviction runs.  Objects that fail to validate will be
- *   dropped from the pool. This setting has no effect unless
- *   <code>timeBetweenEvictionRunsMillis > 0.</code>  The default setting
- *   for this parameter is <code>false.</code>
- *  </li>
- *  <li>
- *    {@link #setMinIdlePerKey minIdlePerKey} sets a target value for the minimum number of
- *    idle objects (per key) that should always be available. If this parameter
- *    is set to a positive number and
- *    <code>timeBetweenEvictionRunsMillis > 0,</code> each time the idle object
- *    eviction thread runs, it will try to create enough idle instances so that
- *    there will be <code>minIdle</code> idle instances available under each
- *    key. This parameter is also used by {@link #preparePool preparePool}
- *    if <code>true</code> is provided as that method's
- *    <code>populateImmediately</code> parameter. The default setting for this
- *    parameter is 0.
- *  </li>
- * </ul>
  * <p>
  * GenericKeyedObjectPool is not usable without a {@link KeyedPoolableObjectFactory}.  A
  * non-<code>null</code> factory must be provided as a constructor argument
@@ -216,11 +108,12 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Returns the cap on the number of object instances allocated by the pool
-     * (checked out or idle),  per key.
-     * A negative value indicates no limit.
+     * Returns the limit on the number of object instances allocated by the pool
+     * (checked out or idle), per key. When the limit is reached, the pool is
+     * said to be exhausted. A negative value indicates no limit.
      *
-     * @return the cap on the number of active instances per key.
+     * @return the limit on the number of active instances per key
+     *
      * @see #setMaxTotalPerKey
      */
     @Override
@@ -229,9 +122,11 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Sets the cap on the number of object instances managed by the pool per key.
-     * @param maxTotalPerKey The cap on the number of object instances per key.
-     * Use a negative value for no limit.
+     * Sets the limit on the number of object instances allocated by the pool
+     * (checked out or idle), per key. When the limit is reached, the pool is
+     * said to be exhausted. A negative value indicates no limit.
+     *
+     * @param maxTotalPerKey the limit on the number of active instances per key
      *
      * @see #getMaxTotalPerKey
      */
@@ -241,9 +136,18 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
 
     /**
-     * Returns the cap on the number of "idle" instances per key.
+     * Returns the cap on the number of "idle" instances per key in the pool.
+     * If maxIdle is set too low on heavily loaded systems it is possible you
+     * will see objects being destroyed and almost immediately new objects
+     * being created. This is a result of the active threads momentarily
+     * returning objects faster than they are requesting them them, causing the
+     * number of idle objects to rise above maxIdle. The best value for maxIdle
+     * for heavily loaded system will vary but the default is a good starting
+     * point.
+     *
      * @return the maximum number of "idle" instances that can be held
-     * in a given keyed pool.
+     *         in a given keyed pool or a negative value if there is no limit
+     *
      * @see #setMaxIdlePerKey
      */
     @Override
@@ -252,7 +156,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Sets the cap on the number of "idle" instances in the pool.
+     * Sets the cap on the number of "idle" instances per key in the pool.
      * If maxIdle is set too low on heavily loaded systems it is possible you
      * will see objects being destroyed and almost immediately new objects
      * being created. This is a result of the active threads momentarily
@@ -260,47 +164,53 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * number of idle objects to rise above maxIdle. The best value for maxIdle
      * for heavily loaded system will vary but the default is a good starting
      * point.
-     * @param maxIdle the maximum number of "idle" instances that can be held
-     * in a given keyed pool. Use a negative value for no limit.
+     *
+     * @param maxIdlePerKey the maximum number of "idle" instances that can be
+     *                      held in a given keyed pool. Use a negative value for
+     *                      no limit
+     *
      * @see #getMaxIdlePerKey
      */
-    public void setMaxIdlePerKey(int maxIdle) {
-        maxIdlePerKey = maxIdle;
+    public void setMaxIdlePerKey(int maxIdlePerKey) {
+        this.maxIdlePerKey = maxIdlePerKey;
     }
 
     /**
-     * Sets the minimum number of idle objects to maintain in each of the keyed
-     * pools. This setting has no effect unless
-     * <code>timeBetweenEvictionRunsMillis > 0</code> and attempts to ensure
-     * that each pool has the required minimum number of instances are only
-     * made during idle object eviction runs.
+     * Sets the target for the minimum number of idle objects to maintain in
+     * each of the keyed sub-pools. This setting only has an effect if it is
+     * positive and {@link #getTimeBetweenEvictionRunsMillis()} is greater than
+     * zero. If this is the case, an attempt is made to ensure that each
+     * sub-pool has the required minimum number of instances during idle object
+     * eviction runs.
      * <p>
      * If the configured value of minIdlePerKey is greater than the configured
      * value for maxIdlePerKey then the value of maxIdlePerKey will be used
      * instead.
      *
-     * @param poolSize - The minimum size of the each keyed pool
-     * @since Pool 1.3
+     * @param minIdlePerKey The minimum size of the each keyed pool
+     *
      * @see #getMinIdlePerKey
+     * @see #getMaxIdlePerKey()
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    public void setMinIdlePerKey(int poolSize) {
-        minIdlePerKey = poolSize;
+    public void setMinIdlePerKey(int minIdlePerKey) {
+        this.minIdlePerKey = minIdlePerKey;
     }
 
     /**
-     * Returns the minimum number of idle objects to maintain in each of the keyed
-     * pools. This setting has no effect unless
-     * <code>timeBetweenEvictionRunsMillis > 0</code> and attempts to ensure
-     * that each pool has the required minimum number of instances are only
-     * made during idle object eviction runs.
+     * Returns the target for the minimum number of idle objects to maintain in
+     * each of the keyed sub-pools. This setting only has an effect if it is
+     * positive and {@link #getTimeBetweenEvictionRunsMillis()} is greater than
+     * zero. If this is the case, an attempt is made to ensure that each
+     * sub-pool has the required minimum number of instances during idle object
+     * eviction runs.
      * <p>
      * If the configured value of minIdlePerKey is greater than the configured
      * value for maxIdlePerKey then the value of maxIdlePerKey will be used
      * instead.
      *
      * @return minimum size of the each keyed pool
-     * @since Pool 1.3
+     *
      * @see #setTimeBetweenEvictionRunsMillis
      */
     @Override
@@ -1199,7 +1109,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * @throws Exception If there was an error whilst creating the pooled objects.
      */
     @Override
-    protected void ensureMinIdle() throws Exception {
+    void ensureMinIdle() throws Exception {
         int minIdlePerKey = getMinIdlePerKey();
         if (minIdlePerKey < 1) {
             return;
