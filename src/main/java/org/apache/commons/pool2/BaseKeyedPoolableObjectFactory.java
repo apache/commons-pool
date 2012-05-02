@@ -29,7 +29,6 @@ package org.apache.commons.pool2;
  * @param <K> The type of keys managed by this factory.
  * @param <V> Type of element managed by this factory.
  *
- * @author Rodney Waldhoff
  * @version $Revision$
  * @since Pool 1.0
  */

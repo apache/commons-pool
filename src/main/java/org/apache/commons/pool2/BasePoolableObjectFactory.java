@@ -29,8 +29,6 @@ package org.apache.commons.pool2;
  * @see PoolableObjectFactory
  * @see BaseKeyedPoolableObjectFactory
  *
- * @author Rodney Waldhoff
- * @version $Revision$
  * @since Pool 1.0
  */
 public abstract class BasePoolableObjectFactory<T> implements PoolableObjectFactory<T> {

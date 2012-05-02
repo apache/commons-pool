@@ -67,10 +67,6 @@ import org.apache.commons.pool2.PoolUtils;
  * @param <K> The type of keys maintained by this pool.
  * @param <T> Type of element pooled in this pool.
  *
- * @author Rodney Waldhoff
- * @author Dirk Verbeeck
- * @author Sandy McArthur
- *
  * @version $Revision$
  */
 public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>

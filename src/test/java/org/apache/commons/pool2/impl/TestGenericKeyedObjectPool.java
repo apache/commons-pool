@@ -53,7 +53,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * @author Rodney Waldhoff
  * @version $Revision$
  */
 public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {

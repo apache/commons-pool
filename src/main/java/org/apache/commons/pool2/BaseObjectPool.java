@@ -26,8 +26,6 @@ package org.apache.commons.pool2;
  * 
  * @param <T> Type of element pooled in this pool.
  *
- * @author Rodney Waldhoff
- * @author Sandy McArthur
  * @version $Revision$
  * @since Pool 1.0
  */

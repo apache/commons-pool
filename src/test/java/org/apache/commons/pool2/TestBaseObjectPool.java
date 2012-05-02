@@ -24,8 +24,6 @@ import org.junit.Test;
 
 
 /**
- * @author Rodney Waldhoff
- * @author Sandy McArthur
  * @version $Revision$ 
  */
 public class TestBaseObjectPool extends TestObjectPool {

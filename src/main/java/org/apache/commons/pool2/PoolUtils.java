@@ -33,7 +33,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
  * This class consists exclusively of static methods that operate on or return ObjectPool
  * or KeyedObjectPool related interfaces.
  *
- * @author Sandy McArthur
  * @version $Revision$
  * @since Pool 1.3
  * 

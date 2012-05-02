@@ -31,8 +31,6 @@ import org.junit.After;
 import org.junit.Test;
 
 /**
- * @author Dirk Verbeeck
- * @author Sandy McArthur
  * @version $Revision$
  */
 public class TestSoftRefOutOfMemory {

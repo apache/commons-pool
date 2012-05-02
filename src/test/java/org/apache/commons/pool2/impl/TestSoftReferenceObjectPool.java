@@ -22,8 +22,6 @@ import org.apache.commons.pool2.PoolableObjectFactory;
 import org.apache.commons.pool2.TestBaseObjectPool;
 
 /**
- * @author Rodney Waldhoff
- * @author Sandy McArthur
  * @version $Revision$
  */
 public class TestSoftReferenceObjectPool extends TestBaseObjectPool {

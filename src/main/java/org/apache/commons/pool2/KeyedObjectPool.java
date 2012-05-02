@@ -58,8 +58,6 @@ import java.util.NoSuchElementException;
  * @param <K> The type of keys maintained by this pool.
  * @param <V> Type of element pooled in this pool.
  *
- * @author Rodney Waldhoff
- * @author Sandy McArthur
  * @version $Revision$
  * @see KeyedPoolableObjectFactory
  * @see ObjectPool

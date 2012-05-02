@@ -43,7 +43,6 @@ import org.junit.Test;
 /**
  * Unit tests for {@link PoolUtils}.
  *
- * @author Sandy McArthur
  * @version $Revision$
  */
 public class TestPoolUtils {
