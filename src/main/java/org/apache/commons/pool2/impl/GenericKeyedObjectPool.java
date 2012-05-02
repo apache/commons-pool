@@ -47,26 +47,19 @@ import org.apache.commons.pool2.PoolUtils;
  * {@link #borrowObject borrowObject} methods. Each time a new key value is
  * provided to one of these methods, a sub-new pool is created under the given
  * key to be managed by the containing <code>GenericKeyedObjectPool.</code>
- * </p>
  * <p>
  * Optionally, one may configure the pool to examine and possibly evict objects
  * as they sit idle in the pool and to ensure that a minimum number of idle
- * objects is maintained for each key. This is performed by an
- * "idle object eviction" thread, which runs asynchronously. Caution should be
- * used when configuring this optional feature. Eviction runs contend with client
- * threads for access to objects in the pool, so if they run too frequently
- * performance issues may result.  The idle object eviction thread may be
- * configured using the following attributes:
- * <p>
- * GenericKeyedObjectPool is not usable without a {@link KeyedPoolableObjectFactory}.  A
- * non-<code>null</code> factory must be provided as a constructor argument
- * before the pool is used.
- * </p>
+ * objects is maintained for each key. This is performed by an "idle object
+ * eviction" thread, which runs asynchronously. Caution should be used when
+ * configuring this optional feature. Eviction runs contend with client threads
+ * for access to objects in the pool, so if they run too frequently performance
+ * issues may result.
  * <p>
  * Implementation note: To prevent possible deadlocks, care has been taken to
  * ensure that no call to a factory method will occur within a synchronization
  * block. See POOL-125 and DBCP-44 for more information.
- * </p>
+ *
  * @see GenericObjectPool
  *
  * @param <K> The type of keys maintained by this pool.
@@ -76,13 +69,13 @@ import org.apache.commons.pool2.PoolUtils;
  * @author Dirk Verbeeck
  * @author Sandy McArthur
  * @version $Revision$ $Date$
- * @since Pool 1.0
  */
 public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMBean<K> {
 
     /**
-     * Create a new <code>GenericKeyedObjectPool</code> using defaults.
+     * Create a new <code>GenericKeyedObjectPool</code> using defaults from
+     * {@link GenericKeyedObjectPoolConfig}.
      */
     public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,T> factory) {
         this(factory, new GenericKeyedObjectPoolConfig());
@@ -109,8 +102,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
     /**
      * Returns the limit on the number of object instances allocated by the pool
-     * (checked out or idle), per key. When the limit is reached, the pool is
-     * said to be exhausted. A negative value indicates no limit.
+     * (checked out or idle), per key. When the limit is reached, the sub-pool
+     * is said to be exhausted. A negative value indicates no limit.
      *
      * @return the limit on the number of active instances per key
      *
@@ -123,8 +116,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
     /**
      * Sets the limit on the number of object instances allocated by the pool
-     * (checked out or idle), per key. When the limit is reached, the pool is
-     * said to be exhausted. A negative value indicates no limit.
+     * (checked out or idle), per key. When the limit is reached, the sub-pool
+     * is said to be exhausted. A negative value indicates no limit.
      *
      * @param maxTotalPerKey the limit on the number of active instances per key
      *
@@ -145,8 +138,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * for heavily loaded system will vary but the default is a good starting
      * point.
      *
-     * @return the maximum number of "idle" instances that can be held
-     *         in a given keyed pool or a negative value if there is no limit
+     * @return the maximum number of "idle" instances that can be held in a
+     *         given keyed sub-pool or a negative value if there is no limit
      *
      * @see #setMaxIdlePerKey
      */
@@ -166,8 +159,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * point.
      *
      * @param maxIdlePerKey the maximum number of "idle" instances that can be
-     *                      held in a given keyed pool. Use a negative value for
-     *                      no limit
+     *                      held in a given keyed sub-pool. Use a negative value
+     *                      for no limit
      *
      * @see #getMaxIdlePerKey
      */
@@ -225,7 +218,9 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
     /**
      * Sets the configuration.
+     *
      * @param conf the new configuration to use.
+     *
      * @see GenericKeyedObjectPoolConfig
      */
     public void setConfig(GenericKeyedObjectPoolConfig conf) {
@@ -258,45 +253,9 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         return factory;
     }
 
-
     /**
-     * <p>Borrows an object from the keyed pool associated with the given
-     * key.</p>
-     *
-     * <p>If there is one or more idle instances available in the pool
-     * associated with the given key, then an idle instance will be selected
-     * based on the value of {@link #getLifo()}, activated and returned.  If
-     * activation fails, or {@link #getTestOnBorrow() testOnBorrow} is set to
-     * <code>true</code> and validation fails, the instance is destroyed and the
-     * next available instance is examined.  This continues until either a valid
-     * instance is returned or there are no more idle instances available.</p>
-     *
-     * <p>If there are no idle instances available in the pool associated with the given key, behavior
-     * depends on the {@link #getMaxTotalPerKey() maxTotalPerKey}, {@link #getMaxTotal() maxTotal}, and (if applicable)
-     * {@link #getBlockWhenExhausted()} and {@link #getMaxWaitMillis() maxWait} settings. If the
-     * number of instances checked out from the pool under the given key is less than <code>maxTotalPerKey</code> and
-     * the total number of instances in circulation (under all keys) is less than <code>maxTotal</code>, a new instance
-     * is created, activated and (if applicable) validated and returned to the caller.</p>
-     *
-     * <p>If the associated keyed pool is exhausted (no available idle instances and no capacity to create new ones),
-     * this method will either block ({@link #getBlockWhenExhausted()} is true) or throw a <code>NoSuchElementException</code>
-     * ({@link #getBlockWhenExhausted()} is false).
-     * The length of time that this method will block when {@link #getBlockWhenExhausted()} is true
-     * is determined by the {@link #getMaxWaitMillis() maxWait} property.</p>
-     *
-     * When <code>maxTotal</code> is set to a
-     * positive value and {@link #borrowObject borrowObject} is invoked
-     * when at the limit with no idle instances available, an attempt is made to
-     * create room by clearing the oldest 15% of the elements from the keyed
-     * pools.
-     *
-     * <p>When the pool is exhausted, multiple calling threads may be simultaneously blocked waiting for instances
-     * to become available.  As of pool 1.5, a "fairness" algorithm has been implemented to ensure that threads receive
-     * available instances in request arrival order.</p>
-     *
-     * @param key pool key
-     * @return object instance from the keyed pool
-     * @throws NoSuchElementException if a keyed object instance cannot be returned.
+     * Equivalent to <code>{@link #borrowObject(Object, long) borrowObject}(key,
+     * {@link #getMaxWaitMillis()})</code>.
      */
     @Override
     public T borrowObject(K key) throws Exception {
@@ -304,14 +263,55 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * <p>Borrows an object from the keyed pool associated with the given key
-     * using a user specific waiting time which only applies if
-     * {@link #getBlockWhenExhausted()} is true.</p>
+     * Borrows an object from the sub-pool associated with the given key using
+     * the specified waiting time which only applies if
+     * {@link #getBlockWhenExhausted()} is true.
+     * <p>
+     * If there is one or more idle instances available in the sub-pool
+     * associated with the given key, then an idle instance will be selected
+     * based on the value of {@link #getLifo()}, activated and returned.  If
+     * activation fails, or {@link #getTestOnBorrow() testOnBorrow} is set to
+     * <code>true</code> and validation fails, the instance is destroyed and the
+     * next available instance is examined.  This continues until either a valid
+     * instance is returned or there are no more idle instances available.
+     * <p>
+     * If there are no idle instances available in the sub-pool associated with
+     * the given key, behavior depends on the {@link #getMaxTotalPerKey()
+     * maxTotalPerKey}, {@link #getMaxTotal() maxTotal}, and (if applicable)
+     * {@link #getBlockWhenExhausted()} and the value passed in to the
+     * <code>borrowMaxWait</code> parameter. If the number of instances checked
+     * out from the sub-pool under the given key is less than
+     * <code>maxTotalPerKey</code> and the total number of instances in
+     * circulation (under all keys) is less than <code>maxTotal</code>, a new
+     * instance is created, activated and (if applicable) validated and returned
+     * to the caller.
+     * <p>
+     * If the associated sub-pool is exhausted (no available idle instances and
+     * no capacity to create new ones), this method will either block
+     * ({@link #getBlockWhenExhausted()} is true) or throw a
+     * <code>NoSuchElementException</code>
+     * ({@link #getBlockWhenExhausted()} is false).
+     * The length of time that this method will block when
+     * {@link #getBlockWhenExhausted()} is true is determined by the value
+     * passed in to the <code>borrowMaxWait</code> parameter.
+     * <p>
+     * When <code>maxTotal</code> is set to a positive value and this method is
+     * invoked when at the limit with no idle instances available, an attempt is
+     * made to create room by clearing the oldest 15% of the elements from the
+     * keyed sub-pools.
+     * <p>
+     * When the pool is exhausted, multiple calling threads may be
+     * simultaneously blocked waiting for instances to become available. A
+     * "fairness" algorithm has been implemented to ensure that threads receive
+     * available instances in request arrival order.
      *
      * @param key pool key
      * @param borrowMaxWait maximum amount of time to wait (in milliseconds)
+     *
      * @return object instance from the keyed pool
-     * @throws NoSuchElementException if a keyed object instance cannot be returned.
+     *
+     * @throws NoSuchElementException if a keyed object instance cannot be
+     *                                returned.
      */
     public T borrowObject(K key, long borrowMaxWait) throws Exception {
         assertOpen();
@@ -424,25 +424,26 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
 
     /**
-     * <p>Returns an object to a keyed pool.</p>
-     *
-     * <p>For the pool to function correctly, the object instance <strong>must</strong> have been borrowed
-     * from the pool (under the same key) and not yet returned. Repeated <code>returnObject</code> calls on
-     * the same object/key pair (with no <code>borrowObject</code> calls in between) will result in multiple
-     * references to the object in the idle instance pool.</p>
-     *
-     * <p>If {@link #getMaxIdlePerKey() maxIdle} is set to a positive value and the number of idle instances under the given
-     * key has reached this value, the returning instance is destroyed.</p>
-     *
-     * <p>If {@link #getTestOnReturn() testOnReturn} == true, the returning instance is validated before being returned
-     * to the idle instance pool under the given key.  In this case, if validation fails, the instance is destroyed.</p>
-     *
+     * Returns an object to a keyed sub-pool.
      * <p>
-     * Exceptions encountered destroying objects for any reason are swallowed.
-     * </p>
+     * If {@link #getMaxIdlePerKey() maxIdle} is set to a positive value and the
+     * number of idle instances under the given key has reached this value, the
+     * returning instance is destroyed.
+     * <p>
+     * If {@link #getTestOnReturn() testOnReturn} == true, the returning
+     * instance is validated before being returned to the idle instance sub-pool
+     * under the given key. In this case, if validation fails, the instance is
+     * destroyed.
+     * <p>
+     * Exceptions encountered destroying objects for any reason are swallowed
+     * but remain accessible via {@link #getSwallowedExceptions()}.
      *
      * @param key pool key
      * @param obj instance to return to the keyed pool
+     *
+     * @throws IllegalStateException if an object is returned to the pool that
+     *                               was not borrowed from it or if an object is
+     *                               returned to the pool multiple times
      */
     @Override
     public void returnObject(K key, T obj) {
