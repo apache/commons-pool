@@ -125,6 +125,14 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
     private volatile long maxBorrowWaitTimeMillis = 0; // @GuardedBy("maxBorrowWaitTimeMillisLock")
 
 
+    /**
+     * Handles JMX regitration (if required) and the initialization required for
+     * monitoring.
+     *
+     * @param config        Pool configuration
+     * @param jmxNameBase   Base JMX name for the new pool
+     * @param jmxNamePrefix Prefix tobe used for JMX name for the new pool
+     */
     public BaseGenericObjectPool(BaseObjectPoolConfig config,
             String jmxNameBase, String jmxNamePrefix) {
         if (config.getJmxEnabled()) {
@@ -589,33 +597,16 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      */
     public abstract void evict() throws Exception;
 
-    /*
-     * Make the eviction policy instance available to the sub-classes
-     */
     final EvictionPolicy<T> getEvictionPolicy() {
         return evictionPolicy;
     }
 
-    /**
-     * Throws an <code>IllegalStateException</code> if called when the pool has
-     * been closed.
-     *
-     * @throws IllegalStateException if this pool has been closed.
-     * @see #isClosed()
-     */
     final void assertOpen() throws IllegalStateException {
         if (isClosed()) {
             throw new IllegalStateException("Pool not open");
         }
     }
 
-    /**
-     * Start the eviction thread or service, or when <i>delay</i> is
-     * non-positive, stop it if it is already running.
-     *
-     * @param delay
-     *            milliseconds between evictor runs.
-     */
     // Needs to be final; see POOL-195. Make method final as it is
     // called from a constructor.
     final void startEvictor(long delay) {
@@ -856,7 +847,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
     private String getStackTrace(Exception e) {
         // Need the exception in string form to prevent the retention of
         // references to classes in the stack trace that could trigger a memory
-        // leak in a container environment
+        // leak in a container environment.
         Writer w = new StringWriter();
         PrintWriter pw = new PrintWriter(w);
         e.printStackTrace(pw);
