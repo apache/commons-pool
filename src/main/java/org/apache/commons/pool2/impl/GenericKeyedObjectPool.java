@@ -1200,8 +1200,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      */
     @Override
     protected void ensureMinIdle() throws Exception {
-        int minIdle = getMinIdlePerKey();
-        if (minIdle < 1) {
+        int minIdlePerKey = getMinIdlePerKey();
+        if (minIdlePerKey < 1) {
             return;
         }
 
@@ -1223,10 +1223,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * @throws Exception If there was an error whilst creating the pooled objects
      */
     private void ensureMinIdle(K key) throws Exception {
-        int minIdle = getMinIdlePerKey();
-        if (minIdle < 1) {
-            return;
-        }
 
         // Calculate current pool objects
         ObjectDeque<T> objectDeque = poolMap.get(key);
@@ -1305,6 +1301,10 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * @since Pool 1.3
      */
     public void preparePool(K key) throws Exception {
+        int minIdlePerKey = getMinIdlePerKey();
+        if (minIdlePerKey < 1) {
+            return;
+        }
         ensureMinIdle(key);
     }
 
