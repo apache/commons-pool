@@ -162,7 +162,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      *
      * @see #setMaxTotal
      */
-    public int getMaxTotal() {
+    public final int getMaxTotal() {
         return maxTotal;
     }
 
@@ -177,7 +177,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      *
      * @see #getMaxTotal
      */
-    public void setMaxTotal(int maxTotal) {
+    public final void setMaxTotal(int maxTotal) {
         this.maxTotal = maxTotal;
     }
 
@@ -191,7 +191,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      *
      * @see #setBlockWhenExhausted
      */
-    public boolean getBlockWhenExhausted() {
+    public final boolean getBlockWhenExhausted() {
         return blockWhenExhausted;
     }
 
@@ -206,7 +206,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      *
      * @see #getBlockWhenExhausted
      */
-    public void setBlockWhenExhausted(boolean blockWhenExhausted) {
+    public final void setBlockWhenExhausted(boolean blockWhenExhausted) {
         this.blockWhenExhausted = blockWhenExhausted;
     }
 
@@ -223,7 +223,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * @see #setMaxWaitMillis
      * @see #setBlockWhenExhausted
      */
-    public long getMaxWaitMillis() {
+    public final long getMaxWaitMillis() {
         return maxWaitMillis;
     }
 
@@ -241,7 +241,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * @see #getMaxWaitMillis
      * @see #setBlockWhenExhausted
      */
-    public void setMaxWaitMillis(long maxWaitMillis) {
+    public final void setMaxWaitMillis(long maxWaitMillis) {
         this.maxWaitMillis = maxWaitMillis;
     }
 
@@ -257,7 +257,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      *
      * @see #setLifo
      */
-    public boolean getLifo() {
+    public final boolean getLifo() {
         return lifo;
     }
 
@@ -273,7 +273,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      *
      * @see #getLifo()
      */
-    public void setLifo(boolean lifo) {
+    public final void setLifo(boolean lifo) {
         this.lifo = lifo;
     }
 
@@ -289,7 +289,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      *
      * @see #setTestOnBorrow
      */
-    public boolean getTestOnBorrow() {
+    public final boolean getTestOnBorrow() {
         return testOnBorrow;
     }
 
@@ -306,7 +306,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      *
      * @see #getTestOnBorrow
      */
-    public void setTestOnBorrow(boolean testOnBorrow) {
+    public final void setTestOnBorrow(boolean testOnBorrow) {
         this.testOnBorrow = testOnBorrow;
     }
 
@@ -321,7 +321,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      *
      * @see #setTestOnReturn
      */
-    public boolean getTestOnReturn() {
+    public final boolean getTestOnReturn() {
         return testOnReturn;
     }
 
@@ -337,7 +337,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      *
      * @see #getTestOnReturn
      */
-    public void setTestOnReturn(boolean testOnReturn) {
+    public final void setTestOnReturn(boolean testOnReturn) {
         this.testOnReturn = testOnReturn;
     }
 
@@ -353,7 +353,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * @see #setTestWhileIdle
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    public boolean getTestWhileIdle() {
+    public final boolean getTestWhileIdle() {
         return testWhileIdle;
     }
 
@@ -370,7 +370,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * @see #getTestWhileIdle
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    public void setTestWhileIdle(boolean testWhileIdle) {
+    public final void setTestWhileIdle(boolean testWhileIdle) {
         this.testWhileIdle = testWhileIdle;
     }
 
@@ -383,7 +383,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      *
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    public long getTimeBetweenEvictionRunsMillis() {
+    public final long getTimeBetweenEvictionRunsMillis() {
         return timeBetweenEvictionRunsMillis;
     }
 
@@ -397,7 +397,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      *
      * @see #getTimeBetweenEvictionRunsMillis
      */
-    public void setTimeBetweenEvictionRunsMillis(
+    public final void setTimeBetweenEvictionRunsMillis(
             long timeBetweenEvictionRunsMillis) {
         this.timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
         startEvictor(timeBetweenEvictionRunsMillis);
@@ -418,7 +418,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * @see #setNumTestsPerEvictionRun
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    public int getNumTestsPerEvictionRun() {
+    public final int getNumTestsPerEvictionRun() {
         return numTestsPerEvictionRun;
     }
 
@@ -438,7 +438,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * @see #getNumTestsPerEvictionRun
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    public void setNumTestsPerEvictionRun(int numTestsPerEvictionRun) {
+    public final void setNumTestsPerEvictionRun(int numTestsPerEvictionRun) {
         this.numTestsPerEvictionRun = numTestsPerEvictionRun;
     }
 
@@ -454,7 +454,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * @see #setMinEvictableIdleTimeMillis
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    public long getMinEvictableIdleTimeMillis() {
+    public final long getMinEvictableIdleTimeMillis() {
         return minEvictableIdleTimeMillis;
     }
 
@@ -471,7 +471,8 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * @see #getMinEvictableIdleTimeMillis
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    public void setMinEvictableIdleTimeMillis(long minEvictableIdleTimeMillis) {
+    public final void setMinEvictableIdleTimeMillis(
+            long minEvictableIdleTimeMillis) {
         this.minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
     }
 
@@ -490,7 +491,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      *
      * @see #setSoftMinEvictableIdleTimeMillis
      */
-    public long getSoftMinEvictableIdleTimeMillis() {
+    public final long getSoftMinEvictableIdleTimeMillis() {
         return softMinEvictableIdleTimeMillis;
     }
 
@@ -511,7 +512,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      *
      * @see #getSoftMinEvictableIdleTimeMillis
      */
-    public void setSoftMinEvictableIdleTimeMillis(
+    public final void setSoftMinEvictableIdleTimeMillis(
             long softMinEvictableIdleTimeMillis) {
         this.softMinEvictableIdleTimeMillis = softMinEvictableIdleTimeMillis;
     }
@@ -524,7 +525,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      *
      * @see #setEvictionPolicyClassName(String)
      */
-    public String getEvictionPolicyClassName() {
+    public final String getEvictionPolicyClassName() {
         return evictionPolicy.getClass().getName();
     }
 
@@ -538,7 +539,8 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * @see #getEvictionPolicyClassName()
      */
     @SuppressWarnings("unchecked")
-    public void setEvictionPolicyClassName(String evictionPolicyClassName) {
+    public final void setEvictionPolicyClassName(
+            String evictionPolicyClassName) {
         try {
             Class<?> clazz = Class.forName(evictionPolicyClassName);
             Object policy = clazz.newInstance();
@@ -590,7 +592,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
     /*
      * Make the eviction policy instance available to the sub-classes
      */
-    EvictionPolicy<T> getEvictionPolicy() {
+    final EvictionPolicy<T> getEvictionPolicy() {
         return evictionPolicy;
     }
 
@@ -640,7 +642,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * platform MBean server or <code>null</code> if the pool has not been
      * registered.
      */
-    public ObjectName getJmxName() {
+    public final ObjectName getJmxName() {
         return oname;
     }
 
@@ -651,7 +653,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * This method is provided to assist with identifying code that creates but
      * does not close it thereby creating a memory leak.
      */
-    public String getCreationStackTrace() {
+    public final String getCreationStackTrace() {
         return creationStackTrace;
     }
 
@@ -660,7 +662,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * implementation. Exceptions are typically swallowed when a problem occurs
      * while destroying an object.
      */
-    public String[] getSwallowedExceptions() {
+    public final String[] getSwallowedExceptions() {
         List<String> temp =
                 new ArrayList<String>(SWALLOWED_EXCEPTION_QUEUE_SIZE);
         synchronized (swallowedExceptions) {
@@ -673,7 +675,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * The total number of objects successfully borrowed from this pool over the
      * lifetime of the pool.
      */
-    public long getBorrowedCount() {
+    public final long getBorrowedCount() {
         return borrowedCount.get();
     }
 
@@ -682,7 +684,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * the pool. This excludes attempts to return the same object multiple
      * times.
      */
-    public long getReturnedCount() {
+    public final long getReturnedCount() {
         return returnedCount.get();
     }
 
@@ -690,7 +692,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * The total number of objects created for this pool over the lifetime of
      * the pool.
      */
-    public long getCreatedCount() {
+    public final long getCreatedCount() {
         return createdCount.get();
     }
 
@@ -698,7 +700,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * The total number of objects destroyed by this pool over the lifetime of
      * the pool.
      */
-    public long getDestroyedCount() {
+    public final long getDestroyedCount() {
         return destroyedCount.get();
     }
 
@@ -706,7 +708,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * The total number of objects destroyed by the evictor associated with this
      * pool over the lifetime of the pool.
      */
-    public long getDestroyedByEvictorCount() {
+    public final long getDestroyedByEvictorCount() {
         return destroyedByEvictorCount.get();
     }
 
@@ -715,7 +717,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * validation during <code>borrowObject()</code> over the lifetime of the
      * pool.
      */
-    public long getDestroyedByBorrowValidationCount() {
+    public final long getDestroyedByBorrowValidationCount() {
         return destroyedByBorrowValidationCount.get();
     }
 
@@ -723,7 +725,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * The mean time objects are active for based on the last {@link
      * #MEAN_TIMING_STATS_CACHE_SIZE} objects returned to the pool.
      */
-    public long getMeanActiveTimeMillis() {
+    public final long getMeanActiveTimeMillis() {
         return getMeanFromStatsCache(activeTimes);
     }
 
@@ -731,7 +733,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * The mean time objects are idle for based on the last {@link
      * #MEAN_TIMING_STATS_CACHE_SIZE} objects borrowed from the pool.
      */
-    public long getMeanIdleTimeMillis() {
+    public final long getMeanIdleTimeMillis() {
         return getMeanFromStatsCache(idleTimes);
     }
 
@@ -739,14 +741,14 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * The mean time threads wait to borrow an object based on the last {@link
      * #MEAN_TIMING_STATS_CACHE_SIZE} objects borrowed from the pool.
      */
-    public long getMeanBorrowWaitTimeMillis() {
+    public final long getMeanBorrowWaitTimeMillis() {
         return getMeanFromStatsCache(waitTimes);
     }
 
     /**
      * The maximum time a thread has waited to borrow objects from the pool.
      */
-    public long getMaxBorrowWaitTimeMillis() {
+    public final long getMaxBorrowWaitTimeMillis() {
         return maxBorrowWaitTimeMillis;
     }
 
@@ -759,7 +761,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
         return jmxNotificationSupport;
     }
 
-    void swallowException(Exception e) {
+    final void swallowException(Exception e) {
         String msg = getStackTrace(e);
 
         ObjectName oname = getJmxName();
@@ -776,7 +778,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
         }
     }
 
-    void updateStatsBorrow(PooledObject<T> p, long waitTime) {
+    final void updateStatsBorrow(PooledObject<T> p, long waitTime) {
         borrowedCount.incrementAndGet();
         synchronized (idleTimes) {
             idleTimes.add(Long.valueOf(p.getIdleTimeMillis()));
@@ -793,7 +795,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
         }
     }
 
-    void updateStatsReturn(long activeTime) {
+    final void updateStatsReturn(long activeTime) {
         returnedCount.incrementAndGet();
         synchronized (activeTimes) {
             activeTimes.add(Long.valueOf(activeTime));
@@ -801,7 +803,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
         }
     }
 
-    void jmxUnregister() {
+    final void jmxUnregister() {
         if (oname != null) {
             try {
                 ManagementFactory.getPlatformMBeanServer().unregisterMBean(
