@@ -59,6 +59,8 @@ import org.apache.commons.pool2.PoolUtils;
  * Implementation note: To prevent possible deadlocks, care has been taken to
  * ensure that no call to a factory method will occur within a synchronization
  * block. See POOL-125 and DBCP-44 for more information.
+ * <p>
+ * This class is intended to be thread-safe.
  *
  * @see GenericObjectPool
  *
@@ -68,8 +70,8 @@ import org.apache.commons.pool2.PoolUtils;
  * @author Rodney Waldhoff
  * @author Dirk Verbeeck
  * @author Sandy McArthur
+ *
  * @version $Revision$
- * This class is intended to be thread-safe.
  */
 public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMBean<K> {
