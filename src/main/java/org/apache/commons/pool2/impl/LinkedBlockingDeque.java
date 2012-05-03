@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.commons.pool2.impl;
 
 import java.util.AbstractQueue;
@@ -51,13 +50,12 @@ import java.util.concurrent.locks.ReentrantLock;
  * Java Collections Framework</a>.
  *
  * @param <E> the type of elements held in this collection
- * 
+ *
  * Note: This was copied from Apache Harmony and modified to suit the needs of
  *       Commons Pool.
  */
-public class LinkedBlockingDeque<E>
-    extends AbstractQueue<E>
-    implements java.io.Serializable {
+class LinkedBlockingDeque<E> extends AbstractQueue<E>
+        implements java.io.Serializable {
 
     /*
      * Implemented as a simple doubly-linked list protected by a
@@ -1167,13 +1165,13 @@ public class LinkedBlockingDeque<E>
             add(item);
         }
     }
-    
+
     // Monitoring methods
-    
+
     /**
      * Returns true if there are threads waiting to take instances from this deque.
      * See disclaimer on accuracy in {@link ReentrantLock#hasWaiters(Condition)}.
-     * 
+     *
      * @return true if there is at least one thread waiting on this deque's notEmpty condition.
      */
     public boolean hasTakeWaiters() {
@@ -1184,11 +1182,11 @@ public class LinkedBlockingDeque<E>
             lock.unlock();
         }
     }
-    
+
     /**
      * Returns the length of the queue of threads waiting to take instances from this deque.
      * See disclaimer on accuracy in {@link ReentrantLock#getWaitQueueLength(Condition)}.
-     * 
+     *
      * @return number of threads waiting on this deque's notEmpty condition.
      */
     public int getTakeQueueLength() {
@@ -1197,7 +1195,7 @@ public class LinkedBlockingDeque<E>
            return lock.getWaitQueueLength(notEmpty);
         } finally {
             lock.unlock();
-        }     
+        }
     }
 
     /**
@@ -1211,6 +1209,6 @@ public class LinkedBlockingDeque<E>
            lock.interruptWaiters(notEmpty);
         } finally {
             lock.unlock();
-        }     
+        }
     }
 }

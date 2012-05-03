@@ -21,9 +21,13 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
+ * This sub-class was created to expose the waiting threads so that they can be
+ * interrupted when the pool using the queue that uses this lock is closed. The
+ * class is intended for internal use only.
+ * <p>
  * This class is intended to be thread-safe.
  */
-public class InterruptibleReentrantLock extends ReentrantLock {
+class InterruptibleReentrantLock extends ReentrantLock {
 
     private static final long serialVersionUID = 1L;
 
