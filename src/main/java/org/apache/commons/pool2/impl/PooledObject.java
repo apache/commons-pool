@@ -16,7 +16,6 @@
  */
 package org.apache.commons.pool2.impl;
 
-
 /**
  * This wrapper is used to track the additional information, such as state, for
  * the pooled objects.
@@ -34,7 +33,7 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
     public PooledObject(T object) {
         this.object = object;
     }
-    
+
     /**
      * Obtain the underlying object that is wrapped by this instance of
      * {@link PooledObject}.
@@ -60,14 +59,14 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
         // Take copies to avoid threading issues
         long rTime = lastReturnTime;
         long bTime = lastBorrowTime;
-        
+
         if (rTime > bTime) {
             return rTime - bTime;
         } else {
             return System.currentTimeMillis() - bTime;
         }
     }
-    
+
     /**
      * Obtain the time in milliseconds that this object last spend in the the
      * idle state (it may still be idle in which case subsequent calls will
@@ -76,7 +75,7 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
     public long getIdleTimeMillis() {
         return System.currentTimeMillis() - lastReturnTime;
     }
-    
+
     public long getLastBorrowTime() {
         return lastBorrowTime;
     }
@@ -118,7 +117,7 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
             state = PooledObjectState.MAINTAIN_EVICTION;
             return true;
         }
-        
+
         return false;
     }
 
@@ -133,7 +132,7 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
                 // TODO - Should never happen
             }
         }
-        
+
         return false;
     }
 
