@@ -234,8 +234,8 @@
         <artifactId>apache-rat-plugin</artifactId>
         <configuration>
           <excludes>
-            <exclude>src/test/java/org/apache/commons/pool2/impl/test1</exclude>
-            <exclude>src/test/java/org/apache/commons/pool2/impl/test2</exclude>
+            <exclude>src/test/resources/test1</exclude>
+            <exclude>src/test/resources/test2</exclude>
             <exclude>.checkstyle</exclude>
             <exclude>.fbprefs</exclude>
             <exclude>.pmd</exclude>
