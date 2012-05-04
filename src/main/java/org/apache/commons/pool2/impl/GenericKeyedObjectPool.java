@@ -1094,10 +1094,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
     private void ensureMinIdle(K key) throws Exception {
         // Calculate current pool objects
         ObjectDeque<T> objectDeque = poolMap.get(key);
-        // Protect against NPEs in case the key has been removed
-        if (objectDeque == null) {
-            return;
-        }
 
         // this method isn't synchronized so the
         // calculateDeficit is done at the beginning
