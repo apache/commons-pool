@@ -1015,7 +1015,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                     visitCount = tracker.getValidateCount();
                     visits[k] = visitCount;
                     if (visitCount < cycleCount || visitCount > cycleCount + 1){
-                        StringBuffer sb = new StringBuffer("Visits:");
+                        StringBuilder sb = new StringBuilder("Visits:");
                         for (int l = 0; l <= k; l++){
                             sb.append(visits[l]).append(' ');
                         }
@@ -1685,7 +1685,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
     private String formatSettings(String title, String s, int i, String s0, boolean b0, String s1, int i1, String s2, int i2, String s3, int i3,
             String s4, int i4, String s5, int i5, String s6, int i6, int zeroLength, int oneLength, int twoLength){
-        StringBuffer sb = new StringBuffer(80);
+        StringBuilder sb = new StringBuilder(80);
         sb.append(title).append(' ');
         sb.append(s).append('=').append(i).append(' ');
         sb.append(s0).append('=').append(b0).append(' ');
