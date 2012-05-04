@@ -59,7 +59,6 @@ import java.util.NoSuchElementException;
  * @see KeyedPoolableObjectFactory
  * @see ObjectPool
  * @see org.apache.commons.pool2.impl.GenericKeyedObjectPool GenericKeyedObjectPool
- * @since Pool 1.0
  */
 public interface KeyedObjectPool<K,V> {
     /**

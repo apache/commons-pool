@@ -29,7 +29,6 @@ package org.apache.commons.pool2;
  * @param <V> Type of element managed by this factory.
  *
  * @version $Revision$
- * @since Pool 1.0
  */
 public abstract class BaseKeyedPoolableObjectFactory<K,V>
         implements KeyedPoolableObjectFactory<K,V> {

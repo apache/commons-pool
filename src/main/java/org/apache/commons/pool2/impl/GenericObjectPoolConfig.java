@@ -19,12 +19,12 @@ package org.apache.commons.pool2.impl;
 /**
  * A simple "struct" encapsulating the configuration for a
  * {@link GenericObjectPool}.
- * 
+ *
  * <p>
  * This class is not thread-safe; it is only intended to be used to provide
  * attributes used when creating a pool.
  *
- * @since Pool 2.0
+ * @since 2.0
  */
 public class GenericObjectPoolConfig extends BaseObjectPoolConfig {
 
@@ -45,11 +45,11 @@ public class GenericObjectPoolConfig extends BaseObjectPoolConfig {
      */
     public static final int DEFAULT_MIN_IDLE = 0;
 
-    
+
     private int maxTotal = DEFAULT_MAX_TOTAL;
 
     private int maxIdle = DEFAULT_MAX_IDLE;
-    
+
     private int minIdle = DEFAULT_MIN_IDLE;
 
 
@@ -70,7 +70,7 @@ public class GenericObjectPoolConfig extends BaseObjectPoolConfig {
         this.maxIdle = maxIdle;
     }
 
-        
+
     public int getMinIdle() {
         return minIdle;
     }

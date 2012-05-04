@@ -19,12 +19,12 @@ package org.apache.commons.pool2.impl;
 /**
  * A simple "struct" encapsulating the configuration for a
  * {@link GenericKeyedObjectPool}.
- * 
+ *
  * <p>
  * This class is not thread-safe; it is only intended to be used to provide
  * attributes used when creating a pool.
- * 
- * @since Pool 2.0
+ *
+ * @since 2.0
  */
 public class GenericKeyedObjectPoolConfig extends BaseObjectPoolConfig {
 
@@ -35,27 +35,27 @@ public class GenericKeyedObjectPoolConfig extends BaseObjectPoolConfig {
      * (idle or checked out) across all keyed pools.
      */
     public static final int DEFAULT_MAX_TOTAL = -1;
-    
+
     /**
      * The default minimum number of idle instances that the maintenance
      * thread (if enabled) will try to maintain per key.
      */
     public static final int DEFAULT_MIN_IDLE_PER_KEY = 0;
-    
+
     /**
      * The default maximum number of idle instances per key.
      */
     public static final int DEFAULT_MAX_IDLE_PER_KEY = 8;
-    
-    
+
+
     private int minIdlePerKey = DEFAULT_MIN_IDLE_PER_KEY;
-    
+
     private int maxIdlePerKey = DEFAULT_MAX_IDLE_PER_KEY;
-    
+
     private int maxTotalPerKey = DEFAULT_MAX_TOTAL_PER_KEY;
-    
+
     private int maxTotal = DEFAULT_MAX_TOTAL;
-    
+
     public GenericKeyedObjectPoolConfig() {
     }
 
@@ -74,7 +74,7 @@ public class GenericKeyedObjectPoolConfig extends BaseObjectPoolConfig {
     public void setMaxTotalPerKey(int maxTotalPerKey) {
         this.maxTotalPerKey = maxTotalPerKey;
     }
-    
+
     public int getMinIdlePerKey() {
         return minIdlePerKey;
     }

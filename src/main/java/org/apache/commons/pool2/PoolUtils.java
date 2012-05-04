@@ -33,7 +33,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
  * ObjectPool or KeyedObjectPool related interfaces.
  *
  * @version $Revision$
- * @since Pool 1.3 This class is intended to be thread-safe.
  */
 public final class PoolUtils {
 
@@ -64,7 +63,6 @@ public final class PoolUtils {
      *             if that is passed in
      * @throws VirtualMachineError
      *             if that is passed in
-     * @since Pool 1.5.5
      */
     public static void checkRethrow(Throwable t) {
         if (t instanceof ThreadDeath) {
@@ -95,8 +93,6 @@ public final class PoolUtils {
      *             when <code>pool</code> is <code>null</code> or when
      *             <code>minIdle</code> is negative or when <code>period</code>
      *             isn't valid for {@link Timer#schedule(TimerTask, long, long)}
-     *             .
-     * @since Pool 1.3
      */
     public static <T> TimerTask checkMinIdle(final ObjectPool<T> pool,
             final int minIdle, final long period)
@@ -135,7 +131,6 @@ public final class PoolUtils {
      *             <code>null</code> or when <code>minIdle</code> is negative or
      *             when <code>period</code> isn't valid for
      *             {@link Timer#schedule(TimerTask, long, long)}.
-     * @since Pool 1.3
      */
     public static <K, V> TimerTask checkMinIdle(
             final KeyedObjectPool<K, V> keyedPool, final K key,
@@ -180,7 +175,6 @@ public final class PoolUtils {
      *             isn't valid for {@link Timer#schedule(TimerTask, long, long)}
      *             .
      * @see #checkMinIdle(KeyedObjectPool, Object, int, long)
-     * @since Pool 1.3
      */
     public static <K, V> Map<K, TimerTask> checkMinIdle(
             final KeyedObjectPool<K, V> keyedPool, final Collection<K> keys,
@@ -211,7 +205,6 @@ public final class PoolUtils {
      *             when {@link ObjectPool#addObject()} fails.
      * @throws IllegalArgumentException
      *             when <code>pool</code> is <code>null</code>.
-     * @since Pool 1.3
      */
     public static <T> void prefill(final ObjectPool<T> pool, final int count)
             throws Exception, IllegalArgumentException {
@@ -238,7 +231,6 @@ public final class PoolUtils {
      * @throws IllegalArgumentException
      *             when <code>keyedPool</code> or <code>key</code> is
      *             <code>null</code>.
-     * @since Pool 1.3
      */
     public static <K, V> void prefill(final KeyedObjectPool<K, V> keyedPool,
             final K key, final int count) throws Exception,
@@ -272,7 +264,6 @@ public final class PoolUtils {
      *             when <code>keyedPool</code>, <code>keys</code>, or any value
      *             in <code>keys</code> is <code>null</code>.
      * @see #prefill(KeyedObjectPool, Object, int)
-     * @since Pool 1.3
      */
     public static <K, V> void prefill(final KeyedObjectPool<K, V> keyedPool,
             final Collection<K> keys, final int count) throws Exception,
@@ -301,7 +292,6 @@ public final class PoolUtils {
      * @param pool
      *            the ObjectPool to be "wrapped" in a synchronized ObjectPool.
      * @return a synchronized view of the specified ObjectPool.
-     * @since Pool 1.3
      */
     public static <T> ObjectPool<T> synchronizedPool(final ObjectPool<T> pool) {
         if (pool == null) {
@@ -337,7 +327,6 @@ public final class PoolUtils {
      *            the KeyedObjectPool to be "wrapped" in a synchronized
      *            KeyedObjectPool.
      * @return a synchronized view of the specified KeyedObjectPool.
-     * @since Pool 1.3
      */
     public static <K, V> KeyedObjectPool<K, V> synchronizedPool(
             final KeyedObjectPool<K, V> keyedPool) {
@@ -364,7 +353,6 @@ public final class PoolUtils {
      *            the PoolableObjectFactory to be "wrapped" in a synchronized
      *            PoolableObjectFactory.
      * @return a synchronized view of the specified PoolableObjectFactory.
-     * @since Pool 1.3
      */
     public static <T> PoolableObjectFactory<T> synchronizedPoolableFactory(
             final PoolableObjectFactory<T> factory) {
@@ -379,7 +367,6 @@ public final class PoolUtils {
      *            the KeyedPoolableObjectFactory to be "wrapped" in a
      *            synchronized KeyedPoolableObjectFactory.
      * @return a synchronized view of the specified KeyedPoolableObjectFactory.
-     * @since Pool 1.3
      */
     public static <K, V> KeyedPoolableObjectFactory<K, V> synchronizedPoolableFactory(
             final KeyedPoolableObjectFactory<K, V> keyedFactory) {
@@ -399,7 +386,6 @@ public final class PoolUtils {
      * @return a pool that adaptively decreases it's size when idle objects are
      *         no longer needed.
      * @see #erodingPool(ObjectPool, float)
-     * @since Pool 1.4
      */
     public static <T> ObjectPool<T> erodingPool(final ObjectPool<T> pool) {
         return erodingPool(pool, 1f);
@@ -429,7 +415,6 @@ public final class PoolUtils {
      * @return a pool that adaptively decreases it's size when idle objects are
      *         no longer needed.
      * @see #erodingPool(ObjectPool)
-     * @since Pool 1.4
      */
     public static <T> ObjectPool<T> erodingPool(final ObjectPool<T> pool,
             final float factor) {
@@ -456,7 +441,6 @@ public final class PoolUtils {
      *         no longer needed.
      * @see #erodingPool(KeyedObjectPool, float)
      * @see #erodingPool(KeyedObjectPool, float, boolean)
-     * @since Pool 1.4
      */
     public static <K, V> KeyedObjectPool<K, V> erodingPool(
             final KeyedObjectPool<K, V> keyedPool) {
@@ -487,7 +471,6 @@ public final class PoolUtils {
      * @return a pool that adaptively decreases it's size when idle objects are
      *         no longer needed.
      * @see #erodingPool(KeyedObjectPool, float, boolean)
-     * @since Pool 1.4
      */
     public static <K, V> KeyedObjectPool<K, V> erodingPool(
             final KeyedObjectPool<K, V> keyedPool, final float factor) {
@@ -527,7 +510,6 @@ public final class PoolUtils {
      *         no longer needed.
      * @see #erodingPool(KeyedObjectPool)
      * @see #erodingPool(KeyedObjectPool, float)
-     * @since Pool 1.4
      */
     public static <K, V> KeyedObjectPool<K, V> erodingPool(
             final KeyedObjectPool<K, V> keyedPool, final float factor,
@@ -549,7 +531,6 @@ public final class PoolUtils {
      * create the {@link Timer} as needed.
      *
      * @return the {@link Timer} for checking keyedPool's idle count.
-     * @since Pool 1.3
      */
     private static synchronized Timer getMinIdleTimer() {
         if (MIN_IDLE_TIMER == null) {

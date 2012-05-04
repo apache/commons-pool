@@ -52,7 +52,6 @@ import java.util.NoSuchElementException;
  * @see PoolableObjectFactory
  * @see KeyedObjectPool
  * @see BaseObjectPool
- * @since Pool 1.0
  */
 public interface ObjectPool<T> {
     /**
