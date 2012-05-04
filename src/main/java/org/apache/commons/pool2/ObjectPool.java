@@ -14,18 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.commons.pool2;
 
 import java.util.NoSuchElementException;
 
 /**
- * A pooling interface.
- * <p>
- * <code>ObjectPool</code> defines a trivially simple pooling interface. The only
- * required methods are {@link #borrowObject borrowObject}, {@link #returnObject returnObject}
- * and {@link #invalidateObject invalidateObject}.
- * </p>
+ * A pooling simple interface.
  * <p>
  * Example of use:
  * <pre style="border:solid thin; padding: 1ex;"
@@ -49,9 +43,8 @@ import java.util.NoSuchElementException;
  * } <code style="color:#00C">catch</code>(Exception e) {
  *       <code style="color:#0C0">// failed to borrow an object</code>
  * }</pre>
- * </p>
- *
- * <p>See {@link BaseObjectPool} for a simple base implementation.</p>
+ * <p>
+ * See {@link BaseObjectPool} for a simple base implementation.
  *
  * @param <T> Type of element pooled in this pool.
  *
@@ -65,111 +58,108 @@ public interface ObjectPool<T> {
     /**
      * Obtains an instance from this pool.
      * <p>
-     * Instances returned from this method will have been either newly created with
-     * {@link PoolableObjectFactory#makeObject makeObject} or will be a previously idle object and
-     * have been activated with {@link PoolableObjectFactory#activateObject activateObject} and
-     * then validated with {@link PoolableObjectFactory#validateObject validateObject}.
-     * </p>
+     * Instances returned from this method will have been either newly created
+     * with {@link PoolableObjectFactory#makeObject} or will be a previously
+     * idle object and have been activated with
+     * {@link PoolableObjectFactory#activateObject} and then validated with
+     * {@link PoolableObjectFactory#validateObject}.
      * <p>
-     * By contract, clients <strong>must</strong> return the borrowed instance using
-     * {@link #returnObject returnObject}, {@link #invalidateObject invalidateObject}, or a related method
-     * as defined in an implementation or sub-interface.
-     * </p>
+     * By contract, clients <strong>must</strong> return the borrowed instance
+     * using {@link #returnObject}, {@link #invalidateObject}, or a related
+     * method as defined in an implementation or sub-interface.
      * <p>
      * The behaviour of this method when the pool has been exhausted
-     * is not strictly specified (although it may be specified by implementations).
-     * Older versions of this method would return <code>null</code> to indicate exhaustion,
-     * newer versions are encouraged to throw a {@link NoSuchElementException}.
-     * </p>
+     * is not strictly specified (although it may be specified by
+     * implementations).
      *
      * @return an instance from this pool.
-     * @throws IllegalStateException after {@link #close close} has been called on this pool.
-     * @throws Exception when {@link PoolableObjectFactory#makeObject makeObject} throws an exception.
-     * @throws NoSuchElementException when the pool is exhausted and cannot or will not return another instance.
+     *
+     * @throws IllegalStateException
+     *              after {@link #close close} has been called on this pool.
+     * @throws Exception
+     *              when {@link PoolableObjectFactory#makeObject} throws an
+     *              exception.
+     * @throws NoSuchElementException
+     *              when the pool is exhausted and cannot or will not return
+     *              another instance.
      */
-    T borrowObject() throws Exception, NoSuchElementException, IllegalStateException;
+    T borrowObject() throws Exception, NoSuchElementException,
+            IllegalStateException;
 
     /**
-     * Return an instance to the pool.
-     * By contract, <code>obj</code> <strong>must</strong> have been obtained
-     * using {@link #borrowObject() borrowObject}
-     * or a related method as defined in an implementation
-     * or sub-interface.
+     * Return an instance to the pool. By contract, <code>obj</code>
+     * <strong>must</strong> have been obtained using {@link #borrowObject()} or
+     * a related method as defined in an implementation or sub-interface.
      *
      * @param obj a {@link #borrowObject borrowed} instance to be returned.
-     * @throws Exception 
+     *
+     * @throws Exception
      */
     void returnObject(T obj) throws Exception;
 
     /**
-     * <p>Invalidates an object from the pool.</p>
-     * 
-     * <p>By contract, <code>obj</code> <strong>must</strong> have been obtained
-     * using {@link #borrowObject borrowObject} or a related method as defined in
-     * an implementation or sub-interface.</p>
-     *
-     * <p>This method should be used when an object that has been borrowed
-     * is determined (due to an exception or other problem) to be invalid.</p>
+     * Invalidates an object from the pool.
+     * <p>
+     * By contract, <code>obj</code> <strong>must</strong> have been obtained
+     * using {@link #borrowObject} or a related method as defined in an
+     * implementation or sub-interface.
+     * <p>
+     * This method should be used when an object that has been borrowed is
+     * determined (due to an exception or other problem) to be invalid.
      *
      * @param obj a {@link #borrowObject borrowed} instance to be disposed.
+     *
      * @throws Exception
      */
     void invalidateObject(T obj) throws Exception;
 
     /**
      * Create an object using the {@link PoolableObjectFactory factory} or other
-     * implementation dependent mechanism, passivate it, and then place it in the idle object pool.
-     * <code>addObject</code> is useful for "pre-loading" a pool with idle objects.
-     * (Optional operation).
+     * implementation dependent mechanism, passivate it, and then place it in
+     * the idle object pool. <code>addObject</code> is useful for "pre-loading"
+     * a pool with idle objects. (Optional operation).
      *
-     * @throws Exception when {@link PoolableObjectFactory#makeObject} fails.
-     * @throws IllegalStateException after {@link #close} has been called on this pool.
-     * @throws UnsupportedOperationException when this pool cannot add new idle objects.
+     * @throws Exception
+     *              when {@link PoolableObjectFactory#makeObject} fails.
+     * @throws IllegalStateException
+     *              after {@link #close} has been called on this pool.
+     * @throws UnsupportedOperationException
+     *              when this pool cannot add new idle objects.
      */
-    void addObject() throws Exception, IllegalStateException, UnsupportedOperationException;
+    void addObject() throws Exception, IllegalStateException,
+            UnsupportedOperationException;
 
     /**
-     * Return the number of instances
-     * currently idle in this pool (optional operation).
-     * This may be considered an approximation of the number
-     * of objects that can be {@link #borrowObject borrowed}
-     * without creating any new instances.
+     * Return the number of instances currently idle in this pool. This may be
+     * considered an approximation of the number of objects that can be
+     * {@link #borrowObject borrowed} without creating any new instances.
      * Returns a negative value if this information is not available.
-     *
-     * @return the number of instances currently idle in this pool or a negative value if unsupported
-     * @throws UnsupportedOperationException <strong>deprecated</strong>: if this implementation does not support the operation
      */
-    int getNumIdle() throws UnsupportedOperationException;
+    int getNumIdle();
 
     /**
-     * Return the number of instances
-     * currently borrowed from this pool
-     * (optional operation).
-     * Returns a negative value if this information is not available.
-     *
-     * @return the number of instances currently borrowed from this pool or a negative value if unsupported
-     * @throws UnsupportedOperationException <strong>deprecated</strong>: if this implementation does not support the operation
-     */
-    int getNumActive() throws UnsupportedOperationException;
+     * Return the number of instances currently borrowed from this pool. Returns
+     * a negative value if this information is not available.
+=     */
+    int getNumActive();
 
     /**
-     * Clears any objects sitting idle in the pool, releasing any
-     * associated resources (optional operation).
-     * Idle objects cleared must be {@link PoolableObjectFactory#destroyObject(Object) destroyed}.
+     * Clears any objects sitting idle in the pool, releasing any associated
+     * resources (optional operation). Idle objects cleared must be
+     * {@link PoolableObjectFactory#destroyObject(Object)}.
      *
-     * @throws UnsupportedOperationException if this implementation does not support the operation
+     * @throws UnsupportedOperationException
+     *              if this implementation does not support the operation
      */
     void clear() throws Exception, UnsupportedOperationException;
 
     /**
      * Close this pool, and free any resources associated with it.
      * <p>
-     * Calling {@link #addObject} or {@link #borrowObject} after invoking
-     * this method on a pool will cause them to throw an
-     * {@link IllegalStateException}.
-     * </p>
-     *
-     * @throws Exception <strong>deprecated</strong>: implementations should silently fail if not all resources can be freed.
+     * Calling {@link #addObject} or {@link #borrowObject} after invoking this
+     * method on a pool will cause them to throw an {@link IllegalStateException}.
+     * <p>
+     * Implementations should silently fail if not all resources can be freed.
      */
-    void close() throws Exception;
+    void close();
 }

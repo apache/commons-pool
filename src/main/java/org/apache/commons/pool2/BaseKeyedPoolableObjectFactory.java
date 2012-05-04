@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.commons.pool2;
 
 /**
@@ -23,7 +22,7 @@ package org.apache.commons.pool2;
  * All operations defined here are essentially no-op's.
  * </p>
  * This class is immutable, and therefore thread-safe.
- * 
+ *
  * @see KeyedPoolableObjectFactory
  *
  * @param <K> The type of keys managed by this factory.
@@ -32,7 +31,9 @@ package org.apache.commons.pool2;
  * @version $Revision$
  * @since Pool 1.0
  */
-public abstract class BaseKeyedPoolableObjectFactory<K,V> implements KeyedPoolableObjectFactory<K,V> {
+public abstract class BaseKeyedPoolableObjectFactory<K,V>
+        implements KeyedPoolableObjectFactory<K,V> {
+
     /**
      * Create an instance that can be served by the pool.
      *
@@ -47,7 +48,6 @@ public abstract class BaseKeyedPoolableObjectFactory<K,V> implements KeyedPoolab
      * Destroy an instance no longer needed by the pool.
      * <p>
      * The default implementation is a no-op.
-     * </p>
      *
      * @param key the key used when selecting the instance
      * @param obj the instance to be destroyed
@@ -61,12 +61,11 @@ public abstract class BaseKeyedPoolableObjectFactory<K,V> implements KeyedPoolab
      * Ensures that the instance is safe to be returned by the pool.
      * <p>
      * The default implementation always returns <tt>true</tt>.
-     * </p>
      *
      * @param key the key used when selecting the object
      * @param obj the instance to be validated
      * @return always <code>true</code> in the default implementation
-     */ 
+     */
     @Override
     public boolean validateObject(K key, V obj) {
         return true;
@@ -76,7 +75,6 @@ public abstract class BaseKeyedPoolableObjectFactory<K,V> implements KeyedPoolab
      * Reinitialize an instance to be returned by the pool.
      * <p>
      * The default implementation is a no-op.
-     * </p>
      *
      * @param key the key used when selecting the object
      * @param obj the instance to be activated
@@ -90,7 +88,6 @@ public abstract class BaseKeyedPoolableObjectFactory<K,V> implements KeyedPoolab
      * Uninitialize an instance to be returned to the idle object pool.
      * <p>
      * The default implementation is a no-op.
-     * </p>
      *
      * @param key the key used when selecting the object
      * @param obj the instance to be passivated

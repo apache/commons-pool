@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.commons.pool2;
 
 /**
@@ -25,19 +24,17 @@ package org.apache.commons.pool2;
  * delegates to a {@link KeyedPoolableObjectFactory},
  * <ol>
  *  <li>
- *   {@link #makeObject makeObject}
- *   is called whenever a new instance is needed.
+ *   {@link #makeObject} is called whenever a new instance is needed.
  *  </li>
  *  <li>
- *   {@link #activateObject activateObject}
- *   is invoked on every instance that has been
+ *   {@link #activateObject} is invoked on every instance that has been
  *   {@link #passivateObject passivated} before it is
  *   {@link KeyedObjectPool#borrowObject borrowed} from the pool.
  *  </li>
  *  <li>
- *   {@link #validateObject validateObject}
- *   is invoked on {@link #activateObject activated} instances to make sure
- *   they can be {@link KeyedObjectPool#borrowObject borrowed} from the pool.
+ *   {@link #validateObject} is invoked on {@link #activateObject activated}
+ *   instances to make sure they can be
+ *   {@link KeyedObjectPool#borrowObject borrowed} from the pool.
  *   <code>validateObject</code> <strong>may</strong> also be used to test an
  *   instance being {@link KeyedObjectPool#returnObject returned} to the pool
  *   before it is {@link #passivateObject passivated}. It will only be invoked
@@ -56,13 +53,10 @@ package org.apache.commons.pool2;
  *   be considered active, passive or in a generally consistent state.
  *  </li>
  * </ol>
- * </p>
- * <p>
  * {@link KeyedPoolableObjectFactory} must be thread-safe. The only promise
- * an {@link KeyedObjectPool} makes is that the same instance of an object will not
- * be passed to more than one method of a <code>KeyedPoolableObjectFactory</code>
- * at a time.
- * </p>
+ * an {@link KeyedObjectPool} makes is that the same instance of an object will
+ * not be passed to more than one method of a
+ * <code>KeyedPoolableObjectFactory</code> at a time.
  *
  * @see KeyedObjectPool
  *
@@ -77,7 +71,9 @@ public interface KeyedPoolableObjectFactory<K,V> {
      * Create an instance that can be served by the pool.
      *
      * @param key the key used when constructing the object
+     *
      * @return an instance that can be served by the pool.
+     *
      * @throws Exception if there is a problem creating a new instance,
      *    this will be propagated to the code requesting an object.
      */
@@ -86,20 +82,19 @@ public interface KeyedPoolableObjectFactory<K,V> {
     /**
      * Destroy an instance no longer needed by the pool.
      * <p>
-     * It is important for implementations of this method to be aware
-     * that there is no guarantee about what state <code>obj</code>
-     * will be in and the implementation should be prepared to handle
-     * unexpected errors.
-     * </p>
+     * It is important for implementations of this method to be aware that there
+     * is no guarantee about what state <code>obj</code> will be in and the
+     * implementation should be prepared to handle unexpected errors.
      * <p>
-     * Also, an implementation must take in to consideration that
-     * instances lost to the garbage collector may never be destroyed.
-     * </p>
+     * Also, an implementation must take in to consideration that instances lost
+     * to the garbage collector may never be destroyed.
      *
      * @param key the key used when selecting the instance
      * @param obj the instance to be destroyed
+     *
      * @throws Exception should be avoided as it may be swallowed by
      *    the pool implementation.
+     *
      * @see #validateObject
      * @see KeyedObjectPool#invalidateObject
      */
@@ -107,10 +102,10 @@ public interface KeyedPoolableObjectFactory<K,V> {
 
     /**
      * Ensures that the instance is safe to be returned by the pool.
-     * Returns <code>false</code> if <code>obj</code> should be destroyed.
      *
      * @param key the key used when selecting the object
      * @param obj the instance to be validated
+     *
      * @return <code>false</code> if <code>obj</code> is not valid and should
      *         be dropped from the pool, <code>true</code> otherwise.
      */
@@ -121,8 +116,10 @@ public interface KeyedPoolableObjectFactory<K,V> {
      *
      * @param key the key used when selecting the object
      * @param obj the instance to be activated
+     *
      * @throws Exception if there is a problem activating <code>obj</code>,
      *    this exception may be swallowed by the pool.
+     *
      * @see #destroyObject
      */
     void activateObject(K key, V obj) throws Exception;
@@ -132,8 +129,10 @@ public interface KeyedPoolableObjectFactory<K,V> {
      *
      * @param key the key used when selecting the object
      * @param obj the instance to be passivated
+     *
      * @throws Exception if there is a problem passivating <code>obj</code>,
      *    this exception may be swallowed by the pool.
+     *
      * @see #destroyObject
      */
     void passivateObject(K key, V obj) throws Exception;

@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.commons.pool2;
 
 /**
@@ -23,7 +22,7 @@ package org.apache.commons.pool2;
  * All operations defined here are essentially no-op's.
  * <p>
  * This class is immutable, and therefore thread-safe
- * 
+ *
  * @param <T> Type of element managed in this factory.
  *
  * @see PoolableObjectFactory
@@ -40,7 +39,7 @@ public abstract class BasePoolableObjectFactory<T> implements PoolableObjectFact
 
     /**
      *  No-op.
-     *  
+     *
      *  @param obj ignored
      */
     @Override
@@ -49,10 +48,11 @@ public abstract class BasePoolableObjectFactory<T> implements PoolableObjectFact
     }
 
     /**
-     * This implementation always returns <tt>true</tt>.
-     * 
+     * This implementation always returns <code>true</code>.
+     *
      * @param obj ignored
-     * @return <tt>true</tt>
+     *
+     * @return <code>true</code>
      */
     @Override
     public boolean validateObject(T obj) {
@@ -61,7 +61,7 @@ public abstract class BasePoolableObjectFactory<T> implements PoolableObjectFact
 
     /**
      *  No-op.
-     *  
+     *
      *  @param obj ignored
      */
     @Override
@@ -70,7 +70,7 @@ public abstract class BasePoolableObjectFactory<T> implements PoolableObjectFact
 
     /**
      *  No-op.
-     *  
+     *
      * @param obj ignored
      */
     @Override
