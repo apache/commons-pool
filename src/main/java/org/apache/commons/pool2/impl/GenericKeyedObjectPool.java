@@ -68,6 +68,8 @@ import org.apache.commons.pool2.PoolUtils;
  * @param <T> Type of element pooled in this pool.
  *
  * @version $Revision$
+ *
+ * @since 2.0
  */
 public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMBean<K> {

@@ -18,6 +18,10 @@ package org.apache.commons.pool2.impl;
 
 /**
  * Defines the methods that will be made available via JMX.
+ *
+ * @version $Revision: $
+ *
+ * @since 2.0
  */
 public interface GenericObjectPoolMBean {
     // Getters for configuration settings

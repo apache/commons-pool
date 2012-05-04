@@ -64,6 +64,8 @@ package org.apache.commons.pool2;
  * @param <V> Type of element managed by this factory.
  *
  * @version $Revision$
+ *
+ * @since 2.0
  */
 public interface KeyedPoolableObjectFactory<K,V> {
     /**

@@ -18,25 +18,29 @@ package org.apache.commons.pool2.impl;
 
 /**
  * Provides the possible states that a {@link PooledObject} may be in.
- * 
+ *
  * TODO: Find shorter names for these states without loss of meaning.
+ *
+ * @version $Revision: $
+ *
+ * @since 2.0
  */
 public enum PooledObjectState {
     /**
      * In the queue, not in use.
      */
     IDLE,
-    
+
     /**
      * In use.
      */
     ALLOCATED,
-    
+
     /**
      * In the queue, currently being tested for possible eviction.
      */
     MAINTAIN_EVICTION,
-    
+
     /**
      * Not in the queue, currently being tested for possible eviction. An
      * attempt to borrow the object was made while being tested which removed it
@@ -46,12 +50,12 @@ public enum PooledObjectState {
      *       test.
      */
     MAINTAIN_EVICTION_RETURN_TO_HEAD,
-    
+
     /**
      * In the queue, currently being validated.
      */
     MAINTAIN_VALIDATION,
-    
+
     /**
      * Not in queue, currently being validated. The object was borrowed while
      * being validated and since testOnBorrow was configured, it was removed
@@ -67,7 +71,7 @@ public enum PooledObjectState {
      * completes.
      */
     MAINTAIN_VALIDATION_RETURN_TO_HEAD,
-    
+
     /**
      * Failed maintenance (e.g. eviction test or validation) and will be / has
      * been destroyed

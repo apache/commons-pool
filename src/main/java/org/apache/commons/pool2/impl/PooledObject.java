@@ -21,6 +21,10 @@ package org.apache.commons.pool2.impl;
  * the pooled objects.
  * <p>
  * This class is intended to be thread-safe.
+ *
+ * @version $Revision: $
+ *
+ * @since 2.0
  */
 public class PooledObject<T> implements Comparable<PooledObject<T>> {
 

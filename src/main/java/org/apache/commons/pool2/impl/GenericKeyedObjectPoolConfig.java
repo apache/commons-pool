@@ -24,6 +24,8 @@ package org.apache.commons.pool2.impl;
  * This class is not thread-safe; it is only intended to be used to provide
  * attributes used when creating a pool.
  *
+ * @version $Revision: $
+ *
  * @since 2.0
  */
 public class GenericKeyedObjectPoolConfig extends BaseObjectPoolConfig {
