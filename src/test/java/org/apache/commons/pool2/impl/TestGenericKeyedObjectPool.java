@@ -40,6 +40,7 @@ import javax.management.Notification;
 import javax.management.NotificationListener;
 import javax.management.ObjectName;
 
+import org.apache.commons.pool2.BaseKeyedPoolableObjectFactory;
 import org.apache.commons.pool2.KeyedObjectPool;
 import org.apache.commons.pool2.KeyedPoolableObjectFactory;
 import org.apache.commons.pool2.TestKeyedObjectPool;
@@ -1045,9 +1046,15 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         long timeBetweenEvictionRunsMillis = 8;
         boolean blockWhenExhausted = false;
         boolean lifo = false;
+        KeyedPoolableObjectFactory<Object,Object> factory = new BaseKeyedPoolableObjectFactory<Object,Object>() { 
+            @Override
+            public Object makeObject(Object key) throws Exception {
+                return null;
+            }
+        };   
 
         GenericKeyedObjectPool<Object,Object> pool =
-            new GenericKeyedObjectPool<Object,Object>(null);
+            new GenericKeyedObjectPool<Object,Object>(factory);
         assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL_PER_KEY, pool.getMaxTotalPerKey());
         assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MAX_IDLE_PER_KEY, pool.getMaxIdlePerKey());
         assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS, pool.getMaxWaitMillis());
@@ -1085,7 +1092,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         config.setTestWhileIdle(testWhileIdle);
         config.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
         config.setBlockWhenExhausted(blockWhenExhausted);
-        pool = new GenericKeyedObjectPool<Object,Object>(null, config);
+        pool = new GenericKeyedObjectPool<Object,Object>(factory, config);
         assertEquals(maxTotalPerKey, pool.getMaxTotalPerKey());
         assertEquals(maxIdle, pool.getMaxIdlePerKey());
         assertEquals(maxWait, pool.getMaxWaitMillis());
