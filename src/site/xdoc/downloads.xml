@@ -31,6 +31,14 @@
          </p>
          <ul>
            <li>
+              Version 2 is a major refactoring. The primary change is in the
+              underlying implementation which uses significantly less locking
+              and is therefore much better suited to high concurrency
+              environments. The API has also been made much more self-consistent
+              with a number of attributes changing name to clarify their
+              purpose. 
+           </li>
+           <li>
               Version 1.6 adds generics based on the latest 1.5.x release, 1.5.7
               at the present time. It requires Java 1.5.
            </li>
