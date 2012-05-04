@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.commons.pool2;
 
 /**
@@ -23,7 +22,7 @@ package org.apache.commons.pool2;
  * indicating it is unsupported or throw {@link UnsupportedOperationException}.
  * <p>
  * This class is intended to be thread-safe.
- * 
+ *
  * @param <T> Type of element pooled in this pool.
  *
  * @version $Revision$
@@ -32,8 +31,9 @@ package org.apache.commons.pool2;
 public abstract class BaseObjectPool<T> implements ObjectPool<T> {
     /**
      * Obtains an instance from the pool.
-     * 
+     *
      * @return an instance from the pool
+     *
      * @throws Exception if an instance cannot be obtained from the pool
      */
     @Override
@@ -41,52 +41,50 @@ public abstract class BaseObjectPool<T> implements ObjectPool<T> {
 
     /**
      * Returns an instance to the pool.
-     * 
+     *
      * @param obj instance to return to the pool
      */
     @Override
     public abstract void returnObject(T obj) throws Exception;
 
     /**
-     * <p>Invalidates an object from the pool.</p>
-     * 
-     * <p>By contract, <code>obj</code> <strong>must</strong> have been obtained
-     * using {@link #borrowObject borrowObject}.<p>
-     * 
-     * <p>This method should be used when an object that has been borrowed
-     * is determined (due to an exception or other problem) to be invalid.</p>
+     * Invalidates an object from the pool.
+     * <p>
+     * By contract, <code>obj</code> <strong>must</strong> have been obtained
+     * using {@link #borrowObject borrowObject}.
+     * <p>
+     * This method should be used when an object that has been borrowed is
+     * determined (due to an exception or other problem) to be invalid.
      *
      * @param obj a {@link #borrowObject borrowed} instance to be disposed.
-     * @throws Exception 
+     * @throws Exception
      */
     @Override
     public abstract void invalidateObject(T obj) throws Exception;
 
     /**
      * Not supported in this base implementation.
+     *
      * @return a negative value.
-     * 
-     * @throws UnsupportedOperationException
      */
     @Override
-    public int getNumIdle() throws UnsupportedOperationException {
+    public int getNumIdle() {
         return -1;
     }
 
     /**
      * Not supported in this base implementation.
+     *
      * @return a negative value.
-     * 
-     * @throws UnsupportedOperationException
      */
     @Override
-    public int getNumActive() throws UnsupportedOperationException {
+    public int getNumActive() {
         return -1;
     }
 
     /**
      * Not supported in this base implementation.
-     * 
+     *
      * @throws UnsupportedOperationException
      */
     @Override
@@ -95,10 +93,10 @@ public abstract class BaseObjectPool<T> implements ObjectPool<T> {
     }
 
     /**
-     * Not supported in this base implementation.
-     * Always throws an {@link UnsupportedOperationException},
-     * subclasses should override this behavior.
-     * 
+     * Not supported in this base implementation.Always throws an
+     * {@link UnsupportedOperationException}, subclasses should override this
+     * behavior.
+     *
      * @throws UnsupportedOperationException
      */
     @Override
@@ -107,16 +105,17 @@ public abstract class BaseObjectPool<T> implements ObjectPool<T> {
     }
 
     /**
-     * Close this pool.
-     * This affects the behavior of <code>isClosed</code> and <code>assertOpen</code>.
+     * Close this pool. This affects the behavior of <code>isClosed</code> and
+     * <code>assertOpen</code>.
      */
     @Override
-    public void close() throws Exception {
+    public void close() {
         closed = true;
     }
 
     /**
      * Has this pool instance been closed.
+     *
      * @return <code>true</code> when this pool has been closed.
      */
     public final boolean isClosed() {
@@ -124,8 +123,11 @@ public abstract class BaseObjectPool<T> implements ObjectPool<T> {
     }
 
     /**
-     * Throws an <code>IllegalStateException</code> when this pool has been closed.
+     * Throws an <code>IllegalStateException</code> when this pool has been
+     * closed.
+     *
      * @throws IllegalStateException when this pool has been closed.
+     *
      * @see #isClosed()
      */
     protected final void assertOpen() throws IllegalStateException {
@@ -134,6 +136,5 @@ public abstract class BaseObjectPool<T> implements ObjectPool<T> {
         }
     }
 
-    /** Whether or not the pool is closed */
     private volatile boolean closed = false;
 }

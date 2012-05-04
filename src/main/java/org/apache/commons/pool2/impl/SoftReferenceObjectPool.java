@@ -290,12 +290,9 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
      * Calling {@link #addObject} or {@link #borrowObject} after invoking this
      * method on a pool will cause them to throw an
      * {@link IllegalStateException}.
-     *
-     * @throws Exception
-     *             never - exceptions clearing the pool are swallowed
      */
     @Override
-    public void close() throws Exception {
+    public void close() {
         super.close();
         clear();
     }
