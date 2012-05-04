@@ -140,7 +140,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             // Clean these up ready for the next test
             mbs.unregisterMBean(name);
         }
-        Assert.assertEquals(0, registeredPoolCount);
+        Assert.assertEquals("Should not be any registered pools remaining", 0, registeredPoolCount);
     }
 
     @Test(timeout=60000)
