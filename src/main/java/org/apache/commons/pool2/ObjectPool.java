@@ -136,12 +136,14 @@ public interface ObjectPool<T> {
      * considered an approximation of the number of objects that can be
      * {@link #borrowObject borrowed} without creating any new instances.
      * Returns a negative value if this information is not available.
+     * @return the number of instances currently idle in this pool.
      */
     int getNumIdle();
 
     /**
      * Return the number of instances currently borrowed from this pool. Returns
      * a negative value if this information is not available.
+     * @return the number of instances currently borrowed from this pool.
 =     */
     int getNumActive();
 
