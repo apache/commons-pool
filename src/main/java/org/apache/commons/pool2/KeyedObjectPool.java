@@ -156,6 +156,8 @@ public interface KeyedObjectPool<K,V> {
      * this information is not available.
      *
      * @param key the key to query
+     * @return the number of instances corresponding to the given
+     * <code>key</code> currently idle in this pool.
      */
     int getNumIdle(K key);
 
@@ -165,12 +167,15 @@ public interface KeyedObjectPool<K,V> {
      * Returns a negative value if this information is not available.
      *
      * @param key the key to query
+     * @return the number of instances currently borrowed from but not yet
+     * returned to the pool corresponding to the given <code>key</code>.
 =     */
     int getNumActive(K key);
 
     /**
      * Returns the total number of instances currently idle in this pool.
      * Returns a negative value if this information is not available.
+     * @return the total number of instances currently idle in this pool.
  =    */
     int getNumIdle();
 
@@ -178,6 +183,8 @@ public interface KeyedObjectPool<K,V> {
      * Returns the total number of instances current borrowed from this pool but
      * not yet returned. Returns a negative value if this information is not
      * available.
+     * @return the total number of instances current borrowed from this pool but
+     * not yet returned.
      */
     int getNumActive();
 
