@@ -33,6 +33,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
  * ObjectPool or KeyedObjectPool related interfaces.
  *
  * @version $Revision$
+ *
+ * @since 2.0
  */
 public final class PoolUtils {
 

@@ -27,6 +27,10 @@ package org.apache.commons.pool2;
  *
  * @see PoolableObjectFactory
  * @see BaseKeyedPoolableObjectFactory
+ *
+ * @version $Revision$
+ *
+ * @since 2.0
  */
 public abstract class BasePoolableObjectFactory<T> implements PoolableObjectFactory<T> {
     /**

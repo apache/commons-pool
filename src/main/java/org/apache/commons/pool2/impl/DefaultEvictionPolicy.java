@@ -29,14 +29,18 @@ package org.apache.commons.pool2.impl;
  *     {@link GenericObjectPool#getSoftMinEvictableIdleTimeMillis()} /
  *     {@link GenericKeyedObjectPool#getSoftMinEvictableIdleTimeMillis()}
  * </ul>
- * This class is immutable and thread-safe
+ * This class is immutable and thread-safe.
+ *
+ * @version $Revision: $
+ *
+ * @since 2.0
  */
 public class DefaultEvictionPolicy<T> implements EvictionPolicy<T> {
 
     @Override
     public boolean evict(EvictionConfig config, PooledObject<T> underTest,
             int idleCount) {
-        
+
         if ((config.getIdleSoftEvictTime() < underTest.getIdleTimeMillis() &&
                 config.getMinIdle() < idleCount) ||
                 config.getIdleEvictTime() < underTest.getIdleTimeMillis()) {

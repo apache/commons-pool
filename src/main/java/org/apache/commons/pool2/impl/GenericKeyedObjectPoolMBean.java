@@ -21,6 +21,10 @@ import java.util.Map;
 
 /**
  * Defines the methods that will be made available via JMX.
+ *
+ * @version $Revision: $
+ *
+ * @since 2.0
  */
 public interface GenericKeyedObjectPoolMBean<K> {
     // Expose getters for configuration settings

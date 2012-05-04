@@ -22,6 +22,10 @@ package org.apache.commons.pool2.impl;
  * defined by the public constants.
  * <p>
  * This class is not thread-safe.
+ *
+ * @version $Revision: $
+ *
+ * @since 2.0
  */
 public abstract class BaseObjectPoolConfig implements Cloneable {
 

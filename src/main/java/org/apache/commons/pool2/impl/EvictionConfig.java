@@ -19,16 +19,20 @@ package org.apache.commons.pool2.impl;
 /**
  * This class is used by pool implementations to pass configuration information
  * to {@link EvictionPolicy} instances. The {@link EvictionPolicy} may also have
- * its own specific configuration attributes.  
+ * its own specific configuration attributes.
  * <p>
- * This class is immutable and thread-safe
+ * This class is immutable and thread-safe.
+ *
+ * @version $Revision: $
+ *
+ * @since 2.0
  */
 public class EvictionConfig {
 
     private final long idleEvictTime;
     private final long idleSoftEvictTime;
     private final int minIdle;
-    
+
 
     public EvictionConfig(long poolIdleEvictTime, long poolIdleSoftEvictTime,
             int minIdle) {
@@ -52,7 +56,7 @@ public class EvictionConfig {
     public long getIdleSoftEvictTime() {
         return idleSoftEvictTime;
     }
-    
+
     public int getMinIdle() {
         return minIdle;
     }

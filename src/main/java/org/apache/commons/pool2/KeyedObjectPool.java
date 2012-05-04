@@ -55,10 +55,13 @@ import java.util.NoSuchElementException;
  * @param <K> The type of keys maintained by this pool.
  * @param <V> Type of element pooled in this pool.
  *
- * @version $Revision$
  * @see KeyedPoolableObjectFactory
  * @see ObjectPool
  * @see org.apache.commons.pool2.impl.GenericKeyedObjectPool GenericKeyedObjectPool
+ *
+ * @version $Revision$
+ *
+ * @since 2.0
  */
 public interface KeyedObjectPool<K,V> {
     /**
