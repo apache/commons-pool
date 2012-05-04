@@ -1,4 +1,3 @@
-
               Apache Commons Pool 2.0 RELEASE NOTES
 
 The Commons Pool team is pleased to announce the release of commons-pool2-2.0-SNAPSHOT
@@ -11,37 +10,37 @@ Changes in this version include:
 
 
 Fixed Bugs:
-o POOL-188:  Remove confusing method PoolUtils.ErodingKeyedObjectPool.numIdle(K key). Thanks to sebb. 
+o POOL-188:  Remove confusing method PoolUtils.ErodingKeyedObjectPool.numIdle(K key). Thanks to sebb.
 o POOL-150:  Ensure GKOP.preparePool() throws an exception if no factory has been
-      defined. 
-o POOL-134:  Add the ability to specify a per call wait time when borrowing an object. 
-o POOL-121:  Provide a name for the eviction timer thread. 
-o POOL-173:  Reduce duplication in configuration code. 
-o POOL-178:  Re-factor common code into common base classes. 
-o POOL-100:  Allow custom eviction policies to be defined. 
+             defined.
+o POOL-134:  Add the ability to specify a per call wait time when borrowing an object.
+o POOL-121:  Provide a name for the eviction timer thread.
+o POOL-173:  Reduce duplication in configuration code.
+o POOL-178:  Re-factor common code into common base classes.
+o POOL-100:  Allow custom eviction policies to be defined.
 
 Changes:
-o POOL-194:  Replace synchronized blocks in PoolUtils with Read/Write locks. 
-o POOL-83:  Support Java 1.5 Generics. 
-o POOL-186:  Developer documentation and examples have to be updated once the 2.0 repackaging has been done 
-o           Switch GOP to use a pooling mechanism based on java.util.concurrent and a
-      LinkedBlockingQueue implementation from Apache Harmony (originally by Doug
-      Lea and the JSR-166 expert group). 
-o           Make deprecated protected attributes private, requiring that access is via
-      the appropriate getters. 
-o           Code clean-up. Add missing @Override annotations, remove unused code,
-      remove deprecated code and unnecessary code. 
-o           Introduce an Enum (WhenExhaustedAction) to control pool behaviour when no
-      more objects are available to allocate. 
-o           Remove WhenExhuastedAction.GROW since it is equivalent to
-      WhenExhuastedAction.FAIL with a maxActive value of Integer.MAX_VALUE. 
+o POOL-194:  Replace synchronized blocks in PoolUtils with Read/Write locks.
+o POOL-83:   Support Java 1.5 Generics.
+o POOL-186:  Developer documentation and examples have to be updated once the 2.0 repackaging has been done
+o            Switch GOP to use a pooling mechanism based on java.util.concurrent and a
+             LinkedBlockingQueue implementation from Apache Harmony (originally by Doug
+             Lea and the JSR-166 expert group).
+o            Make deprecated protected attributes private, requiring that access is via
+             the appropriate getters.
+o            Code clean-up. Add missing @Override annotations, remove unused code,
+             remove deprecated code and unnecessary code.
+o            Introduce an Enum (WhenExhaustedAction) to control pool behaviour when no
+             more objects are available to allocate.
+o            Remove WhenExhuastedAction.GROW since it is equivalent to
+             WhenExhuastedAction.FAIL with a maxActive value of Integer.MAX_VALUE.
 o POOL-155:  Guard against multiple returns of the same object to the pool and ensure
-      that only objects borrowed from the pool are returned to it. 
-o           Remove setFactory() method from GOP. 
-o POOL-172:  Expose GOP and GKOP attributes via JMX. 
-o POOL-98:  Add additional attributes (also accessible via JMX) for monitoring. 
-o           Change meaning of zero for maxWait to a maximum wait of zero milliseconds
-      rather than the unexpected infinite wait. 
+             that only objects borrowed from the pool are returned to it.
+o            Remove setFactory() method from GOP.
+o POOL-172:  Expose GOP and GKOP attributes via JMX.
+o POOL-98:   Add additional attributes (also accessible via JMX) for monitoring.
+o            Change meaning of zero for maxWait to a maximum wait of zero milliseconds
+             rather than the unexpected infinite wait.
 
 
 For complete information on Commons Pool, including instructions on how to submit bug reports,
