@@ -22,6 +22,8 @@ package org.apache.commons.pool2.impl;
  * <p>
  * This class is intended to be thread-safe.
  *
+ * @param <T> the type of object in the pool
+ * 
  * @version $Revision: $
  *
  * @since 2.0
@@ -140,6 +142,11 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
         return false;
     }
 
+    /**
+     * Allocates the object.
+     * 
+     * @return {@code true} if the original state was {@link PooledObjectState#IDLE IDLE} 
+     */
     public synchronized boolean allocate() {
         if (state == PooledObjectState.IDLE) {
             state = PooledObjectState.ALLOCATED;
@@ -155,6 +162,12 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
         return false;
     }
 
+    /**
+     * Deallocates the object and sets it {@link PooledObjectState#IDLE IDLE}
+     * if it is currently {@link PooledObjectState#ALLOCATED ALLOCATED}.
+     * 
+     * @return {@code true} if the state was {@link PooledObjectState#ALLOCATED ALLOCATED}
+     */
     public synchronized boolean deallocate() {
         if (state == PooledObjectState.ALLOCATED) {
             state = PooledObjectState.IDLE;
@@ -165,6 +178,9 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
         return false;
     }
 
+    /**
+     * Sets the state to {@link PooledObjectState#INVALID INVALID}
+     */
     public synchronized void invalidate() {
         state = PooledObjectState.INVALID;
     }
