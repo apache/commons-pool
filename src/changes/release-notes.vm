@@ -28,10 +28,15 @@ $release.description.replaceAll("  ", "
 ")
 
 ## set up indent sizes. Only change indent1
-## indent1 =   POOL-nnn:
-#set($indent1="         ")
+#set($props=${project.properties})
+#set($jiralen=$props.get("commons.jira.id").length())
+## indent1 =   POOL-nnnn:
+#set($blanklen=$jiralen+6)## +6 for "-nnnn:"
+## must be at least as long as the longest JIRA id
+#set($blanks="                                  ")
+#set($indent1=$blanks.substring(0,$blanklen))
 ## indent2 allows for issue wrapper
-#set($indent2="$indent1    ")
+#set($indent2="$indent1   ")
 ##
 #macro ( processaction )
 ## Use replaceAll to fix up LF-only line ends on Windows.
@@ -44,6 +49,7 @@ $release.description.replaceAll("  ", "
 ## Pad shorter issue numbers
 #if ($issue.length() < $indent1.length())#set ($issue="$issue ")#end
 #if ($issue.length() < $indent1.length())#set ($issue="$issue ")#end
+#if ($issue.length() < $indent1.length())#set ($issue="$issue ")#end
 #else
 #set($issue=$indent1)
 #end
@@ -52,7 +58,7 @@ $release.description.replaceAll("  ", "
 #else
 #set($dueto="")
 #end
-o $issue  ${action}$dueto
+o $issue ${action}$dueto
 #set($action="")
 #set($issue="")
 #set($dueto="")
