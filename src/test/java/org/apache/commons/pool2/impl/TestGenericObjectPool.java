@@ -31,7 +31,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.management.AttributeNotFoundException;
 import javax.management.MBeanServer;
 import javax.management.Notification;
 import javax.management.NotificationListener;
@@ -101,11 +100,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             // Clean these up ready for the next test
             msg.append(name.toString());
             msg.append(" created via\n");
-            try {
-                msg.append(mbs.getAttribute(name, "creationStackTrace"));
-            } catch (AttributeNotFoundException e) {
-                msg.append(e.getMessage());
-            }
+            msg.append(mbs.getAttribute(name, "CreationStackTrace"));
             msg.append('\n');
             mbs.unregisterMBean(name);
         }
@@ -136,12 +131,12 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         long timeBetweenEvictionRunsMillis = 8;
         boolean blockWhenExhausted = false;
         boolean lifo = false;
-        PoolableObjectFactory<Object> factory = new BasePoolableObjectFactory<Object>() { 
+        PoolableObjectFactory<Object> factory = new BasePoolableObjectFactory<Object>() {
             @Override
             public Object makeObject() throws Exception {
                 return null;
             }
-        };   
+        };
 
         GenericObjectPool<Object> pool =
             new GenericObjectPool<Object>(factory);

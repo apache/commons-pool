@@ -126,6 +126,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     @After
     public void tearDown() throws Exception {
         super.tearDown();
+        String poolName = pool.getJmxName().toString();
         pool.clear();
         pool.close();
         pool = null;
@@ -137,11 +138,18 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                 null);
         // There should be no registered pools at this point
         int registeredPoolCount = result.size();
+        StringBuffer msg = new StringBuffer("Current pool is: ");
+        msg.append(poolName);
+        msg.append("  Still open pools are: ");
         for (ObjectName name : result) {
             // Clean these up ready for the next test
+            msg.append(name.toString());
+            msg.append(" created via\n");
+            msg.append(mbs.getAttribute(name, "CreationStackTrace"));
+            msg.append('\n');
             mbs.unregisterMBean(name);
         }
-        Assert.assertEquals("Should not be any registered pools remaining", 0, registeredPoolCount);
+        Assert.assertEquals(msg.toString(), 0, registeredPoolCount);
     }
 
     @Test(timeout=60000)
@@ -1046,12 +1054,12 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         long timeBetweenEvictionRunsMillis = 8;
         boolean blockWhenExhausted = false;
         boolean lifo = false;
-        KeyedPoolableObjectFactory<Object,Object> factory = new BaseKeyedPoolableObjectFactory<Object,Object>() { 
+        KeyedPoolableObjectFactory<Object,Object> factory = new BaseKeyedPoolableObjectFactory<Object,Object>() {
             @Override
             public Object makeObject(Object key) throws Exception {
                 return null;
             }
-        };   
+        };
 
         GenericKeyedObjectPool<Object,Object> pool =
             new GenericKeyedObjectPool<Object,Object>(factory);
