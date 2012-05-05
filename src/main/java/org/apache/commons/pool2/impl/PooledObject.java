@@ -31,7 +31,7 @@ package org.apache.commons.pool2.impl;
 public class PooledObject<T> implements Comparable<PooledObject<T>> {
 
     private final T object;
-    private volatile PooledObjectState state = PooledObjectState.IDLE; // @GuardedBy("this") to ensure transitions are valid
+    private PooledObjectState state = PooledObjectState.IDLE; // @GuardedBy("this") to ensure transitions are valid
     private final long createTime = System.currentTimeMillis();
     private volatile long lastBorrowTime = createTime;
     private volatile long lastReturnTime = createTime;
@@ -122,7 +122,9 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
         result.append("Object: ");
         result.append(object.toString());
         result.append(", State: ");
-        result.append(state.toString());
+        synchronized (this) {
+            result.append(state.toString());
+        }
         return result.toString();
         // TODO add other attributes
     }
