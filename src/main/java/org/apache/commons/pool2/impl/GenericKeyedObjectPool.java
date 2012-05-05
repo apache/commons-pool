@@ -99,6 +99,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         super(config, ONAME_BASE, config.getJmxNamePrefix());
 
         if (factory == null) {
+            jmxUnregister(); // tidy up
             throw new IllegalArgumentException("factory may not be null");
         }
         this.factory = factory;
