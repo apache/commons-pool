@@ -77,6 +77,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
     /**
      * Create a new <code>GenericKeyedObjectPool</code> using defaults from
      * {@link GenericKeyedObjectPoolConfig}.
+     * @param factory the factory to be used to create entries
      */
     public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,T> factory) {
         this(factory, new GenericKeyedObjectPoolConfig());
@@ -86,6 +87,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * Create a new <code>GenericKeyedObjectPool</code> using a specific
      * configuration.
      *
+     * @param factory the factory to be used to create entries
      * @param config    The configuration to use for this pool instance. The
      *                  configuration is used by value. Subsequent changes to
      *                  the configuration object will not be reflected in the
@@ -262,6 +264,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
     /**
      * Equivalent to <code>{@link #borrowObject(Object, long) borrowObject}(key,
      * {@link #getMaxWaitMillis()})</code>.
+     * <p>
+     * {@inheritDoc}
      */
     @Override
     public T borrowObject(K key) throws Exception {
@@ -612,14 +616,16 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
 
     /**
-     * Returns the total number of instances currently borrowed from this pool
-     * but not yet returned.
+     * {@inheritDoc}
      */
     @Override
     public int getNumActive() {
         return numTotal.get() - getNumIdle();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getNumIdle() {
         Iterator<ObjectDeque<T>> iter = poolMap.values().iterator();
