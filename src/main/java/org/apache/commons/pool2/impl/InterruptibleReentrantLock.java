@@ -31,6 +31,11 @@ class InterruptibleReentrantLock extends ReentrantLock {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Interrupt the threads that are waiting on a specific condition
+     * 
+     * @param condition the condition on which the threads are waiting.
+     */
     public void interruptWaiters(Condition condition) {
         Collection<Thread> threads = getWaitingThreads(condition);
         for (Thread thread : threads) {
