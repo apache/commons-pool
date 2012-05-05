@@ -1102,6 +1102,9 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         // Calculate current pool objects
         ObjectDeque<T> objectDeque = poolMap.get(key);
 
+        // objectDeque == null is OK here. It is handled correctly by both
+        // methods called below.
+
         // this method isn't synchronized so the
         // calculateDeficit is done at the beginning
         // as a loop limit and a second time inside the loop
