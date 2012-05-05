@@ -10,6 +10,16 @@ Changes in this version include:
 
 
 Fixed Bugs:
+o POOL-221:  PooledObject.state does not need to be volatile.
+o POOL-215:  GenericKeyedObjectPool - multiple mutable fields not published safely.
+o POOL-214:  GenericObjectPool.evictionPolicy not thread-safe
+o POOL-212:  GenericObjectPool allows maxIdle < minIdle
+o POOL-207:  GenericKeyedObjectPool.clear() has unnecessary null check of objectDequeue
+o POOL-201:  Classes Generic[Keyed]ObjectPoolConfig are generic - but why?
+o POOL-200:  GOP/GKOP don't consistently use getters to access fields
+o POOL-199:  GOP/GKOP evict() method is not synchronised and is not thread-safe
+o POOL-197:  PooledObject: risky init of lastBorrowTime & lastReturnTime
+o POOL-196:  PooledObject.getActiveTimeMillis() does not synch. access to lastReturnTime and lastBorrowTime
 o POOL-188:  Remove confusing method PoolUtils.ErodingKeyedObjectPool.numIdle(K key). Thanks to sebb.
 o POOL-150:  Ensure GKOP.preparePool() throws an exception if no factory has been
              defined.
@@ -20,6 +30,7 @@ o POOL-178:  Re-factor common code into common base classes.
 o POOL-100:  Allow custom eviction policies to be defined.
 
 Changes:
+o POOL-216:  GenericKeyedObjectPool.ensureMinIdle(K) does not need to check getMinIdlePerKey().
 o POOL-194:  Replace synchronized blocks in PoolUtils with Read/Write locks.
 o POOL-83:   Support Java 1.5 Generics.
 o POOL-186:  Developer documentation and examples have to be updated once the 2.0 repackaging has been done
