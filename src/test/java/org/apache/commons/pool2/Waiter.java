@@ -148,7 +148,7 @@ public class Waiter {
     
     @Override
     public String toString() {
-        StringBuffer buff = new StringBuffer();
+        StringBuilder buff = new StringBuilder();
         buff.append("ID = " + id + "\n");
         buff.append("valid = " + valid + "\n");
         buff.append("active = " + active + "\n");

@@ -138,7 +138,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                 null);
         // There should be no registered pools at this point
         int registeredPoolCount = result.size();
-        StringBuffer msg = new StringBuffer("Current pool is: ");
+        StringBuilder msg = new StringBuilder("Current pool is: ");
         msg.append(poolName);
         msg.append("  Still open pools are: ");
         for (ObjectName name : result) {
