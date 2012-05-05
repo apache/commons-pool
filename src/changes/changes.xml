@@ -77,7 +77,7 @@ clarify behaviour and improve consistency across the API.">
       GOP/GKOP evict() method is not synchronised and is not thread-safe
     </action>
     <action issue="POOL-197" dev="markt" type="fix" >
-      PooledObject: risky init of lastBorrowTime & lastReturnTime
+      PooledObject: risky init of lastBorrowTime &amp; lastReturnTime
     </action>
     <action issue="POOL-196" dev="markt" type="fix" >
       PooledObject.getActiveTimeMillis() does not synch. access to lastReturnTime and lastBorrowTime
