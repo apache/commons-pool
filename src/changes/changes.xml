@@ -52,6 +52,36 @@ clarify behaviour and improve consistency across the API.">
     <action issue="POOL-221" dev="markt" type="fix" >
       PooledObject.state does not need to be volatile.
     </action>
+    <action issue="POOL-216" dev="markt" type="update" >
+      GenericKeyedObjectPool.ensureMinIdle(K) does not need to check getMinIdlePerKey().
+    </action>
+    <action issue="POOL-215" dev="markt" type="fix" >
+      GenericKeyedObjectPool - multiple mutable fields not published safely.
+    </action>
+    <action issue="POOL-214" dev="markt" type="fix" >
+      GenericObjectPool.evictionPolicy not thread-safe
+    </action>
+    <action issue="POOL-212" dev="markt" type="fix" >
+      GenericObjectPool allows maxIdle &lt; minIdle
+    </action>
+    <action issue="POOL-207" dev="markt" type="fix" >
+      GenericKeyedObjectPool.clear() has unnecessary null check of objectDequeue
+    </action>
+    <action issue="POOL-201" dev="markt" type="fix" >
+      Classes Generic[Keyed]ObjectPoolConfig are generic - but why? 
+    </action>
+    <action issue="POOL-200" dev="markt" type="fix" >
+      GOP/GKOP don't consistently use getters to access fields
+    </action>
+    <action issue="POOL-199" dev="markt" type="fix" >
+      GOP/GKOP evict() method is not synchronised and is not thread-safe
+    </action>
+    <action issue="POOL-197" dev="markt" type="fix" >
+      PooledObject: risky init of lastBorrowTime & lastReturnTime
+    </action>
+    <action issue="POOL-196" dev="markt" type="fix" >
+      PooledObject.getActiveTimeMillis() does not synch. access to lastReturnTime and lastBorrowTime
+    </action>
     <action issue="POOL-194" dev="simonetripodi" type="update" date="2011-12-12">
       Replace synchronized blocks in PoolUtils with Read/Write locks.
     </action>
