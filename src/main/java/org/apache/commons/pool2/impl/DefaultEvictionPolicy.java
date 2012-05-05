@@ -31,6 +31,8 @@ package org.apache.commons.pool2.impl;
  * </ul>
  * This class is immutable and thread-safe.
  *
+ * @param <T> the type of objects in the pool
+ *
  * @version $Revision: $
  *
  * @since 2.0

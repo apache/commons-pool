@@ -21,6 +21,8 @@ package org.apache.commons.pool2.impl;
  * DefaultEvictionPolicy} for a pool, users must provide an implementation of
  * this interface that provides the required eviction policy.
  *
+ * @param <T> the type of objects in the pool
+ *  
  * @version $Revision: $
  *
  * @since 2.0
