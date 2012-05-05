@@ -31,15 +31,16 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.management.AttributeNotFoundException;
 import javax.management.MBeanServer;
 import javax.management.Notification;
 import javax.management.NotificationListener;
 import javax.management.ObjectName;
 
 import org.apache.commons.pool2.BasePoolableObjectFactory;
+import org.apache.commons.pool2.PoolableObjectFactory;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PoolUtils;
-import org.apache.commons.pool2.PoolableObjectFactory;
 import org.apache.commons.pool2.TestBaseObjectPool;
 import org.apache.commons.pool2.VisitTracker;
 import org.apache.commons.pool2.VisitTrackerFactory;
@@ -100,11 +101,101 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             // Clean these up ready for the next test
             msg.append(name.toString());
             msg.append(" created via\n");
-            msg.append(mbs.getAttribute(name, "creationStackTrace"));
+            try {
+                msg.append(mbs.getAttribute(name, "creationStackTrace"));
+            } catch (AttributeNotFoundException e) {
+                msg.append(e.getMessage());
+            }
             msg.append('\n');
             mbs.unregisterMBean(name);
         }
         Assert.assertEquals(msg.toString(), 0, registeredPoolCount);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testConstructorNullFactory() {
+        // add dummy assert (won't be invoked because of IAE) to avoid "unused" warning
+        assertNotNull(new GenericObjectPool<String>(null));
+        // TODO this currently causes tearDown to report an error
+        // Looks like GOP needs to call close() or jmxUnregister() before throwing IAE
+    }
+
+    @Test(timeout=60000)
+    public void testConstructors() throws Exception {
+
+        // Make constructor arguments all different from defaults
+        int minIdle = 2;
+        long maxWait = 3;
+        int maxIdle = 4;
+        int maxTotal = 5;
+        long minEvictableIdleTimeMillis = 6;
+        int numTestsPerEvictionRun = 7;
+        boolean testOnBorrow = true;
+        boolean testOnReturn = true;
+        boolean testWhileIdle = true;
+        long timeBetweenEvictionRunsMillis = 8;
+        boolean blockWhenExhausted = false;
+        boolean lifo = false;
+        PoolableObjectFactory<Object> factory = new BasePoolableObjectFactory<Object>() { 
+            @Override
+            public Object makeObject() throws Exception {
+                return null;
+            }
+        };   
+
+        GenericObjectPool<Object> pool =
+            new GenericObjectPool<Object>(factory);
+        assertEquals(GenericObjectPoolConfig.DEFAULT_MAX_IDLE, pool.getMaxIdle());
+        assertEquals(GenericObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS, pool.getMaxWaitMillis());
+        assertEquals(GenericObjectPoolConfig.DEFAULT_MIN_IDLE, pool.getMinIdle());
+        assertEquals(GenericObjectPoolConfig.DEFAULT_MAX_TOTAL, pool.getMaxTotal());
+        assertEquals(GenericObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
+                pool.getMinEvictableIdleTimeMillis());
+        assertEquals(GenericObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
+                pool.getNumTestsPerEvictionRun());
+        assertEquals(GenericObjectPoolConfig.DEFAULT_TEST_ON_BORROW,
+                pool.getTestOnBorrow());
+        assertEquals(GenericObjectPoolConfig.DEFAULT_TEST_ON_RETURN,
+                pool.getTestOnReturn());
+        assertEquals(GenericObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE,
+                pool.getTestWhileIdle());
+        assertEquals(GenericObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
+                pool.getTimeBetweenEvictionRunsMillis());
+        assertEquals(GenericObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED,
+                pool.getBlockWhenExhausted());
+        assertEquals(GenericObjectPoolConfig.DEFAULT_LIFO, pool.getLifo());
+        pool.close();
+
+        GenericObjectPoolConfig config =
+                new GenericObjectPoolConfig();
+        config.setLifo(lifo);
+        config.setMaxIdle(maxIdle);
+        config.setMinIdle(minIdle);
+        config.setMaxTotal(maxTotal);
+        config.setMaxWaitMillis(maxWait);
+        config.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis);
+        config.setNumTestsPerEvictionRun(numTestsPerEvictionRun);
+        config.setTestOnBorrow(testOnBorrow);
+        config.setTestOnReturn(testOnReturn);
+        config.setTestWhileIdle(testWhileIdle);
+        config.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
+        config.setBlockWhenExhausted(blockWhenExhausted);
+        pool = new GenericObjectPool<Object>(factory, config);
+        assertEquals(maxIdle, pool.getMaxIdle());
+        assertEquals(maxWait, pool.getMaxWaitMillis());
+        assertEquals(minIdle, pool.getMinIdle());
+        assertEquals(maxTotal, pool.getMaxTotal());
+        assertEquals(minEvictableIdleTimeMillis,
+                pool.getMinEvictableIdleTimeMillis());
+        assertEquals(numTestsPerEvictionRun, pool.getNumTestsPerEvictionRun());
+        assertEquals(testOnBorrow,pool.getTestOnBorrow());
+        assertEquals(testOnReturn,pool.getTestOnReturn());
+        assertEquals(testWhileIdle,pool.getTestWhileIdle());
+        assertEquals(timeBetweenEvictionRunsMillis,
+                pool.getTimeBetweenEvictionRunsMillis());
+        assertEquals(blockWhenExhausted,pool.getBlockWhenExhausted());
+        assertEquals(lifo, pool.getLifo());
+        pool.close();
     }
 
     @Test(timeout=60000)
