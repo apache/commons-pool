@@ -49,6 +49,9 @@ in high concurrency environments. Pools now provide a mechanism for tracking
 objects that have been borrowed from the pool but not returned. There have been
 numerous API changes to support these and other new features as well as to
 clarify behaviour and improve consistency across the API.">
+    <action issue="POOL-221" dev="markt" type="fix" >
+      PooledObject.state does not need to be volatile.
+    </action>
     <action dev="simonetripodi" type="update" date="2011-12-12" issue="POOL-194">
       Replace synchronized blocks in PoolUtils with Read/Write locks.
     </action>
