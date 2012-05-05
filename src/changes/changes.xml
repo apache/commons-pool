@@ -52,13 +52,13 @@ clarify behaviour and improve consistency across the API.">
     <action issue="POOL-221" dev="markt" type="fix" >
       PooledObject.state does not need to be volatile.
     </action>
-    <action dev="simonetripodi" type="update" date="2011-12-12" issue="POOL-194">
+    <action issue="POOL-194" dev="simonetripodi" type="update" date="2011-12-12">
       Replace synchronized blocks in PoolUtils with Read/Write locks.
     </action>
-    <action dev="simonetripodi" type="update" date="2011-04-28" issue="POOL-83">
+    <action issue="POOL-83" dev="simonetripodi" type="update" date="2011-04-28">
       Support Java 1.5 Generics.
     </action>
-    <action dev="simonetripodi" type="update" date="2011-04-28" issue="POOL-186">
+    <action issue="POOL-186" dev="simonetripodi" type="update" date="2011-04-28">
       Developer documentation and examples have to be updated once the 2.0 repackaging has been done
     </action>
     <action dev="markt" type="update">
@@ -82,43 +82,43 @@ clarify behaviour and improve consistency across the API.">
       Remove WhenExhuastedAction.GROW since it is equivalent to
       WhenExhuastedAction.FAIL with a maxActive value of Integer.MAX_VALUE. 
     </action>
-    <action dev="markt" type="fix" issue="POOL-188" due-to="sebb">
+    <action issue="POOL-188" dev="markt" type="fix" due-to="sebb">
       Remove confusing method PoolUtils.ErodingKeyedObjectPool.numIdle(K key).
     </action>
-    <action dev="markt" type="update" issue="POOL-155">
+    <action issue="POOL-155" dev="markt" type="update">
       Guard against multiple returns of the same object to the pool and ensure
       that only objects borrowed from the pool are returned to it.
     </action>
-    <action dev="markt" type="fix" issue="POOL-150">
+    <action issue="POOL-150" dev="markt" type="fix">
       Ensure GKOP.preparePool() throws an exception if no factory has been
       defined.
     </action>
-    <action dev="markt" type="fix" issue="POOL-134">
+    <action issue="POOL-134" dev="markt" type="fix">
       Add the ability to specify a per call wait time when borrowing an object.
     </action>
-    <action dev="markt" type="fix" issue="POOL-121">
+    <action issue="POOL-121" dev="markt" type="fix">
       Provide a name for the eviction timer thread.
     </action>
     <action dev="markt" type="update">
       Remove setFactory() method from GOP.
     </action>
-    <action dev="markt" type="fix" issue="POOL-173">
+    <action issue="POOL-173" dev="markt" type="fix">
       Reduce duplication in configuration code.
     </action>
-    <action dev="markt" type="fix" issue="POOL-178">
+    <action issue="POOL-178" dev="markt" type="fix">
       Re-factor common code into common base classes.
     </action>
-    <action dev="markt" type="update" issue="POOL-172">
+    <action issue="POOL-172" dev="markt" type="update">
       Expose GOP and GKOP attributes via JMX.
     </action>
-    <action dev="markt" type="update" issue="POOL-98">
+    <action issue="POOL-98" dev="markt" type="update">
       Add additional attributes (also accessible via JMX) for monitoring.
     </action>
     <action dev="markt" type="update">
       Change meaning of zero for maxWait to a maximum wait of zero milliseconds
       rather than the unexpected infinite wait.
     </action>
-    <action dev="markt" type="fix" issue="POOL-100">
+    <action issue="POOL-100" dev="markt" type="fix">
       Allow custom eviction policies to be defined.
     </action>
   </release>
