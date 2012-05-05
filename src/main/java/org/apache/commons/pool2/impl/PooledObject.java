@@ -23,7 +23,7 @@ package org.apache.commons.pool2.impl;
  * This class is intended to be thread-safe.
  *
  * @param <T> the type of object in the pool
- * 
+ *
  * @version $Revision: $
  *
  * @since 2.0
@@ -90,12 +90,21 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
         return lastReturnTime;
     }
 
+    /**
+     * Orders instances based on idle time - i.e. the length of time since the
+     * instance was returned to the pool. Used by the GKOP idle object evictor.
+     * <p>
+     * Note: This class has a natural ordering that is inconsistent with
+     *       equals if distinct objects have the same identity hash code.
+     */
     @Override
     public int compareTo(PooledObject<T> other) {
         final long lastActiveDiff =
                 this.getLastReturnTime() - other.getLastReturnTime();
         if (lastActiveDiff == 0) {
-            // make sure the natural ordering is consistent with equals
+            // Make sure the natural ordering is broadly consistent with equals
+            // although this will break down if distinct objects have the same
+            // identity hash code.
             // see java.lang.Comparable Javadocs
             return System.identityHashCode(this) - System.identityHashCode(other);
         }
@@ -144,8 +153,8 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
 
     /**
      * Allocates the object.
-     * 
-     * @return {@code true} if the original state was {@link PooledObjectState#IDLE IDLE} 
+     *
+     * @return {@code true} if the original state was {@link PooledObjectState#IDLE IDLE}
      */
     public synchronized boolean allocate() {
         if (state == PooledObjectState.IDLE) {
@@ -165,7 +174,7 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
     /**
      * Deallocates the object and sets it {@link PooledObjectState#IDLE IDLE}
      * if it is currently {@link PooledObjectState#ALLOCATED ALLOCATED}.
-     * 
+     *
      * @return {@code true} if the state was {@link PooledObjectState#ALLOCATED ALLOCATED}
      */
     public synchronized boolean deallocate() {
