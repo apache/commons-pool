@@ -168,10 +168,10 @@ public class StringBufferFactory extends BasePoolableObjectFactory&lt;StringBuff
 }
 </source>
       <p>
-       We can, for example, use this factory with the <code>StackObjectPool</code> to instantiate our
+       We can, for example, use this factory with the <code>GenericObjectPool</code> to instantiate our
        <code>ReaderUtil</code> as follows:
       </p>
-<source>new ReaderUtil(new StackObjectPool&lt;StringBuffer&gt;(new StringBufferFactory()))</source>
+<source>new ReaderUtil(new GenericObjectPool&lt;StringBuffer&gt;(new StringBufferFactory()))</source>
       </section>
    </body>
 </document>
