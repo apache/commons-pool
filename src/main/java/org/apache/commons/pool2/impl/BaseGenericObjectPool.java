@@ -281,7 +281,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * from the pool, or as a FIFO (first in, first out) queue, where the pool
      * always returns the oldest object in the idle object pool.
      *
-     * @param lifo  <code>true</true> if the pool is to be configured with LIFO
+     * @param lifo  <code>true</code> if the pool is to be configured with LIFO
      *              behaviour or <code>false</code> if the pool is to be
      *              configured with FIFO behaviour
      *
