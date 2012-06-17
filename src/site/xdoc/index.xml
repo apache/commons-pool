@@ -19,7 +19,6 @@
    <properties>
       <title>Overview</title>
       <author email="dev@commons.apache.org">Commons Documentation Team</author>
-      <author email="rwaldhoff@apache.org">Rodney Waldhoff</author>
       <revision>$Id$</revision>
    </properties>
 
@@ -30,7 +29,7 @@
           <ol>
            <li>
             A generic object pool interface that clients and implementors can use to provide easily 
-            interchangable pooling implementations.
+            interchangeable pooling implementations.
            </li>
            <li>
             A toolkit for creating modular object pools.
@@ -51,7 +50,7 @@
       <section name="Features">
         <p>
             The 
-            <a href="./apidocs/org/apache/commons/pool2/package-summary.html">org.apache.commons.pool</a> 
+            <a href="./apidocs/org/apache/commons/pool2/package-summary.html">org.apache.commons.pool2</a> 
             package defines a handful of pooling interfaces and some base classes 
             that may be useful when creating new pool implementations.
         </p>
@@ -139,17 +138,6 @@ public interface KeyedPoolableObjectFactory&lt;K,V&gt; {
             <a href="./apidocs/org/apache/commons/pool2/impl/package-summary.html">org.apache.commons.pool2.impl</a> 
             package provides some <i>Pool</i> implementations.
         </p>
-        <subsection name="StackObjectPool">
-          <p>
-             <a href="./apidocs/org/apache/commons/pool2/impl/StackObjectPool.html"><code>StackObjectPool</code></a>
-             will pool a finite number of "idle" instances, but will create new instances a needed in 
-             order to support high demand.
-          </p>
-          <p>
-             <a href="./apidocs/org/apache/commons/pool2/impl/StackKeyedObjectPool.html"><code>StackKeyedObjectPool</code></a>
-             offers the same behavior for keyed pools.
-          </p>
-        </subsection>
         <subsection name="GenericObjectPool">
           <p>
              <a href="./apidocs/org/apache/commons/pool2/impl/GenericObjectPool.html"><code>GenericObjectPool</code></a>
