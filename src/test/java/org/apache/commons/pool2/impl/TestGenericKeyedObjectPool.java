@@ -1486,7 +1486,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             try {
                 preborrow = System.currentTimeMillis();
                 String obj = _pool.borrowObject(_key);
-                objectId=obj.toString();
+                objectId = obj;
                 postborrow = System.currentTimeMillis();
                 Thread.sleep(_pause);
                 _pool.returnObject(_key, obj);
