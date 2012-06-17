@@ -52,6 +52,9 @@ clarify behaviour and improve consistency across the API.">
     <action issue="POOL-221" dev="markt" type="fix" >
       PooledObject.state does not need to be volatile.
     </action>
+    <action issue="POOL-217" dev="markt" type="update"  due-to="sebb">
+      Use an IODH for PoolUtils.MIN_IDLE_TIMER
+    </action>
     <action issue="POOL-216" dev="markt" type="update" >
       GenericKeyedObjectPool.ensureMinIdle(K) does not need to check getMinIdlePerKey().
     </action>
