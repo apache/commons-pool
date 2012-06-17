@@ -618,7 +618,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
     }
 
     /**
-     * Verifies that the pool open.
+     * Verifies that the pool is open.
      * @throws IllegalStateException if the pool is closed.
      */
     final void assertOpen() throws IllegalStateException {
