@@ -40,9 +40,11 @@ public final class PoolUtils {
 
     /**
      * Timer used to periodically check pools idle object count. Because a
-     * {@link Timer} creates a {@link Thread} this is lazily instantiated.
+     * {@link Timer} creates a {@link Thread}, an IODH is used.
      */
-    private static Timer MIN_IDLE_TIMER; // @GuardedBy("PoolUtils.class")
+    static class TimerHolder {
+        static final Timer MIN_IDLE_TIMER = new Timer(true);
+    }
 
     /**
      * PoolUtils instances should NOT be constructed in standard programming.
@@ -553,16 +555,12 @@ public final class PoolUtils {
     }
 
     /**
-     * Get the <code>Timer</code> for checking keyedPool's idle count. Lazily
-     * create the {@link Timer} as needed.
+     * Get the <code>Timer</code> for checking keyedPool's idle count.
      *
      * @return the {@link Timer} for checking keyedPool's idle count.
      */
-    private static synchronized Timer getMinIdleTimer() {
-        if (MIN_IDLE_TIMER == null) {
-            MIN_IDLE_TIMER = new Timer(true);
-        }
-        return MIN_IDLE_TIMER;
+    private static Timer getMinIdleTimer() {
+        return TimerHolder.MIN_IDLE_TIMER;
     }
 
     /**
