@@ -339,6 +339,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                         validate = factory.validateObject(p.getObject());
                     } catch (Throwable t) {
                         PoolUtils.checkRethrow(t);
+                        validationThrowable = t;
                     }
                     if (!validate) {
                         try {
