@@ -989,7 +989,7 @@ public class GenericObjectPool extends BaseObjectPool implements ObjectPool {
      * the pool behaves as a FIFO queue - objects are taken from the idle object
      * pool in the order that they are returned to the pool.
      *
-     * @return <code>true</true> if the pool is configured to act as a LIFO queue
+     * @return <code>true</code> if the pool is configured to act as a LIFO queue
      * @since 1.4
      */
      public synchronized boolean getLifo() {
