@@ -50,7 +50,10 @@ objects that have been borrowed from the pool but not returned. There have been
 numerous API changes to support these and other new features as well as to
 clarify behaviour and improve consistency across the API.">
     <action issue="POOL-221" dev="markt" type="fix" >
-      PooledObject.state does not need to be volatile.
+      PooledObject.state does not need to be volatile
+    </action>
+    <action issue="POOL-220" dev="markt" type="fix">
+      Suppress a FindBugs warning
     </action>
     <action issue="POOL-217" dev="markt" type="update"  due-to="sebb">
       Use an IODH for PoolUtils.MIN_IDLE_TIMER
