@@ -406,6 +406,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                             validate = factory.validateObject(key, p.getObject());
                         } catch (Throwable t) {
                             PoolUtils.checkRethrow(t);
+                            validationThrowable = t;
                         }
                         if (!validate) {
                             try {
