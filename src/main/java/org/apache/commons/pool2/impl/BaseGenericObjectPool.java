@@ -132,7 +132,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
 
 
     /**
-     * Handles JMX regitration (if required) and the initialization required for
+     * Handles JMX registration (if required) and the initialization required for
      * monitoring.
      *
      * @param config        Pool configuration
@@ -609,18 +609,32 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      */
     public abstract void evict() throws Exception;
 
+    /**
+     * Returns the {@link EvictionPolicy} defined for this pool.
+     * @return the eviction policy
+     */
     final EvictionPolicy<T> getEvictionPolicy() {
         return evictionPolicy;
     }
 
+    /**
+     * Verifies that the pool open.
+     * @throws IllegalStateException if the pool is closed.
+     */
     final void assertOpen() throws IllegalStateException {
         if (isClosed()) {
             throw new IllegalStateException("Pool not open");
         }
     }
 
-    // Needs to be final; see POOL-195. Make method final as it is
-    // called from a constructor.
+    /**
+     * <p>Starts the evictor with the given delay. If there is an evictor
+     * running when this method is called, it is stopped and replaced with a
+     * new evictor with the specified delay.</p>
+     * 
+     * <p>This method needs to be final, since it is called from a constructor.
+     * See POOL-195.</p>
+     */
     final void startEvictor(long delay) {
         synchronized (evictionLock) {
             if (null != evictor) {
@@ -635,6 +649,11 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
         }
     }
 
+    /**
+     * Tries to ensure that the configured minimum number of idle instances are
+     * available in the pool.
+     * @throws Exception if an error occurs creating idle instances
+     */
     abstract void ensureMinIdle() throws Exception;
 
 
@@ -644,6 +663,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * Provides the name under which the pool has been registered with the
      * platform MBean server or <code>null</code> if the pool has not been
      * registered.
+     * @return the JMX name
      */
     public final ObjectName getJmxName() {
         return oname;
@@ -655,6 +675,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * deregistered when no longer used by calling the {@link #close()} method.
      * This method is provided to assist with identifying code that creates but
      * does not close it thereby creating a memory leak.
+     * @return pool creation stack trace
      */
     public final String getCreationStackTrace() {
         return creationStackTrace;
@@ -664,6 +685,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * Lists the most recent exceptions that have been swallowed by the pool
      * implementation. Exceptions are typically swallowed when a problem occurs
      * while destroying an object.
+     * @return array containing stack traces of recently swallowed exceptions
      */
     public final String[] getSwallowedExceptions() {
         List<String> temp =
@@ -677,6 +699,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
     /**
      * The total number of objects successfully borrowed from this pool over the
      * lifetime of the pool.
+     * @return the borrowed object count
      */
     public final long getBorrowedCount() {
         return borrowedCount.get();
@@ -686,6 +709,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * The total number of objects returned to this pool over the lifetime of
      * the pool. This excludes attempts to return the same object multiple
      * times.
+     * @return the returned object count
      */
     public final long getReturnedCount() {
         return returnedCount.get();
@@ -694,6 +718,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
     /**
      * The total number of objects created for this pool over the lifetime of
      * the pool.
+     * @return the created object count
      */
     public final long getCreatedCount() {
         return createdCount.get();
@@ -702,6 +727,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
     /**
      * The total number of objects destroyed by this pool over the lifetime of
      * the pool.
+     * @return the destroyed object count
      */
     public final long getDestroyedCount() {
         return destroyedCount.get();
@@ -710,6 +736,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
     /**
      * The total number of objects destroyed by the evictor associated with this
      * pool over the lifetime of the pool.
+     * @return the evictor destroyed object count
      */
     public final long getDestroyedByEvictorCount() {
         return destroyedByEvictorCount.get();
@@ -719,6 +746,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * The total number of objects destroyed by this pool as a result of failing
      * validation during <code>borrowObject()</code> over the lifetime of the
      * pool.
+     * @return validation destroyed object count
      */
     public final long getDestroyedByBorrowValidationCount() {
         return destroyedByBorrowValidationCount.get();
@@ -727,6 +755,8 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
     /**
      * The mean time objects are active for based on the last {@link
      * #MEAN_TIMING_STATS_CACHE_SIZE} objects returned to the pool.
+     * @return mean time an object has been checked out from the pool among
+     * recently returned objects
      */
     public final long getMeanActiveTimeMillis() {
         return getMeanFromStatsCache(activeTimes);
@@ -735,6 +765,8 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
     /**
      * The mean time objects are idle for based on the last {@link
      * #MEAN_TIMING_STATS_CACHE_SIZE} objects borrowed from the pool.
+     * @return mean time an object has been idle in the pool among recently
+     * borrowed objects
      */
     public final long getMeanIdleTimeMillis() {
         return getMeanFromStatsCache(idleTimes);
@@ -743,6 +775,8 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
     /**
      * The mean time threads wait to borrow an object based on the last {@link
      * #MEAN_TIMING_STATS_CACHE_SIZE} objects borrowed from the pool.
+     * @return mean time in milliseconds that a recently served thread has had
+     * to wait to borrow an object from the pool
      */
     public final long getMeanBorrowWaitTimeMillis() {
         return getMeanFromStatsCache(waitTimes);
@@ -750,6 +784,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
 
     /**
      * The maximum time a thread has waited to borrow objects from the pool.
+     * @return maximum wait time in milliseconds since the pool was created
      */
     public final long getMaxBorrowWaitTimeMillis() {
         return maxBorrowWaitTimeMillis;
