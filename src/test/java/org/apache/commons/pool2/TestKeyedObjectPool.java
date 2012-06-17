@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,39 +43,39 @@ public abstract class TestKeyedObjectPool {
      */
     protected abstract KeyedObjectPool<Object,Object> makeEmptyPool(KeyedPoolableObjectFactory<Object,Object> factory);
 
-    protected final String KEY = "key";
-    
+    protected static final String KEY = "key";
+
     private KeyedObjectPool<Object,Object> _pool = null;
-    
+
     protected abstract Object makeKey(int n);
-    
+
     protected abstract boolean isFifo();
-    
+
     protected abstract boolean isLifo();
-    
+
     @After
     public void tearDown() throws Exception {
         _pool = null;
     }
-    
+
     /**
      * Create an {@link KeyedObjectPool} instance
      * that can contain at least <i>mincapacity</i>
      * idle and active objects, or
      * throw {@link IllegalArgumentException}
      * if such a pool cannot be created.
-     * @param mincapacity 
+     * @param mincapacity
      */
-    protected abstract KeyedObjectPool<Object,Object> makeEmptyPool(int mincapacity);  
-    
+    protected abstract KeyedObjectPool<Object,Object> makeEmptyPool(int mincapacity);
+
     /**
      * Return what we expect to be the n<sup>th</sup>
      * object (zero indexed) created by the pool
      * for the given key.
-     * @param key 
-     * @param n 
+     * @param key
+     * @param n
      */
-    protected abstract Object getNthObject(Object key, int n);  
+    protected abstract Object getNthObject(Object key, int n);
 
     @Test
     public void testClosedPoolBehavior() throws Exception {
@@ -186,7 +186,7 @@ public abstract class TestKeyedObjectPool {
         }
         final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
         Object obj;
-        
+
         if (pool instanceof GenericKeyedObjectPool) {
             ((GenericKeyedObjectPool<Object,Object>) pool).setTestOnBorrow(true);
         }
@@ -225,7 +225,7 @@ public abstract class TestKeyedObjectPool {
         factory.setActivateObjectFail(true);
         expectedMethods.add(new MethodCall("activateObject", KEY, obj));
         try {
-            obj = pool.borrowObject(KEY); 
+            pool.borrowObject(KEY);
             fail("Expecting NoSuchElementException");
         } catch (NoSuchElementException e) {
             //Activate should fail
@@ -246,7 +246,7 @@ public abstract class TestKeyedObjectPool {
         // testOnBorrow is on, so this will throw when the newly created instance
         // fails validation
         try {
-            obj = pool.borrowObject(KEY);
+            pool.borrowObject(KEY);
             fail("Expecting NoSuchElementException");
         } catch (NoSuchElementException ex) {
             // expected
@@ -420,7 +420,7 @@ public abstract class TestKeyedObjectPool {
             pool.close();
         }
     }
-    
+
     @Test
     public void testBaseBorrowReturn() throws Exception {
         try {
@@ -503,7 +503,7 @@ public abstract class TestKeyedObjectPool {
 
         assertEquals(0,_pool.getNumActive("xyzzy12345"));
         assertEquals(0,_pool.getNumIdle("xyzzy12345"));
-        
+
         _pool.close();
     }
 
@@ -562,7 +562,7 @@ public abstract class TestKeyedObjectPool {
         assertEquals(2,_pool.getNumIdle(keya));
         assertEquals(0,_pool.getNumActive(keyb));
         assertEquals(2,_pool.getNumIdle(keyb));
-        
+
         _pool.close();
     }
 

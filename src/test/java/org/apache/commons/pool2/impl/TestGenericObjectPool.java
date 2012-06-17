@@ -570,7 +570,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         // Validation will now fail on activation when borrowObject returns
         // an idle instance, and then when attempting to create a new instance
         try {
-            obj1 = pool.borrowObject();
+            pool.borrowObject();
             fail("Expecting NoSuchElementException");
         } catch (NoSuchElementException ex) {
             // expected
@@ -649,13 +649,13 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             pool.borrowObject();
             fail("Expecting NoSuchElementException");
         } catch (NoSuchElementException ex) {
-            //xpected
+            // expected
         }
         pool.returnObject(obj2);
         pool.returnObject(obj);
 
-        obj = pool.borrowObject();
-        obj2 = pool.borrowObject();
+        pool.borrowObject();
+        pool.borrowObject();
     }
 
     @Test(timeout=60000)
@@ -1087,7 +1087,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         Thread.sleep(300);
 
         try {
-            p = pool.borrowObject(1);
+            pool.borrowObject(1);
         } catch (NoSuchElementException nsee) {
             // Ignore
         }
@@ -1469,7 +1469,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertEquals("timeBetweenEvictionRunsMillis",expected.getTimeBetweenEvictionRunsMillis(),actual.getTimeBetweenEvictionRunsMillis());
     }
 
-    public class SimpleFactory implements PoolableObjectFactory<Object> {
+    public static class SimpleFactory implements PoolableObjectFactory<Object> {
         public SimpleFactory() {
             this(true);
         }

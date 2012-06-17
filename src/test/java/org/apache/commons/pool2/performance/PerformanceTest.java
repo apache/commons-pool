@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,8 +29,8 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 
 /**
  * Multi-thread performance test
- * 
- * @version $Revision$ 
+ *
+ * @version $Revision$
  */
 public class PerformanceTest {
     private int logLevel = 0;
@@ -42,19 +42,19 @@ public class PerformanceTest {
         logLevel = i;
     }
 
-    private class TaskStats {
+    private static class TaskStats {
         public int waiting = 0;
         public int complete = 0;
         public long totalBorrowTime = 0;
         public long totalReturnTime = 0;
         public int nrSamples = 0;
     }
-    
+
     class PerfTask implements Callable<TaskStats> {
         TaskStats taskStats = new TaskStats();
         long borrowTime;
         long returnTime;
-        
+
         public void runOnce() {
             try {
                 taskStats.waiting++;
@@ -75,7 +75,7 @@ public class PerformanceTest {
                             "    waiting: " + taskStats.waiting +
                             "   complete: " + taskStats.complete);
                 }
-                                 
+
                 long rbegin = System.currentTimeMillis();
                 pool.returnObject(o);
                 long rend = System.currentTimeMillis();
@@ -111,9 +111,9 @@ public class PerformanceTest {
 
     private void run(int nrIterations, int nrThreads, int maxTotal, int maxIdle) {
         this.nrIterations = nrIterations;
-        
+
         SleepingObjectFactory factory = new SleepingObjectFactory();
-        if (logLevel >= 4) { factory.setDebug(true); } 
+        if (logLevel >= 4) { factory.setDebug(true); }
         pool = new GenericObjectPool<Integer>(factory);
         pool.setMaxTotal(maxTotal);
         pool.setMaxIdle(maxIdle);
@@ -126,7 +126,7 @@ public class PerformanceTest {
             tasks.add(new PerfTask());
             Thread.yield();
         }
-        
+
         if (logLevel >= 1) {
             System.out.println("created");
         }
@@ -137,7 +137,7 @@ public class PerformanceTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-            
+
         if (logLevel >= 1) { System.out.println("started"); }
         Thread.yield();
 
@@ -145,7 +145,7 @@ public class PerformanceTest {
         Thread.yield();
 
         if (logLevel >= 1) { System.out.println("finish"); }
-        
+
         TaskStats aggregate = new TaskStats();
         if (futures != null) {
             for (Future<TaskStats> future : futures) {
@@ -166,7 +166,7 @@ public class PerformanceTest {
                 }
             }
         }
-        
+
         System.out.println("-----------------------------------------");
         System.out.println("nrIterations: " + nrIterations);
         System.out.println("nrThreads: " + nrThreads);
@@ -179,7 +179,7 @@ public class PerformanceTest {
                 aggregate.totalBorrowTime/aggregate.nrSamples);
         System.out.println("avg ReturnTime: " +
                 aggregate.totalReturnTime/aggregate.nrSamples);
-        
+
         threadPool.shutdown();
     }
 

@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -213,7 +213,7 @@ public abstract class TestObjectPool {
         factory.setActivateObjectFail(true);
         expectedMethods.add(new MethodCall("activateObject", obj));
         try {
-            obj = pool.borrowObject();
+            pool.borrowObject();
             fail("Expecting NoSuchElementException");
         } catch (NoSuchElementException ex) {
             // Expected - newly created object will also fail to activate
@@ -233,7 +233,7 @@ public abstract class TestObjectPool {
         expectedMethods.add(new MethodCall("activateObject", ZERO));
         expectedMethods.add(new MethodCall("validateObject", ZERO));
         try {
-            obj = pool.borrowObject();
+            pool.borrowObject();
         } catch (NoSuchElementException ex) {
             // Expected - newly created object will also fail to validate
         }
