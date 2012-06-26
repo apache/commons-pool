@@ -634,6 +634,8 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * 
      * <p>This method needs to be final, since it is called from a constructor.
      * See POOL-195.</p>
+     * 
+     * @param delay time in milliseconds before start and between eviction runs
      */
     final void startEvictor(long delay) {
         synchronized (evictionLock) {
@@ -792,13 +794,23 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
 
     /**
      * The number of instances currently idle in this pool.
+     * @return count of instances available for checkout from the pool
      */
     public abstract int getNumIdle();
 
+    /**
+     * Returns the {@link NotificationBroadcasterSupport} for the pool
+     * @return JMX notification broadcaster
+     */
     final NotificationBroadcasterSupport getJmxNotificationSupport() {
         return jmxNotificationSupport;
     }
 
+    /**
+     * Swallows an exception, sends a JMX notification, and adds the swallowed exception
+     * to the swallowed exceptions queue.
+     * @param e exception to be swallowed
+     */
     final void swallowException(Exception e) {
         String msg = getStackTrace(e);
 
@@ -816,6 +828,11 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
         }
     }
 
+    /**
+     * Updates statistics after an object is borrowed from the pool.
+     * @param p object borrowed from the pool
+     * @param waitTime time (in milliseconds) that the borrowing thread had to wait
+     */
     final void updateStatsBorrow(PooledObject<T> p, long waitTime) {
         borrowedCount.incrementAndGet();
         synchronized (idleTimes) {
@@ -833,6 +850,11 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
         }
     }
 
+    /**
+     * Updates statistics after an object is returned to the pool.
+     * @param activeTime the amount of time (in milliseconds) that the returning
+     * object was checked out
+     */
     final void updateStatsReturn(long activeTime) {
         returnedCount.incrementAndGet();
         synchronized (activeTimes) {
@@ -841,6 +863,9 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
         }
     }
 
+    /**
+     * Unregisters this pool's MBean.
+     */
     final void jmxUnregister() {
         if (oname != null) {
             try {
@@ -854,6 +879,18 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
         }
     }
 
+    /**
+     * Registers the pool with the platform MBean server.
+     * The registered name will be 
+     * <code>jmxNameBase + jmxNamePrefix + i</code> where i is the least
+     * integer greater than or equal to 1 such that the name is not already
+     * registered. Swallows MBeanRegistrationException, NotCompliantMBeanException
+     * returning null.
+     * 
+     * @param jmxNameBase base JMX name for this pool
+     * @param jmxNamePrefix name prefix
+     * @return registered ObjectName, null if registration fails
+     */
     private ObjectName jmxRegister(String jmxNameBase, String jmxNamePrefix) {
         ObjectName objectName = null;
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
@@ -891,6 +928,11 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
         return objectName;
     }
 
+    /**
+     * Gets the stack trace of an exception as a string.
+     * @param e exception to trace
+     * @return exception stack trace as a string
+     */
     private String getStackTrace(Exception e) {
         // Need the exception in string form to prevent the retention of
         // references to classes in the stack trace that could trigger a memory
@@ -901,6 +943,13 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
         return w.toString();
     }
 
+    /**
+     * Returns the greatest integer less than ore equal to the arithmetic mean
+     * of the entries in <code>cache,</code> acquiring and holding the argument's
+     * monitor while making a local copy.
+     * @param cache list containing entries to analyze
+     * @return truncated arithmetic mean
+     */
     private long getMeanFromStatsCache(LinkedList<Long> cache) {
         List<Long> times = new ArrayList<Long>(MEAN_TIMING_STATS_CACHE_SIZE);
         synchronized (cache) {
@@ -920,6 +969,9 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
         return (long) result;
     }
 
+    /**
+     * Initializes pool statistics.
+     */
     private void initStats() {
         for (int i = 0; i < MEAN_TIMING_STATS_CACHE_SIZE; i++) {
             activeTimes.add(null);
