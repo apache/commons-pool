@@ -31,10 +31,6 @@
             <item name="Javadoc (1.5.6 release)"       href="http://commons.apache.org/pool/api-1.5.6/index.html"/>
             <item name="Javadoc (1.6 release)"         href="http://commons.apache.org/pool/api-1.6/index.html"/>
             <item name="Javadoc (2.0 release)"         href="http://commons.apache.org/pool/api-2.0/index.html"/>
-            <item name="Developers&#xA0;Guide"         href="/guide/index.html" collapse="true">
-                <item name="Class&#xA0;Diagrams"       href="/guide/classdiagrams.html"/>
-                <item name="Sequence&#xA0;Diagrams"    href="/guide/sequencediagrams.html"/>
-            </item>
             <item name="Examples"                      href="/examples.html"/>
             <item name="Downloads"                     href="/download_pool.cgi"/>
             <item name="Wiki"                          href="http://wiki.apache.org/commons/Pool"/>
