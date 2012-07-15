@@ -331,7 +331,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
     /**
      * Queue of broken references that might be able to be removed from
      * <code>_pool</code>. This is used to help {@link #getNumIdle()} be more
-     * accurate with minimial performance overhead.
+     * accurate with minimal performance overhead.
      */
     private final ReferenceQueue<T> refQueue = new ReferenceQueue<T>();
 
