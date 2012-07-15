@@ -22,27 +22,4 @@
   put here to instruct findbugs to ignore them.
 -->
 <FindBugsFilter>
-  <!-- findbugs thinks this is naked, but it is not -->
-  <Match>
-    <Class name="org.apache.commons.pool.impl.GenericKeyedObjectPool" />
-    <Method name="allocate"/>
-    <Bug pattern="NN_NAKED_NOTIFY" />
-  </Match>
-  <!-- Iteration has to be over keys here -->
-  <Match>
-    <Class name="org.apache.commons.pool.impl.GenericKeyedObjectPool" />
-    <Method name="destroy"/>
-    <Bug pattern="WMI_WRONG_MAP_ITERATOR" />
-  </Match>
-  <!-- compareTo is implemented consistently with object equals in this case -->
-  <Match>
-    <Class name="org.apache.commons.pool.impl.GenericKeyedObjectPool$ObjectTimestampPair" />
-    <Bug pattern="EQ_COMPARETO_USE_OBJECT_EQUALS" />
-  </Match>
-  <!-- findbugs thinks this is naked, but it is not -->
-  <Match>
-    <Class name="org.apache.commons.pool.impl.GenericObjectPool" />
-    <Method name="allocate"/>
-    <Bug pattern="NN_NAKED_NOTIFY" />
-  </Match>
 </FindBugsFilter>
