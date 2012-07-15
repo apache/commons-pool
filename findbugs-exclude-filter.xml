@@ -17,9 +17,16 @@
 -->
 
 <!--
-  This file contains some false positive bugs detected by findbugs. Their
+  This file contains some false positive bugs detected by Find Bugs. Their
   false positive nature has been analyzed individually and they have been
-  put here to instruct findbugs to ignore them.
+  put here to instruct Find Bugs to ignore them.
 -->
 <FindBugsFilter>
+  <!-- Ignoring the exception is deliberate since an earlier exception is    -->
+  <!-- more important.                                                       -->
+  <Match>
+    <Class name="org.apache.commons.pool2.impl.GenericKeyedObjectPool" />
+    <Method name="borrowObject" />
+    <Bug code="DE" />
+  </Match>
 </FindBugsFilter>
