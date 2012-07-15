@@ -325,6 +325,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * @throws NoSuchElementException if a keyed object instance cannot be
      *                                returned.
      */
+    @SuppressWarnings("null") // objectDeque will always be non-null
     public T borrowObject(K key, long borrowMaxWaitMillis) throws Exception {
         assertOpen();
 
@@ -342,14 +343,12 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
             while (p == null) {
                 create = false;
                 if (blockWhenExhausted) {
-                    if (objectDeque != null) {
-                        p = objectDeque.getIdleObjects().pollFirst();
-                    }
+                    p = objectDeque.getIdleObjects().pollFirst();
                     if (p == null) {
                         create = true;
                         p = create(key);
                     }
-                    if (p == null && objectDeque != null) {
+                    if (p == null) {
                         if (borrowMaxWaitMillis < 0) {
                             p = objectDeque.getIdleObjects().takeFirst();
                         } else {
