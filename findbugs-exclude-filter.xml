@@ -29,4 +29,9 @@
     <Method name="borrowObject" />
     <Bug code="DE" />
   </Match>
+  <Match>
+    <Class name="org.apache.commons.pool2.impl.GenericObjectPool" />
+    <Method name="borrowObject" />
+    <Bug code="DE" />
+  </Match>
 </FindBugsFilter>
