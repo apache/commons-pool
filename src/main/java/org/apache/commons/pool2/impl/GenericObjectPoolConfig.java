@@ -54,9 +54,6 @@ public class GenericObjectPoolConfig extends BaseObjectPoolConfig {
 
     private int minIdle = DEFAULT_MIN_IDLE;
 
-    public GenericObjectPoolConfig() {
-    }
-    
     public int getMaxTotal() {
         return maxTotal;
     }
