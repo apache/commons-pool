@@ -25,6 +25,9 @@
     <action dev="ggregory" type="fix" issue="POOL-224" due-to="liviutudor">
       FindBugs performance warnings on StackKeyedObjectPool.
     </action>
+    <action dev="ggregory" type="fix" issue="POOL-223" due-to="liviutudor">
+      Checkstyle reports "Missing a header - not enough lines in file." on most sources.
+    </action>
     <action dev="markt" type="fix" issue="POOL-161" due-to="Sylvain Laurent">
       Ensure the evictor thread runs with the same class loader that was in use
       when the pool was created to ensure that the factory class is visible.

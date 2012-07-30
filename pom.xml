@@ -108,6 +108,10 @@
       <name>Todd Carmichael</name>
       <email>toddc@concur.com</email>
     </contributor>
+    <contributor>
+      <name>Liviu Tudor</name>
+      <email>me AT liviutudor DOT com</email>
+    </contributor>
   </contributors>
 
   <dependencies>
@@ -134,6 +138,7 @@
     <maven.compile.target>1.5</maven.compile.target>
     <commons.jira.id>POOL</commons.jira.id>
     <commons.jira.pid>12310488</commons.jira.pid>
+    <checkstyle.header.file>license-header.txt</checkstyle.header.file>
   </properties>
 
   <distributionManagement>
