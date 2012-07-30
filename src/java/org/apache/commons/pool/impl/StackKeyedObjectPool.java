@@ -43,7 +43,7 @@ import org.apache.commons.pool.PoolUtils;
  *
  * @param <K> the type of keys in this pool
  * @param <V> the type of objects held in this pool
- * 
+ *
  * @author Rodney Waldhoff
  * @author Sandy McArthur
  * @version $Id$
@@ -139,7 +139,7 @@ public class StackKeyedObjectPool<K, V> extends BaseKeyedObjectPool<K, V> implem
     /**
      * Borrows an object with the given key.  If there are no idle instances under the
      * given key, a new one is created.
-     * 
+     *
      * @param key the pool key
      * @return keyed poolable object instance
      */
@@ -199,7 +199,7 @@ public class StackKeyedObjectPool<K, V> extends BaseKeyedObjectPool<K, V> implem
      * returning instance to the pool results in {@link #_maxSleeping maxSleeping}
      * exceeded for the given key, the oldest instance in the idle object pool
      * is destroyed to make room for the returning instance.
-     * 
+     *
      * @param key the pool key
      * @param obj returning instance
      */
@@ -405,7 +405,7 @@ public class StackKeyedObjectPool<K, V> extends BaseKeyedObjectPool<K, V> implem
 
     /**
      * Destroys all instances in the stack and clears the stack.
-     * 
+     *
      * @param key key passed to factory when destroying instances
      * @param stack stack to destroy
      */
@@ -432,7 +432,7 @@ public class StackKeyedObjectPool<K, V> extends BaseKeyedObjectPool<K, V> implem
     /**
      * Returns a string representation of this StackKeyedObjectPool, including
      * the number of pools, the keys and the size of each keyed pool.
-     * 
+     *
      * @return Keys and pool sizes
      */
     @Override
@@ -485,7 +485,7 @@ public class StackKeyedObjectPool<K, V> extends BaseKeyedObjectPool<K, V> implem
             _factory = factory;
         }
     }
-    
+
     /**
      * @return the {@link KeyedPoolableObjectFactory} used by this pool to manage object instances.
      * @since 1.5.5
@@ -496,7 +496,7 @@ public class StackKeyedObjectPool<K, V> extends BaseKeyedObjectPool<K, V> implem
 
     /**
      * Returns the active instance count for the given key.
-     * 
+     *
      * @param key pool key
      * @return active count
      */
@@ -511,25 +511,34 @@ public class StackKeyedObjectPool<K, V> extends BaseKeyedObjectPool<K, V> implem
     }
 
     /**
+     * This value is created to be used in {@link #incrementActiveCount(Object)}
+     * when we increment the active count for a key for the first time
+     * (and the count becomes 1).
+     * Since <code>Integer</code> is immutable, we can share this instance
+     * for all such cases, rather than creating a new object instance each time.
+     */
+    private static final Integer ONE = Integer.valueOf(1);
+
+    /**
      * Increment the active count for the given key. Also
      * increments the total active count.
-     * 
+     *
      * @param key pool key
      */
     private void incrementActiveCount(K key) {
         _totActive++;
         Integer old = _activeCount.get(key);
         if(null == old) {
-            _activeCount.put(key,new Integer(1));
+            _activeCount.put(key,ONE);
         } else {
-            _activeCount.put(key,new Integer(old.intValue() + 1));
+            _activeCount.put(key,Integer.valueOf(old.intValue() + 1));
         }
     }
 
     /**
      * Decrements the active count for the given key.
      * Also decrements the total active count.
-     * 
+     *
      * @param key pool key
      */
     private void decrementActiveCount(K key) {
@@ -540,11 +549,11 @@ public class StackKeyedObjectPool<K, V> extends BaseKeyedObjectPool<K, V> implem
         } else if(active.intValue() <= 1) {
             _activeCount.remove(key);
         } else {
-            _activeCount.put(key, new Integer(active.intValue() - 1));
+            _activeCount.put(key, Integer.valueOf(active.intValue() - 1));
         }
     }
 
-    
+
     /**
      * @return map of keyed pools
      * @since 1.5.5
