@@ -36,7 +36,7 @@
       Jar manifest.mf does not contain SVN information for Implementation-Build.
     </action>
     <action dev="markt" type="fix" issue="POOL-212">
-      If a pool is configured with maxIdle < minIdle, ensure the evictor does
+      If a pool is configured with maxIdle &lt; minIdle, ensure the evictor does
       not create minIdle instances only to have them immediately destroyed by
       using maxIdle for minIdle in this case.
     </action>
