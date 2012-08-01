@@ -22,6 +22,9 @@
   </properties>
   <body>
   <release version="1.6.1" date="?" description="">
+    <action dev="ggregory" type="fix" issue="POOL-227" due-to="liviutudor">
+      Unit test failures due to getMinIdle changes.
+    </action>
     <action dev="ggregory" type="fix" issue="POOL-224" due-to="liviutudor">
       FindBugs performance warnings on StackKeyedObjectPool.
     </action>

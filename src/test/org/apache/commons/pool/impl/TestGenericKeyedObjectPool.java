@@ -1026,6 +1026,8 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool<Object, 
         byte whenExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_GROW;
         boolean lifo = false;
         
+        assertTrue(minIdle > maxIdle);
+
         GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<String, String>();
         assertEquals(GenericKeyedObjectPool.DEFAULT_MAX_ACTIVE, pool.getMaxActive());
         assertEquals(GenericKeyedObjectPool.DEFAULT_MAX_IDLE, pool.getMaxIdle());
@@ -1066,7 +1068,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool<Object, 
         assertEquals(maxActive, pool.getMaxActive());
         assertEquals(maxIdle, pool.getMaxIdle());
         assertEquals(maxWait, pool.getMaxWait());
-        assertEquals(minIdle, pool.getMinIdle());
+        assertEquals(maxIdle, pool.getMinIdle()); //maxIdle<minIdle so it gets returned!
         assertEquals(maxTotal, pool.getMaxTotal());
         assertEquals(minEvictableIdleTimeMillis,
                 pool.getMinEvictableIdleTimeMillis());
@@ -1235,7 +1237,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool<Object, 
         assertEquals(maxActive, pool.getMaxActive());
         assertEquals(maxIdle, pool.getMaxIdle());
         assertEquals(maxWait, pool.getMaxWait());
-        assertEquals(minIdle, pool.getMinIdle());
+        assertEquals(maxIdle, pool.getMinIdle()); //maxIdle<minIdle so it gets returned!
         assertEquals(maxTotal, pool.getMaxTotal());
         assertEquals(minEvictableIdleTimeMillis,
                 pool.getMinEvictableIdleTimeMillis());
@@ -1257,7 +1259,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool<Object, 
         assertEquals(maxActive, pool.getMaxActive());
         assertEquals(maxIdle, pool.getMaxIdle());
         assertEquals(maxWait, pool.getMaxWait());
-        assertEquals(minIdle, pool.getMinIdle());
+        assertEquals(maxIdle, pool.getMinIdle()); //maxIdle<minIdle so it gets returned!
         assertEquals(maxTotal, pool.getMaxTotal());
         assertEquals(minEvictableIdleTimeMillis,
                 pool.getMinEvictableIdleTimeMillis());

@@ -59,12 +59,13 @@ public class TestGenericObjectPoolFactory extends TestObjectPoolFactory {
         config.lifo = false;
         config.timeBetweenEvictionRunsMillis = 8;
         config.whenExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_GROW;
+        assertTrue(config.minIdle > config.maxIdle);
         factory = new GenericObjectPoolFactory<Integer>(new MethodCallPoolableObjectFactory(), config);
         pool = (GenericObjectPool<Integer>)factory.createPool();
         assertEquals(1, pool.getMaxActive());
         assertEquals(2, pool.getMaxIdle());
         assertEquals(3, pool.getMaxWait());
-        assertEquals(4, pool.getMinIdle());
+        assertEquals(config.maxIdle, pool.getMinIdle());    //minIdle > maxIdle
         assertEquals(5, pool.getMinEvictableIdleTimeMillis());
         assertEquals(6, pool.getNumTestsPerEvictionRun());
         assertEquals(7, pool.getSoftMinEvictableIdleTimeMillis());
@@ -157,7 +158,7 @@ public class TestGenericObjectPoolFactory extends TestObjectPoolFactory {
         assertEquals(1, pool.getMaxActive());
         assertEquals(2, pool.getMaxWait());
         assertEquals(3, pool.getMaxIdle());
-        assertEquals(4, pool.getMinIdle());
+        assertEquals(3, pool.getMinIdle());    //minIdle > maxIdle
         assertEquals(5, pool.getTimeBetweenEvictionRunsMillis());
         assertEquals(6, pool.getNumTestsPerEvictionRun());
         assertEquals(7, pool.getMinEvictableIdleTimeMillis());
@@ -174,7 +175,7 @@ public class TestGenericObjectPoolFactory extends TestObjectPoolFactory {
         assertEquals(1, pool.getMaxActive());
         assertEquals(2, pool.getMaxWait());
         assertEquals(3, pool.getMaxIdle());
-        assertEquals(4, pool.getMinIdle());
+        assertEquals(3, pool.getMinIdle());    //minIdle > maxIdle
         assertEquals(5, pool.getTimeBetweenEvictionRunsMillis());
         assertEquals(6, pool.getNumTestsPerEvictionRun());
         assertEquals(7, pool.getMinEvictableIdleTimeMillis());
