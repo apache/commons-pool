@@ -16,6 +16,10 @@
  */
 package org.apache.commons.pool2.impl;
 
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * This wrapper is used to track the additional information, such as state, for
  * the pooled objects.
@@ -35,9 +39,19 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
     private final long createTime = System.currentTimeMillis();
     private volatile long lastBorrowTime = createTime;
     private volatile long lastReturnTime = createTime;
+    private final Exception createdBy;
+    private final PrintWriter logWriter;
 
     public PooledObject(T object) {
         this.object = object;
+        createdBy = null;
+        logWriter = null;
+    }
+    
+    public PooledObject(T object, PrintWriter logWriter) {
+        this.object = object;
+        this.logWriter = logWriter;
+        createdBy = new AbandonedObjectException();
     }
 
     /**
@@ -88,6 +102,23 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
 
     public long getLastReturnTime() {
         return lastReturnTime;
+    }
+    
+    /**
+     * Return an estimate of the last time this object was used.  If the class
+     * of the pooled object implements {@link TrackedUse}, what is returned is 
+     * the maximum of {@link TrackedUse#getLastUsed()} and
+     * {@link #getLastBorrowTime()}; otherwise this method gives the same
+     * value as {@link #getLastBorrowTime()}.
+     * 
+     * @return the last time this object was used
+     */
+    public long getLastUsed() {
+        if (object instanceof TrackedUse) {
+            return Math.max(((TrackedUse) object).getLastUsed(), lastBorrowTime);
+        } else {
+            return lastBorrowTime;
+        }
     }
 
     /**
@@ -194,7 +225,8 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
      * @return {@code true} if the state was {@link PooledObjectState#ALLOCATED ALLOCATED}
      */
     public synchronized boolean deallocate() {
-        if (state == PooledObjectState.ALLOCATED) {
+        if (state == PooledObjectState.ALLOCATED ||
+                state == PooledObjectState.RETURNING) {
             state = PooledObjectState.IDLE;
             lastReturnTime = System.currentTimeMillis();
             return true;
@@ -208,5 +240,66 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
      */
     public synchronized void invalidate() {
         state = PooledObjectState.INVALID;
+    }
+    
+    /**
+     * Prints the stack trace of the code that created this pooled object to
+     * the configured log writer.  Does nothing of no PrintWriter was supplied
+     * to the constructor.
+     */
+    public void printStackTrace() {
+        if (createdBy != null && logWriter != null) {
+            createdBy.printStackTrace(logWriter);
+        }
+    }
+    
+    /**
+     * Returns the state of this object.
+     * @return state
+     */
+    public synchronized PooledObjectState getState() {
+        return state;
+    }
+    
+    /**
+     * Marks the pooled object as abandoned.
+     */
+    public synchronized void markAbandoned() {
+        state = PooledObjectState.ABANDONED;
+    }
+    
+    /**
+     * Marks the object as returning to the pool.
+     */
+    public synchronized void markReturning() {
+        state = PooledObjectState.RETURNING;
+    }
+    
+    static class AbandonedObjectException extends Exception {
+
+        private static final long serialVersionUID = 7398692158058772916L;
+
+        /** Date format */
+        //@GuardedBy("this")
+        private static final SimpleDateFormat format = new SimpleDateFormat
+            ("'Pooled object created' yyyy-MM-dd HH:mm:ss " +
+             "'by the following code was never returned to the pool:'");
+
+        private final long _createdTime;
+
+        public AbandonedObjectException() {
+            _createdTime = System.currentTimeMillis();
+        }
+
+        // Override getMessage to avoid creating objects and formatting
+        // dates unless the log message will actually be used.
+        @Override
+        public String getMessage() {
+            String msg;
+            synchronized(format) {
+                msg = format.format(new Date(_createdTime));
+            }
+            return msg;
+        }
     }
 }

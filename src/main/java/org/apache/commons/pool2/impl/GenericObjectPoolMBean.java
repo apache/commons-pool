@@ -24,7 +24,7 @@ package org.apache.commons.pool2.impl;
  * @since 2.0
  */
 public interface GenericObjectPoolMBean {
-    // Getters for configuration settings
+    // Getters for basic configuration settings
     /**
      * See {@link GenericObjectPool#getBlockWhenExhausted()}
      */
@@ -138,4 +138,26 @@ public interface GenericObjectPoolMBean {
      * See {@link GenericObjectPool#getNumWaiters()}
      */
     int getNumWaiters();
+    
+    // Getters for abandoned object removal configuration
+    /**
+     * See {@link GenericObjectPool#isAbandonedConfig()}
+     */
+    boolean isAbandonedConfig();  
+    /**
+     * See {@link GenericObjectPool#getLogAbandoned()}
+     */
+    boolean getLogAbandoned();
+    /**
+     * See {@link GenericObjectPool#getRemoveAbandonedOnBorrow()}
+     */
+    boolean getRemoveAbandonedOnBorrow();
+    /**
+     * See {@link GenericObjectPool#getRemoveAbandonedOnMaintenance()}
+     */
+    boolean getRemoveAbandonedOnMaintenance();
+    /**
+     * See {@link GenericObjectPool#getRemoveAbandonedTimeout()}
+     */
+    int getRemoveAbandonedTimeout();
 }
