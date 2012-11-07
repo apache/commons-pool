@@ -777,7 +777,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             throw e;
         }
 
-        final PooledObject p;
+        final PooledObject<T> p;
         if (isAbandonedConfig() && abandonedConfig.getLogAbandoned()) {
             p = new PooledObject<T>(t, abandonedConfig.getLogWriter());
         } else {
