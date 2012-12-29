@@ -1100,6 +1100,84 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertEquals("Total count different than expected.", 0, pool.getNumActive());
         pool.close();
     }
+    
+    /**
+     * POOL-231 - verify that concurrent invalidates of the same object do not
+     * corrupt pool destroyCount.
+     */
+    @Test
+    public void testConcurrentInvalidate() throws Exception {
+        // Get allObjects and idleObjects loaded with some instances
+        final int nObjects = 1000;
+        pool.setMaxTotal(nObjects);
+        pool.setMaxIdle(nObjects);
+        final Object[] obj = new Object[nObjects];
+        for (int i = 0; i < nObjects; i++) {
+            obj[i] = pool.borrowObject();
+        }
+        for (int i = 0; i < nObjects; i++) {
+            if (i % 2 == 0) {
+                pool.returnObject(obj[i]);
+            }
+        }
+        final int nThreads = 20;
+        final int nIterations = 60;
+        final InvalidateThread[] threads = new InvalidateThread[nThreads];
+        // Randomly generated list of distinct invalidation targets
+        final ArrayList<Integer> targets = new ArrayList<Integer>();
+        final Random random = new Random();
+        for (int j = 0; j < nIterations; j++) {
+            // Get a random invalidation target
+            Integer targ = new Integer(random.nextInt(nObjects));
+            while (targets.contains(targ)) {
+                targ = new Integer(random.nextInt(nObjects));
+            }
+            targets.add(targ);
+            // Launch nThreads threads all trying to invalidate the target
+            for (int i = 0; i < nThreads; i++) {
+                threads[i] = new InvalidateThread(pool, obj[targ]);
+            }
+            for (int i = 0; i < nThreads; i++) {
+                new Thread(threads[i]).start();
+            }
+            boolean done = false;
+            while (!done) {
+                done = true;
+                for (int i = 0; i < nThreads; i++) {
+                    done = done && threads[i].complete();
+                }
+                Thread.sleep(100);
+            }
+        }
+        Assert.assertEquals(nIterations, pool.getDestroyedCount());
+    }
+    
+    /**
+     * Attempts to invalidate an object, swallowing IllegalStateException.
+     */
+    static class InvalidateThread implements Runnable {
+        private final Object obj;
+        private final ObjectPool<Object> pool;
+        private boolean done = false;
+        public InvalidateThread(ObjectPool<Object> pool, Object obj) {
+            this.obj = obj;
+            this.pool = pool;
+        }
+        public void run() {
+            try {
+                pool.invalidateObject(obj);
+            } catch (IllegalStateException ex) {
+                // Ignore
+            } catch (Exception ex) {
+                Assert.fail("Unexpected exception " + ex.toString());
+            } finally {
+                done = true;
+            }
+        }
+        public boolean complete() {
+            return done;
+        }
+    }
 
     @Test(timeout=60000)
     public void testMinIdle() throws Exception {

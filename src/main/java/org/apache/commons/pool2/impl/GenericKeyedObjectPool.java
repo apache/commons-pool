@@ -551,7 +551,11 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
             throw new IllegalStateException(
                     "Object not currently part of this pool");
         }
-        destroy(key, p, true);
+        synchronized (p) {
+            if (p.getState() != PooledObjectState.INVALID) { 
+                destroy(key, p, true);
+            }
+        }
     }
 
 

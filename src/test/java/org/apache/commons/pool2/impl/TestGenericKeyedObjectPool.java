@@ -1433,6 +1433,88 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         // Check thread was interrupted
         assertTrue(wtt._thrown instanceof InterruptedException);
     }
+    
+    /**
+     * POOL-231 - verify that concurrent invalidates of the same object do not
+     * corrupt pool destroyCount.
+     */
+    @Test
+    public void testConcurrentInvalidate() throws Exception {
+        // Get allObjects and idleObjects loaded with some instances
+        final int nObjects = 1000;
+        final String key = "one";
+        pool.setMaxTotal(nObjects);
+        pool.setMaxTotalPerKey(nObjects);
+        pool.setMaxIdlePerKey(nObjects);
+        final String [] obj = new String[nObjects];
+        for (int i = 0; i < nObjects; i++) {
+            obj[i] = pool.borrowObject(key);
+        }
+        for (int i = 0; i < nObjects; i++) {
+            if (i % 2 == 0) {
+                pool.returnObject(key, obj[i]);
+            }
+        }
+        final int nThreads = 20;
+        final int nIterations = 60;
+        final InvalidateThread[] threads = new InvalidateThread[nThreads];
+        // Randomly generated list of distinct invalidation targets
+        final ArrayList<Integer> targets = new ArrayList<Integer>();
+        final Random random = new Random();
+        for (int j = 0; j < nIterations; j++) {
+            // Get a random invalidation target
+            Integer targ = new Integer(random.nextInt(nObjects));
+            while (targets.contains(targ)) {
+                targ = new Integer(random.nextInt(nObjects));
+            }
+            targets.add(targ);
+            // Launch nThreads threads all trying to invalidate the target
+            for (int i = 0; i < nThreads; i++) {
+                threads[i] = new InvalidateThread(pool,key, obj[targ]);
+            }
+            for (int i = 0; i < nThreads; i++) {
+                new Thread(threads[i]).start();
+            }
+            boolean done = false;
+            while (!done) {
+                done = true;
+                for (int i = 0; i < nThreads; i++) {
+                    done = done && threads[i].complete();
+                }
+                Thread.sleep(100);
+            }
+        }
+        Assert.assertEquals(nIterations, pool.getDestroyedCount());
+    }
+    
+    /**
+     * Attempts to invalidate an object, swallowing IllegalStateException.
+     */
+    static class InvalidateThread implements Runnable {
+        private final String obj;
+        private final KeyedObjectPool<String, String> pool;
+        private final String key;
+        private boolean done = false;
+        public InvalidateThread(KeyedObjectPool<String, String> pool, String key, String obj) {
+            this.obj = obj;
+            this.pool = pool;
+            this.key = key;
+        }
+        public void run() {
+            try {
+                pool.invalidateObject(key, obj);
+            } catch (IllegalStateException ex) {
+                // Ignore
+            } catch (Exception ex) {
+                Assert.fail("Unexpected exception " + ex.toString());
+            } finally {
+                done = true;
+            }
+        }
+        public boolean complete() {
+            return done;
+        }
+    }
 
     /*
      * Very simple test thread that just tries to borrow an object from

@@ -581,10 +581,14 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                 return;
             } else {
                 throw new IllegalStateException(
-                        "Returned object not currently part of this pool");
+                        "Invalidated object not currently part of this pool");
             }
         }   
-        destroy(p);
+        synchronized (p) {
+            if (p.getState() != PooledObjectState.INVALID) { 
+                destroy(p);
+            }
+        }
     }
 
     /**
