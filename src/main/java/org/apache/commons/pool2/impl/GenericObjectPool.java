@@ -45,7 +45,7 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  * <p>
  * The pool can also be configured to detect and remove "abandoned" objects,
  * i.e. objects that have been checked out of the pool but neither used nor
- * returned before the configured 
+ * returned before the configured
  * {@link AbandonedConfig#getRemoveAbandonedTimeout() removeAbandonedTimeout}.
  * Abandoned object removal can be configured to happen when
  * <code>borrowObject</code> is invoked and the pool is close to starvation, or
@@ -104,7 +104,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
 
         startEvictor(getTimeBetweenEvictionRunsMillis());
     }
-    
+
     /**
      * Create a new <code>GenericObjectPool</code> that tracks and destroys
      * objects that are checked out, but never returned to the pool.
@@ -207,54 +207,60 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             return minIdle;
         }
     }
-    
+
     /**
      * Whether or not abandoned object removal is configured for this pool.
-     * 
+     *
      * @return true if this pool is configured to detect and remove
      * abandoned objects
      */
+    @Override
     public boolean isAbandonedConfig() {
         return abandonedConfig != null;
     }
+
     /**
      * Returns true if abandoned object removal is configured for this pool
      * and removal events are to be logged.
-     * 
+     *
      * See {@link AbandonedConfig#getLogAbandoned()}
      */
+    @Override
     public boolean getLogAbandoned() {
         return isAbandonedConfig() && abandonedConfig.getLogAbandoned();
     }
-    
+
     /**
      * Returns true if abandoned object removal is configured to be
      * activated by borrowObject.
-     * 
+     *
      * See {@link AbandonedConfig#getRemoveAbandonedOnBorrow()}
      */
+    @Override
     public boolean getRemoveAbandonedOnBorrow() {
         return isAbandonedConfig() &&
         abandonedConfig.getRemoveAbandonedOnBorrow();
     }
-    
+
     /**
      * Returns true if abandoned object removal is configured to be
      * activated when the evictor runs.
-     * 
+     *
      * See {@link AbandonedConfig#getRemoveAbandonedOnMaintenance()}
      */
+    @Override
     public boolean getRemoveAbandonedOnMaintenance() {
         return isAbandonedConfig() &&
         abandonedConfig.getRemoveAbandonedOnMaintenance();
     }
-    
+
     /**
      * Returns the abandoned object timeout if abandoned object removal
      * is configured for this pool; Integer.MAX_VALUE otherwise.
-     * 
+     *
      * See {@link AbandonedConfig#getRemoveAbandonedTimeout()}
      */
+    @Override
     public int getRemoveAbandonedTimeout() {
         return isAbandonedConfig() ?
                 abandonedConfig.getRemoveAbandonedTimeout() :
@@ -287,7 +293,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                 conf.getSoftMinEvictableIdleTimeMillis());
         setEvictionPolicyClassName(conf.getEvictionPolicyClassName());
     }
-    
+
     /**
      * Sets the abandoned object removal configuration.
      *
@@ -366,7 +372,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      */
     public T borrowObject(long borrowMaxWaitMillis) throws Exception {
         assertOpen();
-        
+
         if (isAbandonedConfig() &&
                 abandonedConfig.getRemoveAbandonedOnBorrow() &&
                 (getNumIdle() < 2) &&
@@ -491,16 +497,16 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     @Override
     public void returnObject(T obj) {
         PooledObject<T> p = allObjects.get(obj);
-        
+
         if (!isAbandonedConfig()) {
             if (p == null) {
                 throw new IllegalStateException(
                         "Returned object not currently part of this pool");
-            }   
+            }
         } else {
             if (p == null) {
                 return;  // Object was abandoned and removed
-            } else { 
+            } else {
                 // Make sure object is not being reclaimed
                 synchronized(p) {
                     final PooledObjectState state = p.getState();
@@ -511,7 +517,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                         p.markReturning(); // Keep from being marked abandoned
                     }
                 }
-            }  
+            }
         }
 
         long activeTime = p.getActiveTimeMillis();
@@ -583,7 +589,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                 throw new IllegalStateException(
                         "Invalidated object not currently part of this pool");
             }
-        }   
+        }
         synchronized (p) {
             if (p.getState() != PooledObjectState.INVALID) { 
                 destroy(p);
@@ -681,7 +687,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         assertOpen();
 
         if (idleObjects.size() > 0) {
-            
+
             PooledObject<T> underTest = null;
             EvictionPolicy<T> evictionPolicy = getEvictionPolicy();
 
@@ -861,7 +867,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                     Math.abs((double) numTestsPerEvictionRun)));
         }
     }
-    
+
     /**
      * Recover abandoned objects which have been checked out but
      * not used since longer than the removeAbandonedTimeout.
@@ -889,15 +895,15 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             PooledObject<T> pooledObject = itr.next();
             if (abandonedConfig.getLogAbandoned()) {
                 pooledObject.printStackTrace();
-            }             
+            }
             try {
                 invalidateObject(pooledObject.getObject());
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } 
+        }
     }
-    
+
     //--- JMX support ----------------------------------------------------------
 
     /**
@@ -947,7 +953,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     // JMX specific attributes
     private static final String ONAME_BASE =
         "org.apache.commoms.pool2:type=GenericObjectPool,name=";
-    
+
     // Additional configuration properties for abandoned object tracking
     private volatile AbandonedConfig abandonedConfig = null;
 }
