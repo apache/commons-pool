@@ -1100,7 +1100,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertEquals("Total count different than expected.", 0, pool.getNumActive());
         pool.close();
     }
-    
+
     /**
      * POOL-231 - verify that concurrent invalidates of the same object do not
      * corrupt pool destroyCount.
@@ -1135,7 +1135,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             targets.add(targ);
             // Launch nThreads threads all trying to invalidate the target
             for (int i = 0; i < nThreads; i++) {
-                threads[i] = new InvalidateThread(pool, obj[targ]);
+                threads[i] = new InvalidateThread(pool, obj[targ.intValue()]);
             }
             for (int i = 0; i < nThreads; i++) {
                 new Thread(threads[i]).start();
@@ -1151,7 +1151,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
         Assert.assertEquals(nIterations, pool.getDestroyedCount());
     }
-    
+
     /**
      * Attempts to invalidate an object, swallowing IllegalStateException.
      */
@@ -1163,6 +1163,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             this.obj = obj;
             this.pool = pool;
         }
+        @Override
         public void run() {
             try {
                 pool.invalidateObject(obj);
