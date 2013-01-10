@@ -54,4 +54,14 @@
     <Method name="borrowObject" />
     <Bug code="DE" />
   </Match>
+    <!-- Swallowing exception is deliberate design choice -->
+  <Match>
+    <Class name="org.apache.commons.pool2.impl.SoftReferenceObjectPool" />
+    <Or>
+      <Method name="addObject" />
+      <Method name="clear" />
+      <Method name="returnObject" />
+    </Or>
+    <Bug code="DE" />
+  </Match>
 </FindBugsFilter>
