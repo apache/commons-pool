@@ -22,6 +22,24 @@
   put here to instruct Find Bugs to ignore them.
 -->
 <FindBugsFilter>
+  <!-- Swallowing exception is deliberate design choice -->
+  <Match>
+    <Or>
+      <Class name="org.apache.commons.pool2.PoolUtils$ErodingObjectPool" />
+      <Class name="org.apache.commons.pool2.PoolUtils$ErodingKeyedObjectPool" />
+    </Or>
+    <Or>
+      <Method name="invalidateObject" />
+      <Method name="close" />
+    </Or>
+    <Bug code="DE" />
+  </Match>
+  <!-- Exception is thrown and need to be caught -->
+  <Match>
+    <Class name="org.apache.commons.pool2.PoolUtils$KeyedObjectPoolMinIdleTimerTask" />
+    <Method name="run" />
+    <Bug code="REC" />
+  </Match>
   <!-- Ignoring the exception is deliberate since an earlier exception is    -->
   <!-- more important.                                                       -->
   <Match>
@@ -29,6 +47,8 @@
     <Method name="borrowObject" />
     <Bug code="DE" />
   </Match>
+  <!-- Ignoring the exception is deliberate since an earlier exception is    -->
+  <!-- more important.                                                       -->
   <Match>
     <Class name="org.apache.commons.pool2.impl.GenericObjectPool" />
     <Method name="borrowObject" />
