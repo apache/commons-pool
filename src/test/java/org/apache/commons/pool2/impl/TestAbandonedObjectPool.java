@@ -262,7 +262,7 @@ public class TestAbandonedObjectPool extends TestCase {
 
         @Override
         public PooledTestObject makeObject() {
-            return new PooledTestObject(abandonedConfig);
+            return new PooledTestObject();
         }
 
         @Override
@@ -306,7 +306,7 @@ class PooledTestObject implements TrackedUse {
     private boolean _abandoned = false;
     private static AtomicInteger hash = new AtomicInteger();
 
-    public PooledTestObject(AbandonedConfig config) {
+    public PooledTestObject() {
         _hash = hash.incrementAndGet();
     }
 
