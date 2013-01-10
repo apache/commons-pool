@@ -325,7 +325,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * @throws NoSuchElementException if a keyed object instance cannot be
      *                                returned.
      */
-    @SuppressWarnings("null") // objectDeque will always be non-null
     public T borrowObject(K key, long borrowMaxWaitMillis) throws Exception {
         assertOpen();
 
@@ -366,9 +365,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                         p = null;
                     }
                 } else {
-                    if (objectDeque != null) {
-                        p = objectDeque.getIdleObjects().pollFirst();
-                    }
+                    p = objectDeque.getIdleObjects().pollFirst();
                     if (p == null) {
                         create = true;
                         p = create(key);
@@ -552,7 +549,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                     "Object not currently part of this pool");
         }
         synchronized (p) {
-            if (p.getState() != PooledObjectState.INVALID) { 
+            if (p.getState() != PooledObjectState.INVALID) {
                 destroy(key, p, true);
             }
         }
@@ -1030,6 +1027,9 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
     /*
      * register() and deregister() must always be used as a pair.
+     *
+     * If this method returns without throwing an exception then it will never
+     * return null.
      */
     private ObjectDeque<T> register(K k) {
         Lock lock = keyLock.readLock();
