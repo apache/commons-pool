@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,7 +32,7 @@ import org.junit.Assert;
 
 /**
  * TestCase for AbandonedObjectPool
- * 
+ *
  * @version $Revision: 1158659 $ $Date: 2011-08-17 05:37:26 -0700 (Wed, 17 Aug 2011) $
  */
 public class TestAbandonedObjectPool extends TestCase {
@@ -42,10 +42,10 @@ public class TestAbandonedObjectPool extends TestCase {
     @Override
     public void setUp() throws Exception {
         abandonedConfig = new AbandonedConfig();
-        
-        // -- Uncomment the following line to enable logging -- 
+
+        // -- Uncomment the following line to enable logging --
         // abandonedConfig.setLogAbandoned(true);
-        
+
         abandonedConfig.setRemoveAbandonedOnBorrow(true);
         abandonedConfig.setRemoveAbandonedTimeout(1);
         pool = new GenericObjectPool<PooledTestObject>(
@@ -81,7 +81,7 @@ public class TestAbandonedObjectPool extends TestCase {
     /**
     * Tests fix for Bug 28579, a bug in AbandonedObjectPool that causes numActive to go negative
     * in GenericObjectPool
-    * 
+    *
     */
     public void testConcurrentInvalidation() throws Exception {
         final int POOL_SIZE = 30;
@@ -94,10 +94,10 @@ public class TestAbandonedObjectPool extends TestCase {
         for (int i = 0; i < POOL_SIZE; i++) {
             vec.add(pool.borrowObject());
         }
-        
+
         // Abandon all borrowed objects
         for (int i = 0; i < vec.size(); i++) {
-            ((PooledTestObject)vec.get(i)).setAbandoned(true);
+            vec.get(i).setAbandoned(true);
         }
 
         // Try launching a bunch of borrows concurrently.  Abandoned sweep will be triggered for each.
@@ -112,26 +112,26 @@ public class TestAbandonedObjectPool extends TestCase {
         for (int i = 0; i < CONCURRENT_BORROWS; i++) {
             threads[i].join();
         }
-        
+
         // Return all objects that have not been destroyed
         for (int i = 0; i < vec.size(); i++) {
-            PooledTestObject pto = (PooledTestObject)vec.get(i);
+            PooledTestObject pto = vec.get(i);
             if (pto.isActive()) {
                 pool.returnObject(pto);
             }
         }
-        
+
         // Now, the number of active instances should be 0
         assertTrue("numActive should have been 0, was " + pool.getNumActive(), pool.getNumActive() == 0);
     }
-    
+
     /**
      * Verify that an object that gets flagged as abandoned and is subsequently returned
      * is destroyed instead of being returned to the pool (and possibly later destroyed
      * inappropriately).
      */
     public void testAbandonedReturn() throws Exception {
-        abandonedConfig = new AbandonedConfig(); 
+        abandonedConfig = new AbandonedConfig();
         abandonedConfig.setRemoveAbandonedOnBorrow(true);
         abandonedConfig.setRemoveAbandonedTimeout(1);
         pool.close();  // Unregister pool created by setup
@@ -156,13 +156,13 @@ public class TestAbandonedObjectPool extends TestCase {
         assertEquals(0, pool.getNumIdle());
         assertEquals(1, pool.getNumActive());
     }
-    
+
     /**
      * Verify that an object that gets flagged as abandoned and is subsequently
      * invalidated is only destroyed (and pool counter decremented) once.
      */
     public void testAbandonedInvalidate() throws Exception {
-        abandonedConfig = new AbandonedConfig(); 
+        abandonedConfig = new AbandonedConfig();
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
         abandonedConfig.setRemoveAbandonedTimeout(1);
         pool.close();  // Unregister pool created by setup
@@ -176,20 +176,20 @@ public class TestAbandonedObjectPool extends TestCase {
         PooledTestObject obj = null;
         for (int i = 0; i < 5; i++) {
             obj = pool.borrowObject();
-        } 
+        }
         Thread.sleep(1000);          // abandon checked out instances and let evictor start
         pool.invalidateObject(obj);  // Should not trigger another destroy / decrement
         Thread.sleep(2000);          // give evictor time to finish destroys
         assertEquals(0, pool.getNumActive());
         assertEquals(5, pool.getDestroyedCount());
     }
-    
+
     /**
      * Verify that an object that the evictor identifies as abandoned while it
      * is in process of being returned to the pool is not destroyed.
      */
     public void testRemoveAbandonedWhileReturning() throws Exception {
-        abandonedConfig = new AbandonedConfig(); 
+        abandonedConfig = new AbandonedConfig();
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
         abandonedConfig.setRemoveAbandonedTimeout(1);
         pool.close();  // Unregister pool created by setup
@@ -209,16 +209,16 @@ public class TestAbandonedObjectPool extends TestCase {
         pool.returnObject(obj); // evictor will run during validation
         PooledTestObject obj2 = pool.borrowObject();
         assertEquals(obj, obj2);          // should get original back
-        assertTrue(!obj2.isDestroyed());  // and not destroyed 
+        assertTrue(!obj2.isDestroyed());  // and not destroyed
     }
-    
+
     class ConcurrentBorrower extends Thread {
         private ArrayList<PooledTestObject> _borrowed;
-        
+
         public ConcurrentBorrower(ArrayList<PooledTestObject> borrowed) {
             _borrowed = borrowed;
         }
-        
+
         @Override
         public void run() {
             try {
@@ -228,7 +228,7 @@ public class TestAbandonedObjectPool extends TestCase {
             }
         }
     }
-    
+
     class ConcurrentReturner extends Thread {
         private PooledTestObject returned;
         public ConcurrentReturner(PooledTestObject obj) {
@@ -244,26 +244,28 @@ public class TestAbandonedObjectPool extends TestCase {
             }
         }
     }
-    
+
     class SimpleFactory implements PoolableObjectFactory<PooledTestObject> {
-        
+
         private final long destroyLatency;
         private final long validateLatency;
-        
+
         public SimpleFactory() {
             destroyLatency = 0;
             validateLatency = 0;
         }
-        
+
         public SimpleFactory(long destroyLatency, long validateLatency) {
             this.destroyLatency = destroyLatency;
             this.validateLatency = validateLatency;
         }
 
+        @Override
         public PooledTestObject makeObject() {
             return new PooledTestObject(abandonedConfig);
         }
-        
+
+        @Override
         public boolean validateObject(PooledTestObject obj) {
             try {
                 Thread.sleep(validateLatency);
@@ -272,15 +274,18 @@ public class TestAbandonedObjectPool extends TestCase {
             }
             return true;
         }
-        
+
+        @Override
         public void activateObject(PooledTestObject obj) {
-            ((PooledTestObject)obj).setActive(true);
-        }
-        
-        public void passivateObject(PooledTestObject obj) {
-            ((PooledTestObject)obj).setActive(false);
+            obj.setActive(true);
         }
 
+        @Override
+        public void passivateObject(PooledTestObject obj) {
+            obj.setActive(false);
+        }
+
+        @Override
         public void destroyObject(PooledTestObject obj) throws Exception {
             obj.setActive(false);
             // while destroying instances, yield control to other threads
@@ -300,11 +305,11 @@ class PooledTestObject implements TrackedUse {
     private int _hash = 0;
     private boolean _abandoned = false;
     private static AtomicInteger hash = new AtomicInteger();
-    
+
     public PooledTestObject(AbandonedConfig config) {
         _hash = hash.incrementAndGet();
     }
-    
+
     public synchronized void setActive(boolean b) {
         active = b;
     }
@@ -312,24 +317,25 @@ class PooledTestObject implements TrackedUse {
     public synchronized boolean isActive() {
         return active;
     }
-    
+
     public void destroy() {
         destroyed = true;
     }
-    
+
     public boolean isDestroyed() {
         return destroyed;
     }
-    
+
     @Override
     public int hashCode() {
         return _hash;
     }
-    
+
     public void setAbandoned(boolean b) {
         _abandoned = b;
     }
-    
+
+    @Override
     public long getLastUsed() {
         if (_abandoned) {
             // Abandoned object sweep will occur no matter what the value of removeAbandonedTimeout,
@@ -340,7 +346,7 @@ class PooledTestObject implements TrackedUse {
             return 0;
         }
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof PooledTestObject)) return false;

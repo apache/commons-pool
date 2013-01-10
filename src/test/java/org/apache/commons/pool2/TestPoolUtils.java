@@ -759,7 +759,6 @@ public class TestPoolUtils {
     }
 
     private static <T> T createProxy(final Class<T> clazz, final InvocationHandler handler) {
-        @SuppressWarnings("unchecked")
         T ret = (T) Proxy.newProxyInstance(
                 clazz.getClassLoader(), new Class[] { clazz }, handler);
         return ret;
