@@ -591,7 +591,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             }
         }
         synchronized (p) {
-            if (p.getState() != PooledObjectState.INVALID) { 
+            if (p.getState() != PooledObjectState.INVALID) {
                 destroy(p);
             }
         }
@@ -875,7 +875,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     private void removeAbandoned() {
         // Generate a list of abandoned objects to remove
         final long now = System.currentTimeMillis();
-        final long timeout = now - (abandonedConfig.getRemoveAbandonedTimeout() * 1000);
+        final long timeout =
+                now - (abandonedConfig.getRemoveAbandonedTimeout() * 1000L);
         ArrayList<PooledObject<T>> remove = new ArrayList<PooledObject<T>>();
         Iterator<PooledObject<T>> it = allObjects.values().iterator();
         while (it.hasNext()) {
