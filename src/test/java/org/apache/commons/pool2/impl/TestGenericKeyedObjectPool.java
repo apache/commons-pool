@@ -1433,7 +1433,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         // Check thread was interrupted
         assertTrue(wtt._thrown instanceof InterruptedException);
     }
-    
+
     /**
      * POOL-231 - verify that concurrent invalidates of the same object do not
      * corrupt pool destroyCount.
@@ -1470,7 +1470,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             targets.add(targ);
             // Launch nThreads threads all trying to invalidate the target
             for (int i = 0; i < nThreads; i++) {
-                threads[i] = new InvalidateThread(pool,key, obj[targ]);
+                threads[i] =
+                        new InvalidateThread(pool,key, obj[targ.intValue()]);
             }
             for (int i = 0; i < nThreads; i++) {
                 new Thread(threads[i]).start();
@@ -1486,7 +1487,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         }
         Assert.assertEquals(nIterations, pool.getDestroyedCount());
     }
-    
+
     /**
      * Attempts to invalidate an object, swallowing IllegalStateException.
      */
@@ -1500,6 +1501,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             this.pool = pool;
             this.key = key;
         }
+        @Override
         public void run() {
             try {
                 pool.invalidateObject(key, obj);
