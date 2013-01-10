@@ -818,7 +818,7 @@ public class GenericKeyedObjectPool<K, V> extends BaseKeyedObjectPool<K, V> impl
      * <p>
      * If the configured value of minIdle is greater than the configured value
      * for maxIdle then the value of maxIdle will be used instead.
-     * 
+     *
      * @param poolSize - The minimum size of the each keyed pool
      * @since Pool 1.3
      * @see #getMinIdle
@@ -837,7 +837,7 @@ public class GenericKeyedObjectPool<K, V> extends BaseKeyedObjectPool<K, V> impl
      * <p>
      * If the configured value of minIdle is greater than the configured value
      * for maxIdle then the value of maxIdle will be used instead.
-     * 
+     *
      * @return minimum size of the each keyed pool
      * @since Pool 1.3
      * @see #setTimeBetweenEvictionRunsMillis
@@ -2298,21 +2298,15 @@ public class GenericKeyedObjectPool<K, V> extends BaseKeyedObjectPool<K, V> impl
      * This is also used by {@link GenericObjectPool}.
      */
     static class ObjectTimestampPair<T> implements Comparable<T> {
-        //CHECKSTYLE: stop VisibilityModifier
         /**
          * Object instance
-         * @deprecated this field will be made private and final in version 2.0
          */
-        @Deprecated
-        T value;
+        private final T value;
 
         /**
          * timestamp
-         * @deprecated this field will be made private and final in version 2.0
          */
-        @Deprecated
-        long tstamp;
-        //CHECKSTYLE: resume VisibilityModifier
+        private final long tstamp;
 
         /**
          * Create a new ObjectTimestampPair using the given object and the current system time.

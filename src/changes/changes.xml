@@ -43,6 +43,9 @@
       not create minIdle instances only to have them immediately destroyed by
       using maxIdle for minIdle in this case.
     </action>
+    <action dev="markt" type="fix" issue="POOL-226">
+      Make GenericKeyedObjectPool.ObjectTimestampPair fields private and final.
+    </action>
   </release>
   <release version="1.6" date="2012-01-07" description="Adds generics and requires Java 5.">
     <action dev="ggregory" type="add" issue="POOL-208">

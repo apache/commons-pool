@@ -1213,22 +1213,22 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
             }
             // activate & validate the object
             try {
-                _factory.activateObject(latch.getPair().value);
+                _factory.activateObject(latch.getPair().getValue());
                 if(_testOnBorrow &&
-                        !_factory.validateObject(latch.getPair().value)) {
+                        !_factory.validateObject(latch.getPair().getValue())) {
                     throw new Exception("ValidateObject failed");
                 }
                 synchronized(this) {
                     _numInternalProcessing--;
                     _numActive++;
                 }
-                return latch.getPair().value;
+                return latch.getPair().getValue();
             }
             catch (Throwable e) {
                 PoolUtils.checkRethrow(e);
                 // object cannot be activated or is invalid
                 try {
-                    _factory.destroyObject(latch.getPair().value);
+                    _factory.destroyObject(latch.getPair().getValue());
                 } catch (Throwable e2) {
                     PoolUtils.checkRethrow(e2);
                     // cannot destroy broken object
@@ -1348,7 +1348,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
     private void destroy(Collection<ObjectTimestampPair<T>> c, PoolableObjectFactory<T> factory) {
         for (Iterator<ObjectTimestampPair<T>> it = c.iterator(); it.hasNext();) {
             try {
-                factory.destroyObject(it.next().value);
+                factory.destroyObject(it.next().getValue());
             } catch(Exception e) {
                 // ignore error, keep destroying the rest
             } finally {
@@ -1593,7 +1593,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
             }
 
             boolean removeObject = false;
-            final long idleTimeMilis = System.currentTimeMillis() - pair.tstamp;
+            final long idleTimeMilis = System.currentTimeMillis() - pair.getTstamp();
             if ((getMinEvictableIdleTimeMillis() > 0) &&
                     (idleTimeMilis > getMinEvictableIdleTimeMillis())) {
                 removeObject = true;
@@ -1605,17 +1605,17 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
             if(getTestWhileIdle() && !removeObject) {
                 boolean active = false;
                 try {
-                    _factory.activateObject(pair.value);
+                    _factory.activateObject(pair.getValue());
                     active = true;
                 } catch(Exception e) {
                     removeObject=true;
                 }
                 if(active) {
-                    if(!_factory.validateObject(pair.value)) {
+                    if(!_factory.validateObject(pair.getValue())) {
                         removeObject=true;
                     } else {
                         try {
-                            _factory.passivateObject(pair.value);
+                            _factory.passivateObject(pair.getValue());
                         } catch(Exception e) {
                             removeObject=true;
                         }
@@ -1625,7 +1625,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
 
             if (removeObject) {
                 try {
-                    _factory.destroyObject(pair.value);
+                    _factory.destroyObject(pair.getValue());
                 } catch(Exception e) {
                     // ignored
                 }
@@ -1751,7 +1751,7 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
         long time = System.currentTimeMillis();
         while(it.hasNext()) {
             ObjectTimestampPair<T> pair = it.next();
-            buf.append("\t").append(pair.value).append("\t").append(time - pair.tstamp).append("\n");
+            buf.append("\t").append(pair.getValue()).append("\t").append(time - pair.getTstamp()).append("\n");
         }
         return buf.toString();
     }
