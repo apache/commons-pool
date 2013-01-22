@@ -247,7 +247,7 @@ public class TestSoftRefOutOfMemory extends TestCase {
     }
 
     public static class LargePoolableObjectFactory implements PoolableObjectFactory<String> {
-        private String buffer;
+        private final String buffer;
         private int counter = 0;
 
         public LargePoolableObjectFactory(int size) {

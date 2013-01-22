@@ -519,7 +519,7 @@ public class TestStackObjectPool extends TestBaseObjectPool<String> {
      * tracks object destruction.
      */
     static class SelectiveFactory implements PoolableObjectFactory<Integer> {
-        private List<Integer> destroyed = new ArrayList<Integer>();
+        private final List<Integer> destroyed = new ArrayList<Integer>();
         private int counter = 0;
         private boolean validateSelectively = false;  // true <-> validate returns false for even Integers
         private boolean passivateSelectively = false; // true <-> passivate throws RTE if Integer = 0 mod 3
@@ -606,8 +606,8 @@ public class TestStackObjectPool extends TestBaseObjectPool<String> {
     }
     
     static class IntegerFactoryException extends RuntimeException {
-        private String type;
-        private int value;
+        private final String type;
+        private final int value;
         public IntegerFactoryException(String type, int value) {
             super(type + " failed. Value: " + value);
             this.type = type;

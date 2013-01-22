@@ -2775,6 +2775,6 @@ public class GenericKeyedObjectPool<K, V> extends BaseKeyedObjectPool<K, V> impl
      * that objects can be allocated in the order in which the threads requested
      * them.
      */
-    private LinkedList<Latch<K, V>> _allocationQueue = new LinkedList<Latch<K, V>>();
+    private final LinkedList<Latch<K, V>> _allocationQueue = new LinkedList<Latch<K, V>>();
 
 }

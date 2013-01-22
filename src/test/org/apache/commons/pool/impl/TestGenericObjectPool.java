@@ -1223,7 +1223,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool<String> {
     }
 
     private class ConcurrentBorrowAndEvictThread extends Thread {
-        private boolean borrow;
+        private final boolean borrow;
         public String obj;
         
         public ConcurrentBorrowAndEvictThread(boolean borrow) {
