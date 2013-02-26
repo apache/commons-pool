@@ -25,12 +25,12 @@
     <body>
         <menu name="Pool">
             <item name="Overview"                      href="/index.html"/>
-            <item name="Javadoc (1.2 release)"         href="http://commons.apache.org/pool/api-1.2/index.html"/>
-            <item name="Javadoc (1.3 release)"         href="http://commons.apache.org/pool/api-1.3/index.html"/>
-            <item name="Javadoc (1.4 release)"         href="http://commons.apache.org/pool/api-1.4/index.html"/>
-            <item name="Javadoc (1.5.6 release)"       href="http://commons.apache.org/pool/api-1.5.6/index.html"/>
-            <item name="Javadoc (1.6 release)"         href="http://commons.apache.org/pool/api-1.6/index.html"/>
-            <item name="Javadoc (2.0 release)"         href="http://commons.apache.org/pool/api-2.0/index.html"/>
+            <item name="Javadoc (1.2 release)"         href="http://commons.apache.org/pool/javadocs/api-1.2/index.html"/>
+            <item name="Javadoc (1.3 release)"         href="http://commons.apache.org/pool/javadocs/api-1.3/index.html"/>
+            <item name="Javadoc (1.4 release)"         href="http://commons.apache.org/pool/javadocs/api-1.4/index.html"/>
+            <item name="Javadoc (1.5.6 release)"       href="http://commons.apache.org/pool/javadocs/api-1.5.6/index.html"/>
+            <item name="Javadoc (1.6 release)"         href="http://commons.apache.org/pool/javadocs/api-1.6/index.html"/>
+            <item name="Javadoc (2.0 release)"         href="http://commons.apache.org/pool/javadocs/api-2.0/index.html"/>
             <item name="Examples"                      href="/examples.html"/>
             <item name="Downloads"                     href="/download_pool.cgi"/>
             <item name="Wiki"                          href="http://wiki.apache.org/commons/Pool"/>
