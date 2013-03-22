@@ -32,7 +32,7 @@
   <inceptionYear>2001</inceptionYear>
   <description>Commons Object Pooling Library</description>
 
-  <url>http://commons.apache.org/pool/</url>
+  <url>http://commons.apache.org/proper/commons-pool/</url>
 
   <issueManagement>
     <system>jira</system>
