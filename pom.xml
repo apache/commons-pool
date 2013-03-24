@@ -86,24 +86,24 @@
       <name>Robert Burrell Donkin</name>
       <id>rdonkin</id>
       <email></email>
-      <organization>Apache Software Foundation</organization>
+      <organization>The Apache Software Foundation</organization>
     </developer>
     <developer>
       <name>Sandy McArthur</name>
       <id>sandymac</id>
       <email></email>
-      <organization>Apache Software Foundation</organization>
+      <organization>The Apache Software Foundation</organization>
     </developer>
     <developer>
       <name>Phil Steitz</name>
       <id>psteitz</id>
       <email></email>
-      <organization>Apache Software Foundation</organization>
+      <organization>The Apache Software Foundation</organization>
     </developer>
     <developer>
       <name>Simone Tripodi</name>
       <id>simonetripodi</id>
-      <organization>Apache Software Foundation</organization>
+      <organization>The Apache Software Foundation</organization>
     </developer>
   </developers>
   <contributors>
