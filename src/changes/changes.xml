@@ -22,6 +22,9 @@
   </properties>
   <body>
   <release version="1.6.1" date="?" description="">
+    <action dev="ggregory" type="fix" issue="POOL-235">
+      Add missing serialVersionUID fields.
+    </action>
     <action dev="ggregory" type="fix" issue="POOL-234" due-to="izapolsky@gmail.com">
       SoftReferenceObjectPool swallows underlying exceptions when activating / validating newly created object.
     </action>

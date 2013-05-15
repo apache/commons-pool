@@ -970,6 +970,7 @@ class CursorableLinkedList<E> implements List<E>, Serializable {
     //--- inner classes ----------------------------------------------
 
     static class Listable<E> implements Serializable {
+        
         /**
          * Generated serial version ID.
          */

@@ -23,6 +23,7 @@ package org.apache.commons.pool;
  * @version $Id$
  */
 public class PrivateException extends RuntimeException {
+    
     /**
      * Generated serial version ID.
      */
