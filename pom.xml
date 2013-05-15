@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
-    <version>27</version>
+    <version>28</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>commons-pool</groupId>
@@ -156,13 +156,13 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
-          <version>3.1</version>
+          <version>3.3</version>
           <dependencies>
             <dependency>
               <!-- add support for ssh/scp -->
               <groupId>org.apache.maven.wagon</groupId>
               <artifactId>wagon-ssh</artifactId>
-              <version>2.2</version>
+              <version>2.4</version>
             </dependency>
           </dependencies>
         </plugin>
@@ -233,7 +233,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-changes-plugin</artifactId>
-          <version>2.7.1</version>
+          <version>2.9</version>
           <configuration>
             <xmlPath>${basedir}/src/changes/changes.xml</xmlPath>
             <issueLinkTemplate>%URL%/%ISSUE%</issueLinkTemplate>
@@ -251,16 +251,16 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>clirr-maven-plugin</artifactId>
-          <version>2.4</version>
+          <version>2.5</version>
           <configuration>
-            <comparisonVersion>1.5.7</comparisonVersion>
+            <comparisonVersion>1.6.0</comparisonVersion>
             <minSeverity>info</minSeverity>
           </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
-          <version>2.9.1</version>
+          <version>2.10</version>
           <configuration>
             <configLocation>${basedir}/checkstyle.xml</configLocation>
             <enableRulesSummary>false</enableRulesSummary>
@@ -280,12 +280,12 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>cobertura-maven-plugin</artifactId>
-          <version>2.5.1</version>
+          <version>2.5.2</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-pmd-plugin</artifactId>
-          <version>2.7.1</version>
+          <version>3.0.1</version>
           <configuration>
             <targetJdk>1.5</targetJdk>
           </configuration>

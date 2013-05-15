@@ -606,6 +606,10 @@ public class TestStackObjectPool extends TestBaseObjectPool<String> {
     }
     
     static class IntegerFactoryException extends RuntimeException {
+        /**
+         * Generated serial version ID.
+         */
+        private static final long serialVersionUID = 3734995096889766883L;
         private final String type;
         private final int value;
         public IntegerFactoryException(String type, int value) {
