@@ -1258,7 +1258,9 @@ public class GenericObjectPool<T> extends BaseObjectPool<T> implements ObjectPoo
      * this method should not be called from inside a sync block.
      */
     private synchronized void allocate() {
-        if (isClosed()) return;
+        if (isClosed()) {
+            return;
+        }
 
         // First use any objects in the pool to clear the queue
         for (;;) {

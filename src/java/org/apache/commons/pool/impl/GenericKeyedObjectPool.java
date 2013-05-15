@@ -1297,7 +1297,9 @@ public class GenericKeyedObjectPool<K, V> extends BaseKeyedObjectPool<K, V> impl
         boolean clearOldest = false;
 
         synchronized (this) {
-            if (isClosed()) return;
+            if (isClosed()) {
+                return;
+            }
 
             Iterator<Latch<K, V>> allocationQueueIter = _allocationQueue.iterator();
 

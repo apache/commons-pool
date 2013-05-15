@@ -79,14 +79,24 @@ public class MethodCall {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         final MethodCall that = (MethodCall)o;
 
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (params != null ? !params.equals(that.params) : that.params != null) return false;
-        if (returned != null ? !returned.equals(that.returned) : that.returned != null) return false;
+        if (name != null ? !name.equals(that.name) : that.name != null) {
+            return false;
+        }
+        if (params != null ? !params.equals(that.params) : that.params != null) {
+            return false;
+        }
+        if (returned != null ? !returned.equals(that.returned) : that.returned != null) {
+            return false;
+        }
 
         return true;
     }
