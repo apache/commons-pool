@@ -22,6 +22,9 @@
   </properties>
   <body>
   <release version="1.6.1" date="?" description="">
+    <action dev="ggregory" type="fix" issue="POOL-234" due-to="izapolsky@gmail.com">
+      SoftReferenceObjectPool swallows underlying exceptions when activating / validating newly created object.
+    </action>
     <action dev="ggregory" type="fix" issue="POOL-227" due-to="liviutudor">
       Unit test failures due to getMinIdle changes.
     </action>

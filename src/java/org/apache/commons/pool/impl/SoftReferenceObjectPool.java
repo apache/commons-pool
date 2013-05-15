@@ -143,9 +143,11 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> implements Obj
                         obj = null;
                     }
                     if (newlyCreated) {
-                        throw new NoSuchElementException(
+                        final NoSuchElementException e = new NoSuchElementException(
                             "Could not create a validated object, cause: " +
                             t.getMessage());
+                        e.initCause(t);
+                        throw e;
                     }
                 }
             }
