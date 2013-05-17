@@ -1,0 +1,2 @@
+libs=C:/Users/ggregory/.m2/repository
+classpath=${libs}/junit/junit/4.11/junit-4.11.jar
