@@ -16,8 +16,10 @@
  */
 package org.apache.commons.pool2.impl;
 
+import java.io.Serializable;
 import java.util.AbstractQueue;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
@@ -55,7 +57,7 @@ import java.util.concurrent.locks.ReentrantLock;
  *       Commons Pool.
  */
 class LinkedBlockingDeque<E> extends AbstractQueue<E>
-        implements java.io.Serializable {
+        implements Deque<E>, Serializable {
 
     /*
      * Implemented as a simple doubly-linked list protected by a
@@ -303,6 +305,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * @throws IllegalStateException
      * @throws NullPointerException
      */
+    @Override
     public void addFirst(E e) {
         if (!offerFirst(e))
             throw new IllegalStateException("Deque full");
@@ -312,6 +315,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * @throws IllegalStateException
      * @throws NullPointerException
      */
+    @Override
     public void addLast(E e) {
         if (!offerLast(e))
             throw new IllegalStateException("Deque full");
@@ -320,6 +324,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     /**
      * @throws NullPointerException
      */
+    @Override
     public boolean offerFirst(E e) {
         if (e == null) throw new NullPointerException();
         final ReentrantLock lock = this.lock;
@@ -334,6 +339,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     /**
      * @throws NullPointerException
      */
+    @Override
     public boolean offerLast(E e) {
         if (e == null) throw new NullPointerException();
         final ReentrantLock lock = this.lock;
@@ -424,6 +430,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     /**
      * @throws NoSuchElementException
      */
+    @Override
     public E removeFirst() {
         E x = pollFirst();
         if (x == null) throw new NoSuchElementException();
@@ -433,12 +440,14 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     /**
      * @throws NoSuchElementException
      */
+    @Override
     public E removeLast() {
         E x = pollLast();
         if (x == null) throw new NoSuchElementException();
         return x;
     }
 
+    @Override
     public E pollFirst() {
         final ReentrantLock lock = this.lock;
         lock.lock();
@@ -449,6 +458,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
         }
     }
 
+    @Override
     public E pollLast() {
         final ReentrantLock lock = this.lock;
         lock.lock();
@@ -524,6 +534,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     /**
      * @throws NoSuchElementException
      */
+    @Override
     public E getFirst() {
         E x = peekFirst();
         if (x == null) throw new NoSuchElementException();
@@ -533,12 +544,14 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     /**
      * @throws NoSuchElementException
      */
+    @Override
     public E getLast() {
         E x = peekLast();
         if (x == null) throw new NoSuchElementException();
         return x;
     }
 
+    @Override
     public E peekFirst() {
         final ReentrantLock lock = this.lock;
         lock.lock();
@@ -549,6 +562,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
         }
     }
 
+    @Override
     public E peekLast() {
         final ReentrantLock lock = this.lock;
         lock.lock();
@@ -559,6 +573,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
         }
     }
 
+    @Override
     public boolean removeFirstOccurrence(Object o) {
         if (o == null) return false;
         final ReentrantLock lock = this.lock;
@@ -576,6 +591,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
         }
     }
 
+    @Override
     public boolean removeLastOccurrence(Object o) {
         if (o == null) return false;
         final ReentrantLock lock = this.lock;
@@ -747,6 +763,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * @throws IllegalStateException
      * @throws NullPointerException
      */
+    @Override
     public void push(E e) {
         addFirst(e);
     }
@@ -754,6 +771,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     /**
      * @throws NoSuchElementException
      */
+    @Override
     public E pop() {
         return removeFirst();
     }
@@ -1007,6 +1025,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * construction of the iterator, and may (but is not guaranteed to)
      * reflect any modifications subsequent to construction.
      */
+    @Override
     public Iterator<E> descendingIterator() {
         return new DescendingItr();
     }

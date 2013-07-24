@@ -19,6 +19,7 @@ package org.apache.commons.pool2.impl;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Deque;
 
 /**
  * This wrapper is used to track the additional information, such as state, for
@@ -47,7 +48,7 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
         createdBy = null;
         logWriter = null;
     }
-    
+
     public PooledObject(T object, PrintWriter logWriter) {
         this.object = object;
         this.logWriter = logWriter;
@@ -103,14 +104,14 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
     public long getLastReturnTime() {
         return lastReturnTime;
     }
-    
+
     /**
      * Return an estimate of the last time this object was used.  If the class
-     * of the pooled object implements {@link TrackedUse}, what is returned is 
+     * of the pooled object implements {@link TrackedUse}, what is returned is
      * the maximum of {@link TrackedUse#getLastUsed()} and
      * {@link #getLastBorrowTime()}; otherwise this method gives the same
      * value as {@link #getLastBorrowTime()}.
-     * 
+     *
      * @return the last time this object was used
      */
     public long getLastUsed() {
@@ -184,7 +185,7 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
     }
 
     public synchronized boolean endEvictionTest(
-            LinkedBlockingDeque<PooledObject<T>> idleQueue) {
+            Deque<PooledObject<T>> idleQueue) {
         if (state == PooledObjectState.EVICTION) {
             state = PooledObjectState.IDLE;
             return true;
@@ -241,7 +242,7 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
     public synchronized void invalidate() {
         state = PooledObjectState.INVALID;
     }
-    
+
     /**
      * Prints the stack trace of the code that created this pooled object to
      * the configured log writer.  Does nothing of no PrintWriter was supplied
@@ -252,7 +253,7 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
             createdBy.printStackTrace(logWriter);
         }
     }
-    
+
     /**
      * Returns the state of this object.
      * @return state
@@ -260,21 +261,21 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
     public synchronized PooledObjectState getState() {
         return state;
     }
-    
+
     /**
      * Marks the pooled object as abandoned.
      */
     public synchronized void markAbandoned() {
         state = PooledObjectState.ABANDONED;
     }
-    
+
     /**
      * Marks the object as returning to the pool.
      */
     public synchronized void markReturning() {
         state = PooledObjectState.RETURNING;
     }
-    
+
     static class AbandonedObjectException extends Exception {
 
         private static final long serialVersionUID = 7398692158058772916L;
