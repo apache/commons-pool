@@ -38,6 +38,7 @@ import junit.framework.AssertionFailedError;
 
 import org.apache.commons.pool2.impl.GenericKeyedObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.apache.commons.pool2.impl.PoolImplUtils;
 import org.junit.Test;
 
 /**
@@ -83,7 +84,8 @@ public class TestPoolUtils {
         // Test that the minIdle check doesn't add too many idle objects
         @SuppressWarnings("unchecked")
         final PoolableObjectFactory<Object> pof = createProxy(PoolableObjectFactory.class, calledMethods);
-        final ObjectPool<Object> op = new GenericObjectPool<Object>(pof);
+        final ObjectPool<Object> op = new GenericObjectPool<Object>(
+                PoolImplUtils.poolableToPooledObjectFactory(pof));
         PoolUtils.checkMinIdle(op, 2, 100);
         Thread.sleep(400);
         assertEquals(2, op.getNumIdle());
@@ -162,7 +164,8 @@ public class TestPoolUtils {
         final KeyedPoolableObjectFactory<Object,Object> kpof =
             createProxy(KeyedPoolableObjectFactory.class, calledMethods);
         final KeyedObjectPool<Object,Object> kop =
-            new GenericKeyedObjectPool<Object,Object>(kpof);
+                new GenericKeyedObjectPool<Object,Object>(
+                        PoolImplUtils.poolableToKeyedPooledObjectFactory(kpof));
         PoolUtils.checkMinIdle(kop, key, 2, 100);
         Thread.sleep(400);
         assertEquals(2, kop.getNumIdle(key));

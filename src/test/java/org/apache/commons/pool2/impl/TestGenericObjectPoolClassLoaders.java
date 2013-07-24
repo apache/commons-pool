@@ -39,7 +39,9 @@ public class TestGenericObjectPoolClassLoaders extends TestCase {
             Thread.currentThread().setContextClassLoader(cl1);
             CustomClassLoaderObjectFactory factory1 =
                     new CustomClassLoaderObjectFactory(1);
-            GenericObjectPool<URL> pool1 = new GenericObjectPool<URL>(factory1);
+            GenericObjectPool<URL> pool1 =
+                    new GenericObjectPool<URL>(
+                            PoolImplUtils.poolableToPooledObjectFactory(factory1));
             pool1.setMinIdle(1);
             pool1.setTimeBetweenEvictionRunsMillis(100);
             int counter = 0;
@@ -55,7 +57,9 @@ public class TestGenericObjectPoolClassLoaders extends TestCase {
             Thread.currentThread().setContextClassLoader(cl2);
             CustomClassLoaderObjectFactory factory2 =
                     new CustomClassLoaderObjectFactory(2);
-            GenericObjectPool<URL> pool2 = new GenericObjectPool<URL>(factory2);
+            GenericObjectPool<URL> pool2 =
+                    new GenericObjectPool<URL>(
+                            PoolImplUtils.poolableToPooledObjectFactory(factory2));
             pool2.setMinIdle(1);
 
             pool2.addObject();
@@ -64,7 +68,7 @@ public class TestGenericObjectPoolClassLoaders extends TestCase {
             pool2.clear();
 
             pool2.setTimeBetweenEvictionRunsMillis(100);
-            
+
             counter = 0;
             while (counter < 50 && pool2.getNumIdle() != 1) {
                 Thread.sleep(100);

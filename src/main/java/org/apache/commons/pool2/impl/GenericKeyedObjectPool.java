@@ -33,7 +33,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.pool2.KeyedObjectPool;
-import org.apache.commons.pool2.KeyedPoolableObjectFactory;
+import org.apache.commons.pool2.KeyedPooledObjectFactory;
 import org.apache.commons.pool2.PoolUtils;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectState;
@@ -41,7 +41,7 @@ import org.apache.commons.pool2.PooledObjectState;
 /**
  * A configurable <code>KeyedObjectPool</code> implementation.
  * <p>
- * When coupled with the appropriate {@link KeyedPoolableObjectFactory},
+ * When coupled with the appropriate {@link KeyedPooledObjectFactory},
  * <code>GenericKeyedObjectPool</code> provides robust pooling functionality for
  * keyed objects. A <code>GenericKeyedObjectPool</code> can be viewed as a map
  * of sub-pools, keyed on the (unique) key values provided to the
@@ -81,7 +81,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * {@link GenericKeyedObjectPoolConfig}.
      * @param factory the factory to be used to create entries
      */
-    public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,T> factory) {
+    public GenericKeyedObjectPool(KeyedPooledObjectFactory<K,T> factory) {
         this(factory, new GenericKeyedObjectPoolConfig());
     }
 
@@ -95,7 +95,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      *                  the configuration object will not be reflected in the
      *                  pool.
      */
-    public GenericKeyedObjectPool(KeyedPoolableObjectFactory<K,T> factory,
+    public GenericKeyedObjectPool(KeyedPooledObjectFactory<K,T> factory,
             GenericKeyedObjectPoolConfig config) {
 
         super(config, ONAME_BASE, config.getJmxNamePrefix());
@@ -260,7 +260,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      *
      * @return the factory
      */
-    public KeyedPoolableObjectFactory<K, T> getFactory() {
+    public KeyedPooledObjectFactory<K, T> getFactory() {
         return factory;
     }
 
@@ -382,7 +382,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
                 if (p != null) {
                     try {
-                        factory.activateObject(key, p.getObject());
+                        factory.activateObject(key, p);
                     } catch (Exception e) {
                         try {
                             destroy(key, p, true);
@@ -401,7 +401,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                         boolean validate = false;
                         Throwable validationThrowable = null;
                         try {
-                            validate = factory.validateObject(key, p.getObject());
+                            validate = factory.validateObject(key, p);
                         } catch (Throwable t) {
                             PoolUtils.checkRethrow(t);
                             validationThrowable = t;
@@ -471,7 +471,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         long activeTime = p.getActiveTimeMillis();
 
         if (getTestOnReturn()) {
-            if (!factory.validateObject(key, obj)) {
+            if (!factory.validateObject(key, p)) {
                 try {
                     destroy(key, p, true);
                 } catch (Exception e) {
@@ -483,7 +483,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         }
 
         try {
-            factory.passivateObject(key, obj);
+            factory.passivateObject(key, p);
         } catch (Exception e1) {
             swallowException(e1);
             try {
@@ -562,7 +562,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * Clears any objects sitting idle in the pool by removing them from the
      * idle instance sub-pools and then invoking the configured
      * PoolableObjectFactory's
-     * {@link KeyedPoolableObjectFactory#destroyObject(Object, Object)} method
+     * {@link KeyedPooledObjectFactory#destroyObject(Object, Object)} method
      * on each idle instance.
      * <p>
      * Implementation notes:
@@ -919,8 +919,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                     if (testWhileIdle) {
                         boolean active = false;
                         try {
-                            factory.activateObject(evictionKey,
-                                    underTest.getObject());
+                            factory.activateObject(evictionKey, underTest);
                             active = true;
                         } catch (Exception e) {
                             destroy(evictionKey, underTest, true);
@@ -928,13 +927,13 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                         }
                         if (active) {
                             if (!factory.validateObject(evictionKey,
-                                    underTest.getObject())) {
+                                    underTest)) {
                                 destroy(evictionKey, underTest, true);
                                 destroyedByEvictorCount.incrementAndGet();
                             } else {
                                 try {
                                     factory.passivateObject(evictionKey,
-                                            underTest.getObject());
+                                            underTest);
                                 } catch (Exception e) {
                                     destroy(evictionKey, underTest, true);
                                     destroyedByEvictorCount.incrementAndGet();
@@ -984,17 +983,20 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         }
 
 
-        T t = null;
+        PooledObject<T> p = null;
         try {
-            t = factory.makeObject(key);
+            p = factory.makeObject(key);
         } catch (Exception e) {
             numTotal.decrementAndGet();
             throw e;
         }
 
-        PooledObject<T> p = new PooledObjectImpl<T>(t);
+        if (p instanceof PooledObjectImpl) {
+            ((PooledObjectImpl<T> )p).setAbandonedLoqWriter(null);
+        }
+
         createdCount.incrementAndGet();
-        objectDeque.getAllObjects().put(t, p);
+        objectDeque.getAllObjects().put(p.getObject(), p);
         return p;
     }
 
@@ -1011,7 +1013,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                 toDestroy.invalidate();
 
                 try {
-                    factory.destroyObject(key, toDestroy.getObject());
+                    factory.destroyObject(key, toDestroy);
                 } finally {
                     objectDeque.getCreateCount().decrementAndGet();
                     destroyedCount.incrementAndGet();
@@ -1124,14 +1126,14 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Create an object using the {@link KeyedPoolableObjectFactory#makeObject
+     * Create an object using the {@link KeyedPooledObjectFactory#makeObject
      * factory}, passivate it, and then place it in the idle object pool.
      * <code>addObject</code> is useful for "pre-loading" a pool with idle
      * objects.
      *
      * @param key the key a new instance should be added to
      *
-     * @throws Exception when {@link KeyedPoolableObjectFactory#makeObject}
+     * @throws Exception when {@link KeyedPooledObjectFactory#makeObject}
      *                   fails.
      */
     @Override
@@ -1149,7 +1151,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
     private void addIdleObject(K key, PooledObject<T> p) throws Exception {
 
         if (p != null) {
-            factory.passivateObject(key, p.getObject());
+            factory.passivateObject(key, p);
             LinkedBlockingDeque<PooledObject<T>> idleObjects =
                     poolMap.get(key).getIdleObjects();
             if (getLifo()) {
@@ -1346,7 +1348,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         GenericKeyedObjectPoolConfig.DEFAULT_MIN_IDLE_PER_KEY;
     private volatile int maxTotalPerKey =
         GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL_PER_KEY;
-    private final KeyedPoolableObjectFactory<K,T> factory;
+    private final KeyedPooledObjectFactory<K,T> factory;
 
 
     //--- internal attributes --------------------------------------------------
