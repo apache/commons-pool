@@ -20,6 +20,7 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Deque;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectState;
@@ -44,19 +45,12 @@ public class PooledObjectImpl<T> implements PooledObject<T> {
     private final long createTime = System.currentTimeMillis();
     private volatile long lastBorrowTime = createTime;
     private volatile long lastReturnTime = createTime;
-    private final Exception createdBy;
-    private final PrintWriter logWriter;
+    private AtomicBoolean abandonedLogConfigured = new AtomicBoolean(false);
+    private Exception createdBy = null;
+    private PrintWriter logWriter = null;
 
     public PooledObjectImpl(T object) {
         this.object = object;
-        createdBy = null;
-        logWriter = null;
-    }
-
-    public PooledObjectImpl(T object, PrintWriter logWriter) {
-        this.object = object;
-        this.logWriter = logWriter;
-        createdBy = new AbandonedObjectException();
     }
 
     /**
@@ -294,6 +288,19 @@ public class PooledObjectImpl<T> implements PooledObject<T> {
     @Override
     public synchronized void markReturning() {
         state = PooledObjectState.RETURNING;
+    }
+
+    /**
+     * Only has an effect on the first invocation. Subsequent invocations are
+     * ignored.
+     */
+    void setAbandonedLoqWriter(PrintWriter logWriter) {
+        if (abandonedLogConfigured.compareAndSet(false, true)) {
+            if (logWriter != null) {
+                this.logWriter = logWriter;
+                createdBy = new AbandonedObjectException();
+            }
+        }
     }
 
     static class AbandonedObjectException extends Exception {

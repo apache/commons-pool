@@ -50,7 +50,9 @@ public class TestAbandonedObjectPool extends TestCase {
         abandonedConfig.setRemoveAbandonedOnBorrow(true);
         abandonedConfig.setRemoveAbandonedTimeout(1);
         pool = new GenericObjectPool<PooledTestObject>(
-               new SimpleFactory(), new GenericObjectPoolConfig(), abandonedConfig);
+                PoolImplUtils.poolableToPooledObjectFactory(new SimpleFactory()),
+               new GenericObjectPoolConfig(),
+               abandonedConfig);
     }
 
     @Override
@@ -137,7 +139,7 @@ public class TestAbandonedObjectPool extends TestCase {
         abandonedConfig.setRemoveAbandonedTimeout(1);
         pool.close();  // Unregister pool created by setup
         pool = new GenericObjectPool<PooledTestObject>(
-                new SimpleFactory(200, 0),
+                PoolImplUtils.poolableToPooledObjectFactory(new SimpleFactory(200, 0)),
                 new GenericObjectPoolConfig(), abandonedConfig);
         final int n = 10;
         pool.setMaxTotal(n);
@@ -169,7 +171,8 @@ public class TestAbandonedObjectPool extends TestCase {
         abandonedConfig.setRemoveAbandonedTimeout(1);
         pool.close();  // Unregister pool created by setup
         pool = new GenericObjectPool<PooledTestObject>(
-                new SimpleFactory(200, 0),  // destroys take 200 ms
+                // destroys take 200 ms
+                PoolImplUtils.poolableToPooledObjectFactory(new SimpleFactory(200, 0)),
                 new GenericObjectPoolConfig(), abandonedConfig);
         final int n = 10;
         pool.setMaxTotal(n);
@@ -196,7 +199,8 @@ public class TestAbandonedObjectPool extends TestCase {
         abandonedConfig.setRemoveAbandonedTimeout(1);
         pool.close();  // Unregister pool created by setup
         pool = new GenericObjectPool<PooledTestObject>(
-                new SimpleFactory(0, 1000),  // validate takes 1 second
+             // validate takes 1 second
+                PoolImplUtils.poolableToPooledObjectFactory(new SimpleFactory(0, 1000)),
                 new GenericObjectPoolConfig(), abandonedConfig);
         final int n = 10;
         pool.setMaxTotal(n);

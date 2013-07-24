@@ -26,6 +26,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.apache.commons.pool2.impl.PoolImplUtils;
 
 /**
  * Multi-thread performance test
@@ -114,7 +115,8 @@ public class PerformanceTest {
 
         SleepingObjectFactory factory = new SleepingObjectFactory();
         if (logLevel >= 4) { factory.setDebug(true); }
-        pool = new GenericObjectPool<Integer>(factory);
+        pool = new GenericObjectPool<Integer>(
+                PoolImplUtils.poolableToPooledObjectFactory(factory));
         pool.setMaxTotal(maxTotal);
         pool.setMaxIdle(maxIdle);
         pool.setTestOnBorrow(true);

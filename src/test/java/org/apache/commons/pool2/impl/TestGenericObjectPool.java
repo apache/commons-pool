@@ -57,7 +57,9 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Override
     protected ObjectPool<Object> makeEmptyPool(int mincap) {
        GenericObjectPool<Object> pool =
-           new GenericObjectPool<Object>(new SimpleFactory());
+               new GenericObjectPool<Object>(
+                       PoolImplUtils.poolableToPooledObjectFactory(
+                               new SimpleFactory()));
        pool.setMaxTotal(mincap);
        pool.setMaxIdle(mincap);
        return pool;
@@ -66,7 +68,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Override
     protected ObjectPool<Object> makeEmptyPool(
             final PoolableObjectFactory<Object> factory) {
-        GenericObjectPool<Object> pool = new GenericObjectPool<Object>(factory);
+        GenericObjectPool<Object> pool = new GenericObjectPool<Object>(
+                PoolImplUtils.poolableToPooledObjectFactory(factory));
         return pool;
     }
 
@@ -78,7 +81,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Before
     public void setUp() throws Exception {
         factory = new SimpleFactory();
-        pool = new GenericObjectPool<Object>(factory);
+        pool = new GenericObjectPool<Object>(
+                PoolImplUtils.poolableToPooledObjectFactory(factory));
     }
 
     @After
@@ -140,7 +144,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         };
 
         GenericObjectPool<Object> pool =
-            new GenericObjectPool<Object>(factory);
+                new GenericObjectPool<Object>(
+                        PoolImplUtils.poolableToPooledObjectFactory(factory));
         assertEquals(GenericObjectPoolConfig.DEFAULT_MAX_IDLE, pool.getMaxIdle());
         assertEquals(GenericObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS, pool.getMaxWaitMillis());
         assertEquals(GenericObjectPoolConfig.DEFAULT_MIN_IDLE, pool.getMinIdle());
@@ -176,7 +181,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         config.setTestWhileIdle(testWhileIdle);
         config.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
         config.setBlockWhenExhausted(blockWhenExhausted);
-        pool = new GenericObjectPool<Object>(factory, config);
+        pool = new GenericObjectPool<Object>(
+                PoolImplUtils.poolableToPooledObjectFactory(factory), config);
         assertEquals(maxIdle, pool.getMaxIdle());
         assertEquals(maxWait, pool.getMaxWaitMillis());
         assertEquals(minIdle, pool.getMinIdle());
@@ -398,7 +404,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     private void checkEvictorVisiting(boolean lifo) throws Exception {
         VisitTrackerFactory<Object> factory = new VisitTrackerFactory<Object>();
         GenericObjectPool<VisitTracker<Object>> pool =
-            new GenericObjectPool<VisitTracker<Object>>(factory);
+                new GenericObjectPool<VisitTracker<Object>>(
+                        PoolImplUtils.poolableToPooledObjectFactory(factory));
         pool.setNumTestsPerEvictionRun(2);
         pool.setMinEvictableIdleTimeMillis(-1);
         pool.setTestWhileIdle(true);
@@ -431,7 +438,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.close();
 
         factory = new VisitTrackerFactory<Object>();
-        pool = new GenericObjectPool<VisitTracker<Object>>(factory);
+        pool = new GenericObjectPool<VisitTracker<Object>>(
+                PoolImplUtils.poolableToPooledObjectFactory(factory));
         pool.setNumTestsPerEvictionRun(3);
         pool.setMinEvictableIdleTimeMillis(-1);
         pool.setTestWhileIdle(true);
@@ -476,7 +484,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         random.setSeed(System.currentTimeMillis());
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 5; j++) {
-                pool = new GenericObjectPool<VisitTracker<Object>>(factory);
+                pool = new GenericObjectPool<VisitTracker<Object>>(
+                        PoolImplUtils.poolableToPooledObjectFactory(factory));
                 pool.setNumTestsPerEvictionRun(smallPrimes[i]);
                 pool.setMinEvictableIdleTimeMillis(-1);
                 pool.setTestWhileIdle(true);
@@ -1005,7 +1014,9 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
 
         GenericObjectPool<TimeTest> pool =
-            new GenericObjectPool<TimeTest>(new TimeTest());
+                new GenericObjectPool<TimeTest>(
+                        PoolImplUtils.poolableToPooledObjectFactory(
+                                new TimeTest()));
 
         pool.setMaxIdle(5);
         pool.setMaxTotal(5);
@@ -1058,7 +1069,9 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
 
         final GenericObjectPool<Object> pool =
-            new GenericObjectPool<Object>(new InvalidFactory());
+                new GenericObjectPool<Object>(
+                        PoolImplUtils.poolableToPooledObjectFactory(
+                                new InvalidFactory()));
 
         pool.setMaxIdle(1);
         pool.setMaxTotal(1);
