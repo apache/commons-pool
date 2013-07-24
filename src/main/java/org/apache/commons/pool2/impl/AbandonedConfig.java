@@ -19,6 +19,8 @@ package org.apache.commons.pool2.impl;
 
 import java.io.PrintWriter;
 
+import org.apache.commons.pool2.TrackedUse;
+
 /**
  * Configuration settings for abandoned object removal.
  *                                                                     

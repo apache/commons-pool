@@ -35,6 +35,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.apache.commons.pool2.KeyedObjectPool;
 import org.apache.commons.pool2.KeyedPoolableObjectFactory;
 import org.apache.commons.pool2.PoolUtils;
+import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.PooledObjectState;
 
 /**
  * A configurable <code>KeyedObjectPool</code> implementation.
@@ -990,7 +992,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
             throw e;
         }
 
-        PooledObject<T> p = new PooledObject<T>(t);
+        PooledObject<T> p = new PooledObjectImpl<T>(t);
         createdCount.incrementAndGet();
         objectDeque.getAllObjects().put(t, p);
         return p;

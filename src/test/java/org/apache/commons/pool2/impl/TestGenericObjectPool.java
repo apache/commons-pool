@@ -40,6 +40,7 @@ import org.apache.commons.pool2.BasePoolableObjectFactory;
 import org.apache.commons.pool2.PoolableObjectFactory;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PoolUtils;
+import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.TestBaseObjectPool;
 import org.apache.commons.pool2.VisitTracker;
 import org.apache.commons.pool2.VisitTrackerFactory;

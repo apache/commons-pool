@@ -44,6 +44,8 @@ import javax.management.NotificationFilter;
 import javax.management.NotificationListener;
 import javax.management.ObjectName;
 
+import org.apache.commons.pool2.PooledObject;
+
 /**
  * Base class that provides common functionality for {@link GenericObjectPool}
  * and {@link GenericKeyedObjectPool}. The primary reason this class exists is

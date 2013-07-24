@@ -27,6 +27,9 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PoolUtils;
 import org.apache.commons.pool2.PoolableObjectFactory;
+import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.PooledObjectState;
+import org.apache.commons.pool2.TrackedUse;
 
 /**
  * A configurable {@link ObjectPool} implementation.
@@ -789,9 +792,9 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
 
         final PooledObject<T> p;
         if (isAbandonedConfig() && abandonedConfig.getLogAbandoned()) {
-            p = new PooledObject<T>(t, abandonedConfig.getLogWriter());
+            p = new PooledObjectImpl<T>(t, abandonedConfig.getLogWriter());
         } else {
-            p = new PooledObject<T>(t);
+            p = new PooledObjectImpl<T>(t);
         }
         createdCount.incrementAndGet();
         allObjects.put(t, p);

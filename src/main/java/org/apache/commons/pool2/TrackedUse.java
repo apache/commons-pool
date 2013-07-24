@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.commons.pool2.impl;
+package org.apache.commons.pool2;
 
 /**
  * Methods to support usage tracking for instances managed by pools configured

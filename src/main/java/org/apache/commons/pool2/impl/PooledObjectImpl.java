@@ -21,6 +21,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Deque;
 
+import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.PooledObjectState;
+import org.apache.commons.pool2.TrackedUse;
+
 /**
  * This wrapper is used to track the additional information, such as state, for
  * the pooled objects.
@@ -33,7 +37,7 @@ import java.util.Deque;
  *
  * @since 2.0
  */
-public class PooledObject<T> implements Comparable<PooledObject<T>> {
+public class PooledObjectImpl<T> implements PooledObject<T> {
 
     private final T object;
     private PooledObjectState state = PooledObjectState.IDLE; // @GuardedBy("this") to ensure transitions are valid
@@ -43,13 +47,13 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
     private final Exception createdBy;
     private final PrintWriter logWriter;
 
-    public PooledObject(T object) {
+    public PooledObjectImpl(T object) {
         this.object = object;
         createdBy = null;
         logWriter = null;
     }
 
-    public PooledObject(T object, PrintWriter logWriter) {
+    public PooledObjectImpl(T object, PrintWriter logWriter) {
         this.object = object;
         this.logWriter = logWriter;
         createdBy = new AbandonedObjectException();
@@ -59,6 +63,7 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
      * Obtain the underlying object that is wrapped by this instance of
      * {@link PooledObject}.
      */
+    @Override
     public T getObject() {
         return object;
     }
@@ -67,6 +72,7 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
      * Obtain the time (using the same basis as
      * {@link System#currentTimeMillis()}) that this object was created.
      */
+    @Override
     public long getCreateTime() {
         return createTime;
     }
@@ -76,6 +82,7 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
      * active state (it may still be active in which case subsequent calls will
      * return an increased value).
      */
+    @Override
     public long getActiveTimeMillis() {
         // Take copies to avoid threading issues
         long rTime = lastReturnTime;
@@ -93,14 +100,17 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
      * idle state (it may still be idle in which case subsequent calls will
      * return an increased value).
      */
+    @Override
     public long getIdleTimeMillis() {
         return System.currentTimeMillis() - lastReturnTime;
     }
 
+    @Override
     public long getLastBorrowTime() {
         return lastBorrowTime;
     }
 
+    @Override
     public long getLastReturnTime() {
         return lastReturnTime;
     }
@@ -114,6 +124,7 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
      *
      * @return the last time this object was used
      */
+    @Override
     public long getLastUsed() {
         if (object instanceof TrackedUse) {
             return Math.max(((TrackedUse) object).getLastUsed(), lastBorrowTime);
@@ -175,6 +186,7 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
         // TODO add other attributes
     }
 
+    @Override
     public synchronized boolean startEvictionTest() {
         if (state == PooledObjectState.IDLE) {
             state = PooledObjectState.EVICTION;
@@ -184,6 +196,7 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
         return false;
     }
 
+    @Override
     public synchronized boolean endEvictionTest(
             Deque<PooledObject<T>> idleQueue) {
         if (state == PooledObjectState.EVICTION) {
@@ -204,6 +217,7 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
      *
      * @return {@code true} if the original state was {@link PooledObjectState#IDLE IDLE}
      */
+    @Override
     public synchronized boolean allocate() {
         if (state == PooledObjectState.IDLE) {
             state = PooledObjectState.ALLOCATED;
@@ -225,6 +239,7 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
      *
      * @return {@code true} if the state was {@link PooledObjectState#ALLOCATED ALLOCATED}
      */
+    @Override
     public synchronized boolean deallocate() {
         if (state == PooledObjectState.ALLOCATED ||
                 state == PooledObjectState.RETURNING) {
@@ -239,6 +254,7 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
     /**
      * Sets the state to {@link PooledObjectState#INVALID INVALID}
      */
+    @Override
     public synchronized void invalidate() {
         state = PooledObjectState.INVALID;
     }
@@ -248,6 +264,7 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
      * the configured log writer.  Does nothing of no PrintWriter was supplied
      * to the constructor.
      */
+    @Override
     public void printStackTrace() {
         if (createdBy != null && logWriter != null) {
             createdBy.printStackTrace(logWriter);
@@ -258,6 +275,7 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
      * Returns the state of this object.
      * @return state
      */
+    @Override
     public synchronized PooledObjectState getState() {
         return state;
     }
@@ -265,6 +283,7 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
     /**
      * Marks the pooled object as abandoned.
      */
+    @Override
     public synchronized void markAbandoned() {
         state = PooledObjectState.ABANDONED;
     }
@@ -272,6 +291,7 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
     /**
      * Marks the object as returning to the pool.
      */
+    @Override
     public synchronized void markReturning() {
         state = PooledObjectState.RETURNING;
     }

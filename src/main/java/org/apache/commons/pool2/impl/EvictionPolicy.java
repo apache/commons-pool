@@ -16,6 +16,8 @@
  */
 package org.apache.commons.pool2.impl;
 
+import org.apache.commons.pool2.PooledObject;
+
 /**
  * To provide a custom eviction policy (i.e. something other than {@link
  * DefaultEvictionPolicy} for a pool, users must provide an implementation of

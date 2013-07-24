@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.pool2.impl;
+package org.apache.commons.pool2;
 
 /**
  * Provides the possible states that a {@link PooledObject} may be in.
