@@ -176,7 +176,7 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
 
     public synchronized boolean startEvictionTest() {
         if (state == PooledObjectState.IDLE) {
-            state = PooledObjectState.MAINTAIN_EVICTION;
+            state = PooledObjectState.EVICTION;
             return true;
         }
 
@@ -185,10 +185,10 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
 
     public synchronized boolean endEvictionTest(
             LinkedBlockingDeque<PooledObject<T>> idleQueue) {
-        if (state == PooledObjectState.MAINTAIN_EVICTION) {
+        if (state == PooledObjectState.EVICTION) {
             state = PooledObjectState.IDLE;
             return true;
-        } else if (state == PooledObjectState.MAINTAIN_EVICTION_RETURN_TO_HEAD) {
+        } else if (state == PooledObjectState.EVICTION_RETURN_TO_HEAD) {
             state = PooledObjectState.IDLE;
             if (!idleQueue.offerFirst(this)) {
                 // TODO - Should never happen
@@ -208,9 +208,9 @@ public class PooledObject<T> implements Comparable<PooledObject<T>> {
             state = PooledObjectState.ALLOCATED;
             lastBorrowTime = System.currentTimeMillis();
             return true;
-        } else if (state == PooledObjectState.MAINTAIN_EVICTION) {
+        } else if (state == PooledObjectState.EVICTION) {
             // TODO Allocate anyway and ignore eviction test
-            state = PooledObjectState.MAINTAIN_EVICTION_RETURN_TO_HEAD;
+            state = PooledObjectState.EVICTION_RETURN_TO_HEAD;
             return false;
         }
         // TODO if validating and testOnBorrow == true then pre-allocate for
