@@ -28,6 +28,7 @@ import javax.management.ObjectName;
 import junit.framework.TestCase;
 
 import org.apache.commons.pool2.PoolableObjectFactory;
+import org.apache.commons.pool2.TrackedUse;
 import org.junit.Assert;
 
 /**

@@ -16,6 +16,8 @@
  */
 package org.apache.commons.pool2.impl;
 
+import org.apache.commons.pool2.PooledObject;
+
 /**
  * Provides the default implementation of {@link EvictionPolicy} used by the
  * pools. Objects will be evicted if the following conditions are met:
