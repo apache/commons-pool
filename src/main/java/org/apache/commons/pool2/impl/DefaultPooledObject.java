@@ -20,7 +20,6 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Deque;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectState;
@@ -45,9 +44,8 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
     private final long createTime = System.currentTimeMillis();
     private volatile long lastBorrowTime = createTime;
     private volatile long lastReturnTime = createTime;
-    private AtomicBoolean abandonedLogConfigured = new AtomicBoolean(false);
+    private volatile boolean logAbandoned = false;
     private Exception borrowedBy = null;
-    private PrintWriter logWriter = null;
 
     public DefaultPooledObject(T object) {
         this.object = object;
@@ -216,7 +214,7 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
         if (state == PooledObjectState.IDLE) {
             state = PooledObjectState.ALLOCATED;
             lastBorrowTime = System.currentTimeMillis();
-            if (abandonedLogConfigured.get()) {
+            if (logAbandoned) {
                 borrowedBy = new AbandonedObjectException();
             }
             return true;
@@ -242,7 +240,7 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
                 state == PooledObjectState.RETURNING) {
             state = PooledObjectState.IDLE;
             lastReturnTime = System.currentTimeMillis();
-            if (abandonedLogConfigured.get()) {
+            if (borrowedBy != null) {
                 borrowedBy = null;
             }
             return true;
@@ -261,13 +259,12 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
 
     /**
      * Prints the stack trace of the code that borrowed this pooled object to
-     * the configured log writer.  Does nothing of no PrintWriter was supplied
-     * to the constructor.
+     * the supplied writer.
      */
     @Override
-    public void printStackTrace() {
-        if (borrowedBy != null && logWriter != null) {
-            borrowedBy.printStackTrace(logWriter);
+    public void printStackTrace(PrintWriter writer) {
+        if (borrowedBy != null) {
+            borrowedBy.printStackTrace(writer);
         }
     }
 
@@ -296,16 +293,9 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
         state = PooledObjectState.RETURNING;
     }
 
-    /**
-     * Only has an effect on the first invocation. Subsequent invocations are
-     * ignored.
-     */
-    void setAbandonedLoqWriter(PrintWriter logWriter) {
-        if (abandonedLogConfigured.compareAndSet(false, true)) {
-            if (logWriter != null) {
-                this.logWriter = logWriter;
-            }
-        }
+    @Override
+    public void setLogAbandoned(boolean logAbandoned) {
+        this.logAbandoned = logAbandoned;
     }
 
     static class AbandonedObjectException extends Exception {
@@ -315,8 +305,8 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
         /** Date format */
         //@GuardedBy("this")
         private static final SimpleDateFormat format = new SimpleDateFormat
-            ("'Pooled object created' yyyy-MM-dd HH:mm:ss " +
-             "'by the following code was never returned to the pool:'");
+            ("'Pooled object created' yyyy-MM-dd HH:mm:ss Z " +
+             "'by the following code has not been returned to the pool:'");
 
         private final long _createdTime;
 

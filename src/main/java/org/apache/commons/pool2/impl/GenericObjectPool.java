@@ -17,9 +17,11 @@
 package org.apache.commons.pool2.impl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -73,7 +75,7 @@ import org.apache.commons.pool2.TrackedUse;
  * @since 2.0
  */
 public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
-        implements ObjectPool<T>, GenericObjectPoolMBean {
+        implements ObjectPool<T>, GenericObjectPoolMXBean {
 
     /**
      * Create a new <code>GenericObjectPool</code> using defaults from
@@ -790,13 +792,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             throw e;
         }
 
-        if (p instanceof DefaultPooledObject) {
-            if (isAbandonedConfig() && abandonedConfig.getLogAbandoned()) {
-                ((DefaultPooledObject<T> )p).setAbandonedLoqWriter(
-                        abandonedConfig.getLogWriter());
-            } else {
-                ((DefaultPooledObject<T> )p).setAbandonedLoqWriter(null);
-            }
+        if (isAbandonedConfig() && abandonedConfig.getLogAbandoned()) {
+            p.setLogAbandoned(true);
         }
 
         createdCount.incrementAndGet();
@@ -901,7 +898,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         while (itr.hasNext()) {
             PooledObject<T> pooledObject = itr.next();
             if (abandonedConfig.getLogAbandoned()) {
-                pooledObject.printStackTrace();
+                pooledObject.printStackTrace(abandonedConfig.getLogWriter());
             }
             try {
                 invalidateObject(pooledObject.getObject());
@@ -927,6 +924,15 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         }
     }
 
+    @Override
+    public Set<DefaultPooledObjectInfo> getAllObjects() {
+        Set<DefaultPooledObjectInfo> result =
+                new HashSet<DefaultPooledObjectInfo>(allObjects.size());
+        for (PooledObject<T> p : allObjects.values()) {
+            result.add(new DefaultPooledObjectInfo(p));
+        }
+        return result;
+    }
 
     // --- configuration attributes --------------------------------------------
 

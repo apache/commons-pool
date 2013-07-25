@@ -991,10 +991,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
             throw e;
         }
 
-        if (p instanceof DefaultPooledObject) {
-            ((DefaultPooledObject<T> )p).setAbandonedLoqWriter(null);
-        }
-
         createdCount.incrementAndGet();
         objectDeque.getAllObjects().put(p.getObject(), p);
         return p;
