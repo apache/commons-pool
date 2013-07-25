@@ -16,6 +16,7 @@
  */
 package org.apache.commons.pool2;
 
+import java.io.PrintWriter;
 import java.util.Deque;
 
 /**
@@ -120,10 +121,17 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     void invalidate();
 
     /**
-     * Prints the stack trace of the code that created this pooled object to
-     * the configured log writer.  Does nothing if no log writer has been set.
+     * Is abandoned object tracking being used? If this is true the
+     * implementation will need to record the stack trace of the last caller to
+     * borrow this object.
      */
-    void printStackTrace();
+    void setLogAbandoned(boolean logAbandoned);
+
+    /**
+     * Prints the stack trace of the code that borrowed this pooled object to
+     * the supplied writer.
+     */
+    void printStackTrace(PrintWriter writer);
 
     /**
      * Returns the state of this object.
@@ -140,4 +148,6 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      * Marks the object as returning to the pool.
      */
     void markReturning();
+
+
 }

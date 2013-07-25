@@ -16,6 +16,8 @@
  */
 package org.apache.commons.pool2.impl;
 
+import java.util.Set;
+
 /**
  * Defines the methods that will be made available via JMX.
  *
@@ -23,7 +25,7 @@ package org.apache.commons.pool2.impl;
  *
  * @since 2.0
  */
-public interface GenericObjectPoolMBean {
+public interface GenericObjectPoolMXBean {
     // Getters for basic configuration settings
     /**
      * See {@link GenericObjectPool#getBlockWhenExhausted()}
@@ -138,12 +140,12 @@ public interface GenericObjectPoolMBean {
      * See {@link GenericObjectPool#getNumWaiters()}
      */
     int getNumWaiters();
-    
+
     // Getters for abandoned object removal configuration
     /**
      * See {@link GenericObjectPool#isAbandonedConfig()}
      */
-    boolean isAbandonedConfig();  
+    boolean isAbandonedConfig();
     /**
      * See {@link GenericObjectPool#getLogAbandoned()}
      */
@@ -160,4 +162,8 @@ public interface GenericObjectPoolMBean {
      * See {@link GenericObjectPool#getRemoveAbandonedTimeout()}
      */
     int getRemoveAbandonedTimeout();
+    /**
+     * See {@link GenericObjectPool#getAllObjects()}
+     */
+    Set<DefaultPooledObjectInfo> getAllObjects();
 }
