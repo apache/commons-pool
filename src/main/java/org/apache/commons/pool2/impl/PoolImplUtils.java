@@ -42,7 +42,7 @@ public class PoolImplUtils {
 
         @Override
         public PooledObject<T> makeObject() throws Exception {
-            return new PooledObjectImpl<T>(innerFactory.makeObject());
+            return new DefaultPooledObject<T>(innerFactory.makeObject());
         }
 
         @Override
@@ -80,7 +80,7 @@ public class PoolImplUtils {
         @Override
         public PooledObject<V> makeObject(K key) throws Exception {
             V obj = innerFactory.makeObject(key);
-            return new PooledObjectImpl<V>(obj);
+            return new DefaultPooledObject<V>(obj);
         }
 
         @Override

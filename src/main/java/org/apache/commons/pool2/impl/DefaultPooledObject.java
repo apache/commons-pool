@@ -38,7 +38,7 @@ import org.apache.commons.pool2.TrackedUse;
  *
  * @since 2.0
  */
-public class PooledObjectImpl<T> implements PooledObject<T> {
+public class DefaultPooledObject<T> implements PooledObject<T> {
 
     private final T object;
     private PooledObjectState state = PooledObjectState.IDLE; // @GuardedBy("this") to ensure transitions are valid
@@ -49,7 +49,7 @@ public class PooledObjectImpl<T> implements PooledObject<T> {
     private Exception borrowedBy = null;
     private PrintWriter logWriter = null;
 
-    public PooledObjectImpl(T object) {
+    public DefaultPooledObject(T object) {
         this.object = object;
     }
 
