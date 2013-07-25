@@ -790,12 +790,12 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             throw e;
         }
 
-        if (p instanceof PooledObjectImpl) {
+        if (p instanceof DefaultPooledObject) {
             if (isAbandonedConfig() && abandonedConfig.getLogAbandoned()) {
-                ((PooledObjectImpl<T> )p).setAbandonedLoqWriter(
+                ((DefaultPooledObject<T> )p).setAbandonedLoqWriter(
                         abandonedConfig.getLogWriter());
             } else {
-                ((PooledObjectImpl<T> )p).setAbandonedLoqWriter(null);
+                ((DefaultPooledObject<T> )p).setAbandonedLoqWriter(null);
             }
         }
 
