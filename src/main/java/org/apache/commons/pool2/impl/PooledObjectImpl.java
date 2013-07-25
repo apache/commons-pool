@@ -46,7 +46,7 @@ public class PooledObjectImpl<T> implements PooledObject<T> {
     private volatile long lastBorrowTime = createTime;
     private volatile long lastReturnTime = createTime;
     private AtomicBoolean abandonedLogConfigured = new AtomicBoolean(false);
-    private Exception createdBy = null;
+    private Exception borrowedBy = null;
     private PrintWriter logWriter = null;
 
     public PooledObjectImpl(T object) {
@@ -216,6 +216,9 @@ public class PooledObjectImpl<T> implements PooledObject<T> {
         if (state == PooledObjectState.IDLE) {
             state = PooledObjectState.ALLOCATED;
             lastBorrowTime = System.currentTimeMillis();
+            if (abandonedLogConfigured.get()) {
+                borrowedBy = new AbandonedObjectException();
+            }
             return true;
         } else if (state == PooledObjectState.EVICTION) {
             // TODO Allocate anyway and ignore eviction test
@@ -239,6 +242,9 @@ public class PooledObjectImpl<T> implements PooledObject<T> {
                 state == PooledObjectState.RETURNING) {
             state = PooledObjectState.IDLE;
             lastReturnTime = System.currentTimeMillis();
+            if (abandonedLogConfigured.get()) {
+                borrowedBy = null;
+            }
             return true;
         }
 
@@ -254,14 +260,14 @@ public class PooledObjectImpl<T> implements PooledObject<T> {
     }
 
     /**
-     * Prints the stack trace of the code that created this pooled object to
+     * Prints the stack trace of the code that borrowed this pooled object to
      * the configured log writer.  Does nothing of no PrintWriter was supplied
      * to the constructor.
      */
     @Override
     public void printStackTrace() {
-        if (createdBy != null && logWriter != null) {
-            createdBy.printStackTrace(logWriter);
+        if (borrowedBy != null && logWriter != null) {
+            borrowedBy.printStackTrace(logWriter);
         }
     }
 
@@ -298,7 +304,6 @@ public class PooledObjectImpl<T> implements PooledObject<T> {
         if (abandonedLogConfigured.compareAndSet(false, true)) {
             if (logWriter != null) {
                 this.logWriter = logWriter;
-                createdBy = new AbandonedObjectException();
             }
         }
     }
