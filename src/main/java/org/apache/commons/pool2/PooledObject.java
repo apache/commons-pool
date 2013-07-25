@@ -36,30 +36,30 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      * Obtain the underlying object that is wrapped by this instance of
      * {@link PooledObject}.
      */
-    public T getObject();
+    T getObject();
 
     /**
      * Obtain the time (using the same basis as
      * {@link System#currentTimeMillis()}) that this object was created.
      */
-    public long getCreateTime();
+    long getCreateTime();
 
     /**
      * Obtain the time in milliseconds that this object last spent in the the
      * active state (it may still be active in which case subsequent calls will
      * return an increased value).
      */
-    public long getActiveTimeMillis();
+    long getActiveTimeMillis();
     /**
      * Obtain the time in milliseconds that this object last spend in the the
      * idle state (it may still be idle in which case subsequent calls will
      * return an increased value).
      */
-    public long getIdleTimeMillis();
+    long getIdleTimeMillis();
 
-    public long getLastBorrowTime();
+    long getLastBorrowTime();
 
-    public long getLastReturnTime();
+    long getLastReturnTime();
 
     /**
      * Return an estimate of the last time this object was used.  If the class
@@ -70,7 +70,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      *
      * @return the last time this object was used
      */
-    public long getLastUsed();
+    long getLastUsed();
 
     /**
      * Orders instances based on idle time - i.e. the length of time since the
@@ -80,31 +80,31 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      *       equals if distinct objects have the same identity hash code.
      */
     @Override
-    public int compareTo(PooledObject<T> other);
+    int compareTo(PooledObject<T> other);
 
     @Override
-    public boolean equals(Object obj);
+    boolean equals(Object obj);
 
     @Override
-    public int hashCode();
+    int hashCode();
 
     /**
      * Provides a String form of the wrapper for debug purposes. The format is
      * not fixed and may change at any time.
      */
     @Override
-    public String toString();
+    String toString();
 
-    public boolean startEvictionTest();
+    boolean startEvictionTest();
 
-    public boolean endEvictionTest(Deque<PooledObject<T>> idleQueue);
+    boolean endEvictionTest(Deque<PooledObject<T>> idleQueue);
 
     /**
      * Allocates the object.
      *
      * @return {@code true} if the original state was {@link PooledObjectState#IDLE IDLE}
      */
-    public boolean allocate();
+    boolean allocate();
 
     /**
      * Deallocates the object and sets it {@link PooledObjectState#IDLE IDLE}
@@ -112,33 +112,32 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      *
      * @return {@code true} if the state was {@link PooledObjectState#ALLOCATED ALLOCATED}
      */
-    public boolean deallocate();
+    boolean deallocate();
 
     /**
      * Sets the state to {@link PooledObjectState#INVALID INVALID}
      */
-    public void invalidate();
+    void invalidate();
 
     /**
      * Prints the stack trace of the code that created this pooled object to
-     * the configured log writer.  Does nothing of no PrintWriter was supplied
-     * to the constructor.
+     * the configured log writer.  Does nothing if no log writer has been set.
      */
-    public void printStackTrace();
+    void printStackTrace();
 
     /**
      * Returns the state of this object.
      * @return state
      */
-    public PooledObjectState getState();
+    PooledObjectState getState();
 
     /**
      * Marks the pooled object as abandoned.
      */
-    public void markAbandoned();
+    void markAbandoned();
 
     /**
      * Marks the object as returning to the pool.
      */
-    public void markReturning();
+    void markReturning();
 }
