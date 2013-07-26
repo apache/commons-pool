@@ -74,7 +74,7 @@ import org.apache.commons.pool2.PooledObjectState;
  * @since 2.0
  */
 public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
-        implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMBean<K> {
+        implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMXBean<K> {
 
     /**
      * Create a new <code>GenericKeyedObjectPool</code> using defaults from
@@ -1257,34 +1257,53 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
     /**
      * Return an estimate of the number of threads currently blocked waiting for
-     * an object from the pool for the given key. This is intended for
+     * an object from the pool for each key. This is intended for
      * monitoring only, not for synchronization control.
      */
     @Override
-    public int getNumWaiters(K key) {
-        if (getBlockWhenExhausted()) {
-            final ObjectDeque<T> objectDeque = poolMap.get(key);
-            if (objectDeque == null) {
-                return 0;
-            } else {
-                return objectDeque.getIdleObjects().getTakeQueueLength();
+    public Map<String,Integer> getNumWaitersByKey() {
+        Map<String,Integer> result = new HashMap<String,Integer>();
+
+        for (K key : poolMap.keySet()) {
+            ObjectDeque<T> queue = poolMap.get(key);
+            if (queue != null) {
+                if (getBlockWhenExhausted()) {
+                    result.put(key.toString(), Integer.valueOf(
+                            queue.getIdleObjects().getTakeQueueLength()));
+                } else {
+                    result.put(key.toString(), Integer.valueOf(0));
+                }
             }
-        } else {
-            return 0;
         }
+        return result;
     }
 
+    /**
+     * Provides information on all the objects in the pool, both idle (waiting
+     * to be borrowed) and active (currently borrowed).
+     * <p>
+     * Note: This is named listAllObjects so it is presented as an operation via
+     * JMX. That means it won't be invoked unless the explicitly requested
+     * whereas all attributes will be automatically requested when viewing the
+     * attributes for an object in a tool like JConsole.
+     */
     @Override
-    public List<K> getKeys() {
-        List<K> keyCopy = new ArrayList<K>();
-        Lock readLock = keyLock.readLock();
-        readLock.lock();
-        try {
-            keyCopy.addAll(poolKeyList);
-        } finally {
-            readLock.unlock();
+    public Map<String,List<DefaultPooledObjectInfo>> listAllObjects() {
+        Map<String,List<DefaultPooledObjectInfo>> result =
+                new HashMap<String,List<DefaultPooledObjectInfo>>();
+
+        for (K key : poolMap.keySet()) {
+            List<DefaultPooledObjectInfo> list =
+                    new ArrayList<DefaultPooledObjectInfo>();
+            ObjectDeque<T> queue = poolMap.get(key);
+            if (queue != null) {
+                result.put(key.toString(), list);
+                for (PooledObject<T> p : queue.getAllObjects().values()) {
+                    list.add(new DefaultPooledObjectInfo(p));
+                }
+            }
         }
-        return keyCopy;
+        return result;
     }
 
 
