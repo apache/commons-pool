@@ -163,7 +163,11 @@ public interface GenericObjectPoolMXBean {
      */
     int getRemoveAbandonedTimeout();
     /**
-     * See {@link GenericObjectPool#getAllObjects()}
+     * See {@link GenericObjectPool#getFactoryType()}
      */
-    Set<DefaultPooledObjectInfo> getAllObjects();
+    public String getFactoryType();
+    /**
+     * See {@link GenericObjectPool#listAllObjects()}
+     */
+    Set<DefaultPooledObjectInfo> listAllObjects();
 }
