@@ -69,4 +69,14 @@ public class DefaultPooledObjectInfo implements DefaultPooledObjectInfoMBean {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
         return sdf.format(Long.valueOf(pooledObject.getLastReturnTime()));
     }
+
+    @Override
+    public String getPooledObjectType() {
+        return pooledObject.getObject().getClass().getName();
+    }
+
+    @Override
+    public String getPooledObjectToString() {
+        return pooledObject.getObject().toString();
+    }
 }

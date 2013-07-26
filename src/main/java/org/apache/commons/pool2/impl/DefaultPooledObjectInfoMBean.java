@@ -24,4 +24,6 @@ public interface DefaultPooledObjectInfoMBean {
     String getLastBorrowTrace();
     long getLastReturnTime();
     String getLastReturnTimeFormatted();
+    String getPooledObjectType();
+    String getPooledObjectToString();
 }
