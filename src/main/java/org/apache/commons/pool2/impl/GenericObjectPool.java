@@ -910,6 +910,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
 
     //--- JMX support ----------------------------------------------------------
 
+    private volatile String factoryType = null;
+
     /**
      * Return an estimate of the number of threads currently blocked waiting for
      * an object from the pool. This is intended for monitoring only, not for
@@ -924,8 +926,37 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         }
     }
 
+    /**
+     * Return the type - included the specific type rather than the generic - of
+     * the factory.
+     */
     @Override
-    public Set<DefaultPooledObjectInfo> getAllObjects() {
+    public String getFactoryType() {
+        // Not thread safe. Accept that there may be multiple evaluations.
+        if (factoryType == null) {
+            StringBuilder result = new StringBuilder();
+            result.append(factory.getClass().getName());
+            result.append('<');
+            Class<?> pooledObjectType =
+                    PoolImplUtils.getFactoryType(factory.getClass());
+            result.append(pooledObjectType.getName());
+            result.append('>');
+            factoryType = result.toString();
+        }
+        return factoryType;
+    }
+
+    /**
+     * Provides information on all the objects in the pool, both idle (waiting
+     * to be borrowed) and active (currently borrowed).
+     * <p>
+     * Note: This is named listAllObjects so it is presented as an operation via
+     * JMX. That means it won't be invoked unless the explicitly requested
+     * whereas all attributes will be automatically requested when viewing the
+     * attributes for an object in a tool like JConsole.
+     */
+    @Override
+    public Set<DefaultPooledObjectInfo> listAllObjects() {
         Set<DefaultPooledObjectInfo> result =
                 new HashSet<DefaultPooledObjectInfo>(allObjects.size());
         for (PooledObject<T> p : allObjects.values()) {
