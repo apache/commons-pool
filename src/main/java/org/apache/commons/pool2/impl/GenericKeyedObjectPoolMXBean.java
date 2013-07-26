@@ -26,7 +26,7 @@ import java.util.Map;
  *
  * @since 2.0
  */
-public interface GenericKeyedObjectPoolMBean<K> {
+public interface GenericKeyedObjectPoolMXBean<K> {
     // Expose getters for configuration settings
     /**
      * See {@link GenericKeyedObjectPool#getBlockWhenExhausted()}
@@ -152,9 +152,9 @@ public interface GenericKeyedObjectPoolMBean<K> {
     /**
      * See {@link GenericKeyedObjectPool#getNumWaiters(Object)}
      */
-    int getNumWaiters(K key);
+    Map<String,Integer> getNumWaitersByKey();
     /**
-     * See {@link GenericKeyedObjectPool#getKeys()}
+     * See {@link GenericKeyedObjectPool#listAllObjects()}
      */
-    List<K> getKeys();
+    Map<String,List<DefaultPooledObjectInfo>> listAllObjects();
 }
