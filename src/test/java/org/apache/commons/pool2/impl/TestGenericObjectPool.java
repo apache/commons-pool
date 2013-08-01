@@ -25,15 +25,12 @@ import static junit.framework.Assert.fail;
 
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.management.MBeanServer;
-import javax.management.Notification;
-import javax.management.NotificationListener;
 import javax.management.ObjectName;
 
 import org.apache.commons.pool2.BasePoolableObjectFactory;
@@ -1967,38 +1964,5 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         Set<ObjectName> result = mbs.queryNames(oname, null);
         Assert.assertEquals(1, result.size());
-    }
-
-    @Test(timeout=60000)
-    public void testJmxNotification() throws Exception {
-        factory.setThrowExceptionOnPassivate(true);
-        ObjectName oname = pool.getJmxName();
-        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-        JmxNotificationListener listener = new JmxNotificationListener();
-        mbs.addNotificationListener(oname, listener, null, null);
-
-        Object obj = pool.borrowObject();
-        pool.returnObject(obj);
-
-        List<String> messages = listener.getMessages();
-        Assert.assertEquals(1, messages.size());
-        Assert.assertNotNull(messages.get(0));
-        Assert.assertTrue(messages.get(0).length() > 0);
-    }
-
-    private static class JmxNotificationListener
-            implements NotificationListener {
-
-        private List<String> messages = new ArrayList<String>();
-
-        public List<String> getMessages() {
-            return messages;
-        }
-
-        @Override
-        public void handleNotification(Notification notification,
-                Object handback) {
-            messages.add(notification.getMessage());
-        }
     }
 }
