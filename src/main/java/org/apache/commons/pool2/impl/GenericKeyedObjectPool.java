@@ -1396,5 +1396,5 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
     // JMX specific attributes
     private static final String ONAME_BASE =
-        "org.apache.commoms.pool2:type=GenericKeyedObjectPool,name=";
+        "org.apache.commons.pool2:type=GenericKeyedObjectPool,name=";
 }
