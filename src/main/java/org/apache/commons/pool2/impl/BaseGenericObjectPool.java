@@ -21,12 +21,10 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TimerTask;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -37,7 +35,6 @@ import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
-import javax.management.Notification;
 import javax.management.NotificationBroadcasterSupport;
 import javax.management.NotificationEmitter;
 import javax.management.NotificationFilter;
@@ -45,6 +42,7 @@ import javax.management.NotificationListener;
 import javax.management.ObjectName;
 
 import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.SwallowedExceptionListener;
 
 /**
  * Base class that provides common functionality for {@link GenericObjectPool}
@@ -73,7 +71,6 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * so that rolling means may be calculated.
      */
     public static final int MEAN_TIMING_STATS_CACHE_SIZE = 100;
-    private static final int SWALLOWED_EXCEPTION_QUEUE_SIZE = 10;
 
     // Configuration attributes
     private volatile int maxTotal =
@@ -118,8 +115,6 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
     private final ObjectName oname;
     private final NotificationBroadcasterSupport jmxNotificationSupport;
     private final String creationStackTrace;
-    private final Deque<String> swallowedExceptions = new LinkedList<String>();
-    private final AtomicInteger swallowedExcpetionCount = new AtomicInteger(0);
     private final AtomicLong borrowedCount = new AtomicLong(0);
     private final AtomicLong returnedCount = new AtomicLong(0);
     final AtomicLong createdCount = new AtomicLong(0);
@@ -131,6 +126,7 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
     private final LinkedList<Long> waitTimes = new LinkedList<Long>(); // @GuardedBy("activeTimes") - except in initStats()
     private final Object maxBorrowWaitTimeMillisLock = new Object();
     private volatile long maxBorrowWaitTimeMillis = 0; // @GuardedBy("maxBorrowWaitTimeMillisLock")
+    private SwallowedExceptionListener swallowedExceptionListener = null;
 
 
     /**
@@ -149,11 +145,6 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
         } else {
             this.jmxNotificationSupport = null;
             this.oname = null;
-        }
-
-        // Populate the swallowed exceptions queue
-        for (int i = 0; i < SWALLOWED_EXCEPTION_QUEUE_SIZE; i++) {
-            swallowedExceptions.add(null);
         }
 
         // Populate the creation stack trace
@@ -633,10 +624,10 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * <p>Starts the evictor with the given delay. If there is an evictor
      * running when this method is called, it is stopped and replaced with a
      * new evictor with the specified delay.</p>
-     * 
+     *
      * <p>This method needs to be final, since it is called from a constructor.
      * See POOL-195.</p>
-     * 
+     *
      * @param delay time in milliseconds before start and between eviction runs
      */
     final void startEvictor(long delay) {
@@ -683,21 +674,6 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      */
     public final String getCreationStackTrace() {
         return creationStackTrace;
-    }
-
-    /**
-     * Lists the most recent exceptions that have been swallowed by the pool
-     * implementation. Exceptions are typically swallowed when a problem occurs
-     * while destroying an object.
-     * @return array containing stack traces of recently swallowed exceptions
-     */
-    public final String[] getSwallowedExceptions() {
-        List<String> temp =
-                new ArrayList<String>(SWALLOWED_EXCEPTION_QUEUE_SIZE);
-        synchronized (swallowedExceptions) {
-            temp.addAll(swallowedExceptions);
-        }
-        return temp.toArray(new String[SWALLOWED_EXCEPTION_QUEUE_SIZE]);
     }
 
     /**
@@ -801,6 +777,26 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
     public abstract int getNumIdle();
 
     /**
+     * The listener used (if any) to receive notifications of exceptions
+     * unavoidably swallowed by the pool.
+     */
+    public SwallowedExceptionListener getSwallowedExceptionListener() {
+        return swallowedExceptionListener;
+    }
+
+    /**
+     * The listener used (if any) to receive notifications of exceptions
+     * unavoidably swallowed by the pool.
+     *
+     * @param swallowedExceptionListener    The listener or <code>null</code>
+     *                                      for no listener
+     */
+    public void setSwallowedExceptionListener(
+            SwallowedExceptionListener swallowedExceptionListener) {
+        this.swallowedExceptionListener = swallowedExceptionListener;
+    }
+
+    /**
      * Returns the {@link NotificationBroadcasterSupport} for the pool
      * @return JMX notification broadcaster
      */
@@ -814,19 +810,20 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
      * @param e exception to be swallowed
      */
     final void swallowException(Exception e) {
-        String msg = getStackTrace(e);
+        SwallowedExceptionListener listener = getSwallowedExceptionListener();
 
-        ObjectName oname = getJmxName();
-        if (oname != null && !isClosed()) {
-            Notification n = new Notification(NOTIFICATION_SWALLOWED_EXCEPTION,
-                    oname, swallowedExcpetionCount.incrementAndGet(), msg);
-            getJmxNotificationSupport().sendNotification(n);
+        if (listener == null) {
+            return;
         }
 
-        // Add the exception the queue, removing the oldest
-        synchronized (swallowedExceptions) {
-            swallowedExceptions.addLast(msg);
-            swallowedExceptions.pollFirst();
+        try {
+            listener.onSwallowException(e);
+        } catch (OutOfMemoryError oome) {
+            throw oome;
+        } catch (VirtualMachineError vme) {
+            throw vme;
+        } catch (Throwable t) {
+            // Ignore. Enjoy the irony.
         }
     }
 
@@ -883,12 +880,12 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
 
     /**
      * Registers the pool with the platform MBean server.
-     * The registered name will be 
+     * The registered name will be
      * <code>jmxNameBase + jmxNamePrefix + i</code> where i is the least
      * integer greater than or equal to 1 such that the name is not already
      * registered. Swallows MBeanRegistrationException, NotCompliantMBeanException
      * returning null.
-     * 
+     *
      * @param jmxNameBase base JMX name for this pool
      * @param jmxNamePrefix name prefix
      * @return registered ObjectName, null if registration fails
