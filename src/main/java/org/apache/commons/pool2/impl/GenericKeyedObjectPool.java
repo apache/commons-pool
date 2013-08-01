@@ -37,6 +37,7 @@ import org.apache.commons.pool2.KeyedPooledObjectFactory;
 import org.apache.commons.pool2.PoolUtils;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectState;
+import org.apache.commons.pool2.SwallowedExceptionListener;
 
 /**
  * A configurable <code>KeyedObjectPool</code> implementation.
@@ -447,7 +448,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * destroyed.
      * <p>
      * Exceptions encountered destroying objects for any reason are swallowed
-     * but remain accessible via {@link #getSwallowedExceptions()}.
+     * but notified via a {@link SwallowedExceptionListener}.
      *
      * @param key pool key
      * @param obj instance to return to the keyed pool
@@ -572,8 +573,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * <li>Invoking this method does not prevent objects being returned to the
      * idle instance pool, even during its execution. Additional instances may
      * be returned while removed items are being destroyed.</li>
-     * <li>Exceptions encountered destroying idle instances are swallowed but
-     * remain accessible via {@link #getSwallowedExceptions()}.</li>
+     * <li>Exceptions encountered destroying idle instances are swallowed
+     * but notified via a {@link SwallowedExceptionListener}.</li>
      * </ul>
      */
     @Override
@@ -589,8 +590,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
     /**
      * Clears the specified sub-pool, removing all pooled instances
      * corresponding to the given <code>key</code>. Exceptions encountered
-     * destroying idle instances are swallowed but remain accessible via
-     * {@link #getSwallowedExceptions()}.
+     * destroying idle instances are swallowed but notified via a
+     * {@link SwallowedExceptionListener}.
      *
      * @param key the key to clear
      */

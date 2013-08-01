@@ -31,6 +31,7 @@ import org.apache.commons.pool2.PoolUtils;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.PooledObjectState;
+import org.apache.commons.pool2.SwallowedExceptionListener;
 import org.apache.commons.pool2.TrackedUse;
 
 /**
@@ -495,7 +496,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * this case, if validation fails, the instance is destroyed.
      * <p>
      * Exceptions encountered destroying objects for any reason are swallowed
-     * but remain accessible via {@link #getSwallowedExceptions()}.
+     * but notified via a {@link SwallowedExceptionListener}..
      *
      * @param obj instance to return to the pool
      */
@@ -615,8 +616,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * <li>Invoking this method does not prevent objects being returned to the
      * idle instance pool, even during its execution. Additional instances may
      * be returned while removed items are being destroyed.</li>
-     * <li>Exceptions encountered destroying idle instances are swallowed but
-     * remain accessible via {@link #getSwallowedExceptions()}.</li>
+     * <li>Exceptions encountered destroying idle instances are swallowed
+     * but notified via a {@link SwallowedExceptionListener}.</li>
      * </ul>
      */
     @Override
