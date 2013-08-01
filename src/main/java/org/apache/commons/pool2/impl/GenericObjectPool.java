@@ -997,7 +997,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
 
     // JMX specific attributes
     private static final String ONAME_BASE =
-        "org.apache.commoms.pool2:type=GenericObjectPool,name=";
+        "org.apache.commons.pool2:type=GenericObjectPool,name=";
 
     // Additional configuration properties for abandoned object tracking
     private volatile AbandonedConfig abandonedConfig = null;
