@@ -146,7 +146,7 @@ public interface GenericKeyedObjectPoolMXBean<K> {
      */
     int getNumWaiters();
     /**
-     * See {@link GenericKeyedObjectPool#getNumWaiters(Object)}
+     * See {@link GenericKeyedObjectPool#getNumWaitersByKey()}
      */
     Map<String,Integer> getNumWaitersByKey();
     /**
