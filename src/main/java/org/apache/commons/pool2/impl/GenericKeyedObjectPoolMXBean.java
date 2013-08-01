@@ -138,10 +138,6 @@ public interface GenericKeyedObjectPoolMXBean<K> {
      */
     long getMaxBorrowWaitTimeMillis();
     /**
-     * See {@link GenericKeyedObjectPool#getSwallowedExceptions()}
-     */
-    String[] getSwallowedExceptions();
-    /**
      * See {@link GenericKeyedObjectPool#getCreationStackTrace()}
      */
     String getCreationStackTrace();

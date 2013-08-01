@@ -129,10 +129,6 @@ public interface GenericObjectPoolMXBean {
      */
     long getMaxBorrowWaitTimeMillis();
     /**
-     * See {@link GenericObjectPool#getSwallowedExceptions()}
-     */
-    String[] getSwallowedExceptions();
-    /**
      * See {@link GenericObjectPool#getCreationStackTrace()}
      */
     String getCreationStackTrace();
