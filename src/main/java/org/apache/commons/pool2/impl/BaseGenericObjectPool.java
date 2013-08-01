@@ -61,12 +61,6 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
 
     // Constants
     /**
-     * Name of the JMX notification broadcast when the pool implementation
-     * swallows an {@link Exception}.
-     */
-    public static final String NOTIFICATION_SWALLOWED_EXCEPTION =
-            "SWALLOWED_EXCEPTION";
-    /**
      * The size of the caches used to store historical data for some attributes
      * so that rolling means may be calculated.
      */
