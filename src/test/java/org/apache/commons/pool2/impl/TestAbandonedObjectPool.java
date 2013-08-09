@@ -27,7 +27,8 @@ import javax.management.ObjectName;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.pool2.PoolableObjectFactory;
+import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.TrackedUse;
 import org.junit.Assert;
 
@@ -50,7 +51,7 @@ public class TestAbandonedObjectPool extends TestCase {
         abandonedConfig.setRemoveAbandonedOnBorrow(true);
         abandonedConfig.setRemoveAbandonedTimeout(1);
         pool = new GenericObjectPool<PooledTestObject>(
-                PoolImplUtils.poolableToPooledObjectFactory(new SimpleFactory()),
+               new SimpleFactory(),
                new GenericObjectPoolConfig(),
                abandonedConfig);
     }
@@ -139,7 +140,7 @@ public class TestAbandonedObjectPool extends TestCase {
         abandonedConfig.setRemoveAbandonedTimeout(1);
         pool.close();  // Unregister pool created by setup
         pool = new GenericObjectPool<PooledTestObject>(
-                PoolImplUtils.poolableToPooledObjectFactory(new SimpleFactory(200, 0)),
+                new SimpleFactory(200, 0),
                 new GenericObjectPoolConfig(), abandonedConfig);
         final int n = 10;
         pool.setMaxTotal(n);
@@ -148,7 +149,6 @@ public class TestAbandonedObjectPool extends TestCase {
         for (int i = 0; i < n - 2; i++) {
             obj = pool.borrowObject();
         }
-        @SuppressWarnings("null") // obj can't be null here
         final int deadMansHash = obj.hashCode();
         ConcurrentReturner returner = new ConcurrentReturner(obj);
         Thread.sleep(2000);  // abandon checked out instances
@@ -172,7 +172,7 @@ public class TestAbandonedObjectPool extends TestCase {
         pool.close();  // Unregister pool created by setup
         pool = new GenericObjectPool<PooledTestObject>(
                 // destroys take 200 ms
-                PoolImplUtils.poolableToPooledObjectFactory(new SimpleFactory(200, 0)),
+                new SimpleFactory(200, 0),
                 new GenericObjectPoolConfig(), abandonedConfig);
         final int n = 10;
         pool.setMaxTotal(n);
@@ -200,7 +200,7 @@ public class TestAbandonedObjectPool extends TestCase {
         pool.close();  // Unregister pool created by setup
         pool = new GenericObjectPool<PooledTestObject>(
              // validate takes 1 second
-                PoolImplUtils.poolableToPooledObjectFactory(new SimpleFactory(0, 1000)),
+                new SimpleFactory(0, 1000),
                 new GenericObjectPoolConfig(), abandonedConfig);
         final int n = 10;
         pool.setMaxTotal(n);
@@ -251,7 +251,7 @@ public class TestAbandonedObjectPool extends TestCase {
         }
     }
 
-    class SimpleFactory implements PoolableObjectFactory<PooledTestObject> {
+    class SimpleFactory implements PooledObjectFactory<PooledTestObject> {
 
         private final long destroyLatency;
         private final long validateLatency;
@@ -267,12 +267,12 @@ public class TestAbandonedObjectPool extends TestCase {
         }
 
         @Override
-        public PooledTestObject makeObject() {
-            return new PooledTestObject();
+        public PooledObject<PooledTestObject> makeObject() {
+            return new DefaultPooledObject<PooledTestObject>(new PooledTestObject());
         }
 
         @Override
-        public boolean validateObject(PooledTestObject obj) {
+        public boolean validateObject(PooledObject<PooledTestObject> obj) {
             try {
                 Thread.sleep(validateLatency);
             } catch (Exception ex) {
@@ -282,25 +282,25 @@ public class TestAbandonedObjectPool extends TestCase {
         }
 
         @Override
-        public void activateObject(PooledTestObject obj) {
-            obj.setActive(true);
+        public void activateObject(PooledObject<PooledTestObject> obj) {
+            obj.getObject().setActive(true);
         }
 
         @Override
-        public void passivateObject(PooledTestObject obj) {
-            obj.setActive(false);
+        public void passivateObject(PooledObject<PooledTestObject> obj) {
+            obj.getObject().setActive(false);
         }
 
         @Override
-        public void destroyObject(PooledTestObject obj) throws Exception {
-            obj.setActive(false);
+        public void destroyObject(PooledObject<PooledTestObject> obj) throws Exception {
+            obj.getObject().setActive(false);
             // while destroying instances, yield control to other threads
             // helps simulate threading errors
             Thread.yield();
             if (destroyLatency != 0) {
                 Thread.sleep(destroyLatency);
             }
-            obj.destroy();
+            obj.getObject().destroy();
         }
     }
 }

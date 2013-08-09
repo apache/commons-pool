@@ -17,59 +17,60 @@
 
 package org.apache.commons.pool2;
 
-import org.apache.commons.pool2.KeyedPoolableObjectFactory;
-import org.apache.commons.pool2.PoolableObjectFactory;
+import org.apache.commons.pool2.KeyedPooledObjectFactory;
+import org.apache.commons.pool2.PooledObjectFactory;
+import org.apache.commons.pool2.impl.DefaultPooledObject;
 
 /**
  * Factory that creates VisitTracker instances. Used to
  * test Evictor runs.
  *
  */
-public class VisitTrackerFactory<K> implements PoolableObjectFactory<VisitTracker<K>>, 
-    KeyedPoolableObjectFactory<K,VisitTracker<K>> {
+public class VisitTrackerFactory<K> implements PooledObjectFactory<VisitTracker<K>>, 
+    KeyedPooledObjectFactory<K,VisitTracker<K>> {
     private int nextId = 0;
     public VisitTrackerFactory() {
         super();
     }
     @Override
-    public VisitTracker<K> makeObject() {
-        return new VisitTracker<K>(nextId++);
+    public PooledObject<VisitTracker<K>> makeObject() {
+        return new DefaultPooledObject<VisitTracker<K>>(new VisitTracker<K>(nextId++));
     }
     @Override
-    public VisitTracker<K> makeObject(K key) {
-        return new VisitTracker<K>(nextId++, key);
+    public PooledObject<VisitTracker<K>> makeObject(K key) {
+        return new DefaultPooledObject<VisitTracker<K>>(new VisitTracker<K>(nextId++, key));
     }
     @Override
-    public void destroyObject(VisitTracker<K> obj) {
-        obj.destroy();
+    public void destroyObject(PooledObject<VisitTracker<K>> ref) {
+        ref.getObject().destroy();
     }
     @Override
-    public void destroyObject(K key, VisitTracker<K> obj) {
-        obj.destroy();
+    public void destroyObject(K key, PooledObject<VisitTracker<K>> ref) {
+        ref.getObject().destroy();
     }
     @Override
-    public boolean validateObject(VisitTracker<K> obj) {
-        return obj.validate();
+    public boolean validateObject(PooledObject<VisitTracker<K>> ref) {
+        return ref.getObject().validate();
     }
     @Override
-    public boolean validateObject(K key, VisitTracker<K> obj) {
-        return obj.validate();
+    public boolean validateObject(K key, PooledObject<VisitTracker<K>> ref) {
+        return ref.getObject().validate();
     }
     @Override
-    public void activateObject(VisitTracker<K> obj) throws Exception {
-        obj.activate();
+    public void activateObject(PooledObject<VisitTracker<K>> ref) throws Exception {
+        ref.getObject().activate();
     }
     @Override
-    public void activateObject(K key, VisitTracker<K> obj) throws Exception {
-        obj.activate();
+    public void activateObject(K key, PooledObject<VisitTracker<K>> ref) throws Exception {
+        ref.getObject().activate();
     }
     @Override
-    public void passivateObject(VisitTracker<K> obj) throws Exception {
-        obj.passivate();
+    public void passivateObject(PooledObject<VisitTracker<K>> ref) throws Exception {
+        ref.getObject().passivate();
     }
     @Override
-    public void passivateObject(K key, VisitTracker<K> obj) throws Exception {
-        obj.passivate();
+    public void passivateObject(K key, PooledObject<VisitTracker<K>> ref) throws Exception {
+        ref.getObject().passivate();
     }
     public void resetId() {
         nextId = 0;

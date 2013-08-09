@@ -21,7 +21,7 @@ import java.net.URLClassLoader;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.pool2.BasePoolableObjectFactory;
+import org.apache.commons.pool2.BasePooledObjectFactory;
 
 public class TestGenericObjectPoolClassLoaders extends TestCase {
 
@@ -39,9 +39,7 @@ public class TestGenericObjectPoolClassLoaders extends TestCase {
             Thread.currentThread().setContextClassLoader(cl1);
             CustomClassLoaderObjectFactory factory1 =
                     new CustomClassLoaderObjectFactory(1);
-            GenericObjectPool<URL> pool1 =
-                    new GenericObjectPool<URL>(
-                            PoolImplUtils.poolableToPooledObjectFactory(factory1));
+            GenericObjectPool<URL> pool1 = new GenericObjectPool<URL>(factory1);
             pool1.setMinIdle(1);
             pool1.setTimeBetweenEvictionRunsMillis(100);
             int counter = 0;
@@ -58,8 +56,7 @@ public class TestGenericObjectPoolClassLoaders extends TestCase {
             CustomClassLoaderObjectFactory factory2 =
                     new CustomClassLoaderObjectFactory(2);
             GenericObjectPool<URL> pool2 =
-                    new GenericObjectPool<URL>(
-                            PoolImplUtils.poolableToPooledObjectFactory(factory2));
+                    new GenericObjectPool<URL>(factory2);
             pool2.setMinIdle(1);
 
             pool2.addObject();
@@ -85,7 +82,7 @@ public class TestGenericObjectPoolClassLoaders extends TestCase {
     }
 
     private static class CustomClassLoaderObjectFactory extends
-            BasePoolableObjectFactory<URL> {
+            BasePooledObjectFactory<URL> {
         private int n;
 
         CustomClassLoaderObjectFactory(int n) {
@@ -93,7 +90,7 @@ public class TestGenericObjectPoolClassLoaders extends TestCase {
         }
 
         @Override
-        public URL makeObject() throws Exception {
+        public URL create() throws Exception {
             URL url = Thread.currentThread().getContextClassLoader()
                     .getResource("test" + n);
             if (url == null) {

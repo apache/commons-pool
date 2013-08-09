@@ -363,34 +363,34 @@ public final class PoolUtils {
     }
 
     /**
-     * Returns a synchronized (thread-safe) PoolableObjectFactory backed by the
-     * specified PoolableObjectFactory.
+     * Returns a synchronized (thread-safe) PooledObjectFactory backed by the
+     * specified PooledObjectFactory.
      *
      * @param factory
-     *            the PoolableObjectFactory to be "wrapped" in a synchronized
-     *            PoolableObjectFactory.
+     *            the PooledObjectFactory to be "wrapped" in a synchronized
+     *            PooledObjectFactory.
      * @param <T> the type of objects in the pool
-     * @return a synchronized view of the specified PoolableObjectFactory.
+     * @return a synchronized view of the specified PooledObjectFactory.
      */
-    public static <T> PoolableObjectFactory<T> synchronizedPoolableFactory(
-            final PoolableObjectFactory<T> factory) {
-        return new SynchronizedPoolableObjectFactory<T>(factory);
+    public static <T> PooledObjectFactory<T> synchronizedPooledFactory(
+            final PooledObjectFactory<T> factory) {
+        return new SynchronizedPooledObjectFactory<T>(factory);
     }
 
     /**
-     * Returns a synchronized (thread-safe) KeyedPoolableObjectFactory backed by
+     * Returns a synchronized (thread-safe) KeyedPooledObjectFactory backed by
      * the specified KeyedPoolableObjectFactory.
      *
      * @param keyedFactory
-     *            the KeyedPoolableObjectFactory to be "wrapped" in a
-     *            synchronized KeyedPoolableObjectFactory.
+     *            the KeyedPooledObjectFactory to be "wrapped" in a
+     *            synchronized KeyedPooledObjectFactory.
      * @param <K> the type of the pool key
      * @param <V> the type of pool entries
-     * @return a synchronized view of the specified KeyedPoolableObjectFactory.
+     * @return a synchronized view of the specified KeyedPooledObjectFactory.
      */
-    public static <K, V> KeyedPoolableObjectFactory<K, V> synchronizedPoolableFactory(
-            final KeyedPoolableObjectFactory<K, V> keyedFactory) {
-        return new SynchronizedKeyedPoolableObjectFactory<K, V>(keyedFactory);
+    public static <K, V> KeyedPooledObjectFactory<K, V> synchronizedKeyedPooledFactory(
+            final KeyedPooledObjectFactory<K, V> keyedFactory) {
+        return new SynchronizedKeyedPooledObjectFactory<K, V>(keyedFactory);
     }
 
     /**
@@ -610,7 +610,6 @@ public final class PoolUtils {
 
             } catch (Exception e) {
                 cancel();
-
             } finally {
                 // detect other types of Throwable and cancel this Timer
                 if (!success) {
@@ -1101,8 +1100,8 @@ public final class PoolUtils {
     }
 
     /**
-     * A fully synchronized PoolableObjectFactory that wraps a
-     * PoolableObjectFactory and synchronizes access to the wrapped factory
+     * A fully synchronized PooledObjectFactory that wraps a
+     * PooledObjectFactory and synchronizes access to the wrapped factory
      * methods.
      * <p>
      * <b>Note:</b> This should not be used on pool implementations that already
@@ -1110,13 +1109,13 @@ public final class PoolUtils {
      * Pool library.
      * </p>
      */
-    private static class SynchronizedPoolableObjectFactory<T> implements
-            PoolableObjectFactory<T> {
+    private static class SynchronizedPooledObjectFactory<T> implements
+            PooledObjectFactory<T> {
         /** Synchronization lock */
         private final WriteLock writeLock = new ReentrantReadWriteLock().writeLock();
 
         /** Wrapped factory */
-        private final PoolableObjectFactory<T> factory;
+        private final PooledObjectFactory<T> factory;
 
         /**
          * Create a SynchronizedPoolableObjectFactory wrapping the given
@@ -1127,7 +1126,7 @@ public final class PoolUtils {
          * @throws IllegalArgumentException
          *             if the factory is null
          */
-        SynchronizedPoolableObjectFactory(final PoolableObjectFactory<T> factory)
+        SynchronizedPooledObjectFactory(final PooledObjectFactory<T> factory)
                 throws IllegalArgumentException {
             if (factory == null) {
                 throw new IllegalArgumentException("factory must not be null.");
@@ -1139,7 +1138,7 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         @Override
-        public T makeObject() throws Exception {
+        public PooledObject<T> makeObject() throws Exception {
             writeLock.lock();
             try {
                 return factory.makeObject();
@@ -1152,10 +1151,10 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         @Override
-        public void destroyObject(final T obj) throws Exception {
+        public void destroyObject(final PooledObject<T> p) throws Exception {
             writeLock.lock();
             try {
-                factory.destroyObject(obj);
+                factory.destroyObject(p);
             } finally {
                 writeLock.unlock();
             }
@@ -1165,10 +1164,10 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         @Override
-        public boolean validateObject(final T obj) {
+        public boolean validateObject(final PooledObject<T> p) {
             writeLock.lock();
             try {
-                return factory.validateObject(obj);
+                return factory.validateObject(p);
             } finally {
                 writeLock.unlock();
             }
@@ -1178,10 +1177,10 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         @Override
-        public void activateObject(final T obj) throws Exception {
+        public void activateObject(final PooledObject<T> p) throws Exception {
             writeLock.lock();
             try {
-                factory.activateObject(obj);
+                factory.activateObject(p);
             } finally {
                 writeLock.unlock();
             }
@@ -1191,10 +1190,10 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         @Override
-        public void passivateObject(final T obj) throws Exception {
+        public void passivateObject(final PooledObject<T> p) throws Exception {
             writeLock.lock();
             try {
-                factory.passivateObject(obj);
+                factory.passivateObject(p);
             } finally {
                 writeLock.unlock();
             }
@@ -1214,8 +1213,8 @@ public final class PoolUtils {
     }
 
     /**
-     * A fully synchronized KeyedPoolableObjectFactory that wraps a
-     * KeyedPoolableObjectFactory and synchronizes access to the wrapped factory
+     * A fully synchronized KeyedPooledObjectFactory that wraps a
+     * KeyedPooledObjectFactory and synchronizes access to the wrapped factory
      * methods.
      * <p>
      * <b>Note:</b> This should not be used on pool implementations that already
@@ -1223,13 +1222,13 @@ public final class PoolUtils {
      * Pool library.
      * </p>
      */
-    private static class SynchronizedKeyedPoolableObjectFactory<K, V>
-            implements KeyedPoolableObjectFactory<K, V> {
+    private static class SynchronizedKeyedPooledObjectFactory<K, V>
+            implements KeyedPooledObjectFactory<K, V> {
         /** Synchronization lock */
         private final WriteLock writeLock = new ReentrantReadWriteLock().writeLock();
 
         /** Wrapped factory */
-        private final KeyedPoolableObjectFactory<K, V> keyedFactory;
+        private final KeyedPooledObjectFactory<K, V> keyedFactory;
 
         /**
          * Create a SynchronizedKeyedPoolableObjectFactory wrapping the given
@@ -1240,8 +1239,8 @@ public final class PoolUtils {
          * @throws IllegalArgumentException
          *             if the factory is null
          */
-        SynchronizedKeyedPoolableObjectFactory(
-                final KeyedPoolableObjectFactory<K, V> keyedFactory)
+        SynchronizedKeyedPooledObjectFactory(
+                final KeyedPooledObjectFactory<K, V> keyedFactory)
                 throws IllegalArgumentException {
             if (keyedFactory == null) {
                 throw new IllegalArgumentException(
@@ -1254,7 +1253,7 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         @Override
-        public V makeObject(final K key) throws Exception {
+        public PooledObject<V> makeObject(final K key) throws Exception {
             writeLock.lock();
             try {
                 return keyedFactory.makeObject(key);
@@ -1267,10 +1266,10 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         @Override
-        public void destroyObject(final K key, final V obj) throws Exception {
+        public void destroyObject(final K key, final PooledObject<V> p) throws Exception {
             writeLock.lock();
             try {
-                keyedFactory.destroyObject(key, obj);
+                keyedFactory.destroyObject(key, p);
             } finally {
                 writeLock.unlock();
             }
@@ -1280,10 +1279,10 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         @Override
-        public boolean validateObject(final K key, final V obj) {
+        public boolean validateObject(final K key, final PooledObject<V> p) {
             writeLock.lock();
             try {
-                return keyedFactory.validateObject(key, obj);
+                return keyedFactory.validateObject(key, p);
             } finally {
                 writeLock.unlock();
             }
@@ -1293,10 +1292,10 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         @Override
-        public void activateObject(final K key, final V obj) throws Exception {
+        public void activateObject(final K key, final PooledObject<V> p) throws Exception {
             writeLock.lock();
             try {
-                keyedFactory.activateObject(key, obj);
+                keyedFactory.activateObject(key, p);
             } finally {
                 writeLock.unlock();
             }
@@ -1306,10 +1305,10 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         @Override
-        public void passivateObject(final K key, final V obj) throws Exception {
+        public void passivateObject(final K key, final PooledObject<V> p) throws Exception {
             writeLock.lock();
             try {
-                keyedFactory.passivateObject(key, obj);
+                keyedFactory.passivateObject(key, p);
             } finally {
                 writeLock.unlock();
             }

@@ -21,8 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Iterator;
 
-import org.apache.commons.pool2.KeyedPoolableObjectFactory;
-import org.apache.commons.pool2.PoolableObjectFactory;
+import org.apache.commons.pool2.impl.DefaultPooledObject;
 
 /**
  * Object factory with configurable latencies for object lifecycle methods.
@@ -32,8 +31,8 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  * (per key) exceeds the configured max.
  *
  */
-public class WaiterFactory<K> implements PoolableObjectFactory<Waiter>,
-KeyedPoolableObjectFactory<K,Waiter> {
+public class WaiterFactory<K> implements PooledObjectFactory<Waiter>,
+KeyedPooledObjectFactory<K,Waiter> {
     
     /** Latency of activateObject */
     private final long activateLatency;
@@ -98,16 +97,16 @@ KeyedPoolableObjectFactory<K,Waiter> {
     }
 
     @Override
-    public void activateObject(Waiter obj) throws Exception {
+    public void activateObject(PooledObject<Waiter> obj) throws Exception {
         doWait(activateLatency);
-        obj.setActive(true);
+        obj.getObject().setActive(true);
     }
 
     @Override
-    public void destroyObject(Waiter obj) throws Exception {
+    public void destroyObject(PooledObject<Waiter> obj) throws Exception {
         doWait(destroyLatency);
-        obj.setValid(false);
-        obj.setActive(false);
+        obj.getObject().setValid(false);
+        obj.getObject().setActive(false);
         // Decrement *after* destroy 
         synchronized (this) {
             activeCount--;
@@ -115,7 +114,7 @@ KeyedPoolableObjectFactory<K,Waiter> {
     }
 
     @Override
-    public Waiter makeObject() throws Exception {
+    public PooledObject<Waiter> makeObject() throws Exception {
         // Increment and test *before* make
         synchronized (this) {
             if (activeCount >= maxActive) {
@@ -126,22 +125,22 @@ KeyedPoolableObjectFactory<K,Waiter> {
             }
         }
         doWait(makeLatency);
-        return new Waiter(false, true, waiterLatency);
+        return new DefaultPooledObject<Waiter>(new Waiter(false, true, waiterLatency));
     }
 
     @Override
-    public void passivateObject(Waiter arg0) throws Exception {
-        arg0.setActive(false);
+    public void passivateObject(PooledObject<Waiter> obj) throws Exception {
+        obj.getObject().setActive(false);
         doWait(passivateLatency);
         if (Math.random() < passivateInvalidationProbability) {
-            arg0.setValid(false);
+            obj.getObject().setValid(false);
         }
     }
 
     @Override
-    public boolean validateObject(Waiter arg0) {
+    public boolean validateObject(PooledObject<Waiter> obj) {
         doWait(validateLatency);
-        return arg0.isValid();
+        return obj.getObject().isValid();
     }
     
     protected void doWait(long latency) {
@@ -174,12 +173,12 @@ KeyedPoolableObjectFactory<K,Waiter> {
     // KeyedPoolableObjectFactory methods
     
     @Override
-    public void activateObject(K key, Waiter obj) throws Exception {
+    public void activateObject(K key, PooledObject<Waiter> obj) throws Exception {
         activateObject(obj);
     }
 
     @Override
-    public void destroyObject(K key, Waiter obj) throws Exception {
+    public void destroyObject(K key,PooledObject<Waiter> obj) throws Exception {
         destroyObject(obj);
         synchronized (this) {
             Integer count = activeCounts.get(key);
@@ -188,7 +187,7 @@ KeyedPoolableObjectFactory<K,Waiter> {
     }
 
     @Override
-    public Waiter makeObject(K key) throws Exception {
+    public PooledObject<Waiter> makeObject(K key) throws Exception {
         synchronized (this) {
             Integer count = activeCounts.get(key);
             if (count == null) {
@@ -209,12 +208,12 @@ KeyedPoolableObjectFactory<K,Waiter> {
     }
 
     @Override
-    public void passivateObject(K key, Waiter obj) throws Exception {
+    public void passivateObject(K key, PooledObject<Waiter> obj) throws Exception {
         passivateObject(obj);
     }
 
     @Override
-    public boolean validateObject(K key, Waiter obj) {
+    public boolean validateObject(K key, PooledObject<Waiter> obj) {
         return validateObject(obj);
     }
 

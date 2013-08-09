@@ -17,47 +17,49 @@
 
 package org.apache.commons.pool2.performance;
 
-import org.apache.commons.pool2.PoolableObjectFactory;
+import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.PooledObjectFactory;
+import org.apache.commons.pool2.impl.DefaultPooledObject;
 
 /**
  * Sleepy ObjectFactory (everything takes a while longer)
  * 
  * @version $Revision$ 
  */
-public class SleepingObjectFactory implements PoolableObjectFactory<Integer> {
+public class SleepingObjectFactory implements PooledObjectFactory<Integer> {
 
     private int counter = 0;
     private boolean debug = false;
 
     @Override
-    public Integer makeObject() throws Exception {
+    public PooledObject<Integer> makeObject() throws Exception {
         Integer obj = new Integer(counter++);
         debug("makeObject", obj);
         sleep(500);
-        return obj;
+        return new DefaultPooledObject<Integer>(obj);
     }
 
     @Override
-    public void destroyObject(Integer obj) throws Exception {
+    public void destroyObject(PooledObject<Integer> obj) throws Exception {
         debug("destroyObject", obj);
         sleep(250);
     }
 
     @Override
-    public boolean validateObject(Integer obj) {
+    public boolean validateObject(PooledObject<Integer> obj) {
         debug("validateObject", obj);
         sleep(30);
         return true;
     }
 
     @Override
-    public void activateObject(Integer obj) throws Exception {
+    public void activateObject(PooledObject<Integer> obj) throws Exception {
         debug("activateObject", obj);
         sleep(10);
     }
 
     @Override
-    public void passivateObject(Integer obj) throws Exception {
+    public void passivateObject(PooledObject<Integer> obj) throws Exception {
         debug("passivateObject", obj);
         sleep(10);
     }

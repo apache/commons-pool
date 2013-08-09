@@ -21,13 +21,12 @@ import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.apache.commons.pool2.BaseObjectPool;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PoolUtils;
-import org.apache.commons.pool2.PoolableObjectFactory;
+import org.apache.commons.pool2.PooledObjectFactory;
 
 /**
  * A {@link java.lang.ref.SoftReference SoftReference} based {@link ObjectPool}.
@@ -42,28 +41,54 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  * @since 2.0
  */
 public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
+
+    /** Factory to source pooled objects */
+    private final PooledObjectFactory<T> factory;
+
+    /**
+     * Queue of broken references that might be able to be removed from
+     * <code>_pool</code>. This is used to help {@link #getNumIdle()} be more
+     * accurate with minimal performance overhead.
+     */
+    private final ReferenceQueue<T> refQueue = new ReferenceQueue<T>();
+
+    /** Count of instances that have been checkout out to pool clients */
+    private int numActive = 0; // @GuardedBy("this")
+    
+    /** Total number of instances that have been destroyed */
+    private long destroyCount = 0;
+    
+    /** Total number of instances that have been created */
+    private long createCount = 0;
+    
+    /** Idle references - waiting to be borrowed */
+    private final LinkedBlockingDeque<PooledSoftReference<T>> idleReferences =
+        new LinkedBlockingDeque<PooledSoftReference<T>>();
+    
+    /** All references - checked out or waiting to be borrowed. */
+    private final ArrayList<PooledSoftReference<T>> allReferences =
+        new ArrayList<PooledSoftReference<T>>();
+    
     /**
      * Create a <code>SoftReferenceObjectPool</code> with the specified factory.
      *
-     * @param factory
-     *            object factory to use.
+     * @param factory object factory to use.
      */
-    public SoftReferenceObjectPool(PoolableObjectFactory<T> factory) {
-        _pool = new ArrayList<SoftReference<T>>();
-        _factory = factory;
+    public SoftReferenceObjectPool(PooledObjectFactory<T> factory) {
+        this.factory = factory;
     }
 
     /**
      * Borrow an object from the pool. If there are no idle instances available
      * in the pool, the configured factory's
-     * {@link PoolableObjectFactory#makeObject()} method is invoked to create a
+     * {@link PooledObjectFactory#makeObject()} method is invoked to create a
      * new instance.
      * <p>
      * All instances are {@link PoolableObjectFactory#activateObject(Object)
-     * activated} and {@link PoolableObjectFactory#validateObject(Object)
+     * activated} and {@link PooledObjectFactory#validateObject(Object)
      * validated} before being returned by this method. If validation fails or
      * an exception occurs activating or validating an idle instance, the
-     * failing instance is {@link PoolableObjectFactory#destroyObject(Object)
+     * failing instance is {@link PooledObjectFactory#destroyObject(Object)
      * destroyed} and another instance is retrieved from the pool, validated and
      * activated. This process continues until either the pool is empty or an
      * instance passes validation. If the pool is empty on activation or it does
@@ -89,30 +114,38 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
         assertOpen();
         T obj = null;
         boolean newlyCreated = false;
+        PooledSoftReference<T> ref = null;
         while (null == obj) {
-            if (_pool.isEmpty()) {
-                if (null == _factory) {
+            if (idleReferences.isEmpty()) {
+                if (null == factory) {
                     throw new NoSuchElementException();
                 } else {
                     newlyCreated = true;
-                    obj = _factory.makeObject();
+                    obj = factory.makeObject().getObject();
+                    createCount++;
+                    // Do not register with the queue 
+                    ref = new PooledSoftReference<T>(new SoftReference<T>(obj));
+                    allReferences.add(ref); 
                 }
             } else {
-                SoftReference<T> ref = _pool.remove(_pool.size() - 1);
-                obj = ref.get();
-                ref.clear(); // prevent this ref from being enqueued with
-                             // refQueue.
+                ref = idleReferences.pollFirst();
+                obj = ref.getObject();
+                // Clear the reference so it will not be queued, but replace with a
+                // a new, non-registered reference so we can still track this object
+                // in allReferences
+                ref.getReference().clear();
+                ref.setReference(new SoftReference<T>(obj)); 
             }
-            if (null != _factory && null != obj) {
+            if (null != factory && null != obj) {
                 try {
-                    _factory.activateObject(obj);
-                    if (!_factory.validateObject(obj)) {
+                    factory.activateObject(ref);
+                    if (!factory.validateObject(ref)) {
                         throw new Exception("ValidateObject failed");
                     }
                 } catch (Throwable t) {
                     PoolUtils.checkRethrow(t);
                     try {
-                        _factory.destroyObject(obj);
+                        destroy(ref);
                     } catch (Throwable t2) {
                         PoolUtils.checkRethrow(t2);
                         // Swallowed
@@ -127,7 +160,8 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
                 }
             }
         }
-        _numActive++;
+        numActive++;
+        ref.allocate();
         return obj;
     }
 
@@ -137,9 +171,9 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
      * are true:
      * <ul>
      * <li>the pool is closed</li>
-     * <li>{@link PoolableObjectFactory#validateObject(Object) validation} fails
+     * <li>{@link PooledObjectFactory#validateObject(Object) validation} fails
      * </li>
-     * <li>{@link PoolableObjectFactory#passivateObject(Object) passivation}
+     * <li>{@link PooledObjectFactory#passivateObject(Object) passivation}
      * throws an exception</li>
      * </ul>
      * Exceptions passivating or destroying instances are silently swallowed.
@@ -151,12 +185,17 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
     @Override
     public synchronized void returnObject(T obj) throws Exception {
         boolean success = !isClosed();
-        if (_factory != null) {
-            if (!_factory.validateObject(obj)) {
+        final PooledSoftReference<T> ref = findReference(obj);
+        if (ref == null) {
+            throw new IllegalStateException(
+                "Returned object not currently part of this pool");
+        }
+        if (factory != null) {
+            if (!factory.validateObject(ref)) {
                 success = false;
             } else {
                 try {
-                    _factory.passivateObject(obj);
+                    factory.passivateObject(ref);
                 } catch (Exception e) {
                     success = false;
                 }
@@ -164,15 +203,18 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
         }
 
         boolean shouldDestroy = !success;
-        _numActive--;
+        numActive--;
         if (success) {
-            _pool.add(new SoftReference<T>(obj, refQueue));
+            
+            // Deallocate and add to the idle instance pool
+            ref.deallocate();
+            idleReferences.add(ref);
         }
-        notifyAll(); // _numActive has changed
+        notifyAll(); // numActive has changed
 
-        if (shouldDestroy && _factory != null) {
+        if (shouldDestroy && factory != null) {
             try {
-                _factory.destroyObject(obj);
+                destroy(ref);
             } catch (Exception e) {
                 // ignored
             }
@@ -184,11 +226,16 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
      */
     @Override
     public synchronized void invalidateObject(T obj) throws Exception {
-        _numActive--;
-        if (_factory != null) {
-            _factory.destroyObject(obj);
+        final PooledSoftReference<T> ref = findReference(obj);
+        if (ref == null) {
+            throw new IllegalStateException(
+                "Object to invalidate is not currently part of this pool");   
         }
-        notifyAll(); // _numActive has changed
+        if (factory != null) {
+            destroy(ref);
+        }
+        numActive--;
+        notifyAll(); // numActive has changed
     }
 
     /**
@@ -196,10 +243,10 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
      * "pre-loading" a pool with idle objects.
      * <p>
      * Before being added to the pool, the newly created instance is
-     * {@link PoolableObjectFactory#validateObject(Object) validated} and
-     * {@link PoolableObjectFactory#passivateObject(Object) passivated}. If
+     * {@link PooledObjectFactory#validateObject(Object) validated} and
+     * {@link PooledObjectFactory#passivateObject(Object) passivated}. If
      * validation fails, the new instance is
-     * {@link PoolableObjectFactory#destroyObject(Object) destroyed}. Exceptions
+     * {@link PooledObjectFactory#destroyObject(Object) destroyed}. Exceptions
      * generated by the factory <code>makeObject</code> or
      * <code>passivate</code> are propagated to the caller. Exceptions
      * destroying instances are silently swallowed.
@@ -213,28 +260,33 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
     @Override
     public synchronized void addObject() throws Exception {
         assertOpen();
-        if (_factory == null) {
+        if (factory == null) {
             throw new IllegalStateException(
                     "Cannot add objects without a factory.");
         }
-        T obj = _factory.makeObject();
+        T obj = factory.makeObject().getObject();
+        createCount++;
+        // Create and register with the queue
+        PooledSoftReference<T> ref = new PooledSoftReference<T>(
+                new SoftReference<T>(obj, refQueue));
+        allReferences.add(ref); 
 
         boolean success = true;
-        if (!_factory.validateObject(obj)) {
+        if (!factory.validateObject(ref)) {
             success = false;
         } else {
-            _factory.passivateObject(obj);
+            factory.passivateObject(ref);
         }
 
         boolean shouldDestroy = !success;
         if (success) {
-            _pool.add(new SoftReference<T>(obj, refQueue));
-            notifyAll(); // _numActive has changed
+            idleReferences.add(ref);
+            notifyAll(); // numActive has changed
         }
 
         if (shouldDestroy) {
             try {
-                _factory.destroyObject(obj);
+                destroy(ref);
             } catch (Exception e) {
                 // ignored
             }
@@ -250,7 +302,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
     @Override
     public synchronized int getNumIdle() {
         pruneClearedReferences();
-        return _pool.size();
+        return idleReferences.size();
     }
 
     /**
@@ -260,7 +312,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
      */
     @Override
     public synchronized int getNumActive() {
-        return _numActive;
+        return numActive;
     }
 
     /**
@@ -268,20 +320,20 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
      */
     @Override
     public synchronized void clear() {
-        if (null != _factory) {
-            Iterator<SoftReference<T>> iter = _pool.iterator();
+        if (null != factory) {
+            Iterator<PooledSoftReference<T>> iter = idleReferences.iterator();
             while (iter.hasNext()) {
                 try {
-                    T obj = iter.next().get();
-                    if (null != obj) {
-                        _factory.destroyObject(obj);
+                    final PooledSoftReference<T> ref = iter.next();
+                    if (null != ref.getObject()) {
+                        factory.destroyObject(ref);
                     }
                 } catch (Exception e) {
                     // ignore error, keep destroying the rest
                 }
             }
         }
-        _pool.clear();
+        idleReferences.clear();
         pruneClearedReferences();
     }
 
@@ -300,40 +352,73 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
     }
 
     /**
-     * If any idle objects were garbage collected, remove their
-     * {@link Reference} wrappers from the idle object pool.
-     */
-    private void pruneClearedReferences() {
-        Reference<? extends T> ref;
-        while ((ref = refQueue.poll()) != null) {
-            try {
-                _pool.remove(ref);
-            } catch (UnsupportedOperationException uoe) {
-                // ignored
-            }
-        }
-    }
-
-    /**
-     * Returns the {@link PoolableObjectFactory} used by this pool to create and
+     * Returns the {@link PooledObjectFactory} used by this pool to create and
      * manage object instances.
      *
      * @return the factory
      */
-    public synchronized PoolableObjectFactory<T> getFactory() {
-        return _factory;
+    public synchronized PooledObjectFactory<T> getFactory() {
+        return factory;
     }
-
-    private final List<SoftReference<T>> _pool;
-
-    private final PoolableObjectFactory<T> _factory;
-
+    
     /**
-     * Queue of broken references that might be able to be removed from
-     * <code>_pool</code>. This is used to help {@link #getNumIdle()} be more
-     * accurate with minimal performance overhead.
+     * If any idle objects were garbage collected, remove their
+     * {@link Reference} wrappers from the idle object pool.
      */
-    private final ReferenceQueue<T> refQueue = new ReferenceQueue<T>();
-
-    private int _numActive = 0; // @GuardedBy("this")
+    private void pruneClearedReferences() {
+        // Remove wrappers for enqueued references from idle and allReferences lists
+        removeClearedReferences(idleReferences.iterator());
+        removeClearedReferences(allReferences.iterator());
+        while (refQueue.poll() != null) {}
+    }
+    
+    /**
+     * Find the PooledSoftReference in allReferences that points to obj.
+     * 
+     * @param obj returning object
+     * @return PooledSoftReference wrapping a soft reference to obj
+     */
+    private PooledSoftReference<T> findReference(T obj) {
+        Iterator<PooledSoftReference<T>> iterator = allReferences.iterator();
+        while (iterator.hasNext()) {
+            final PooledSoftReference<T> reference = iterator.next();
+            if (reference.getObject() != null && reference.getObject().equals(obj)) {
+                return reference;
+            } 
+        }
+        return null;
+    }
+    
+    /**
+     * Destroy a {@code PooledSoftReference} and remove it from the idle and all
+     * references pools.
+     * 
+     * @param toDestroy PooledSoftReference to destroy
+     * @throws Exception
+     */
+    private void destroy(PooledSoftReference<T> toDestroy) throws Exception {
+        toDestroy.invalidate();
+        idleReferences.remove(toDestroy);
+        allReferences.remove(toDestroy);
+        try {
+            factory.destroyObject(toDestroy);
+        } finally {
+            destroyCount++;
+            toDestroy.getReference().clear();
+        }
+    }
+    
+    /**
+     * Clears cleared references from iterator's collection 
+     * @param iterator iterator over idle/allReferences
+     */
+    private void removeClearedReferences(Iterator<PooledSoftReference<T>> iterator) {
+        PooledSoftReference<T> ref;
+        while (iterator.hasNext()) {
+            ref = iterator.next();
+            if (ref.getReference() == null || ref.getReference().isEnqueued()) {
+                iterator.remove();
+            }
+        }
+    }
 }

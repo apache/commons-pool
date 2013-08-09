@@ -16,24 +16,26 @@
  */
 package org.apache.commons.pool2;
 
+import org.apache.commons.pool2.impl.DefaultPooledObject;
+
 /**
- * A base implementation of <code>KeyedPoolableObjectFactory</code>.
+ * A base implementation of <code>KeyedPooledObjectFactory</code>.
  * <p>
  * All operations defined here are essentially no-op's.
  * </p>
  * This class is immutable, and therefore thread-safe.
  *
- * @see KeyedPoolableObjectFactory
+ * @see KeyedPooledObjectFactory
  *
  * @param <K> The type of keys managed by this factory.
  * @param <V> Type of element managed by this factory.
  *
- * @version $Revision$
+ * @version $Revision: 1333925 $
  *
  * @since 2.0
  */
-public abstract class BaseKeyedPoolableObjectFactory<K,V>
-        implements KeyedPoolableObjectFactory<K,V> {
+public abstract class BaseKeyedPooledObjectFactory<K,V>
+        implements KeyedPooledObjectFactory<K,V> {
 
     /**
      * Create an instance that can be served by the pool.
@@ -41,9 +43,12 @@ public abstract class BaseKeyedPoolableObjectFactory<K,V>
      * @param key the key used when constructing the object
      * @return an instance that can be served by the pool
      */
-    @Override
-    public abstract V makeObject(K key)
+    public abstract V create(K key)
         throws Exception;
+    
+    public PooledObject<V> makeObject(K key) throws Exception {
+        return new DefaultPooledObject<V>(create(key));
+    }
 
     /**
      * Destroy an instance no longer needed by the pool.
@@ -51,10 +56,10 @@ public abstract class BaseKeyedPoolableObjectFactory<K,V>
      * The default implementation is a no-op.
      *
      * @param key the key used when selecting the instance
-     * @param obj the instance to be destroyed
+     * @param p a {@code PooledObject} wrapping the the instance to be destroyed
      */
     @Override
-    public void destroyObject(K key, V obj)
+    public void destroyObject(K key, PooledObject<V> p)
         throws Exception {
     }
 
@@ -64,11 +69,11 @@ public abstract class BaseKeyedPoolableObjectFactory<K,V>
      * The default implementation always returns <tt>true</tt>.
      *
      * @param key the key used when selecting the object
-     * @param obj the instance to be validated
+     * @param p a {@code PooledObject} wrapping the the instance to be validated
      * @return always <code>true</code> in the default implementation
      */
     @Override
-    public boolean validateObject(K key, V obj) {
+    public boolean validateObject(K key, PooledObject<V> p) {
         return true;
     }
 
@@ -78,10 +83,10 @@ public abstract class BaseKeyedPoolableObjectFactory<K,V>
      * The default implementation is a no-op.
      *
      * @param key the key used when selecting the object
-     * @param obj the instance to be activated
+     * @param p a {@code PooledObject} wrapping the the instance to be activated
      */
     @Override
-    public void activateObject(K key, V obj)
+    public void activateObject(K key, PooledObject<V> p)
         throws Exception {
     }
 
@@ -91,10 +96,10 @@ public abstract class BaseKeyedPoolableObjectFactory<K,V>
      * The default implementation is a no-op.
      *
      * @param key the key used when selecting the object
-     * @param obj the instance to be passivated
+     * @param p a {@code PooledObject} wrapping the the instance to be passivated
      */
     @Override
-    public void passivateObject(K key, V obj)
+    public void passivateObject(K key, PooledObject<V> p)
         throws Exception {
     }
 }

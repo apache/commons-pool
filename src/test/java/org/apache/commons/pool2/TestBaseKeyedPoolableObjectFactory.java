@@ -27,9 +27,9 @@ public class TestBaseKeyedPoolableObjectFactory {
 
     @Test
     public void testDefaultMethods() throws Exception {
-        KeyedPoolableObjectFactory<Object,Object> factory = new BaseKeyedPoolableObjectFactory<Object,Object>() { 
+        KeyedPooledObjectFactory<Object,Object> factory = new BaseKeyedPooledObjectFactory<Object,Object>() { 
             @Override
-            public Object makeObject(Object key) throws Exception {
+            public Object create(Object key) throws Exception {
                 return null;
             }
         };   

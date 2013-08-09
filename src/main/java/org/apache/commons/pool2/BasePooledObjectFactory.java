@@ -16,6 +16,8 @@
  */
 package org.apache.commons.pool2;
 
+import org.apache.commons.pool2.impl.DefaultPooledObject;
+
 /**
  * A base implementation of <code>PoolableObjectFactory</code>.
  * <p>
@@ -28,55 +30,63 @@ package org.apache.commons.pool2;
  * @see PoolableObjectFactory
  * @see BaseKeyedPoolableObjectFactory
  *
- * @version $Revision$
+ * @version $Revision: 1333925 $
  *
  * @since 2.0
  */
-public abstract class BasePoolableObjectFactory<T> implements PoolableObjectFactory<T> {
+public abstract class BasePooledObjectFactory<T> implements PooledObjectFactory<T> {
     /**
-     * {@inheritDoc}
+     * Creates an object instance, to be wrapped in a {@link PooledObject}.
+     * <p>This method <strong>must</strong> support concurrent, multi-threaded
+     * activation.</p>
+     * 
+     * @return an instance to be served by the pool
      */
+    public abstract T create() throws Exception;
+    
     @Override
-    public abstract T makeObject() throws Exception;
+    public PooledObject<T> makeObject() throws Exception {
+        return new DefaultPooledObject<T>(create());
+    }
 
     /**
      *  No-op.
      *
-     *  @param obj ignored
+     *  @param p ignored
      */
     @Override
-    public void destroyObject(T obj)
+    public void destroyObject(PooledObject<T> p)
         throws Exception  {
     }
 
     /**
-     * This implementation always returns <code>true</code>.
+     * This implementation always returns {@code true}.
      *
-     * @param obj ignored
+     * @param p ignored
      *
-     * @return <code>true</code>
+     * @return {@code true}
      */
     @Override
-    public boolean validateObject(T obj) {
+    public boolean validateObject(PooledObject<T> p) {
         return true;
     }
 
     /**
      *  No-op.
      *
-     *  @param obj ignored
+     *  @param p ignored
      */
     @Override
-    public void activateObject(T obj) throws Exception {
+    public void activateObject(PooledObject<T> p) throws Exception {
     }
 
     /**
      *  No-op.
      *
-     * @param obj ignored
+     * @param p ignored
      */
     @Override
-    public void passivateObject(T obj)
+    public void passivateObject(PooledObject<T> p)
         throws Exception {
     }
 }
