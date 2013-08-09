@@ -27,9 +27,9 @@ public class TestBasePoolableObjectFactory {
 
     @Test
     public void testDefaultMethods() throws Exception {
-        PoolableObjectFactory<Object> factory = new BasePoolableObjectFactory<Object>() { 
+        PooledObjectFactory<Object> factory = new BasePooledObjectFactory<Object>() { 
             @Override
-            public Object makeObject() throws Exception {
+            public Object create() throws Exception {
                 return null;
             }
         };   

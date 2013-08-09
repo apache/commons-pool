@@ -21,7 +21,7 @@ import static junit.framework.Assert.*;
 import junit.framework.TestCase;
 
 import org.apache.commons.pool2.ObjectPool;
-import org.apache.commons.pool2.PoolableObjectFactory;
+import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.SoftReferenceObjectPool;
 import org.apache.commons.pool2.PoolUtils;
@@ -45,7 +45,7 @@ public abstract class TestObjectPool {
      * Generally speaking there should be no limits on the various object counts.
      * @throws UnsupportedOperationException if the pool being tested does not follow pool contracts.
      */
-    protected abstract ObjectPool<Object> makeEmptyPool(PoolableObjectFactory<Object> factory) throws UnsupportedOperationException;
+    protected abstract ObjectPool<Object> makeEmptyPool(PooledObjectFactory<Object> factory) throws UnsupportedOperationException;
 
     @Test
     public void testClosedPoolBehavior() throws Exception {

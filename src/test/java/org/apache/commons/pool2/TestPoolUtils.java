@@ -36,6 +36,7 @@ import java.util.TimerTask;
 import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
 
+import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.PoolImplUtils;
@@ -83,11 +84,10 @@ public class TestPoolUtils {
 
         // Test that the minIdle check doesn't add too many idle objects
         @SuppressWarnings("unchecked")
-        final PoolableObjectFactory<Object> pof = createProxy(PoolableObjectFactory.class, calledMethods);
-        final ObjectPool<Object> op = new GenericObjectPool<Object>(
-                PoolImplUtils.poolableToPooledObjectFactory(pof));
+        final PooledObjectFactory<Object> pof = createProxy(PooledObjectFactory.class, calledMethods);
+        final ObjectPool<Object> op = new GenericObjectPool<Object>(pof);
         PoolUtils.checkMinIdle(op, 2, 100);
-        Thread.sleep(400);
+        Thread.sleep(1000);
         assertEquals(2, op.getNumIdle());
         op.close();
         int makeObjectCount = 0;
@@ -161,11 +161,10 @@ public class TestPoolUtils {
 
         // Test that the minIdle check doesn't add too many idle objects
         @SuppressWarnings("unchecked")
-        final KeyedPoolableObjectFactory<Object,Object> kpof =
-            createProxy(KeyedPoolableObjectFactory.class, calledMethods);
+        final KeyedPooledObjectFactory<Object,Object> kpof =
+            createProxy(KeyedPooledObjectFactory.class, calledMethods);
         final KeyedObjectPool<Object,Object> kop =
-                new GenericKeyedObjectPool<Object,Object>(
-                        PoolImplUtils.poolableToKeyedPooledObjectFactory(kpof));
+                new GenericKeyedObjectPool<Object,Object>(kpof);
         PoolUtils.checkMinIdle(kop, key, 2, 100);
         Thread.sleep(400);
         assertEquals(2, kop.getNumIdle(key));
@@ -223,7 +222,7 @@ public class TestPoolUtils {
             // expected
         }
 
-        // Because this isn't determinist and you can get false failures, try more than once.
+        // Because this isn't deterministic and you can get false failures, try more than once.
         AssertionFailedError afe = null;
         int triesLeft = 3;
         do {
@@ -389,7 +388,7 @@ public class TestPoolUtils {
     @Test
     public void testSynchronizedPoolableFactoryPoolableObjectFactory() throws Exception {
         try {
-            PoolUtils.synchronizedPoolableFactory((PoolableObjectFactory<Object>)null);
+            PoolUtils.synchronizedPooledFactory((PooledObjectFactory<Object>)null);
             fail("PoolUtils.synchronizedPoolableFactory(PoolableObjectFactory) must not allow a null factory.");
         } catch(IllegalArgumentException iae) {
             // expected
@@ -397,10 +396,10 @@ public class TestPoolUtils {
 
         final List<String> calledMethods = new ArrayList<String>();
         @SuppressWarnings("unchecked")
-        final PoolableObjectFactory<Object> pof =
-                createProxy(PoolableObjectFactory.class, calledMethods);
+        final PooledObjectFactory<Object> pof =
+                createProxy(PooledObjectFactory.class, calledMethods);
 
-        final PoolableObjectFactory<Object> spof = PoolUtils.synchronizedPoolableFactory(pof);
+        final PooledObjectFactory<Object> spof = PoolUtils.synchronizedPooledFactory(pof);
         final List<String> expectedMethods = invokeEveryMethod(spof);
         assertEquals(expectedMethods, calledMethods);
 
@@ -410,7 +409,7 @@ public class TestPoolUtils {
     @Test
     public void testSynchronizedPoolableFactoryKeyedPoolableObjectFactory() throws Exception {
         try {
-            PoolUtils.synchronizedPoolableFactory((KeyedPoolableObjectFactory<Object,Object>)null);
+            PoolUtils.synchronizedKeyedPooledFactory((KeyedPooledObjectFactory<Object,Object>)null);
             fail("PoolUtils.synchronizedPoolableFactory(KeyedPoolableObjectFactory) must not allow a null factory.");
         } catch(IllegalArgumentException iae) {
             // expected
@@ -418,10 +417,10 @@ public class TestPoolUtils {
 
         final List<String> calledMethods = new ArrayList<String>();
         @SuppressWarnings("unchecked")
-        final KeyedPoolableObjectFactory<Object,Object> kpof =
-                createProxy(KeyedPoolableObjectFactory.class, calledMethods);
+        final KeyedPooledObjectFactory<Object,Object> kpof =
+                createProxy(KeyedPooledObjectFactory.class, calledMethods);
 
-        final KeyedPoolableObjectFactory<Object,Object> skpof = PoolUtils.synchronizedPoolableFactory(kpof);
+        final KeyedPooledObjectFactory<Object,Object> skpof = PoolUtils.synchronizedKeyedPooledFactory(kpof);
         final List<String> expectedMethods = invokeEveryMethod(skpof);
         assertEquals(expectedMethods, calledMethods);
 
@@ -727,7 +726,7 @@ public class TestPoolUtils {
         return expectedMethods;
     }
 
-    private static <T> List<String> invokeEveryMethod(PoolableObjectFactory<T> pof) throws Exception {
+    private static <T> List<String> invokeEveryMethod(PooledObjectFactory<T> pof) throws Exception {
         pof.activateObject(null);
         pof.destroyObject(null);
         pof.makeObject();
@@ -742,7 +741,7 @@ public class TestPoolUtils {
         return expectedMethods;
     }
 
-    private static <K,V> List<String> invokeEveryMethod(KeyedPoolableObjectFactory<K,V> kpof) throws Exception {
+    private static <K,V> List<String> invokeEveryMethod(KeyedPooledObjectFactory<K,V> kpof) throws Exception {
         kpof.activateObject(null, null);
         kpof.destroyObject(null, null);
         kpof.makeObject(null);
@@ -785,6 +784,8 @@ public class TestPoolUtils {
                 return new Long(0);
             } else if (Object.class.equals(method.getReturnType())) {
                 return new Object();
+            } else if (PooledObject.class.equals(method.getReturnType())) {
+                return new DefaultPooledObject<Object>(new Object());
             } else {
                 return null;
             }

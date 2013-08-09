@@ -40,7 +40,7 @@ public class TestBaseObjectPool extends TestObjectPool {
     }
 
     @Override
-    protected ObjectPool<Object> makeEmptyPool(final PoolableObjectFactory<Object> factory) {
+    protected ObjectPool<Object> makeEmptyPool(final PooledObjectFactory<Object> factory) {
         if (this.getClass() != TestBaseObjectPool.class) {
             fail("Subclasses of TestBaseObjectPool must reimplement this method.");
         }

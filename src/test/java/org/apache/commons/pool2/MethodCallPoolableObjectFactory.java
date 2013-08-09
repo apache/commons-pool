@@ -20,7 +20,8 @@ package org.apache.commons.pool2;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.apache.commons.pool2.PoolableObjectFactory;
+import org.apache.commons.pool2.PooledObjectFactory;
+import org.apache.commons.pool2.impl.DefaultPooledObject;
 
 /**
  * A poolable object factory that tracks how {@link MethodCall methods are called}.
@@ -28,7 +29,7 @@ import org.apache.commons.pool2.PoolableObjectFactory;
  * @version $Revision$
  * @see MethodCall
  */
-public class MethodCallPoolableObjectFactory implements PoolableObjectFactory<Object> {
+public class MethodCallPoolableObjectFactory implements PooledObjectFactory<Object> {
     private final List<MethodCall> methodCalls = new ArrayList<MethodCall>();
     private int count = 0;
     private boolean valid = true;
@@ -110,7 +111,7 @@ public class MethodCallPoolableObjectFactory implements PoolableObjectFactory<Ob
     }
 
     @Override
-    public Object makeObject() throws Exception {
+    public PooledObject<Object> makeObject() throws Exception {
         final MethodCall call = new MethodCall("makeObject");
         methodCalls.add(call);
         int count = this.count++;
@@ -119,20 +120,20 @@ public class MethodCallPoolableObjectFactory implements PoolableObjectFactory<Ob
         }
         final Integer obj = new Integer(count);
         call.setReturned(obj);
-        return obj;
+        return new DefaultPooledObject<Object>(obj);
     }
 
     @Override
-    public void activateObject(final Object obj) throws Exception {
-        methodCalls.add(new MethodCall("activateObject", obj));
+    public void activateObject(final PooledObject<Object> obj) throws Exception {
+        methodCalls.add(new MethodCall("activateObject", obj.getObject()));
         if (activateObjectFail) {
             throw new PrivateException("activateObject");
         }
     }
 
     @Override
-    public boolean validateObject(final Object obj) {
-        final MethodCall call = new MethodCall("validateObject", obj);
+    public boolean validateObject(final PooledObject<Object> obj) {
+        final MethodCall call = new MethodCall("validateObject", obj.getObject());
         methodCalls.add(call);
         if (validateObjectFail) {
             throw new PrivateException("validateObject");
@@ -143,16 +144,16 @@ public class MethodCallPoolableObjectFactory implements PoolableObjectFactory<Ob
     }
 
     @Override
-    public void passivateObject(final Object obj) throws Exception {
-        methodCalls.add(new MethodCall("passivateObject", obj));
+    public void passivateObject(final PooledObject<Object> obj) throws Exception {
+        methodCalls.add(new MethodCall("passivateObject", obj.getObject()));
         if (passivateObjectFail) {
             throw new PrivateException("passivateObject");
         }
     }
 
     @Override
-    public void destroyObject(final Object obj) throws Exception {
-        methodCalls.add(new MethodCall("destroyObject", obj));
+    public void destroyObject(final PooledObject<Object> obj) throws Exception {
+        methodCalls.add(new MethodCall("destroyObject", obj.getObject()));
         if (destroyObjectFail) {
             throw new PrivateException("destroyObject");
         }

@@ -25,8 +25,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.pool2.BasePoolableObjectFactory;
-import org.apache.commons.pool2.PoolableObjectFactory;
+import org.apache.commons.pool2.BasePooledObjectFactory;
+import org.apache.commons.pool2.PooledObject;
 import org.junit.After;
 import org.junit.Test;
 
@@ -162,9 +162,9 @@ public class TestSoftRefOutOfMemory {
      */
     @Test
     public void testOutOfMemoryError() throws Exception {
-        pool = new SoftReferenceObjectPool<String>(new BasePoolableObjectFactory<String>() {
+        pool = new SoftReferenceObjectPool<String>(new BasePooledObjectFactory<String>() {
             @Override
-            public String makeObject() throws Exception {
+            public String create() throws Exception {
                 throw new OutOfMemoryError();
             }
         });
@@ -178,14 +178,14 @@ public class TestSoftRefOutOfMemory {
         }
         pool.close();
 
-        pool = new SoftReferenceObjectPool<String>(new BasePoolableObjectFactory<String>() {
+        pool = new SoftReferenceObjectPool<String>(new BasePooledObjectFactory<String>() {
             @Override
-            public String makeObject() throws Exception {
+            public String create() throws Exception {
                 return new String();
             }
 
             @Override
-            public boolean validateObject(String obj) {
+            public boolean validateObject(PooledObject<String> obj) {
                 throw new OutOfMemoryError();
             }
         });
@@ -199,19 +199,19 @@ public class TestSoftRefOutOfMemory {
         }
         pool.close();
         
-        pool = new SoftReferenceObjectPool<String>(new BasePoolableObjectFactory<String>() {
+        pool = new SoftReferenceObjectPool<String>(new BasePooledObjectFactory<String>() {
             @Override
-            public String makeObject() throws Exception {
+            public String create() throws Exception {
                 return new String();
             }
 
             @Override
-            public boolean validateObject(String obj) {
+            public boolean validateObject(PooledObject<String> obj) {
                 throw new IllegalAccessError();
             }
 
             @Override
-            public void destroyObject(String obj) throws Exception {
+            public void destroyObject(PooledObject<String> obj) throws Exception {
                 throw new OutOfMemoryError();
             }
         });
@@ -228,11 +228,11 @@ public class TestSoftRefOutOfMemory {
     }
 
 
-    public static class SmallPoolableObjectFactory implements PoolableObjectFactory<String> {
+    public static class SmallPoolableObjectFactory extends BasePooledObjectFactory<String> {
         private int counter = 0;
 
         @Override
-        public String makeObject() {
+        public String create() {
             counter++;
             // It seems that as of Java 1.4 String.valueOf may return an
             // intern()'ed String this may cause problems when the tests
@@ -241,19 +241,9 @@ public class TestSoftRefOutOfMemory {
             // is returned eliminated false failures.
             return new String(String.valueOf(counter));
         }
-        @Override
-        public boolean validateObject(String obj) {
-            return true;
-        }
-        @Override
-        public void activateObject(String obj) { }
-        @Override
-        public void passivateObject(String obj) { }
-        @Override
-        public void destroyObject(String obj) { }
     }
 
-    public static class LargePoolableObjectFactory implements PoolableObjectFactory<String> {
+    public static class LargePoolableObjectFactory extends BasePooledObjectFactory<String> {
         private String buffer;
         private int counter = 0;
 
@@ -264,19 +254,9 @@ public class TestSoftRefOutOfMemory {
         }
 
         @Override
-        public String makeObject() {
+        public String create() {
             counter++;
             return String.valueOf(counter) + buffer;
         }
-        @Override
-        public boolean validateObject(String obj) {
-            return true;
-        }
-        @Override
-        public void activateObject(String obj) { }
-        @Override
-        public void passivateObject(String obj) { }
-        @Override
-        public void destroyObject(String obj) { }
     }
 }

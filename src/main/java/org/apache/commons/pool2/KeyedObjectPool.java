@@ -21,8 +21,7 @@ import java.util.NoSuchElementException;
 /**
  * A "keyed" pooling interface.
  * <p>
- * A keyed pool pools instances of multiple types. Each type may be accessed
- * using an arbitrary key.
+ * A keyed pool maintains a pool of instances for each key value.
  * <p>
  * Example of use:
  * <pre style="border:solid thin; padding: 1ex;"
@@ -71,7 +70,7 @@ public interface KeyedObjectPool<K,V> {
      * with {@link KeyedPoolableObjectFactory#makeObject makeObject} or will be
      * a previously idle object and have been activated with
      * {@link KeyedPoolableObjectFactory#activateObject activateObject} and then
-     * validated with
+     * (optionally) validated with
      * {@link KeyedPoolableObjectFactory#validateObject validateObject}.
      * <p>
      * By contract, clients <strong>must</strong> return the borrowed object

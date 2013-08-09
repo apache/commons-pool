@@ -18,7 +18,8 @@
 package org.apache.commons.pool2.impl;
 
 import org.apache.commons.pool2.ObjectPool;
-import org.apache.commons.pool2.PoolableObjectFactory;
+import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.TestBaseObjectPool;
 
 /**
@@ -29,24 +30,24 @@ public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
     @Override
     protected ObjectPool<Object> makeEmptyPool(int cap) {
         return new SoftReferenceObjectPool<Object>(
-            new PoolableObjectFactory<Object>()  {
+            new PooledObjectFactory<Object>()  {
                 int counter = 0;
                 @Override
-                public Object makeObject() { return String.valueOf(counter++); }
+                public PooledObject<Object> makeObject() { return new DefaultPooledObject<Object>(String.valueOf(counter++)); }
                 @Override
-                public void destroyObject(Object obj) { }
+                public void destroyObject(PooledObject<Object> obj) { }
                 @Override
-                public boolean validateObject(Object obj) { return true; }
+                public boolean validateObject(PooledObject<Object> obj) { return true; }
                 @Override
-                public void activateObject(Object obj) { }
+                public void activateObject(PooledObject<Object> obj) { }
                 @Override
-                public void passivateObject(Object obj) { }
+                public void passivateObject(PooledObject<Object> obj) { }
             }
             );
     }
 
     @Override
-    protected ObjectPool<Object> makeEmptyPool(final PoolableObjectFactory<Object> factory) {
+    protected ObjectPool<Object> makeEmptyPool(final PooledObjectFactory<Object> factory) {
         return new SoftReferenceObjectPool<Object>(factory);
     }
 
