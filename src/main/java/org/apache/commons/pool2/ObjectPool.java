@@ -48,7 +48,7 @@ import java.util.NoSuchElementException;
  *
  * @param <T> Type of element pooled in this pool.
  *
- * @see PoolableObjectFactory
+ * @see PooledObjectFactory
  * @see KeyedObjectPool
  * @see BaseObjectPool
  *
@@ -61,10 +61,10 @@ public interface ObjectPool<T> {
      * Obtains an instance from this pool.
      * <p>
      * Instances returned from this method will have been either newly created
-     * with {@link PoolableObjectFactory#makeObject} or will be a previously
+     * with {@link PooledObjectFactory#makeObject} or will be a previously
      * idle object and have been activated with
-     * {@link PoolableObjectFactory#activateObject} and then validated with
-     * {@link PoolableObjectFactory#validateObject}.
+     * {@link PooledObjectFactory#activateObject} and then validated with
+     * {@link PooledObjectFactory#validateObject}.
      * <p>
      * By contract, clients <strong>must</strong> return the borrowed instance
      * using {@link #returnObject}, {@link #invalidateObject}, or a related
@@ -79,7 +79,7 @@ public interface ObjectPool<T> {
      * @throws IllegalStateException
      *              after {@link #close close} has been called on this pool.
      * @throws Exception
-     *              when {@link PoolableObjectFactory#makeObject} throws an
+     *              when {@link PooledObjectFactory#makeObject} throws an
      *              exception.
      * @throws NoSuchElementException
      *              when the pool is exhausted and cannot or will not return
@@ -116,13 +116,13 @@ public interface ObjectPool<T> {
     void invalidateObject(T obj) throws Exception;
 
     /**
-     * Create an object using the {@link PoolableObjectFactory factory} or other
+     * Create an object using the {@link PooledObjectFactory factory} or other
      * implementation dependent mechanism, passivate it, and then place it in
      * the idle object pool. <code>addObject</code> is useful for "pre-loading"
      * a pool with idle objects. (Optional operation).
      *
      * @throws Exception
-     *              when {@link PoolableObjectFactory#makeObject} fails.
+     *              when {@link PooledObjectFactory#makeObject} fails.
      * @throws IllegalStateException
      *              after {@link #close} has been called on this pool.
      * @throws UnsupportedOperationException
@@ -150,7 +150,7 @@ public interface ObjectPool<T> {
     /**
      * Clears any objects sitting idle in the pool, releasing any associated
      * resources (optional operation). Idle objects cleared must be
-     * {@link PoolableObjectFactory#destroyObject(Object)}.
+     * {@link PooledObjectFactory#destroyObject(PooledObject)}.
      *
      * @throws UnsupportedOperationException
      *              if this implementation does not support the operation
