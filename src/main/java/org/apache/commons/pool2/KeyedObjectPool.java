@@ -54,7 +54,7 @@ import java.util.NoSuchElementException;
  * @param <K> The type of keys maintained by this pool.
  * @param <V> Type of element pooled in this pool.
  *
- * @see KeyedPoolableObjectFactory
+ * @see KeyedPooledObjectFactory
  * @see ObjectPool
  * @see org.apache.commons.pool2.impl.GenericKeyedObjectPool GenericKeyedObjectPool
  *
@@ -67,11 +67,11 @@ public interface KeyedObjectPool<K,V> {
      * Obtains an instance from this pool for the specified <code>key</code>.
      * <p>
      * Instances returned from this method will have been either newly created
-     * with {@link KeyedPoolableObjectFactory#makeObject makeObject} or will be
+     * with {@link KeyedPooledObjectFactory#makeObject makeObject} or will be
      * a previously idle object and have been activated with
-     * {@link KeyedPoolableObjectFactory#activateObject activateObject} and then
+     * {@link KeyedPooledObjectFactory#activateObject activateObject} and then
      * (optionally) validated with
-     * {@link KeyedPoolableObjectFactory#validateObject validateObject}.
+     * {@link KeyedPooledObjectFactory#validateObject validateObject}.
      * <p>
      * By contract, clients <strong>must</strong> return the borrowed object
      * using {@link #returnObject returnObject},
@@ -90,7 +90,7 @@ public interface KeyedObjectPool<K,V> {
      * @throws IllegalStateException
      *              after {@link #close close} has been called on this pool
      * @throws Exception
-     *              when {@link KeyedPoolableObjectFactory#makeObject
+     *              when {@link KeyedPooledObjectFactory#makeObject
      *              makeObject} throws an exception
      * @throws NoSuchElementException
      *              when the pool is exhausted and cannot or will not return
@@ -132,7 +132,7 @@ public interface KeyedObjectPool<K,V> {
     void invalidateObject(K key, V obj) throws Exception;
 
     /**
-     * Create an object using the {@link KeyedPoolableObjectFactory factory} or
+     * Create an object using the {@link KeyedPooledObjectFactory factory} or
      * other implementation dependent mechanism, passivate it, and then place it
      * in the idle object pool. <code>addObject</code> is useful for
      * "pre-loading" a pool with idle objects (Optional operation).
@@ -140,7 +140,7 @@ public interface KeyedObjectPool<K,V> {
      * @param key the key a new instance should be added to
      *
      * @throws Exception
-     *              when {@link KeyedPoolableObjectFactory#makeObject} fails.
+     *              when {@link KeyedPooledObjectFactory#makeObject} fails.
      * @throws IllegalStateException
      *              after {@link #close} has been called on this pool.
      * @throws UnsupportedOperationException

@@ -27,8 +27,8 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
  *
  * @param <T> Type of element managed in this factory.
  *
- * @see PoolableObjectFactory
- * @see BaseKeyedPoolableObjectFactory
+ * @see PooledObjectFactory
+ * @see BaseKeyedPooledObjectFactory
  *
  * @version $Revision: 1333925 $
  *
@@ -39,11 +39,11 @@ public abstract class BasePooledObjectFactory<T> implements PooledObjectFactory<
      * Creates an object instance, to be wrapped in a {@link PooledObject}.
      * <p>This method <strong>must</strong> support concurrent, multi-threaded
      * activation.</p>
-     * 
+     *
      * @return an instance to be served by the pool
      */
     public abstract T create() throws Exception;
-    
+
     @Override
     public PooledObject<T> makeObject() throws Exception {
         return new DefaultPooledObject<T>(create());

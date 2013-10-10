@@ -45,7 +45,8 @@ public abstract class BaseKeyedPooledObjectFactory<K,V>
      */
     public abstract V create(K key)
         throws Exception;
-    
+
+    @Override
     public PooledObject<V> makeObject(K key) throws Exception {
         return new DefaultPooledObject<V>(create(key));
     }

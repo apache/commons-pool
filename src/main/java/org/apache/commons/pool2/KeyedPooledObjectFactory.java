@@ -53,7 +53,7 @@ package org.apache.commons.pool2;
  *   be considered active, passive or in a generally consistent state.
  *  </li>
  * </ol>
- * {@link KeyedPoolableObjectFactory} must be thread-safe. The only promise
+ * {@link KeyedPooledObjectFactory} must be thread-safe. The only promise
  * an {@link KeyedObjectPool} makes is that the same instance of an object will
  * not be passed to more than one method of a
  * <code>KeyedPoolableObjectFactory</code> at a time.
