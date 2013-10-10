@@ -29,16 +29,10 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
-import javax.management.ListenerNotFoundException;
-import javax.management.MBeanNotificationInfo;
 import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
-import javax.management.NotificationBroadcasterSupport;
-import javax.management.NotificationEmitter;
-import javax.management.NotificationFilter;
-import javax.management.NotificationListener;
 import javax.management.ObjectName;
 
 import org.apache.commons.pool2.PooledObject;
@@ -57,7 +51,7 @@ import org.apache.commons.pool2.SwallowedExceptionListener;
  *
  * @since 2.0
  */
-public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
+public abstract class BaseGenericObjectPool<T> {
 
     // Constants
     /**
@@ -107,7 +101,6 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
 
     // Monitoring (primarily JMX) attributes
     private final ObjectName oname;
-    private final NotificationBroadcasterSupport jmxNotificationSupport;
     private final String creationStackTrace;
     private final AtomicLong borrowedCount = new AtomicLong(0);
     private final AtomicLong returnedCount = new AtomicLong(0);
@@ -134,10 +127,8 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
     public BaseGenericObjectPool(BaseObjectPoolConfig config,
             String jmxNameBase, String jmxNamePrefix) {
         if (config.getJmxEnabled()) {
-            this.jmxNotificationSupport = new NotificationBroadcasterSupport();
             this.oname = jmxRegister(jmxNameBase, jmxNamePrefix);
         } else {
-            this.jmxNotificationSupport = null;
             this.oname = null;
         }
 
@@ -791,16 +782,9 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
     }
 
     /**
-     * Returns the {@link NotificationBroadcasterSupport} for the pool
-     * @return JMX notification broadcaster
-     */
-    final NotificationBroadcasterSupport getJmxNotificationSupport() {
-        return jmxNotificationSupport;
-    }
-
-    /**
-     * Swallows an exception, sends a JMX notification, and adds the swallowed exception
-     * to the swallowed exceptions queue.
+     * Swallows an exception and notifies the configured listener for swallowed
+     * exceptions queue.
+     *
      * @param e exception to be swallowed
      */
     final void swallowException(Exception e) {
@@ -971,52 +955,6 @@ public abstract class BaseGenericObjectPool<T> implements NotificationEmitter {
             idleTimes.add(null);
             waitTimes.add(null);
         }
-    }
-
-
-    // Implement NotificationEmitter interface
-
-    @Override
-    public final void addNotificationListener(NotificationListener listener,
-            NotificationFilter filter, Object handback)
-            throws IllegalArgumentException {
-
-        if (jmxNotificationSupport == null) {
-            throw new UnsupportedOperationException("JMX is not enabled");
-        }
-        jmxNotificationSupport.addNotificationListener(
-                listener, filter, handback);
-    }
-
-    @Override
-    public final void removeNotificationListener(NotificationListener listener)
-            throws ListenerNotFoundException {
-
-        if (jmxNotificationSupport == null) {
-            throw new UnsupportedOperationException("JMX is not enabled");
-        }
-        jmxNotificationSupport.removeNotificationListener(listener);
-    }
-
-    @Override
-    public final MBeanNotificationInfo[] getNotificationInfo() {
-
-        if (jmxNotificationSupport == null) {
-            throw new UnsupportedOperationException("JMX is not enabled");
-        }
-        return jmxNotificationSupport.getNotificationInfo();
-    }
-
-    @Override
-    public final void removeNotificationListener(NotificationListener listener,
-            NotificationFilter filter, Object handback)
-            throws ListenerNotFoundException {
-
-        if (jmxNotificationSupport == null) {
-            throw new UnsupportedOperationException("JMX is not enabled");
-        }
-        jmxNotificationSupport.removeNotificationListener(
-                listener, filter, handback);
     }
 
 
