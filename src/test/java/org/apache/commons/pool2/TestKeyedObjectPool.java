@@ -739,7 +739,7 @@ public abstract class TestKeyedObjectPool {
         }
 
         @Override
-        public PooledObject makeObject(final Object key) throws Exception {
+        public PooledObject<Object> makeObject(final Object key) throws Exception {
             final MethodCall call = new MethodCall("makeObject", key);
             methodCalls.add(call);
             int count = this.count++;
@@ -748,11 +748,11 @@ public abstract class TestKeyedObjectPool {
             }
             final Integer obj = new Integer(count);
             call.setReturned(obj);
-            return new DefaultPooledObject(obj);
+            return new DefaultPooledObject<Object>(obj);
         }
 
         @Override
-        public void activateObject(final Object key, final PooledObject obj) throws Exception {
+        public void activateObject(final Object key, final PooledObject<Object> obj) throws Exception {
             methodCalls.add(new MethodCall("activateObject", key, obj.getObject()));
             if (activateObjectFail) {
                 throw new PrivateException("activateObject");
@@ -760,7 +760,7 @@ public abstract class TestKeyedObjectPool {
         }
 
         @Override
-        public boolean validateObject(final Object key, final PooledObject obj) {
+        public boolean validateObject(final Object key, final PooledObject<Object> obj) {
             final MethodCall call = new MethodCall("validateObject", key, obj.getObject());
             methodCalls.add(call);
             if (validateObjectFail) {
@@ -772,7 +772,7 @@ public abstract class TestKeyedObjectPool {
         }
 
         @Override
-        public void passivateObject(final Object key, final PooledObject obj) throws Exception {
+        public void passivateObject(final Object key, final PooledObject<Object> obj) throws Exception {
             methodCalls.add(new MethodCall("passivateObject", key, obj.getObject()));
             if (passivateObjectFail) {
                 throw new PrivateException("passivateObject");
@@ -780,7 +780,7 @@ public abstract class TestKeyedObjectPool {
         }
 
         @Override
-        public void destroyObject(final Object key, final PooledObject obj) throws Exception {
+        public void destroyObject(final Object key, final PooledObject<Object> obj) throws Exception {
             methodCalls.add(new MethodCall("destroyObject", key, obj.getObject()));
             if (destroyObjectFail) {
                 throw new PrivateException("destroyObject");

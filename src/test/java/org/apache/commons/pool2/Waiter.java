@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * <p>Object created by {@link WaiterFactory}. Maintains active / valid state,
- * last passivated and idle times.  Waits with configurable latency when 
+ * last passivated and idle times.  Waits with configurable latency when
  * {@link #doWait()} method is called.</p>
  *
  * <p>This class is *not* threadsafe.</p>
@@ -34,7 +34,7 @@ public class Waiter {
     private long lastPassivated = 0;
     private long lastIdleTimeMs = 0;
     private int id = instanceCount.getAndIncrement();
-    
+
     public Waiter(boolean active, boolean valid, long latency) {
         this.active = active;
         this.valid = valid;
@@ -55,7 +55,7 @@ public class Waiter {
 
     /**
      * Whether or not the instance is active.
-     * 
+     *
      * @return true if the last lifecycle event for this instance was activation.
      */
     public boolean isActive() {
@@ -65,17 +65,17 @@ public class Waiter {
     /**
      * <p>Sets the active state and updates {@link #getLastIdleTimeMs() lastIdleTime}
      * or {@link #getLastPassivated() lastPassivated} as appropriate.</p>
-     * 
+     *
      * <p>If the active state is changing from inactive to active, lastIdleTime
      * is updated with the current time minus lastPassivated.  If the state is
      * changing from active to inactive, lastPassivated is updated with the
      * current time.</p>
-     * 
-     * <p>{@link WaiterFactory#activateObject(Object)} and
-     * {@link WaiterFactory#passivateObject(Object)} invoke this method on their
-     * actual parameter, passing <code>true</code> and <code>false</code>,
+     *
+     * <p>{@link WaiterFactory#activateObject(PooledObject)} and
+     * {@link WaiterFactory#passivateObject(PooledObject)} invoke this method on
+     * their actual parameter, passing <code>true</code> and <code>false</code>,
      * respectively.</p>
-     * 
+     *
      * @param active new active state
      */
     public void setActive(boolean active) {
@@ -107,37 +107,37 @@ public class Waiter {
     public void setValid(boolean valid) {
         this.valid = valid;
     }
-    
+
     /**
      * <p>Returns the system time of this instance's last passivation.</p>
-     * 
+     *
      * <p>When an instance is created, this field is initialized to the system time.</p>
-     * 
+     *
      * @return time of last passivation
      */
     public long getLastPassivated() {
         return lastPassivated;
     }
-    
+
     /**
      * <p>Returns the last idle time for this instance in ms.</p>
-     * 
+     *
      * <p>When an instance is created, and each subsequent time it is passivated,
      * the {@link #getLastPassivated() lastPassivated} property is updated with the
      * current time.  When the next activation occurs, <code>lastIdleTime</code> is
      * updated with the elapsed time since passivation.<p>
-     * 
+     *
      * @return last idle time
      */
     public long getLastIdleTimeMs() {
         return lastIdleTimeMs;
     }
-    
+
     @Override
     public int hashCode() {
-        return id;     
+        return id;
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Waiter)) {
@@ -145,7 +145,7 @@ public class Waiter {
         }
         return obj.hashCode() == id;
     }
-    
+
     @Override
     public String toString() {
         StringBuilder buff = new StringBuilder();
@@ -156,5 +156,5 @@ public class Waiter {
         buff.append("lastIdleTimeMs = " + lastIdleTimeMs + "\n");
         buff.append("latency = " + latency + "\n");
         return buff.toString();
-    } 
+    }
 }
