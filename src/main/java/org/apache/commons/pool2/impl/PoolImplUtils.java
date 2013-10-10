@@ -20,8 +20,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 
-import org.apache.commons.pool2.KeyedPooledObjectFactory;
-import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectFactory;
 
 /**
@@ -60,6 +58,7 @@ public class PoolImplUtils {
         }
 
         // Interface not found on this class. Look at the superclass.
+        @SuppressWarnings("unchecked")
         Class<? extends T> superClazz =
                 (Class<? extends T>) clazz.getSuperclass();
 

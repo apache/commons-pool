@@ -54,21 +54,21 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
 
     /** Count of instances that have been checkout out to pool clients */
     private int numActive = 0; // @GuardedBy("this")
-    
+
     /** Total number of instances that have been destroyed */
     private long destroyCount = 0;
-    
+
     /** Total number of instances that have been created */
     private long createCount = 0;
-    
+
     /** Idle references - waiting to be borrowed */
     private final LinkedBlockingDeque<PooledSoftReference<T>> idleReferences =
         new LinkedBlockingDeque<PooledSoftReference<T>>();
-    
+
     /** All references - checked out or waiting to be borrowed. */
     private final ArrayList<PooledSoftReference<T>> allReferences =
         new ArrayList<PooledSoftReference<T>>();
-    
+
     /**
      * Create a <code>SoftReferenceObjectPool</code> with the specified factory.
      *
@@ -84,11 +84,14 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
      * {@link PooledObjectFactory#makeObject()} method is invoked to create a
      * new instance.
      * <p>
-     * All instances are {@link PoolableObjectFactory#activateObject(Object)
-     * activated} and {@link PooledObjectFactory#validateObject(Object)
+     * All instances are {@link PooledObjectFactory#activateObject(
+     * org.apache.commons.pool2.PooledObject) activated}
+     * and {@link PooledObjectFactory#validateObject(
+     * org.apache.commons.pool2.PooledObject)
      * validated} before being returned by this method. If validation fails or
      * an exception occurs activating or validating an idle instance, the
-     * failing instance is {@link PooledObjectFactory#destroyObject(Object)
+     * failing instance is {@link PooledObjectFactory#destroyObject(
+     * org.apache.commons.pool2.PooledObject)
      * destroyed} and another instance is retrieved from the pool, validated and
      * activated. This process continues until either the pool is empty or an
      * instance passes validation. If the pool is empty on activation or it does
@@ -109,6 +112,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
      *             if an exception occurs creating a new instance
      * @return a valid, activated object instance
      */
+    @SuppressWarnings("null") // ref can not be null
     @Override
     public synchronized T borrowObject() throws Exception {
         assertOpen();
@@ -123,9 +127,9 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
                     newlyCreated = true;
                     obj = factory.makeObject().getObject();
                     createCount++;
-                    // Do not register with the queue 
+                    // Do not register with the queue
                     ref = new PooledSoftReference<T>(new SoftReference<T>(obj));
-                    allReferences.add(ref); 
+                    allReferences.add(ref);
                 }
             } else {
                 ref = idleReferences.pollFirst();
@@ -134,7 +138,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
                 // a new, non-registered reference so we can still track this object
                 // in allReferences
                 ref.getReference().clear();
-                ref.setReference(new SoftReference<T>(obj)); 
+                ref.setReference(new SoftReference<T>(obj));
             }
             if (null != factory && null != obj) {
                 try {
@@ -171,9 +175,11 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
      * are true:
      * <ul>
      * <li>the pool is closed</li>
-     * <li>{@link PooledObjectFactory#validateObject(Object) validation} fails
+     * <li>{@link PooledObjectFactory#validateObject(
+     * org.apache.commons.pool2.PooledObject) validation} fails
      * </li>
-     * <li>{@link PooledObjectFactory#passivateObject(Object) passivation}
+     * <li>{@link PooledObjectFactory#passivateObject(
+     * org.apache.commons.pool2.PooledObject) passivation}
      * throws an exception</li>
      * </ul>
      * Exceptions passivating or destroying instances are silently swallowed.
@@ -205,7 +211,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
         boolean shouldDestroy = !success;
         numActive--;
         if (success) {
-            
+
             // Deallocate and add to the idle instance pool
             ref.deallocate();
             idleReferences.add(ref);
@@ -229,7 +235,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
         final PooledSoftReference<T> ref = findReference(obj);
         if (ref == null) {
             throw new IllegalStateException(
-                "Object to invalidate is not currently part of this pool");   
+                "Object to invalidate is not currently part of this pool");
         }
         if (factory != null) {
             destroy(ref);
@@ -243,10 +249,13 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
      * "pre-loading" a pool with idle objects.
      * <p>
      * Before being added to the pool, the newly created instance is
-     * {@link PooledObjectFactory#validateObject(Object) validated} and
-     * {@link PooledObjectFactory#passivateObject(Object) passivated}. If
+     * {@link PooledObjectFactory#validateObject(
+     * org.apache.commons.pool2.PooledObject) validated} and
+     * {@link PooledObjectFactory#passivateObject(
+     * org.apache.commons.pool2.PooledObject) passivated}. If
      * validation fails, the new instance is
-     * {@link PooledObjectFactory#destroyObject(Object) destroyed}. Exceptions
+     * {@link PooledObjectFactory#destroyObject(
+     * org.apache.commons.pool2.PooledObject) destroyed}. Exceptions
      * generated by the factory <code>makeObject</code> or
      * <code>passivate</code> are propagated to the caller. Exceptions
      * destroying instances are silently swallowed.
@@ -269,7 +278,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
         // Create and register with the queue
         PooledSoftReference<T> ref = new PooledSoftReference<T>(
                 new SoftReference<T>(obj, refQueue));
-        allReferences.add(ref); 
+        allReferences.add(ref);
 
         boolean success = true;
         if (!factory.validateObject(ref)) {
@@ -360,7 +369,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
     public synchronized PooledObjectFactory<T> getFactory() {
         return factory;
     }
-    
+
     /**
      * If any idle objects were garbage collected, remove their
      * {@link Reference} wrappers from the idle object pool.
@@ -371,10 +380,10 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
         removeClearedReferences(allReferences.iterator());
         while (refQueue.poll() != null) {}
     }
-    
+
     /**
      * Find the PooledSoftReference in allReferences that points to obj.
-     * 
+     *
      * @param obj returning object
      * @return PooledSoftReference wrapping a soft reference to obj
      */
@@ -384,15 +393,15 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
             final PooledSoftReference<T> reference = iterator.next();
             if (reference.getObject() != null && reference.getObject().equals(obj)) {
                 return reference;
-            } 
+            }
         }
         return null;
     }
-    
+
     /**
      * Destroy a {@code PooledSoftReference} and remove it from the idle and all
      * references pools.
-     * 
+     *
      * @param toDestroy PooledSoftReference to destroy
      * @throws Exception
      */
@@ -407,9 +416,9 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
             toDestroy.getReference().clear();
         }
     }
-    
+
     /**
-     * Clears cleared references from iterator's collection 
+     * Clears cleared references from iterator's collection
      * @param iterator iterator over idle/allReferences
      */
     private void removeClearedReferences(Iterator<PooledSoftReference<T>> iterator) {
