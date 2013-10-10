@@ -149,6 +149,9 @@ public class TestAbandonedObjectPool extends TestCase {
         for (int i = 0; i < n - 2; i++) {
             obj = pool.borrowObject();
         }
+        if (obj == null) {
+            throw new NullPointerException("Unable to borrow object from pool");
+        }
         final int deadMansHash = obj.hashCode();
         ConcurrentReturner returner = new ConcurrentReturner(obj);
         Thread.sleep(2000);  // abandon checked out instances

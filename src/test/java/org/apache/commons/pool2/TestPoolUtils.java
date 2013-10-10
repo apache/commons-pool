@@ -39,7 +39,7 @@ import junit.framework.AssertionFailedError;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPool;
-import org.apache.commons.pool2.impl.PoolImplUtils;
+
 import org.junit.Test;
 
 /**
@@ -761,6 +761,7 @@ public class TestPoolUtils {
     }
 
     private static <T> T createProxy(final Class<T> clazz, final InvocationHandler handler) {
+        @SuppressWarnings("unchecked")
         T ret = (T) Proxy.newProxyInstance(
                 clazz.getClassLoader(), new Class[] { clazz }, handler);
         return ret;
