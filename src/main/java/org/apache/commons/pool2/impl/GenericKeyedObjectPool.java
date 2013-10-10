@@ -563,8 +563,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * Clears any objects sitting idle in the pool by removing them from the
      * idle instance sub-pools and then invoking the configured
      * PoolableObjectFactory's
-     * {@link KeyedPooledObjectFactory#destroyObject(Object, Object)} method
-     * on each idle instance.
+     * {@link KeyedPooledObjectFactory#destroyObject(Object, PooledObject)}
+     * method on each idle instance.
      * <p>
      * Implementation notes:
      * <ul>
