@@ -18,6 +18,8 @@ package org.apache.commons.pool2.proxy;
 
 import java.lang.reflect.Proxy;
 
+import org.apache.commons.pool2.UsageTracking;
+
 class JdkProxySource<T> implements ProxySource<T> {
 
     private final ClassLoader classLoader;
@@ -31,10 +33,10 @@ class JdkProxySource<T> implements ProxySource<T> {
 
 
     @Override
-    public T createProxy(T pooledObject) {
+    public T createProxy(T pooledObject, UsageTracking<T> usageTracking) {
         @SuppressWarnings("unchecked")
-        T proxy = (T) Proxy.newProxyInstance(
-                classLoader, interfaces, new JdkProxyHandler<T>(pooledObject));
+        T proxy = (T) Proxy.newProxyInstance(classLoader, interfaces,
+                new JdkProxyHandler<T>(pooledObject, usageTracking));
         return proxy;
     }
 

@@ -14,34 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.pool2.proxy;
+package org.apache.commons.pool2;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-
-import org.apache.commons.pool2.UsageTracking;
-
-class JdkProxyHandler<T> extends BaseProxyHandler<T>
-        implements InvocationHandler {
-
-    private final UsageTracking<T> usageTracking;
-
-
-    JdkProxyHandler(T pooledObject, UsageTracking<T> usageTracking) {
-        super(pooledObject);
-        this.usageTracking = usageTracking;
-    }
-
-
-    @Override
-    public Object invoke(Object proxy, Method method, Object[] args)
-            throws Throwable {
-        validateProxiedObject();
-        T pooledObject = getPooledObject();
-        if (usageTracking != null) {
-            usageTracking.use(pooledObject);
-        }
-        return method.invoke(pooledObject, args);
-    }
+/**
+ * This interface may be implemented by an object pool to enable clients
+ * (primarily those clients that wrap pools to provide pools with extended
+ * features) to provide additional information to the pool relating to object
+ * using allowing more informed decisions and reporting to be made regarding
+ * abandoned objects.
+ *
+ * @version $Revision:$
+ *
+ * @since 2.0
+ */
+public interface UsageTracking<T> {
+    void use(T pooledObject);
 }
-
