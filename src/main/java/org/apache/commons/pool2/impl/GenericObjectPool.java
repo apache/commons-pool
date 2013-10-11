@@ -33,6 +33,7 @@ import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.PooledObjectState;
 import org.apache.commons.pool2.SwallowedExceptionListener;
 import org.apache.commons.pool2.TrackedUse;
+import org.apache.commons.pool2.UsageTracking;
 
 /**
  * A configurable {@link ObjectPool} implementation.
@@ -76,7 +77,7 @@ import org.apache.commons.pool2.TrackedUse;
  * @since 2.0
  */
 public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
-        implements ObjectPool<T>, GenericObjectPoolMXBean {
+        implements ObjectPool<T>, GenericObjectPoolMXBean, UsageTracking<T> {
 
     /**
      * Create a new <code>GenericObjectPool</code> using defaults from
@@ -233,7 +234,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      */
     @Override
     public boolean getLogAbandoned() {
-        return isAbandonedConfig() && abandonedConfig.getLogAbandoned();
+        AbandonedConfig ac = this.abandonedConfig;
+        return ac != null && ac.getLogAbandoned();
     }
 
     /**
@@ -244,8 +246,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      */
     @Override
     public boolean getRemoveAbandonedOnBorrow() {
-        return isAbandonedConfig() &&
-        abandonedConfig.getRemoveAbandonedOnBorrow();
+        AbandonedConfig ac = this.abandonedConfig;
+        return ac != null && ac.getRemoveAbandonedOnBorrow();
     }
 
     /**
@@ -256,8 +258,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      */
     @Override
     public boolean getRemoveAbandonedOnMaintenance() {
-        return isAbandonedConfig() &&
-        abandonedConfig.getRemoveAbandonedOnMaintenance();
+        AbandonedConfig ac = this.abandonedConfig;
+        return ac != null && ac.getRemoveAbandonedOnMaintenance();
     }
 
     /**
@@ -268,9 +270,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      */
     @Override
     public int getRemoveAbandonedTimeout() {
-        return isAbandonedConfig() ?
-                abandonedConfig.getRemoveAbandonedTimeout() :
-                    Integer.MAX_VALUE;
+        AbandonedConfig ac = this.abandonedConfig;
+        return ac != null ? ac.getRemoveAbandonedTimeout() : Integer.MAX_VALUE;
     }
 
 
@@ -308,12 +309,16 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * @see AbandonedConfig
      */
     public void setAbandonedConfig(AbandonedConfig abandonedConfig) throws IllegalArgumentException {
-        this.abandonedConfig = new AbandonedConfig();
-        this.abandonedConfig.setLogAbandoned(abandonedConfig.getLogAbandoned());
-        this.abandonedConfig.setLogWriter(abandonedConfig.getLogWriter());
-        this.abandonedConfig.setRemoveAbandonedOnBorrow(abandonedConfig.getRemoveAbandonedOnBorrow());
-        this.abandonedConfig.setRemoveAbandonedOnMaintenance(abandonedConfig.getRemoveAbandonedOnMaintenance());
-        this.abandonedConfig.setRemoveAbandonedTimeout(abandonedConfig.getRemoveAbandonedTimeout());
+        if (abandonedConfig == null) {
+            this.abandonedConfig = null;
+        } else {
+            this.abandonedConfig = new AbandonedConfig();
+            this.abandonedConfig.setLogAbandoned(abandonedConfig.getLogAbandoned());
+            this.abandonedConfig.setLogWriter(abandonedConfig.getLogWriter());
+            this.abandonedConfig.setRemoveAbandonedOnBorrow(abandonedConfig.getRemoveAbandonedOnBorrow());
+            this.abandonedConfig.setRemoveAbandonedOnMaintenance(abandonedConfig.getRemoveAbandonedOnMaintenance());
+            this.abandonedConfig.setRemoveAbandonedTimeout(abandonedConfig.getRemoveAbandonedTimeout());
+        }
     }
 
     /**
@@ -379,11 +384,11 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     public T borrowObject(long borrowMaxWaitMillis) throws Exception {
         assertOpen();
 
-        if (isAbandonedConfig() &&
-                abandonedConfig.getRemoveAbandonedOnBorrow() &&
+        AbandonedConfig ac = this.abandonedConfig;
+        if (ac != null && ac.getRemoveAbandonedOnBorrow() &&
                 (getNumIdle() < 2) &&
                 (getNumActive() > getMaxTotal() - 3) ) {
-            removeAbandoned();
+            removeAbandoned(ac);
         }
 
         PooledObject<T> p = null;
@@ -771,8 +776,9 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                 }
             }
         }
-        if (isAbandonedConfig() && abandonedConfig.getRemoveAbandonedOnMaintenance()) {
-            removeAbandoned();
+        AbandonedConfig ac = this.abandonedConfig;
+        if (ac != null && ac.getRemoveAbandonedOnMaintenance()) {
+            removeAbandoned(ac);
         }
     }
 
@@ -793,7 +799,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             throw e;
         }
 
-        if (isAbandonedConfig() && abandonedConfig.getLogAbandoned()) {
+        AbandonedConfig ac = this.abandonedConfig;
+        if (ac != null && ac.getLogAbandoned()) {
             p.setLogAbandoned(true);
         }
 
@@ -876,11 +883,11 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * Recover abandoned objects which have been checked out but
      * not used since longer than the removeAbandonedTimeout.
      */
-    private void removeAbandoned() {
+    private void removeAbandoned(AbandonedConfig ac) {
         // Generate a list of abandoned objects to remove
         final long now = System.currentTimeMillis();
         final long timeout =
-                now - (abandonedConfig.getRemoveAbandonedTimeout() * 1000L);
+                now - (ac.getRemoveAbandonedTimeout() * 1000L);
         ArrayList<PooledObject<T>> remove = new ArrayList<PooledObject<T>>();
         Iterator<PooledObject<T>> it = allObjects.values().iterator();
         while (it.hasNext()) {
@@ -898,8 +905,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         Iterator<PooledObject<T>> itr = remove.iterator();
         while (itr.hasNext()) {
             PooledObject<T> pooledObject = itr.next();
-            if (abandonedConfig.getLogAbandoned()) {
-                pooledObject.printStackTrace(abandonedConfig.getLogWriter());
+            if (ac.getLogAbandoned()) {
+                pooledObject.printStackTrace(ac.getLogWriter());
             }
             try {
                 invalidateObject(pooledObject.getObject());
@@ -908,6 +915,15 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             }
         }
     }
+
+
+    //--- Usage tracking support -----------------------------------------------
+
+    @Override
+    public void use(T pooledObject) {
+        // TODO Auto-generated method stub
+    }
+
 
     //--- JMX support ----------------------------------------------------------
 
