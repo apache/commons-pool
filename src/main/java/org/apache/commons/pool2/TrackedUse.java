@@ -14,14 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.commons.pool2;
 
 /**
- * Methods to support usage tracking for instances managed by pools configured
- * to remove abandoned objects.
- * 
+ * This interface allows pooled objects to make information available about when
+ * and how they were used available to the object pool. The object pool may, but
+ * is not required, to use this information to make more informed decisions when
+ * determining the state of a pooled object - for instance whether or not the
+ * object has been abandoned.
+ *
  * @version $Revision:$
+ *
+ * @since 2.0
  */
 public interface TrackedUse {
 

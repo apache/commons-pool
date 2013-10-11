@@ -19,6 +19,7 @@ package org.apache.commons.pool2.proxy;
 import java.util.NoSuchElementException;
 
 import org.apache.commons.pool2.KeyedObjectPool;
+import org.apache.commons.pool2.UsageTracking;
 
 public class ProxiedKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
 
@@ -33,11 +34,16 @@ public class ProxiedKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
     }
 
 
+    @SuppressWarnings("unchecked")
     @Override
     public V borrowObject(K key) throws Exception, NoSuchElementException,
             IllegalStateException {
+        UsageTracking<V> usageTracking = null;
+        if (pool instanceof UsageTracking) {
+            usageTracking = (UsageTracking<V>) pool;
+        }
         V pooledObject = pool.borrowObject(key);
-        V proxy = proxySource.createProxy(pooledObject);
+        V proxy = proxySource.createProxy(pooledObject, usageTracking);
         return proxy;
     }
 
