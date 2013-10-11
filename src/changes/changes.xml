@@ -160,6 +160,11 @@ clarify behaviour and improve consistency across the API.">
     <action issue="POOL-100" dev="markt" type="fix">
       Allow custom eviction policies to be defined.
     </action>
+    <action issue="POOL-211" dev="markt" type="add" due-to="Brad Koehn">
+      Add support for proxy wrappers for ObjectPool and KeyedObjectPool. The
+      primary advantage of using these wrappers is that use of pooled objects
+      is prevented after they have been returned to the pool.  
+    </action>
   </release>
   <release version="1.5.6" date="2011-04-03" description="This is a patch release, including bugfixes only.">
     <action dev="markt" type="fix" issue="POOL-179" due-to="Axel Grossmann">
