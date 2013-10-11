@@ -71,7 +71,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      *
      * @return the last time this object was used
      */
-    long getLastUsed();
+    long getLastUsedTime();
 
     /**
      * Orders instances based on idle time - i.e. the length of time since the
@@ -128,7 +128,13 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     void setLogAbandoned(boolean logAbandoned);
 
     /**
-     * Prints the stack trace of the code that borrowed this pooled object to
+     * Record the current stack trace as the last time the object was used.
+     */
+    void use();
+
+    /**
+     * Prints the stack trace of the code that borrowed this pooled object and
+     * the stack trace of the last code to use this object (if available) to
      * the supplied writer.
      */
     void printStackTrace(PrintWriter writer);

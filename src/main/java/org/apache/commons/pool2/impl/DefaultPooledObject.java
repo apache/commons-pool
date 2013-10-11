@@ -43,9 +43,11 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
     private PooledObjectState state = PooledObjectState.IDLE; // @GuardedBy("this") to ensure transitions are valid
     private final long createTime = System.currentTimeMillis();
     private volatile long lastBorrowTime = createTime;
+    private volatile long lastUseTime = createTime;
     private volatile long lastReturnTime = createTime;
     private volatile boolean logAbandoned = false;
     private Exception borrowedBy = null;
+    private Exception usedBy = null;
 
     public DefaultPooledObject(T object) {
         this.object = object;
@@ -117,11 +119,11 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
      * @return the last time this object was used
      */
     @Override
-    public long getLastUsed() {
+    public long getLastUsedTime() {
         if (object instanceof TrackedUse) {
-            return Math.max(((TrackedUse) object).getLastUsed(), lastBorrowTime);
+            return Math.max(((TrackedUse) object).getLastUsed(), lastUseTime);
         } else {
-            return lastBorrowTime;
+            return lastUseTime;
         }
     }
 
@@ -214,8 +216,9 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
         if (state == PooledObjectState.IDLE) {
             state = PooledObjectState.ALLOCATED;
             lastBorrowTime = System.currentTimeMillis();
+            lastUseTime = lastBorrowTime;
             if (logAbandoned) {
-                borrowedBy = new AbandonedObjectException();
+                borrowedBy = new AbandonedObjectCreatedException();
             }
             return true;
         } else if (state == PooledObjectState.EVICTION) {
@@ -257,14 +260,19 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
         state = PooledObjectState.INVALID;
     }
 
-    /**
-     * Prints the stack trace of the code that borrowed this pooled object to
-     * the supplied writer.
-     */
+    @Override
+    public void use() {
+        lastUseTime = System.currentTimeMillis();
+        usedBy = new Exception("The last code to use this object was:");
+    }
+
     @Override
     public void printStackTrace(PrintWriter writer) {
         if (borrowedBy != null) {
             borrowedBy.printStackTrace(writer);
+        }
+        if (usedBy != null) {
+            usedBy.printStackTrace(writer);
         }
     }
 
@@ -298,7 +306,7 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
         this.logAbandoned = logAbandoned;
     }
 
-    static class AbandonedObjectException extends Exception {
+    static class AbandonedObjectCreatedException extends Exception {
 
         private static final long serialVersionUID = 7398692158058772916L;
 
@@ -310,7 +318,7 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
 
         private final long _createdTime;
 
-        public AbandonedObjectException() {
+        public AbandonedObjectCreatedException() {
             _createdTime = System.currentTimeMillis();
         }
 

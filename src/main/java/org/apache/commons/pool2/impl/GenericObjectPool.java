@@ -894,7 +894,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             PooledObject<T> pooledObject = it.next();
             synchronized (pooledObject) {
                 if (pooledObject.getState() == PooledObjectState.ALLOCATED &&
-                        pooledObject.getLastUsed() <= timeout) {
+                        pooledObject.getLastUsedTime() <= timeout) {
                     pooledObject.markAbandoned();
                     remove.add(pooledObject);
                 }
@@ -921,7 +921,11 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
 
     @Override
     public void use(T pooledObject) {
-        // TODO Auto-generated method stub
+        AbandonedConfig ac = this.abandonedConfig;
+        if (ac != null && ac.getUseUsageTracking()) {
+            PooledObject<T> wrapper = allObjects.get(pooledObject);
+            wrapper.use();
+        }
     }
 
 
