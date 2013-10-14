@@ -36,12 +36,16 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     /**
      * Obtain the underlying object that is wrapped by this instance of
      * {@link PooledObject}.
+     *
+     * @return The wrapped object
      */
     T getObject();
 
     /**
      * Obtain the time (using the same basis as
      * {@link System#currentTimeMillis()}) that this object was created.
+     *
+     * @return The creation time for the wrapped object
      */
     long getCreateTime();
 
@@ -49,17 +53,32 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      * Obtain the time in milliseconds that this object last spent in the the
      * active state (it may still be active in which case subsequent calls will
      * return an increased value).
+     *
+     * @return The time in milliseconds last spent in the active state
      */
     long getActiveTimeMillis();
+
     /**
      * Obtain the time in milliseconds that this object last spend in the the
      * idle state (it may still be idle in which case subsequent calls will
      * return an increased value).
+     *
+     * @return The time in milliseconds last spent in the idle state
      */
     long getIdleTimeMillis();
 
+    /**
+     * Obtain the time the wrapped object was last borrowed.
+     *
+     * @return The time the object was last borrowed
+     */
     long getLastBorrowTime();
 
+    /**
+     * Obtain the time the wrapped object was last returned.
+     *
+     * @return The time the object was last returned
+     */
     long getLastReturnTime();
 
     /**
@@ -76,9 +95,11 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     /**
      * Orders instances based on idle time - i.e. the length of time since the
      * instance was returned to the pool. Used by the GKOP idle object evictor.
-     * <p>
+     *<p>
      * Note: This class has a natural ordering that is inconsistent with
      *       equals if distinct objects have the same identity hash code.
+     * <p>
+     * {@inheritDoc}
      */
     @Override
     int compareTo(PooledObject<T> other);
@@ -92,6 +113,8 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     /**
      * Provides a String form of the wrapper for debug purposes. The format is
      * not fixed and may change at any time.
+     * <p>
+     * {@inheritDoc}
      */
     @Override
     String toString();
@@ -154,6 +177,4 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      * Marks the object as returning to the pool.
      */
     void markReturning();
-
-
 }
