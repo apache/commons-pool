@@ -22,8 +22,13 @@
   put here to instruct Find Bugs to ignore them.
 -->
 <FindBugsFilter>
-  <!-- Swallowing exception is deliberate design choice -->
   <Match>
+    <!-- Class implements the generics based interface and does so correctly -->
+    <Class name="org.apache.commons.pool2.PooledObject" />
+    <Bug pattern="CO_ABSTRACT_SELF" />
+  </Match>
+  <Match>
+    <!-- Swallowing exception is deliberate design choice -->
     <Or>
       <Class name="org.apache.commons.pool2.PoolUtils$ErodingObjectPool" />
       <Class name="org.apache.commons.pool2.PoolUtils$ErodingKeyedObjectPool" />
@@ -34,28 +39,33 @@
     </Or>
     <Bug code="DE" />
   </Match>
-  <!-- Exception is thrown and need to be caught -->
   <Match>
+    <!-- Exception is thrown and need to be caught -->
     <Class name="org.apache.commons.pool2.PoolUtils$KeyedObjectPoolMinIdleTimerTask" />
     <Method name="run" />
     <Bug code="REC" />
   </Match>
-  <!-- Ignoring the exception is deliberate since an earlier exception is    -->
-  <!-- more important.                                                       -->
   <Match>
+    <!-- compareTo() method carries the appropriate warning -->
+    <Class name="org.apache.commons.pool2.impl.DefaultPooledObject" />
+    <Bug pattern="EQ_COMPARETO_USE_OBJECT_EQUALS " />
+  </Match>
+  <Match>
+    <!-- Ignoring the exception is deliberate since an earlier exception is  -->
+    <!-- more important.                                                     -->
     <Class name="org.apache.commons.pool2.impl.GenericKeyedObjectPool" />
     <Method name="borrowObject" />
     <Bug code="DE" />
   </Match>
-  <!-- Ignoring the exception is deliberate since an earlier exception is    -->
-  <!-- more important.                                                       -->
   <Match>
+    <!-- Ignoring the exception is deliberate since an earlier exception is  -->
+    <!-- more important.                                                     -->
     <Class name="org.apache.commons.pool2.impl.GenericObjectPool" />
     <Method name="borrowObject" />
     <Bug code="DE" />
   </Match>
-    <!-- Swallowing exception is deliberate design choice -->
   <Match>
+    <!-- Swallowing exception is deliberate design choice -->
     <Class name="org.apache.commons.pool2.impl.SoftReferenceObjectPool" />
     <Or>
       <Method name="addObject" />
