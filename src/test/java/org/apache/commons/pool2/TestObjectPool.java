@@ -99,6 +99,8 @@ public abstract class TestObjectPool {
         pool.close();
     }
 
+    // Deliberate choice to create a new object in case future unit tests check
+    // for a specific object.
     private final Integer ZERO = new Integer(0);
     private final Integer ONE = new Integer(1);
 
