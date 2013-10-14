@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,25 +28,25 @@ public class VisitTracker<K> {
     private boolean destroyed = false;
     private int id = 0;
     private K key = null;
-    
+
     public VisitTracker() {
         super();
         reset();
     }
-    
+
     public VisitTracker(int id) {
         super();
         this.id = id;
         reset();
     }
-    
+
     public VisitTracker(int id, K key) {
         super();
         this.id = id;
         this.key = key;
         reset();
     }
-    
+
     public boolean validate() {
         if (destroyed) {
             fail("attempted to validate a destroyed object");
@@ -97,7 +97,7 @@ public class VisitTracker<K> {
     public String toString() {
         return "Key: " + key + " id: " + id;
     }
-    
+
     private void fail(String message) {
         throw new IllegalStateException(message);
     }

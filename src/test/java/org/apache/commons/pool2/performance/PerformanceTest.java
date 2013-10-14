@@ -98,11 +98,11 @@ public class PerformanceTest {
                taskStats.nrSamples++;
                if (logLevel >= 2) {
                    String name = "thread" + Thread.currentThread().getName();
-                   System.out.println("result " + taskStats.nrSamples + "\t"
-                           + name + "\t" + "borrow time: " + borrowTime + "\t"
-                           + "return time: " + returnTime + "\t" + "waiting: "
-                           + taskStats.waiting + "\t" + "complete: "
-                           + taskStats.complete);
+                   System.out.println("result " + taskStats.nrSamples + "\t" +
+                           name + "\t" + "borrow time: " + borrowTime + "\t" +
+                           "return time: " + returnTime + "\t" + "waiting: " +
+                           taskStats.waiting + "\t" + "complete: " +
+                           taskStats.complete);
                }
            }
            return taskStats;
