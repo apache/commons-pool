@@ -457,7 +457,7 @@ public class TestPoolUtils {
                 Object o = super.invoke(proxy, method, args);
                 if (o instanceof Integer) {
                     // so getNumActive/getNumIdle are not zero.
-                    o = new Integer(1);
+                    o = Integer.valueOf(1);
                 }
                 return o;
             }
@@ -551,7 +551,7 @@ public class TestPoolUtils {
                 Object o = super.invoke(proxy, method, args);
                 if (o instanceof Integer) {
                     // so getNumActive/getNumIdle are not zero.
-                    o = new Integer(1);
+                    o = Integer.valueOf(1);
                 }
                 return o;
             }
@@ -633,7 +633,7 @@ public class TestPoolUtils {
                 Object o = super.invoke(proxy, method, args);
                 if (o instanceof Integer) {
                     // so getNumActive/getNumIdle are not zero.
-                    o = new Integer(1);
+                    o = Integer.valueOf(1);
                 }
                 return o;
             }
@@ -780,9 +780,9 @@ public class TestPoolUtils {
             if (boolean.class.equals(method.getReturnType())) {
                 return Boolean.FALSE;
             } else if (int.class.equals(method.getReturnType())) {
-                return new Integer(0);
+                return Integer.valueOf(0);
             } else if (long.class.equals(method.getReturnType())) {
-                return new Long(0);
+                return Long.valueOf(0);
             } else if (Object.class.equals(method.getReturnType())) {
                 return new Object();
             } else if (PooledObject.class.equals(method.getReturnType())) {

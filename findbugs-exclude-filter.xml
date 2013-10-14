@@ -81,6 +81,7 @@
     <Or>
       <Class name="org.apache.commons.pool2.MethodCallPoolableObjectFactory" />
       <Class name="org.apache.commons.pool2.TestKeyedObjectPool$FailingKeyedPooledObjectFactory" />
+      <Class name="org.apache.commons.pool2.performance.SleepingObjectFactory" />
     </Or>
     <Method name="makeObject" />
     <Bug pattern="DM_NUMBER_CTOR" />
@@ -92,5 +93,11 @@
       <Class name="org.apache.commons.pool2.TestObjectPool" />
     </Or>
     <Bug pattern="DM_NUMBER_CTOR" />
+  </Match>
+  <Match>
+    <!-- Use of no-arg constructor is intentional -->
+    <Class name="org.apache.commons.pool2.TestPoolUtils" />
+    <Method name="testJavaBeanInstantiation" />
+    <Bug pattern="ISC_INSTANTIATE_STATIC_CLASS" />
   </Match>
 </FindBugsFilter>

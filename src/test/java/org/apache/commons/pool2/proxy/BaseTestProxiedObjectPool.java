@@ -38,8 +38,8 @@ public abstract class BaseTestProxiedObjectPool {
     private static final String DATA1 = "data1";
     private static final int ABANDONED_TIMEOUT_SECS = 3;
 
-    private ObjectPool<TestObject> pool;
-    private StringWriter log;
+    private ObjectPool<TestObject> pool = null;
+    private StringWriter log = null;
 
     @Before
     public void setup() {
