@@ -100,4 +100,13 @@
     <Method name="testJavaBeanInstantiation" />
     <Bug pattern="ISC_INSTANTIATE_STATIC_CLASS" />
   </Match>
+  <Match>
+    <!-- Exceptions are deliberately ignored -->
+    <Or>
+      <Class name="org.apache.commons.pool2.impl.TestAbandonedObjectPool$ConcurrentBorrower" />
+      <Class name="org.apache.commons.pool2.impl.TestAbandonedObjectPool$ConcurrentReturner" />
+    </Or>
+    <Method name="run" />
+    <Bug pattern="DE_MIGHT_IGNORE" />
+  </Match>
 </FindBugsFilter>
