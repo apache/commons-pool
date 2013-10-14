@@ -46,8 +46,8 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
     private volatile long lastUseTime = createTime;
     private volatile long lastReturnTime = createTime;
     private volatile boolean logAbandoned = false;
-    private Exception borrowedBy = null;
-    private Exception usedBy = null;
+    private volatile Exception borrowedBy = null;
+    private volatile Exception usedBy = null;
 
     public DefaultPooledObject(T object) {
         this.object = object;
@@ -255,9 +255,11 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
 
     @Override
     public void printStackTrace(PrintWriter writer) {
+        Exception borrowedBy = this.borrowedBy;
         if (borrowedBy != null) {
             borrowedBy.printStackTrace(writer);
         }
+        Exception usedBy = this.usedBy;
         if (usedBy != null) {
             usedBy.printStackTrace(writer);
         }
