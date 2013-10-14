@@ -58,24 +58,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
     @Override
     protected KeyedObjectPool<Object,Object> makeEmptyPool(int mincapacity) {
-
         KeyedPooledObjectFactory<Object,Object> factory =
-                new BaseKeyedPooledObjectFactory<Object,Object>()  {
-            ConcurrentHashMap<Object,AtomicInteger> map = new ConcurrentHashMap<Object,AtomicInteger>();
-            @Override
-            public Object create(Object key) throws Exception {
-                int counter = 0;
-                AtomicInteger Counter = map.get(key);
-                if(null != Counter) {
-                    counter = Counter.incrementAndGet();
-                } else {
-                    map.put(key, new AtomicInteger(0));
-                    counter = 0;
-                }
-                return String.valueOf(key) + String.valueOf(counter);
-            }
-        };
-
+                new SimplePerKeyFactory();
         GenericKeyedObjectPool<Object,Object> pool =
             new GenericKeyedObjectPool<Object,Object>(factory);
         pool.setMaxTotalPerKey(mincapacity);
@@ -1043,12 +1027,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         long timeBetweenEvictionRunsMillis = 8;
         boolean blockWhenExhausted = false;
         boolean lifo = false;
-        KeyedPooledObjectFactory<Object,Object> factory = new BaseKeyedPooledObjectFactory<Object,Object>() {
-            @Override
-            public Object create(Object key) throws Exception {
-                return null;
-            }
-        };
+        KeyedPooledObjectFactory<Object,Object> factory = new DummyFactory();
 
         GenericKeyedObjectPool<Object,Object> pool =
                 new GenericKeyedObjectPool<Object,Object>(factory);
@@ -1789,6 +1768,34 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         Set<ObjectName> result = mbs.queryNames(oname, null);
         Assert.assertEquals(1, result.size());
+    }
+
+
+    private static class DummyFactory
+            extends BaseKeyedPooledObjectFactory<Object,Object> {
+        @Override
+        public Object create(Object key) throws Exception {
+            return null;
+        }
+    }
+
+
+    private static class SimplePerKeyFactory
+            extends BaseKeyedPooledObjectFactory<Object,Object> {
+        ConcurrentHashMap<Object,AtomicInteger> map =
+                new ConcurrentHashMap<Object,AtomicInteger>();
+        @Override
+        public Object create(Object key) throws Exception {
+            int counter = 0;
+            AtomicInteger Counter = map.get(key);
+            if(null != Counter) {
+                counter = Counter.incrementAndGet();
+            } else {
+                map.put(key, new AtomicInteger(0));
+                counter = 0;
+            }
+            return String.valueOf(key) + String.valueOf(counter);
+        }
     }
 }
 
