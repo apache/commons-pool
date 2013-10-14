@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,8 +23,8 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
 
 /**
  * Sleepy ObjectFactory (everything takes a while longer)
- * 
- * @version $Revision$ 
+ *
+ * @version $Revision$
  */
 public class SleepingObjectFactory implements PooledObjectFactory<Integer> {
 
@@ -33,6 +33,8 @@ public class SleepingObjectFactory implements PooledObjectFactory<Integer> {
 
     @Override
     public PooledObject<Integer> makeObject() throws Exception {
+        // Deliberate choice to create a new object in case future unit tests
+        // check for a specific object.
         Integer obj = new Integer(counter++);
         debug("makeObject", obj);
         sleep(500);
@@ -63,14 +65,14 @@ public class SleepingObjectFactory implements PooledObjectFactory<Integer> {
         debug("passivateObject", obj);
         sleep(10);
     }
-    
+
     private void debug(String method, Object obj) {
         if (debug) {
             String thread = "thread" + Thread.currentThread().getName();
             System.out.println(thread + ": " + method + " " + obj);
         }
     }
-    
+
     private void sleep(long millis) {
         try {
             Thread.sleep(millis);

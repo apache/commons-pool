@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,37 +33,37 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
  */
 public class WaiterFactory<K> implements PooledObjectFactory<Waiter>,
 KeyedPooledObjectFactory<K,Waiter> {
-    
+
     /** Latency of activateObject */
     private final long activateLatency;
-    
+
     /** Latency of destroyObject */
     private final long destroyLatency;
-    
+
     /** Latency of makeObject */
     private final long makeLatency;
-    
+
     /** Latency of passivateObject */
     private final long passivateLatency;
-    
+
     /** Latency of validateObject */
     private final long validateLatency;
-    
+
     /** Latency of doWait for Waiter instances created by this factory */
     private final long waiterLatency;
-    
+
     /** Probability that passivation will invalidate Waiter instances */
     private final double passivateInvalidationProbability;
-    
+
     /** Count of (makes - destroys) since last reset */
     private long activeCount = 0;
-    
+
     /** Count of (makes - destroys) per key since last reset */
     private Map<K,Integer> activeCounts = new HashMap<K,Integer>();
-    
+
     /** Maximum of (makes - destroys) - if exceeded IllegalStateException */
     private final long maxActive;  // GKOP 1.x calls this maxTotal
-    
+
     /** Maximum of (makes - destroys) per key */
     private final long maxActivePerKey;  // GKOP 1.x calls this maxActive
 
@@ -81,14 +81,14 @@ KeyedPooledObjectFactory<K,Waiter> {
         this.maxActivePerKey = maxActivePerKey;
         this.passivateInvalidationProbability = passivateInvalidationProbability;
     }
-    
+
     public WaiterFactory(long activateLatency, long destroyLatency,
             long makeLatency, long passivateLatency, long validateLatency,
             long waiterLatency) {
         this(activateLatency, destroyLatency, makeLatency, passivateLatency,
                 validateLatency, waiterLatency, Long.MAX_VALUE, Long.MAX_VALUE, 0);
     }
-    
+
     public WaiterFactory(long activateLatency, long destroyLatency,
             long makeLatency, long passivateLatency, long validateLatency,
             long waiterLatency,long maxActive) {
@@ -107,7 +107,7 @@ KeyedPooledObjectFactory<K,Waiter> {
         doWait(destroyLatency);
         obj.getObject().setValid(false);
         obj.getObject().setActive(false);
-        // Decrement *after* destroy 
+        // Decrement *after* destroy
         synchronized (this) {
             activeCount--;
         }
@@ -142,7 +142,7 @@ KeyedPooledObjectFactory<K,Waiter> {
         doWait(validateLatency);
         return obj.getObject().isValid();
     }
-    
+
     protected void doWait(long latency) {
         try {
             Thread.sleep(latency);
@@ -150,7 +150,7 @@ KeyedPooledObjectFactory<K,Waiter> {
             // ignore
         }
     }
-    
+
     public synchronized void reset() {
         activeCount = 0;
         if (activeCounts.isEmpty()) {
@@ -159,7 +159,7 @@ KeyedPooledObjectFactory<K,Waiter> {
         Iterator<K> it = activeCounts.keySet().iterator();
         while (it.hasNext()) {
             K key = it.next();
-            activeCounts.put(key, new Integer (0));
+            activeCounts.put(key, Integer.valueOf(0));
         }
     }
 
@@ -171,7 +171,7 @@ KeyedPooledObjectFactory<K,Waiter> {
     }
 
     // KeyedPoolableObjectFactory methods
-    
+
     @Override
     public void activateObject(K key, PooledObject<Waiter> obj) throws Exception {
         activateObject(obj);
@@ -182,7 +182,7 @@ KeyedPooledObjectFactory<K,Waiter> {
         destroyObject(obj);
         synchronized (this) {
             Integer count = activeCounts.get(key);
-            activeCounts.put(key, new Integer(count.intValue() - 1));
+            activeCounts.put(key, Integer.valueOf(count.intValue() - 1));
         }
     }
 
@@ -191,16 +191,16 @@ KeyedPooledObjectFactory<K,Waiter> {
         synchronized (this) {
             Integer count = activeCounts.get(key);
             if (count == null) {
-                count = new Integer(1);
+                count = Integer.valueOf(1);
                 activeCounts.put(key, count);
             } else {
                 if (count.intValue() >= maxActivePerKey) {
                     throw new IllegalStateException("Too many active " +
-                    "instances for key = " + key + ": " + count.intValue() + 
-                    " in circulation " + "with maxActivePerKey = " + 
+                    "instances for key = " + key + ": " + count.intValue() +
+                    " in circulation " + "with maxActivePerKey = " +
                     maxActivePerKey);
                 } else {
-                    activeCounts.put(key, new Integer(count.intValue() + 1));
+                    activeCounts.put(key, Integer.valueOf(count.intValue() + 1));
                 }
             }
         }
