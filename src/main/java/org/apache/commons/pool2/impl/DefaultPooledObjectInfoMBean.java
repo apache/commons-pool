@@ -16,6 +16,9 @@
  */
 package org.apache.commons.pool2.impl;
 
+/**
+ * @since 2.0
+ */
 public interface DefaultPooledObjectInfoMBean {
     long getCreateTime();
     String getCreateTimeFormatted();

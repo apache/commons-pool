@@ -20,6 +20,9 @@ import java.lang.reflect.Proxy;
 
 import org.apache.commons.pool2.UsageTracking;
 
+/**
+ * @since 2.0
+ */
 class JdkProxySource<T> implements ProxySource<T> {
 
     private final ClassLoader classLoader;

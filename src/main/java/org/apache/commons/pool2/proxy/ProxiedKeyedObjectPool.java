@@ -21,6 +21,9 @@ import java.util.NoSuchElementException;
 import org.apache.commons.pool2.KeyedObjectPool;
 import org.apache.commons.pool2.UsageTracking;
 
+/**
+ * @since 2.0
+ */
 public class ProxiedKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
 
     private final KeyedObjectPool<K,V> pool;

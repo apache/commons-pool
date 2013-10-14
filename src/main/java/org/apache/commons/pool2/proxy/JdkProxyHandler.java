@@ -21,6 +21,9 @@ import java.lang.reflect.Method;
 
 import org.apache.commons.pool2.UsageTracking;
 
+/**
+ * @since 2.0
+ */
 class JdkProxyHandler<T> extends BaseProxyHandler<T>
         implements InvocationHandler {
 

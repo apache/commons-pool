@@ -33,12 +33,14 @@ import java.util.TimerTask;
  * The class declaration below should *not* be changed to public.
  * <p>
  * This class is intended to be thread-safe.
+ *
+ * @since 2.0
  */
 class EvictionTimer {
-    
+
     /** Timer instance */
     private static Timer _timer; //@GuardedBy("this")
-    
+
     /** Static usage count tracker */
     private static int _usageCount; //@GuardedBy("this")
 
@@ -86,13 +88,13 @@ class EvictionTimer {
             _timer = null;
         }
     }
-    
-    /** 
+
+    /**
      * {@link PrivilegedAction} used to get the ContextClassLoader
      */
     private static class PrivilegedGetTccl implements PrivilegedAction<ClassLoader> {
 
-        /** 
+        /**
          * {@inheritDoc}
          */
         @Override
@@ -101,7 +103,7 @@ class EvictionTimer {
         }
     }
 
-    /** 
+    /**
      * {@link PrivilegedAction} used to set the ContextClassLoader
      */
     private static class PrivilegedSetTccl implements PrivilegedAction<Void> {
@@ -117,7 +119,7 @@ class EvictionTimer {
             this.cl = cl;
         }
 
-        /** 
+        /**
          * {@inheritDoc}
          */
         @Override

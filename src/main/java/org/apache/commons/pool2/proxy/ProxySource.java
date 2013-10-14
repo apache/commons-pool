@@ -18,6 +18,9 @@ package org.apache.commons.pool2.proxy;
 
 import org.apache.commons.pool2.UsageTracking;
 
+/**
+ * @since 2.0
+ */
 interface ProxySource<T> {
     T createProxy(T pooledObject, UsageTracking<T> usageTracking);
     T resolveProxy(T proxy);

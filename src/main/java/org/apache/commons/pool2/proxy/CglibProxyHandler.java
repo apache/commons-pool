@@ -7,7 +7,9 @@ import org.apache.commons.pool2.UsageTracking;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 
-
+/**
+ * @since 2.0
+ */
 public class CglibProxyHandler<T> extends BaseProxyHandler<T>
         implements MethodInterceptor {
 

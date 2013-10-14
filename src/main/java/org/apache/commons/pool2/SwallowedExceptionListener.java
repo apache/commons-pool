@@ -21,6 +21,8 @@ package org.apache.commons.pool2;
  * of this listener so the user may receive notification of when this happens.
  * The listener should not throw an exception when called but pools calling
  * listeners should protect themselves against exceptions anyway.
+ *
+ * @since 2.0
  */
 public interface SwallowedExceptionListener {
 

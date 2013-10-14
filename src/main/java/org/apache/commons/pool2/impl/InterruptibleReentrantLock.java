@@ -26,6 +26,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * class is intended for internal use only.
  * <p>
  * This class is intended to be thread-safe.
+ *
+ * @since 2.0
  */
 class InterruptibleReentrantLock extends ReentrantLock {
 
@@ -33,7 +35,7 @@ class InterruptibleReentrantLock extends ReentrantLock {
 
     /**
      * Interrupt the threads that are waiting on a specific condition
-     * 
+     *
      * @param condition the condition on which the threads are waiting.
      */
     public void interruptWaiters(Condition condition) {
