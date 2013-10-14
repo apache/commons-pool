@@ -42,7 +42,7 @@ public abstract class BaseTestProxiedObjectPool {
     private StringWriter log = null;
 
     @Before
-    public void setup() {
+    public void setUp() {
         log = new StringWriter();
 
         PrintWriter pw = new PrintWriter(log);
