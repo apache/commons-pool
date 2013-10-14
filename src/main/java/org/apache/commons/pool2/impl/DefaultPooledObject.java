@@ -150,19 +150,6 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
     }
 
 
-    @Override
-    public boolean equals(Object obj) {
-        // Overridden purely to stop FindBugs complaining because compareTo()
-        // has been defined.
-        return super.equals(obj);
-    }
-
-    @Override
-    public int hashCode() {
-        // Overridden because equals() had to be overridden (see above)
-        return super.hashCode();
-    }
-
     /**
      * Provides a String form of the wrapper for debug purposes. The format is
      * not fixed and may change at any time.
