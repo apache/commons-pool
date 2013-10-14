@@ -139,7 +139,7 @@ public abstract class TestKeyedObjectPool {
         }
         final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
 
-        // addObject should make a new object, pasivate it and put it in the pool
+        // addObject should make a new object, passivate it and put it in the pool
         pool.addObject(KEY);
         expectedMethods.add(new MethodCall("makeObject", KEY).returned(ZERO));
         expectedMethods.add(new MethodCall("passivateObject", KEY, ZERO));
@@ -767,7 +767,7 @@ public abstract class TestKeyedObjectPool {
                 throw new PrivateException("validateObject");
             }
             final boolean r = true;
-            call.returned(new Boolean(r));
+            call.returned(Boolean.valueOf(r));
             return r;
         }
 

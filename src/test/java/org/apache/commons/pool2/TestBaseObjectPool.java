@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,13 +24,13 @@ import org.junit.Test;
 
 
 /**
- * @version $Revision$ 
+ * @version $Revision$
  */
 public class TestBaseObjectPool extends TestObjectPool {
     private ObjectPool<Object> _pool = null;
 
     /**
-     * @param mincapacity  
+     * @param mincapacity
      */
     protected ObjectPool<Object> makeEmptyPool(int mincapacity) {
         if (this.getClass() != TestBaseObjectPool.class) {
@@ -48,7 +48,7 @@ public class TestBaseObjectPool extends TestObjectPool {
     }
 
     /**
-     * @param n  
+     * @param n
      */
     protected Object getNthObject(final int n) {
         if (this.getClass() != TestBaseObjectPool.class) {
@@ -77,18 +77,7 @@ public class TestBaseObjectPool extends TestObjectPool {
         if (!getClass().equals(TestBaseObjectPool.class)) {
             return; // skip redundant tests
         }
-        ObjectPool<Object> pool = new BaseObjectPool<Object>() { 
-            @Override
-            public Object borrowObject() {
-                return null;
-            }
-            @Override
-            public void returnObject(Object obj) {
-            }
-            @Override
-            public void invalidateObject(Object obj) {
-            }            
-        };   
+        ObjectPool<Object> pool = new TestObjectPool();
 
         assertTrue("Negative expected.", pool.getNumIdle() < 0);
         assertTrue("Negative expected.", pool.getNumActive() < 0);
@@ -110,18 +99,7 @@ public class TestBaseObjectPool extends TestObjectPool {
 
     @Test
     public void testClose() throws Exception {
-        ObjectPool<Object> pool = new BaseObjectPool<Object>() {
-            @Override
-            public Object borrowObject() {
-                return null;
-            }
-            @Override
-            public void returnObject(Object obj) {
-            }
-            @Override
-            public void invalidateObject(Object obj) {
-            }
-        };
+        ObjectPool<Object> pool = new TestObjectPool();
 
         pool.close();
         pool.close(); // should not error as of Pool 2.0.
@@ -293,6 +271,19 @@ public class TestBaseObjectPool extends TestObjectPool {
             fail("Expected IllegalStateException");
         } catch(IllegalStateException e) {
             // expected
+        }
+    }
+
+    private static class TestObjectPool extends BaseObjectPool<Object> {
+        @Override
+        public Object borrowObject() {
+            return null;
+        }
+        @Override
+        public void returnObject(Object obj) {
+        }
+        @Override
+        public void invalidateObject(Object obj) {
         }
     }
 }
