@@ -20,7 +20,7 @@ import java.lang.ref.SoftReference;
 
 /**
  * Extension of {@link DefaultPooledObject} to wrap pooled soft references.
- * 
+ *
  * <p>This class is intended to be thread-safe.</p>
  *
  * @param <T> the type of the underlying object that the wrapped SoftReference
@@ -33,11 +33,11 @@ import java.lang.ref.SoftReference;
 public class PooledSoftReference<T> extends DefaultPooledObject<T> {
 
     /** SoftReference wrapped by this object */
-    private SoftReference<T> reference;
+    private volatile SoftReference<T> reference;
 
     /**
      * Creates a new PooledSoftReference wrapping the provided reference.
-     * 
+     *
      * @param reference SoftReference to be managed by the pool
      */
     public PooledSoftReference(SoftReference<T> reference) {
@@ -50,7 +50,7 @@ public class PooledSoftReference<T> extends DefaultPooledObject<T> {
      * <p>
      * Note that if the reference has been cleared, this method will return
      * null.
-     * 
+     *
      * @return Object referred to by the SoftReference
      */
     @Override
@@ -74,24 +74,24 @@ public class PooledSoftReference<T> extends DefaultPooledObject<T> {
         // TODO add other attributes
         // TODO encapsulate state and other attribute display in parent
     }
-    
+
     /**
      * Returns the SoftReference wrapped by this object.
-     * 
+     *
      * @return underlying SoftReference
      */
     public synchronized SoftReference<T> getReference() {
         return reference;
     }
-    
+
     /**
      * Sets the wrapped reference.
-     * 
+     *
      * <p>This method exists to allow a new, non-registered reference to be
      * held by the pool to track objects that have been checked out of the pool.
      * The actual parameter <strong>should</strong> be a reference to the same
      * object that {@link #getObject()} returns before calling this method.</p>
-     * 
+     *
      * @param reference new reference
      */
     public synchronized void setReference(SoftReference<T> reference) {
