@@ -74,4 +74,12 @@
     </Or>
     <Bug code="DE" />
   </Match>
+  
+  <!-- TEST CODE -->
+  <Match>
+    <!-- Generating a new object is a deliberate choice -->
+    <Class name="org.apache.commons.pool2.MethodCallPoolableObjectFactory" />
+    <Method name="makeObject" />
+    <Bug pattern="DM_NUMBER_CTOR" />
+  </Match>
 </FindBugsFilter>
