@@ -24,24 +24,15 @@ import org.apache.commons.pool2.UsageTracking;
 class JdkProxyHandler<T> extends BaseProxyHandler<T>
         implements InvocationHandler {
 
-    private final UsageTracking<T> usageTracking;
-
-
     JdkProxyHandler(T pooledObject, UsageTracking<T> usageTracking) {
-        super(pooledObject);
-        this.usageTracking = usageTracking;
+        super(pooledObject, usageTracking);
     }
 
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args)
             throws Throwable {
-        validateProxiedObject();
-        T pooledObject = getPooledObject();
-        if (usageTracking != null) {
-            usageTracking.use(pooledObject);
-        }
-        return method.invoke(pooledObject, args);
+        return doInvoke(method, args);
     }
 }
 

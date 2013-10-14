@@ -49,9 +49,9 @@ public class CglibProxySource<T> implements ProxySource<T> {
     @Override
     public T resolveProxy(T proxy) {
         @SuppressWarnings("unchecked")
-        BaseProxyHandler<T> proxyInterceptor =
-                (BaseProxyHandler<T>) ((Factory) proxy).getCallback(0);
-        T pooledObject = proxyInterceptor.disableProxy();
+        CglibProxyHandler<T> cglibProxyHandler =
+                (CglibProxyHandler<T>) ((Factory) proxy).getCallback(0);
+        T pooledObject = cglibProxyHandler.disableProxy();
         return pooledObject;
     }
 }
