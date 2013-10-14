@@ -21,6 +21,9 @@ import net.sf.cglib.proxy.Factory;
 
 import org.apache.commons.pool2.UsageTracking;
 
+/**
+ * @since 2.0
+ */
 public class CglibProxySource<T> implements ProxySource<T> {
 
     private final Class<? extends T> superclass;

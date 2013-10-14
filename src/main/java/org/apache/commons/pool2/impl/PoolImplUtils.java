@@ -24,6 +24,8 @@ import org.apache.commons.pool2.PooledObjectFactory;
 
 /**
  * Implementation specific utilities.
+ *
+ * @since 2.0
  */
 public class PoolImplUtils {
 

@@ -21,6 +21,9 @@ import java.util.NoSuchElementException;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.UsageTracking;
 
+/**
+ * @since 2.0
+ */
 public class ProxiedObjectPool<T> implements ObjectPool<T> {
 
     private final ObjectPool<T> pool;

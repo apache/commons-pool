@@ -22,6 +22,9 @@ import java.text.SimpleDateFormat;
 
 import org.apache.commons.pool2.PooledObject;
 
+/**
+ * @since 2.0
+ */
 public class DefaultPooledObjectInfo implements DefaultPooledObjectInfoMBean {
 
     private final PooledObject<?> pooledObject;

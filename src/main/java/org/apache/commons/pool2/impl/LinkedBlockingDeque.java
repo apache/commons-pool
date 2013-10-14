@@ -55,6 +55,8 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * Note: This was copied from Apache Harmony and modified to suit the needs of
  *       Commons Pool.
+ *
+ * @since 2.0
  */
 class LinkedBlockingDeque<E> extends AbstractQueue<E>
         implements Deque<E>, Serializable {
