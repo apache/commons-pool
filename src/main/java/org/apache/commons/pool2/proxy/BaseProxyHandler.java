@@ -16,13 +16,19 @@
  */
 package org.apache.commons.pool2.proxy;
 
+import java.lang.reflect.Method;
+
+import org.apache.commons.pool2.UsageTracking;
+
 class BaseProxyHandler<T> {
 
     private T pooledObject;
+    private final UsageTracking<T> usageTracking;
 
 
-    BaseProxyHandler(T pooledObject) {
+    BaseProxyHandler(T pooledObject, UsageTracking<T> usageTracking) {
         this.pooledObject = pooledObject;
+        this.usageTracking = usageTracking;
     }
 
 
@@ -43,5 +49,15 @@ class BaseProxyHandler<T> {
             throw new IllegalStateException("This object may no longer be " +
             		"used as it has been returned to the Object Pool.");
         }
+    }
+
+
+    Object doInvoke(Method method, Object[] args) throws Throwable {
+        validateProxiedObject();
+        T pooledObject = getPooledObject();
+        if (usageTracking != null) {
+            usageTracking.use(pooledObject);
+        }
+        return method.invoke(pooledObject, args);
     }
 }
