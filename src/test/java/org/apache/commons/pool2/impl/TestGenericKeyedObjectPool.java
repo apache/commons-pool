@@ -60,10 +60,10 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     protected KeyedObjectPool<Object,Object> makeEmptyPool(int mincapacity) {
 
         KeyedPooledObjectFactory<Object,Object> factory =
-                new KeyedPooledObjectFactory<Object,Object>()  {
+                new BaseKeyedPooledObjectFactory<Object,Object>()  {
             ConcurrentHashMap<Object,AtomicInteger> map = new ConcurrentHashMap<Object,AtomicInteger>();
             @Override
-            public PooledObject<Object> makeObject(Object key) {
+            public Object create(Object key) throws Exception {
                 int counter = 0;
                 AtomicInteger Counter = map.get(key);
                 if(null != Counter) {
@@ -72,16 +72,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                     map.put(key, new AtomicInteger(0));
                     counter = 0;
                 }
-                return new DefaultPooledObject<Object>(String.valueOf(key) + String.valueOf(counter));
+                return String.valueOf(key) + String.valueOf(counter);
             }
-            @Override
-            public void destroyObject(Object key, PooledObject<Object> obj) { }
-            @Override
-            public boolean validateObject(Object key, PooledObject<Object> obj) { return true; }
-            @Override
-            public void activateObject(Object key,PooledObject<Object> obj) { }
-            @Override
-            public void passivateObject(Object key, PooledObject<Object> obj) { }
         };
 
         GenericKeyedObjectPool<Object,Object> pool =
@@ -110,9 +102,9 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
     private GenericKeyedObjectPool<String,String> pool = null;
     private SimpleFactory<String> factory = null;
-    private final Integer zero = new Integer(0);
-    private final Integer one = new Integer(1);
-    private final Integer two = new Integer(2);
+    private static final Integer KEY_ZERO = Integer.valueOf(0);
+    private static final Integer KEY_ONE = Integer.valueOf(1);
+    private static final Integer KEY_TWO = Integer.valueOf(2);
 
     @Before
     public void setUp() throws Exception {
@@ -750,7 +742,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         pool.setLifo(lifo);
 
         for (int i = 0; i < 3; i ++) {
-            Integer key = new Integer(i);
+            Integer key = Integer.valueOf(i);
             for (int j = 0; j < 5; j++) {
                 pool.addObject(key);
             }
@@ -768,41 +760,41 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
          */
 
         pool.evict(); // Kill (0,0),(0,1)
-        assertEquals(3, pool.getNumIdle(zero));
-        String objZeroA = pool.borrowObject(zero);
+        assertEquals(3, pool.getNumIdle(KEY_ZERO));
+        String objZeroA = pool.borrowObject(KEY_ZERO);
         assertTrue(lifo ? objZeroA.equals("04") : objZeroA.equals("02"));
-        assertEquals(2, pool.getNumIdle(zero));
-        String objZeroB = pool.borrowObject(zero);
+        assertEquals(2, pool.getNumIdle(KEY_ZERO));
+        String objZeroB = pool.borrowObject(KEY_ZERO);
         assertTrue(objZeroB.equals("03"));
-        assertEquals(1, pool.getNumIdle(zero));
+        assertEquals(1, pool.getNumIdle(KEY_ZERO));
 
         pool.evict(); // Kill remaining 0 survivor and (1,5)
-        assertEquals(0, pool.getNumIdle(zero));
-        assertEquals(4, pool.getNumIdle(one));
-        String objOneA = pool.borrowObject(one);
+        assertEquals(0, pool.getNumIdle(KEY_ZERO));
+        assertEquals(4, pool.getNumIdle(KEY_ONE));
+        String objOneA = pool.borrowObject(KEY_ONE);
         assertTrue(lifo ? objOneA.equals("19") : objOneA.equals("16"));
-        assertEquals(3, pool.getNumIdle(one));
-        String objOneB = pool.borrowObject(one);
+        assertEquals(3, pool.getNumIdle(KEY_ONE));
+        String objOneB = pool.borrowObject(KEY_ONE);
         assertTrue(lifo ? objOneB.equals("18") : objOneB.equals("17"));
-        assertEquals(2, pool.getNumIdle(one));
+        assertEquals(2, pool.getNumIdle(KEY_ONE));
 
         pool.evict(); // Kill remaining 1 survivors
-        assertEquals(0, pool.getNumIdle(one));
+        assertEquals(0, pool.getNumIdle(KEY_ONE));
         pool.evict(); // Kill (2,10), (2,11)
-        assertEquals(3, pool.getNumIdle(two));
-        String objTwoA = pool.borrowObject(two);
+        assertEquals(3, pool.getNumIdle(KEY_TWO));
+        String objTwoA = pool.borrowObject(KEY_TWO);
         assertTrue(lifo ? objTwoA.equals("214") : objTwoA.equals("212"));
-        assertEquals(2, pool.getNumIdle(two));
+        assertEquals(2, pool.getNumIdle(KEY_TWO));
         pool.evict(); // All dead now
-        assertEquals(0, pool.getNumIdle(two));
+        assertEquals(0, pool.getNumIdle(KEY_TWO));
 
         pool.evict(); // Should do nothing - make sure no exception
         // Currently 2 zero, 2 one and 1 two active. Return them
-        pool.returnObject(zero, objZeroA);
-        pool.returnObject(zero, objZeroB);
-        pool.returnObject(one, objOneA);
-        pool.returnObject(one, objOneB);
-        pool.returnObject(two, objTwoA);
+        pool.returnObject(KEY_ZERO, objZeroA);
+        pool.returnObject(KEY_ZERO, objZeroB);
+        pool.returnObject(KEY_ONE, objOneA);
+        pool.returnObject(KEY_ONE, objOneB);
+        pool.returnObject(KEY_TWO, objTwoA);
         // Remove all idle objects
         pool.clear();
 
@@ -810,7 +802,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         pool.setMinEvictableIdleTimeMillis(500);
         factory.counter = 0; // Reset counter
         for (int i = 0; i < 3; i ++) {
-            Integer key = new Integer(i);
+            Integer key = Integer.valueOf(i);
             for (int j = 0; j < 5; j++) {
                 pool.addObject(key);
             }
@@ -819,33 +811,33 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
         // 0's are evictable, others not
         pool.evict(); // Kill (0,0),(0,1)
-        assertEquals(3, pool.getNumIdle(zero));
+        assertEquals(3, pool.getNumIdle(KEY_ZERO));
         pool.evict(); // Kill (0,2),(0,3)
-        assertEquals(1, pool.getNumIdle(zero));
+        assertEquals(1, pool.getNumIdle(KEY_ZERO));
         pool.evict(); // Kill (0,4), leave (1,5)
-        assertEquals(0, pool.getNumIdle(zero));
-        assertEquals(5, pool.getNumIdle(one));
-        assertEquals(5, pool.getNumIdle(two));
+        assertEquals(0, pool.getNumIdle(KEY_ZERO));
+        assertEquals(5, pool.getNumIdle(KEY_ONE));
+        assertEquals(5, pool.getNumIdle(KEY_TWO));
         pool.evict(); // (1,6), (1,7)
-        assertEquals(5, pool.getNumIdle(one));
-        assertEquals(5, pool.getNumIdle(two));
+        assertEquals(5, pool.getNumIdle(KEY_ONE));
+        assertEquals(5, pool.getNumIdle(KEY_TWO));
         pool.evict(); // (1,8), (1,9)
-        assertEquals(5, pool.getNumIdle(one));
-        assertEquals(5, pool.getNumIdle(two));
+        assertEquals(5, pool.getNumIdle(KEY_ONE));
+        assertEquals(5, pool.getNumIdle(KEY_TWO));
         pool.evict(); // (2,10), (2,11)
-        assertEquals(5, pool.getNumIdle(one));
-        assertEquals(5, pool.getNumIdle(two));
+        assertEquals(5, pool.getNumIdle(KEY_ONE));
+        assertEquals(5, pool.getNumIdle(KEY_TWO));
         pool.evict(); // (2,12), (2,13)
-        assertEquals(5, pool.getNumIdle(one));
-        assertEquals(5, pool.getNumIdle(two));
+        assertEquals(5, pool.getNumIdle(KEY_ONE));
+        assertEquals(5, pool.getNumIdle(KEY_TWO));
         pool.evict(); // (2,14), (1,5)
-        assertEquals(5, pool.getNumIdle(one));
-        assertEquals(5, pool.getNumIdle(two));
+        assertEquals(5, pool.getNumIdle(KEY_ONE));
+        assertEquals(5, pool.getNumIdle(KEY_TWO));
         Thread.sleep(200); // Ones now timed out
         pool.evict(); // kill (1,6), (1,7) - (1,5) missed
-        assertEquals(3, pool.getNumIdle(one));
-        assertEquals(5, pool.getNumIdle(two));
-        String obj = pool.borrowObject(one);
+        assertEquals(3, pool.getNumIdle(KEY_ONE));
+        assertEquals(5, pool.getNumIdle(KEY_TWO));
+        String obj = pool.borrowObject(KEY_ONE);
         if (lifo) {
             assertEquals("19", obj);
         } else {
@@ -877,22 +869,22 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         pool.setTestOnBorrow(false);
         for (int i = 0; i < 3; i ++) {
             factory.resetId();
-            Integer key = new Integer(i);
+            Integer key = Integer.valueOf(i);
             for (int j = 0; j < 8; j++) {
                 pool.addObject(key);
             }
         }
         pool.evict(); // Visit oldest 2 - 00 and 01
-        VisitTracker<Integer> obj = pool.borrowObject(zero);
-        pool.returnObject(zero, obj);
-        obj = pool.borrowObject(zero);
-        pool.returnObject(zero, obj);
+        VisitTracker<Integer> obj = pool.borrowObject(KEY_ZERO);
+        pool.returnObject(KEY_ZERO, obj);
+        obj = pool.borrowObject(KEY_ZERO);
+        pool.returnObject(KEY_ZERO, obj);
         //  borrow, return, borrow, return
         //  FIFO will move 0 and 1 to end - 2,3,4,5,6,7,0,1
         //  LIFO, 7 out, then in, then out, then in - 7,6,5,4,3,2,1,0
         pool.evict();  // Should visit 02 and 03 in either case
         for (int i = 0; i < 8; i++) {
-            VisitTracker<Integer> tracker = pool.borrowObject(zero);
+            VisitTracker<Integer> tracker = pool.borrowObject(KEY_ZERO);
             if (tracker.getId() >= 4) {
                 assertEquals("Unexpected instance visited " + tracker.getId(),
                         0, tracker.getValidateCount());
@@ -909,12 +901,12 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         pool.evict(); // 10, 11, 12
         pool.evict(); // 13, 14, 15
 
-        obj = pool.borrowObject(one);
-        pool.returnObject(one, obj);
-        obj = pool.borrowObject(one);
-        pool.returnObject(one, obj);
-        obj = pool.borrowObject(one);
-        pool.returnObject(one, obj);
+        obj = pool.borrowObject(KEY_ONE);
+        pool.returnObject(KEY_ONE, obj);
+        obj = pool.borrowObject(KEY_ONE);
+        pool.returnObject(KEY_ONE, obj);
+        obj = pool.borrowObject(KEY_ONE);
+        pool.returnObject(KEY_ONE, obj);
         // borrow, return, borrow, return
         //  FIFO 3,4,5,^,6,7,0,1,2
         //  LIFO 7,6,^,5,4,3,2,1,0
@@ -932,7 +924,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         // LIFO - 27, 10, 11
         // FIFO - 24, 25, 26
         for (int i = 0; i < 8; i++) {
-            VisitTracker<Integer> tracker = pool.borrowObject(one);
+            VisitTracker<Integer> tracker = pool.borrowObject(KEY_ONE);
             if ((lifo && tracker.getId() > 1) ||
                     (!lifo && tracker.getId() > 2)) {
                 assertEquals("Instance " +  tracker.getId() +
@@ -968,15 +960,15 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
                 int zeroLength = 10 + random.nextInt(20);
                 for (int k = 0; k < zeroLength; k++) {
-                    pool.addObject(zero);
+                    pool.addObject(KEY_ZERO);
                 }
                 int oneLength = 10 + random.nextInt(20);
                 for (int k = 0; k < oneLength; k++) {
-                    pool.addObject(one);
+                    pool.addObject(KEY_ONE);
                 }
                 int twoLength = 10 + random.nextInt(20);
                 for (int k = 0; k < twoLength; k++) {
-                    pool.addObject(two);
+                    pool.addObject(KEY_TWO);
                 }
 
                 // Choose a random number of evictor runs
@@ -997,7 +989,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                 VisitTracker<Integer> tracker = null;
                 int visitCount = 0;
                 for (int k = 0; k < zeroLength; k++) {
-                    tracker = pool.borrowObject(zero);
+                    tracker = pool.borrowObject(KEY_ZERO);
                     visitCount = tracker.getValidateCount();
                     if (visitCount < cycleCount || visitCount > cycleCount + 1){
                         fail(formatSettings("ZERO", "runs", runs, "lifo", lifo, "i", i, "j", j,
@@ -1006,7 +998,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                     }
                 }
                 for (int k = 0; k < oneLength; k++) {
-                    tracker = pool.borrowObject(one);
+                    tracker = pool.borrowObject(KEY_ONE);
                     visitCount = tracker.getValidateCount();
                     if (visitCount < cycleCount || visitCount > cycleCount + 1){
                         fail(formatSettings("ONE", "runs", runs, "lifo", lifo, "i", i, "j", j,
@@ -1016,7 +1008,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                 }
                 int visits[] = new int[twoLength];
                 for (int k = 0; k < twoLength; k++) {
-                    tracker = pool.borrowObject(two);
+                    tracker = pool.borrowObject(KEY_TWO);
                     visitCount = tracker.getValidateCount();
                     visits[k] = visitCount;
                     if (visitCount < cycleCount || visitCount > cycleCount + 1){
@@ -1460,9 +1452,9 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         final Random random = new Random();
         for (int j = 0; j < nIterations; j++) {
             // Get a random invalidation target
-            Integer targ = new Integer(random.nextInt(nObjects));
+            Integer targ = Integer.valueOf(random.nextInt(nObjects));
             while (targets.contains(targ)) {
-                targ = new Integer(random.nextInt(nObjects));
+                targ = Integer.valueOf(random.nextInt(nObjects));
             }
             targets.add(targ);
             // Launch nThreads threads all trying to invalidate the target
@@ -1733,7 +1725,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             exceptionOnPassivate = b;
         }
 
-        int counter = 0;
+        volatile int counter = 0;
         boolean valid;
 
         int activeCount = 0;
@@ -1742,7 +1734,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         boolean oddValid = true;
         boolean enableValidation = false;
         long destroyLatency = 0;
-        int maxTotalPerKey = Integer.MAX_VALUE;
+        volatile int maxTotalPerKey = Integer.MAX_VALUE;
         boolean exceptionOnPassivate = false;
         boolean exceptionOnActivate = false;
         boolean exceptionOnDestroy = false;
