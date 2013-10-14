@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -162,12 +162,8 @@ public class TestSoftRefOutOfMemory {
      */
     @Test
     public void testOutOfMemoryError() throws Exception {
-        pool = new SoftReferenceObjectPool<String>(new BasePooledObjectFactory<String>() {
-            @Override
-            public String create() throws Exception {
-                throw new OutOfMemoryError();
-            }
-        });
+        pool = new SoftReferenceObjectPool<String>(
+                new OomeFactory(OomeTrigger.CREATE));
 
         try {
             pool.borrowObject();
@@ -178,43 +174,8 @@ public class TestSoftRefOutOfMemory {
         }
         pool.close();
 
-        pool = new SoftReferenceObjectPool<String>(new BasePooledObjectFactory<String>() {
-            @Override
-            public String create() throws Exception {
-                return new String();
-            }
-
-            @Override
-            public boolean validateObject(PooledObject<String> obj) {
-                throw new OutOfMemoryError();
-            }
-        });
-
-        try {
-            pool.borrowObject();
-            fail("Expected out of memory.");
-        }
-        catch (OutOfMemoryError ex) {
-            // expected
-        }
-        pool.close();
-        
-        pool = new SoftReferenceObjectPool<String>(new BasePooledObjectFactory<String>() {
-            @Override
-            public String create() throws Exception {
-                return new String();
-            }
-
-            @Override
-            public boolean validateObject(PooledObject<String> obj) {
-                throw new IllegalAccessError();
-            }
-
-            @Override
-            public void destroyObject(PooledObject<String> obj) throws Exception {
-                throw new OutOfMemoryError();
-            }
-        });
+        pool = new SoftReferenceObjectPool<String>(
+                new OomeFactory(OomeTrigger.VALIDATE));
 
         try {
             pool.borrowObject();
@@ -225,6 +186,17 @@ public class TestSoftRefOutOfMemory {
         }
         pool.close();
 
+        pool = new SoftReferenceObjectPool<String>(
+                new OomeFactory(OomeTrigger.DESTROY));
+
+        try {
+            pool.borrowObject();
+            fail("Expected out of memory.");
+        }
+        catch (OutOfMemoryError ex) {
+            // expected
+        }
+        pool.close();
     }
 
 
@@ -258,5 +230,53 @@ public class TestSoftRefOutOfMemory {
             counter++;
             return String.valueOf(counter) + buffer;
         }
+    }
+
+    private static class OomeFactory extends BasePooledObjectFactory<String> {
+
+        private final OomeTrigger trigger;
+
+        public OomeFactory(OomeTrigger trigger) {
+            this.trigger = trigger;
+        }
+
+        @Override
+        public String create() throws Exception {
+            if (trigger.equals(OomeTrigger.CREATE)) {
+                throw new OutOfMemoryError();
+            }
+            // It seems that as of Java 1.4 String.valueOf may return an
+            // intern()'ed String this may cause problems when the tests
+            // depend on the returned object to be eventually garbaged
+            // collected. Either way, making sure a new String instance
+            // is returned eliminated false failures.
+            return new String();
+        }
+
+        @Override
+        public boolean validateObject(PooledObject<String> p) {
+            if (trigger.equals(OomeTrigger.VALIDATE)) {
+                throw new OutOfMemoryError();
+            }
+            if (trigger.equals(OomeTrigger.DESTROY)) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        @Override
+        public void destroyObject(PooledObject<String> p) throws Exception {
+            if (trigger.equals(OomeTrigger.DESTROY)) {
+                throw new OutOfMemoryError();
+            }
+            super.destroyObject(p);
+        }
+    }
+
+    private static enum OomeTrigger {
+        CREATE,
+        VALIDATE,
+        DESTROY
     }
 }

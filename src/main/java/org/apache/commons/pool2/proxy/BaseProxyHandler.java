@@ -50,7 +50,7 @@ class BaseProxyHandler<T> {
     void validateProxiedObject() {
         if (pooledObject == null) {
             throw new IllegalStateException("This object may no longer be " +
-            		"used as it has been returned to the Object Pool.");
+                    "used as it has been returned to the Object Pool.");
         }
     }
 

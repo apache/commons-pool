@@ -130,13 +130,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         long timeBetweenEvictionRunsMillis = 8;
         boolean blockWhenExhausted = false;
         boolean lifo = false;
-        PooledObjectFactory<Object> factory = new BasePooledObjectFactory<Object>() {
-            @Override
-            public Object create() throws Exception {
-                return null;
-            }
-        };
-
+        PooledObjectFactory<Object> factory = new DummyFactory();
         GenericObjectPool<Object> pool =
                 new GenericObjectPool<Object>(factory);
         assertEquals(GenericObjectPoolConfig.DEFAULT_MAX_IDLE, pool.getMaxIdle());
@@ -1016,7 +1010,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         Long[] creationTime = new Long[5] ;
         for(int i=0;i<5;i++) {
             active[i] = pool.borrowObject();
-            creationTime[i] = new Long((active[i]).getCreateTime());
+            creationTime[i] = Long.valueOf((active[i]).getCreateTime());
         }
 
         for(int i=0;i<5;i++) {
@@ -1037,23 +1031,6 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
     @Test(timeout=60000)
     public void testEvictionInvalid() throws Exception {
-        class InvalidFactory extends BasePooledObjectFactory<Object> {
-
-            @Override
-            public Object create() throws Exception {
-                return new Object();
-            }
-
-            @Override
-            public boolean validateObject(PooledObject<Object> obj) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    // Ignore
-                }
-                return false;
-            }
-        }
 
         final GenericObjectPool<Object> pool =
                 new GenericObjectPool<Object>(new InvalidFactory());
@@ -1070,16 +1047,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.returnObject(p);
 
         // Run eviction in a separate thread
-        Thread t = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    pool.evict();
-                } catch (Exception e) {
-                    // Ignore
-                }
-            }
-        };
+        Thread t = new EvictionThread<Object>(pool);
         t.start();
 
         // Sleep to make sure evictor has started
@@ -1127,9 +1095,9 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         final Random random = new Random();
         for (int j = 0; j < nIterations; j++) {
             // Get a random invalidation target
-            Integer targ = new Integer(random.nextInt(nObjects));
+            Integer targ = Integer.valueOf(random.nextInt(nObjects));
             while (targets.contains(targ)) {
-                targ = new Integer(random.nextInt(nObjects));
+                targ = Integer.valueOf(random.nextInt(nObjects));
             }
             targets.add(targ);
             // Launch nThreads threads all trying to invalidate the target
@@ -1952,5 +1920,52 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         Set<ObjectName> result = mbs.queryNames(oname, null);
         Assert.assertEquals(1, result.size());
+    }
+
+
+    private static final class DummyFactory
+            extends BasePooledObjectFactory<Object> {
+        @Override
+        public Object create() throws Exception {
+            return null;
+        }
+    }
+
+
+    private static class InvalidFactory
+            extends BasePooledObjectFactory<Object> {
+
+        @Override
+        public Object create() throws Exception {
+            return new Object();
+        }
+
+        @Override
+        public boolean validateObject(PooledObject<Object> obj) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                // Ignore
+            }
+            return false;
+        }
+    }
+
+    private static class EvictionThread<T> extends Thread {
+
+        private final GenericObjectPool<T> pool;
+
+        public EvictionThread(GenericObjectPool<T> pool) {
+            this.pool = pool;
+        }
+
+        @Override
+        public void run() {
+            try {
+                pool.evict();
+            } catch (Exception e) {
+                // Ignore
+            }
+        }
     }
 }

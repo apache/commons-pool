@@ -105,8 +105,41 @@
     <Or>
       <Class name="org.apache.commons.pool2.impl.TestAbandonedObjectPool$ConcurrentBorrower" />
       <Class name="org.apache.commons.pool2.impl.TestAbandonedObjectPool$ConcurrentReturner" />
+      <Class name="org.apache.commons.pool2.impl.TestGenericKeyedObjectPool$SimpleTestThread" />
+      <Class name="org.apache.commons.pool2.impl.TestGenericObjectPool$EvictionThread" />
     </Or>
     <Method name="run" />
     <Bug pattern="DE_MIGHT_IGNORE" />
+  </Match>
+  <Match>
+    <!-- Using equals is deliberate. The objects are being tested to see if  -->
+    <!-- they are the same object                                            -->
+    <Class name="org.apache.commons.pool2.impl.TestGenericKeyedObjectPool" />
+    <Method name="testMaxTotalLRU" />
+    <bug pattern="ES_COMPARING_STRINGS_WITH_EQ" />
+  </Match>
+  <Match>
+    <!-- Exception is ignored as earlier exception is more important -->
+    <Class name="org.apache.commons.pool2.impl.TestGenericObjectPool" />
+    <Method name="testMaxTotalUnderLoad" />
+    <Bug pattern="DE_MIGHT_IGNORE" />
+  </Match>
+  <Match>
+    <!-- Direct use of GC is deliberate and necessary -->
+    <Class name="org.apache.commons.pool2.impl.TestSoftRefOutOfMemory" />
+    <Mehtod name="tearDown" />
+    <Bug pattern="DM_GC" />
+  </Match>
+  <Match>
+    <!-- Use of new String() is deliberate -->
+    <Class name="org.apache.commons.pool2.impl.TestSoftRefOutOfMemory$OomeFactory" />
+    <Method name="create" />
+    <Bug pattern="DM_STRING_VOID_CTOR" />
+  </Match>
+  <Match>
+    <!-- Use of new String() is deliberate -->
+    <Class name="org.apache.commons.pool2.impl.TestSoftRefOutOfMemory$SmallPoolableObjectFactory" />
+    <Method name="create" />
+    <Bug pattern="DM_STRING_CTOR" />
   </Match>
 </FindBugsFilter>
