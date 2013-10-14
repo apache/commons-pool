@@ -82,12 +82,7 @@ public abstract class TestKeyedObjectPool {
     public void testClosedPoolBehavior() throws Exception {
         final KeyedObjectPool<Object,Object> pool;
         try {
-            pool = makeEmptyPool(new BaseKeyedPooledObjectFactory<Object,Object>() {
-                @Override
-                public Object create(final Object key) throws Exception {
-                    return new Object();
-                }
-            });
+            pool = makeEmptyPool(new TestFactory());
         } catch(UnsupportedOperationException uoe) {
             return; // test not supported
         }
@@ -125,6 +120,8 @@ public abstract class TestKeyedObjectPool {
         pool.close();
     }
 
+    // Deliberate choice to create a new object in case future unit tests check
+    // for a specific object.
     private final Integer ZERO = new Integer(0);
     private final Integer ONE = new Integer(1);
 
@@ -664,6 +661,14 @@ public abstract class TestKeyedObjectPool {
         expectedMethods.clear();
     }
 
+    private static class TestFactory
+            extends BaseKeyedPooledObjectFactory<Object,Object> {
+        @Override
+        public Object create(final Object key) throws Exception {
+            return new Object();
+        }
+    }
+
     protected static class FailingKeyedPooledObjectFactory implements KeyedPooledObjectFactory<Object,Object> {
         private final List<MethodCall> methodCalls = new ArrayList<MethodCall>();
         private int count = 0;
@@ -746,6 +751,8 @@ public abstract class TestKeyedObjectPool {
             if (makeObjectFail) {
                 throw new PrivateException("makeObject");
             }
+            // Deliberate choice to create new object in case future unit test
+            // checks for a specific object
             final Integer obj = new Integer(count);
             call.setReturned(obj);
             return new DefaultPooledObject<Object>(obj);
