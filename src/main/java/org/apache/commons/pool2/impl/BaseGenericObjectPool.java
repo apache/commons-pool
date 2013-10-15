@@ -764,6 +764,8 @@ public abstract class BaseGenericObjectPool<T> {
     /**
      * The listener used (if any) to receive notifications of exceptions
      * unavoidably swallowed by the pool.
+     *
+     * @return The listener or <code>null</code> for no listener
      */
     public SwallowedExceptionListener getSwallowedExceptionListener() {
         return swallowedExceptionListener;
