@@ -17,8 +17,8 @@
 
 package org.apache.commons.pool2;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimerTask;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import junit.framework.AssertionFailedError;
 
 import org.apache.commons.pool2.impl.DefaultPooledObject;

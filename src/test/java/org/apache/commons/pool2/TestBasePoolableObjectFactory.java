@@ -16,7 +16,7 @@
  */
 package org.apache.commons.pool2;
 
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 

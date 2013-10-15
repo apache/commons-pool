@@ -19,16 +19,18 @@ package org.apache.commons.pool2.impl;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.pool2.BasePooledObjectFactory;
 
-public class TestGenericObjectPoolClassLoaders extends TestCase {
+import org.junit.Assert;
+import org.junit.Test;
+
+public class TestGenericObjectPoolClassLoaders {
 
     private static final URL BASE_URL =
             TestGenericObjectPoolClassLoaders.class.getResource(
                     "/org/apache/commons/pool2/impl/");
 
+    @Test
     public void testContextClassLoader() throws Exception {
 
         ClassLoader savedClassloader =
@@ -47,7 +49,7 @@ public class TestGenericObjectPoolClassLoaders extends TestCase {
                 Thread.sleep(100);
                 counter++;
             }
-            assertEquals("Wrong number of idle objects in pool1", 1,
+            Assert.assertEquals("Wrong number of idle objects in pool1", 1,
                     pool1.getNumIdle());
 
             // ---------------
@@ -60,7 +62,7 @@ public class TestGenericObjectPoolClassLoaders extends TestCase {
             pool2.setMinIdle(1);
 
             pool2.addObject();
-            assertEquals("Wrong number of idle objects in pool2", 1,
+            Assert.assertEquals("Wrong number of idle objects in pool2", 1,
                     pool2.getNumIdle());
             pool2.clear();
 
@@ -71,7 +73,7 @@ public class TestGenericObjectPoolClassLoaders extends TestCase {
                 Thread.sleep(100);
                 counter++;
             }
-            assertEquals("Wrong number of  idle objects in pool2", 1,
+            Assert.assertEquals("Wrong number of  idle objects in pool2", 1,
                     pool2.getNumIdle());
 
             pool1.close();

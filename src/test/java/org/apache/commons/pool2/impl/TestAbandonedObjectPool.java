@@ -25,23 +25,24 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.TrackedUse;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * TestCase for AbandonedObjectPool
  *
  * @version $Revision: 1158659 $ $Date: 2011-08-17 05:37:26 -0700 (Wed, 17 Aug 2011) $
  */
-public class TestAbandonedObjectPool extends TestCase {
+public class TestAbandonedObjectPool {
     private GenericObjectPool<PooledTestObject> pool = null;
     private AbandonedConfig abandonedConfig = null;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         abandonedConfig = new AbandonedConfig();
 
@@ -56,7 +57,7 @@ public class TestAbandonedObjectPool extends TestCase {
                abandonedConfig);
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         String poolName = pool.getJmxName().toString();
         pool.clear();
@@ -87,6 +88,7 @@ public class TestAbandonedObjectPool extends TestCase {
     * in GenericObjectPool
     *
     */
+    @Test
     public void testConcurrentInvalidation() throws Exception {
         final int POOL_SIZE = 30;
         pool.setMaxTotal(POOL_SIZE);
@@ -126,7 +128,7 @@ public class TestAbandonedObjectPool extends TestCase {
         }
 
         // Now, the number of active instances should be 0
-        assertTrue("numActive should have been 0, was " + pool.getNumActive(), pool.getNumActive() == 0);
+        Assert.assertTrue("numActive should have been 0, was " + pool.getNumActive(), pool.getNumActive() == 0);
     }
 
     /**
@@ -134,6 +136,7 @@ public class TestAbandonedObjectPool extends TestCase {
      * is destroyed instead of being returned to the pool (and possibly later destroyed
      * inappropriately).
      */
+    @Test
     public void testAbandonedReturn() throws Exception {
         abandonedConfig = new AbandonedConfig();
         abandonedConfig.setRemoveAbandonedOnBorrow(true);
@@ -159,15 +162,16 @@ public class TestAbandonedObjectPool extends TestCase {
         // off removeAbandoned and then returns an instance that borrowObject
         // will deem abandoned.  Make sure it is not returned to the borrower.
         returner.start();    // short delay, then return instance
-        assertTrue(pool.borrowObject().hashCode() != deadMansHash);
-        assertEquals(0, pool.getNumIdle());
-        assertEquals(1, pool.getNumActive());
+        Assert.assertTrue(pool.borrowObject().hashCode() != deadMansHash);
+        Assert.assertEquals(0, pool.getNumIdle());
+        Assert.assertEquals(1, pool.getNumActive());
     }
 
     /**
      * Verify that an object that gets flagged as abandoned and is subsequently
      * invalidated is only destroyed (and pool counter decremented) once.
      */
+    @Test
     public void testAbandonedInvalidate() throws Exception {
         abandonedConfig = new AbandonedConfig();
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
@@ -188,14 +192,15 @@ public class TestAbandonedObjectPool extends TestCase {
         Thread.sleep(1000);          // abandon checked out instances and let evictor start
         pool.invalidateObject(obj);  // Should not trigger another destroy / decrement
         Thread.sleep(2000);          // give evictor time to finish destroys
-        assertEquals(0, pool.getNumActive());
-        assertEquals(5, pool.getDestroyedCount());
+        Assert.assertEquals(0, pool.getNumActive());
+        Assert.assertEquals(5, pool.getDestroyedCount());
     }
 
     /**
      * Verify that an object that the evictor identifies as abandoned while it
      * is in process of being returned to the pool is not destroyed.
      */
+    @Test
     public void testRemoveAbandonedWhileReturning() throws Exception {
         abandonedConfig = new AbandonedConfig();
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
@@ -217,8 +222,8 @@ public class TestAbandonedObjectPool extends TestCase {
         Thread.sleep(50);       // abandon obj
         pool.returnObject(obj); // evictor will run during validation
         PooledTestObject obj2 = pool.borrowObject();
-        assertEquals(obj, obj2);          // should get original back
-        assertTrue(!obj2.isDestroyed());  // and not destroyed
+        Assert.assertEquals(obj, obj2);          // should get original back
+        Assert.assertTrue(!obj2.isDestroyed());  // and not destroyed
     }
 
     class ConcurrentBorrower extends Thread {
