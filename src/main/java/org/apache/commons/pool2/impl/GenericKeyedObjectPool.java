@@ -1294,10 +1294,10 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                 new HashMap<String,List<DefaultPooledObjectInfo>>();
 
         for (K key : poolMap.keySet()) {
-            List<DefaultPooledObjectInfo> list =
-                    new ArrayList<DefaultPooledObjectInfo>();
             ObjectDeque<T> queue = poolMap.get(key);
             if (queue != null) {
+                List<DefaultPooledObjectInfo> list =
+                        new ArrayList<DefaultPooledObjectInfo>();
                 result.put(key.toString(), list);
                 for (PooledObject<T> p : queue.getAllObjects().values()) {
                     list.add(new DefaultPooledObjectInfo(p));
