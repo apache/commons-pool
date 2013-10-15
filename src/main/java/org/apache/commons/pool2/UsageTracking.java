@@ -23,10 +23,17 @@ package org.apache.commons.pool2;
  * using allowing more informed decisions and reporting to be made regarding
  * abandoned objects.
  *
- * @version $Revision:$
+ * @param <T>   The type of object provided by the pool.
  *
  * @since 2.0
  */
 public interface UsageTracking<T> {
+
+    /**
+     * This method is called every time a pooled object to enable the pool to
+     * better track borrowed objects.
+     *
+     * @param pooledObject  The object that is being used
+     */
     void use(T pooledObject);
 }

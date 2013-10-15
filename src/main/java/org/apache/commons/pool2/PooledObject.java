@@ -119,8 +119,24 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     @Override
     String toString();
 
+    /**
+     * Attempt to place the pooled object in the
+     * {@link PooledObjectState#EVICTION} state.
+     *
+     * @return <code>true</code> if the object was placed in the
+     *         {@link PooledObjectState#EVICTION} state otherwise
+     *         <code>false</code>
+     */
     boolean startEvictionTest();
 
+    /**
+     * Called to inform the object that the eviction test has ended.
+     *
+     * @param idleQueue The queue if idle objects to which the object should be
+     *                  returned
+     *
+     * @return  Currently not used
+     */
     boolean endEvictionTest(Deque<PooledObject<T>> idleQueue);
 
     /**
@@ -147,6 +163,9 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      * Is abandoned object tracking being used? If this is true the
      * implementation will need to record the stack trace of the last caller to
      * borrow this object.
+     *
+     * @param   logAbandoned    The new configuration setting for abandoned
+     *                          object tracking
      */
     void setLogAbandoned(boolean logAbandoned);
 
@@ -159,6 +178,8 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      * Prints the stack trace of the code that borrowed this pooled object and
      * the stack trace of the last code to use this object (if available) to
      * the supplied writer.
+     *
+     * @param   writer  The destination for the debug output
      */
     void printStackTrace(PrintWriter writer);
 
