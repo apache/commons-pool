@@ -208,6 +208,8 @@ public class AbandonedConfig {
      * If the pool implements {@link UsageTracking}, should the pool record a
      * stack trace every time a method is called on a pooled object and retain
      * the most recent stack trace to aid debugging of abandoned objects?
+     *
+     * @return <code>true</code> if usage tracking is enabled
      */
     public boolean getUseUsageTracking() {
         return useUsageTracking;
@@ -218,6 +220,10 @@ public class AbandonedConfig {
      * should record a stack trace every time a method is called on a pooled
      * object and retain the most recent stack trace to aid debugging of
      * abandoned objects.
+     *
+     * @param   useUsageTracking    A value of <code>true</code> will enable
+     *                              the recording of a stack trace on every use
+     *                              of a pooled object
      */
     public void setUseUsageTracking(boolean useUsageTracking) {
         this.useUsageTracking = useUsageTracking;
