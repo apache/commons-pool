@@ -177,6 +177,10 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
     /**
      * Set the value for the {@code lifo} configuration attribute for pools
      * created with this configuration instance.
+     *
+     * @param lifo The new setting of {@code lifo}
+     *        for this configuration instance
+     *
      * @see GenericObjectPool#getLifo()
      * @see GenericKeyedObjectPool#getLifo()
      */
@@ -201,6 +205,10 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
     /**
      * Set the value for the {@code maxWait} configuration attribute for pools
      * created with this configuration instance.
+     *
+     * @param maxWaitMillis The new setting of {@code maxWaitMillis}
+     *        for this configuration instance
+     *
      * @see GenericObjectPool#getMaxWaitMillis()
      * @see GenericKeyedObjectPool#getMaxWaitMillis()
      */
@@ -225,6 +233,10 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
     /**
      * Set the value for the {@code minEvictableIdleTimeMillis} configuration
      * attribute for pools created with this configuration instance.
+     *
+     * @param minEvictableIdleTimeMillis The new setting of
+     *        {@code minEvictableIdleTimeMillis} for this configuration instance
+     *
      * @see GenericObjectPool#getMinEvictableIdleTimeMillis()
      * @see GenericKeyedObjectPool#getMinEvictableIdleTimeMillis()
      */
@@ -251,6 +263,11 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
      * Set the value for the {@code softMinEvictableIdleTimeMillis}
      * configuration attribute for pools created with this configuration
      * instance.
+     *
+     * @param softMinEvictableIdleTimeMillis The new setting of
+     *        {@code softMinEvictableIdleTimeMillis} for this configuration
+     *        instance
+     *
      * @see GenericObjectPool#getSoftMinEvictableIdleTimeMillis()
      * @see GenericKeyedObjectPool#getSoftMinEvictableIdleTimeMillis()
      */
@@ -276,6 +293,10 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
     /**
      * Set the value for the {@code numTestsPerEvictionRun} configuration
      * attribute for pools created with this configuration instance.
+     *
+     * @param numTestsPerEvictionRun The new setting of
+     *        {@code numTestsPerEvictionRun} for this configuration instance
+     *
      * @see GenericObjectPool#getNumTestsPerEvictionRun()
      * @see GenericKeyedObjectPool#getNumTestsPerEvictionRun()
      */
@@ -300,6 +321,10 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
     /**
      * Set the value for the {@code testOnBorrow} configuration attribute for
      * pools created with this configuration instance.
+     *
+     * @param testOnBorrow The new setting of {@code testOnBorrow}
+     *        for this configuration instance
+     *
      * @see GenericObjectPool#getTestOnBorrow()
      * @see GenericKeyedObjectPool#getTestOnBorrow()
      */
@@ -324,6 +349,10 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
     /**
      * Set the value for the {@code testOnReturn} configuration attribute for
      * pools created with this configuration instance.
+     *
+     * @param testOnReturn The new setting of {@code testOnReturn}
+     *        for this configuration instance
+     *
      * @see GenericObjectPool#getTestOnReturn()
      * @see GenericKeyedObjectPool#getTestOnReturn()
      */
@@ -348,6 +377,10 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
     /**
      * Set the value for the {@code testWhileIdle} configuration attribute for
      * pools created with this configuration instance.
+     *
+     * @param testWhileIdle The new setting of {@code testWhileIdle}
+     *        for this configuration instance
+     *
      * @see GenericObjectPool#getTestWhileIdle()
      * @see GenericKeyedObjectPool#getTestWhileIdle()
      */
@@ -372,6 +405,11 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
     /**
      * Set the value for the {@code timeBetweenEvictionRunsMillis} configuration
      * attribute for pools created with this configuration instance.
+     *
+     * @param timeBetweenEvictionRunsMillis The new setting of
+     *        {@code timeBetweenEvictionRunsMillis} for this configuration
+     *        instance
+     *
      * @see GenericObjectPool#getTimeBetweenEvictionRunsMillis()
      * @see GenericKeyedObjectPool#getTimeBetweenEvictionRunsMillis()
      */
@@ -397,6 +435,10 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
     /**
      * Set the value for the {@code evictionPolicyClassName} configuration
      * attribute for pools created with this configuration instance.
+     *
+     * @param evictionPolicyClassName The new setting of
+     *        {@code evictionPolicyClassName} for this configuration instance
+     *
      * @see GenericObjectPool#getEvictionPolicyClassName()
      * @see GenericKeyedObjectPool#getEvictionPolicyClassName()
      */
@@ -421,6 +463,10 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
     /**
      * Set the value for the {@code blockWhenExhausted} configuration attribute
      * for pools created with this configuration instance.
+     *
+     * @param blockWhenExhausted The new setting of {@code blockWhenExhausted}
+     *        for this configuration instance
+     *
      * @see GenericObjectPool#getBlockWhenExhausted()
      * @see GenericKeyedObjectPool#getBlockWhenExhausted()
      */
@@ -442,6 +488,9 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
     /**
      * Sets the value of the flag that determines if JMX will be enabled for
      * pools created with this configuration instance.
+     *
+     * @param jmxEnabled The new setting of {@code jmxEnabled}
+     *        for this configuration instance
      */
     public void setJmxEnabled(boolean jmxEnabled) {
         this.jmxEnabled = jmxEnabled;
@@ -463,6 +512,9 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
      * Sets the value of the JMX name prefix that will be used as part of the
      * name assigned to JMX enabled pools created with this configuration
      * instance.
+     *
+     * @param jmxNamePrefix The new setting of {@code jmxNamePrefix}
+     *        for this configuration instance
      */
     public void setJmxNamePrefix(String jmxNamePrefix) {
         this.jmxNamePrefix = jmxNamePrefix;
