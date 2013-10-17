@@ -620,17 +620,12 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getNumActive() {
         return numTotal.get() - getNumIdle();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public int getNumIdle() {
         Iterator<ObjectDeque<T>> iter = poolMap.values().iterator();
@@ -643,12 +638,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         return result;
     }
 
-    /**
-     * Returns the number of instances currently borrowed from but not yet
-     * returned to the sub-pool corresponding to the given <code>key</code>.
-     *
-     * @param key the key to query
-     */
+
     @Override
     public int getNumActive(K key) {
         final ObjectDeque<T> objectDeque = poolMap.get(key);
@@ -660,12 +650,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         }
     }
 
-    /**
-     * Returns the number of idle instances in the sub-pool corresponding to the
-     * given <code>key</code>.
-     *
-     * @param key the key to query
-     */
+
     @Override
     public int getNumIdle(K key) {
         final ObjectDeque<T> objectDeque = poolMap.get(key);
@@ -815,6 +800,13 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         }
     }
 
+    /**
+     * Checks to see if there are any threads currently waiting to borrow
+     * objects but are blocked waiting for more objects to become available.
+     *
+     * @return {@code true} if there is at least one thread waiting otherwise
+     *         {@code false}
+     */
     private boolean hasBorrowWaiters() {
         for (K k : poolMap.keySet()) {
             final ObjectDeque<T> deque = poolMap.get(k);
@@ -951,6 +943,15 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         }
     }
 
+    /**
+     * Create a new pooled object.
+     *
+     * @param key Key associated with new pooled object
+     *
+     * @return The new, wrapped pooled object
+     *
+     * @throws Exception If the objection creation fails
+     */
     private PooledObject<T> create(K key) throws Exception {
         int maxTotalPerKey = getMaxTotalPerKey(); // Per key
         int maxTotal = getMaxTotal();   // All keys
@@ -997,6 +998,16 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         return p;
     }
 
+    /**
+     * Destroy the wrapped, pooled object.
+     *
+     * @param key The key associated with the object to destroy.
+     * @param toDestroy The wrapped object to be destroyed
+     * @param always Should the object be destroyed even if it is not currently
+     *               in the set of idle objects for the given key
+     * @return {@code true} if the object was destroyed, otherwise {@code false}
+     * @throws Exception If the object destruction failed
+     */
     private boolean destroy(K key, PooledObject<T> toDestroy, boolean always)
             throws Exception {
 
@@ -1026,11 +1037,16 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
     }
 
 
-    /*
+    /**
+     * Register the use of a key by an object.
+     * <p>
      * register() and deregister() must always be used as a pair.
      *
-     * If this method returns without throwing an exception then it will never
-     * return null.
+     * @param k The key to register
+     *
+     * @return The objects currently associated with the given key. If this
+     *         method returns without throwing an exception then it will never
+     *         return null.
      */
     private ObjectDeque<T> register(K k) {
         Lock lock = keyLock.readLock();
@@ -1064,8 +1080,12 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         return objectDeque;
     }
 
-    /*
+    /**
+     * De-register the use of a key by an object.
+     * <p>
      * register() and deregister() must always be used as a pair.
+     *
+     * @param k The key to de-register
      */
     private void deregister(K k) {
         ObjectDeque<T> objectDeque;
@@ -1103,6 +1123,14 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         }
     }
 
+    /**
+     * Ensure that the configured number of minimum idle objects is available in
+     * the pool for the given key.
+     *
+     * @param key The key to check for idle objects
+     *
+     * @throws Exception If a new object is required and cannot be created
+     */
     private void ensureMinIdle(K key) throws Exception {
         // Calculate current pool objects
         ObjectDeque<T> objectDeque = poolMap.get(key);
@@ -1145,6 +1173,14 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         }
     }
 
+    /**
+     * Add an object to the set of idle objects for a given key.
+     *
+     * @param key The key to associate with the idle object
+     * @param p The wrapped object to add.
+     *
+     * @throws Exception If the associated factory fails to passivate the object
+     */
     private void addIdleObject(K key, PooledObject<T> p) throws Exception {
 
         if (p != null) {
@@ -1173,6 +1209,12 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         ensureMinIdle(key);
     }
 
+    /**
+     * Calculate the number of objects to test in a run of the idle object
+     * evictor.
+     *
+     * @return The number of objects to test for validity
+     */
     private int getNumTests() {
         int totalIdle = getNumIdle();
         int numTests = getNumTestsPerEvictionRun();
@@ -1182,6 +1224,15 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         return(int)(Math.ceil(totalIdle/Math.abs((double)numTests)));
     }
 
+    /**
+     * Calculate the number of objects that need to be created to attempt to
+     * maintain the minimum number of idle objects while not exceeded the limits
+     * on the maximum number of objects either per key or totally.
+     *
+     * @param objectDeque   The set of objects to check
+     *
+     * @return The number of new objects to create
+     */
     private int calculateDeficit(ObjectDeque<T> objectDeque) {
 
         if (objectDeque == null) {
@@ -1239,6 +1290,9 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * Return an estimate of the number of threads currently blocked waiting for
      * an object from the pool. This is intended for monitoring only, not for
      * synchronization control.
+     *
+     * @return The estimate of the number of threads currently blocked waiting
+     *         for an object from the pool
      */
     @Override
     public int getNumWaiters() {
@@ -1260,6 +1314,9 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * Return an estimate of the number of threads currently blocked waiting for
      * an object from the pool for each key. This is intended for
      * monitoring only, not for synchronization control.
+     *
+     * @return The estimate of the number of threads currently blocked waiting
+     *         for an object from the pool for each key
      */
     @Override
     public Map<String,Integer> getNumWaitersByKey() {
@@ -1287,6 +1344,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * JMX. That means it won't be invoked unless the explicitly requested
      * whereas all attributes will be automatically requested when viewing the
      * attributes for an object in a tool like JConsole.
+     *
+     * @return Information grouped by key on all the objects in the pool
      */
     @Override
     public Map<String,List<DefaultPooledObjectInfo>> listAllObjects() {
@@ -1310,7 +1369,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
     //--- inner classes ----------------------------------------------
 
-    /*
+    /**
      * Maintains information on the per key queue for a given key.
      */
     private class ObjectDeque<S> {
@@ -1340,18 +1399,39 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
          */
         private final AtomicLong numInterested = new AtomicLong(0);
 
+        /**
+         * Obtain the idle objects for the current key.
+         *
+         * @return The idle objects
+         */
         public LinkedBlockingDeque<PooledObject<S>> getIdleObjects() {
             return idleObjects;
         }
 
+        /**
+         * Obtain the count of the number of objects created for the current
+         * key.
+         *
+         * @return The number of objects created for this key
+         */
         public AtomicInteger getCreateCount() {
             return createCount;
         }
 
+        /**
+         * Obtain the number of threads with an interest registered in this key.
+         *
+         * @return The number of threads with a registered interest in this key
+         */
         public AtomicLong getNumInterested() {
             return numInterested;
         }
 
+        /**
+         * Obtain all the objects for the current key.
+         *
+         * @return All the objects
+         */
         public Map<S, PooledObject<S>> getAllObjects() {
             return allObjects;
         }
