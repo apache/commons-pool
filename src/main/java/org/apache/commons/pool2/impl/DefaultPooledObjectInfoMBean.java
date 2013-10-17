@@ -17,16 +17,85 @@
 package org.apache.commons.pool2.impl;
 
 /**
+ * The interface that defines the information about pooled objects that will be
+ * exposed via JMX.
+ *
  * @since 2.0
  */
 public interface DefaultPooledObjectInfoMBean {
+    /**
+     * Obtain the time (using the same basis as
+     * {@link System#currentTimeMillis()}) that pooled object was created.
+     *
+     * @return The creation time for the pooled object
+     */
     long getCreateTime();
+
+    /**
+     * Obtain the time that pooled object was created.
+     *
+     * @return The creation time for the pooled object formated as
+     *         <code>yyyy-MM-dd HH:mm:ss Z</code>
+     */
     String getCreateTimeFormatted();
+
+    /**
+     * Obtain the time (using the same basis as
+     * {@link System#currentTimeMillis()}) the polled object was last borrowed.
+     *
+     * @return The time the pooled object was last borrowed
+     */
     long getLastBorrowTime();
+
+    /**
+     * Obtain the time that pooled object was last borrowed.
+     *
+     * @return The last borrowed time for the pooled object formated as
+     *         <code>yyyy-MM-dd HH:mm:ss Z</code>
+     */
     String getLastBorrowTimeFormatted();
+
+    /**
+     * Obtain the stack trace recorded when the pooled object was last borrowed.
+     *
+     * @return The stack trace showing which code last borrowed the pooled
+     *         object
+     */
     String getLastBorrowTrace();
+
+
+    /**
+     * Obtain the time (using the same basis as
+     * {@link System#currentTimeMillis()})the wrapped object was last returned.
+     *
+     * @return The time the object was last returned
+     */
     long getLastReturnTime();
+
+    /**
+     * Obtain the time that pooled object was last returned.
+     *
+     * @return The last returned time for the pooled object formated as
+     *         <code>yyyy-MM-dd HH:mm:ss Z</code>
+     */
     String getLastReturnTimeFormatted();
+
+    /**
+     * Obtain the name of the class of the pooled object.
+     *
+     * @return The pooled object's class name
+     *
+     * @see Class#getName()
+     */
     String getPooledObjectType();
+
+    /**
+     * Provides a String form of the wrapper for debug purposes. The format is
+     * not fixed and may change at any time.
+     *
+     * @return A string representation of the pooled object
+     *
+     * @see Object#toString()
+     */
     String getPooledObjectToString();
 }
