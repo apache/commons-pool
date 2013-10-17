@@ -87,49 +87,49 @@ public interface KeyedObjectPool&lt;K,V&gt; {
 }
 </source>           
         </subsection>
-        <subsection name="PoolableObjectFactory">
+        <subsection name="PooledObjectFactory">
           <p>
              The <i>Pool</i> package makes it possible separate the way in which instances
              are pooled from the way in which instances are created and destroyed. 
-             <a href="./apidocs/org/apache/commons/pool2/PoolableObjectFactory.html"><code>PoolableObjectFactory</code></a>
+             <a href="./apidocs/org/apache/commons/pool2/PooledObjectFactory.html"><code>PooledObjectFactory</code></a>
              supports this by providing a generic interface for the lifecycle of a pooled object:
           </p>
 <source>
-public interface PoolableObjectFactory&lt;T&gt; {
-    T makeObject();
-    void activateObject(T obj);
-    void passivateObject(T obj);
-    boolean validateObject(T obj);
-    void destroyObject(T obj);
+public interface PooledObjectFactory&lt;T&gt; {
+    PooledObject&lt;T&gt; makeObject();
+    void activateObject(PooledObject&lt;T&gt; obj);
+    void passivateObject(PooledObject&lt;T&gt; obj);
+    boolean validateObject(PooledObject&lt;T&gt; obj);
+    void destroyObject(PooledObject&lt;T&gt; obj);
 }
 </source>           
           <p>
              <code>ObjectPool</code> implementations may be written to accept arbitrary
-             <code>PoolableObjectFactory</code>s.
+             <code>PooledObjectFactory</code>s.
              This makes is possible for clients to select pooling-behavior distinct 
              from the kinds of objects that are pooled.  
           </p>           
           <p>
-             <a href="./apidocs/org/apache/commons/pool2/BasePoolableObjectFactory.html"><code>BasePoolableObjectFactory</code></a>
-             provides an abstract base implementation of <code>PoolableObjectFactory</code> that
+             <a href="./apidocs/org/apache/commons/pool2/BasePooledObjectFactory.html"><code>BasePooledObjectFactory</code></a>
+             provides an abstract base implementation of <code>PooledObjectFactory</code> that
              makes implementations a snap.
           </p>
           <p>
-             <a href="./apidocs/org/apache/commons/pool2/KeyedPoolableObjectFactory.html"><code>KeyedPoolableObjectFactory</code></a>
+             <a href="./apidocs/org/apache/commons/pool2/KeyedPooledObjectFactory.html"><code>KeyedPooledObjectFactory</code></a>
              defines a similar interface for <code>KeyedObjectPool</code>s:
           </p>
 <source>
 public interface KeyedPoolableObjectFactory&lt;K,V&gt; {
-    V makeObject(K key);
-    void activateObject(K key, V obj);
-    void passivateObject(K key, V obj);
-    boolean validateObject(K key, V obj);
-    void destroyObject(K key, V obj);
+    PooledObject&lt;V&gt; makeObject(K key);
+    void activateObject(K key, PooledObject&lt;V&gt; obj);
+    void passivateObject(K key, PooledObject&lt;V&gt; obj);
+    boolean validateObject(K key, PooledObject&lt;V&gt; obj);
+    void destroyObject(K key, PooledObject&lt;V&gt; obj);
 }
 </source>           
           <p>
-             <a href="./apidocs/org/apache/commons/pool2/BaseKeyedPoolableObjectFactory.html"><code>BaseKeyedPoolableObjectFactory</code></a>
-             provides an abstract base implementation of <code>KeyedPoolableObjectFactory</code> that
+             <a href="./apidocs/org/apache/commons/pool2/BaseKeyedPooledObjectFactory.html"><code>BaseKeyedPooledObjectFactory</code></a>
+             provides an abstract base implementation of <code>KeyedPooledObjectFactory</code> that
              makes implementations a snap.
           </p>
         </subsection>
