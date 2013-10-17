@@ -53,29 +53,16 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
         this.object = object;
     }
 
-    /**
-     * Obtain the underlying object that is wrapped by this instance of
-     * {@link PooledObject}.
-     */
     @Override
     public T getObject() {
         return object;
     }
 
-    /**
-     * Obtain the time (using the same basis as
-     * {@link System#currentTimeMillis()}) that this object was created.
-     */
     @Override
     public long getCreateTime() {
         return createTime;
     }
 
-    /**
-     * Obtain the time in milliseconds that this object last spent in the the
-     * active state (it may still be active in which case subsequent calls will
-     * return an increased value).
-     */
     @Override
     public long getActiveTimeMillis() {
         // Take copies to avoid threading issues
@@ -89,11 +76,6 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
         }
     }
 
-    /**
-     * Obtain the time in milliseconds that this object last spend in the the
-     * idle state (it may still be idle in which case subsequent calls will
-     * return an increased value).
-     */
     @Override
     public long getIdleTimeMillis() {
         return System.currentTimeMillis() - lastReturnTime;
@@ -127,13 +109,6 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
         }
     }
 
-    /**
-     * Orders instances based on idle time - i.e. the length of time since the
-     * instance was returned to the pool. Used by the GKOP idle object evictor.
-     * <p>
-     * Note: This class has a natural ordering that is inconsistent with
-     *       equals if distinct objects have the same identity hash code.
-     */
     @Override
     public int compareTo(PooledObject<T> other) {
         final long lastActiveDiff =
@@ -149,11 +124,6 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
         return (int)Math.min(Math.max(lastActiveDiff, Integer.MIN_VALUE), Integer.MAX_VALUE);
     }
 
-
-    /**
-     * Provides a String form of the wrapper for debug purposes. The format is
-     * not fixed and may change at any time.
-     */
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
