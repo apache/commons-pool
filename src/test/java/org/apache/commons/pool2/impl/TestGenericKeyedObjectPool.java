@@ -18,6 +18,7 @@
 package org.apache.commons.pool2.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
@@ -400,9 +401,9 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         }
         {
             pool.setBlockWhenExhausted(true);
-            assertEquals(true,pool.getBlockWhenExhausted());
+            assertTrue(pool.getBlockWhenExhausted());
             pool.setBlockWhenExhausted(false);
-            assertEquals(false,pool.getBlockWhenExhausted());
+            assertFalse(pool.getBlockWhenExhausted());
         }
     }
 
