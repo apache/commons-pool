@@ -144,7 +144,7 @@ public interface ObjectPool<T> {
      * Return the number of instances currently borrowed from this pool. Returns
      * a negative value if this information is not available.
      * @return the number of instances currently borrowed from this pool.
-=     */
+     */
     int getNumActive();
 
     /**
