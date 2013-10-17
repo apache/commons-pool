@@ -49,6 +49,12 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
     private volatile Exception borrowedBy = null;
     private volatile Exception usedBy = null;
 
+    /**
+     * Create a new instance that wraps the provided object so that the pool can
+     * track the state of the pooled object.
+     *
+     * @param object The object to wrap
+     */
     public DefaultPooledObject(T object) {
         this.object = object;
     }
@@ -265,6 +271,11 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
         this.logAbandoned = logAbandoned;
     }
 
+    /**
+     * Used to track how an object was obtained from the pool (the stack trace
+     * of the exception will show which code borrowed the object) and when the
+     * object was borrowed.
+     */
     static class AbandonedObjectCreatedException extends Exception {
 
         private static final long serialVersionUID = 7398692158058772916L;
@@ -277,7 +288,13 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
 
         private final long _createdTime;
 
+        /**
+         * Create a new instance.
+         * <p>
+         * @see Exception#Exception()
+         */
         public AbandonedObjectCreatedException() {
+            super();
             _createdTime = System.currentTimeMillis();
         }
 
