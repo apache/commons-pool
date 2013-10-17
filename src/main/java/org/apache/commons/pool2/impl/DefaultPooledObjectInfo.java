@@ -23,12 +23,20 @@ import java.text.SimpleDateFormat;
 import org.apache.commons.pool2.PooledObject;
 
 /**
+ * Implementation of object that is used to provide information on pooled
+ * objects via JMX.
+ *
  * @since 2.0
  */
 public class DefaultPooledObjectInfo implements DefaultPooledObjectInfoMBean {
 
     private final PooledObject<?> pooledObject;
 
+    /**
+     * Create a new instance for the given pooled object.
+     *
+     * @param pooledObject The pooled object that this instance will represent
+     */
     public DefaultPooledObjectInfo(PooledObject<?> pooledObject) {
         this.pooledObject = pooledObject;
     }
