@@ -31,7 +31,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * Abstract {@link TestCase} for {@link ObjectPool} implementations.
+ * Abstract test case for {@link ObjectPool} implementations.
  * @version $Revision$
  */
 public abstract class TestObjectPool {
