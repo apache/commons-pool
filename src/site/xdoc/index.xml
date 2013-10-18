@@ -25,19 +25,9 @@
    <body>
       <section name="The Pool Component">
          <p>
-          Pool provides an Object-pooling API, with three major aspects:
-          <ol>
-           <li>
-            A generic object pool interface that clients and implementors can use to provide easily 
-            interchangeable pooling implementations.
-           </li>
-           <li>
-            A toolkit for creating modular object pools.
-           </li>
-           <li>
-            Several general purpose pool implementations.
-           </li>
-          </ol>
+          Pool provides an Object-pooling API and some pool implementations.  Version 2 of Commons
+          pool is a complete rewrite.  In addition to performance and scalability improvements,
+          version 2 implementations include robust instance tracking and pool monitoring.
          </p>
       </section>
 
@@ -54,45 +44,10 @@
             package defines a handful of pooling interfaces and some base classes 
             that may be useful when creating new pool implementations.
         </p>
-        <subsection name="ObjectPool">
-          <p>
-             <a href="./apidocs/org/apache/commons/pool2/ObjectPool.html"><code>ObjectPool</code></a>
-             defines a trivially simple pooling interface:
-          </p>
-<source>
-public interface ObjectPool&lt;T&gt; {
-    T borrowObject();
-    void returnObject(T borrowed);
-}
-</source>           
-          <p>
-            Some client classes won't integrate with <i>Pool</i> any more than this.
-            Clients written to this interface can use arbitrary <code>ObjectPool</code> 
-            implementations interchangeably. 
-          </p>           
-          <p>
-             <a href="./apidocs/org/apache/commons/pool2/BaseObjectPool.html"><code>BaseObjectPool</code></a>
-             provides an abstract base implementation of <code>ObjectPool</code>. Clients are
-             encouraged but not required to extend <code>BaseObjectPool</code> for new 
-             <code>ObjectPool</code> implementations.
-          </p>
-          <p>
-             <a href="./apidocs/org/apache/commons/pool2/KeyedObjectPool.html"><code>KeyedObjectPool</code></a>
-             defines a similar interface for pools composed of heterogeneous objects:
-          </p>
-<source>
-public interface KeyedObjectPool&lt;K,V&gt; {
-    V borrowObject(K key);
-    void returnObject(K key, V borrowed);
-}
-</source>           
-        </subsection>
         <subsection name="PooledObjectFactory">
           <p>
-             The <i>Pool</i> package makes it possible separate the way in which instances
-             are pooled from the way in which instances are created and destroyed. 
              <a href="./apidocs/org/apache/commons/pool2/PooledObjectFactory.html"><code>PooledObjectFactory</code></a>
-             supports this by providing a generic interface for the lifecycle of a pooled object:
+             provides a generic interface for managing the lifecycle of a pooled object:
           </p>
 <source>
 public interface PooledObjectFactory&lt;T&gt; {
@@ -102,18 +57,33 @@ public interface PooledObjectFactory&lt;T&gt; {
     boolean validateObject(PooledObject&lt;T&gt; obj);
     void destroyObject(PooledObject&lt;T&gt; obj);
 }
-</source>           
+</source>
           <p>
-             <code>ObjectPool</code> implementations may be written to accept arbitrary
-             <code>PooledObjectFactory</code>s.
-             This makes is possible for clients to select pooling-behavior distinct 
-             from the kinds of objects that are pooled.  
-          </p>           
-          <p>
-             <a href="./apidocs/org/apache/commons/pool2/BasePooledObjectFactory.html"><code>BasePooledObjectFactory</code></a>
-             provides an abstract base implementation of <code>PooledObjectFactory</code> that
-             makes implementations a snap.
+            Users of 1.x versions of Commons pool will notice that while the <code>PoolableObjectFactory</code>s used by
+            1.x pools create and manage pooled objects directly, version 2 <code>PooledObjectFactory</code>s create and
+            manage
+            <a href="./apidocs/org/apache/commons/pool2/PooledObject"><code>PooledObject</code></a>s. These object wrappers
+            maintain object pooling state, enabling <code>PooledObjectFactory</code> methods to have access to data such
+            as instance creation time or time or time of last use.  A 
+            <a href="./apidocs/org/apache/commons/pool2/impl/DefaultPooledObject"><code>DefaultPooledObject</code></a> is
+            provided, with natural implementations for pooling state methods. The simplest way to implement a
+            <code>PoolableObjectFactory</code> is to have it extend
+            <a href="./apidocs/org/apache/commons/pool2/BasePooledObjectFactory.html"><code>BasePooledObjectFactory</code></a>.
+            This factory provides a <code>makeObject()</code> that looks like this:
+ <source>
+ public PooledObject&lt;T&gt; makeObject() throws Exception {
+        return new DefaultPooledObject&lt;T&gt;(create());
+ }
+ </source>
+           where <code>create()</code> is abstract.  You just provide an implementation of <code>create()</code> that creates
+           the underlying objects that you want to manage in the pool and <code>BasePooledObjectFactory</code> takes care of
+           wrapping instances in <code>DefaultPooledObject</code>s.
           </p>
+          <p>
+            Another important difference between 1.x and version 2 pools is that the implementations provided maintain references
+            to all objects under management by the pool. Correct behavior depends on underlying instances being discernable by 
+            equals - i.e., if A and B are two different instances being managed by the pool, A.equals(B) should return false.
+          </p> 
           <p>
              <a href="./apidocs/org/apache/commons/pool2/KeyedPooledObjectFactory.html"><code>KeyedPooledObjectFactory</code></a>
              defines a similar interface for <code>KeyedObjectPool</code>s:
@@ -129,8 +99,7 @@ public interface KeyedPoolableObjectFactory&lt;K,V&gt; {
 </source>           
           <p>
              <a href="./apidocs/org/apache/commons/pool2/BaseKeyedPooledObjectFactory.html"><code>BaseKeyedPooledObjectFactory</code></a>
-             provides an abstract base implementation of <code>KeyedPooledObjectFactory</code> that
-             makes implementations a snap.
+             provides an abstract base implementation of <code>KeyedPooledObjectFactory</code>.
           </p>
         </subsection>
         <p>
@@ -142,7 +111,8 @@ public interface KeyedPoolableObjectFactory&lt;K,V&gt; {
           <p>
              <a href="./apidocs/org/apache/commons/pool2/impl/GenericObjectPool.html"><code>GenericObjectPool</code></a>
              provides a wide variety of configuration options, including the ability to cap the number of idle or
-             active instances, to evict instances as they sit idle in the pool, etc.
+             active instances, to evict instances as they sit idle in the pool, etc. As of version 2, <code>GenericObjectPool</code>
+             also provides abandoned instance tracking and removal.
           </p>
           <p>
              <a href="./apidocs/org/apache/commons/pool2/impl/GenericKeyedObjectPool.html"><code>GenericKeyedObjectPool</code></a>
