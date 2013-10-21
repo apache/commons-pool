@@ -27,8 +27,8 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * An optionally-bounded {@linkplain java.util.concurrent.BlockingDeque blocking deque} based on
- * linked nodes.
+ * An optionally-bounded {@linkplain java.util.concurrent.BlockingDeque blocking
+ * deque} based on linked nodes.
  *
  * <p> The optional capacity bound constructor argument serves as a
  * way to prevent excessive expansion. The capacity, if unspecified,
@@ -112,6 +112,13 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
          */
         Node<E> next;
 
+        /**
+         * Create a new list node.
+         *
+         * @param x The list item
+         * @param p Previous item
+         * @param n Next item
+         */
         Node(E x, Node<E> p, Node<E> n) {
             item = x;
             prev = p;
@@ -198,7 +205,11 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     // Basic linking and unlinking operations, called only while holding lock
 
     /**
-     * Links e as first element, or returns false if full.
+     * Links provided element as first element, or returns false if full.
+     *
+     * @param e The element to link as the first element.
+     *
+     * @return {@code true} if successful, otherwise {@code false}
      */
     private boolean linkFirst(E e) {
         // assert lock.isHeldByCurrentThread();
@@ -217,7 +228,11 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     }
 
     /**
-     * Links e as last element, or returns false if full.
+     * Links provided element as last element, or returns false if full.
+     *
+     * @param e The element to link as the last element.
+     *
+     * @return {@code true} if successful, otherwise {@code false}
      */
     private boolean linkLast(E e) {
         // assert lock.isHeldByCurrentThread();
@@ -236,7 +251,9 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     }
 
     /**
-     * Removes and returns first element, or null if empty.
+     * Removes and returns the first element, or null if empty.
+     *
+     * @return The first element or {@code null} if empty
      */
     private E unlinkFirst() {
         // assert lock.isHeldByCurrentThread();
@@ -258,7 +275,9 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     }
 
     /**
-     * Removes and returns last element, or null if empty.
+     * Removes and returns the last element, or null if empty.
+     *
+     * @return The first element or {@code null} if empty
      */
     private E unlinkLast() {
         // assert lock.isHeldByCurrentThread();
@@ -280,7 +299,9 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     }
 
     /**
-     * Unlinks x.
+     * Unlinks the provided node.
+     *
+     * @param x The node to unlink
      */
     private void unlink(Node<E> x) {
         // assert lock.isHeldByCurrentThread();
@@ -304,8 +325,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     // BlockingDeque methods
 
     /**
-     * @throws IllegalStateException
-     * @throws NullPointerException
+     * {@inheritDoc}
      */
     @Override
     public void addFirst(E e) {
@@ -314,8 +334,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     }
 
     /**
-     * @throws IllegalStateException
-     * @throws NullPointerException
+     * {@inheritDoc}
      */
     @Override
     public void addLast(E e) {
@@ -324,7 +343,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     }
 
     /**
-     * @throws NullPointerException
+     * {@inheritDoc}
      */
     @Override
     public boolean offerFirst(E e) {
@@ -339,7 +358,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     }
 
     /**
-     * @throws NullPointerException
+     * {@inheritDoc}
      */
     @Override
     public boolean offerLast(E e) {
@@ -354,6 +373,11 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     }
 
     /**
+     * Links the provided element as the first in the queue, waiting until there
+     * is space to do so if the queue is full.
+     *
+     * @param e element to link
+     *
      * @throws NullPointerException
      * @throws InterruptedException
      */
@@ -370,6 +394,11 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     }
 
     /**
+     * Links the provided element as the last in the queue, waiting until there
+     * is space to do so if the queue is full.
+     *
+     * @param e element to link
+     *
      * @throws NullPointerException
      * @throws InterruptedException
      */
@@ -386,6 +415,15 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     }
 
     /**
+     * Links the provided element as the first in the queue, waiting up to the
+     * specified time to do so if the queue is full.
+     *
+     * @param e         element to link
+     * @param timeout   length of time to wait
+     * @param unit      units that timeout is expressed in
+     *
+     * @return {@code true} if successful, otherwise {@code false}
+     *
      * @throws NullPointerException
      * @throws InterruptedException
      */
@@ -408,6 +446,15 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     }
 
     /**
+     * Links the provided element as the last in the queue, waiting up to the
+     * specified time to do so if the queue is full.
+     *
+     * @param e         element to link
+     * @param timeout   length of time to wait
+     * @param unit      units that timeout is expressed in
+     *
+     * @return {@code true} if successful, otherwise {@code false}
+     *
      * @throws NullPointerException
      * @throws InterruptedException
      */
@@ -430,7 +477,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     }
 
     /**
-     * @throws NoSuchElementException
+     * {@inheritDoc}
      */
     @Override
     public E removeFirst() {
@@ -440,7 +487,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     }
 
     /**
-     * @throws NoSuchElementException
+     * {@inheritDoc}
      */
     @Override
     public E removeLast() {
@@ -471,6 +518,12 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
         }
     }
 
+    /**
+     * Unlinks the first element in the queue, waiting until there is an element
+     * to unlink if the queue is empty.
+     *
+     * @return the unlinked element
+     */
     public E takeFirst() throws InterruptedException {
         final ReentrantLock lock = this.lock;
         lock.lock();
@@ -484,6 +537,12 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
         }
     }
 
+    /**
+     * Unlinks the last element in the queue, waiting until there is an element
+     * to unlink if the queue is empty.
+     *
+     * @return the unlinked element
+     */
     public E takeLast() throws InterruptedException {
         final ReentrantLock lock = this.lock;
         lock.lock();
@@ -497,6 +556,15 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
         }
     }
 
+    /**
+     * Unlinks the first element in the queue, waiting up to the specified time
+     * to do so if the queue is empty.
+     *
+     * @param timeout   length of time to wait
+     * @param unit      units that timeout is expressed in
+     *
+     * @return the unlinked element
+     */
     public E pollFirst(long timeout, TimeUnit unit)
         throws InterruptedException {
         long nanos = unit.toNanos(timeout);
@@ -515,6 +583,15 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
         }
     }
 
+    /**
+     * Unlinks the last element in the queue, waiting up to the specified time
+     * to do so if the queue is empty.
+     *
+     * @param timeout   length of time to wait
+     * @param unit      units that timeout is expressed in
+     *
+     * @return the unlinked element
+     */
     public E pollLast(long timeout, TimeUnit unit)
         throws InterruptedException {
         long nanos = unit.toNanos(timeout);
@@ -534,7 +611,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     }
 
     /**
-     * @throws NoSuchElementException
+     * {@inheritDoc}
      */
     @Override
     public E getFirst() {
@@ -544,7 +621,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     }
 
     /**
-     * @throws NoSuchElementException
+     * {@inheritDoc}
      */
     @Override
     public E getLast() {
@@ -614,15 +691,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     // BlockingQueue methods
 
     /**
-     * Inserts the specified element at the end of this deque unless it would
-     * violate capacity restrictions.  When using a capacity-restricted deque,
-     * it is generally preferable to use method {@link #offer(Object) offer}.
-     *
-     * <p>This method is equivalent to {@link #addLast}.
-     *
-     * @throws IllegalStateException if the element cannot be added at this
-     *         time due to capacity restrictions
-     * @throws NullPointerException if the specified element is null
+     * {@inheritDoc}
      */
     @Override
     public boolean add(E e) {
@@ -631,7 +700,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     }
 
     /**
-     * @throws NullPointerException if the specified element is null
+     * {@inheritDoc}
      */
     @Override
     public boolean offer(E e) {
@@ -639,6 +708,13 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     }
 
     /**
+     * Links the provided element as the last in the queue, waiting until there
+     * is space to do so if the queue is full.
+     *
+     * <p>This method is equivalent to {@link #putLast(Object)}.
+     *
+     * @param e element to link
+     *
      * @throws NullPointerException
      * @throws InterruptedException
      */
@@ -647,6 +723,17 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     }
 
     /**
+     * Links the provided element as the last in the queue, waiting up to the
+     * specified time to do so if the queue is full.
+     * <p>
+     * This method is equivalent to {@link #offerLast(Object, long, TimeUnit)}
+     *
+     * @param e         element to link
+     * @param timeout   length of time to wait
+     * @param unit      units that timeout is expressed in
+     *
+     * @return {@code true} if successful, otherwise {@code false}
+     *
      * @throws NullPointerException
      * @throws InterruptedException
      */
@@ -675,10 +762,29 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
         return pollFirst();
     }
 
+    /**
+     * Unlinks the first element in the queue, waiting until there is an element
+     * to unlink if the queue is empty.
+     *
+     * <p>This method is equivalent to {@link #takeFirst()}.
+     *
+     * @return the unlinked element
+     */
     public E take() throws InterruptedException {
         return takeFirst();
     }
 
+    /**
+     * Unlinks the first element in the queue, waiting up to the specified time
+     * to do so if the queue is empty.
+     *
+     * <p>This method is equivalent to {@link #pollFirst(long, TimeUnit)}.
+     *
+     * @param timeout   length of time to wait
+     * @param unit      units that timeout is expressed in
+     *
+     * @return the unlinked element
+     */
     public E poll(long timeout, TimeUnit unit) throws InterruptedException {
         return pollFirst(timeout, unit);
     }
@@ -713,6 +819,8 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * an element will succeed by inspecting {@code remainingCapacity}
      * because it may be the case that another thread is about to
      * insert or remove an element.
+     *
+     * @return The number of additional elements the queue is able to accept
      */
     public int remainingCapacity() {
         final ReentrantLock lock = this.lock;
@@ -725,6 +833,12 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     }
 
     /**
+     * Empty the queue to the specified collection.
+     *
+     * @param c The collection to add the elements to
+     *
+     * @return number of elements added to the collection
+     *
      * @throws UnsupportedOperationException
      * @throws ClassCastException
      * @throws NullPointerException
@@ -735,6 +849,13 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     }
 
     /**
+     * Empty no more than the specified number of elements from the queue to the
+     * specified collection.
+     *
+     * @param c           collection to add the elements to
+     * @param maxElements maximum number of elements to remove from the queue
+     *
+     * @return number of elements added to the collection
      * @throws UnsupportedOperationException
      * @throws ClassCastException
      * @throws NullPointerException
@@ -762,8 +883,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     // Stack methods
 
     /**
-     * @throws IllegalStateException
-     * @throws NullPointerException
+     * {@inheritDoc}
      */
     @Override
     public void push(E e) {
@@ -771,7 +891,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     }
 
     /**
-     * @throws NoSuchElementException
+     * {@inheritDoc}
      */
     @Override
     public E pop() {
@@ -908,43 +1028,10 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     }
 
     /**
-     * Returns an array containing all of the elements in this deque, in
-     * proper sequence; the runtime type of the returned array is that of
-     * the specified array.  If the deque fits in the specified array, it
-     * is returned therein.  Otherwise, a new array is allocated with the
-     * runtime type of the specified array and the size of this deque.
-     *
-     * <p>If this deque fits in the specified array with room to spare
-     * (i.e., the array has more elements than this deque), the element in
-     * the array immediately following the end of the deque is set to
-     * {@code null}.
-     *
-     * <p>Like the {@link #toArray()} method, this method acts as bridge between
-     * array-based and collection-based APIs.  Further, this method allows
-     * precise control over the runtime type of the output array, and may,
-     * under certain circumstances, be used to save allocation costs.
-     *
-     * <p>Suppose {@code x} is a deque known to contain only strings.
-     * The following code can be used to dump the deque into a newly
-     * allocated array of {@code String}:
-     *
-     * <pre>
-     *     String[] y = x.toArray(new String[0]);</pre>
-     *
-     * Note that {@code toArray(new Object[0])} is identical in function to
-     * {@code toArray()}.
-     *
-     * @param a the array into which the elements of the deque are to
-     *          be stored, if it is big enough; otherwise, a new array of the
-     *          same runtime type is allocated for this purpose
-     * @return an array containing all of the elements in this deque
-     * @throws ArrayStoreException if the runtime type of the specified array
-     *         is not a supertype of the runtime type of every element in
-     *         this deque
-     * @throws NullPointerException if the specified array is null
+     * {@inheritDoc}
      */
-    @Override
     @SuppressWarnings("unchecked")
+    @Override
     public <T> T[] toArray(T[] a) {
         final ReentrantLock lock = this.lock;
         lock.lock();
@@ -1017,15 +1104,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     }
 
     /**
-     * Returns an iterator over the elements in this deque in reverse
-     * sequential order.  The elements will be returned in order from
-     * last (tail) to first (head).
-     * The returned {@code Iterator} is a "weakly consistent" iterator that
-     * will never throw {@link java.util.ConcurrentModificationException
-     * ConcurrentModificationException},
-     * and guarantees to traverse elements as they existed upon
-     * construction of the iterator, and may (but is not guaranteed to)
-     * reflect any modifications subsequent to construction.
+     * {@inheritDoc}
      */
     @Override
     public Iterator<E> descendingIterator() {
@@ -1055,9 +1134,26 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
          */
         private Node<E> lastRet;
 
+        /**
+         * Obtain the first node to be returned by the iterator.
+         *
+         * @return first node
+         */
         abstract Node<E> firstNode();
+
+        /**
+         * For a given node, obtain the next node to be returned by the
+         * iterator.
+         *
+         * @param n given node
+         *
+         * @return next node
+         */
         abstract Node<E> nextNode(Node<E> n);
 
+        /**
+         * Create a new iterator. Sets the initial position.
+         */
         AbstractItr() {
             // set to initial position
             final ReentrantLock lock = LinkedBlockingDeque.this.lock;

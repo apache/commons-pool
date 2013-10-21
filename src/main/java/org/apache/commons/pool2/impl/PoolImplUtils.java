@@ -31,6 +31,10 @@ public class PoolImplUtils {
 
     /**
      * Identifies the concrete type of object that an object factory creates.
+     *
+     * @param factory The factory to examine
+     *
+     * @return the type of object the factory creates
      */
     @SuppressWarnings("rawtypes")
     static Class<?> getFactoryType(Class<? extends PooledObjectFactory> factory) {
@@ -38,6 +42,16 @@ public class PoolImplUtils {
     }
 
 
+    /**
+     * Obtain the concrete type used by an implementation of an interface that
+     * uses a generic type.
+     *
+     * @param type  The interface that defines a generic type
+     * @param clazz The class that implements the interface with a concrete type
+     * @param <T>   The interface type
+     *
+     * @return concrete type used by the implementation
+     */
     private static <T> Object getGenericType(Class<T> type,
             Class<? extends T> clazz) {
 
@@ -85,9 +99,16 @@ public class PoolImplUtils {
     }
 
 
-    /*
+    /**
      * For a generic parameter, return either the Class used or if the type
      * is unknown, the index for the type in definition of the class
+     *
+     * @param clazz defining class
+     * @param argType the type argument of interest
+     *
+     * @return An instance of {@link Class} representing the type used by the
+     *         type parameter or an instance of {@link Integer} representing
+     *         the index for the type in the definition of the defining class
      */
     private static Object getTypeParameter(Class<?> clazz, Type argType) {
         if (argType instanceof Class<?>) {
