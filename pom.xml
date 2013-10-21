@@ -27,10 +27,10 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>commons-pool2</artifactId>
   <version>2.0-SNAPSHOT</version>
-  <name>Commons Pool</name>
+  <name>Apache Commons Pool</name>
 
   <inceptionYear>2001</inceptionYear>
-  <description>Commons Object Pooling Library</description>
+  <description>Apache Commons Object Pooling Library</description>
 
   <url>http://commons.apache.org/proper/commons-pool/</url>
 
