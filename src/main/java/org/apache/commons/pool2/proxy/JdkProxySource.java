@@ -21,6 +21,10 @@ import java.lang.reflect.Proxy;
 import org.apache.commons.pool2.UsageTracking;
 
 /**
+ * Provides proxy objects using Java reflection.
+ *
+ * @param <T> type of the pooled object to be proxied
+ *
  * @since 2.0
  */
 class JdkProxySource<T> implements ProxySource<T> {
@@ -29,6 +33,12 @@ class JdkProxySource<T> implements ProxySource<T> {
     private final Class<?>[] interfaces;
 
 
+    /**
+     * Create a new proxy source for the given interfaces.
+     *
+     * @param classLoader The class loader with which to create the proxy
+     * @param interfaces  The interfaces to proxy
+     */
     JdkProxySource(ClassLoader classLoader, Class<?>[] interfaces) {
         this.classLoader = classLoader;
         this.interfaces = interfaces;

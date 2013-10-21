@@ -22,6 +22,14 @@ import org.apache.commons.pool2.KeyedObjectPool;
 import org.apache.commons.pool2.UsageTracking;
 
 /**
+ * Create a new keyed object pool where the pooled objects are wrapped in
+ * proxies allowing better control of pooled objects and in particular the
+ * prevention of the continued use of an object by a client after that client
+ * returns the object to the pool.
+ *
+ * @param <K> type of the key
+ * @param <V> type of the pooled object
+ *
  * @since 2.0
  */
 public class ProxiedKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
@@ -30,6 +38,12 @@ public class ProxiedKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
     private final ProxySource<V> proxySource;
 
 
+    /**
+     * Create a new proxied object pool.
+     *
+     * @param pool  The object pool to wrap
+     * @param proxySource The source of the proxy objects
+     */
     public ProxiedKeyedObjectPool(KeyedObjectPool<K,V> pool,
             ProxySource<V> proxySource) {
         this.pool = pool;

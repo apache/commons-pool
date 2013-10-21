@@ -22,11 +22,23 @@ import java.lang.reflect.Method;
 import org.apache.commons.pool2.UsageTracking;
 
 /**
+ * Java reflection implementation of the proxy handler.
+ *
+ * @param <T> type of the wrapped pooled object
+ *
  * @since 2.0
  */
 class JdkProxyHandler<T> extends BaseProxyHandler<T>
         implements InvocationHandler {
 
+    /**
+     * Create a Java reflection proxy instance.
+     *
+     * @param pooledObject  The object to wrap
+     * @param usageTracking The instance, if any (usually the object pool) to
+     *                      be provided with usage tracking information for this
+     *                      wrapped object
+     */
     JdkProxyHandler(T pooledObject, UsageTracking<T> usageTracking) {
         super(pooledObject, usageTracking);
     }

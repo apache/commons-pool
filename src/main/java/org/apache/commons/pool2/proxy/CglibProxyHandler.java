@@ -24,12 +24,24 @@ import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 
 /**
+ * CGLib implementation of the proxy handler.
+ *
+ * @param <T> type of the wrapped pooled object
+ *
  * @since 2.0
  */
 public class CglibProxyHandler<T> extends BaseProxyHandler<T>
         implements MethodInterceptor {
 
 
+    /**
+     * Create a CGLib proxy instance.
+     *
+     * @param pooledObject  The object to wrap
+     * @param usageTracking The instance, if any (usually the object pool) to
+     *                      be provided with usage tracking information for this
+     *                      wrapped object
+     */
     CglibProxyHandler(T pooledObject, UsageTracking<T> usageTracking) {
         super(pooledObject, usageTracking);
     }
