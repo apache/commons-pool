@@ -22,12 +22,21 @@ import net.sf.cglib.proxy.Factory;
 import org.apache.commons.pool2.UsageTracking;
 
 /**
+ * Provides proxy objects using CGLib.
+ *
+ * @param <T> type of the pooled object to be proxied
+ *
  * @since 2.0
  */
 public class CglibProxySource<T> implements ProxySource<T> {
 
     private final Class<? extends T> superclass;
 
+    /**
+     * Create a new proxy source for the given class.
+     *
+     * @param superclass The class to proxy
+     */
     public CglibProxySource(Class<? extends T> superclass) {
         this.superclass = superclass;
     }

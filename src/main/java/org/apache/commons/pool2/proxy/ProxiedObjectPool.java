@@ -22,6 +22,13 @@ import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.UsageTracking;
 
 /**
+ * Create a new object pool where the pooled objects are wrapped in proxies
+ * allowing better control of pooled objects and in particular the prevention
+ * of the continued use of an object by a client after that client returns the
+ * object to the pool.
+ *
+ * @param <T> type of the pooled object
+ *
  * @since 2.0
  */
 public class ProxiedObjectPool<T> implements ObjectPool<T> {
@@ -30,6 +37,12 @@ public class ProxiedObjectPool<T> implements ObjectPool<T> {
     private final ProxySource<T> proxySource;
 
 
+    /**
+     * Create a new proxied object pool.
+     *
+     * @param pool  The object pool to wrap
+     * @param proxySource The source of the proxy objects
+     */
     public ProxiedObjectPool(ObjectPool<T> pool, ProxySource<T> proxySource) {
         this.pool = pool;
         this.proxySource = proxySource;
