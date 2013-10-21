@@ -142,17 +142,18 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 pool.getMinEvictableIdleTimeMillis());
         assertEquals(GenericObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
                 pool.getNumTestsPerEvictionRun());
-        assertEquals(GenericObjectPoolConfig.DEFAULT_TEST_ON_BORROW,
-                pool.getTestOnBorrow());
-        assertEquals(GenericObjectPoolConfig.DEFAULT_TEST_ON_RETURN,
-                pool.getTestOnReturn());
-        assertEquals(GenericObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE,
-                pool.getTestWhileIdle());
+        assertEquals(Boolean.valueOf(GenericObjectPoolConfig.DEFAULT_TEST_ON_BORROW),
+                Boolean.valueOf(pool.getTestOnBorrow()));
+        assertEquals(Boolean.valueOf(GenericObjectPoolConfig.DEFAULT_TEST_ON_RETURN),
+                Boolean.valueOf(pool.getTestOnReturn()));
+        assertEquals(Boolean.valueOf(GenericObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE),
+                Boolean.valueOf(pool.getTestWhileIdle()));
         assertEquals(GenericObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
                 pool.getTimeBetweenEvictionRunsMillis());
-        assertEquals(GenericObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED,
-                pool.getBlockWhenExhausted());
-        assertEquals(GenericObjectPoolConfig.DEFAULT_LIFO, pool.getLifo());
+        assertEquals(Boolean.valueOf(GenericObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED),
+                Boolean.valueOf(pool.getBlockWhenExhausted()));
+        assertEquals(Boolean.valueOf(GenericObjectPoolConfig.DEFAULT_LIFO),
+                Boolean.valueOf(pool.getLifo()));
         pool.close();
 
         GenericObjectPoolConfig config =
@@ -177,13 +178,17 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertEquals(minEvictableIdleTimeMillis,
                 pool.getMinEvictableIdleTimeMillis());
         assertEquals(numTestsPerEvictionRun, pool.getNumTestsPerEvictionRun());
-        assertEquals(testOnBorrow,pool.getTestOnBorrow());
-        assertEquals(testOnReturn,pool.getTestOnReturn());
-        assertEquals(testWhileIdle,pool.getTestWhileIdle());
+        assertEquals(Boolean.valueOf(testOnBorrow),
+                Boolean.valueOf(pool.getTestOnBorrow()));
+        assertEquals(Boolean.valueOf(testOnReturn),
+                Boolean.valueOf(pool.getTestOnReturn()));
+        assertEquals(Boolean.valueOf(testWhileIdle),
+                Boolean.valueOf(pool.getTestWhileIdle()));
         assertEquals(timeBetweenEvictionRunsMillis,
                 pool.getTimeBetweenEvictionRunsMillis());
-        assertEquals(blockWhenExhausted,pool.getBlockWhenExhausted());
-        assertEquals(lifo, pool.getLifo());
+        assertEquals(Boolean.valueOf(blockWhenExhausted),
+                Boolean.valueOf(pool.getBlockWhenExhausted()));
+        assertEquals(Boolean.valueOf(lifo), Boolean.valueOf(pool.getLifo()));
         pool.close();
     }
 
@@ -1504,10 +1509,15 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     private SimpleFactory factory = null;
 
     private void assertConfiguration(GenericObjectPoolConfig expected, GenericObjectPool<?> actual) throws Exception {
-        assertEquals("testOnBorrow",expected.getTestOnBorrow(),actual.getTestOnBorrow());
-        assertEquals("testOnReturn",expected.getTestOnReturn(),actual.getTestOnReturn());
-        assertEquals("testWhileIdle",expected.getTestWhileIdle(),actual.getTestWhileIdle());
-        assertEquals("whenExhaustedAction",expected.getBlockWhenExhausted(),actual.getBlockWhenExhausted());
+        assertEquals("testOnBorrow",Boolean.valueOf(expected.getTestOnBorrow()),
+                Boolean.valueOf(actual.getTestOnBorrow()));
+        assertEquals("testOnReturn",Boolean.valueOf(expected.getTestOnReturn()),
+                Boolean.valueOf(actual.getTestOnReturn()));
+        assertEquals("testWhileIdle",Boolean.valueOf(expected.getTestWhileIdle()),
+                Boolean.valueOf(actual.getTestWhileIdle()));
+        assertEquals("whenExhaustedAction",
+                Boolean.valueOf(expected.getBlockWhenExhausted()),
+                Boolean.valueOf(actual.getBlockWhenExhausted()));
         assertEquals("maxTotal",expected.getMaxTotal(),actual.getMaxTotal());
         assertEquals("maxIdle",expected.getMaxIdle(),actual.getMaxIdle());
         assertEquals("maxWait",expected.getMaxWaitMillis(),actual.getMaxWaitMillis());

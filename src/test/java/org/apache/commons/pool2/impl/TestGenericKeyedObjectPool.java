@@ -1041,17 +1041,18 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                 pool.getMinEvictableIdleTimeMillis());
         assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
                 pool.getNumTestsPerEvictionRun());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_TEST_ON_BORROW,
-                pool.getTestOnBorrow());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_TEST_ON_RETURN,
-                pool.getTestOnReturn());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE,
-                pool.getTestWhileIdle());
+        assertEquals(Boolean.valueOf(GenericKeyedObjectPoolConfig.DEFAULT_TEST_ON_BORROW),
+                Boolean.valueOf(pool.getTestOnBorrow()));
+        assertEquals(Boolean.valueOf(GenericKeyedObjectPoolConfig.DEFAULT_TEST_ON_RETURN),
+                Boolean.valueOf(pool.getTestOnReturn()));
+        assertEquals(Boolean.valueOf(GenericKeyedObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE),
+                Boolean.valueOf(pool.getTestWhileIdle()));
         assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
                 pool.getTimeBetweenEvictionRunsMillis());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED,
-                pool.getBlockWhenExhausted());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_LIFO, pool.getLifo());
+        assertEquals(Boolean.valueOf(GenericKeyedObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED),
+                Boolean.valueOf(pool.getBlockWhenExhausted()));
+        assertEquals(Boolean.valueOf(GenericKeyedObjectPoolConfig.DEFAULT_LIFO),
+                Boolean.valueOf(pool.getLifo()));
         pool.close();
 
         GenericKeyedObjectPoolConfig config =
@@ -1078,13 +1079,18 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         assertEquals(minEvictableIdleTimeMillis,
                 pool.getMinEvictableIdleTimeMillis());
         assertEquals(numTestsPerEvictionRun, pool.getNumTestsPerEvictionRun());
-        assertEquals(testOnBorrow,pool.getTestOnBorrow());
-        assertEquals(testOnReturn,pool.getTestOnReturn());
-        assertEquals(testWhileIdle,pool.getTestWhileIdle());
+        assertEquals(Boolean.valueOf(testOnBorrow),
+                Boolean.valueOf(pool.getTestOnBorrow()));
+        assertEquals(Boolean.valueOf(testOnReturn),
+                Boolean.valueOf(pool.getTestOnReturn()));
+        assertEquals(Boolean.valueOf(testWhileIdle),
+                Boolean.valueOf(pool.getTestWhileIdle()));
         assertEquals(timeBetweenEvictionRunsMillis,
                 pool.getTimeBetweenEvictionRunsMillis());
-        assertEquals(blockWhenExhausted,pool.getBlockWhenExhausted());
-        assertEquals(lifo, pool.getLifo());
+        assertEquals(Boolean.valueOf(blockWhenExhausted),
+                Boolean.valueOf(pool.getBlockWhenExhausted()));
+        assertEquals(Boolean.valueOf(lifo),
+                Boolean.valueOf(pool.getLifo()));
         pool.close();
     }
 
