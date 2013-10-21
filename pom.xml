@@ -28,10 +28,10 @@
   <groupId>commons-pool</groupId>
   <artifactId>commons-pool</artifactId>
   <version>1.5.8-SNAPSHOT</version>
-  <name>Commons Pool</name>
+  <name>Apache Commons Pool</name>
 
   <inceptionYear>2001</inceptionYear>
-  <description>Commons Object Pooling Library</description>
+  <description>Apache Commons Object Pooling Library</description>
 
   <url>http://commons.apache.org/pool/</url>
 
