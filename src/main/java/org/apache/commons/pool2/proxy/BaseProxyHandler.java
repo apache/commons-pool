@@ -96,10 +96,10 @@ class BaseProxyHandler<T> {
      */
     Object doInvoke(Method method, Object[] args) throws Throwable {
         validateProxiedObject();
-        T pooledObject = getPooledObject();
+        T object = getPooledObject();
         if (usageTracking != null) {
-            usageTracking.use(pooledObject);
+            usageTracking.use(object);
         }
-        return method.invoke(pooledObject, args);
+        return method.invoke(object, args);
     }
 }

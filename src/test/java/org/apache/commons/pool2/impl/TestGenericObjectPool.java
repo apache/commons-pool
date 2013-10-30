@@ -54,19 +54,17 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
     @Override
     protected ObjectPool<Object> makeEmptyPool(int mincap) {
-       GenericObjectPool<Object> pool =
+       GenericObjectPool<Object> mtPool =
                new GenericObjectPool<Object>(new SimpleFactory());
-       pool.setMaxTotal(mincap);
-       pool.setMaxIdle(mincap);
-       return pool;
+       mtPool.setMaxTotal(mincap);
+       mtPool.setMaxIdle(mincap);
+       return mtPool;
     }
 
     @Override
     protected ObjectPool<Object> makeEmptyPool(
             final PooledObjectFactory<Object> factory) {
-        GenericObjectPool<Object> pool =
-            new GenericObjectPool<Object>(factory);
-        return pool;
+        return new GenericObjectPool<Object>(factory);
     }
 
     @Override
@@ -131,30 +129,30 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         long timeBetweenEvictionRunsMillis = 8;
         boolean blockWhenExhausted = false;
         boolean lifo = false;
-        PooledObjectFactory<Object> factory = new DummyFactory();
-        GenericObjectPool<Object> pool =
-                new GenericObjectPool<Object>(factory);
-        assertEquals(GenericObjectPoolConfig.DEFAULT_MAX_IDLE, pool.getMaxIdle());
-        assertEquals(GenericObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS, pool.getMaxWaitMillis());
-        assertEquals(GenericObjectPoolConfig.DEFAULT_MIN_IDLE, pool.getMinIdle());
-        assertEquals(GenericObjectPoolConfig.DEFAULT_MAX_TOTAL, pool.getMaxTotal());
+        PooledObjectFactory<Object> dummyFactory = new DummyFactory();
+        GenericObjectPool<Object> dummyPool =
+                new GenericObjectPool<Object>(dummyFactory);
+        assertEquals(GenericObjectPoolConfig.DEFAULT_MAX_IDLE, dummyPool.getMaxIdle());
+        assertEquals(GenericObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS, dummyPool.getMaxWaitMillis());
+        assertEquals(GenericObjectPoolConfig.DEFAULT_MIN_IDLE, dummyPool.getMinIdle());
+        assertEquals(GenericObjectPoolConfig.DEFAULT_MAX_TOTAL, dummyPool.getMaxTotal());
         assertEquals(GenericObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
-                pool.getMinEvictableIdleTimeMillis());
+                dummyPool.getMinEvictableIdleTimeMillis());
         assertEquals(GenericObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
-                pool.getNumTestsPerEvictionRun());
+                dummyPool.getNumTestsPerEvictionRun());
         assertEquals(Boolean.valueOf(GenericObjectPoolConfig.DEFAULT_TEST_ON_BORROW),
-                Boolean.valueOf(pool.getTestOnBorrow()));
+                Boolean.valueOf(dummyPool.getTestOnBorrow()));
         assertEquals(Boolean.valueOf(GenericObjectPoolConfig.DEFAULT_TEST_ON_RETURN),
-                Boolean.valueOf(pool.getTestOnReturn()));
+                Boolean.valueOf(dummyPool.getTestOnReturn()));
         assertEquals(Boolean.valueOf(GenericObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE),
-                Boolean.valueOf(pool.getTestWhileIdle()));
+                Boolean.valueOf(dummyPool.getTestWhileIdle()));
         assertEquals(GenericObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
-                pool.getTimeBetweenEvictionRunsMillis());
+                dummyPool.getTimeBetweenEvictionRunsMillis());
         assertEquals(Boolean.valueOf(GenericObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED),
-                Boolean.valueOf(pool.getBlockWhenExhausted()));
+                Boolean.valueOf(dummyPool.getBlockWhenExhausted()));
         assertEquals(Boolean.valueOf(GenericObjectPoolConfig.DEFAULT_LIFO),
-                Boolean.valueOf(pool.getLifo()));
-        pool.close();
+                Boolean.valueOf(dummyPool.getLifo()));
+        dummyPool.close();
 
         GenericObjectPoolConfig config =
                 new GenericObjectPoolConfig();
@@ -170,26 +168,26 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         config.setTestWhileIdle(testWhileIdle);
         config.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
         config.setBlockWhenExhausted(blockWhenExhausted);
-        pool = new GenericObjectPool<Object>(factory, config);
-        assertEquals(maxIdle, pool.getMaxIdle());
-        assertEquals(maxWait, pool.getMaxWaitMillis());
-        assertEquals(minIdle, pool.getMinIdle());
-        assertEquals(maxTotal, pool.getMaxTotal());
+        dummyPool = new GenericObjectPool<Object>(dummyFactory, config);
+        assertEquals(maxIdle, dummyPool.getMaxIdle());
+        assertEquals(maxWait, dummyPool.getMaxWaitMillis());
+        assertEquals(minIdle, dummyPool.getMinIdle());
+        assertEquals(maxTotal, dummyPool.getMaxTotal());
         assertEquals(minEvictableIdleTimeMillis,
-                pool.getMinEvictableIdleTimeMillis());
-        assertEquals(numTestsPerEvictionRun, pool.getNumTestsPerEvictionRun());
+                dummyPool.getMinEvictableIdleTimeMillis());
+        assertEquals(numTestsPerEvictionRun, dummyPool.getNumTestsPerEvictionRun());
         assertEquals(Boolean.valueOf(testOnBorrow),
-                Boolean.valueOf(pool.getTestOnBorrow()));
+                Boolean.valueOf(dummyPool.getTestOnBorrow()));
         assertEquals(Boolean.valueOf(testOnReturn),
-                Boolean.valueOf(pool.getTestOnReturn()));
+                Boolean.valueOf(dummyPool.getTestOnReturn()));
         assertEquals(Boolean.valueOf(testWhileIdle),
-                Boolean.valueOf(pool.getTestWhileIdle()));
+                Boolean.valueOf(dummyPool.getTestWhileIdle()));
         assertEquals(timeBetweenEvictionRunsMillis,
-                pool.getTimeBetweenEvictionRunsMillis());
+                dummyPool.getTimeBetweenEvictionRunsMillis());
         assertEquals(Boolean.valueOf(blockWhenExhausted),
-                Boolean.valueOf(pool.getBlockWhenExhausted()));
-        assertEquals(Boolean.valueOf(lifo), Boolean.valueOf(pool.getLifo()));
-        pool.close();
+                Boolean.valueOf(dummyPool.getBlockWhenExhausted()));
+        assertEquals(Boolean.valueOf(lifo), Boolean.valueOf(dummyPool.getLifo()));
+        dummyPool.close();
     }
 
     @Test(timeout=60000)
@@ -394,29 +392,29 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     private void checkEvictorVisiting(boolean lifo) throws Exception {
-        VisitTrackerFactory<Object> factory = new VisitTrackerFactory<Object>();
-        GenericObjectPool<VisitTracker<Object>> pool =
-                new GenericObjectPool<VisitTracker<Object>>(factory);
-        pool.setNumTestsPerEvictionRun(2);
-        pool.setMinEvictableIdleTimeMillis(-1);
-        pool.setTestWhileIdle(true);
-        pool.setLifo(lifo);
-        pool.setTestOnReturn(false);
-        pool.setTestOnBorrow(false);
+        VisitTrackerFactory<Object> trackerFactory = new VisitTrackerFactory<Object>();
+        GenericObjectPool<VisitTracker<Object>> trackerPool =
+                new GenericObjectPool<VisitTracker<Object>>(trackerFactory);
+        trackerPool.setNumTestsPerEvictionRun(2);
+        trackerPool.setMinEvictableIdleTimeMillis(-1);
+        trackerPool.setTestWhileIdle(true);
+        trackerPool.setLifo(lifo);
+        trackerPool.setTestOnReturn(false);
+        trackerPool.setTestOnBorrow(false);
         for (int i = 0; i < 8; i++) {
-            pool.addObject();
+            trackerPool.addObject();
         }
-        pool.evict(); // Visit oldest 2 - 0 and 1
-        VisitTracker<Object> obj = pool.borrowObject();
-        pool.returnObject(obj);
-        obj = pool.borrowObject();
-        pool.returnObject(obj);
+        trackerPool.evict(); // Visit oldest 2 - 0 and 1
+        VisitTracker<Object> obj = trackerPool.borrowObject();
+        trackerPool.returnObject(obj);
+        obj = trackerPool.borrowObject();
+        trackerPool.returnObject(obj);
         //  borrow, return, borrow, return
         //  FIFO will move 0 and 1 to end
         //  LIFO, 7 out, then in, then out, then in
-        pool.evict();  // Should visit 2 and 3 in either case
+        trackerPool.evict();  // Should visit 2 and 3 in either case
         for (int i = 0; i < 8; i++) {
-            VisitTracker<Object> tracker = pool.borrowObject();
+            VisitTracker<Object> tracker = trackerPool.borrowObject();
             if (tracker.getId() >= 4) {
                 assertEquals("Unexpected instance visited " + tracker.getId(),
                         0, tracker.getValidateCount());
@@ -426,35 +424,35 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                         1, tracker.getValidateCount());
             }
         }
-        pool.close();
+        trackerPool.close();
 
-        factory = new VisitTrackerFactory<Object>();
-        pool = new GenericObjectPool<VisitTracker<Object>>(factory);
-        pool.setNumTestsPerEvictionRun(3);
-        pool.setMinEvictableIdleTimeMillis(-1);
-        pool.setTestWhileIdle(true);
-        pool.setLifo(lifo);
-        pool.setTestOnReturn(false);
-        pool.setTestOnBorrow(false);
+        trackerFactory = new VisitTrackerFactory<Object>();
+        trackerPool = new GenericObjectPool<VisitTracker<Object>>(trackerFactory);
+        trackerPool.setNumTestsPerEvictionRun(3);
+        trackerPool.setMinEvictableIdleTimeMillis(-1);
+        trackerPool.setTestWhileIdle(true);
+        trackerPool.setLifo(lifo);
+        trackerPool.setTestOnReturn(false);
+        trackerPool.setTestOnBorrow(false);
         for (int i = 0; i < 8; i++) {
-            pool.addObject();
+            trackerPool.addObject();
         }
-        pool.evict(); // 0, 1, 2
-        pool.evict(); // 3, 4, 5
-        obj = pool.borrowObject();
-        pool.returnObject(obj);
-        obj = pool.borrowObject();
-        pool.returnObject(obj);
-        obj = pool.borrowObject();
-        pool.returnObject(obj);
+        trackerPool.evict(); // 0, 1, 2
+        trackerPool.evict(); // 3, 4, 5
+        obj = trackerPool.borrowObject();
+        trackerPool.returnObject(obj);
+        obj = trackerPool.borrowObject();
+        trackerPool.returnObject(obj);
+        obj = trackerPool.borrowObject();
+        trackerPool.returnObject(obj);
         // borrow, return, borrow, return
         //  FIFO 3,4,5,6,7,0,1,2
         //  LIFO 7,6,5,4,3,2,1,0
         // In either case, pointer should be at 6
-        pool.evict();
+        trackerPool.evict();
         // Should hit 6,7,0 - 0 for second time
         for (int i = 0; i < 8; i++) {
-            VisitTracker<Object> tracker = pool.borrowObject();
+            VisitTracker<Object> tracker = trackerPool.borrowObject();
             if (tracker.getId() != 0) {
                 assertEquals("Instance " +  tracker.getId() +
                         " visited wrong number of times.",
@@ -465,7 +463,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                         2, tracker.getValidateCount());
             }
         }
-        pool.close();
+        trackerPool.close();
 
         // Randomly generate a pools with random numTests
         // and make sure evictor cycles through elements appropriately
@@ -474,28 +472,28 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         random.setSeed(System.currentTimeMillis());
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 5; j++) {
-                pool = new GenericObjectPool<VisitTracker<Object>>(factory);
-                pool.setNumTestsPerEvictionRun(smallPrimes[i]);
-                pool.setMinEvictableIdleTimeMillis(-1);
-                pool.setTestWhileIdle(true);
-                pool.setLifo(lifo);
-                pool.setTestOnReturn(false);
-                pool.setTestOnBorrow(false);
-                pool.setMaxIdle(-1);
+                trackerPool = new GenericObjectPool<VisitTracker<Object>>(trackerFactory);
+                trackerPool.setNumTestsPerEvictionRun(smallPrimes[i]);
+                trackerPool.setMinEvictableIdleTimeMillis(-1);
+                trackerPool.setTestWhileIdle(true);
+                trackerPool.setLifo(lifo);
+                trackerPool.setTestOnReturn(false);
+                trackerPool.setTestOnBorrow(false);
+                trackerPool.setMaxIdle(-1);
                 int instanceCount = 10 + random.nextInt(20);
-                pool.setMaxTotal(instanceCount);
+                trackerPool.setMaxTotal(instanceCount);
                 for (int k = 0; k < instanceCount; k++) {
-                    pool.addObject();
+                    trackerPool.addObject();
                 }
 
                 // Execute a random number of evictor runs
                 int runs = 10 + random.nextInt(50);
                 for (int k = 0; k < runs; k++) {
-                    pool.evict();
+                    trackerPool.evict();
                 }
 
                 // Number of times evictor should have cycled through the pool
-                int cycleCount = (runs * pool.getNumTestsPerEvictionRun()) /
+                int cycleCount = (runs * trackerPool.getNumTestsPerEvictionRun()) /
                         instanceCount;
 
                 // Look at elements and make sure they are visited cycleCount
@@ -503,13 +501,13 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 VisitTracker<Object> tracker = null;
                 int visitCount = 0;
                 for (int k = 0; k < instanceCount; k++) {
-                    tracker = pool.borrowObject();
-                    assertTrue(pool.getNumActive() <= pool.getMaxTotal());
+                    tracker = trackerPool.borrowObject();
+                    assertTrue(trackerPool.getNumActive() <= trackerPool.getMaxTotal());
                     visitCount = tracker.getValidateCount();
                     assertTrue(visitCount >= cycleCount &&
                             visitCount <= cycleCount + 1);
                 }
-                pool.close();
+                trackerPool.close();
             }
         }
     }
@@ -1006,65 +1004,65 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             }
         }
 
-        GenericObjectPool<TimeTest> pool =
+        GenericObjectPool<TimeTest> timePool =
             new GenericObjectPool<TimeTest>(new TimeTest());
 
-        pool.setMaxIdle(5);
-        pool.setMaxTotal(5);
-        pool.setNumTestsPerEvictionRun(5);
-        pool.setMinEvictableIdleTimeMillis(3000L);
-        pool.setSoftMinEvictableIdleTimeMillis(1000L);
-        pool.setMinIdle(2);
+        timePool.setMaxIdle(5);
+        timePool.setMaxTotal(5);
+        timePool.setNumTestsPerEvictionRun(5);
+        timePool.setMinEvictableIdleTimeMillis(3000L);
+        timePool.setSoftMinEvictableIdleTimeMillis(1000L);
+        timePool.setMinIdle(2);
 
         TimeTest[] active = new TimeTest[5];
         Long[] creationTime = new Long[5] ;
         for(int i=0;i<5;i++) {
-            active[i] = pool.borrowObject();
+            active[i] = timePool.borrowObject();
             creationTime[i] = Long.valueOf((active[i]).getCreateTime());
         }
 
         for(int i=0;i<5;i++) {
-            pool.returnObject(active[i]);
+            timePool.returnObject(active[i]);
         }
 
         // Soft evict all but minIdle(2)
         Thread.sleep(1500L);
-        pool.evict();
-        assertEquals("Idle count different than expected.", 2, pool.getNumIdle());
+        timePool.evict();
+        assertEquals("Idle count different than expected.", 2, timePool.getNumIdle());
 
         // Hard evict the rest.
         Thread.sleep(2000L);
-        pool.evict();
-        assertEquals("Idle count different than expected.", 0, pool.getNumIdle());
-        pool.close();
+        timePool.evict();
+        assertEquals("Idle count different than expected.", 0, timePool.getNumIdle());
+        timePool.close();
     }
 
     @Test(timeout=60000)
     public void testEvictionInvalid() throws Exception {
 
-        final GenericObjectPool<Object> pool =
+        final GenericObjectPool<Object> invalidFactoryPool =
                 new GenericObjectPool<Object>(new InvalidFactory());
 
-        pool.setMaxIdle(1);
-        pool.setMaxTotal(1);
-        pool.setTestOnBorrow(false);
-        pool.setTestOnReturn(false);
-        pool.setTestWhileIdle(true);
-        pool.setMinEvictableIdleTimeMillis(100000);
-        pool.setNumTestsPerEvictionRun(1);
+        invalidFactoryPool.setMaxIdle(1);
+        invalidFactoryPool.setMaxTotal(1);
+        invalidFactoryPool.setTestOnBorrow(false);
+        invalidFactoryPool.setTestOnReturn(false);
+        invalidFactoryPool.setTestWhileIdle(true);
+        invalidFactoryPool.setMinEvictableIdleTimeMillis(100000);
+        invalidFactoryPool.setNumTestsPerEvictionRun(1);
 
-        Object p = pool.borrowObject();
-        pool.returnObject(p);
+        Object p = invalidFactoryPool.borrowObject();
+        invalidFactoryPool.returnObject(p);
 
         // Run eviction in a separate thread
-        Thread t = new EvictionThread<Object>(pool);
+        Thread t = new EvictionThread<Object>(invalidFactoryPool);
         t.start();
 
         // Sleep to make sure evictor has started
         Thread.sleep(300);
 
         try {
-            pool.borrowObject(1);
+            invalidFactoryPool.borrowObject(1);
         } catch (NoSuchElementException nsee) {
             // Ignore
         }
@@ -1073,9 +1071,9 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         Thread.sleep(1000);
 
         // Should have an empty pool
-        assertEquals("Idle count different than expected.", 0, pool.getNumIdle());
-        assertEquals("Total count different than expected.", 0, pool.getNumActive());
-        pool.close();
+        assertEquals("Idle count different than expected.", 0, invalidFactoryPool.getNumIdle());
+        assertEquals("Total count different than expected.", 0, invalidFactoryPool.getNumActive());
+        invalidFactoryPool.close();
     }
 
     /**
