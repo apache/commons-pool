@@ -1,16 +1,25 @@
               Apache Commons Pool 2.0 RELEASE NOTES
 
-The Commons Pool team is pleased to announce the release of commons-pool2-2.0-SNAPSHOT
+The Apache Commons Pool team is pleased to announce the release of commons-pool2-2.0
 
-Commons Object Pooling Library
+Apache Commons Object Pooling Library
 
-This is a major new release that provides significant performance improvements in high concurrency environments. Pools now provide a mechanism for tracking objects that have been borrowed from the pool but not returned. There have been numerous API changes to support these and other new features as well as to clarify behaviour and improve consistency across the API.
+This is a major new release that provides significant performance improvements
+in high concurrency environments. Pools now provide a mechanism for tracking
+objects that have been borrowed from the pool but not returned. There have been
+numerous API changes to support these and other new features as well as to
+clarify behaviour and improve consistency across the API.
 
 Changes in this version include:
 
+New features:
+o POOL-211:  Add support for proxy wrappers for ObjectPool and KeyedObjectPool. The
+             primary advantage of using these wrappers is that use of pooled objects
+             is prevented after they have been returned to the pool. Thanks to Brad Koehn.
 
 Fixed Bugs:
-o POOL-221:  PooledObject.state does not need to be volatile.
+o POOL-221:  PooledObject.state does not need to be volatile
+o POOL-220:  Suppress a FindBugs warning
 o POOL-215:  GenericKeyedObjectPool - multiple mutable fields not published safely.
 o POOL-214:  GenericObjectPool.evictionPolicy not thread-safe
 o POOL-212:  GenericObjectPool allows maxIdle < minIdle
@@ -30,6 +39,8 @@ o POOL-178:  Re-factor common code into common base classes.
 o POOL-100:  Allow custom eviction policies to be defined.
 
 Changes:
+o POOL-229:  Added abandoned object removal (moved from DBCP) to GenericObjectPool.
+o POOL-217:  Use an IODH for PoolUtils.MIN_IDLE_TIMER Thanks to sebb.
 o POOL-216:  GenericKeyedObjectPool.ensureMinIdle(K) does not need to check getMinIdlePerKey().
 o POOL-194:  Replace synchronized blocks in PoolUtils with Read/Write locks.
 o POOL-83:   Support Java 1.5 Generics.
@@ -54,9 +65,10 @@ o            Change meaning of zero for maxWait to a maximum wait of zero millis
              rather than the unexpected infinite wait.
 
 
-For complete information on Commons Pool, including instructions on how to submit bug reports,
-patches, or suggestions for improvement, see the Apache Commons Pool website:
+For complete information on Apache Commons Pool, including instructions on how
+to submit bug reports, patches, or suggestions for improvement, see the Apache
+Commons Pool website:
 
-http://commons.apache.org/pool/
+http://commons.apache.org/proper/commons-pool/
 
 
