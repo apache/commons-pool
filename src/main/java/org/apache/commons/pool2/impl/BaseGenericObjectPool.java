@@ -64,24 +64,24 @@ public abstract class BaseGenericObjectPool<T> {
     private volatile int maxTotal =
             GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL;
     private volatile boolean blockWhenExhausted =
-            GenericObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED;
+            BaseObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED;
     private volatile long maxWaitMillis =
-            GenericKeyedObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS;
-    private volatile boolean lifo = GenericObjectPoolConfig.DEFAULT_LIFO;
+            BaseObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS;
+    private volatile boolean lifo = BaseObjectPoolConfig.DEFAULT_LIFO;
     private volatile boolean testOnBorrow =
-            GenericObjectPoolConfig.DEFAULT_TEST_ON_BORROW;
+    		BaseObjectPoolConfig.DEFAULT_TEST_ON_BORROW;
     private volatile boolean testOnReturn =
-            GenericObjectPoolConfig.DEFAULT_TEST_ON_RETURN;
+    		BaseObjectPoolConfig.DEFAULT_TEST_ON_RETURN;
     private volatile boolean testWhileIdle =
-            GenericObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE;
+    		BaseObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE;
     private volatile long timeBetweenEvictionRunsMillis =
-            GenericObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
+    		BaseObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
     private volatile int numTestsPerEvictionRun =
-            GenericObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
+    		BaseObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
     private volatile long minEvictableIdleTimeMillis =
-            GenericObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+    		BaseObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
     private volatile long softMinEvictableIdleTimeMillis =
-            GenericObjectPoolConfig.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+    		BaseObjectPoolConfig.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
     private volatile EvictionPolicy<T> evictionPolicy;
 
 
