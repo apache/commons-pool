@@ -1034,24 +1034,24 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                 new GenericKeyedObjectPool<Object,Object>(factory);
         assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL_PER_KEY, pool.getMaxTotalPerKey());
         assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MAX_IDLE_PER_KEY, pool.getMaxIdlePerKey());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS, pool.getMaxWaitMillis());
+        assertEquals(BaseObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS, pool.getMaxWaitMillis());
         assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MIN_IDLE_PER_KEY, pool.getMinIdlePerKey());
         assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL, pool.getMaxTotal());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
+        assertEquals(BaseObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
                 pool.getMinEvictableIdleTimeMillis());
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
+        assertEquals(BaseObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
                 pool.getNumTestsPerEvictionRun());
-        assertEquals(Boolean.valueOf(GenericKeyedObjectPoolConfig.DEFAULT_TEST_ON_BORROW),
+        assertEquals(Boolean.valueOf(BaseObjectPoolConfig.DEFAULT_TEST_ON_BORROW),
                 Boolean.valueOf(pool.getTestOnBorrow()));
-        assertEquals(Boolean.valueOf(GenericKeyedObjectPoolConfig.DEFAULT_TEST_ON_RETURN),
+        assertEquals(Boolean.valueOf(BaseObjectPoolConfig.DEFAULT_TEST_ON_RETURN),
                 Boolean.valueOf(pool.getTestOnReturn()));
-        assertEquals(Boolean.valueOf(GenericKeyedObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE),
+        assertEquals(Boolean.valueOf(BaseObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE),
                 Boolean.valueOf(pool.getTestWhileIdle()));
-        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
+        assertEquals(BaseObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
                 pool.getTimeBetweenEvictionRunsMillis());
-        assertEquals(Boolean.valueOf(GenericKeyedObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED),
+        assertEquals(Boolean.valueOf(BaseObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED),
                 Boolean.valueOf(pool.getBlockWhenExhausted()));
-        assertEquals(Boolean.valueOf(GenericKeyedObjectPoolConfig.DEFAULT_LIFO),
+        assertEquals(Boolean.valueOf(BaseObjectPoolConfig.DEFAULT_LIFO),
                 Boolean.valueOf(pool.getLifo()));
         pool.close();
 
