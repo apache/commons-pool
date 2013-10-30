@@ -109,8 +109,8 @@ public class PerformanceTest {
        }
     }
 
-    private void run(int nrIterations, int nrThreads, int maxTotal, int maxIdle) {
-        this.nrIterations = nrIterations;
+    private void run(int iterations, int nrThreads, int maxTotal, int maxIdle) {
+        this.nrIterations = iterations;
 
         SleepingObjectFactory factory = new SleepingObjectFactory();
         if (logLevel >= 4) { factory.setDebug(true); }
@@ -168,7 +168,7 @@ public class PerformanceTest {
         }
 
         System.out.println("-----------------------------------------");
-        System.out.println("nrIterations: " + nrIterations);
+        System.out.println("nrIterations: " + iterations);
         System.out.println("nrThreads: " + nrThreads);
         System.out.println("maxTotal: " + maxTotal);
         System.out.println("maxIdle: " + maxIdle);
