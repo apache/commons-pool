@@ -665,6 +665,10 @@ public abstract class TestKeyedObjectPool {
         public Object create(final Object key) throws Exception {
             return new Object();
         }
+        @Override
+        public PooledObject<Object> wrap(Object value) {
+            return new DefaultPooledObject<Object>(value);
+        }
     }
 
     protected static class FailingKeyedPooledObjectFactory implements KeyedPooledObjectFactory<Object,Object> {

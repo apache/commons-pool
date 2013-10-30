@@ -18,6 +18,7 @@ package org.apache.commons.pool2.impl;
 
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.ObjectPool;
+import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.TestBaseObjectPool;
 
@@ -57,6 +58,10 @@ public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
         @Override
         public Object create() {
             return String.valueOf(counter++);
+        }
+        @Override
+        public PooledObject<Object> wrap(Object value) {
+            return new DefaultPooledObject<Object>(value);
         }
     }
 }

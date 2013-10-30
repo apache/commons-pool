@@ -18,6 +18,7 @@ package org.apache.commons.pool2;
 
 import static org.junit.Assert.assertTrue;
 
+import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.junit.Test;
 
 /**
@@ -39,6 +40,10 @@ public class TestBasePoolableObjectFactory {
         @Override
         public Object create() throws Exception {
             return null;
+        }
+        @Override
+        public PooledObject<Object> wrap(Object value) {
+            return new DefaultPooledObject<Object>(value);
         }
     }
 }

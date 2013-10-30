@@ -997,6 +997,10 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             public TimeTest create() throws Exception {
                 return new TimeTest();
             }
+            @Override
+            public PooledObject<TimeTest> wrap(TimeTest value) {
+                return new DefaultPooledObject<TimeTest>(value);
+            }
             public long getCreateTime() {
                 return createTime;
             }
@@ -1940,6 +1944,10 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         public Object create() throws Exception {
             return null;
         }
+        @Override
+        public PooledObject<Object> wrap(Object value) {
+            return new DefaultPooledObject<Object>(value);
+        }
     }
 
 
@@ -1949,6 +1957,10 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         @Override
         public Object create() throws Exception {
             return new Object();
+        }
+        @Override
+        public PooledObject<Object> wrap(Object value) {
+            return new DefaultPooledObject<Object>(value);
         }
 
         @Override

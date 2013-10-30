@@ -213,6 +213,10 @@ public class TestSoftRefOutOfMemory {
             // is returned eliminated false failures.
             return new String(String.valueOf(counter));
         }
+        @Override
+        public PooledObject<String> wrap(String value) {
+            return new DefaultPooledObject<String>(value);
+        }
     }
 
     public static class LargePoolableObjectFactory extends BasePooledObjectFactory<String> {
@@ -229,6 +233,11 @@ public class TestSoftRefOutOfMemory {
         public String create() {
             counter++;
             return String.valueOf(counter) + buffer;
+        }
+
+        @Override
+        public PooledObject<String> wrap(String value) {
+            return new DefaultPooledObject<String>(value);
         }
     }
 
@@ -251,6 +260,11 @@ public class TestSoftRefOutOfMemory {
             // collected. Either way, making sure a new String instance
             // is returned eliminated false failures.
             return new String();
+        }
+
+        @Override
+        public PooledObject<String> wrap(String value) {
+            return new DefaultPooledObject<String>(value);
         }
 
         @Override
