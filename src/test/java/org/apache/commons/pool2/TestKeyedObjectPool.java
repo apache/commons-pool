@@ -749,13 +749,13 @@ public abstract class TestKeyedObjectPool {
         public PooledObject<Object> makeObject(final Object key) throws Exception {
             final MethodCall call = new MethodCall("makeObject", key);
             methodCalls.add(call);
-            int count = this.count++;
+            int originalCount = this.count++;
             if (makeObjectFail) {
                 throw new PrivateException("makeObject");
             }
             // Deliberate choice to create new object in case future unit test
             // checks for a specific object
-            final Integer obj = new Integer(count);
+            final Integer obj = new Integer(originalCount);
             call.setReturned(obj);
             return new DefaultPooledObject<Object>(obj);
         }
