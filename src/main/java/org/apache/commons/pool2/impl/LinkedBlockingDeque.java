@@ -1013,15 +1013,16 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     public <T> T[] toArray(T[] a) {
         lock.lock();
         try {
-            if (a.length < count)
+            if (a.length < count) {
                 a = (T[])java.lang.reflect.Array.newInstance
                     (a.getClass().getComponentType(), count);
-
+            }
             int k = 0;
             for (Node<E> p = first; p != null; p = p.next)
                 a[k++] = (T)p.item;
-            if (a.length > k)
+            if (a.length > k) {
                 a[k] = null;
+            }
             return a;
         } finally {
             lock.unlock();
