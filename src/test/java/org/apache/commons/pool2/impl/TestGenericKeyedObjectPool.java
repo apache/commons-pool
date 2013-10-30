@@ -83,7 +83,9 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         return String.valueOf(n);
     }
 
+    /** setUp(): {@code new GenericKeyedObjectPool<String,String>(factory)} */
     private GenericKeyedObjectPool<String,String> pool = null;
+    /** setUp(): {@code new SimpleFactory<String>()} */
     private SimpleFactory<String> factory = null;
     private static final Integer KEY_ZERO = Integer.valueOf(0);
     private static final Integer KEY_ONE = Integer.valueOf(1);
@@ -1102,9 +1104,6 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
     @Test(timeout=60000)
     public void testExceptionOnPassivateDuringReturn() throws Exception {
-        SimpleFactory<String> factory = new SimpleFactory<String>();
-        GenericKeyedObjectPool<String,String> pool =
-                new GenericKeyedObjectPool<String,String>(factory);
         String obj = pool.borrowObject("one");
         factory.setThrowExceptionOnPassivate(true);
         pool.returnObject("one", obj);
@@ -1351,9 +1350,6 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
      */
     @Test(timeout=60000)
     public void testClear() throws Exception {
-        SimpleFactory<String> factory = new SimpleFactory<String>();
-        GenericKeyedObjectPool<String,String> pool =
-                new GenericKeyedObjectPool<String,String>(factory);
         pool.setMaxTotal(2);
         pool.setMaxTotalPerKey(2);
         pool.setBlockWhenExhausted(false);
@@ -1380,9 +1376,6 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
      */
     @Test(timeout=60000)
     public void testWhenExhaustedBlockClosePool() throws Exception {
-        SimpleFactory<String> factory = new SimpleFactory<String>();
-        GenericKeyedObjectPool<String,String> pool =
-                new GenericKeyedObjectPool<String,String>(factory);
         pool.setMaxTotalPerKey(1);
         pool.setBlockWhenExhausted(true);
         pool.setMaxWaitMillis(-1);
