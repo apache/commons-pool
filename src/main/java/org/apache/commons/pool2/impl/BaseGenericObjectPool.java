@@ -536,14 +536,15 @@ public abstract class BaseGenericObjectPool<T> {
      *
      * @see #getEvictionPolicyClassName()
      */
-    @SuppressWarnings("unchecked")
     public final void setEvictionPolicyClassName(
             String evictionPolicyClassName) {
         try {
             Class<?> clazz = Class.forName(evictionPolicyClassName);
             Object policy = clazz.newInstance();
             if (policy instanceof EvictionPolicy<?>) {
-                this.evictionPolicy = (EvictionPolicy<T>) policy;
+                @SuppressWarnings("unchecked") // safe, because we just checked the class
+                EvictionPolicy<T> evicPolicy = (EvictionPolicy<T>) policy;
+				this.evictionPolicy = evicPolicy;
             }
         } catch (ClassNotFoundException e) {
             throw new IllegalArgumentException(
