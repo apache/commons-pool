@@ -49,6 +49,11 @@ in high concurrency environments. Pools now provide a mechanism for tracking
 objects that have been borrowed from the pool but not returned. There have been
 numerous API changes to support these and other new features as well as to
 clarify behaviour and improve consistency across the API.">
+    <action issue="POOL-211" dev="markt" type="add" due-to="Brad Koehn">
+      Add support for proxy wrappers to ObjectPool and KeyedObjectPool. The
+      primary advantage of these wrappers is that use of pooled objects is
+      prevented after they have been returned to the pool.
+    </action>
     <action issue="POOL-229" dev="psteitz" type="update">
       Added abandoned object removal (moved from DBCP) to GenericObjectPool.
     </action>
