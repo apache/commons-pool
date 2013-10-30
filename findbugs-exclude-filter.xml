@@ -46,6 +46,12 @@
     <Bug code="REC" />
   </Match>
   <Match>
+    <!-- Use of default system encoding is deliberate design choice -->
+    <Class name="org.apache.commons.pool2.impl.AbandonedConfig" />
+    <Method name="&lt;init&gt;" />
+    <Bug pattern="DM_DEFAULT_ENCODING " />
+  </Match>
+  <Match>
     <!-- compareTo() method carries the appropriate warning -->
     <Class name="org.apache.commons.pool2.impl.DefaultPooledObject" />
     <Bug pattern="EQ_COMPARETO_USE_OBJECT_EQUALS " />

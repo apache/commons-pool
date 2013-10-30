@@ -173,13 +173,14 @@ public class AbandonedConfig {
 
     /**
      * PrintWriter to use to log information on abandoned objects.
+     * Use of default system encoding is deliberate.
      */
     private PrintWriter logWriter = new PrintWriter(System.out);
 
     /**
      * Returns the log writer being used by this configuration to log
      * information on abandoned objects. If not set, a PrintWriter based on
-     * System.out is used.
+     * System.out with the system default encoding is used.
      *
      * @return log writer in use
      */
