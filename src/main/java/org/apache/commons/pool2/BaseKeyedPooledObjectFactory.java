@@ -16,8 +16,6 @@
  */
 package org.apache.commons.pool2;
 
-import org.apache.commons.pool2.impl.DefaultPooledObject;
-
 /**
  * A base implementation of <code>KeyedPooledObjectFactory</code>.
  * <p>
@@ -46,9 +44,19 @@ public abstract class BaseKeyedPooledObjectFactory<K,V>
     public abstract V create(K key)
         throws Exception;
 
+    /**
+     * Wrap the provided instance with an implementation of
+     * {@link PooledObject}.
+     *
+     * @param value the instance to wrap
+     *
+     * @return The provided instance, wrapped by a {@link PooledObject}
+     */
+    public abstract PooledObject<V> wrap(V value);
+
     @Override
     public PooledObject<V> makeObject(K key) throws Exception {
-        return new DefaultPooledObject<V>(create(key));
+        return wrap(create(key));
     }
 
     /**

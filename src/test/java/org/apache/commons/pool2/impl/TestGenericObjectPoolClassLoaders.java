@@ -20,6 +20,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 import org.apache.commons.pool2.BasePooledObjectFactory;
+import org.apache.commons.pool2.PooledObject;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -101,6 +102,10 @@ public class TestGenericObjectPoolClassLoaders {
             return url;
         }
 
+        @Override
+        public PooledObject<URL> wrap(URL value) {
+            return new DefaultPooledObject<URL>(value);
+        }
     }
 
     private static class CustomClassLoader extends URLClassLoader {

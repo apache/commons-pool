@@ -16,8 +16,6 @@
  */
 package org.apache.commons.pool2;
 
-import org.apache.commons.pool2.impl.DefaultPooledObject;
-
 /**
  * A base implementation of <code>PoolableObjectFactory</code>.
  * <p>
@@ -44,9 +42,19 @@ public abstract class BasePooledObjectFactory<T> implements PooledObjectFactory<
      */
     public abstract T create() throws Exception;
 
+    /**
+     * Wrap the provided instance with an implementation of
+     * {@link PooledObject}.
+     *
+     * @param obj the instance to wrap
+     *
+     * @return The provided instance, wrapped by a {@link PooledObject}
+     */
+    public abstract PooledObject<T> wrap(T obj);
+
     @Override
     public PooledObject<T> makeObject() throws Exception {
-        return new DefaultPooledObject<T>(create());
+        return wrap(create());
     }
 
     /**

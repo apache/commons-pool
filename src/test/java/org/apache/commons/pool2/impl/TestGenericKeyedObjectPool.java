@@ -1784,6 +1784,10 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         public Object create(Object key) throws Exception {
             return null;
         }
+        @Override
+        public PooledObject<Object> wrap(Object value) {
+            return new DefaultPooledObject<Object>(value);
+        }
     }
 
 
@@ -1802,6 +1806,10 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                 counter = 0;
             }
             return String.valueOf(key) + String.valueOf(counter);
+        }
+        @Override
+        public PooledObject<Object> wrap(Object value) {
+            return new DefaultPooledObject<Object>(value);
         }
     }
 }

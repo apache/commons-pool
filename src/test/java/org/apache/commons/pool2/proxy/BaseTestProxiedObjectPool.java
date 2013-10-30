@@ -25,8 +25,10 @@ import java.io.StringWriter;
 
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.ObjectPool;
+import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.impl.AbandonedConfig;
+import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.junit.Before;
@@ -123,6 +125,10 @@ public abstract class BaseTestProxiedObjectPool {
         @Override
         public TestObject create() throws Exception {
             return new TestObjectImpl();
+        }
+        @Override
+        public PooledObject<TestObject> wrap(TestObject value) {
+            return new DefaultPooledObject<TestObject>(value);
         }
     }
 
