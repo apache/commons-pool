@@ -187,7 +187,6 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      */
     public LinkedBlockingDeque(Collection<? extends E> c) {
         this(Integer.MAX_VALUE);
-        final ReentrantLock lock = this.lock;
         lock.lock(); // Never contended, but necessary for visibility
         try {
             for (E e : c) {
@@ -348,7 +347,6 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     @Override
     public boolean offerFirst(E e) {
         if (e == null) throw new NullPointerException();
-        final ReentrantLock lock = this.lock;
         lock.lock();
         try {
             return linkFirst(e);
@@ -363,7 +361,6 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     @Override
     public boolean offerLast(E e) {
         if (e == null) throw new NullPointerException();
-        final ReentrantLock lock = this.lock;
         lock.lock();
         try {
             return linkLast(e);
@@ -383,7 +380,6 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      */
     public void putFirst(E e) throws InterruptedException {
         if (e == null) throw new NullPointerException();
-        final ReentrantLock lock = this.lock;
         lock.lock();
         try {
             while (!linkFirst(e))
@@ -404,7 +400,6 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      */
     public void putLast(E e) throws InterruptedException {
         if (e == null) throw new NullPointerException();
-        final ReentrantLock lock = this.lock;
         lock.lock();
         try {
             while (!linkLast(e))
@@ -431,7 +426,6 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
         throws InterruptedException {
         if (e == null) throw new NullPointerException();
         long nanos = unit.toNanos(timeout);
-        final ReentrantLock lock = this.lock;
         lock.lockInterruptibly();
         try {
             while (!linkFirst(e)) {
@@ -462,7 +456,6 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
         throws InterruptedException {
         if (e == null) throw new NullPointerException();
         long nanos = unit.toNanos(timeout);
-        final ReentrantLock lock = this.lock;
         lock.lockInterruptibly();
         try {
             while (!linkLast(e)) {
@@ -498,7 +491,6 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
 
     @Override
     public E pollFirst() {
-        final ReentrantLock lock = this.lock;
         lock.lock();
         try {
             return unlinkFirst();
@@ -509,7 +501,6 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
 
     @Override
     public E pollLast() {
-        final ReentrantLock lock = this.lock;
         lock.lock();
         try {
             return unlinkLast();
@@ -525,7 +516,6 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * @return the unlinked element
      */
     public E takeFirst() throws InterruptedException {
-        final ReentrantLock lock = this.lock;
         lock.lock();
         try {
             E x;
@@ -544,7 +534,6 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * @return the unlinked element
      */
     public E takeLast() throws InterruptedException {
-        final ReentrantLock lock = this.lock;
         lock.lock();
         try {
             E x;
@@ -568,7 +557,6 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     public E pollFirst(long timeout, TimeUnit unit)
         throws InterruptedException {
         long nanos = unit.toNanos(timeout);
-        final ReentrantLock lock = this.lock;
         lock.lockInterruptibly();
         try {
             E x;
@@ -595,7 +583,6 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     public E pollLast(long timeout, TimeUnit unit)
         throws InterruptedException {
         long nanos = unit.toNanos(timeout);
-        final ReentrantLock lock = this.lock;
         lock.lockInterruptibly();
         try {
             E x;
@@ -632,7 +619,6 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
 
     @Override
     public E peekFirst() {
-        final ReentrantLock lock = this.lock;
         lock.lock();
         try {
             return (first == null) ? null : first.item;
@@ -643,7 +629,6 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
 
     @Override
     public E peekLast() {
-        final ReentrantLock lock = this.lock;
         lock.lock();
         try {
             return (last == null) ? null : last.item;
@@ -655,7 +640,6 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     @Override
     public boolean removeFirstOccurrence(Object o) {
         if (o == null) return false;
-        final ReentrantLock lock = this.lock;
         lock.lock();
         try {
             for (Node<E> p = first; p != null; p = p.next) {
@@ -673,7 +657,6 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     @Override
     public boolean removeLastOccurrence(Object o) {
         if (o == null) return false;
-        final ReentrantLock lock = this.lock;
         lock.lock();
         try {
             for (Node<E> p = last; p != null; p = p.prev) {
@@ -823,7 +806,6 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * @return The number of additional elements the queue is able to accept
      */
     public int remainingCapacity() {
-        final ReentrantLock lock = this.lock;
         lock.lock();
         try {
             return capacity - count;
@@ -866,7 +848,6 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
             throw new NullPointerException();
         if (c == this)
             throw new IllegalArgumentException();
-        final ReentrantLock lock = this.lock;
         lock.lock();
         try {
             int n = Math.min(maxElements, count);
@@ -926,7 +907,6 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      */
     @Override
     public int size() {
-        final ReentrantLock lock = this.lock;
         lock.lock();
         try {
             return count;
@@ -946,7 +926,6 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     @Override
     public boolean contains(Object o) {
         if (o == null) return false;
-        final ReentrantLock lock = this.lock;
         lock.lock();
         try {
             for (Node<E> p = first; p != null; p = p.next)
@@ -1014,7 +993,6 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      */
     @Override
     public Object[] toArray() {
-        final ReentrantLock lock = this.lock;
         lock.lock();
         try {
             Object[] a = new Object[count];
@@ -1033,7 +1011,6 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     @SuppressWarnings("unchecked")
     @Override
     public <T> T[] toArray(T[] a) {
-        final ReentrantLock lock = this.lock;
         lock.lock();
         try {
             if (a.length < count)
@@ -1053,7 +1030,6 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
 
     @Override
     public String toString() {
-        final ReentrantLock lock = this.lock;
         lock.lock();
         try {
             return super.toString();
@@ -1068,7 +1044,6 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      */
     @Override
     public void clear() {
-        final ReentrantLock lock = this.lock;
         lock.lock();
         try {
             for (Node<E> f = first; f != null; ) {
@@ -1156,7 +1131,6 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
          */
         AbstractItr() {
             // set to initial position
-            final ReentrantLock lock = LinkedBlockingDeque.this.lock;
             lock.lock();
             try {
                 next = firstNode();
@@ -1170,7 +1144,6 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
          * Advances next.
          */
         void advance() {
-            final ReentrantLock lock = LinkedBlockingDeque.this.lock;
             lock.lock();
             try {
                 // assert next != null;
@@ -1211,7 +1184,6 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
             if (n == null)
                 throw new IllegalStateException();
             lastRet = null;
-            final ReentrantLock lock = LinkedBlockingDeque.this.lock;
             lock.lock();
             try {
                 if (n.item != null)
@@ -1247,7 +1219,6 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      */
     private void writeObject(java.io.ObjectOutputStream s)
         throws java.io.IOException {
-        final ReentrantLock lock = this.lock;
         lock.lock();
         try {
             // Write out capacity and any hidden stuff
