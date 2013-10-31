@@ -41,7 +41,9 @@ public class JdkProxySource<T> implements ProxySource<T> {
      */
     public JdkProxySource(ClassLoader classLoader, Class<?>[] interfaces) {
         this.classLoader = classLoader;
-        this.interfaces = interfaces;
+        // Defensive copy
+        this.interfaces = new Class<?>[interfaces.length];
+        System.arraycopy(interfaces, 0, this.interfaces, 0, interfaces.length);
     }
 
 
