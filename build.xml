@@ -144,7 +144,7 @@
         <batchtest todir="${build.dir}/ant-reports" unless="test.entry">
           <fileset dir="${src.test.dir}">
             <include name="**/Test*.java"/>
-            <exclude name="org/apache/commons/pool/impl/TestSoftRefOutOfMemory.java"/>
+            <exclude name="org/apache/commons/pool2/impl/TestSoftRefOutOfMemory.java"/>
             <!-- abstract classes -->
             <exclude name="**/TestObjectPool.java"/>
             <exclude name="**/TestObjectPoolFactory.java"/>
