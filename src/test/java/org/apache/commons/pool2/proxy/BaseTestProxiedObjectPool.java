@@ -99,6 +99,23 @@ public abstract class BaseTestProxiedObjectPool {
     }
 
 
+    @Test(expected=IllegalStateException.class)
+    public void testAccessAfterInvalidate() throws Exception {
+        TestObject obj = pool.borrowObject();
+        assertNotNull(obj);
+
+        // Make sure proxied methods are working
+        obj.setData(DATA1);
+        assertEquals(DATA1, obj.getData());
+
+        pool.invalidateObject(obj);
+
+        assertNotNull(obj);
+
+        obj.getData();
+    }
+
+
     @Test
     public void testUsageTracking() throws Exception {
         TestObject obj = pool.borrowObject();
@@ -117,6 +134,30 @@ public abstract class BaseTestProxiedObjectPool {
 
         assertTrue(logOutput.contains("Pooled object created"));
         assertTrue(logOutput.contains("The last code to use this object was"));
+    }
+
+
+    @Test
+    public void testPassThroughMethods01() throws Exception {
+        assertEquals(0, pool.getNumActive());
+        assertEquals(0, pool.getNumIdle());
+
+        pool.addObject();
+
+        assertEquals(0, pool.getNumActive());
+        assertEquals(1, pool.getNumIdle());
+
+        pool.clear();
+
+        assertEquals(0, pool.getNumActive());
+        assertEquals(0, pool.getNumIdle());
+    }
+
+
+    @Test(expected=IllegalStateException.class)
+    public void testPassThroughMethods02() throws Exception {
+        pool.close();
+        pool.addObject();
     }
 
     private static class TestObjectFactory extends
