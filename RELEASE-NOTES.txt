@@ -11,7 +11,14 @@ objects that have been borrowed from the pool but not returned. There have been
 numerous API changes to support these and other new features as well as to
 clarify behaviour and improve consistency across the API.
 
-Changes in this version include:
+The changes to the API are not backwards compatible with Apache Commons Pool
+1.x. Therefore, to avoid dependency conflicts, the package name and Maven
+co-ordinates have changed as follows:
+Package name:      org.apache.commons.pool2
+Maven Group ID:    org.apache.commons
+Maven Artifact ID: commons-pool2
+
+Changes in this version (relative to Apache Commons Pool 1.6) include:
 
 New features:
 o POOL-211:  Add support for proxy wrappers for ObjectPool and KeyedObjectPool. The
