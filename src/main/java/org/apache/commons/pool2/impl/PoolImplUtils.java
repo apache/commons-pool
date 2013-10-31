@@ -27,7 +27,7 @@ import org.apache.commons.pool2.PooledObjectFactory;
  *
  * @since 2.0
  */
-public class PoolImplUtils {
+class PoolImplUtils {
 
     /**
      * Identifies the concrete type of object that an object factory creates.
