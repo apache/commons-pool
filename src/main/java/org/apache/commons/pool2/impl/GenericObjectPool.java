@@ -214,9 +214,9 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      */
     @Override
     public int getMinIdle() {
-        int maxIdle = getMaxIdle();
-        if (this.minIdle > maxIdle) {
-            return maxIdle;
+        int maxIdleSave = getMaxIdle();
+        if (this.minIdle > maxIdleSave) {
+            return maxIdleSave;
         } else {
             return minIdle;
         }
@@ -583,8 +583,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                     "Object has already been retured to this pool or is invalid");
         }
 
-        int maxIdle = getMaxIdle();
-        if (isClosed() || maxIdle > -1 && maxIdle <= idleObjects.size()) {
+        int maxIdleSave = getMaxIdle();
+        if (isClosed() || maxIdleSave > -1 && maxIdleSave <= idleObjects.size()) {
             try {
                 destroy(p);
             } catch (Exception e) {
@@ -854,12 +854,12 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
 
     @Override
     void ensureMinIdle() throws Exception {
-        int minIdle = getMinIdle();
-        if (minIdle < 1) {
+        int minIdleSave = getMinIdle();
+        if (minIdleSave < 1) {
             return;
         }
 
-        while (idleObjects.size() < minIdle) {
+        while (idleObjects.size() < minIdleSave) {
             PooledObject<T> p = create();
             if (p == null) {
                 // Can't create objects, no reason to think another call to
