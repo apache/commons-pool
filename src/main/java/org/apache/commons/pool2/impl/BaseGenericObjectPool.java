@@ -544,7 +544,7 @@ public abstract class BaseGenericObjectPool<T> {
             if (policy instanceof EvictionPolicy<?>) {
                 @SuppressWarnings("unchecked") // safe, because we just checked the class
                 EvictionPolicy<T> evicPolicy = (EvictionPolicy<T>) policy;
-				this.evictionPolicy = evicPolicy;
+                this.evictionPolicy = evicPolicy;
             }
         } catch (ClassNotFoundException e) {
             throw new IllegalArgumentException(
@@ -768,7 +768,7 @@ public abstract class BaseGenericObjectPool<T> {
      *
      * @return The listener or <code>null</code> for no listener
      */
-    public SwallowedExceptionListener getSwallowedExceptionListener() {
+    public final SwallowedExceptionListener getSwallowedExceptionListener() {
         return swallowedExceptionListener;
     }
 
@@ -779,7 +779,7 @@ public abstract class BaseGenericObjectPool<T> {
      * @param swallowedExceptionListener    The listener or <code>null</code>
      *                                      for no listener
      */
-    public void setSwallowedExceptionListener(
+    public final void setSwallowedExceptionListener(
             SwallowedExceptionListener swallowedExceptionListener) {
         this.swallowedExceptionListener = swallowedExceptionListener;
     }
