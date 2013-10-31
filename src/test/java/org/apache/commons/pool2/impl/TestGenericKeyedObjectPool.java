@@ -69,8 +69,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     }
 
     @Override
-    protected KeyedObjectPool<Object,Object> makeEmptyPool(KeyedPooledObjectFactory<Object,Object> factory) {
-        return new GenericKeyedObjectPool<Object,Object>(factory);
+    protected KeyedObjectPool<Object,Object> makeEmptyPool(KeyedPooledObjectFactory<Object,Object> fac) {
+        return new GenericKeyedObjectPool<Object,Object>(fac);
     }
 
     @Override
@@ -505,10 +505,10 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
      * <iterations> borrow-return cycles with random delay times <= delay
      * in between.
      */
-    public <T> void runTestThreads(int numThreads, int iterations, int delay, GenericKeyedObjectPool<String,T> pool) {
+    public <T> void runTestThreads(int numThreads, int iterations, int delay, GenericKeyedObjectPool<String,T> gkopPool) {
         ArrayList<TestThread<T>> threads = new ArrayList<TestThread<T>>();
         for(int i=0;i<numThreads;i++) {
-            TestThread<T> testThread = new TestThread<T>(pool, iterations, delay);
+            TestThread<T> testThread = new TestThread<T>(gkopPool, iterations, delay);
             threads.add(testThread);
             Thread t = new Thread(testThread);
             t.start();
