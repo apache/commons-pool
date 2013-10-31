@@ -63,8 +63,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
     @Override
     protected ObjectPool<Object> makeEmptyPool(
-            final PooledObjectFactory<Object> factory) {
-        return new GenericObjectPool<Object>(factory);
+            final PooledObjectFactory<Object> fac) {
+        return new GenericObjectPool<Object>(fac);
     }
 
     @Override
