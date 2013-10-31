@@ -18,7 +18,7 @@
 <document>
    <properties>
       <title>Overview</title>
-      <author email="dev@commons.apache.org">Commons Documentation Team</author>
+      <author email="dev@commons.apache.org">Apache Commons Documentation Team</author>
       <revision>$Id$</revision>
    </properties>
 
@@ -63,7 +63,7 @@ public interface PooledObjectFactory&lt;T&gt; {
 }
 </source>
           <p>
-            Users of 1.x versions of Commons pool will notice that while the <code>PoolableObjectFactory</code>s used by
+            Users of 1.x versions of Commons Pool will notice that while the <code>PoolableObjectFactory</code>s used by
             1.x pools create and manage pooled objects directly, version 2 <code>PooledObjectFactory</code>s create and
             manage
             <a href="./apidocs/org/apache/commons/pool2/PooledObject"><code>PooledObject</code></a>s. These object wrappers
