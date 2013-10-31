@@ -231,13 +231,13 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
 
     @Override
     public void printStackTrace(PrintWriter writer) {
-        Exception borrowedBy = this.borrowedBy;
-        if (borrowedBy != null) {
-            borrowedBy.printStackTrace(writer);
+        Exception borrowedByCopy = this.borrowedBy;
+        if (borrowedByCopy != null) {
+            borrowedByCopy.printStackTrace(writer);
         }
-        Exception usedBy = this.usedBy;
-        if (usedBy != null) {
-            usedBy.printStackTrace(writer);
+        Exception usedByCopy = this.usedBy;
+        if (usedByCopy != null) {
+            usedByCopy.printStackTrace(writer);
         }
     }
 
