@@ -878,10 +878,10 @@ public abstract class BaseGenericObjectPool<T> {
         boolean registered = false;
         while (!registered) {
             try {
-                ObjectName oname =
+                ObjectName objName =
                     new ObjectName(jmxNameBase + jmxNamePrefix + i);
-                mbs.registerMBean(this, oname);
-                objectName = oname;
+                mbs.registerMBean(this, objName);
+                objectName = objName;
                 registered = true;
             } catch (MalformedObjectNameException e) {
                 if (BaseObjectPoolConfig.DEFAULT_JMX_NAME_PREFIX.equals(
