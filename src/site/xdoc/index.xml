@@ -25,7 +25,7 @@
    <body>
       <section name="Apache Commons Pool">
          <p>
-          Apache Commons Pool is an open source software library that provides
+          The Apache Commons Pool open source software library provides
           an object-pooling API and a number of object pool implementations.
           Version 2 of Apache Commons Pool contains a completely re-written
           pooling implementation compared to the 1.x series.  In addition to
