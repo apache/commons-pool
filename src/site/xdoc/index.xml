@@ -23,17 +23,21 @@
    </properties>
 
    <body>
-      <section name="The Pool Component">
+      <section name="Apache Commons Pool">
          <p>
-          Pool provides an Object-pooling API and some pool implementations.  Version 2 of Commons
-          pool is a complete rewrite.  In addition to performance and scalability improvements,
-          version 2 implementations include robust instance tracking and pool monitoring.
+          Apache Commons Pool is an open source software library that provides
+          an object-pooling API and a number of object pool implementations.
+          Version 2 of Apache Commons Pool contains a completely re-written
+          pooling implementation compared to the 1.x series.  In addition to
+          performance and scalability improvements, version 2 includes robust
+          instance tracking and pool monitoring.
          </p>
       </section>
 
       <section name="Releases">
          <p>
-            See the <a href="downloads.html">downloads</a> page for information on obtaining releases.
+            See the <a href="downloads.html">downloads</a> page for information
+            on obtaining releases.
          </p>
       </section>
 
@@ -64,7 +68,7 @@ public interface PooledObjectFactory&lt;T&gt; {
             manage
             <a href="./apidocs/org/apache/commons/pool2/PooledObject"><code>PooledObject</code></a>s. These object wrappers
             maintain object pooling state, enabling <code>PooledObjectFactory</code> methods to have access to data such
-            as instance creation time or time or time of last use.  A 
+            as instance creation time or time of last use.  A 
             <a href="./apidocs/org/apache/commons/pool2/impl/DefaultPooledObject"><code>DefaultPooledObject</code></a> is
             provided, with natural implementations for pooling state methods. The simplest way to implement a
             <code>PoolableObjectFactory</code> is to have it extend
