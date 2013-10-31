@@ -1,6 +1,7 @@
               Apache Commons Pool 2.0 RELEASE NOTES
 
-The Apache Commons Pool team is pleased to announce the release of commons-pool2-2.0
+The Apache Commons Pool team is pleased to announce the release of Apache
+Commons Pool 2.0
 
 Apache Commons Object Pooling Library
 
