@@ -27,7 +27,7 @@ import org.apache.commons.pool2.UsageTracking;
  *
  * @since 2.0
  */
-class JdkProxySource<T> implements ProxySource<T> {
+public class JdkProxySource<T> implements ProxySource<T> {
 
     private final ClassLoader classLoader;
     private final Class<?>[] interfaces;
@@ -39,7 +39,7 @@ class JdkProxySource<T> implements ProxySource<T> {
      * @param classLoader The class loader with which to create the proxy
      * @param interfaces  The interfaces to proxy
      */
-    JdkProxySource(ClassLoader classLoader, Class<?>[] interfaces) {
+    public JdkProxySource(ClassLoader classLoader, Class<?>[] interfaces) {
         this.classLoader = classLoader;
         this.interfaces = interfaces;
     }
