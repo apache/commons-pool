@@ -220,9 +220,9 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      */
     @Override
     public int getMinIdlePerKey() {
-        int maxIdlePerKey = getMaxIdlePerKey();
-        if (this.minIdlePerKey > maxIdlePerKey) {
-            return maxIdlePerKey;
+        int maxIdlePerKeySave = getMaxIdlePerKey();
+        if (this.minIdlePerKey > maxIdlePerKeySave) {
+            return maxIdlePerKeySave;
         } else {
             return minIdlePerKey;
         }
@@ -765,7 +765,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * borrowed, returned or destroyed by other threads while it is executing.
      */
     private void reuseCapacity() {
-        final int maxTotalPerKey = getMaxTotalPerKey();
+        final int maxTotalPerKeySave = getMaxTotalPerKey();
 
         // Find the most loaded pool that could take a new instance
         int maxQueueLength = 0;
@@ -776,7 +776,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
             if (deque != null) {
                 final LinkedBlockingDeque<PooledObject<T>> pool = deque.getIdleObjects();
                 final int queueLength = pool.getTakeQueueLength();
-                if (getNumActive(k) < maxTotalPerKey && queueLength > maxQueueLength) {
+                if (getNumActive(k) < maxTotalPerKeySave && queueLength > maxQueueLength) {
                     maxQueueLength = queueLength;
                     mostLoaded = pool;
                     loadedKey = k;
@@ -953,7 +953,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * @throws Exception If the objection creation fails
      */
     private PooledObject<T> create(K key) throws Exception {
-        int maxTotalPerKey = getMaxTotalPerKey(); // Per key
+        int maxTotalPerKeySave = getMaxTotalPerKey(); // Per key
         int maxTotal = getMaxTotal();   // All keys
 
         // Check against the overall limit
@@ -977,7 +977,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         long newCreateCount = objectDeque.getCreateCount().incrementAndGet();
 
         // Check against the per key limit
-        if (maxTotalPerKey > -1 && newCreateCount > maxTotalPerKey ||
+        if (maxTotalPerKeySave > -1 && newCreateCount > maxTotalPerKeySave ||
                 newCreateCount > Integer.MAX_VALUE) {
             numTotal.decrementAndGet();
             objectDeque.getCreateCount().decrementAndGet();
@@ -1113,8 +1113,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
     @Override
     void ensureMinIdle() throws Exception {
-        int minIdlePerKey = getMinIdlePerKey();
-        if (minIdlePerKey < 1) {
+        int minIdlePerKeySave = getMinIdlePerKey();
+        if (minIdlePerKeySave < 1) {
             return;
         }
 
@@ -1202,8 +1202,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * @param key - The key to register for pool control.
      */
     public void preparePool(K key) throws Exception {
-        int minIdlePerKey = getMinIdlePerKey();
-        if (minIdlePerKey < 1) {
+        int minIdlePerKeySave = getMinIdlePerKey();
+        if (minIdlePerKeySave < 1) {
             return;
         }
         ensureMinIdle(key);
@@ -1241,16 +1241,16 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
         // Used more than once so keep a local copy so the value is consistent
         int maxTotal = getMaxTotal();
-        int maxTotalPerKey = getMaxTotalPerKey();
+        int maxTotalPerKeySave = getMaxTotalPerKey();
 
         int objectDefecit = 0;
 
         // Calculate no of objects needed to be created, in order to have
         // the number of pooled objects < maxTotalPerKey();
         objectDefecit = getMinIdlePerKey() - objectDeque.getIdleObjects().size();
-        if (maxTotalPerKey > 0) {
+        if (maxTotalPerKeySave > 0) {
             int growLimit = Math.max(0,
-                    maxTotalPerKey - objectDeque.getIdleObjects().size());
+                    maxTotalPerKeySave - objectDeque.getIdleObjects().size());
             objectDefecit = Math.min(objectDefecit, growLimit);
         }
 
