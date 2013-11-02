@@ -40,7 +40,7 @@ The <action> type attribute can be add,update,fix,remove.
 
 <document>
   <properties>
-    <title>Commons Pool Changes</title>
+    <title>Apache Commons Pool Changes</title>
   </properties>
   <body>
   <release version="2.0" description=
@@ -48,7 +48,8 @@ The <action> type attribute can be add,update,fix,remove.
 in high concurrency environments. Pools now provide a mechanism for tracking
 objects that have been borrowed from the pool but not returned. There have been
 numerous API changes to support these and other new features as well as to
-clarify behaviour and improve consistency across the API.">
+clarify behaviour and improve consistency across the API. This release requires
+JDK level 1.6 or above.">
     <action issue="POOL-211" dev="markt" type="add" due-to="Brad Koehn">
       Add support for proxy wrappers to ObjectPool and KeyedObjectPool. The
       primary advantage of these wrappers is that use of pooled objects is
