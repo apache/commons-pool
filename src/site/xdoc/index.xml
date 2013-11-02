@@ -30,7 +30,8 @@
           Version 2 of Apache Commons Pool contains a completely re-written
           pooling implementation compared to the 1.x series.  In addition to
           performance and scalability improvements, version 2 includes robust
-          instance tracking and pool monitoring.
+          instance tracking and pool monitoring. Version 2 requires JDK level
+          1.6 or above.
          </p>
       </section>
 
