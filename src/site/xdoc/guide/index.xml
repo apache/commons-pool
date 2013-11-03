@@ -26,10 +26,10 @@
  <body>
 
 <section name="ObjectPool">
-<center><img src="../images/uml/ObjectPool.gif"/></center>
-<br/>
 <p>
-<a href="../apidocs/org/apache/commons/pool2/ObjectPool.html">ObjectPool</a> defines a simple pooling interface.
+<a href="../apidocs/org/apache/commons/pool2/ObjectPool.html">ObjectPool</a>
+defines a simple pooling interface.
+</p>
 <ul>
    <li>
        <a href="../apidocs/org/apache/commons/pool2/impl/GenericObjectPool.html">GenericObjectPool</a>:
@@ -38,11 +38,7 @@
        means is that when there are idle objects available in the pool, 
        borrowObject returns the most recently returned ("last in") instance.
        If the <code>lifo</code> the property of the pool false, instances are
-       returned in the oppposite order - first-in, first-out.
-   </li>
-   <li>
-       <a href="../apidocs/org/apache/commons/pool2/impl/StackObjectPool.html">StackObjectPool</a>:
-       ObjectPool implementation with a LIFO (Last In First Out) behavior.
+       returned in the opposite order - first-in, first-out.
    </li>
    <li>
        <a href="../apidocs/org/apache/commons/pool2/impl/SoftReferenceObjectPool.html">SoftReferenceObjectPool</a>: 
@@ -51,26 +47,24 @@
        memory demand.
    </li>
 </ul>
-</p>
 </section>
 
 <section name="KeyedObjectPool">
-<center><img src="../images/uml/KeyedObjectPool.gif"/></center>
-<br/>
 <p>
 A <a href="../apidocs/org/apache/commons/pool2/KeyedObjectPool.html">KeyedObjectPool</a>
 pools instances of multiple types. Each type may be accessed using an arbitrary key.
+</p>
 <ul>
    <li>
        <a href="../apidocs/org/apache/commons/pool2/impl/GenericKeyedObjectPool.html">GenericKeyedObjectPool</a>:
-       ObjectPool implementation with a FIFO (First In First Out) behavior.
-   </li>
-   <li>
-       <a href="../apidocs/org/apache/commons/pool2/impl/StackKeyedObjectPool.html">StackKeyedObjectPool</a>:
-       ObjectPool implementation with a LIFO (Last In First Out) behavior.
+       ObjectPool implementation with configurable LIFO/FIFO behavior.
+       The default behavior is for the pool to act as a LIFO queue. What this
+       means is that when there are idle objects available in the pool, 
+       borrowObject returns the most recently returned ("last in") instance.
+       If the <code>lifo</code> the property of the pool false, instances are
+       returned in the opposite order - first-in, first-out.
    </li>
 </ul>
-</p>
 </section>
 
 </body>
