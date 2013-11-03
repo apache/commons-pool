@@ -172,6 +172,26 @@ JDK level 1.6 or above.">
       is prevented after they have been returned to the pool.  
     </action>
   </release>
+  <release version="1.6" date="2012-01-07" description="Adds generics and requires Java 5.">
+    <action dev="ggregory" type="add" issue="POOL-208">
+      Support Java 1.5 Generics in version 1.x.
+    </action>
+  </release>
+  <release version="1.5.7" date="2011-12-20" description="This is a patch release, including bugfixes only.">
+    <action dev="psteitz" type="fix" issue="POOL-189" due-to="Bill Speirs">
+      Awaken threads waiting on borrowObject when a pool has been closed and have them throw
+      IllegalStateException.  Prior to the fix for this issue, threads waiting in borrowObject when
+      close was invoked on GOP or GKOP would block indefinitely.
+    </action>
+    <action dev="psteitz" type="fix" issue="POOL-192" due-to="Helge Dannenberg">
+      Corrected total internal processing counter update in destroy.  Prior to the fix
+      for this issue, clear(key) was leaking capacity associated with elements in the
+      pool being cleared.
+    </action>
+  </release>
+  <release version="1.5.7" date=""
+      description="This is a patch release, including bugfixes only.">
+  </release>
   <release version="1.5.6" date="2011-04-03" description="This is a patch release, including bugfixes only.">
     <action dev="markt" type="fix" issue="POOL-179" due-to="Axel Grossmann">
       Correctly handle an InterruptedException when waiting for an object from
