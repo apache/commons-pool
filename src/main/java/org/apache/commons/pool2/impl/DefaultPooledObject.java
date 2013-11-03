@@ -117,8 +117,7 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
 
     @Override
     public int compareTo(PooledObject<T> other) {
-        final long lastActiveDiff =
-                this.getLastReturnTime() - other.getLastReturnTime();
+        final long lastActiveDiff = this.getLastReturnTime() - other.getLastReturnTime();
         if (lastActiveDiff == 0) {
             // Make sure the natural ordering is broadly consistent with equals
             // although this will break down if distinct objects have the same
