@@ -28,8 +28,8 @@ import org.apache.commons.pool2.TestBaseObjectPool;
 public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
 
     @Override
-    protected ObjectPool<Object> makeEmptyPool(int cap) {
-        return new SoftReferenceObjectPool<Object>(new SimpleFactory());
+    protected ObjectPool<String> makeEmptyPool(int cap) {
+        return new SoftReferenceObjectPool<String>(new SimpleFactory());
     }
 
     @Override
@@ -53,15 +53,15 @@ public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
     }
 
 
-    private static class SimpleFactory extends BasePooledObjectFactory<Object>  {
+    private static class SimpleFactory extends BasePooledObjectFactory<String>  {
         int counter = 0;
         @Override
-        public Object create() {
+        public String create() {
             return String.valueOf(counter++);
         }
         @Override
-        public PooledObject<Object> wrap(Object value) {
-            return new DefaultPooledObject<Object>(value);
+        public PooledObject<String> wrap(String value) {
+            return new DefaultPooledObject<String>(value);
         }
     }
 }

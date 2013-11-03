@@ -53,9 +53,9 @@ import org.junit.Test;
 public class TestGenericObjectPool extends TestBaseObjectPool {
 
     @Override
-    protected ObjectPool<Object> makeEmptyPool(int mincap) {
-       GenericObjectPool<Object> mtPool =
-               new GenericObjectPool<Object>(new SimpleFactory());
+    protected ObjectPool<String> makeEmptyPool(int mincap) {
+       GenericObjectPool<String> mtPool =
+               new GenericObjectPool<String>(new SimpleFactory());
        mtPool.setMaxTotal(mincap);
        mtPool.setMaxIdle(mincap);
        return mtPool;
@@ -75,7 +75,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Before
     public void setUp() throws Exception {
         factory = new SimpleFactory();
-        pool = new GenericObjectPool<Object>(factory);
+        pool = new GenericObjectPool<String>(factory);
     }
 
     @After
@@ -194,7 +194,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     public void testWhenExhaustedFail() throws Exception {
         pool.setMaxTotal(1);
         pool.setBlockWhenExhausted(false);
-        Object obj1 = pool.borrowObject();
+        String obj1 = pool.borrowObject();
         assertNotNull(obj1);
         try {
             pool.borrowObject();
@@ -212,7 +212,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.setMaxTotal(1);
         pool.setBlockWhenExhausted(true);
         pool.setMaxWaitMillis(10L);
-        Object obj1 = pool.borrowObject();
+        String obj1 = pool.borrowObject();
         assertNotNull(obj1);
         try {
             pool.borrowObject();
@@ -229,7 +229,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.setMaxTotal(1);
         pool.setBlockWhenExhausted(true);
         pool.setMaxWaitMillis(-1);
-        Object obj1 = pool.borrowObject();
+        String obj1 = pool.borrowObject();
 
         // Make sure on object was obtained
         assertNotNull(obj1);
@@ -252,7 +252,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
         // Bug POOL-162 - check there is now an object in the pool
         pool.setMaxWaitMillis(10L);
-        Object obj2 = null;
+        String obj2 = null;
         try {
              obj2 = pool.borrowObject();
             assertNotNull(obj2);
@@ -514,7 +514,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
     @Test(timeout=60000)
     public void testExceptionOnPassivateDuringReturn() throws Exception {
-        Object obj = pool.borrowObject();
+        String obj = pool.borrowObject();
         factory.setThrowExceptionOnPassivate(true);
         pool.returnObject(obj);
         assertEquals(0,pool.getNumIdle());
@@ -540,7 +540,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     public void testExceptionOnDestroyDuringReturn() throws Exception {
         factory.setThrowExceptionOnDestroy(true);
         pool.setTestOnReturn(true);
-        Object obj1 = pool.borrowObject();
+        String obj1 = pool.borrowObject();
         pool.borrowObject();
         factory.setValid(false); // Make validation fail
         pool.returnObject(obj1);
@@ -550,15 +550,15 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
     @Test(timeout=60000)
     public void testExceptionOnActivateDuringBorrow() throws Exception {
-        Object obj1 = pool.borrowObject();
-        Object obj2 = pool.borrowObject();
+        String obj1 = pool.borrowObject();
+        String obj2 = pool.borrowObject();
         pool.returnObject(obj1);
         pool.returnObject(obj2);
         factory.setThrowExceptionOnActivate(true);
         factory.setEvenValid(false);
         // Activation will now throw every other time
         // First attempt throws, but loop continues and second succeeds
-        Object obj = pool.borrowObject();
+        String obj = pool.borrowObject();
         assertEquals(1, pool.getNumActive());
         assertEquals(0, pool.getNumIdle());
 
@@ -580,7 +580,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     public void testNegativeMaxTotal() throws Exception {
         pool.setMaxTotal(-1);
         pool.setBlockWhenExhausted(false);
-        Object obj = pool.borrowObject();
+        String obj = pool.borrowObject();
         assertEquals(getNthObject(0),obj);
         pool.returnObject(obj);
     }
@@ -589,7 +589,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     public void testMaxIdle() throws Exception {
         pool.setMaxTotal(100);
         pool.setMaxIdle(8);
-        Object[] active = new Object[100];
+        String[] active = new String[100];
         for(int i=0;i<100;i++) {
             active[i] = pool.borrowObject();
         }
@@ -606,7 +606,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     public void testMaxIdleZero() throws Exception {
         pool.setMaxTotal(100);
         pool.setMaxIdle(0);
-        Object[] active = new Object[100];
+        String[] active = new String[100];
         for(int i=0;i<100;i++) {
             active[i] = pool.borrowObject();
         }
@@ -640,8 +640,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.setMaxTotal(2);
         pool.setMaxWaitMillis(10);
         pool.setBlockWhenExhausted(true);
-        Object obj = pool.borrowObject();
-        Object obj2 = pool.borrowObject();
+        String obj = pool.borrowObject();
+        String obj2 = pool.borrowObject();
         try {
             pool.borrowObject();
             fail("Expecting NoSuchElementException");
@@ -699,7 +699,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
 
         for (int i = 0; i < numIter; i++) {
-            Object obj = null;
+            String obj = null;
             try {
                 try {
                     Thread.sleep(delay);
@@ -835,7 +835,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         for(int j=0;j<2;j++) {
             // populate the pool
             {
-                Object[] active = new Object[6];
+                String[] active = new String[6];
                 for(int i=0;i<6;i++) {
                     active[i] = pool.borrowObject();
                 }
@@ -870,7 +870,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.setMinEvictableIdleTimeMillis(50L);
         pool.setTimeBetweenEvictionRunsMillis(100L);
 
-        Object[] active = new Object[6];
+        String[] active = new String[6];
         for(int i=0;i<6;i++) {
             active[i] = pool.borrowObject();
         }
@@ -897,7 +897,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.setTimeBetweenEvictionRunsMillis(500L);
         pool.setTestWhileIdle(true);
 
-        Object[] active = new Object[500];
+        String[] active = new String[500];
         for(int i=0;i<500;i++) {
             active[i] = pool.borrowObject();
         }
@@ -964,7 +964,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.setTestWhileIdle(true);
         pool.setEvictionPolicyClassName(TestEvictionPolicy.class.getName());
 
-        Object[] active = new Object[500];
+        String[] active = new String[500];
         for(int i=0;i<500;i++) {
             active[i] = pool.borrowObject();
         }
@@ -1086,7 +1086,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         final int nObjects = 1000;
         pool.setMaxTotal(nObjects);
         pool.setMaxIdle(nObjects);
-        final Object[] obj = new Object[nObjects];
+        final String[] obj = new String[nObjects];
         for (int i = 0; i < nObjects; i++) {
             obj[i] = pool.borrowObject();
         }
@@ -1131,10 +1131,10 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
      * Attempts to invalidate an object, swallowing IllegalStateException.
      */
     static class InvalidateThread implements Runnable {
-        private final Object obj;
-        private final ObjectPool<Object> pool;
+        private final String obj;
+        private final ObjectPool<String> pool;
         private boolean done = false;
-        public InvalidateThread(ObjectPool<Object> pool, Object obj) {
+        public InvalidateThread(ObjectPool<String> pool, String obj) {
             this.obj = obj;
             this.pool = pool;
         }
@@ -1168,7 +1168,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         try { Thread.sleep(150L); } catch(InterruptedException e) { }
         assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
 
-        Object[] active = new Object[5];
+        String[] active = new String[5];
         active[0] = pool.borrowObject();
 
         try { Thread.sleep(150L); } catch(InterruptedException e) { }
@@ -1202,7 +1202,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         try { Thread.sleep(150L); } catch(InterruptedException e) { }
         assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
 
-        Object[] active = new Object[10];
+        String[] active = new String[10];
 
         try { Thread.sleep(150L); } catch(InterruptedException e) { }
         assertTrue("Should be 5 idle, found " + pool.getNumIdle(),pool.getNumIdle() == 5);
@@ -1347,7 +1347,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
     private class ConcurrentBorrowAndEvictThread extends Thread {
         private boolean borrow;
-        public Object obj;
+        public String obj;
 
         public ConcurrentBorrowAndEvictThread(boolean borrow) {
             this.borrow = borrow;
@@ -1369,7 +1369,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         private final java.util.Random _random = new java.util.Random();
 
         // Thread config items
-        private final ObjectPool<Object> _pool;
+        private final ObjectPool<String> _pool;
         private final int _iter;
         private final int _delay;
         private final boolean _randomDelay;
@@ -1379,24 +1379,24 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         private volatile boolean _failed = false;
         private volatile Throwable _error;
 
-        public TestThread(ObjectPool<Object> pool) {
+        public TestThread(ObjectPool<String> pool) {
             this(pool, 100, 50, true, null);
         }
 
-        public TestThread(ObjectPool<Object> pool, int iter) {
+        public TestThread(ObjectPool<String> pool, int iter) {
             this(pool, iter, 50, true, null);
         }
 
-        public TestThread(ObjectPool<Object> pool, int iter, int delay) {
+        public TestThread(ObjectPool<String> pool, int iter, int delay) {
             this(pool, iter, delay, true, null);
         }
 
-        public TestThread(ObjectPool<Object> pool, int iter, int delay,
+        public TestThread(ObjectPool<String> pool, int iter, int delay,
                 boolean randomDelay) {
             this(pool, iter, delay, randomDelay, null);
         }
 
-        public TestThread(ObjectPool<Object> pool, int iter, int delay,
+        public TestThread(ObjectPool<String> pool, int iter, int delay,
                 boolean randomDelay, Object obj) {
             _pool = pool;
             _iter = iter;
@@ -1423,7 +1423,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 } catch(InterruptedException e) {
                     // ignored
                 }
-                Object obj = null;
+                String obj = null;
                 try {
                     obj = _pool.borrowObject();
                 } catch(Exception e) {
@@ -1460,7 +1460,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
     @Test(timeout=60000)
     public void testFIFO() throws Exception {
-        Object o = null;
+        String o = null;
         pool.setLifo(false);
         pool.addObject(); // "0"
         pool.addObject(); // "1"
@@ -1477,7 +1477,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
     @Test(timeout=60000)
     public void testLIFO() throws Exception {
-        Object o = null;
+        String o = null;
         pool.setLifo(true);
         pool.addObject(); // "0"
         pool.addObject(); // "1"
@@ -1498,7 +1498,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.addObject();
         assertEquals("should be one idle", 1, pool.getNumIdle());
         assertEquals("should be zero active", 0, pool.getNumActive());
-        Object obj = pool.borrowObject();
+        String obj = pool.borrowObject();
         assertEquals("should be zero idle", 0, pool.getNumIdle());
         assertEquals("should be one active", 1, pool.getNumActive());
         pool.returnObject(obj);
@@ -1506,7 +1506,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertEquals("should be zero active", 0, pool.getNumActive());
     }
 
-    protected GenericObjectPool<Object> pool = null;
+    protected GenericObjectPool<String> pool = null;
 
     private SimpleFactory factory = null;
 
@@ -1528,7 +1528,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertEquals("timeBetweenEvictionRunsMillis",expected.getTimeBetweenEvictionRunsMillis(),actual.getTimeBetweenEvictionRunsMillis());
     }
 
-    public static class SimpleFactory implements PooledObjectFactory<Object> {
+    public static class SimpleFactory implements PooledObjectFactory<String> {
         public SimpleFactory() {
             this(true);
         }
@@ -1565,7 +1565,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             this.validateLatency = validateLatency;
         }
         @Override
-        public PooledObject<Object> makeObject() {
+        public PooledObject<String> makeObject() {
             final long waitLatency;
             synchronized(this) {
                 activeCount++;
@@ -1582,10 +1582,10 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             synchronized(this) {
                 counter = makeCounter++;
             }
-            return new DefaultPooledObject<Object>(String.valueOf(counter));
+            return new DefaultPooledObject<String>(String.valueOf(counter));
         }
         @Override
-        public void destroyObject(PooledObject<Object> obj) throws Exception {
+        public void destroyObject(PooledObject<String> obj) throws Exception {
             final long waitLatency;
             final boolean hurl;
             synchronized(this) {
@@ -1603,7 +1603,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             }
         }
         @Override
-        public boolean validateObject(PooledObject<Object> obj) {
+        public boolean validateObject(PooledObject<String> obj) {
             final boolean validate;
             final boolean evenTest;
             final boolean oddTest;
@@ -1627,7 +1627,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             }
         }
         @Override
-        public void activateObject(PooledObject<Object> obj) throws Exception {
+        public void activateObject(PooledObject<String> obj) throws Exception {
             final boolean hurl;
             final boolean evenTest;
             final boolean oddTest;
@@ -1645,7 +1645,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             }
         }
         @Override
-        public void passivateObject(PooledObject<Object> obj) throws Exception {
+        public void passivateObject(PooledObject<String> obj) throws Exception {
             final boolean hurl;
             synchronized(this) {
                 hurl = exceptionOnPassivate;
@@ -1770,7 +1770,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
         // First borrow object will need to create a new object which will fail
         // validation.
-        Object obj = null;
+        String obj = null;
         Exception ex = null;
         factory.setValid(false);
         try {
@@ -1805,7 +1805,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
      * the provided pool returns it after a wait
      */
     static class WaitingTestThread extends Thread {
-        private final GenericObjectPool<Object> _pool;
+        private final GenericObjectPool<String> _pool;
         private final long _pause;
         private Throwable _thrown;
 
@@ -1815,7 +1815,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         private long ended;
         private String objectId;
 
-        public WaitingTestThread(GenericObjectPool<Object> pool, long pause) {
+        public WaitingTestThread(GenericObjectPool<String> pool, long pause) {
             _pool = pool;
             _pause = pause;
             _thrown = null;
@@ -1825,7 +1825,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         public void run() {
             try {
                 preborrow = System.currentTimeMillis();
-                Object obj = _pool.borrowObject();
+                String obj = _pool.borrowObject();
                 objectId=obj.toString();
                 postborrow = System.currentTimeMillis();
                 Thread.sleep(_pause);
@@ -1917,7 +1917,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         Thread.sleep(50); // wait for validation to succeed
         // Slow down validation and borrow an instance
         factory.setValidateLatency(400);
-        Object instance = pool.borrowObject();
+        String instance = pool.borrowObject();
         // Now make sure that we have not leaked an instance
         assertEquals(factory.getMakeCounter(), pool.getNumIdle() + 1);
         pool.returnObject(instance);
