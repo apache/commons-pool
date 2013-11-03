@@ -131,5 +131,21 @@ public interface KeyedPoolableObjectFactory&lt;K,V&gt; {
           </p>
         </subsection>
       </section>
+      <section name="Migrating from Pool 1.x">
+        <p>
+          The migration from Apache Commons Pool 1.x to 2.x will require some
+          code changes. The most significant change is the change in package
+          name from <code>org.apache.commons.pool</code> to
+          <code>org.apache.commons.pool2</code>.
+        </p>
+        <p>
+          The key implementation classes (<code>GenericObjectPool</code> and
+          <code>GenericKeyedObjectPool</code>) have retained their names so no
+          changes should be required there although a number of attributes have
+          been renamed to improve consistency and ensure attributes with the
+          same name in different pools have the same meaning. It is likely that
+          some changes will be required to use the new attribute names.
+        </p>
+      </section>
    </body>
 </document>
