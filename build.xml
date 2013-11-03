@@ -15,6 +15,12 @@
    limitations under the License.
 -->
 <!-- $Id$ -->
+<!--
+  This build script requires that the class path (set via the classpath property
+  or the command line class path contains the following libraries:
+  - JUnit 4.11 or later
+  - cglib 3.0 or later 
+-->
 <project name="commons-pool" default="test" basedir=".">
 
    <target name="init">
