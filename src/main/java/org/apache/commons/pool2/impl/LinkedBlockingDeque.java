@@ -514,6 +514,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * to unlink if the queue is empty.
      *
      * @return the unlinked element
+     * @throws InterruptedException if the current thread is interrupted
      */
     public E takeFirst() throws InterruptedException {
         lock.lock();
@@ -532,6 +533,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * to unlink if the queue is empty.
      *
      * @return the unlinked element
+     * @throws InterruptedException if the current thread is interrupted
      */
     public E takeLast() throws InterruptedException {
         lock.lock();
@@ -553,6 +555,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * @param unit      units that timeout is expressed in
      *
      * @return the unlinked element
+     * @throws InterruptedException if the current thread is interrupted
      */
     public E pollFirst(long timeout, TimeUnit unit)
         throws InterruptedException {
@@ -579,6 +582,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * @param unit      units that timeout is expressed in
      *
      * @return the unlinked element
+     * @throws InterruptedException if the current thread is interrupted
      */
     public E pollLast(long timeout, TimeUnit unit)
         throws InterruptedException {
@@ -752,6 +756,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * <p>This method is equivalent to {@link #takeFirst()}.
      *
      * @return the unlinked element
+     * @throws InterruptedException if the current thread is interrupted
      */
     public E take() throws InterruptedException {
         return takeFirst();
@@ -767,6 +772,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * @param unit      units that timeout is expressed in
      *
      * @return the unlinked element
+     * @throws InterruptedException if the current thread is interrupted
      */
     public E poll(long timeout, TimeUnit unit) throws InterruptedException {
         return pollFirst(timeout, unit);
