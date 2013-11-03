@@ -189,9 +189,6 @@ JDK level 1.6 or above.">
       pool being cleared.
     </action>
   </release>
-  <release version="1.5.7" date=""
-      description="This is a patch release, including bugfixes only.">
-  </release>
   <release version="1.5.6" date="2011-04-03" description="This is a patch release, including bugfixes only.">
     <action dev="markt" type="fix" issue="POOL-179" due-to="Axel Grossmann">
       Correctly handle an InterruptedException when waiting for an object from
