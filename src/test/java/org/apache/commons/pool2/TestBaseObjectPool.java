@@ -27,12 +27,12 @@ import org.junit.Test;
  * @version $Revision$
  */
 public class TestBaseObjectPool extends TestObjectPool {
-    private ObjectPool<Object> _pool = null;
+    private ObjectPool<String> _pool = null;
 
     /**
      * @param mincapacity
      */
-    protected ObjectPool<Object> makeEmptyPool(int mincapacity) {
+    protected ObjectPool<String> makeEmptyPool(int mincapacity) {
         if (this.getClass() != TestBaseObjectPool.class) {
             fail("Subclasses of TestBaseObjectPool must reimplement this method.");
         }
@@ -131,7 +131,7 @@ public class TestBaseObjectPool extends TestObjectPool {
             _pool.addObject();
             assertEquals(1,_pool.getNumIdle());
             assertEquals(0,_pool.getNumActive());
-            Object obj = _pool.borrowObject();
+            String obj = _pool.borrowObject();
             assertEquals(getNthObject(0),obj);
             assertEquals(0,_pool.getNumIdle());
             assertEquals(1,_pool.getNumActive());
@@ -152,11 +152,11 @@ public class TestBaseObjectPool extends TestObjectPool {
         } catch(UnsupportedOperationException e) {
             return; // skip this test if unsupported
         }
-        Object obj0 = _pool.borrowObject();
+        String obj0 = _pool.borrowObject();
         assertEquals(getNthObject(0),obj0);
-        Object obj1 = _pool.borrowObject();
+        String obj1 = _pool.borrowObject();
         assertEquals(getNthObject(1),obj1);
-        Object obj2 = _pool.borrowObject();
+        String obj2 = _pool.borrowObject();
         assertEquals(getNthObject(2),obj2);
         _pool.returnObject(obj2);
         obj2 = _pool.borrowObject();
@@ -193,10 +193,10 @@ public class TestBaseObjectPool extends TestObjectPool {
         }
         assertEquals(0,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
-        Object obj0 = _pool.borrowObject();
+        String obj0 = _pool.borrowObject();
         assertEquals(1,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
-        Object obj1 = _pool.borrowObject();
+        String obj1 = _pool.borrowObject();
         assertEquals(2,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
         _pool.returnObject(obj1);
@@ -217,8 +217,8 @@ public class TestBaseObjectPool extends TestObjectPool {
         }
         assertEquals(0,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
-        Object obj0 = _pool.borrowObject();
-        Object obj1 = _pool.borrowObject();
+        String obj0 = _pool.borrowObject();
+        String obj1 = _pool.borrowObject();
         assertEquals(2,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
         _pool.returnObject(obj1);
@@ -242,8 +242,8 @@ public class TestBaseObjectPool extends TestObjectPool {
         }
         assertEquals(0,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
-        Object obj0 = _pool.borrowObject();
-        Object obj1 = _pool.borrowObject();
+        String obj0 = _pool.borrowObject();
+        String obj1 = _pool.borrowObject();
         assertEquals(2,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
         _pool.invalidateObject(obj0);
@@ -262,7 +262,7 @@ public class TestBaseObjectPool extends TestObjectPool {
         } catch(UnsupportedOperationException e) {
             return; // skip this test if unsupported
         }
-        Object obj = _pool.borrowObject();
+        String obj = _pool.borrowObject();
         _pool.returnObject(obj);
 
         _pool.close();
