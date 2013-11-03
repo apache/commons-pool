@@ -9,7 +9,8 @@ This is a major new release that provides significant performance improvements
 in high concurrency environments. Pools now provide a mechanism for tracking
 objects that have been borrowed from the pool but not returned. There have been
 numerous API changes to support these and other new features as well as to
-clarify behaviour and improve consistency across the API.
+clarify behaviour and improve consistency across the API. This release requires
+JDK level 1.6 or above.
 
 The changes to the API are not backwards compatible with Apache Commons Pool
 1.x. Therefore, to avoid dependency conflicts, the package name and Maven
@@ -21,9 +22,9 @@ Maven Artifact ID: commons-pool2
 Changes in this version (relative to Apache Commons Pool 1.6) include:
 
 New features:
-o POOL-211:  Add support for proxy wrappers for ObjectPool and KeyedObjectPool. The
-             primary advantage of using these wrappers is that use of pooled objects
-             is prevented after they have been returned to the pool. Thanks to Brad Koehn.
+o POOL-211:  Add support for proxy wrappers to ObjectPool and KeyedObjectPool. The
+             primary advantage of these wrappers is that use of pooled objects is
+             prevented after they have been returned to the pool. Thanks to Brad Koehn.
 
 Fixed Bugs:
 o POOL-221:  PooledObject.state does not need to be volatile
@@ -73,9 +74,8 @@ o            Change meaning of zero for maxWait to a maximum wait of zero millis
              rather than the unexpected infinite wait.
 
 
-For complete information on Apache Commons Pool, including instructions on how
-to submit bug reports, patches, or suggestions for improvement, see the Apache
-Commons Pool website:
+For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Commons Pool website:
 
 http://commons.apache.org/proper/commons-pool/
 
