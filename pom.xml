@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
-    <version>28</version>
+    <version>32</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>commons-pool2</artifactId>
@@ -147,8 +147,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <maven.compile.source>1.6</maven.compile.source>
-    <maven.compile.target>1.6</maven.compile.target>
+    <maven.compiler.source>1.6</maven.compiler.source>
+    <maven.compiler.target>1.6</maven.compiler.target>
     <commons.componentid>pool2</commons.componentid>
     <commons.release.version>2.0</commons.release.version>
     <commons.release.desc>(Java 6.0+)</commons.release.desc>
