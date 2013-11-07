@@ -74,15 +74,17 @@ public interface PooledObjectFactory&lt;T&gt; {
             provided, with natural implementations for pooling state methods. The simplest way to implement a
             <code>PoolableObjectFactory</code> is to have it extend
             <a href="./apidocs/org/apache/commons/pool2/BasePooledObjectFactory.html"><code>BasePooledObjectFactory</code></a>.
-            This factory provides a <code>makeObject()</code> that looks like this:
- <source>
- public PooledObject&lt;T&gt; makeObject() throws Exception {
-        return new DefaultPooledObject&lt;T&gt;(create());
+            This factory provides a <code>makeObject()</code> that returns <code>wrap(create())</code>
+            where <code>create</code> and <code>wrap</code> are abstract.  You provide an implementation of <code>create</code>
+            to create the underlying objects that you want to manage in the pool and <code>wrap</code> to wrap created
+            instances in <code>PooledObject</code>s.  To use <code>DefaultPooledObject</code> wrappers, use
+<source>
+@Override
+ public PooledObject&lt;Foo&gt; wrap(Foo foo) {
+    return new DefaultPooledObject&lt;Foo&gt;(foo);
  }
  </source>
-           where <code>create()</code> is abstract.  You just provide an implementation of <code>create()</code> that creates
-           the underlying objects that you want to manage in the pool and <code>BasePooledObjectFactory</code> takes care of
-           wrapping instances in <code>DefaultPooledObject</code>s.
+          where <code>Foo</code> is the type of the objects being pooled (the return type of <code>create()</code>).
           </p>
           <p>
             Another important difference between 1.x and version 2 pools is that the implementations provided maintain references
@@ -134,9 +136,10 @@ public interface KeyedPoolableObjectFactory&lt;K,V&gt; {
       <section name="Migrating from Pool 1.x">
         <p>
           The migration from Apache Commons Pool 1.x to 2.x will require some
-          code changes. The most significant change is the change in package
+          code changes. The most significant changes are the changes in package
           name from <code>org.apache.commons.pool</code> to
-          <code>org.apache.commons.pool2</code>.
+          <code>org.apache.commons.pool2</code> and the change in the implementation
+          classes to use <code>PooledObjectFactory</code>s, as described above.
         </p>
         <p>
           The key implementation classes (<code>GenericObjectPool</code> and
