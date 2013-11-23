@@ -799,11 +799,14 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Creates a new wrapped pooled object.
+     * Attempts to create a new wrapped pooled object.
+     * <p>
+     * If there are {@link #getMaxTotal()} objects already in circulation
+     * or in process of being created, this method returns null.
      *
      * @return The new wrapped pooled object
      *
-     * @throws Exception if the creation of the pooled object fails
+     * @throws Exception if the object factory's {@code makeObject} fails
      */
     private PooledObject<T> create() throws Exception {
         int localMaxTotal = getMaxTotal();
@@ -1062,7 +1065,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * The combined count of the currently created objects and those in the
      * process of being created. Under load, it may exceed {@link #_maxActive}
      * if multiple threads try and create a new object at the same time but
-     * {@link #create(boolean)} will ensure that there are never more than
+     * {@link #create()} will ensure that there are never more than
      * {@link #_maxActive} objects created at any one time.
      */
     private final AtomicLong createCount = new AtomicLong(0);
