@@ -1005,7 +1005,7 @@ public class TestGenericKeyedObjectPool extends TestBaseKeyedObjectPool {
         
         // Make constructor arguments all different from defaults
         int maxActive = 1;
-        int maxIdle = 2;
+        int maxIdle = 12;
         long maxWait = 3;
         int minIdle = 4;
         int maxTotal = 5;

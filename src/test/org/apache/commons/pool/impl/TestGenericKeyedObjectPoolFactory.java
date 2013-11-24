@@ -44,7 +44,7 @@ public class TestGenericKeyedObjectPoolFactory extends TestKeyedObjectPoolFactor
 
         final GenericKeyedObjectPool.Config config = new GenericKeyedObjectPool.Config();
         config.maxActive = 1;
-        config.maxIdle = 2;
+        config.maxIdle = 12;
         config.maxWait = 3;
         config.minIdle = 4;
         config.minEvictableIdleTimeMillis = 5;
@@ -58,7 +58,7 @@ public class TestGenericKeyedObjectPoolFactory extends TestKeyedObjectPoolFactor
         factory = new GenericKeyedObjectPoolFactory(createObjectFactory(), config);
         pool = (GenericKeyedObjectPool)factory.createPool();
         assertEquals(1, pool.getMaxActive());
-        assertEquals(2, pool.getMaxIdle());
+        assertEquals(12, pool.getMaxIdle());
         assertEquals(3, pool.getMaxWait());
         assertEquals(4, pool.getMinIdle());
         assertEquals(5, pool.getMinEvictableIdleTimeMillis());
