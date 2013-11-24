@@ -1934,6 +1934,65 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         Set<ObjectName> result = mbs.queryNames(oname, null);
         Assert.assertEquals(1, result.size());
     }
+    
+    /**
+     * Verify that threads waiting on a depleted pool get served when a checked out object is
+     * invalidated.
+     * 
+     * JIRA: POOL-240
+     */
+    //@Test
+    public void testInvalidateFreesCapacity()
+        throws Exception {
+        SimpleFactory factory = new SimpleFactory();
+        GenericObjectPool<String> pool = new GenericObjectPool<String>(factory);
+        pool.setMaxTotal(2);
+        pool.setMaxWaitMillis(500);
+        // Borrow an instance and hold if for 5 seconds
+        WaitingTestThread thread1 = new WaitingTestThread(pool, 5000);
+        thread1.start();
+        // Borrow another instance
+        String obj = pool.borrowObject();
+        // Launch another thread - will block, but fail in 500 ms
+        WaitingTestThread thread2 = new WaitingTestThread(pool, 100);
+        thread2.start();
+        // Invalidate the object borrowed by this thread - should allow thread2 to create
+        Thread.sleep(20);
+        pool.invalidateObject(obj);
+        Thread.sleep(600); // Wait for thread2 to timeout
+        if (thread2._thrown != null) {
+            fail(thread2._thrown.toString());
+        } 
+    }
+
+    /**
+     * Verify that threads waiting on a depleted pool get served when a returning object fails
+     * validation.
+     * 
+     * JIRA: POOL-240
+     */
+    //@Test
+    public void testValidationFailureOnReturnFreesCapacity()
+        throws Exception {
+        SimpleFactory factory = new SimpleFactory();
+        factory.setValid(false); // Validate will always fail
+        factory.setValidationEnabled(true);
+        GenericObjectPool<String> pool = new GenericObjectPool<String>(factory);
+        pool.setMaxTotal(2);
+        pool.setMaxWaitMillis(1500);
+        pool.setTestOnReturn(true);
+        pool.setTestOnBorrow(false);
+        // Borrow an instance and hold if for 5 seconds
+        WaitingTestThread thread1 = new WaitingTestThread(pool, 5000);
+        thread1.start();
+        // Borrow another instance and return it after 500 ms (validation will fail)
+        WaitingTestThread thread2 = new WaitingTestThread(pool, 500);
+        thread2.start();
+        Thread.sleep(50);
+        // Try to borrow an object
+        String obj = pool.borrowObject();
+        pool.returnObject(obj);
+    }
 
 
     private static final class DummyFactory
