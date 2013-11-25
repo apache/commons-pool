@@ -1941,7 +1941,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
      * 
      * JIRA: POOL-240
      */
-    //@Test
+    @Test
     public void testInvalidateFreesCapacity()
         throws Exception {
         SimpleFactory factory = new SimpleFactory();
@@ -1971,7 +1971,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
      * 
      * JIRA: POOL-240
      */
-    //@Test
+    @Test
     public void testValidationFailureOnReturnFreesCapacity()
         throws Exception {
         SimpleFactory factory = new SimpleFactory();
