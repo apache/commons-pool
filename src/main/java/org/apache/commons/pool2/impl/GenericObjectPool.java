@@ -561,6 +561,11 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                     swallowException(e);
                 }
                 updateStatsReturn(activeTime);
+                try {
+                    ensureIdle(1, false);
+                } catch (Exception e) {
+                    swallowException(e);
+                }
                 return;
             }
         }
@@ -571,6 +576,11 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             swallowException(e1);
             try {
                 destroy(p);
+            } catch (Exception e) {
+                swallowException(e);
+            }
+            try {
+                ensureIdle(1, false);
             } catch (Exception e) {
                 swallowException(e);
             }
@@ -626,6 +636,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                 destroy(p);
             }
         }
+        ensureIdle(1, false);
     }
 
     /**
@@ -857,12 +868,27 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
 
     @Override
     void ensureMinIdle() throws Exception {
-        int minIdleSave = getMinIdle();
-        if (minIdleSave < 1) {
+        ensureIdle(getMinIdle(), true);
+    }
+    
+    /**
+     * Tries to ensure that {@code idleCount} idle instances exist in the pool.
+     * <p>
+     * Creates and adds idle instances until either {@link #getNumIdle()} reaches {@code idleCount}
+     * or the total number of objects (idle, checked out, or being created) reaches
+     * {@link #getMaxTotal()}. If {@code always} is false, no instances are created unless
+     * there are threads waiting to check out instances from the pool.
+     * 
+     * @param idleCount the number of idle instances desired
+     * @param always true means create instances even if the pool has no threads waiting
+     * @throws Exception if the factory's makeObject throws
+     */
+    private void ensureIdle(int idleCount, boolean always) throws Exception {
+        if (idleCount < 1 || isClosed() || (!always && !idleObjects.hasTakeWaiters())) {
             return;
         }
 
-        while (idleObjects.size() < minIdleSave) {
+        while (idleObjects.size() < idleCount) {
             PooledObject<T> p = create();
             if (p == null) {
                 // Can't create objects, no reason to think another call to
