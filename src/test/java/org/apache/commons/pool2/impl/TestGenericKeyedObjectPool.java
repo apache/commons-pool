@@ -1774,11 +1774,11 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         Set<ObjectName> result = mbs.queryNames(oname, null);
         Assert.assertEquals(1, result.size());
     }
-    
+
     /**
      * Verify that threads blocked waiting on a depleted pool get served when a checked out instance
      * is invalidated.
-     * 
+     *
      * JIRA: POOL-240
      */
     //@Test
@@ -1801,8 +1801,9 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                                                                                                          config);
 
         // Allocate both objects with this thread
-        Object object1 = pool.borrowObject(1);
-        Object object2 = pool.borrowObject(1);
+        @SuppressWarnings("unused")
+        Object object1 = pool.borrowObject(Integer.valueOf(1));
+        Object object2 = pool.borrowObject(Integer.valueOf(1));
 
         // Cause a thread to block waiting for an object
         ExecutorService executorService = Executors.newSingleThreadExecutor(new ThreadFactory() {
@@ -1822,8 +1823,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             public Exception call() {
                 try {
                     signal.release();
-                    Object object3 = pool.borrowObject(1);
-                    pool.returnObject(1, object3);
+                    Object object3 = pool.borrowObject(Integer.valueOf(1));
+                    pool.returnObject(Integer.valueOf(1), object3);
                     signal.release();
                 } catch (Exception e) {
                     return e;
@@ -1841,7 +1842,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         // Attempt to ensure that test thread is blocked waiting for an object
         Thread.sleep(500);
 
-        pool.invalidateObject(1, object2);
+        pool.invalidateObject(Integer.valueOf(1), object2);
 
         assertTrue("Call to invalidateObject did not unblock pool waiters.",
                    signal.tryAcquire(2, TimeUnit.SECONDS));
@@ -1850,11 +1851,11 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             throw new AssertionError(result.get());
         }
     }
-    
+
     /**
      * Verify that threads waiting on a depleted pool get served when a checked out object is
      * invalidated.
-     * 
+     *
      * JIRA: POOL-240
      */
     //@Test
@@ -1878,13 +1879,13 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         Thread.sleep(600); // Wait for thread2 to timeout
         if (thread2._thrown != null) {
             fail(thread2._thrown.toString());
-        } 
+        }
     }
 
     /**
      * Verify that threads waiting on a depleted pool get served when a returning object fails
      * validation.
-     * 
+     *
      * JIRA: POOL-240
      */
     //@Test
@@ -1943,7 +1944,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             return new DefaultPooledObject<Object>(value);
         }
     }
-    
+
     private static class ObjectFactory
         extends BaseKeyedPooledObjectFactory<Integer, Object> {
 
