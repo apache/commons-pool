@@ -44,7 +44,7 @@ public class TestDefaultPooledObjectInfo {
         long t3 = System.currentTimeMillis();
 
         Thread.sleep(50);
-        s1 = pool.borrowObject();
+        pool.borrowObject();
         Thread.sleep(50);
 
         long t4 = System.currentTimeMillis();
