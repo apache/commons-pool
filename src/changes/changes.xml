@@ -43,7 +43,13 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Pool Changes</title>
   </properties>
   <body>
-  <release version="2.0" description=
+  <release version="2.0.1" date="TBD" description=""This is a patch release, including bugfixes only.">
+    <action issue="POOL-240" dev="psteitz" type="fix" due-to="Dan McNulty">
+      Ensured that blocked threads waiting on a depleted pool get served when objects are destroyed due to
+      validation or passivation failures in returnObject or when a checked out instance is invalidated.
+    </action>
+  </release>
+  <release version="2.0" date="2013-11-11" description=
 "This is a major new release that provides significant performance improvements
 in high concurrency environments. Pools now provide a mechanism for tracking
 objects that have been borrowed from the pool but not returned. There have been
