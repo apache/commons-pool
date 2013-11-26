@@ -1796,26 +1796,17 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         config.setTestWhileIdle(true);
         config.setTimeBetweenEvictionRunsMillis(-1);
 
-        final GenericKeyedObjectPool<Integer, Object> pool = new GenericKeyedObjectPool<Integer, Object>(
-                                                                                                         new ObjectFactory(),
-                                                                                                         config);
+        final GenericKeyedObjectPool<Integer, Object> pool =
+                new GenericKeyedObjectPool<Integer, Object>(
+                        new ObjectFactory(), config);
 
         // Allocate both objects with this thread
-        @SuppressWarnings("unused")
-        Object object1 = pool.borrowObject(Integer.valueOf(1));
+        pool.borrowObject(Integer.valueOf(1)); // object1
         Object object2 = pool.borrowObject(Integer.valueOf(1));
 
         // Cause a thread to block waiting for an object
-        ExecutorService executorService = Executors.newSingleThreadExecutor(new ThreadFactory() {
-
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread t = new Thread(r);
-                t.setDaemon(true);
-                return t;
-            }
-        });
-
+        ExecutorService executorService =
+                Executors.newSingleThreadExecutor(new DaemonThreadFactory());
         final Semaphore signal = new Semaphore(0);
         Future<Exception> result = executorService.submit(new Callable<Exception>() {
 
@@ -1851,6 +1842,17 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             throw new AssertionError(result.get());
         }
     }
+
+
+    private static class DaemonThreadFactory implements ThreadFactory {
+        @Override
+        public Thread newThread(Runnable r) {
+            Thread t = new Thread(r);
+            t.setDaemon(true);
+            return t;
+        }
+    }
+
 
     /**
      * Verify that threads waiting on a depleted pool get served when a checked out object is
