@@ -478,6 +478,13 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                 } catch (Exception e) {
                     swallowException(e);
                 }
+                if (objectDeque.idleObjects.hasTakeWaiters()) {
+                    try {
+                        addObject(key);
+                    } catch (Exception e) {
+                        swallowException(e);
+                    }
+                }
                 updateStatsReturn(activeTime);
                 return;
             }
@@ -491,6 +498,13 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                 destroy(key, p, true);
             } catch (Exception e) {
                 swallowException(e);
+            }
+            if (objectDeque.idleObjects.hasTakeWaiters()) {
+                try {
+                    addObject(key);
+                } catch (Exception e) {
+                    swallowException(e);
+                }
             }
             updateStatsReturn(activeTime);
             return;
@@ -555,6 +569,9 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
             if (p.getState() != PooledObjectState.INVALID) {
                 destroy(key, p, true);
             }
+        }
+        if (objectDeque.idleObjects.hasTakeWaiters()) {
+            addObject(key);
         }
     }
 
