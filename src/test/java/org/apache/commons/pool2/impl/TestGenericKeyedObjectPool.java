@@ -1781,7 +1781,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
      *
      * JIRA: POOL-240
      */
-    //@Test
+    @Test
     public void testInvalidateWaiting()
         throws Exception {
 
@@ -1860,7 +1860,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
      *
      * JIRA: POOL-240
      */
-    //@Test
+    @Test
     public void testInvalidateFreesCapacity()
         throws Exception {
         SimpleFactory<String> factory = new SimpleFactory<String>();
@@ -1890,7 +1890,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
      *
      * JIRA: POOL-240
      */
-    //@Test
+    @Test
     public void testValidationFailureOnReturnFreesCapacity()
         throws Exception {
         SimpleFactory<String> factory = new SimpleFactory<String>();
