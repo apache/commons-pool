@@ -560,12 +560,12 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                 } catch (Exception e) {
                     swallowException(e);
                 }
-                updateStatsReturn(activeTime);
                 try {
                     ensureIdle(1, false);
                 } catch (Exception e) {
                     swallowException(e);
                 }
+                updateStatsReturn(activeTime);
                 return;
             }
         }
@@ -870,7 +870,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     void ensureMinIdle() throws Exception {
         ensureIdle(getMinIdle(), true);
     }
-    
+
     /**
      * Tries to ensure that {@code idleCount} idle instances exist in the pool.
      * <p>
@@ -878,7 +878,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * or the total number of objects (idle, checked out, or being created) reaches
      * {@link #getMaxTotal()}. If {@code always} is false, no instances are created unless
      * there are threads waiting to check out instances from the pool.
-     * 
+     *
      * @param idleCount the number of idle instances desired
      * @param always true means create instances even if the pool has no threads waiting
      * @throws Exception if the factory's makeObject throws
