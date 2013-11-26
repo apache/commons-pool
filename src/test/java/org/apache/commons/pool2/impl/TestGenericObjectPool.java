@@ -1826,7 +1826,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             try {
                 preborrow = System.currentTimeMillis();
                 String obj = _pool.borrowObject();
-                objectId=obj.toString();
+                objectId = obj;
                 postborrow = System.currentTimeMillis();
                 Thread.sleep(_pause);
                 _pool.returnObject(obj);
@@ -1934,11 +1934,11 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         Set<ObjectName> result = mbs.queryNames(oname, null);
         Assert.assertEquals(1, result.size());
     }
-    
+
     /**
      * Verify that threads waiting on a depleted pool get served when a checked out object is
      * invalidated.
-     * 
+     *
      * JIRA: POOL-240
      */
     @Test
@@ -1962,13 +1962,13 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         Thread.sleep(600); // Wait for thread2 to timeout
         if (thread2._thrown != null) {
             fail(thread2._thrown.toString());
-        } 
+        }
     }
 
     /**
      * Verify that threads waiting on a depleted pool get served when a returning object fails
      * validation.
-     * 
+     *
      * JIRA: POOL-240
      */
     @Test
