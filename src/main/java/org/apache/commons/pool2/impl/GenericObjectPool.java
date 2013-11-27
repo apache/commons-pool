@@ -376,7 +376,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * the {@link #getMaxTotal() maxTotal}, (if applicable)
      * {@link #getBlockWhenExhausted()} and the value passed in to the
      * <code>borrowMaxWaitMillis</code> parameter. If the number of instances
-     * checked out from the pool is less than <code>maxActive,</code> a new
+     * checked out from the pool is less than <code>maxTotal,</code> a new
      * instance is created, activated and (if applicable) validated and returned
      * to the caller.
      * <p>
@@ -386,7 +386,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * <code>NoSuchElementException</code> (if
      * {@link #getBlockWhenExhausted()} is false). The length of time that this
      * method will block when {@link #getBlockWhenExhausted()} is true is
-     * determined by the value passed in to the <code>borrowMaxWait</code>
+     * determined by the value passed in to the <code>borrowMaxWaitMillis</code>
      * parameter.
      * <p>
      * When the pool is exhausted, multiple calling threads may be
@@ -521,7 +521,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * this case, if validation fails, the instance is destroyed.
      * <p>
      * Exceptions encountered destroying objects for any reason are swallowed
-     * but notified via a {@link SwallowedExceptionListener}..
+     * but notified via a {@link SwallowedExceptionListener}.
      *
      * @param obj instance to return to the pool
      */
