@@ -146,7 +146,7 @@ public abstract class BaseGenericObjectPool<T> {
     /**
      * Returns the maximum number of objects that can be allocated by the pool
      * (checked out to clients, or idle awaiting checkout) at a given time. When
-     * non-positive, there is no limit to the number of objects that can be
+     * negative, there is no limit to the number of objects that can be
      * managed by the pool at one time.
      *
      * @return the cap on the total number of object instances managed by the
@@ -308,10 +308,10 @@ public abstract class BaseGenericObjectPool<T> {
      * Returns whether objects borrowed from the pool will be validated when
      * they are returned to the pool via the <code>returnObject()</code> method.
      * Validation is performed by the <code>validateObject()</code> method of
-     * the factory associated with the pool. If the object fails to it will be
-     * destroyed rather then returned the pool.
+     * the factory associated with the pool. Returning objects that fail validation
+     * are destroyed rather then being returned the pool.
      *
-     * @return <code>true</code> if objects are validated on being returned to
+     * @return <code>true</code> if objects are validated on return to
      *         the pool via the <code>returnObject()</code> method
      *
      * @see #setTestOnReturn
@@ -324,11 +324,11 @@ public abstract class BaseGenericObjectPool<T> {
      * Sets whether objects borrowed from the pool will be validated when
      * they are returned to the pool via the <code>returnObject()</code> method.
      * Validation is performed by the <code>validateObject()</code> method of
-     * the factory associated with the pool. If the object fails to it will be
-     * destroyed rather then returned the pool.
+     * the factory associated with the pool. Returning objects that fail validation
+     * are destroyed rather then being returned the pool.
      *
-     * @param testOnReturn <code>true</code> if objects are validated on being
-     *                     returned to the pool via the
+     * @param testOnReturn <code>true</code> if objects are validated on
+     *                     return to the pool via the
      *                     <code>returnObject()</code> method
      *
      * @see #getTestOnReturn
@@ -360,7 +360,9 @@ public abstract class BaseGenericObjectPool<T> {
      * {@link #setTimeBetweenEvictionRunsMillis(long)}). Validation is performed
      * by the <code>validateObject()</code> method of the factory associated
      * with the pool. If the object fails to validate, it will be removed from
-     * the pool and destroyed.
+     * the pool and destroyed.  Note that setting this property has no effect
+     * unless the idle object evictor is enabled by setting
+     * <code>timeBetweenEvictionRunsMillis</code> to a positive value.
      *
      * @param testWhileIdle
      *            <code>true</code> so objects will be validated by the evictor
@@ -407,7 +409,7 @@ public abstract class BaseGenericObjectPool<T> {
      * performed for a run will be the minimum of the configured value and the
      * number of idle instances in the pool. When negative, the number of tests
      * performed will be <code>ceil({@link #getNumIdle}/
-     * abs({@link #getNumTestsPerEvictionRun})) whch means that when the value
+     * abs({@link #getNumTestsPerEvictionRun})) which means that when the value
      * is <code>-n</code> roughly one nth of the idle objects will be tested per
      * run.
      *
@@ -426,7 +428,7 @@ public abstract class BaseGenericObjectPool<T> {
      * performed for a run will be the minimum of the configured value and the
      * number of idle instances in the pool. When negative, the number of tests
      * performed will be <code>ceil({@link #getNumIdle}/
-     * abs({@link #getNumTestsPerEvictionRun})) whch means that when the value
+     * abs({@link #getNumTestsPerEvictionRun})) which means that when the value
      * is <code>-n</code> roughly one nth of the idle objects will be tested per
      * run.
      *
