@@ -24,7 +24,7 @@ import java.util.TimerTask;
 /**
  * Provides a shared idle object eviction timer for all pools. This class wraps
  * the standard {@link Timer} and keeps track of how many pools are using it.
- * If no pools are using the timer, it is cancelled. This prevents a thread
+ * If no pools are using the timer, it is canceled. This prevents a thread
  * being left running which, in application server environments, can lead to
  * memory leads and/or prevent applications from shutting down or reloading
  * cleanly.
@@ -46,7 +46,7 @@ class EvictionTimer {
 
     /** Prevent instantiation */
     private EvictionTimer() {
-        // Hide the default constuctor
+        // Hide the default constructor
     }
 
     /**
