@@ -59,6 +59,31 @@ public class TestPoolUtils {
     private static final int CHECK_SLEEP_PERIOD = CHECK_PERIOD * (CHECK_COUNT - 1) + CHECK_PERIOD / 2;
 
     @Test
+    public void testCheckRethrow() {
+        try {
+            PoolUtils.checkRethrow(new Exception());
+        } catch (Throwable t) {
+            fail("PoolUtils.checkRethrow(Throwable) must rethrow only ThreadDeath and VirtualMachineError.");
+        }
+        try {
+            PoolUtils.checkRethrow(new ThreadDeath());
+            fail("PoolUtils.checkRethrow(Throwable) must rethrow ThreadDeath.");
+        } catch (ThreadDeath td) {
+            // expected
+        } catch (Throwable t) {
+            fail("PoolUtils.checkRethrow(Throwable) must rethrow only ThreadDeath and VirtualMachineError.");
+        }
+        try {
+            PoolUtils.checkRethrow(new InternalError()); // InternalError extends VirtualMachineError
+            fail("PoolUtils.checkRethrow(Throwable) must rethrow VirtualMachineError.");
+        } catch (VirtualMachineError td) {
+            // expected
+        } catch (Throwable t) {
+            fail("PoolUtils.checkRethrow(Throwable) must rethrow only ThreadDeath and VirtualMachineError.");
+        }
+    }
+
+    @Test
     public void testJavaBeanInstantiation() {
         Assert.assertNotNull(new PoolUtils());
     }
@@ -216,7 +241,7 @@ public class TestPoolUtils {
         try {
             @SuppressWarnings("unchecked")
             final KeyedObjectPool<Object,Object> pool = createProxy(KeyedObjectPool.class, (List<String>)null);
-            PoolUtils.checkMinIdle(pool, (Object)null, 1, 1);
+            PoolUtils.checkMinIdle(pool, (Collection<?>) null, 1, 1);
             fail("PoolUtils.checkMinIdle(KeyedObjectPool,Collection,int,long) must not accept null keys.");
         } catch (IllegalArgumentException iae) {
             // expected
@@ -683,6 +708,9 @@ public class TestPoolUtils {
         expectedMethods.add("getNumIdle");
         expectedMethods.add("invalidateObject");
         assertEquals(expectedMethods, calledMethods);
+        
+        String expectedToString = "ErodingPerKeyKeyedObjectPool{factor="+factor+", keyedPool=null}";
+        assertEquals(expectedToString, pool.toString());
     }
 
     private static List<String> invokeEveryMethod(ObjectPool<Object> op) throws Exception {
