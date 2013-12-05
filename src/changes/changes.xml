@@ -43,10 +43,15 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Pool Changes</title>
   </properties>
   <body>
-  <release version="2.0.1" date="TBD" description=""This is a patch release, including bugfixes only.">
+  <release version="2.0.1" date="TBD" description=
+      "This is a patch release, including bugfixes and test case improvements.">
     <action issue="POOL-240" dev="psteitz" type="fix" due-to="Dan McNulty">
-      Ensured that blocked threads waiting on a depleted pool get served when objects are destroyed due to
-      validation or passivation failures in returnObject or when a checked out instance is invalidated.
+      Ensured that blocked threads waiting on a depleted pool get served when
+      objects are destroyed due to validation or passivation failures in
+      returnObject or when a checked out instance is invalidated.
+    </action>
+    <action issue="POOL-241" dev="markt" type="add" due-to="Bruno P. Kinoshita">
+      Expand the coverage of the unit tests.
     </action>
   </release>
   <release version="2.0" date="2013-11-11" description=

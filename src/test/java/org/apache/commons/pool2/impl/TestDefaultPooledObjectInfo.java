@@ -16,8 +16,10 @@
  */
 package org.apache.commons.pool2.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.Set;
 
+import org.apache.commons.pool2.impl.DefaultPooledObject.AbandonedObjectCreatedException;
 import org.apache.commons.pool2.impl.TestGenericObjectPool.SimpleFactory;
 import org.junit.Assert;
 import org.junit.Test;
@@ -55,13 +57,21 @@ public class TestDefaultPooledObjectInfo {
 
         DefaultPooledObjectInfo s1Info = strings.iterator().next();
 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+
         Assert.assertTrue(s1Info.getCreateTime() > t1);
+        Assert.assertEquals(sdf.format(Long.valueOf(s1Info.getCreateTime())),
+                s1Info.getCreateTimeFormatted());
         Assert.assertTrue(s1Info.getCreateTime() < t2);
 
         Assert.assertTrue(s1Info.getLastReturnTime() > t2);
+        Assert.assertEquals(sdf.format(Long.valueOf(s1Info.getLastReturnTime())),
+                s1Info.getLastReturnTimeFormatted());
         Assert.assertTrue(s1Info.getLastReturnTime() < t3);
 
         Assert.assertTrue(s1Info.getLastBorrowTime() > t3);
+        Assert.assertEquals(sdf.format(Long.valueOf(s1Info.getLastBorrowTime())),
+                s1Info.getLastBorrowTimeFormatted());
         Assert.assertTrue(s1Info.getLastBorrowTime() < t4);
     }
 
@@ -96,5 +106,31 @@ public class TestDefaultPooledObjectInfo {
         DefaultPooledObjectInfo s1Info = strings.iterator().next();
 
         Assert.assertEquals(s1, s1Info.getPooledObjectToString());
+    }
+
+    @Test
+    public void testGetLastBorrowTrace() throws Exception {
+        AbandonedConfig abandonedConfig = new AbandonedConfig();
+
+        abandonedConfig.setRemoveAbandonedOnBorrow(true);
+        abandonedConfig.setRemoveAbandonedTimeout(1);
+        abandonedConfig.setLogAbandoned(true);
+        GenericObjectPool<String> pool = new GenericObjectPool<String>(
+                new SimpleFactory(),
+                new GenericObjectPoolConfig(),
+                abandonedConfig);
+
+        try {
+            pool.borrowObject();
+            //pool.returnObject(s1); // Object not returned, causes abandoned object created exception
+        } catch (AbandonedObjectCreatedException e) {
+            // do nothing. We will print the stack trace later
+        }
+
+        Set<DefaultPooledObjectInfo> strings = pool.listAllObjects();
+        DefaultPooledObjectInfo s1Info = strings.iterator().next();
+        String lastBorrowTrace = s1Info.getLastBorrowTrace();
+
+        Assert.assertTrue(lastBorrowTrace.startsWith(AbandonedObjectCreatedException.class.getName()));
     }
 }
