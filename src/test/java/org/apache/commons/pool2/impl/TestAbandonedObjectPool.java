@@ -226,6 +226,33 @@ public class TestAbandonedObjectPool {
         Assert.assertTrue(!obj2.isDestroyed());  // and not destroyed
     }
 
+    /**
+     * Test case for https://issues.apache.org/jira/browse/DBCP-260.
+     * Borrow and abandon all the available objects then attempt to borrow one
+     * further object which should block until the abandoned objects are
+     * removed. We don't want the test to block indefinitely when it fails so
+     * use maxWait be check we don't actually have to wait that long.
+     */
+    @Test
+    public void testWhenExhaustedBlock() throws Exception {
+        abandonedConfig.setRemoveAbandonedOnMaintenance(true);
+        pool.setAbandonedConfig(abandonedConfig);
+        pool.setTimeBetweenEvictionRunsMillis(500);
+
+        pool.setMaxTotal(1);
+
+        @SuppressWarnings("unused") // This is going to be abandoned
+        PooledTestObject o1 = pool.borrowObject();
+
+        long start = System.currentTimeMillis();
+        PooledTestObject o2 = pool.borrowObject(5000);
+        long end = System.currentTimeMillis();
+
+        pool.returnObject(o2);
+
+        Assert.assertTrue (end - start < 5000);
+    }
+
     class ConcurrentBorrower extends Thread {
         private ArrayList<PooledTestObject> _borrowed;
 
