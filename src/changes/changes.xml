@@ -43,8 +43,9 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Pool Changes</title>
   </properties>
   <body>
-  <release version="2.0.1" date="TBD" description=
-      "This is a patch release, including bugfixes and test case improvements.">
+  <release version="2.1" date="TBD" description=
+      "This is a maintenance release that includes a small number of new
+       features as well as including bugfixes and test case improvements.">
     <action issue="POOL-240" dev="psteitz" type="fix" due-to="Dan McNulty">
       Ensured that blocked threads waiting on a depleted pool get served when
       objects are destroyed due to validation or passivation failures in
@@ -52,6 +53,11 @@ The <action> type attribute can be add,update,fix,remove.
     </action>
     <action issue="POOL-241" dev="markt" type="add" due-to="Bruno P. Kinoshita">
       Expand the coverage of the unit tests.
+    </action>
+    <action dev="markt" type="add">
+      Provide more control over the names under which Pools are registered in
+      JMX so components using the pools can register the pools they use under a
+      related name.
     </action>
   </release>
   <release version="2.0" date="2013-11-11" description=

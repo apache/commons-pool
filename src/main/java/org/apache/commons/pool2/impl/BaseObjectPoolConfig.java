@@ -120,6 +120,15 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
     public static final String DEFAULT_JMX_NAME_PREFIX = "pool";
 
     /**
+     * The default value for the base name to use to name JMX enabled pools
+     * created with a configuration instance. The default is <code>null</code>
+     * which means the pool will provide the base name to use.
+     * @see GenericObjectPool#getJmxName()
+     * @see GenericKeyedObjectPool#getJmxName()
+     */
+    public static final String DEFAULT_JMX_NAME_BASE = null;
+
+    /**
      * The default value for the {@code evictionPolicyClassName} configuration
      * attribute.
      * @see GenericObjectPool#getEvictionPolicyClassName()
@@ -158,6 +167,8 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
     private boolean jmxEnabled = DEFAULT_JMX_ENABLE;
 
     private String jmxNamePrefix = DEFAULT_JMX_NAME_PREFIX;
+
+    private String jmxNameBase = DEFAULT_JMX_NAME_PREFIX;
 
 
     /**
@@ -494,6 +505,32 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
      */
     public void setJmxEnabled(boolean jmxEnabled) {
         this.jmxEnabled = jmxEnabled;
+    }
+
+    /**
+     * Gets the value of the JMX name base that will be used as part of the
+     * name assigned to JMX enabled pools created with this configuration
+     * instance. A value of <code>null</code> means that the pool will define
+     * the JMX name base.
+     *
+     * @return  The current setting of {@code jmxNameBase} for this
+     *          configuration instance
+     */
+    public String getJmxNameBase() {
+        return jmxNameBase;
+    }
+
+    /**
+     * Sets the value of the JMX name base that will be used as part of the
+     * name assigned to JMX enabled pools created with this configuration
+     * instance. A value of <code>null</code> means that the pool will define
+     * the JMX name base.
+     *
+     * @param jmxNameBase The new setting of {@code jmxNameBase}
+     *        for this configuration instance
+     */
+    public void setJmxNameBase(String jmxNameBase) {
+        this.jmxNameBase = jmxNameBase;
     }
 
     /**

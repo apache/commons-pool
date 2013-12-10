@@ -121,13 +121,14 @@ public abstract class BaseGenericObjectPool<T> {
      * monitoring.
      *
      * @param config        Pool configuration
-     * @param jmxNameBase   Base JMX name for the new pool
+     * @param jmxNameBase   The default base JMX name for the new pool unless
+     *                      overridden by the config
      * @param jmxNamePrefix Prefix to be used for JMX name for the new pool
      */
     public BaseGenericObjectPool(BaseObjectPoolConfig config,
             String jmxNameBase, String jmxNamePrefix) {
         if (config.getJmxEnabled()) {
-            this.oname = jmxRegister(jmxNameBase, jmxNamePrefix);
+            this.oname = jmxRegister(config, jmxNameBase, jmxNamePrefix);
         } else {
             this.oname = null;
         }
@@ -869,32 +870,44 @@ public abstract class BaseGenericObjectPool<T> {
      * registered. Swallows MBeanRegistrationException, NotCompliantMBeanException
      * returning null.
      *
-     * @param jmxNameBase base JMX name for this pool
+     * @param config Pool configuration
+     * @param jmxNameBase default base JMX name for this pool
      * @param jmxNamePrefix name prefix
      * @return registered ObjectName, null if registration fails
      */
-    private ObjectName jmxRegister(String jmxNameBase, String jmxNamePrefix) {
+    private ObjectName jmxRegister(BaseObjectPoolConfig config,
+            String jmxNameBase, String jmxNamePrefix) {
         ObjectName objectName = null;
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         int i = 1;
         boolean registered = false;
+        String base = config.getJmxNameBase();
+        if (base == null) {
+            base = jmxNameBase;
+        }
         while (!registered) {
             try {
-                ObjectName objName =
-                    new ObjectName(jmxNameBase + jmxNamePrefix + i);
+                ObjectName objName;
+                // Skip the numeric suffix for the first pool in case there is
+                // only one so the names are cleaner.
+                if (i == 1) {
+                    objName = new ObjectName(base + jmxNamePrefix);
+                } else {
+                    objName = new ObjectName(base + jmxNamePrefix + i);
+                }
                 mbs.registerMBean(this, objName);
                 objectName = objName;
                 registered = true;
             } catch (MalformedObjectNameException e) {
                 if (BaseObjectPoolConfig.DEFAULT_JMX_NAME_PREFIX.equals(
-                        jmxNamePrefix)) {
+                        jmxNamePrefix) && jmxNameBase.equals(base)) {
                     // Shouldn't happen. Skip registration if it does.
                     registered = true;
                 } else {
-                    // Must be an invalid name prefix. Use the default
-                    // instead.
+                    // Must be an invalid name. Use the defaults instead.
                     jmxNamePrefix =
                             BaseObjectPoolConfig.DEFAULT_JMX_NAME_PREFIX;
+                    base = jmxNameBase;
                 }
             } catch (InstanceAlreadyExistsException e) {
                 // Increment the index and try again
