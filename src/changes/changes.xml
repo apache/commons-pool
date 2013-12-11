@@ -59,6 +59,10 @@ The <action> type attribute can be add,update,fix,remove.
       JMX so components using the pools can register the pools they use under a
       related name.
     </action>
+    <action dev="markt" type="add">
+      Include the number of times an object has been borrowed from the Pool when
+      the DefaultPooledObject wrapper is used.
+    </action>
   </release>
   <release version="2.0" date="2013-11-11" description=
 "This is a major new release that provides significant performance improvements
