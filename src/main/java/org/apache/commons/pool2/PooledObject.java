@@ -198,4 +198,11 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      * Marks the object as returning to the pool.
      */
     void markReturning();
+
+    // TODO: Uncomment this for version 3 (can't add it to 2.x as it will break
+    //       API compatibility)
+    ///**
+    // * Get the number of times this object has been borrowed.
+    // */
+    //long getBorrowedCount();
 }

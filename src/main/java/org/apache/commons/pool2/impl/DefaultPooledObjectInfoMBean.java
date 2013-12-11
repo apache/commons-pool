@@ -98,4 +98,10 @@ public interface DefaultPooledObjectInfoMBean {
      * @see Object#toString()
      */
     String getPooledObjectToString();
+
+    /**
+     * Get the number of times this object has been borrowed.
+     * @return The number of times this object has been borrowed.
+     */
+    long getBorrowedCount();
 }

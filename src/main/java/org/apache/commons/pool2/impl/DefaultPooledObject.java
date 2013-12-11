@@ -48,6 +48,7 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
     private volatile boolean logAbandoned = false;
     private volatile Exception borrowedBy = null;
     private volatile Exception usedBy = null;
+    private volatile long borrowedCount = 0;
 
     /**
      * Create a new instance that wraps the provided object so that the pool can
@@ -95,6 +96,14 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
     @Override
     public long getLastReturnTime() {
         return lastReturnTime;
+    }
+
+    /**
+     * Get the number of times this object has been borrowed.
+     * @return The number of times this object has been borrowed.
+     */
+    public long getBorrowedCount() {
+        return borrowedCount;
     }
 
     /**
@@ -179,6 +188,7 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
             state = PooledObjectState.ALLOCATED;
             lastBorrowTime = System.currentTimeMillis();
             lastUseTime = lastBorrowTime;
+            borrowedCount++;
             if (logAbandoned) {
                 borrowedBy = new AbandonedObjectCreatedException();
             }
