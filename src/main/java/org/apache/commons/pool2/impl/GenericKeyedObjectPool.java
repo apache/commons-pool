@@ -1007,6 +1007,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
             p = factory.makeObject(key);
         } catch (Exception e) {
             numTotal.decrementAndGet();
+            objectDeque.getCreateCount().decrementAndGet();
             throw e;
         }
 

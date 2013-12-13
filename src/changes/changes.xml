@@ -46,6 +46,11 @@ The <action> type attribute can be add,update,fix,remove.
   <release version="2.1" date="TBD" description=
       "This is a maintenance release that includes a small number of new
        features as well as including bugfixes and test case improvements.">
+    <action issue="POOL-243" dev="psteitz" type="fix" duu-to="Michal Sabo">
+      Added missing create counter decrement in GenericKeyedObjectPool create method on factory
+      exception path. Prior to this fix, exceptions thrown by factory makeObject calls could leak
+      per key capacity.
+    </action>
     <action issue="POOL-240" dev="psteitz" type="fix" due-to="Dan McNulty">
       Ensured that blocked threads waiting on a depleted pool get served when
       objects are destroyed due to validation or passivation failures in

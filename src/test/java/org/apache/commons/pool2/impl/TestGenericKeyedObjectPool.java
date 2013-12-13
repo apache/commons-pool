@@ -1635,7 +1635,10 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             this.valid = valid;
         }
         @Override
-        public PooledObject<String> makeObject(K key) {
+        public PooledObject<String> makeObject(K key) throws Exception {
+            if (exceptionOnCreate) {
+                throw new Exception();
+            }
             String out = null;
             synchronized(this) {
                 activeCount++;
@@ -1722,6 +1725,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         boolean exceptionOnPassivate = false;
         boolean exceptionOnActivate = false;
         boolean exceptionOnDestroy = false;
+        boolean exceptionOnCreate = false;
 
         private void doWait(long latency) {
             try {
@@ -1911,6 +1915,28 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         // Try to borrow an object
         String obj = pool.borrowObject("one");
         pool.returnObject("one", obj);
+    }
+    
+    /**
+     * Verify that factory exceptions creating objects do not corrupt per key create count.
+     * 
+     * JIRA: POOL-243
+     */
+    @Test
+    public void testMakeObjectException()
+        throws Exception {
+        SimpleFactory<String> factory = new SimpleFactory<String>();
+        GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<String, String>(factory);
+        pool.setMaxTotalPerKey(1);
+        pool.setBlockWhenExhausted(false);
+        factory.exceptionOnCreate = true;
+        try {
+            pool.borrowObject("One");
+        } catch (Exception ex) {
+            // expected
+        }
+        factory.exceptionOnCreate = false;
+        pool.borrowObject("One");
     }
 
     private static class DummyFactory
