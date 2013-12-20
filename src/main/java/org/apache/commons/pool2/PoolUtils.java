@@ -347,9 +347,6 @@ public final class PoolUtils {
      */
     public static <K, V> KeyedObjectPool<K, V> synchronizedPool(
             final KeyedObjectPool<K, V> keyedPool) {
-        if (keyedPool == null) {
-            throw new IllegalArgumentException("keyedPool must not be null.");
-        }
         /*
          * assert !(keyedPool instanceof GenericKeyedObjectPool) :
          * "GenericKeyedObjectPool is already thread-safe"; assert !(keyedPool
@@ -394,17 +391,17 @@ public final class PoolUtils {
     }
 
     /**
-     * Returns a pool that adaptively decreases it's size when idle objects are
+     * Returns a pool that adaptively decreases its size when idle objects are
      * no longer needed. This is intended as an always thread-safe alternative
      * to using an idle object evictor provided by many pool implementations.
      * This is also an effective way to shrink FIFO ordered pools that
      * experience load spikes.
      *
      * @param pool
-     *            the ObjectPool to be decorated so it shrinks it's idle count
+     *            the ObjectPool to be decorated so it shrinks its idle count
      *            when possible.
      * @param <T> the type of objects in the pool
-     * @return a pool that adaptively decreases it's size when idle objects are
+     * @return a pool that adaptively decreases its size when idle objects are
      *         no longer needed.
      * @see #erodingPool(ObjectPool, float)
      */
@@ -413,28 +410,28 @@ public final class PoolUtils {
     }
 
     /**
-     * Returns a pool that adaptively decreases it's size when idle objects are
+     * Returns a pool that adaptively decreases its size when idle objects are
      * no longer needed. This is intended as an always thread-safe alternative
      * to using an idle object evictor provided by many pool implementations.
      * This is also an effective way to shrink FIFO ordered pools that
      * experience load spikes.
      * <p>
      * The factor parameter provides a mechanism to tweak the rate at which the
-     * pool tries to shrink it's size. Values between 0 and 1 cause the pool to
-     * try to shrink it's size more often. Values greater than 1 cause the pool
-     * to less frequently try to shrink it's size.
+     * pool tries to shrink its size. Values between 0 and 1 cause the pool to
+     * try to shrink its size more often. Values greater than 1 cause the pool
+     * to less frequently try to shrink its size.
      * </p>
      *
      * @param pool
-     *            the ObjectPool to be decorated so it shrinks it's idle count
+     *            the ObjectPool to be decorated so it shrinks its idle count
      *            when possible.
      * @param factor
      *            a positive value to scale the rate at which the pool tries to
-     *            reduce it's size. If 0 &lt; factor &lt; 1 then the pool
+     *            reduce its size. If 0 &lt; factor &lt; 1 then the pool
      *            shrinks more aggressively. If 1 &lt; factor then the pool
      *            shrinks less aggressively.
      * @param <T> the type of objects in the pool
-     * @return a pool that adaptively decreases it's size when idle objects are
+     * @return a pool that adaptively decreases its size when idle objects are
      *         no longer needed.
      * @see #erodingPool(ObjectPool)
      */
@@ -450,18 +447,18 @@ public final class PoolUtils {
     }
 
     /**
-     * Returns a pool that adaptively decreases it's size when idle objects are
+     * Returns a pool that adaptively decreases its size when idle objects are
      * no longer needed. This is intended as an always thread-safe alternative
      * to using an idle object evictor provided by many pool implementations.
      * This is also an effective way to shrink FIFO ordered pools that
      * experience load spikes.
      *
      * @param keyedPool
-     *            the KeyedObjectPool to be decorated so it shrinks it's idle
+     *            the KeyedObjectPool to be decorated so it shrinks its idle
      *            count when possible.
      * @param <K> the type of the pool key
      * @param <V> the type of pool entries
-     * @return a pool that adaptively decreases it's size when idle objects are
+     * @return a pool that adaptively decreases its size when idle objects are
      *         no longer needed.
      * @see #erodingPool(KeyedObjectPool, float)
      * @see #erodingPool(KeyedObjectPool, float, boolean)
@@ -472,29 +469,29 @@ public final class PoolUtils {
     }
 
     /**
-     * Returns a pool that adaptively decreases it's size when idle objects are
+     * Returns a pool that adaptively decreases its size when idle objects are
      * no longer needed. This is intended as an always thread-safe alternative
      * to using an idle object evictor provided by many pool implementations.
      * This is also an effective way to shrink FIFO ordered pools that
      * experience load spikes.
      * <p>
      * The factor parameter provides a mechanism to tweak the rate at which the
-     * pool tries to shrink it's size. Values between 0 and 1 cause the pool to
-     * try to shrink it's size more often. Values greater than 1 cause the pool
-     * to less frequently try to shrink it's size.
+     * pool tries to shrink its size. Values between 0 and 1 cause the pool to
+     * try to shrink its size more often. Values greater than 1 cause the pool
+     * to less frequently try to shrink its size.
      * </p>
      *
      * @param keyedPool
-     *            the KeyedObjectPool to be decorated so it shrinks it's idle
+     *            the KeyedObjectPool to be decorated so it shrinks its idle
      *            count when possible.
      * @param factor
      *            a positive value to scale the rate at which the pool tries to
-     *            reduce it's size. If 0 &lt; factor &lt; 1 then the pool
+     *            reduce its size. If 0 &lt; factor &lt; 1 then the pool
      *            shrinks more aggressively. If 1 &lt; factor then the pool
      *            shrinks less aggressively.
      * @param <K> the type of the pool key
      * @param <V> the type of pool entries
-     * @return a pool that adaptively decreases it's size when idle objects are
+     * @return a pool that adaptively decreases its size when idle objects are
      *         no longer needed.
      * @see #erodingPool(KeyedObjectPool, float, boolean)
      */
@@ -504,37 +501,37 @@ public final class PoolUtils {
     }
 
     /**
-     * Returns a pool that adaptively decreases it's size when idle objects are
+     * Returns a pool that adaptively decreases its size when idle objects are
      * no longer needed. This is intended as an always thread-safe alternative
      * to using an idle object evictor provided by many pool implementations.
      * This is also an effective way to shrink FIFO ordered pools that
      * experience load spikes.
      * <p>
      * The factor parameter provides a mechanism to tweak the rate at which the
-     * pool tries to shrink it's size. Values between 0 and 1 cause the pool to
-     * try to shrink it's size more often. Values greater than 1 cause the pool
-     * to less frequently try to shrink it's size.
+     * pool tries to shrink its size. Values between 0 and 1 cause the pool to
+     * try to shrink its size more often. Values greater than 1 cause the pool
+     * to less frequently try to shrink its size.
      * </p>
      * <p>
      * The perKey parameter determines if the pool shrinks on a whole pool basis
      * or a per key basis. When perKey is false, the keys do not have an effect
-     * on the rate at which the pool tries to shrink it's size. When perKey is
+     * on the rate at which the pool tries to shrink its size. When perKey is
      * true, each key is shrunk independently.
      * </p>
      *
      * @param keyedPool
-     *            the KeyedObjectPool to be decorated so it shrinks it's idle
+     *            the KeyedObjectPool to be decorated so it shrinks its idle
      *            count when possible.
      * @param factor
      *            a positive value to scale the rate at which the pool tries to
-     *            reduce it's size. If 0 &lt; factor &lt; 1 then the pool
+     *            reduce its size. If 0 &lt; factor &lt; 1 then the pool
      *            shrinks more aggressively. If 1 &lt; factor then the pool
      *            shrinks less aggressively.
      * @param perKey
      *            when true, each key is treated independently.
      * @param <K> the type of the pool key
      * @param <V> the type of pool entries
-     * @return a pool that adaptively decreases it's size when idle objects are
+     * @return a pool that adaptively decreases its size when idle objects are
      *         no longer needed.
      * @see #erodingPool(KeyedObjectPool)
      * @see #erodingPool(KeyedObjectPool, float)
