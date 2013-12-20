@@ -1743,7 +1743,7 @@ public final class PoolUtils {
          */
         @Override
         public String toString() {
-            return "ErodingKeyedObjectPool{" + "erodingFactor=" +
+            return "ErodingKeyedObjectPool{" + "factor=" +
                     erodingFactor + ", keyedPool=" + keyedPool + '}';
         }
     }

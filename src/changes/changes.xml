@@ -70,6 +70,10 @@ The <action> type attribute can be add,update,fix,remove.
     <action issue="POOL-245" dev="markt" type="fix" due-to="Bruno P. Kinoshita">
       Remove a duplicate null check and fix some typos in PoolUtils.
     </action>
+    <action issue="POOL-246" dev="markt" type="fix" due-to="Bruno P. Kinoshita">
+      Make the toString() method of ErodingKeyedObjectPool consistent with the
+      other pools.
+    </action>
   </release>
   <release version="2.0" date="2013-11-11" description=
 "This is a major new release that provides significant performance improvements
