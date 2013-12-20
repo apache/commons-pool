@@ -26,6 +26,7 @@ import static org.junit.Assert.fail;
 
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.Set;
@@ -35,10 +36,11 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
 import org.apache.commons.pool2.BasePooledObjectFactory;
-import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PoolUtils;
 import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.PooledObjectFactory;
+import org.apache.commons.pool2.SwallowedExceptionListener;
 import org.apache.commons.pool2.TestBaseObjectPool;
 import org.apache.commons.pool2.VisitTracker;
 import org.apache.commons.pool2.VisitTrackerFactory;
@@ -748,6 +750,44 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Test(timeout=60000)
     public void testSettersAndGetters() throws Exception {
         {
+            // The object receives an Exception during its creation to prevent
+            // memory leaks. See BaseGenericObjectPool constructor for more details.
+            assertTrue(false == "".equals(pool.getCreationStackTrace()));
+        }
+        {
+            assertEquals(0, pool.getBorrowedCount());
+        }
+        {
+            assertEquals(0, pool.getReturnedCount());
+        }
+        {
+            assertEquals(0, pool.getCreatedCount());
+        }
+        {
+            assertEquals(0, pool.getDestroyedCount());
+        }
+        {
+            assertEquals(0, pool.getDestroyedByEvictorCount());
+        }
+        {
+            assertEquals(0, pool.getDestroyedByBorrowValidationCount());
+        }
+        {
+            assertEquals(0, pool.getMeanActiveTimeMillis());
+        }
+        {
+            assertEquals(0, pool.getMeanIdleTimeMillis());
+        }
+        {
+            assertEquals(0, pool.getMeanBorrowWaitTimeMillis());
+        }
+        {
+            assertEquals(0, pool.getMaxBorrowWaitTimeMillis());
+        }
+        {
+            assertEquals(0, pool.getNumIdle());
+        }
+        {
             pool.setMaxTotal(123);
             assertEquals(123,pool.getMaxTotal());
         }
@@ -962,7 +1002,33 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.setMinEvictableIdleTimeMillis(250L);
         pool.setTimeBetweenEvictionRunsMillis(500L);
         pool.setTestWhileIdle(true);
+
+        // ClassNotFoundException
+        try {
+            pool.setEvictionPolicyClassName(Long.toString(System.currentTimeMillis()));
+            fail("setEvictionPolicyClassName must throw an error if the class name is invalid.");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+
+        // InstantiationException
+        try {
+            pool.setEvictionPolicyClassName(java.io.Serializable.class.getName());
+            fail("setEvictionPolicyClassName must throw an error if the class name is invalid.");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+
+        // IllegalAccessException
+        try {
+            pool.setEvictionPolicyClassName(java.util.Collections.class.getName());
+            fail("setEvictionPolicyClassName must throw an error if the class name is invalid.");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+
         pool.setEvictionPolicyClassName(TestEvictionPolicy.class.getName());
+        assertEquals(TestEvictionPolicy.class.getName(), pool.getEvictionPolicyClassName());
 
         String[] active = new String[500];
         for(int i=0;i<500;i++) {
@@ -1933,6 +1999,18 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         Set<ObjectName> result = mbs.queryNames(oname, null);
         Assert.assertEquals(1, result.size());
+        pool.jmxUnregister();
+
+        GenericObjectPoolConfig config = new GenericObjectPoolConfig();
+        config.setJmxEnabled(false);
+        GenericObjectPool<String> poolWithoutJmx = new GenericObjectPool<String>(factory, config);
+        assertNull(poolWithoutJmx.getJmxName());
+        config.setJmxEnabled(true);
+        poolWithoutJmx.jmxUnregister();
+
+        config.setJmxNameBase(null);
+        GenericObjectPool<String> poolWithDefaultJmxNameBase = new GenericObjectPool<String>(factory, config);
+        assertNotNull(poolWithDefaultJmxNameBase.getJmxName());
     }
 
     /**
@@ -1994,6 +2072,40 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.returnObject(obj);
     }
 
+    @Test
+    public void testSwallowedExceptionListener() {
+        pool.setSwallowedExceptionListener(null); // must simply return
+        final List<Exception> swallowedExceptions = new ArrayList<Exception>();
+        /*
+         * A simple listener, that will throw a OOM on 3rd exception.
+         */
+        final SwallowedExceptionListener listener = new SwallowedExceptionListener() {
+            @Override
+            public void onSwallowException(Exception e) {
+                if (swallowedExceptions.size() == 2) {
+                    throw new OutOfMemoryError();
+                } else {
+                    swallowedExceptions.add(e);
+                }
+            }
+        };
+        pool.setSwallowedExceptionListener(listener);
+
+        Exception e1 = new Exception();
+        Exception e2 = new ArrayIndexOutOfBoundsException();
+
+        pool.swallowException(e1);
+        pool.swallowException(e2);
+
+        try {
+            pool.swallowException(e1);
+            fail("Not supposed to get here");
+        } catch (OutOfMemoryError oom) {
+            // expected
+        }
+
+        assertEquals(2, swallowedExceptions.size());
+    }
 
     private static final class DummyFactory
             extends BasePooledObjectFactory<Object> {

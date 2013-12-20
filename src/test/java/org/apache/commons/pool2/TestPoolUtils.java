@@ -17,6 +17,7 @@
 
 package org.apache.commons.pool2;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -26,6 +27,7 @@ import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -245,6 +247,14 @@ public class TestPoolUtils {
             fail("PoolUtils.checkMinIdle(KeyedObjectPool,Collection,int,long) must not accept null keys.");
         } catch (IllegalArgumentException iae) {
             // expected
+        }
+
+        try {
+            @SuppressWarnings("unchecked")
+            final KeyedObjectPool<Object,Object> pool = createProxy(KeyedObjectPool.class, (List<String>)null);
+            PoolUtils.checkMinIdle(pool, (Collection<?>) Collections.emptyList(), 1, 1);
+        } catch (IllegalArgumentException iae) {
+            fail("PoolUtils.checkMinIdle(KeyedObjectPool,Collection,int,long) must accept empty lists.");
         }
 
         // Because this isn't deterministic and you can get false failures, try more than once.
@@ -468,13 +478,6 @@ public class TestPoolUtils {
             // expected
         }
 
-        try {
-            PoolUtils.erodingPool((ObjectPool<Object>)null, 0);
-            fail("PoolUtils.erodingPool(ObjectPool, float) must not allow a non-positive factor.");
-        } catch(IllegalArgumentException iae) {
-            // expected
-        }
-
         final List<String> calledMethods = new ArrayList<String>();
         final InvocationHandler handler = new MethodCallLogger(calledMethods) {
             @Override
@@ -488,6 +491,14 @@ public class TestPoolUtils {
             }
         };
 
+        try {
+            @SuppressWarnings({"unchecked", "unused"})
+            Object o = PoolUtils.erodingPool(createProxy(ObjectPool.class, handler), -1f);
+            fail("PoolUtils.erodingPool(ObjectPool, float) must not allow a non-positive factor.");
+        } catch(IllegalArgumentException iae) {
+            // expected
+        }
+
         // If the logic behind PoolUtils.erodingPool changes then this will need to be tweaked.
         float factor = 0.01f; // about ~9 seconds until first discard
         @SuppressWarnings("unchecked")
@@ -497,6 +508,9 @@ public class TestPoolUtils {
         final List<String> expectedMethods = new ArrayList<String>();
         assertEquals(expectedMethods, calledMethods);
 
+        pool.addObject();
+        expectedMethods.add("addObject");
+
         Object o = pool.borrowObject();
         expectedMethods.add("borrowObject");
 
@@ -505,6 +519,12 @@ public class TestPoolUtils {
         pool.returnObject(o);
         expectedMethods.add("returnObject");
         assertEquals(expectedMethods, calledMethods);
+
+        // the invocation handler always returns 1
+        assertEquals(1, pool.getNumActive());
+        expectedMethods.add("getNumActive");
+        assertEquals(1, pool.getNumIdle());
+        expectedMethods.add("getNumIdle");
 
         for (int i=0; i < 5; i ++) {
             o = pool.borrowObject();
@@ -529,7 +549,28 @@ public class TestPoolUtils {
         pool.returnObject(o);
         expectedMethods.add("getNumIdle");
         expectedMethods.add("invalidateObject");
+        pool.clear();
+        pool.close();
+        expectedMethods.add("clear");
+        expectedMethods.add("close");
         assertEquals(expectedMethods, calledMethods);
+    }
+
+    @Test
+    public void testErodingObjectPoolDefaultFactor() {
+        @SuppressWarnings("unchecked")
+        ObjectPool<Object> internalPool = createProxy(ObjectPool.class, new InvocationHandler() {
+            @Override
+            public Object invoke(Object arg0, Method arg1, Object[] arg2)
+                    throws Throwable {
+                return null;
+            }
+        });
+        ObjectPool<Object> pool = PoolUtils.erodingPool(internalPool);
+        String expectedToString = "ErodingObjectPool{factor=ErodingFactor{factor=1.0, idleHighWaterMark=1}, pool=" + internalPool + "}";
+        // The factor is not exposed, but will be printed in the toString() method
+        // In this case since we didn't pass one, the default 1.0f will be printed
+        assertEquals(expectedToString, pool.toString());
     }
 
     @Test
@@ -549,22 +590,8 @@ public class TestPoolUtils {
         }
 
         try {
-            PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null, 0);
-            fail("PoolUtils.erodingPool(ObjectPool, float) must not allow a non-positive factor.");
-        } catch(IllegalArgumentException iae) {
-            // expected
-        }
-
-        try {
             PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null, 1f, true);
             fail("PoolUtils.erodingPool(KeyedObjectPool, float, boolean) must not allow a null pool.");
-        } catch(IllegalArgumentException iae) {
-            // expected
-        }
-
-        try {
-            PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null, 0, false);
-            fail("PoolUtils.erodingPool(ObjectPool, float, boolean) must not allow a non-positive factor.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
@@ -582,6 +609,22 @@ public class TestPoolUtils {
             }
         };
 
+        try {
+            @SuppressWarnings({"unchecked", "unused"})
+            Object o = PoolUtils.erodingPool(createProxy(KeyedObjectPool.class, handler), 0f);
+            fail("PoolUtils.erodingPool(ObjectPool, float) must not allow a non-positive factor.");
+        } catch(IllegalArgumentException iae) {
+            // expected
+        }
+
+        try {
+            @SuppressWarnings({"unchecked", "unused"})
+            Object o = PoolUtils.erodingPool(createProxy(KeyedObjectPool.class, handler), 0f, false);
+            fail("PoolUtils.erodingPool(ObjectPool, float, boolean) must not allow a non-positive factor.");
+        } catch(IllegalArgumentException iae) {
+            // expected
+        }
+
         // If the logic behind PoolUtils.erodingPool changes then this will need to be tweaked.
         float factor = 0.01f; // about ~9 seconds until first discard
         @SuppressWarnings("unchecked")
@@ -593,6 +636,9 @@ public class TestPoolUtils {
 
         final Object key = "key";
 
+        pool.addObject(key);
+        expectedMethods.add("addObject");
+
         Object o = pool.borrowObject(key);
         expectedMethods.add("borrowObject");
 
@@ -601,6 +647,12 @@ public class TestPoolUtils {
         pool.returnObject(key, o);
         expectedMethods.add("returnObject");
         assertEquals(expectedMethods, calledMethods);
+
+        // the invocation handler always returns 1
+        assertEquals(1, pool.getNumActive());
+        expectedMethods.add("getNumActive");
+        assertEquals(1, pool.getNumIdle());
+        expectedMethods.add("getNumIdle");
 
         for (int i=0; i < 5; i ++) {
             o = pool.borrowObject(key);
@@ -625,21 +677,42 @@ public class TestPoolUtils {
         pool.returnObject(key, o);
         expectedMethods.add("getNumIdle");
         expectedMethods.add("invalidateObject");
+        pool.clear();
+        pool.close();
+        expectedMethods.add("clear");
+        expectedMethods.add("close");
         assertEquals(expectedMethods, calledMethods);
+    }
+
+    @Test
+    public void testErodingPoolKeyedObjectPoolDefaultFactor() {
+        @SuppressWarnings("unchecked")
+        KeyedObjectPool<Object, Object> internalPool = createProxy(KeyedObjectPool.class, new InvocationHandler() {
+            @Override
+            public Object invoke(Object arg0, Method arg1, Object[] arg2)
+                    throws Throwable {
+                return null;
+            }
+        });
+        KeyedObjectPool<Object, Object> pool = PoolUtils.erodingPool(internalPool);
+        String expectedToString = "ErodingKeyedObjectPool{factor=ErodingFactor{factor=1.0, idleHighWaterMark=1}, keyedPool=" + internalPool + "}";
+        // The factor is not exposed, but will be printed in the toString() method
+        // In this case since we didn't pass one, the default 1.0f will be printed
+        assertEquals(expectedToString, pool.toString());
     }
 
     @Test
     public void testErodingPerKeyKeyedObjectPool() throws Exception {
         try {
-            PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null, 1, true);
+            PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null, 1f, true);
             fail("PoolUtils.erodingPool(KeyedObjectPool) must not allow a null pool.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
 
         try {
-            PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null, 0, true);
-            fail("PoolUtils.erodingPool(ObjectPool, float) must not allow a non-positive factor.");
+            PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null, 0f, true);
+            fail("PoolUtils.erodingPool(ObjectPool, float, boolean) must not allow a non-positive factor.");
         } catch(IllegalArgumentException iae) {
             // expected
         }
@@ -708,9 +781,19 @@ public class TestPoolUtils {
         expectedMethods.add("getNumIdle");
         expectedMethods.add("invalidateObject");
         assertEquals(expectedMethods, calledMethods);
-        
+
         String expectedToString = "ErodingPerKeyKeyedObjectPool{factor="+factor+", keyedPool=null}";
         assertEquals(expectedToString, pool.toString());
+    }
+
+    /**
+     * Tests the {@link PoolUtils} timer holder.
+     */
+    @Test
+    public void testTimerHolder() {
+        PoolUtils.TimerHolder h = new PoolUtils.TimerHolder();
+        assertNotNull(h);
+        assertNotNull(PoolUtils.TimerHolder.MIN_IDLE_TIMER);
     }
 
     private static List<String> invokeEveryMethod(ObjectPool<Object> op) throws Exception {
