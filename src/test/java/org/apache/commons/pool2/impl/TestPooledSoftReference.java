@@ -56,4 +56,10 @@ public class TestPooledSoftReference {
         softRef.clear();
     }
 
+    @Test
+    public void testToString() {
+        String expected = "Referenced Object: test, State: IDLE";
+        assertEquals(expected, ref.toString());
+    }
+
 }

@@ -74,6 +74,9 @@ The <action> type attribute can be add,update,fix,remove.
       Make the toString() method of ErodingKeyedObjectPool consistent with the
       other pools.
     </action>
+    <action issue="POOL-245" dev="markt" type="add" due-to="Bruno P. Kinoshita">
+      Further expansion of the coverage of the unit tests.
+    </action>
   </release>
   <release version="2.0" date="2013-11-11" description=
 "This is a major new release that provides significant performance improvements
