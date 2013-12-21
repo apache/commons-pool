@@ -16,10 +16,12 @@
 ## under the License.
               Apache ${project.name} ${version} RELEASE NOTES
 
-The ${developmentTeam} is pleased to announce the release of ${finalName}
+The ${developmentTeam} is pleased to announce the release of ${project.name} ${version}.
 
-$introduction.replaceAll("(?<!\015)\012", "
-").replaceAll("(?m)^ +","")
+Apache Commons Pool provides an object-pooling API and a number of object pool implementations.
+Version 2 is a complete rewrite of the 1.x series. In addition to performance and scalability
+improvements, version 2 includes robust instance tracking and pool monitoring. Version 2 requires
+JDK level 1.6 or above. 
 
 ## N.B. the available variables are described here:
 ## http://maven.apache.org/plugins/maven-changes-plugin/examples/using-a-custom-announcement-template.html
@@ -67,7 +69,7 @@ o $issue ${action}$dueto
 #if ($release.getActions().size() == 0)
 No changes defined in this version.
 #else
-Changes in this version include:
+Changes in version ${version} include:
 
 #if ($release.getActions('add').size() !=0)
 New features:
