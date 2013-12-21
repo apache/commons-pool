@@ -27,4 +27,4 @@
 # ----------------------------------------------------------------------------
 
 mvn changes:announcement-generate -Prelease-notes # [-Dchanges.version=nnn]
-mvn commons:download-page
+mvn commons:download-page -Dcommons.componentid=pool  # Override to get download_pool
