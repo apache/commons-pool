@@ -46,7 +46,7 @@ limitations under the License.
 <document>
   <properties>
     <title>Download Apache Commons Pool</title>
-    <author email="dev@commons.apache.org">Apache Commons Documentation Team</author>
+    <author email="dev@commons.apache.org">Commons Documentation Team</author>
   </properties>
   <body>
     <section name="Download Apache Commons Pool">
@@ -95,32 +95,32 @@ limitations under the License.
       </p>
     </subsection>
     </section>
-    <section name="Apache Commons Pool 2.0 (Java 6.0+)">
+    <section name="Apache Commons Pool 2.1 (Java 6.0+)">
       <subsection name="Binaries">
         <table>
           <tr>
-              <td><a href="[preferred]/commons/pool/binaries/commons-pool2-2.0-bin.tar.gz">commons-pool2-2.0-bin.tar.gz</a></td>
-              <td><a href="http://www.apache.org/dist/commons/pool/binaries/commons-pool2-2.0-bin.tar.gz.md5">md5</a></td>
-              <td><a href="http://www.apache.org/dist/commons/pool/binaries/commons-pool2-2.0-bin.tar.gz.asc">pgp</a></td>
+              <td><a href="[preferred]/commons/pool/binaries/commons-pool2-2.1-bin.tar.gz">commons-pool2-2.1-bin.tar.gz</a></td>
+              <td><a href="http://www.apache.org/dist/commons/pool/binaries/commons-pool2-2.1-bin.tar.gz.md5">md5</a></td>
+              <td><a href="http://www.apache.org/dist/commons/pool/binaries/commons-pool2-2.1-bin.tar.gz.asc">pgp</a></td>
           </tr>
           <tr>
-              <td><a href="[preferred]/commons/pool/binaries/commons-pool2-2.0-bin.zip">commons-pool2-2.0-bin.zip</a></td>
-              <td><a href="http://www.apache.org/dist/commons/pool/binaries/commons-pool2-2.0-bin.zip.md5">md5</a></td>
-              <td><a href="http://www.apache.org/dist/commons/pool/binaries/commons-pool2-2.0-bin.zip.asc">pgp</a></td>
+              <td><a href="[preferred]/commons/pool/binaries/commons-pool2-2.1-bin.zip">commons-pool2-2.1-bin.zip</a></td>
+              <td><a href="http://www.apache.org/dist/commons/pool/binaries/commons-pool2-2.1-bin.zip.md5">md5</a></td>
+              <td><a href="http://www.apache.org/dist/commons/pool/binaries/commons-pool2-2.1-bin.zip.asc">pgp</a></td>
           </tr>
         </table>
       </subsection>
       <subsection name="Source">
         <table>
           <tr>
-              <td><a href="[preferred]/commons/pool/source/commons-pool2-2.0-src.tar.gz">commons-pool2-2.0-src.tar.gz</a></td>
-              <td><a href="http://www.apache.org/dist/commons/pool/source/commons-pool2-2.0-src.tar.gz.md5">md5</a></td>
-              <td><a href="http://www.apache.org/dist/commons/pool/source/commons-pool2-2.0-src.tar.gz.asc">pgp</a></td>
+              <td><a href="[preferred]/commons/pool/source/commons-pool2-2.1-src.tar.gz">commons-pool2-2.1-src.tar.gz</a></td>
+              <td><a href="http://www.apache.org/dist/commons/pool/source/commons-pool2-2.1-src.tar.gz.md5">md5</a></td>
+              <td><a href="http://www.apache.org/dist/commons/pool/source/commons-pool2-2.1-src.tar.gz.asc">pgp</a></td>
           </tr>
           <tr>
-              <td><a href="[preferred]/commons/pool/source/commons-pool2-2.0-src.zip">commons-pool2-2.0-src.zip</a></td>
-              <td><a href="http://www.apache.org/dist/commons/pool/source/commons-pool2-2.0-src.zip.md5">md5</a></td>
-              <td><a href="http://www.apache.org/dist/commons/pool/source/commons-pool2-2.0-src.zip.asc">pgp</a></td>
+              <td><a href="[preferred]/commons/pool/source/commons-pool2-2.1-src.zip">commons-pool2-2.1-src.zip</a></td>
+              <td><a href="http://www.apache.org/dist/commons/pool/source/commons-pool2-2.1-src.zip.md5">md5</a></td>
+              <td><a href="http://www.apache.org/dist/commons/pool/source/commons-pool2-2.1-src.zip.asc">pgp</a></td>
           </tr>
         </table>
       </subsection>
