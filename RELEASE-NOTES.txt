@@ -1,81 +1,41 @@
-              Apache Commons Pool 2.0 RELEASE NOTES
+              Apache Apache Commons Pool 2.1 RELEASE NOTES
 
-The Apache Commons Pool team is pleased to announce the release of Apache
-Commons Pool 2.0
+The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.1.
 
-Apache Commons Object Pooling Library
+Apache Commons Pool provides an object-pooling API and a number of object pool implementations.
+Version 2.1 is source and binary compatible with version 2.0, but not with the 1.x series.
+Version 2 contains a completely re-written pooling implementation compared to the 1.x series.
+In addition to performance and scalability improvements, version 2 includes robust instance
+tracking and pool monitoring. Version 2 requires JDK level 1.6 or above. 
 
-This is a major new release that provides significant performance improvements
-in high concurrency environments. Pools now provide a mechanism for tracking
-objects that have been borrowed from the pool but not returned. There have been
-numerous API changes to support these and other new features as well as to
-clarify behaviour and improve consistency across the API. This release requires
-JDK level 1.6 or above.
+This is a maintenance release that includes a small number of new features as well as including bugfixes and test case improvements.
 
-The changes to the API are not backwards compatible with Apache Commons Pool
-1.x. Therefore, to avoid dependency conflicts, the package name and Maven
-co-ordinates have changed as follows:
-Package name:      org.apache.commons.pool2
-Maven Group ID:    org.apache.commons
-Maven Artifact ID: commons-pool2
-
-Changes in this version (relative to Apache Commons Pool 1.6) include:
+Changes in version 2.1 include:
 
 New features:
-o POOL-211:  Add support for proxy wrappers to ObjectPool and KeyedObjectPool. The
-             primary advantage of these wrappers is that use of pooled objects is
-             prevented after they have been returned to the pool. Thanks to Brad Koehn.
+o POOL-241:  Expand the coverage of the unit tests. Thanks to Bruno P. Kinoshita.
+o            Provide more control over the names under which Pools are registered in
+             JMX so components using the pools can register the pools they use under a
+             related name.
+o            Include the number of times an object has been borrowed from the Pool when
+             the DefaultPooledObject wrapper is used.
+o POOL-245:  Further expansion of the coverage of the unit tests. Thanks to Bruno P. Kinoshita.
 
 Fixed Bugs:
-o POOL-221:  PooledObject.state does not need to be volatile
-o POOL-220:  Suppress a FindBugs warning
-o POOL-215:  GenericKeyedObjectPool - multiple mutable fields not published safely.
-o POOL-214:  GenericObjectPool.evictionPolicy not thread-safe
-o POOL-212:  GenericObjectPool allows maxIdle < minIdle
-o POOL-207:  GenericKeyedObjectPool.clear() has unnecessary null check of objectDequeue
-o POOL-201:  Classes Generic[Keyed]ObjectPoolConfig are generic - but why?
-o POOL-200:  GOP/GKOP don't consistently use getters to access fields
-o POOL-199:  GOP/GKOP evict() method is not synchronised and is not thread-safe
-o POOL-197:  PooledObject: risky init of lastBorrowTime & lastReturnTime
-o POOL-196:  PooledObject.getActiveTimeMillis() does not synch. access to lastReturnTime and lastBorrowTime
-o POOL-188:  Remove confusing method PoolUtils.ErodingKeyedObjectPool.numIdle(K key). Thanks to sebb.
-o POOL-150:  Ensure GKOP.preparePool() throws an exception if no factory has been
-             defined.
-o POOL-134:  Add the ability to specify a per call wait time when borrowing an object.
-o POOL-121:  Provide a name for the eviction timer thread.
-o POOL-173:  Reduce duplication in configuration code.
-o POOL-178:  Re-factor common code into common base classes.
-o POOL-100:  Allow custom eviction policies to be defined.
+o POOL-243:  Added missing create counter decrement in GenericKeyedObjectPool create method on factory
+             exception path. Prior to this fix, exceptions thrown by factory makeObject calls could leak
+             per key capacity. Thanks to Michal Sabo.
+o POOL-240:  Ensured that blocked threads waiting on a depleted pool get served when
+             objects are destroyed due to validation or passivation failures in
+             returnObject or when a checked out instance is invalidated. Thanks to Dan McNulty.
+o POOL-245:  Remove a duplicate null check and fix some typos in PoolUtils. Thanks to Bruno P. Kinoshita.
+o POOL-246:  Make the toString() method of ErodingKeyedObjectPool consistent with the
+             other pools. Thanks to Bruno P. Kinoshita.
 
-Changes:
-o POOL-229:  Added abandoned object removal (moved from DBCP) to GenericObjectPool.
-o POOL-217:  Use an IODH for PoolUtils.MIN_IDLE_TIMER Thanks to sebb.
-o POOL-216:  GenericKeyedObjectPool.ensureMinIdle(K) does not need to check getMinIdlePerKey().
-o POOL-194:  Replace synchronized blocks in PoolUtils with Read/Write locks.
-o POOL-83:   Support Java 1.5 Generics.
-o POOL-186:  Developer documentation and examples have to be updated once the 2.0 repackaging has been done
-o            Switch GOP to use a pooling mechanism based on java.util.concurrent and a
-             LinkedBlockingQueue implementation from Apache Harmony (originally by Doug
-             Lea and the JSR-166 expert group).
-o            Make deprecated protected attributes private, requiring that access is via
-             the appropriate getters.
-o            Code clean-up. Add missing @Override annotations, remove unused code,
-             remove deprecated code and unnecessary code.
-o            Introduce an Enum (WhenExhaustedAction) to control pool behaviour when no
-             more objects are available to allocate.
-o            Remove WhenExhuastedAction.GROW since it is equivalent to
-             WhenExhuastedAction.FAIL with a maxActive value of Integer.MAX_VALUE.
-o POOL-155:  Guard against multiple returns of the same object to the pool and ensure
-             that only objects borrowed from the pool are returned to it.
-o            Remove setFactory() method from GOP.
-o POOL-172:  Expose GOP and GKOP attributes via JMX.
-o POOL-98:   Add additional attributes (also accessible via JMX) for monitoring.
-o            Change meaning of zero for maxWait to a maximum wait of zero milliseconds
-             rather than the unexpected infinite wait.
 
 
 For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
-patches, or suggestions for improvement, see the Apache Commons Pool website:
+patches, or suggestions for improvement, see the Apache Apache Commons Pool website:
 
 http://commons.apache.org/proper/commons-pool/
 
