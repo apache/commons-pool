@@ -148,4 +148,10 @@
     <Method name="create" />
     <Bug pattern="DM_STRING_CTOR" />
   </Match>
+  <Match>
+    <!-- Increment (only write) is in synchronized method, unprotected read in getter is OK -->
+    <Class name="org.apache.commons.pool2.impl.DefaultPooledObject" />
+    <Method name="allocate" />
+    <Bug pattern="VO_VOLATILE_INCREMENT" />
+  </Match>
 </FindBugsFilter>
