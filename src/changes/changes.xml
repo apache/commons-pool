@@ -44,8 +44,8 @@ The <action> type attribute can be add,update,fix,remove.
   </properties>
   <body>
    <release version="2.1" date="TBD" description=
-"This is a maintenance release that includes a small number of new
-features as well as including bugfixes and test case improvements.">
+"This is a maintenance release that includes a small number of new features as well as 
+including bugfixes and test case improvements.">
     <action issue="POOL-243" dev="psteitz" type="fix" due-to="Michal Sabo">
       Added missing create counter decrement in GenericKeyedObjectPool create method on factory
       exception path. Prior to this fix, exceptions thrown by factory makeObject calls could leak
