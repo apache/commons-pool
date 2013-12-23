@@ -14,7 +14,7 @@
 ## KIND, either express or implied.  See the License for the
 ## specific language governing permissions and limitations
 ## under the License.
-              Apache ${project.name} ${version} RELEASE NOTES
+              ${project.name} ${version} RELEASE NOTES
 
 The ${developmentTeam} is pleased to announce the release of ${project.name} ${version}.
 
