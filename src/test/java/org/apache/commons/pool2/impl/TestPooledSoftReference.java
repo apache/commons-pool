@@ -24,7 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Tests for {@PooledSoftReference}.
+ * Tests for PooledSoftReference.
  */
 public class TestPooledSoftReference {
 
