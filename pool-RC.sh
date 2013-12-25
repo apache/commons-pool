@@ -15,58 +15,41 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # -----------------------------------------------------------------------------
+# Generates a pool RC and publishes (a superset of) maven artifacts to Nexus.
+# Should be run from top-level directory of a fresh checkout of the RC tag.
 #
-# Shell script to create commons pool RCs.
-# This script should be run from a fresh checkout of the RC tag.
+# Preconditions:
+# 0) pool-pre-RC has been run to update the download page and release notes
+#    and these have been checked in and included in the RC tag.
+# 1) Release artifacts from previous runs have been svn deleted from local
+#    svn pub/sub dev checkout.
+# 2) Nexus repo from previous RC has been dropped.
 #
 # $Revision$ $Date$
 # -----------------------------------------------------------------------------
 # Set script variables
-version=1.5.6
-rc=2
-repo_path=~/.m2/repository/commons-pool/commons-pool/${version}
-release_path=~/pool-${version}-rc${rc}
+version=2.1
+repo_path=~/.m2/repository/org/apache/commons/commons-pool2/${version}
+release_path=~/pool-rc  #checkout of https://dist.apache.org/repos/dist/dev/commons/pool
 #
 # Delete any locally installed artifacts from previous runs
 rm -rf ${repo_path}
 echo "Cleaned maven repo."
-rm -rf ${release_path}
-echo "Cleaned local release directory"
-mvn clean
 #
-# Generate the release artifacts and install them locally
-mvn site
-mvn -Prc -DcreateChecksum=true install
+# Generate site and release artifacts, deploy locally and upload to Nexus
+mvn clean site
+mvn deploy -Prelease
 #
-# Copy the zips/tarballs and release notes to the release directory
-mkdir ${release_path}
-cp ${repo_path}/*.zip ${release_path}
-cp ${repo_path}/*.zip.* ${release_path}
-cp ${repo_path}/*.gz ${release_path}
-cp ${repo_path}/*.gz.* ${release_path}
+# Copy the zips/tarballs and release notes to the local svn pub path
+cp ${repo_path}/*bin.zip* ${release_path}/binaries
+cp ${repo_path}/*bin.tar.gz* ${release_path}/binaries
+cp ${repo_path}/*src.zip* ${release_path}/source
+cp ${repo_path}/*src.tar.gz* ${release_path}/source
 cp RELEASE-NOTES.txt ${release_path}
-#
-# Copy site
-cp -R target/site ${release_path}
-#
-# Copy maven artifacts
-cp -R ${repo_path} ${release_path}
-#
-# Rename maven, site directories
-mv ${release_path}/${version} ${release_path}/maven
-mv ${release_path}/site ${release_path}/docs
-echo "Artifacts copied."
-#
-# Delete tars/zips from maven subdirectory
-rm ${release_path}/maven/*.zip
-rm ${release_path}/maven/*.zip*
-rm ${release_path}/maven/*.gz
-rm ${release_path}/maven/*.gz*
-#
-# Create combined tarball
-cd ${release_path}
-cd ..
-tar -czf ${release_path}.tgz pool-${version}-rc${rc}
 
-echo "Release candidate complete"
+echo "Release candidate complete."
+echo "svn add the generated artifacts and commit after inspection."
+echo "log in to repository.apache.org, manually (sic) drop the cruft and close the repo."
+
+
 
