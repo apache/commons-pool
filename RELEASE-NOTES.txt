@@ -3,10 +3,12 @@
 The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.1.
 
 Apache Commons Pool provides an object-pooling API and a number of object pool implementations.
-Version 2.1 is source and binary compatible with version 2.0, but not with the 1.x series.
 Version 2 contains a completely re-written pooling implementation compared to the 1.x series.
 In addition to performance and scalability improvements, version 2 includes robust instance
 tracking and pool monitoring. Version 2 requires JDK level 1.6 or above. 
+
+No client code changes are required to migrate from version 2.0 to 2.1.  Users of version 1.x
+should consult the migration guide on the Commons Pool web site.
 
 This is a maintenance release that includes a small number of new features as well as
 including bugfixes and test case improvements.
@@ -19,7 +21,7 @@ o            Provide more control over the names under which Pools are registere
              JMX so components using the pools can register the pools they use under a
              related name.
 o            Include the number of times an object has been borrowed from the Pool when
-             the DefaultPooledObject wrapper is used.
+             the DefaultPooledObject wrapper is used and expose this property via JMX.
 o POOL-245:  Further expansion of the coverage of the unit tests. Thanks to Bruno P. Kinoshita.
 
 Fixed Bugs:
