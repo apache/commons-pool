@@ -21,6 +21,9 @@ import java.util.Map;
 
 /**
  * Defines the methods that will be made available via JMX.
+ * 
+ * NOTE: This interface is subject to change between major version releases
+ * of commons pool.
  *
  * @param <K> The type of keys maintained by the pool.
  *

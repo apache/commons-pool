@@ -66,7 +66,7 @@ including bugfixes and test case improvements.">
     </action>
     <action dev="markt" type="add">
       Include the number of times an object has been borrowed from the Pool when
-      the DefaultPooledObject wrapper is used.
+      the DefaultPooledObject wrapper is used and expose this property via JMX.
     </action>
     <action issue="POOL-245" dev="markt" type="fix" due-to="Bruno P. Kinoshita">
       Remove a duplicate null check and fix some typos in PoolUtils.

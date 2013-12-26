@@ -19,6 +19,9 @@ package org.apache.commons.pool2.impl;
 /**
  * The interface that defines the information about pooled objects that will be
  * exposed via JMX.
+ * 
+ * NOTE: This interface is subject to change between major version releases
+ * of commons pool.
  *
  * @since 2.0
  */
