@@ -43,7 +43,10 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Pool Changes</title>
   </properties>
   <body>
-   <release version="2.1" date="TBD" description=
+  <release version="2.2" date="TBD" description=
+"TBD">
+  </release>
+   <release version="2.1" date="2013-12-30" description=
 "This is a maintenance release that includes a small number of new features as well as 
 including bugfixes and test case improvements.">
     <action issue="POOL-243" dev="psteitz" type="fix" due-to="Michal Sabo">
