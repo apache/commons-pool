@@ -101,6 +101,7 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
     /**
      * Get the number of times this object has been borrowed.
      * @return The number of times this object has been borrowed.
+     * @since 2.1
      */
     public long getBorrowedCount() {
         return borrowedCount;
