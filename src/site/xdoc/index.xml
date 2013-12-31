@@ -150,5 +150,16 @@ public interface KeyedPoolableObjectFactory&lt;K,V&gt; {
           some changes will be required to use the new attribute names.
         </p>
       </section>
+      <section name="Migrating from Pool 2.0">
+        <p>
+          Client code that uses Pool 2.0 should require no code changes to work
+          with Pool 2.1. The MBean interface
+          <a href="./apidocs/org/apache/commons/pool2/impl/DefaultPooledObjectInfoMBean.html"><code>DefaultPooledObjectInfoMBean</code></a>
+          has a new method in 2.1, <code>getBorrowedCount</code>, returning the number of times an
+          instance has been borrowed from the pool.  This interface, like the other MBean interfaces
+          included with pool 2.x, should not be implemented by client classes, as these interfaces
+          are subject to change in minor releases.
+        </p>
+      </section>
    </body>
 </document>
