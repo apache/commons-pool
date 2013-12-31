@@ -197,7 +197,7 @@
           <artifactId>maven-scm-publish-plugin</artifactId>
           <configuration>
             <ignorePathsToDelete>
-              <ignorePathToDelete>javadocs</ignorePathToDelete>
+              <ignorePathToDelete>api-*</ignorePathToDelete>
             </ignorePathsToDelete>
           </configuration>
         </plugin>
