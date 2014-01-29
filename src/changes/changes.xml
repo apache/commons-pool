@@ -45,6 +45,10 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
   <release version="2.2" date="TBD" description=
 "TBD">
+    <action issue="POOL-258" dev="markt" type="fix" due-to="Warren Chen">
+      Ensure that if an attempt is made to return an object multiple times that
+      the current active and idle object counts are not corrupted.
+    </action>
   </release>
    <release version="2.1" date="2013-12-30" description=
 "This is a maintenance release that includes a small number of new features as well as 

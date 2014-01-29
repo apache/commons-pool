@@ -2107,6 +2107,32 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertEquals(2, swallowedExceptions.size());
     }
 
+    // POOL-248
+    @Test
+    public void testMultipleReturnOfSameObject() throws Exception {
+        final GenericObjectPool<String> pool = new GenericObjectPool<String>(
+                factory, new GenericObjectPoolConfig(),
+                new AbandonedConfig());
+
+        Assert.assertEquals(0, pool.getNumActive());
+        Assert.assertEquals(0, pool.getNumIdle());
+
+        String obj = pool.borrowObject();
+
+        Assert.assertEquals(1, pool.getNumActive());
+        Assert.assertEquals(0, pool.getNumIdle());
+
+        pool.returnObject(obj);
+
+        Assert.assertEquals(0, pool.getNumActive());
+        Assert.assertEquals(1, pool.getNumIdle());
+
+        pool.returnObject(obj);
+
+        Assert.assertEquals(0, pool.getNumActive());
+        Assert.assertEquals(1, pool.getNumIdle());
+    }
+
     private static final class DummyFactory
             extends BasePooledObjectFactory<Object> {
         @Override
