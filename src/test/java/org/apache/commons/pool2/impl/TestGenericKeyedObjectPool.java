@@ -1916,10 +1916,10 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         String obj = pool.borrowObject("one");
         pool.returnObject("one", obj);
     }
-    
+
     /**
      * Verify that factory exceptions creating objects do not corrupt per key create count.
-     * 
+     *
      * JIRA: POOL-243
      */
     @Test

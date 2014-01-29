@@ -541,8 +541,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                 // Make sure object is not being reclaimed
                 synchronized(p) {
                     final PooledObjectState state = p.getState();
-                    if (state == PooledObjectState.ABANDONED ||
-                            state == PooledObjectState.INVALID) {
+                    if (state != PooledObjectState.ALLOCATED) {
                         return;
                     } else {
                         p.markReturning(); // Keep from being marked abandoned
