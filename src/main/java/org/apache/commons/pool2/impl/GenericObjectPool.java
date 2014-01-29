@@ -542,7 +542,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                 synchronized(p) {
                     final PooledObjectState state = p.getState();
                     if (state != PooledObjectState.ALLOCATED) {
-                        return;
+                        throw new IllegalStateException(
+                                "Object has already been retured to this pool or is invalid");
                     } else {
                         p.markReturning(); // Keep from being marked abandoned
                     }
