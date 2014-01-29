@@ -2108,11 +2108,10 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     // POOL-248
-    @Test
+    @Test(expected=IllegalStateException.class)
     public void testMultipleReturnOfSameObject() throws Exception {
         final GenericObjectPool<String> pool = new GenericObjectPool<String>(
-                factory, new GenericObjectPoolConfig(),
-                new AbandonedConfig());
+                factory, new GenericObjectPoolConfig());
 
         Assert.assertEquals(0, pool.getNumActive());
         Assert.assertEquals(0, pool.getNumIdle());
