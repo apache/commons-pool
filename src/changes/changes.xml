@@ -30,6 +30,11 @@
       not create minIdle instances only to have them immediately destroyed by
       using maxIdle for minIdle in this case.
     </action>
+    <action dev="markt" type="fix">
+      Do not swallow original exception and stack trace when borrowObject()
+      fails because the object factory is unable to validate the newly created
+      object. 
+    </action>
   </release>
   <release version="1.5.7" date="2011-12-20" description="This is a patch release, including bugfixes only.">
     <action dev="psteitz" type="fix" issue="POOL-189" due-to="Bill Speirs">
