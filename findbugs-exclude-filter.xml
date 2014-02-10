@@ -57,6 +57,13 @@
     <Bug pattern="EQ_COMPARETO_USE_OBJECT_EQUALS " />
   </Match>
   <Match>
+    <!-- Update is inside sync block. Volatile is to ensure other threads    -->
+    <!-- can read new value.                                                 -->
+    <Class name="org.apache.commons.pool2.impl.DefaultPooledObject" />
+    <Method name="allocate" />
+    <Bug pattern="VO_VOLATILE_INCREMENT" />
+  </Match>
+  <Match>
     <!-- Ignoring the exception is deliberate since an earlier exception is  -->
     <!-- more important.                                                     -->
     <Class name="org.apache.commons.pool2.impl.GenericKeyedObjectPool" />
