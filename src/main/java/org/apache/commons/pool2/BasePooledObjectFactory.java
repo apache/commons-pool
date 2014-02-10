@@ -39,6 +39,9 @@ public abstract class BasePooledObjectFactory<T> implements PooledObjectFactory<
      * activation.</p>
      *
      * @return an instance to be served by the pool
+     *
+     * @throws Exception if there is a problem creating a new instance,
+     *    this will be propagated to the code requesting an object.
      */
     public abstract T create() throws Exception;
 

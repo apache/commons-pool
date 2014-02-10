@@ -1540,7 +1540,7 @@ public final class PoolUtils {
 
     /**
      * Decorates a keyed object pool, adding "eroding" behavior. Based on the
-     * configured {@link #factor erosion factor}, objects returning to the pool
+     * configured erosion factor, objects returning to the pool
      * may be invalidated instead of being added to idle capacity.
      */
     private static class ErodingKeyedObjectPool<K, V> implements

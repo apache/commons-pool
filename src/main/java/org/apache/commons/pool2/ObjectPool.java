@@ -95,7 +95,7 @@ public interface ObjectPool<T> {
      *
      * @param obj a {@link #borrowObject borrowed} instance to be returned.
      *
-     * @throws Exception
+     * @throws Exception if an instance cannot be returned to the pool
      */
     void returnObject(T obj) throws Exception;
 
@@ -111,7 +111,7 @@ public interface ObjectPool<T> {
      *
      * @param obj a {@link #borrowObject borrowed} instance to be disposed.
      *
-     * @throws Exception
+     * @throws Exception if the instance cannot be invalidated
      */
     void invalidateObject(T obj) throws Exception;
 
@@ -154,6 +154,8 @@ public interface ObjectPool<T> {
      *
      * @throws UnsupportedOperationException
      *              if this implementation does not support the operation
+     *
+     * @throws Exception if the pool cannot be cleared
      */
     void clear() throws Exception, UnsupportedOperationException;
 

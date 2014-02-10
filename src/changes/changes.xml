@@ -49,6 +49,12 @@ The <action> type attribute can be add,update,fix,remove.
       Ensure that if an attempt is made to return an object multiple times that
       the current active and idle object counts are not corrupted.
     </action>
+    <action issue="POOL-249" dev="markt" type="fix" due-to="Ville Skyttä">
+      Fix Javadoc issues when building docs with Java 8.
+    </action>
+    <action dev="markt" type="fix">
+      Fix the remaining Javadoc warnings.
+    </action>
   </release>
    <release version="2.1" date="2013-12-30" description=
 "This is a maintenance release that includes a small number of new features as well as 

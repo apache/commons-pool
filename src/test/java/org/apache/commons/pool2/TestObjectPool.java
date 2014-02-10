@@ -41,7 +41,13 @@ public abstract class TestObjectPool {
      * The pool should be in a default configuration and conform to the expected
      * behaviors described in {@link ObjectPool}.
      * Generally speaking there should be no limits on the various object counts.
-     * @throws UnsupportedOperationException if the pool being tested does not follow pool contracts.
+     *
+     * @param factory The factory to be used by the object pool
+     *
+     * @return the newly created empty pool
+     *
+     * @throws UnsupportedOperationException if the pool being tested does not
+     *                                       follow pool contracts.
      */
     protected abstract ObjectPool<Object> makeEmptyPool(PooledObjectFactory<Object> factory) throws UnsupportedOperationException;
 

@@ -159,6 +159,8 @@ public class TestSoftRefOutOfMemory {
 
     /**
      * Makes sure an {@link OutOfMemoryError} isn't swallowed.
+     *
+     * @throws Exception May occur in some failure modes
      */
     @Test
     public void testOutOfMemoryError() throws Exception {

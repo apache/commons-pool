@@ -44,7 +44,7 @@ public class AbandonedConfig {
      *
      * <p>If set to true, abandoned objects are removed by borrowObject if
      * there are fewer than 2 idle objects available in the pool and
-     * <code>getNumActive() > getMaxTotal() - 3</code> </p>
+     * <code>getNumActive() &gt; getMaxTotal() - 3</code></p>
      *
      * @return true if abandoned objects are to be removed by borrowObject
      */

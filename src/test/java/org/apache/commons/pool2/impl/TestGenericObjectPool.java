@@ -276,7 +276,9 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
     /**
      * Tests addObject contention between ensureMinIdle triggered by
-     * the Evictor with minIdle > 0 and borrowObject.
+     * the Evictor with minIdle &gt; 0 and borrowObject.
+     *
+     * @throws Exception May occur in some failure modes
      */
     @Test(timeout=60000)
     public void testEvictAddObjects() throws Exception {
@@ -335,6 +337,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
      * regardless of FIFO/LIFO.
      *
      * JIRA: POOL-86
+     *
+     * @throws Exception May occur in some failure modes
      */
     @Test(timeout=60000)
     public void testEvictionOrder() throws Exception {
@@ -386,6 +390,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     /**
      * Verifies that the evictor visits objects in expected order
      * and frequency.
+     *
+     * @throws Exception May occur in some failure modes
      */
     @Test
     public void testEvictorVisiting() throws Exception {
@@ -1145,6 +1151,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     /**
      * POOL-231 - verify that concurrent invalidates of the same object do not
      * corrupt pool destroyCount.
+     *
+     * @throws Exception May occur in some failure modes
      */
     @Test
     public void testConcurrentInvalidate() throws Exception {
@@ -1340,6 +1348,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
      * Verifies that maxTotal is not exceeded when factory destroyObject
      * has high latency, testOnReturn is set and there is high incidence of
      * validation failures.
+     *
+     * @throws Exception May occur in some failure modes
      */
     @Test(timeout=60000)
     public void testMaxTotalInvariant() throws Exception {
@@ -1384,6 +1394,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
     /**
      * POOL-189
+     *
+     * @throws Exception May occur in some failure modes
      */
     @Test(timeout=60000)
     public void testWhenExhaustedBlockClosePool() throws Exception {
@@ -1972,6 +1984,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
      *   Thread 2 starts to borrow another instance before thread 1 returns its instance
      *   Thread 1 returns its instance while thread 2 is validating its newly created instance
      * The test verifies that the instance created by Thread 2 is not leaked.
+     *
+     * @throws Exception May occur in some failure modes
      */
     @Test(timeout=60000)
     public void testMakeConcurrentWithReturn() throws Exception {
@@ -2018,6 +2032,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
      * invalidated.
      *
      * JIRA: POOL-240
+     *
+     * @throws Exception May occur in some failure modes
      */
     @Test
     public void testInvalidateFreesCapacity()
@@ -2048,6 +2064,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
      * validation.
      *
      * JIRA: POOL-240
+     *
+     * @throws Exception May occur in some failure modes
      */
     @Test
     public void testValidationFailureOnReturnFreesCapacity()

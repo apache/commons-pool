@@ -508,9 +508,15 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     }
 
     /**
-     * Kicks off <numThreads> test threads, each of which will go through
-     * <iterations> borrow-return cycles with random delay times <= delay
-     * in between.
+     * Kicks off <code>numThreads</code> test threads, each of which will go
+     * through <code>iterations</code> borrow-return cycles with random delay
+     * times &lt;= delay in between.
+     *
+     * @param <T>           Type of object in pool
+     * @param numThreads    Number of test threads
+     * @param iterations    Number of iterations for each thread
+     * @param delay         Maximum delay between iterations
+     * @param gkopPool      The keyed object pool to use
      */
     public <T> void runTestThreads(int numThreads, int iterations, int delay, GenericKeyedObjectPool<String,T> gkopPool) {
         ArrayList<TestThread<T>> threads = new ArrayList<TestThread<T>>();
@@ -547,6 +553,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
      * Verifies that maxTotal is not exceeded when factory destroyObject
      * has high latency, testOnReturn is set and there is high incidence of
      * validation failures.
+     *
+     * @throws Exception May occur in some failure modes
      */
     @Test(timeout=60000)
     public void testMaxTotalInvariant() throws Exception {
@@ -718,6 +726,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
      * regardless of FIFO/LIFO
      *
      * JIRA: POOL-86
+     *
+     * @throws Exception May occur in some failure modes
      */
     @Test(timeout=60000)
     public void testEvictionOrder() throws Exception {
@@ -842,6 +852,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     /**
      * Verifies that the evictor visits objects in expected order
      * and frequency.
+     *
+     * @throws Exception May occur in some failure modes
      */
     @Test(timeout=60000)
     public void testEvictorVisiting() throws Exception {
@@ -1275,6 +1287,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
     /**
      * Test case for POOL-180.
+     *
+     * @throws Exception May occur in some failure modes
      */
     @Test(timeout=200000)
     public void testMaxActivePerKeyExceeded() throws Exception {
@@ -1294,6 +1308,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
     /**
      * Test to make sure that clearOldest does not destroy instances that have been checked out.
+     *
+     * @throws Exception May occur in some failure modes
      */
     @Test(timeout=60000)
     public void testClearOldest() throws Exception {
@@ -1330,6 +1346,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     /**
      * Verifies that threads that get parked waiting for keys not in use
      * when the pool is at maxTotal eventually get served.
+     *
+     * @throws Exception May occur in some failure modes
      */
     @Test(timeout=60000)
     public void testLivenessPerKey() throws Exception {
@@ -1354,6 +1372,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     /**
      * POOL-192
      * Verify that clear(key) does not leak capacity.
+     *
+     * @throws Exception May occur in some failure modes
      */
     @Test(timeout=60000)
     public void testClear() throws Exception {
@@ -1380,6 +1400,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
     /**
      * POOL-189
+     *
+     * @throws Exception May occur in some failure modes
      */
     @Test(timeout=60000)
     public void testWhenExhaustedBlockClosePool() throws Exception {
@@ -1410,6 +1432,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     /**
      * POOL-231 - verify that concurrent invalidates of the same object do not
      * corrupt pool destroyCount.
+     *
+     * @throws Exception May occur in some failure modes
      */
     @Test
     public void testConcurrentInvalidate() throws Exception {
@@ -1784,6 +1808,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
      * is invalidated.
      *
      * JIRA: POOL-240
+     *
+     * @throws Exception May occur in some failure modes
      */
     @Test
     public void testInvalidateWaiting()
@@ -1863,6 +1889,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
      * invalidated.
      *
      * JIRA: POOL-240
+     *
+     * @throws Exception May occur in some failure modes
      */
     @Test
     public void testInvalidateFreesCapacity()
@@ -1893,6 +1921,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
      * validation.
      *
      * JIRA: POOL-240
+     *
+     * @throws Exception May occur in some failure modes
      */
     @Test
     public void testValidationFailureOnReturnFreesCapacity()
@@ -1921,6 +1951,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
      * Verify that factory exceptions creating objects do not corrupt per key create count.
      *
      * JIRA: POOL-243
+     *
+     * @throws Exception May occur in some failure modes
      */
     @Test
     public void testMakeObjectException()

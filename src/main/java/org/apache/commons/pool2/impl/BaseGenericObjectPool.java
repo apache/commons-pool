@@ -410,9 +410,9 @@ public abstract class BaseGenericObjectPool<T> {
      * performed for a run will be the minimum of the configured value and the
      * number of idle instances in the pool. When negative, the number of tests
      * performed will be <code>ceil({@link #getNumIdle}/
-     * abs({@link #getNumTestsPerEvictionRun})) which means that when the value
-     * is <code>-n</code> roughly one nth of the idle objects will be tested per
-     * run.
+     * abs({@link #getNumTestsPerEvictionRun}))</code> which means that when the
+     * value is <code>-n</code> roughly one nth of the idle objects will be
+     * tested per run.
      *
      * @return max number of objects to examine during each evictor run
      *
@@ -429,9 +429,9 @@ public abstract class BaseGenericObjectPool<T> {
      * performed for a run will be the minimum of the configured value and the
      * number of idle instances in the pool. When negative, the number of tests
      * performed will be <code>ceil({@link #getNumIdle}/
-     * abs({@link #getNumTestsPerEvictionRun})) which means that when the value
-     * is <code>-n</code> roughly one nth of the idle objects will be tested per
-     * run.
+     * abs({@link #getNumTestsPerEvictionRun}))</code> which means that when the
+     * value is <code>-n</code> roughly one nth of the idle objects will be
+     * tested per run.
      *
      * @param numTestsPerEvictionRun
      *            max number of objects to examine during each evictor run

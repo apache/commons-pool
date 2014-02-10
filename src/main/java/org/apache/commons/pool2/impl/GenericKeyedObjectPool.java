@@ -326,7 +326,10 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * @return object instance from the keyed pool
      *
      * @throws NoSuchElementException if a keyed object instance cannot be
-     *                                returned.
+     *                                returned because the pool is exhausted.
+     *
+     * @throws Exception if a keyed object instance cannot be returned due to an
+     *                   error
      */
     public T borrowObject(K key, long borrowMaxWaitMillis) throws Exception {
         assertOpen();
@@ -1218,6 +1221,9 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * {@link #getMinIdlePerKey()} idle instances are created.
      *
      * @param key - The key to register for pool control.
+     *
+     * @throws Exception If the associated factory fails to create the necessary
+     *                   number of idle instances
      */
     public void preparePool(K key) throws Exception {
         int minIdlePerKeySave = getMinIdlePerKey();

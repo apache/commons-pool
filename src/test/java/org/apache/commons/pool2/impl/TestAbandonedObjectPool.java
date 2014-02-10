@@ -84,10 +84,11 @@ public class TestAbandonedObjectPool {
     }
 
     /**
-    * Tests fix for Bug 28579, a bug in AbandonedObjectPool that causes numActive to go negative
-    * in GenericObjectPool
-    *
-    */
+     * Tests fix for Bug 28579, a bug in AbandonedObjectPool that causes numActive to go negative
+     * in GenericObjectPool
+     *
+     * @throws Exception May occur in some failure modes
+     */
     @Test
     public void testConcurrentInvalidation() throws Exception {
         final int POOL_SIZE = 30;
@@ -135,6 +136,8 @@ public class TestAbandonedObjectPool {
      * Verify that an object that gets flagged as abandoned and is subsequently returned
      * is destroyed instead of being returned to the pool (and possibly later destroyed
      * inappropriately).
+     *
+     * @throws Exception May occur in some failure modes
      */
     @Test
     public void testAbandonedReturn() throws Exception {
@@ -170,6 +173,8 @@ public class TestAbandonedObjectPool {
     /**
      * Verify that an object that gets flagged as abandoned and is subsequently
      * invalidated is only destroyed (and pool counter decremented) once.
+     *
+     * @throws Exception May occur in some failure modes
      */
     @Test
     public void testAbandonedInvalidate() throws Exception {
@@ -199,6 +204,8 @@ public class TestAbandonedObjectPool {
     /**
      * Verify that an object that the evictor identifies as abandoned while it
      * is in process of being returned to the pool is not destroyed.
+     *
+     * @throws Exception May occur in some failure modes
      */
     @Test
     public void testRemoveAbandonedWhileReturning() throws Exception {
@@ -232,6 +239,8 @@ public class TestAbandonedObjectPool {
      * further object which should block until the abandoned objects are
      * removed. We don't want the test to block indefinitely when it fails so
      * use maxWait be check we don't actually have to wait that long.
+     *
+     * @throws Exception May occur in some failure modes
      */
     @Test
     public void testWhenExhaustedBlock() throws Exception {
