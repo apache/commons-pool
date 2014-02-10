@@ -60,7 +60,7 @@ package org.apache.commons.pool2;
  * <p>
  * While clients of a {@link KeyedObjectPool} borrow and return instances of
  * the underlying value type V, the factory methods act on instances of
- * {@link PooledObject PooledObject<V>}.  These are the object wrappers that
+ * {@link PooledObject PooledObject&lt;V&gt;}.  These are the object wrappers that
  * pools use to track and maintain state informations about the objects that
  * they manage.
  *

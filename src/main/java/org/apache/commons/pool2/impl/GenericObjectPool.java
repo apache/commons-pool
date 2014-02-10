@@ -400,6 +400,9 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * @return object instance from the pool
      *
      * @throws NoSuchElementException if an instance cannot be returned
+     *
+     * @throws Exception if an object instance cannot be returned due to an
+     *                   error
      */
     public T borrowObject(long borrowMaxWaitMillis) throws Exception {
         assertOpen();

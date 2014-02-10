@@ -30,7 +30,9 @@ public class TestBaseObjectPool extends TestObjectPool {
     private ObjectPool<String> _pool = null;
 
     /**
-     * @param mincapacity
+     * @param mincapacity Ignored by this implemented. Used by sub-classes.
+     *
+     * @return A newly created empty pool
      */
     protected ObjectPool<String> makeEmptyPool(int mincapacity) {
         if (this.getClass() != TestBaseObjectPool.class) {
@@ -48,7 +50,9 @@ public class TestBaseObjectPool extends TestObjectPool {
     }
 
     /**
-     * @param n
+     * @param n Ignored by this implemented. Used by sub-classes.
+     *
+     * @return the Nth object (zero indexed)
      */
     protected Object getNthObject(final int n) {
         if (this.getClass() != TestBaseObjectPool.class) {

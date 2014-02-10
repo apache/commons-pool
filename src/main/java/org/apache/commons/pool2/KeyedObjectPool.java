@@ -108,7 +108,7 @@ public interface KeyedObjectPool<K,V> {
      * @param key the key used to obtain the object
      * @param obj a {@link #borrowObject borrowed} instance to be returned.
      *
-     * @throws Exception
+     * @throws Exception if an instance cannot be returned to the pool
      */
     void returnObject(K key, V obj) throws Exception;
 
@@ -127,7 +127,7 @@ public interface KeyedObjectPool<K,V> {
      * @param key the key used to obtain the object
      * @param obj a {@link #borrowObject borrowed} instance to be returned.
      *
-     * @throws Exception
+     * @throws Exception if the instance cannot be invalidated
      */
     void invalidateObject(K key, V obj) throws Exception;
 
@@ -192,6 +192,8 @@ public interface KeyedObjectPool<K,V> {
      *
      * @throws UnsupportedOperationException when this implementation doesn't
      *                                       support the operation
+     *
+     * @throws Exception if the pool cannot be cleared
      */
     void clear() throws Exception, UnsupportedOperationException;
 
@@ -203,6 +205,8 @@ public interface KeyedObjectPool<K,V> {
      *
      * @throws UnsupportedOperationException when this implementation doesn't
      *                                       support the operation
+     *
+     * @throws Exception if the key cannot be cleared
      */
     void clear(K key) throws Exception, UnsupportedOperationException;
 

@@ -39,8 +39,12 @@ public abstract class TestKeyedObjectPool {
      * The pool should be in a default configuration and conform to the expected
      * behaviors described in {@link KeyedObjectPool}.
      * Generally speaking there should be no limits on the various object counts.
+     *
+     * @param factory Factory to use to associate with the pool
+     * @return The newly created empty pool
      */
-    protected abstract KeyedObjectPool<Object,Object> makeEmptyPool(KeyedPooledObjectFactory<Object,Object> factory);
+    protected abstract KeyedObjectPool<Object,Object> makeEmptyPool(
+            KeyedPooledObjectFactory<Object,Object> factory);
 
     protected static final String KEY = "key";
 
@@ -63,7 +67,9 @@ public abstract class TestKeyedObjectPool {
      * idle and active objects, or
      * throw {@link IllegalArgumentException}
      * if such a pool cannot be created.
-     * @param mincapacity
+     * @param mincapacity Minimum capacity of the pool to create
+     *
+     * @return the newly created keyed object pool
      */
     protected abstract KeyedObjectPool<Object,Object> makeEmptyPool(int mincapacity);
 
@@ -71,8 +77,10 @@ public abstract class TestKeyedObjectPool {
      * Return what we expect to be the n<sup>th</sup>
      * object (zero indexed) created by the pool
      * for the given key.
-     * @param key
-     * @param n
+     * @param key Key for the object to be obtained
+     * @param n   index of the object to be obtained
+     *
+     * @return the requested object
      */
     protected abstract Object getNthObject(Object key, int n);
 

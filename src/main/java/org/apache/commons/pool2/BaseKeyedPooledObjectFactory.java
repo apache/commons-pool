@@ -40,6 +40,9 @@ public abstract class BaseKeyedPooledObjectFactory<K,V>
      *
      * @param key the key used when constructing the object
      * @return an instance that can be served by the pool
+     *
+     * @throws Exception if there is a problem creating a new instance,
+     *    this will be propagated to the code requesting an object.
      */
     public abstract V create(K key)
         throws Exception;

@@ -58,7 +58,8 @@ public abstract class BaseObjectPool<T> implements ObjectPool<T> {
      * determined (due to an exception or other problem) to be invalid.
      *
      * @param obj a {@link #borrowObject borrowed} instance to be disposed.
-     * @throws Exception
+     *
+     * @throws Exception If the object can not be invalidated
      */
     @Override
     public abstract void invalidateObject(T obj) throws Exception;
@@ -86,7 +87,8 @@ public abstract class BaseObjectPool<T> implements ObjectPool<T> {
     /**
      * Not supported in this base implementation.
      *
-     * @throws UnsupportedOperationException
+     * @throws UnsupportedOperationException if the pool does not implement this
+     *          method
      */
     @Override
     public void clear() throws Exception, UnsupportedOperationException {
@@ -94,11 +96,11 @@ public abstract class BaseObjectPool<T> implements ObjectPool<T> {
     }
 
     /**
-     * Not supported in this base implementation.Always throws an
-     * {@link UnsupportedOperationException}, subclasses should override this
-     * behavior.
+     * Not supported in this base implementation. Subclasses should override
+     * this behavior.
      *
-     * @throws UnsupportedOperationException
+     * @throws UnsupportedOperationException if the pool does not implement this
+     *          method
      */
     @Override
     public void addObject() throws Exception, UnsupportedOperationException {
