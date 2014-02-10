@@ -95,6 +95,13 @@ public interface ObjectPool<T> {
      *
      * @param obj a {@link #borrowObject borrowed} instance to be returned.
      *
+     * @throws IllegalStateException
+     *              if an attempt is made to return an object to the pool that
+     *              is in any state other than allocated (i.e. borrowed).
+     *              Attempting to return an object more than once or attempting
+     *              to return an object that was never borrowed from the pool
+     *              will trigger this exception.
+     *
      * @throws Exception if an instance cannot be returned to the pool
      */
     void returnObject(T obj) throws Exception;

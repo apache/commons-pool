@@ -513,7 +513,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Returns an object instance to the pool.
+     * {@inheritDoc}
      * <p>
      * If {@link #getMaxIdle() maxIdle} is set to a positive value and the
      * number of idle instances has reached this value, the returning instance
@@ -525,8 +525,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * <p>
      * Exceptions encountered destroying objects for any reason are swallowed
      * but notified via a {@link SwallowedExceptionListener}.
-     *
-     * @param obj instance to return to the pool
      */
     @Override
     public void returnObject(T obj) {
