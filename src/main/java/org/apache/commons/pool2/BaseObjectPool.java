@@ -30,37 +30,13 @@ package org.apache.commons.pool2;
  * @since 2.0
  */
 public abstract class BaseObjectPool<T> implements ObjectPool<T> {
-    /**
-     * Obtains an instance from the pool.
-     *
-     * @return an instance from the pool
-     *
-     * @throws Exception if an instance cannot be obtained from the pool
-     */
+
     @Override
     public abstract T borrowObject() throws Exception;
 
-    /**
-     * Returns an instance to the pool.
-     *
-     * @param obj instance to return to the pool
-     */
     @Override
     public abstract void returnObject(T obj) throws Exception;
 
-    /**
-     * Invalidates an object from the pool.
-     * <p>
-     * By contract, <code>obj</code> <strong>must</strong> have been obtained
-     * using {@link #borrowObject borrowObject}.
-     * <p>
-     * This method should be used when an object that has been borrowed is
-     * determined (due to an exception or other problem) to be invalid.
-     *
-     * @param obj a {@link #borrowObject borrowed} instance to be disposed.
-     *
-     * @throws Exception If the object can not be invalidated
-     */
     @Override
     public abstract void invalidateObject(T obj) throws Exception;
 
@@ -108,7 +84,9 @@ public abstract class BaseObjectPool<T> implements ObjectPool<T> {
     }
 
     /**
-     * Close this pool. This affects the behavior of <code>isClosed</code> and
+     * {@inheritDoc}
+     * <p>
+     * This affects the behavior of <code>isClosed</code> and
      * <code>assertOpen</code>.
      */
     @Override
