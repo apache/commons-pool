@@ -1,39 +1,28 @@
-              Apache Commons Pool 2.1 RELEASE NOTES
+              Apache Commons Pool 2.2 RELEASE NOTES
 
-The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.1.
+The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.2.
 
 Apache Commons Pool provides an object-pooling API and a number of object pool implementations.
 Version 2 contains a completely re-written pooling implementation compared to the 1.x series.
 In addition to performance and scalability improvements, version 2 includes robust instance
 tracking and pool monitoring. Version 2 requires JDK level 1.6 or above. 
 
-No client code changes are required to migrate from version 2.0 to 2.1.  Users of version 1.x
+No client code changes are required to migrate from version 2.1 to 2.2.  Users of version 1.x
 should consult the migration guide on the Commons Pool web site.
 
-This is a maintenance release that includes a small number of new features as well as
-including bugfixes and test case improvements.
+This is a maintenance release that add a new testOnCreate configuration option and fixes a small number of bugs.
 
-Changes in version 2.1 include:
+Changes in version 2.2 include:
 
 New features:
-o POOL-241:  Expand the coverage of the unit tests. Thanks to Bruno P. Kinoshita.
-o            Provide more control over the names under which Pools are registered in
-             JMX so components using the pools can register the pools they use under a
-             related name.
-o            Include the number of times an object has been borrowed from the Pool when
-             the DefaultPooledObject wrapper is used and expose this property via JMX.
-o POOL-245:  Further expansion of the coverage of the unit tests. Thanks to Bruno P. Kinoshita.
+o            Add a new validation configuration option testOnCreate that tests an
+             object immediately after it is created.
 
 Fixed Bugs:
-o POOL-243:  Added missing create counter decrement in GenericKeyedObjectPool create method on factory
-             exception path. Prior to this fix, exceptions thrown by factory makeObject calls could leak
-             per key capacity. Thanks to Michal Sabo.
-o POOL-240:  Ensured that blocked threads waiting on a depleted pool get served when
-             objects are destroyed due to validation or passivation failures in
-             returnObject or when a checked out instance is invalidated. Thanks to Dan McNulty.
-o POOL-245:  Remove a duplicate null check and fix some typos in PoolUtils. Thanks to Bruno P. Kinoshita.
-o POOL-246:  Make the toString() method of ErodingKeyedObjectPool consistent with the
-             other pools. Thanks to Bruno P. Kinoshita.
+o POOL-248:  Ensure that if an attempt is made to return an object multiple times that
+             the current active and idle object counts are not corrupted. Thanks to Warren Chen.
+o POOL-249:  Fix Javadoc issues when building docs with Java 8. Thanks to Ville Skyttä.
+o            Fix the remaining Javadoc warnings.
 
 
 
