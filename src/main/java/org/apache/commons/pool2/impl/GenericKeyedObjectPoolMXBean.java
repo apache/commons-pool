@@ -91,6 +91,7 @@ public interface GenericKeyedObjectPoolMXBean<K> {
     /**
      * See {@link GenericKeyedObjectPool#getTestOnCreate()}
      * @return See {@link GenericKeyedObjectPool#getTestOnCreate()}
+     * @since 2.2
      */
     boolean getTestOnCreate();
     /**
