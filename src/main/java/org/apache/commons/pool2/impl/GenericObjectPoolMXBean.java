@@ -83,6 +83,7 @@ public interface GenericObjectPoolMXBean {
     /**
      * See {@link GenericObjectPool#getTestOnCreate()}
      * @return See {@link GenericObjectPool#getTestOnCreate()}
+     * @since 2.2
      */
     boolean getTestOnCreate();
     /**

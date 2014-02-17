@@ -283,6 +283,8 @@ public abstract class BaseGenericObjectPool<T> {
      *         being returned from the <code>borrowObject()</code> method
      *
      * @see #setTestOnCreate
+     *
+     * @since 2.2
      */
     public final boolean getTestOnCreate() {
         return testOnCreate;
@@ -300,6 +302,8 @@ public abstract class BaseGenericObjectPool<T> {
      *                      <code>borrowObject()</code> method
      *
      * @see #getTestOnCreate
+     *
+     * @since 2.2
      */
     public final void setTestOnCreate(boolean testOnCreate) {
         this.testOnCreate = testOnCreate;
