@@ -243,6 +243,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         setMinIdlePerKey(conf.getMinIdlePerKey());
         setMaxWaitMillis(conf.getMaxWaitMillis());
         setBlockWhenExhausted(conf.getBlockWhenExhausted());
+        setTestOnCreate(conf.getTestOnCreate());
         setTestOnBorrow(conf.getTestOnBorrow());
         setTestOnReturn(conf.getTestOnReturn());
         setTestWhileIdle(conf.getTestWhileIdle());
@@ -298,7 +299,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * <code>maxTotalPerKey</code> and the total number of instances in
      * circulation (under all keys) is less than <code>maxTotal</code>, a new
      * instance is created, activated and (if applicable) validated and returned
-     * to the caller.
+     * to the caller. If validation fails, a <code>NoSuchElementException</code>
+     * will be thrown.
      * <p>
      * If the associated sub-pool is exhausted (no available idle instances and
      * no capacity to create new ones), this method will either block
@@ -401,7 +403,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                             throw nsee;
                         }
                     }
-                    if (p != null && getTestOnBorrow()) {
+                    if (p != null && (getTestOnBorrow() || create && getTestOnCreate())) {
                         boolean validate = false;
                         Throwable validationThrowable = null;
                         try {

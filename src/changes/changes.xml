@@ -44,7 +44,8 @@ The <action> type attribute can be add,update,fix,remove.
   </properties>
   <body>
   <release version="2.2" date="TBD" description=
-"TBD">
+"This is a maintenance release that add a new testOnCreate configuration option
+and fixes a small number of bugs.">
     <action issue="POOL-248" dev="markt" type="fix" due-to="Warren Chen">
       Ensure that if an attempt is made to return an object multiple times that
       the current active and idle object counts are not corrupted.
@@ -54,6 +55,10 @@ The <action> type attribute can be add,update,fix,remove.
     </action>
     <action dev="markt" type="fix">
       Fix the remaining Javadoc warnings.
+    </action>
+    <action dev="markt" type="add">
+      Add a new validation configuration option testOnCreate that tests an
+      object immediately after it is created.
     </action>
   </release>
    <release version="2.1" date="2013-12-30" description=

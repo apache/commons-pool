@@ -861,6 +861,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         expected.setMaxWaitMillis(5L);
         expected.setMinEvictableIdleTimeMillis(7L);
         expected.setNumTestsPerEvictionRun(9);
+        expected.setTestOnCreate(true);
         expected.setTestOnBorrow(true);
         expected.setTestOnReturn(true);
         expected.setTestWhileIdle(true);
@@ -1589,6 +1590,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     private SimpleFactory factory = null;
 
     private void assertConfiguration(GenericObjectPoolConfig expected, GenericObjectPool<?> actual) throws Exception {
+        assertEquals("testOnCreate",Boolean.valueOf(expected.getTestOnCreate()),
+                Boolean.valueOf(actual.getTestOnCreate()));
         assertEquals("testOnBorrow",Boolean.valueOf(expected.getTestOnBorrow()),
                 Boolean.valueOf(actual.getTestOnBorrow()));
         assertEquals("testOnReturn",Boolean.valueOf(expected.getTestOnReturn()),

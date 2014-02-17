@@ -69,6 +69,13 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
     public static final int DEFAULT_NUM_TESTS_PER_EVICTION_RUN = 3;
 
     /**
+     * The default value for the {@code testOnCreate} configuration attribute.
+     * @see GenericObjectPool#getTestOnCreate()
+     * @see GenericKeyedObjectPool#getTestOnCreate()
+     */
+    public static final boolean DEFAULT_TEST_ON_CREATE = false;
+
+    /**
      * The default value for the {@code testOnBorrow} configuration attribute.
      * @see GenericObjectPool#getTestOnBorrow()
      * @see GenericKeyedObjectPool#getTestOnBorrow()
@@ -152,6 +159,8 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
         DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
 
     private String evictionPolicyClassName = DEFAULT_EVICTION_POLICY_CLASS_NAME;
+
+    private boolean testOnCreate = DEFAULT_TEST_ON_CREATE;
 
     private boolean testOnBorrow = DEFAULT_TEST_ON_BORROW;
 
@@ -314,6 +323,34 @@ public abstract class BaseObjectPoolConfig implements Cloneable {
      */
     public void setNumTestsPerEvictionRun(int numTestsPerEvictionRun) {
         this.numTestsPerEvictionRun = numTestsPerEvictionRun;
+    }
+
+    /**
+     * Get the value for the {@code testOnCreate} configuration attribute for
+     * pools created with this configuration instance.
+     *
+     * @return  The current setting of {@code testOnCreate} for this
+     *          configuration instance
+     *
+     * @see GenericObjectPool#getTestOnCreate()
+     * @see GenericKeyedObjectPool#getTestOnCreate()
+     */
+    public boolean getTestOnCreate() {
+        return testOnCreate;
+    }
+
+    /**
+     * Set the value for the {@code testOnCreate} configuration attribute for
+     * pools created with this configuration instance.
+     *
+     * @param testOnCreate The new setting of {@code testOnCreate}
+     *        for this configuration instance
+     *
+     * @see GenericObjectPool#getTestOnCreate()
+     * @see GenericKeyedObjectPool#getTestOnCreate()
+     */
+    public void setTestOnCreate(boolean testOnCreate) {
+        this.testOnCreate = testOnCreate;
     }
 
     /**

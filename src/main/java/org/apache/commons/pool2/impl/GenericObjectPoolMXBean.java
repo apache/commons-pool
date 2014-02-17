@@ -20,7 +20,7 @@ import java.util.Set;
 
 /**
  * Defines the methods that will be made available via JMX.
- * 
+ *
  * NOTE: This interface is subject to change between major version releases
  * of commons pool.
  *
@@ -80,6 +80,11 @@ public interface GenericObjectPoolMXBean {
      * @return See {@link GenericObjectPool#getNumTestsPerEvictionRun()}
      */
     int getNumTestsPerEvictionRun();
+    /**
+     * See {@link GenericObjectPool#getTestOnCreate()}
+     * @return See {@link GenericObjectPool#getTestOnCreate()}
+     */
+    boolean getTestOnCreate();
     /**
      * See {@link GenericObjectPool#getTestOnBorrow()}
      * @return See {@link GenericObjectPool#getTestOnBorrow()}

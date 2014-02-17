@@ -306,6 +306,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         setMaxTotal(conf.getMaxTotal());
         setMaxWaitMillis(conf.getMaxWaitMillis());
         setBlockWhenExhausted(conf.getBlockWhenExhausted());
+        setTestOnCreate(conf.getTestOnCreate());
         setTestOnBorrow(conf.getTestOnBorrow());
         setTestOnReturn(conf.getTestOnReturn());
         setTestWhileIdle(conf.getTestWhileIdle());
@@ -378,7 +379,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * <code>borrowMaxWaitMillis</code> parameter. If the number of instances
      * checked out from the pool is less than <code>maxTotal,</code> a new
      * instance is created, activated and (if applicable) validated and returned
-     * to the caller.
+     * to the caller. If validation fails, a <code>NoSuchElementException</code>
+     * is thrown.
      * <p>
      * If the pool is exhausted (no available idle instances and no capacity to
      * create new ones), this method will either block (if
@@ -479,7 +481,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                         throw nsee;
                     }
                 }
-                if (p != null && getTestOnBorrow()) {
+                if (p != null && (getTestOnBorrow() || create && getTestOnCreate())) {
                     boolean validate = false;
                     Throwable validationThrowable = null;
                     try {

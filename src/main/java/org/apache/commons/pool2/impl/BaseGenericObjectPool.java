@@ -68,6 +68,8 @@ public abstract class BaseGenericObjectPool<T> {
     private volatile long maxWaitMillis =
             BaseObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS;
     private volatile boolean lifo = BaseObjectPoolConfig.DEFAULT_LIFO;
+    private volatile boolean testOnCreate =
+            BaseObjectPoolConfig.DEFAULT_TEST_ON_CREATE;
     private volatile boolean testOnBorrow =
             BaseObjectPoolConfig.DEFAULT_TEST_ON_BORROW;
     private volatile boolean testOnReturn =
@@ -268,6 +270,39 @@ public abstract class BaseGenericObjectPool<T> {
      */
     public final void setLifo(boolean lifo) {
         this.lifo = lifo;
+    }
+
+    /**
+     * Returns whether objects created for the pool will be validated before
+     * being returned from the <code>borrowObject()</code> method. Validation is
+     * performed by the <code>validateObject()</code> method of the factory
+     * associated with the pool. If the object fails to validate, then
+     * <code>borrowObject()</code> will fail.
+     *
+     * @return <code>true</code> if newly created objects are validated before
+     *         being returned from the <code>borrowObject()</code> method
+     *
+     * @see #setTestOnCreate
+     */
+    public final boolean getTestOnCreate() {
+        return testOnCreate;
+    }
+
+    /**
+     * Sets whether objects created for the pool will be validated before
+     * being returned from the <code>borrowObject()</code> method. Validation is
+     * performed by the <code>validateObject()</code> method of the factory
+     * associated with the pool. If the object fails to validate, then
+     * <code>borrowObject()</code> will fail.
+     *
+     * @param testOnCreate  <code>true</code> if newly created objects should be
+     *                      validated before being returned from the
+     *                      <code>borrowObject()</code> method
+     *
+     * @see #getTestOnCreate
+     */
+    public final void setTestOnCreate(boolean testOnCreate) {
+        this.testOnCreate = testOnCreate;
     }
 
     /**

@@ -21,7 +21,7 @@ import java.util.Map;
 
 /**
  * Defines the methods that will be made available via JMX.
- * 
+ *
  * NOTE: This interface is subject to change between major version releases
  * of commons pool.
  *
@@ -88,6 +88,11 @@ public interface GenericKeyedObjectPoolMXBean<K> {
      * @return See {@link GenericKeyedObjectPool#getNumTestsPerEvictionRun()}
      */
     int getNumTestsPerEvictionRun();
+    /**
+     * See {@link GenericKeyedObjectPool#getTestOnCreate()}
+     * @return See {@link GenericKeyedObjectPool#getTestOnCreate()}
+     */
+    boolean getTestOnCreate();
     /**
      * See {@link GenericKeyedObjectPool#getTestOnBorrow()}
      * @return See {@link GenericKeyedObjectPool#getTestOnBorrow()}
