@@ -133,7 +133,24 @@ public interface KeyedPoolableObjectFactory&lt;K,V&gt; {
           </p>
         </subsection>
       </section>
-      <section name="Migrating from Pool 1.x">
+      <section name="Migrating from Pool 2.x to Pool 2.y">
+        <p>
+          Client code that uses a Pool 2.x release should require no code
+          changes to work with a later Pool 2.x release.
+        </p>
+        <p>
+          New Pool 2.x releases may include support for new configuration
+          attributes. These will be listed in the change log. Note that the
+          MBean interfaces (those with names ending in MXBean or MBean) such as
+          <a href="./apidocs/org/apache/commons/pool2/impl/DefaultPooledObjectInfoMBean.html"><code>DefaultPooledObjectInfoMBean</code></a>,
+          <a href="./apidocs/org/apache/commons/pool2/impl/GenericKeyedObjectPoolMXBean.html"><code>GenericKeyedObjectPoolMXBean</code></a> or
+          <a href="./apidocs/org/apache/commons/pool2/impl/GenericKeyedObjectPoolMXBean.html"><code>GenericKeyedObjectPoolMXBean</code></a>
+          may change from one release to the next to support these new
+          attributes. These interfaces should, therefore, not be implemented by
+          client as the changes will not be backwards compatible.
+        </p>
+      </section>
+      <section name="Migrating from Pool 1.x to Pool 2.x">
         <p>
           The migration from Apache Commons Pool 1.x to 2.x will require some
           code changes. The most significant changes are the changes in package
@@ -148,17 +165,6 @@ public interface KeyedPoolableObjectFactory&lt;K,V&gt; {
           been renamed to improve consistency and ensure attributes with the
           same name in different pools have the same meaning. It is likely that
           some changes will be required to use the new attribute names.
-        </p>
-      </section>
-      <section name="Migrating from Pool 2.0">
-        <p>
-          Client code that uses Pool 2.0 should require no code changes to work
-          with Pool 2.1. The MBean interface
-          <a href="./apidocs/org/apache/commons/pool2/impl/DefaultPooledObjectInfoMBean.html"><code>DefaultPooledObjectInfoMBean</code></a>
-          has a new method in 2.1, <code>getBorrowedCount</code>, returning the number of times an
-          instance has been borrowed from the pool.  This interface, like the other MBean interfaces
-          included with pool 2.x, should not be implemented by client classes, as these interfaces
-          are subject to change in minor releases.
         </p>
       </section>
    </body>
