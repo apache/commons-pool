@@ -21,8 +21,12 @@ import java.util.Set;
 /**
  * Defines the methods that will be made available via JMX.
  *
- * NOTE: This interface is subject to change between major version releases
- * of commons pool.
+ * NOTE: This interface exists only to define those attributes and methods that
+ *       will be made available via JMX. It must not be implemented by clients
+ *       as it is subject to change between major, minor and patch version
+ *       releases of commons pool. Clients that implement this interface may
+ *       not, therefore, be able to upgrade to a new minor or patch release
+ *       without requiring code changes.
  *
  * @version $Revision: $
  *
