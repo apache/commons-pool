@@ -18,7 +18,6 @@
     <id>src</id>
     <formats>
         <format>tar.gz</format>
-        <format>zip</format>
     </formats>
     <baseDirectory>${project.artifactId}-${project.version}-src</baseDirectory>
     <fileSets>
@@ -35,9 +34,11 @@
                 <include>findbugs-exclude-filter.xml</include>
                 <include>build.properties.sample</include>
             </includes>
+            <lineEnding>lf</lineEnding>
         </fileSet>
         <fileSet>
             <directory>src</directory>
+            <lineEnding>unix</lineEnding>
         </fileSet>
     </fileSets>
 </assembly>

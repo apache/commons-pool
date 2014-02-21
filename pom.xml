@@ -187,7 +187,8 @@
           <configuration>
             <descriptors>
               <descriptor>src/main/assembly/bin.xml</descriptor>
-              <descriptor>src/main/assembly/src.xml</descriptor>
+              <descriptor>src/main/assembly/src-tar-gz.xml</descriptor>
+              <descriptor>src/main/assembly/src-zip.xml</descriptor>
             </descriptors>
             <tarLongFileMode>gnu</tarLongFileMode>
           </configuration>
