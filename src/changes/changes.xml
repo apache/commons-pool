@@ -44,7 +44,7 @@ The <action> type attribute can be add,update,fix,remove.
   </properties>
   <body>
   <release version="2.2" date="TBD" description=
-"This is a maintenance release that add a new testOnCreate configuration option
+"This is a maintenance release that adds a new testOnCreate configuration option
 and fixes a small number of bugs.">
     <action issue="POOL-248" dev="markt" type="fix" due-to="Warren Chen">
       Ensure that if an attempt is made to return an object multiple times that
