@@ -14,6 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/*
+ * This file is one of the source files for the examples contained in
+ * /src/site/xdoc/examples.xml
+ * It is not intended to be included in a source release.
+ */
+
 import java.io.IOException;
 import java.io.Reader;
 
