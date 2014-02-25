@@ -546,7 +546,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                     final PooledObjectState state = p.getState();
                     if (state != PooledObjectState.ALLOCATED) {
                         throw new IllegalStateException(
-                                "Object has already been retured to this pool or is invalid");
+                                "Object has already been returned to this pool or is invalid");
                     } else {
                         p.markReturning(); // Keep from being marked abandoned
                     }
@@ -593,7 +593,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
 
         if (!p.deallocate()) {
             throw new IllegalStateException(
-                    "Object has already been retured to this pool or is invalid");
+                    "Object has already been returned to this pool or is invalid");
         }
 
         int maxIdleSave = getMaxIdle();
