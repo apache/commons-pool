@@ -20,10 +20,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.management.ManagementFactory;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -110,9 +107,9 @@ public abstract class BaseGenericObjectPool<T> {
     final AtomicLong destroyedCount = new AtomicLong(0);
     final AtomicLong destroyedByEvictorCount = new AtomicLong(0);
     final AtomicLong destroyedByBorrowValidationCount = new AtomicLong(0);
-    private final LinkedList<Long> activeTimes = new LinkedList<Long>(); // @GuardedBy("activeTimes") - except in initStats()
-    private final LinkedList<Long> idleTimes = new LinkedList<Long>(); // @GuardedBy("activeTimes") - except in initStats()
-    private final LinkedList<Long> waitTimes = new LinkedList<Long>(); // @GuardedBy("activeTimes") - except in initStats()
+    private final StatsStore activeTimes = new StatsStore(MEAN_TIMING_STATS_CACHE_SIZE);
+    private final StatsStore idleTimes = new StatsStore(MEAN_TIMING_STATS_CACHE_SIZE);
+    private final StatsStore waitTimes = new StatsStore(MEAN_TIMING_STATS_CACHE_SIZE);
     private final Object maxBorrowWaitTimeMillisLock = new Object();
     private volatile long maxBorrowWaitTimeMillis = 0; // @GuardedBy("maxBorrowWaitTimeMillisLock")
     private SwallowedExceptionListener swallowedExceptionListener = null;
@@ -140,9 +137,6 @@ public abstract class BaseGenericObjectPool<T> {
 
         // save the current CCL to be used later by the evictor Thread
         factoryClassLoader = Thread.currentThread().getContextClassLoader();
-
-        // Initialise the attributes used to record rolling averages
-        initStats();
     }
 
 
@@ -767,7 +761,7 @@ public abstract class BaseGenericObjectPool<T> {
      * recently returned objects
      */
     public final long getMeanActiveTimeMillis() {
-        return getMeanFromStatsCache(activeTimes);
+        return activeTimes.getMean();
     }
 
     /**
@@ -777,7 +771,7 @@ public abstract class BaseGenericObjectPool<T> {
      * borrowed objects
      */
     public final long getMeanIdleTimeMillis() {
-        return getMeanFromStatsCache(idleTimes);
+        return idleTimes.getMean();
     }
 
     /**
@@ -787,7 +781,7 @@ public abstract class BaseGenericObjectPool<T> {
      * to wait to borrow an object from the pool
      */
     public final long getMeanBorrowWaitTimeMillis() {
-        return getMeanFromStatsCache(waitTimes);
+        return waitTimes.getMean();
     }
 
     /**
@@ -857,14 +851,8 @@ public abstract class BaseGenericObjectPool<T> {
      */
     final void updateStatsBorrow(PooledObject<T> p, long waitTime) {
         borrowedCount.incrementAndGet();
-        synchronized (idleTimes) {
-            idleTimes.add(Long.valueOf(p.getIdleTimeMillis()));
-            idleTimes.poll();
-        }
-        synchronized (waitTimes) {
-            waitTimes.add(Long.valueOf(waitTime));
-            waitTimes.poll();
-        }
+        idleTimes.add(p.getIdleTimeMillis());
+        waitTimes.add(waitTime);
         synchronized (maxBorrowWaitTimeMillisLock) {
             if (waitTime > maxBorrowWaitTimeMillis) {
                 maxBorrowWaitTimeMillis = waitTime;
@@ -879,10 +867,7 @@ public abstract class BaseGenericObjectPool<T> {
      */
     final void updateStatsReturn(long activeTime) {
         returnedCount.incrementAndGet();
-        synchronized (activeTimes) {
-            activeTimes.add(Long.valueOf(activeTime));
-            activeTimes.poll();
-        }
+        activeTimes.add(activeTime);
     }
 
     /**
@@ -977,44 +962,6 @@ public abstract class BaseGenericObjectPool<T> {
         return w.toString();
     }
 
-    /**
-     * Returns the greatest integer less than ore equal to the arithmetic mean
-     * of the entries in <code>cache,</code> acquiring and holding the argument's
-     * monitor while making a local copy.
-     * @param cache list containing entries to analyze
-     * @return truncated arithmetic mean
-     */
-    private long getMeanFromStatsCache(LinkedList<Long> cache) {
-        List<Long> times = new ArrayList<Long>(MEAN_TIMING_STATS_CACHE_SIZE);
-        synchronized (cache) {
-            times.addAll(cache);
-        }
-        double result = 0;
-        int counter = 0;
-        Iterator<Long> iter = times.iterator();
-        while (iter.hasNext()) {
-            Long time = iter.next();
-            if (time != null) {
-                counter++;
-                result = result * ((counter - 1) / (double) counter) +
-                        time.longValue()/(double) counter;
-            }
-        }
-        return (long) result;
-    }
-
-    /**
-     * Initializes pool statistics.
-     */
-    private void initStats() {
-        for (int i = 0; i < MEAN_TIMING_STATS_CACHE_SIZE; i++) {
-            activeTimes.add(null);
-            idleTimes.add(null);
-            waitTimes.add(null);
-        }
-    }
-
-
     // Inner classes
 
     /**
@@ -1060,6 +1007,44 @@ public abstract class BaseGenericObjectPool<T> {
                 // Restore the previous CCL
                 Thread.currentThread().setContextClassLoader(savedClassLoader);
             }
+        }
+    }
+
+    private class StatsStore {
+
+        private final AtomicLong values[];
+        private final int size;
+        private int index;
+
+        public StatsStore(int size) {
+            this.size = size;
+            values = new AtomicLong[size];
+            for (int i = 0; i < size; i++) {
+                values[i] = new AtomicLong(-1);
+            }
+        }
+
+        public synchronized void add(long value) {
+            values[index].set(value);
+            index++;
+            if (index == size) {
+                index = 0;
+            }
+        }
+
+        public long getMean() {
+            double result = 0;
+            int counter = 0;
+            for (int i = 0; i < size; i++) {
+                long value = values[i].get();
+                if (value != -1) {
+                    counter++;
+                    result = result * ((counter - 1) / (double) counter) +
+                            value/(double) counter;
+                }
+            }
+            return (long) result;
+
         }
     }
 }
