@@ -132,7 +132,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     /**
      * Called to inform the object that the eviction test has ended.
      *
-     * @param idleQueue The queue if idle objects to which the object should be
+     * @param idleQueue The queue of idle objects to which the object should be
      *                  returned
      *
      * @return  Currently not used
