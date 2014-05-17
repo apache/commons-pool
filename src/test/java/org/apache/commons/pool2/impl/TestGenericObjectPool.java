@@ -289,7 +289,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.borrowObject(); // numActive = 1, numIdle = 0
         // Create a test thread that will run once and try a borrow after
         // 150ms fixed delay
-        TestThread borrower = new TestThread(pool, 1, 150, false);
+        TestThread<String> borrower = new TestThread<String>(pool, 1, 150, false);
         Thread borrowerThread = new Thread(borrower);
         // Set evictor to run in 100 ms - will create idle instance
         pool.setTimeBetweenEvictionRunsMillis(100);
@@ -677,6 +677,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     @Test(timeout=60000)
+    @SuppressWarnings("rawtypes")
     public void testMaxTotalUnderLoad() {
         // Config
         int numThreads = 199; // And main thread makes a round 200.
@@ -695,7 +696,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             // Factor of 2 on iterations so main thread does work whilst other
             // threads are running. Factor of 2 on delay so average delay for
             // other threads == actual delay for main thread
-            threads[i] = new TestThread(pool, numIter * 2, delay * 2);
+            threads[i] = new TestThread<String>(pool, numIter * 2, delay * 2);
             Thread t = new Thread(threads[i]);
             t.start();
         }
@@ -1316,10 +1317,13 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
      * <iterations> borrow-return cycles with random delay times <= delay
      * in between.
      */
-    private void runTestThreads(int numThreads, int iterations, int delay) {
+    @SuppressWarnings({
+        "rawtypes", "unchecked"
+    })
+    private void runTestThreads(int numThreads, int iterations, int delay, GenericObjectPool testPool) {
         TestThread[] threads = new TestThread[numThreads];
         for(int i=0;i<numThreads;i++) {
-            threads[i] = new TestThread(pool,iterations,delay);
+            threads[i] = new TestThread<String>(testPool,iterations,delay);
             Thread t = new Thread(threads[i]);
             t.start();
         }
@@ -1342,7 +1346,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.setMaxTotal(15);
         pool.setMaxIdle(15);
         pool.setMaxWaitMillis(1000L);
-        runTestThreads(20, 100, 50);
+        runTestThreads(20, 100, 50, pool);
     }
 
     /**
@@ -1363,7 +1367,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.setMaxIdle(-1);
         pool.setTestOnReturn(true);
         pool.setMaxWaitMillis(1000L);
-        runTestThreads(5, 10, 50);
+        runTestThreads(5, 10, 50, pool);
     }
 
     @Test(timeout=60000)
@@ -1391,6 +1395,26 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             }
             */
         }
+    }
+    
+    /**
+     * Verifies that concurrent threads never "share" instances
+     */
+    @Test
+    public void testNoInstanceOverlap() {
+        final int maxTotal = 5;
+        final int numThreads = 100;
+        final int delay = 1;
+        final int iterations = 1000;
+        AtomicIntegerFactory factory = new AtomicIntegerFactory();
+        GenericObjectPool<AtomicInteger> pool = new GenericObjectPool<AtomicInteger>(factory);
+        pool.setMaxTotal(maxTotal);
+        pool.setMaxIdle(maxTotal);
+        pool.setTestOnBorrow(true);
+        pool.setBlockWhenExhausted(true);
+        pool.setMaxWaitMillis(-1);
+        runTestThreads(numThreads, iterations, delay, pool);
+        Assert.assertEquals(0, pool.getDestroyedByBorrowValidationCount());
     }
 
     /**
@@ -1444,11 +1468,11 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
     }
 
-    static class TestThread implements Runnable {
+    static class TestThread<T> implements Runnable {
         private final java.util.Random _random = new java.util.Random();
 
         // Thread config items
-        private final ObjectPool<String> _pool;
+        private final ObjectPool<T> _pool;
         private final int _iter;
         private final int _delay;
         private final boolean _randomDelay;
@@ -1458,24 +1482,24 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         private volatile boolean _failed = false;
         private volatile Throwable _error;
 
-        public TestThread(ObjectPool<String> pool) {
+        public TestThread(ObjectPool<T> pool) {
             this(pool, 100, 50, true, null);
         }
 
-        public TestThread(ObjectPool<String> pool, int iter) {
+        public TestThread(ObjectPool<T> pool, int iter) {
             this(pool, iter, 50, true, null);
         }
 
-        public TestThread(ObjectPool<String> pool, int iter, int delay) {
+        public TestThread(ObjectPool<T> pool, int iter, int delay) {
             this(pool, iter, delay, true, null);
         }
 
-        public TestThread(ObjectPool<String> pool, int iter, int delay,
+        public TestThread(ObjectPool<T> pool, int iter, int delay,
                 boolean randomDelay) {
             this(pool, iter, delay, randomDelay, null);
         }
 
-        public TestThread(ObjectPool<String> pool, int iter, int delay,
+        public TestThread(ObjectPool<T> pool, int iter, int delay,
                 boolean randomDelay, Object obj) {
             _pool = pool;
             _iter = iter;
@@ -1502,7 +1526,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 } catch(InterruptedException e) {
                     // ignored
                 }
-                String obj = null;
+                T obj = null;
                 try {
                     obj = _pool.borrowObject();
                 } catch(Exception e) {
@@ -1781,6 +1805,101 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             }
         }
     }
+    
+    protected static class AtomicIntegerFactory
+    extends BasePooledObjectFactory<AtomicInteger> {
+
+    private long activateLatency = 0;
+    private long passivateLatency = 0;
+    private long createLatency = 0;
+    private long destroyLatency = 0;
+    private long validateLatency = 0;
+    
+    @Override
+    public AtomicInteger create() {
+        try {
+            Thread.sleep(createLatency);
+        } catch (InterruptedException ex) {}
+        return new AtomicInteger(0);
+    }
+
+    @Override
+    public PooledObject<AtomicInteger> wrap(AtomicInteger integer) {
+        return new DefaultPooledObject<AtomicInteger>(integer);
+    }
+
+    @Override
+    public void activateObject(PooledObject<AtomicInteger> p) {
+        p.getObject().incrementAndGet();
+        try {
+            Thread.sleep(activateLatency);
+        } catch (InterruptedException ex) {}
+    }
+
+    @Override
+    public void passivateObject(PooledObject<AtomicInteger> p) {
+        p.getObject().decrementAndGet();
+        try {
+            Thread.sleep(passivateLatency);
+        } catch (InterruptedException ex) {}
+    }
+
+    @Override
+    public boolean validateObject(PooledObject<AtomicInteger> instance) {
+        try {
+            Thread.sleep(validateLatency);
+        } catch (InterruptedException ex) {}
+        return instance.getObject().intValue() == 1;
+    }
+    
+    @Override
+    public void destroyObject(PooledObject<AtomicInteger> p) {
+        try {
+            Thread.sleep(destroyLatency);
+        } catch (InterruptedException ex) {}
+    }
+
+    
+    /**
+     * @param activateLatency the activateLatency to set
+     */
+    public void setActivateLatency(long activateLatency) {
+        this.activateLatency = activateLatency;
+    }
+
+    
+    /**
+     * @param passivateLatency the passivateLatency to set
+     */
+    public void setPassivateLatency(long passivateLatency) {
+        this.passivateLatency = passivateLatency;
+    }
+
+    
+    /**
+     * @param createLatency the createLatency to set
+     */
+    public void setCreateLatency(long createLatency) {
+        this.createLatency = createLatency;
+    }
+
+    
+    /**
+     * @param destroyLatency the destroyLatency to set
+     */
+    public void setDestroyLatency(long destroyLatency) {
+        this.destroyLatency = destroyLatency;
+    }
+
+    
+    /**
+     * @param validateLatency the validateLatency to set
+     */
+    public void setDelayLatency(long delayLatency) {
+        this.validateLatency = delayLatency;
+    }
+}
+
     @Override
     protected boolean isLifo() {
         return true;
@@ -1796,6 +1915,9 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
      * enough margin for this to work correctly on most (all?) systems but be
      * aware of this if you see a failure of this test.
      */
+    @SuppressWarnings({
+        "rawtypes", "unchecked"
+    })
     @Test(timeout=60000)
     public void testBorrowObjectFairness() {
 
