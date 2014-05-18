@@ -37,8 +37,38 @@
             <lineEnding>lf</lineEnding>
         </fileSet>
         <fileSet>
-            <directory>src</directory>
-            <lineEnding>unix</lineEnding>
+            <directory>doc</directory>
+            <lineEnding>lf</lineEnding>
         </fileSet>
+        <fileSet>
+            <directory>src/site/resources</directory>
+        </fileSet>
+        <fileSet>
+            <directory>src/site/xdoc</directory>
+            <lineEnding>lf</lineEnding>
+        </fileSet>
+        <fileSet>
+            <directory>src/site</directory>
+            <includes>
+              <include>site.xml</include>
+            </includes>
+            <lineEnding>lf</lineEnding>
+        </fileSet>
+        <fileSet>
+            <directory>src/changes</directory>
+            <lineEnding>lf</lineEnding>
+        </fileSet>
+        <fileSet>
+            <directory>src/main</directory>
+            <lineEnding>lf</lineEnding>
+        </fileSet>
+        <fileSet>
+            <directory>src/test/java</directory>
+            <lineEnding>lf</lineEnding>
+        </fileSet> 
+        <fileSet>
+            <directory>src/test/resources</directory>
+        </fileSet> 
     </fileSets>
 </assembly>
+
