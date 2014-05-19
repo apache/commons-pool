@@ -423,7 +423,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         boolean blockWhenExhausted = getBlockWhenExhausted();
 
         boolean create;
-        long waitTime = 0;
+        long waitTime = System.currentTimeMillis();
 
         while (p == null) {
             create = false;
@@ -437,10 +437,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                     if (borrowMaxWaitMillis < 0) {
                         p = idleObjects.takeFirst();
                     } else {
-                        waitTime = System.currentTimeMillis();
                         p = idleObjects.pollFirst(borrowMaxWaitMillis,
                                 TimeUnit.MILLISECONDS);
-                        waitTime = System.currentTimeMillis() - waitTime;
                     }
                 }
                 if (p == null) {
@@ -509,7 +507,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             }
         }
 
-        updateStatsBorrow(p, waitTime);
+        updateStatsBorrow(p, System.currentTimeMillis() - waitTime);
 
         return p.getObject();
     }

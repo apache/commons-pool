@@ -49,6 +49,11 @@ The <action> type attribute can be add,update,fix,remove.
       Improve performance of statistics collection for pools that extend
       BaseGenericObjectPool.
     </action>
+    <action dev="psteitz" type="fix" issue="POOL-259">
+      Made client wait time statistics accurate when pools are configured to
+      block indefinitely.  Also modified computation to include latency clients
+      experience due to waiting on factory methods.
+    </action>
   </release>
   <release version="2.2" date="2014-02-24" description=
 "This is a maintenance release that adds a new testOnCreate configuration option
