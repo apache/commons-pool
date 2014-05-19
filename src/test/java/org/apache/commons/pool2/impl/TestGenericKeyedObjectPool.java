@@ -1484,6 +1484,26 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         }
         Assert.assertEquals(nIterations, pool.getDestroyedCount());
     }
+    
+    // POOL-259
+    @Test
+    public void testClientWaitStats() throws Exception {
+        SimpleFactory<String> factory = new SimpleFactory<String>();
+        // Give makeObject a little latency
+        factory.setMakeLatency(100);
+        final GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<String, String>(
+                factory, new GenericKeyedObjectPoolConfig());
+        String s = pool.borrowObject("one");
+        // First borrow waits on create, so wait time should be at least 100 ms
+        Assert.assertTrue(pool.getMaxBorrowWaitTimeMillis() >= 100);
+        Assert.assertTrue(pool.getMeanBorrowWaitTimeMillis() >= 100);
+        pool.returnObject("one", s);
+        pool.borrowObject("one");
+        // Second borrow does not have to wait on create, average should be about 50
+        Assert.assertTrue(pool.getMaxBorrowWaitTimeMillis() >= 100);
+        Assert.assertTrue(pool.getMeanBorrowWaitTimeMillis() < 60);  
+        Assert.assertTrue(pool.getMeanBorrowWaitTimeMillis() > 40);  
+    }
 
     /**
      * Attempts to invalidate an object, swallowing IllegalStateException.
@@ -1663,6 +1683,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             if (exceptionOnCreate) {
                 throw new Exception();
             }
+            doWait(makeLatency);
             String out = null;
             synchronized(this) {
                 activeCount++;
@@ -1713,6 +1734,9 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         public void setDestroyLatency(long destroyLatency) {
             this.destroyLatency = destroyLatency;
         }
+        public void setMakeLatency(long makeLatency) {
+            this.makeLatency = makeLatency;
+        }
         public void setValidationEnabled(boolean b) {
             enableValidation = b;
         }
@@ -1745,6 +1769,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         boolean oddValid = true;
         boolean enableValidation = false;
         long destroyLatency = 0;
+        long makeLatency = 0;
         volatile int maxTotalPerKey = Integer.MAX_VALUE;
         boolean exceptionOnPassivate = false;
         boolean exceptionOnActivate = false;
