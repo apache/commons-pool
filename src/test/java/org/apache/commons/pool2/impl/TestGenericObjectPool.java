@@ -1469,13 +1469,26 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     static class TestThread<T> implements Runnable {
-        private final java.util.Random _random = new java.util.Random();
 
-        // Thread config items
+        /** source of random delay times */
+        private final java.util.Random _random;
+
+        /** pool to borrow from */
         private final ObjectPool<T> _pool;
+
+        /** number of borrow attempts */
         private final int _iter;
-        private final int _delay;
+
+        /** delay before each borrow attempt */
+        private final int _startDelay;
+
+        /** time to hold each borrowed object before returning it */
+        private final int _holdTime;
+
+        /** whether or not start and hold time are randomly generated */
         private final boolean _randomDelay;
+
+        /** object expected to be borrowed (fail otherwise) */
         private final Object _expectedObject;
 
         private volatile boolean _complete = false;
@@ -1501,12 +1514,19 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
         public TestThread(ObjectPool<T> pool, int iter, int delay,
                 boolean randomDelay, Object obj) {
-            _pool = pool;
-            _iter = iter;
-            _delay = delay;
-            _randomDelay = randomDelay;
-            _expectedObject = obj;
+            this(pool, iter, delay, delay, randomDelay, obj);
         }
+        
+        public TestThread(ObjectPool<T> pool, int iter, int startDelay,
+            int holdTime, boolean randomDelay, Object obj) {
+        _pool = pool;
+        _iter = iter;
+        _startDelay = startDelay;
+        _holdTime = holdTime;
+        _randomDelay = randomDelay;
+        _random = _randomDelay ? new Random() : null;
+        _expectedObject = obj;
+    }
 
         public boolean complete() {
             return _complete;
@@ -1519,10 +1539,12 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         @Override
         public void run() {
             for(int i=0;i<_iter;i++) {
-                long delay =
-                    _randomDelay ? (long)_random.nextInt(_delay) : _delay;
+                long startDelay =
+                    _randomDelay ? (long)_random.nextInt(_startDelay) : _startDelay;
+                long holdTime =
+                    _randomDelay ? (long)_random.nextInt(_holdTime) : _holdTime;
                 try {
-                    Thread.sleep(delay);
+                    Thread.sleep(startDelay);
                 } catch(InterruptedException e) {
                     // ignored
                 }
@@ -1544,7 +1566,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 }
 
                 try {
-                    Thread.sleep(delay);
+                    Thread.sleep(holdTime);
                 } catch(InterruptedException e) {
                     // ignored
                 }
