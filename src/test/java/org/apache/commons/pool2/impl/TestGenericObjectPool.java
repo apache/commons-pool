@@ -1917,8 +1917,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     /**
      * @param validateLatency the validateLatency to set
      */
-    public void setDelayLatency(long delayLatency) {
-        this.validateLatency = delayLatency;
+    public void setValidateLatency(long validateLatency) {
+        this.validateLatency = validateLatency;
     }
 }
 
@@ -1941,28 +1941,42 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         "rawtypes", "unchecked"
     })
     @Test(timeout=60000)
-    public void testBorrowObjectFairness() {
+    public void testBorrowObjectFairness() throws Exception {
+        
+        int numThreads = 40;
+        int maxTotal = 40;
 
-        // Config
-        int numThreads = 30;
-        int maxTotal = 10;
+        GenericObjectPoolConfig config = new GenericObjectPoolConfig();
+        config.setMaxTotal(maxTotal);
+        config.setMaxIdle(maxTotal);
+        config.setFairness(true);
+        config.setLifo(false);
+        
+        pool = new GenericObjectPool(factory, config);
+        
+        // Exhaust the pool
+        String[] objects = new String[maxTotal];
+        for (int i = 0; i < maxTotal; i++) {
+            objects[i] = pool.borrowObject();
+        }
 
-        pool.setMaxTotal(maxTotal);
-        pool.setBlockWhenExhausted(true);
-        pool.setTimeBetweenEvictionRunsMillis(-1);
-
-        // Start threads to borrow objects
+        // Start and park threads waiting to borrow objects
         TestThread[] threads = new TestThread[numThreads];
         for(int i=0;i<numThreads;i++) {
-            threads[i] = new TestThread(pool, 1, 2000, false, String.valueOf(i % maxTotal));
+            threads[i] = new TestThread(pool, 1, 0, 2000, false, String.valueOf(i % maxTotal));
             Thread t = new Thread(threads[i]);
             t.start();
             // Short delay to ensure threads start in correct order
             try {
-                Thread.sleep(50);
+                Thread.sleep(10);
             } catch (InterruptedException e) {
                 fail(e.toString());
             }
+        }
+        
+        // Return objects, other threads should get served in order
+        for (int i = 0; i < maxTotal; i++) {
+            pool.returnObject(objects[i]);
         }
 
         // Wait for threads to finish

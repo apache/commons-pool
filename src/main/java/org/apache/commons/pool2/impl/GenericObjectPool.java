@@ -111,6 +111,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             throw new IllegalArgumentException("factory may not be null");
         }
         this.factory = factory;
+        
+        idleObjects = new LinkedBlockingDeque<PooledObject<T>>(config.getFairness());
 
         setConfig(config);
 
@@ -1096,8 +1098,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * {@link #_maxActive} objects created at any one time.
      */
     private final AtomicLong createCount = new AtomicLong(0);
-    private final LinkedBlockingDeque<PooledObject<T>> idleObjects =
-        new LinkedBlockingDeque<PooledObject<T>>();
+    private final LinkedBlockingDeque<PooledObject<T>> idleObjects;
 
     // JMX specific attributes
     private static final String ONAME_BASE =
