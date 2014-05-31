@@ -106,6 +106,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
             throw new IllegalArgumentException("factory may not be null");
         }
         this.factory = factory;
+        this.fairness = config.getFairness();
 
         setConfig(config);
 
@@ -1082,7 +1083,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                 lock.lock();
                 objectDeque = poolMap.get(k);
                 if (objectDeque == null) {
-                    objectDeque = new ObjectDeque<T>();
+                    objectDeque = new ObjectDeque<T>(fairness);
                     objectDeque.getNumInterested().incrementAndGet();
                     // NOTE: Keys must always be added to both poolMap and
                     //       poolKeyList at the same time while protected by
@@ -1398,8 +1399,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      */
     private class ObjectDeque<S> {
 
-        private final LinkedBlockingDeque<PooledObject<S>> idleObjects =
-                new LinkedBlockingDeque<PooledObject<S>>();
+        private final LinkedBlockingDeque<PooledObject<S>> idleObjects;
 
         /*
          * Number of instances created - number destroyed.
@@ -1423,6 +1423,16 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
          */
         private final AtomicLong numInterested = new AtomicLong(0);
 
+        /**
+         * Create a new ObjecDeque with the given fairness policy.
+         * @param fairness true means client threads waiting to borrow / return instances
+         * will be served as if waiting in a FIFO queue.
+         */
+        public ObjectDeque(boolean fairness) {
+            idleObjects = new LinkedBlockingDeque<PooledObject<S>>(fairness);
+            
+        }
+        
         /**
          * Obtain the idle objects for the current key.
          *
@@ -1469,6 +1479,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
     private volatile int maxTotalPerKey =
         GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL_PER_KEY;
     private final KeyedPooledObjectFactory<K,T> factory;
+    private final boolean fairness;
 
 
     //--- internal attributes --------------------------------------------------

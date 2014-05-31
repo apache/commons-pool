@@ -1029,6 +1029,68 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             }
         }
     }
+    
+    /*
+     * Note: This test relies on timing for correct execution. There *should* be
+     * enough margin for this to work correctly on most (all?) systems but be
+     * aware of this if you see a failure of this test.
+     */
+    @SuppressWarnings({
+        "rawtypes", "unchecked"
+    })
+    @Test(timeout=60000)
+    public void testBorrowObjectFairness() throws Exception {
+        
+        int numThreads = 40;
+        int maxTotal = 40;
+
+        GenericKeyedObjectPoolConfig config = new GenericKeyedObjectPoolConfig();
+        config.setMaxTotalPerKey(maxTotal);
+        config.setFairness(true);
+        config.setLifo(false);
+        config.setMaxIdlePerKey(maxTotal);
+        
+        pool = new GenericKeyedObjectPool<String, String>(factory, config);
+        
+        // Exhaust the pool
+        String[] objects = new String[maxTotal];
+        for (int i = 0; i < maxTotal; i++) {
+            objects[i] = pool.borrowObject("0");
+        }
+
+        // Start and park threads waiting to borrow objects
+        TestThread[] threads = new TestThread[numThreads];
+        for(int i=0;i<numThreads;i++) {
+            threads[i] = new TestThread(pool, 1, 0, 2000, false, "0" + String.valueOf(i % maxTotal), "0");
+            Thread t = new Thread(threads[i]);
+            t.start();
+            // Short delay to ensure threads start in correct order
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                fail(e.toString());
+            }
+        }
+        
+        // Return objects, other threads should get served in order
+        for (int i = 0; i < maxTotal; i++) {
+            pool.returnObject("0", objects[i]);
+        }
+
+        // Wait for threads to finish
+        for(int i=0;i<numThreads;i++) {
+            while(!(threads[i]).complete()) {
+                try {
+                    Thread.sleep(500L);
+                } catch(InterruptedException e) {
+                    // ignored
+                }
+            }
+            if(threads[i].failed()) {
+                fail("Thread "+i+" failed: "+threads[i]._exception.toString());
+            }
+        }
+    }
 
     @Test(timeout=60000)
     public void testConstructors() throws Exception {
@@ -1603,27 +1665,47 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     static class TestThread<T> implements Runnable {
         private final java.util.Random _random = new java.util.Random();
 
-        // Thread config items
+        /** GKOP to hit */
         private final KeyedObjectPool<String,T> _pool;
+        /** number of borrow/return iterations */
         private final int _iter;
-        private final int _delay;
+        /** delay before borrow */
+        private final int _startDelay;
+        /** delay before return */
+        private final int _holdTime;
+        /** whether or not delays are random (with max = configured values) */
+        private final boolean _randomDelay;
+        /** expected object */
+        private final T _expectedObject;
+        /** key used in borrow / return sequence - null means random */
+        private final String _key;
 
         private volatile boolean _complete = false;
         private volatile boolean _failed = false;
         private volatile Exception _exception;
 
         public TestThread(KeyedObjectPool<String,T> pool) {
-            this(pool, 100, 50);
+            this(pool, 100, 50, 50, true, null, null);
         }
 
         public TestThread(KeyedObjectPool<String,T> pool, int iter) {
-            this(pool, iter, 50);
+            this(pool, iter, 50, 50, true, null, null);
+        }
+        
+        public TestThread(KeyedObjectPool<String,T> pool, int iter, int delay) {
+            this(pool, iter, delay, delay, true, null, null);
         }
 
-        public TestThread(KeyedObjectPool<String,T> pool, int iter, int delay) {
+        public TestThread(KeyedObjectPool<String,T> pool, int iter, int startDelay,
+            int holdTime, boolean randomDelay, T expectedObject, String key) {
             _pool = pool;
             _iter = iter;
-            _delay = delay;
+            _startDelay = startDelay;
+            _holdTime = holdTime;
+            _randomDelay = randomDelay;
+            _expectedObject = expectedObject;
+            _key = key;
+            
         }
 
         public boolean complete() {
@@ -1637,9 +1719,9 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         @Override
         public void run() {
             for(int i=0;i<_iter;i++) {
-                String key = String.valueOf(_random.nextInt(3));
+                String key = _key == null ? String.valueOf(_random.nextInt(3)) : _key;
                 try {
-                    Thread.sleep(_random.nextInt(_delay));
+                    Thread.sleep(_randomDelay ? _random.nextInt(_startDelay) : _startDelay);
                 } catch(InterruptedException e) {
                     // ignored
                 }
@@ -1652,9 +1734,16 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                     _complete = true;
                     break;
                 }
+                
+                if (_expectedObject != null && !_expectedObject.equals(obj)) {
+                    _exception = new Exception("Expected: "+_expectedObject+ " found: "+obj);
+                    _failed = true;
+                    _complete = true;
+                    break;
+                }
 
                 try {
-                    Thread.sleep(_random.nextInt(_delay));
+                    Thread.sleep(_randomDelay ? _random.nextInt(_holdTime) : _holdTime);
                 } catch(InterruptedException e) {
                     // ignored
                 }

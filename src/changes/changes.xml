@@ -45,6 +45,9 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
   <release version="2.3" date="TBD" description=
 "TBD">
+    <action dev="psteitz" type="add" issue="POOL-262">
+      Made fairness configurable for GenericObjectPool, GenericKeyedObjectPool.
+    </action>
     <action dev="markt" type="fix">
       Improve performance of statistics collection for pools that extend
       BaseGenericObjectPool.
