@@ -535,6 +535,12 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
             } else {
                 idleObjects.addLast(p);
             }
+            if (isClosed()) {
+                // Pool closed while object was being added to idle objects.
+                // Make sure the returned object is destroyed rather than left
+                // in the idle object pool (which would effectively be a leak)
+                clear(key);
+            }
         }
 
         if (hasBorrowWaiters()) {
@@ -1430,9 +1436,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
          */
         public ObjectDeque(boolean fairness) {
             idleObjects = new LinkedBlockingDeque<PooledObject<S>>(fairness);
-            
         }
-        
+
         /**
          * Obtain the idle objects for the current key.
          *

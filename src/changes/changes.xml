@@ -45,6 +45,10 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
   <release version="2.3" date="TBD" description=
 "TBD">
+    <action dev="markt" type="fix" issue="POOL-263">
+      Fix a threading issue that meant that concurrent calls to close() and
+      returnObject() could result in some returned objects not being destroyed.
+    </action>
     <action dev="psteitz" type="add" issue="POOL-262">
       Made fairness configurable for GenericObjectPool, GenericKeyedObjectPool.
     </action>
