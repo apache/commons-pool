@@ -124,13 +124,13 @@
       <groupId>cglib</groupId>
       <artifactId>cglib</artifactId>
       <version>3.0</version>
-      <scope>provided</scope>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm-util</artifactId>
       <version>4.0</version>
-      <scope>provided</scope>
+      <optional>true</optional>
     </dependency>
     
   </dependencies>
@@ -161,6 +161,7 @@
     <commons.site.path>pool</commons.site.path>
     <commons.scmPubUrl>https://svn.apache.org/repos/infra/websites/production/commons/content/proper/commons-pool</commons.scmPubUrl>
     <commons.scmPubCheckoutDirectory>site-content</commons.scmPubCheckoutDirectory>
+    <commons.osgi.import>net.sf.cglib.proxy;resolution:=optional,*</commons.osgi.import>
   </properties> 
 
   <build>

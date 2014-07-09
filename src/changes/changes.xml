@@ -48,6 +48,10 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="psteitz" type="add" issue="POOL-262">
       Made fairness configurable for GenericObjectPool, GenericKeyedObjectPool.
     </action>
+    <action dev="markt" type="fix" issue="POOL-261">
+      Correctly mark cglib as an optional dependency and ensure that the OSGi
+      manifest information reflects that.
+    </action>
     <action dev="markt" type="fix">
       Improve performance of statistics collection for pools that extend
       BaseGenericObjectPool.
