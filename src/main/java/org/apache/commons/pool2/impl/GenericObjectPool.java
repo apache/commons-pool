@@ -111,7 +111,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             throw new IllegalArgumentException("factory may not be null");
         }
         this.factory = factory;
-        
+
         idleObjects = new LinkedBlockingDeque<PooledObject<T>>(config.getFairness());
 
         setConfig(config);
@@ -609,6 +609,12 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             } else {
                 idleObjects.addLast(p);
             }
+            if (isClosed()) {
+                // Pool closed while object was being added to idle objects.
+                // Make sure the returned object is destroyed rather than left
+                // in the idle object pool (which would effectively be a leak)
+                clear();
+            }
         }
         updateStatsReturn(activeTime);
     }
@@ -903,6 +909,12 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             } else {
                 idleObjects.addLast(p);
             }
+        }
+        if (isClosed()) {
+            // Pool closed while object was being added to idle objects.
+            // Make sure the returned object is destroyed rather than left
+            // in the idle object pool (which would effectively be a leak)
+            clear();
         }
     }
 

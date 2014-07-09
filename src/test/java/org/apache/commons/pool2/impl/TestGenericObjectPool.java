@@ -754,6 +754,45 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
     }
 
+    /**
+     * This is the test case for POOL-263. It is disabled since it will always
+     * pass without artificial delay being injected into GOP.returnObject() and
+     * a way to this this hasn't currently been found that doesn't involve
+     * polluting the GOP implementation. The artificial delay needs to be
+     * inserted just before the final call to isLifo() in the returnObject()
+     * method.
+     */
+    //@Test(timeout=60000)
+    public void testReturnObject() throws Exception {
+
+        pool.setMaxTotal(1);
+        pool.setMaxIdle(-1);
+        String active = pool.borrowObject();
+
+        assertEquals(1, pool.getNumActive());
+        assertEquals(0, pool.getNumIdle());
+
+        Thread t = new Thread() {
+
+            @Override
+            public void run() {
+                pool.close();
+            }
+
+        };
+        t.start();
+
+        pool.returnObject(active);
+
+        // Wait for the close() thread to complete
+        while (t.isAlive()) {
+            Thread.sleep(50);
+        }
+
+        assertEquals(0, pool.getNumIdle());
+    }
+
+
     @Test(timeout=60000)
     public void testSettersAndGetters() throws Exception {
         {
@@ -1396,7 +1435,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             */
         }
     }
-    
+
     /**
      * Verifies that concurrent threads never "share" instances
      */
@@ -1516,7 +1555,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 boolean randomDelay, Object obj) {
             this(pool, iter, delay, delay, randomDelay, obj);
         }
-        
+
         public TestThread(ObjectPool<T> pool, int iter, int startDelay,
             int holdTime, boolean randomDelay, Object obj) {
         _pool = pool;
@@ -1827,7 +1866,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             }
         }
     }
-    
+
     protected static class AtomicIntegerFactory
     extends BasePooledObjectFactory<AtomicInteger> {
 
@@ -1836,7 +1875,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     private long createLatency = 0;
     private long destroyLatency = 0;
     private long validateLatency = 0;
-    
+
     @Override
     public AtomicInteger create() {
         try {
@@ -1873,7 +1912,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         } catch (InterruptedException ex) {}
         return instance.getObject().intValue() == 1;
     }
-    
+
     @Override
     public void destroyObject(PooledObject<AtomicInteger> p) {
         try {
@@ -1881,7 +1920,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         } catch (InterruptedException ex) {}
     }
 
-    
+
     /**
      * @param activateLatency the activateLatency to set
      */
@@ -1889,7 +1928,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         this.activateLatency = activateLatency;
     }
 
-    
+
     /**
      * @param passivateLatency the passivateLatency to set
      */
@@ -1897,7 +1936,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         this.passivateLatency = passivateLatency;
     }
 
-    
+
     /**
      * @param createLatency the createLatency to set
      */
@@ -1905,7 +1944,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         this.createLatency = createLatency;
     }
 
-    
+
     /**
      * @param destroyLatency the destroyLatency to set
      */
@@ -1913,7 +1952,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         this.destroyLatency = destroyLatency;
     }
 
-    
+
     /**
      * @param validateLatency the validateLatency to set
      */
@@ -1942,7 +1981,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     })
     @Test(timeout=60000)
     public void testBorrowObjectFairness() throws Exception {
-        
+
         int numThreads = 40;
         int maxTotal = 40;
 
@@ -1951,9 +1990,9 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         config.setMaxIdle(maxTotal);
         config.setFairness(true);
         config.setLifo(false);
-        
+
         pool = new GenericObjectPool(factory, config);
-        
+
         // Exhaust the pool
         String[] objects = new String[maxTotal];
         for (int i = 0; i < maxTotal; i++) {
@@ -1973,7 +2012,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 fail(e.toString());
             }
         }
-        
+
         // Return objects, other threads should get served in order
         for (int i = 0; i < maxTotal; i++) {
             pool.returnObject(objects[i]);
@@ -2310,7 +2349,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         Assert.assertEquals(0, pool.getNumActive());
         Assert.assertEquals(1, pool.getNumIdle());
     }
-    
+
     // POOL-259
     @Test
     public void testClientWaitStats() throws Exception {
@@ -2327,8 +2366,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.borrowObject();
         // Second borrow does not have to wait on create, average should be about 50
         Assert.assertTrue(pool.getMaxBorrowWaitTimeMillis() >= 100);
-        Assert.assertTrue(pool.getMeanBorrowWaitTimeMillis() < 60);  
-        Assert.assertTrue(pool.getMeanBorrowWaitTimeMillis() > 40);  
+        Assert.assertTrue(pool.getMeanBorrowWaitTimeMillis() < 60);
+        Assert.assertTrue(pool.getMeanBorrowWaitTimeMillis() > 40);
     }
 
     private static final class DummyFactory
