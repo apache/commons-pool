@@ -413,6 +413,28 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             assertFalse(pool.getBlockWhenExhausted());
         }
     }
+    
+    /** 
+     * JIRA: POOL-270 - make sure constructor correctly sets run
+     * frequency of evictor timer.
+     */
+    @Test
+    public void testContructorEvictionConfig() throws Exception {
+        GenericKeyedObjectPoolConfig config = new GenericKeyedObjectPoolConfig();
+        config.setTimeBetweenEvictionRunsMillis(500);
+        config.setMinEvictableIdleTimeMillis(50);
+        config.setNumTestsPerEvictionRun(5);
+        GenericKeyedObjectPool p = new GenericKeyedObjectPool<String, String>(factory, config);
+        for(int i=0;i<5;i++) {
+            p.addObject("one");
+        }
+        try { Thread.sleep(100); } catch(InterruptedException e) { }
+        assertEquals(5, p.getNumIdle("one"));
+        try { Thread.sleep(500); } catch(InterruptedException e) { }
+        assertEquals(0, p.getNumIdle("one"));
+        p.close();
+    }
+    
 
     @Test(timeout=60000)
     public void testEviction() throws Exception {
