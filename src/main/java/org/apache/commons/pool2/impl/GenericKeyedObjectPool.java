@@ -110,7 +110,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
         setConfig(config);
 
-        startEvictor(getMinEvictableIdleTimeMillis());
+        startEvictor(getTimeBetweenEvictionRunsMillis());
     }
 
     /**

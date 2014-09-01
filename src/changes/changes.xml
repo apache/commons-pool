@@ -45,6 +45,11 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
   <release version="2.3" date="TBD" description=
 "TBD">
+    <action dev="psteitz" type="fix" issue="POOL-270" due-to="Michael Berman">
+      Fixed error in GenericKeyedObjectPool constructor causing minEvictableIdleTimeMillis
+      to be used in place of timeBetweenEvictionRunsMillis in eviction timer setup
+      when a GenericKeyedObjectPoolConfig instance is supplied to the constructor.
+    </action>
     <action dev="markt" type="fix" issue="POOL-263">
       Fix a threading issue that meant that concurrent calls to close() and
       returnObject() could result in some returned objects not being destroyed.
