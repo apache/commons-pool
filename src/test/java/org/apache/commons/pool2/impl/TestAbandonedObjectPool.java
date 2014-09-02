@@ -399,7 +399,9 @@ class PooledTestObject implements TrackedUse {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof PooledTestObject)) return false;
+        if (!(obj instanceof PooledTestObject)) {
+            return false;
+        }
         return obj.hashCode() == hashCode();
     }
 }
