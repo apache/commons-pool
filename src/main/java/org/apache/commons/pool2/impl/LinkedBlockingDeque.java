@@ -692,7 +692,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     public E peekFirst() {
         lock.lock();
         try {
-            return (first == null) ? null : first.item;
+            return first == null ? null : first.item;
         } finally {
             lock.unlock();
         }
@@ -702,7 +702,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     public E peekLast() {
         lock.lock();
         try {
-            return (last == null) ? null : last.item;
+            return last == null ? null : last.item;
         } finally {
             lock.unlock();
         }
@@ -1220,7 +1220,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
             lock.lock();
             try {
                 next = firstNode();
-                nextItem = (next == null) ? null : next.item;
+                nextItem = next == null ? null : next.item;
             } finally {
                 lock.unlock();
             }
@@ -1244,7 +1244,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
                     }
                     next = s;
                 }
-                nextItem = (next == null) ? null : next.item;
+                nextItem = next == null ? null : next.item;
             } finally {
                 lock.unlock();
             }

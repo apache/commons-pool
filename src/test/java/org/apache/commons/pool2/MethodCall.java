@@ -103,7 +103,7 @@ public class MethodCall {
     @Override
     public int hashCode() {
         int result;
-        result = (name != null ? name.hashCode() : 0);
+        result = name != null ? name.hashCode() : 0;
         result = 29 * result + (params != null ? params.hashCode() : 0);
         result = 29 * result + (returned != null ? returned.hashCode() : 0);
         return result;
