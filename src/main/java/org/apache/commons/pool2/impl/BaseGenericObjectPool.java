@@ -113,7 +113,7 @@ public abstract class BaseGenericObjectPool<T> {
     private final StatsStore waitTimes = new StatsStore(MEAN_TIMING_STATS_CACHE_SIZE);
     private final Object maxBorrowWaitTimeMillisLock = new Object();
     private volatile long maxBorrowWaitTimeMillis = 0; // @GuardedBy("maxBorrowWaitTimeMillisLock")
-    private SwallowedExceptionListener swallowedExceptionListener = null;
+    private volatile SwallowedExceptionListener swallowedExceptionListener = null;
 
 
     /**
