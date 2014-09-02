@@ -39,10 +39,10 @@ import java.util.TimerTask;
 class EvictionTimer {
 
     /** Timer instance */
-    private static Timer _timer; //@GuardedBy("this")
+    private static Timer _timer; //@GuardedBy("EvictionTimer.class")
 
     /** Static usage count tracker */
-    private static int _usageCount; //@GuardedBy("this")
+    private static int _usageCount; //@GuardedBy("EvictionTimer.class")
 
     /** Prevent instantiation */
     private EvictionTimer() {
