@@ -131,17 +131,17 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * Invariant: (first == null && last == null) ||
      *            (first.prev == null && first.item != null)
      */
-    private transient Node<E> first;
+    private transient Node<E> first; // @GuardedBy("lock")
 
     /**
      * Pointer to last node.
      * Invariant: (first == null && last == null) ||
      *            (last.next == null && last.item != null)
      */
-    private transient Node<E> last;
+    private transient Node<E> last; // @GuardedBy("lock")
 
     /** Number of items in the deque */
-    private transient int count;
+    private transient int count; // @GuardedBy("lock")
 
     /** Maximum number of items in the deque */
     private final int capacity;
