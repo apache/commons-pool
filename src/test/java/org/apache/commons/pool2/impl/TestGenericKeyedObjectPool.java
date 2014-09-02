@@ -424,7 +424,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         config.setTimeBetweenEvictionRunsMillis(500);
         config.setMinEvictableIdleTimeMillis(50);
         config.setNumTestsPerEvictionRun(5);
-        GenericKeyedObjectPool p = new GenericKeyedObjectPool<String, String>(factory, config);
+        GenericKeyedObjectPool<String, String> p = new GenericKeyedObjectPool<String, String>(factory, config);
         for(int i=0;i<5;i++) {
             p.addObject("one");
         }
