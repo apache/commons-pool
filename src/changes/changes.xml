@@ -43,8 +43,7 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Pool Changes</title>
   </properties>
   <body>
-  <release version="2.3" date="TBD" description=
-"TBD">
+  <release version="2.3" date="TBD" description="TBD">
     <action dev="psteitz" type="fix" issue="POOL-270" due-to="Michael Berman">
       Fixed error in GenericKeyedObjectPool constructor causing minEvictableIdleTimeMillis
       to be used in place of timeBetweenEvictionRunsMillis in eviction timer setup
@@ -69,6 +68,9 @@ The <action> type attribute can be add,update,fix,remove.
       Made client wait time statistics accurate when pools are configured to
       block indefinitely.  Also modified computation to include latency clients
       experience due to waiting on factory methods.
+    </action>
+    <action dev="ggregory" type="update" issue="POOL-273">
+      Update cglib to 3.1 from 3.0.
     </action>
   </release>
   <release version="2.2" date="2014-02-24" description=
