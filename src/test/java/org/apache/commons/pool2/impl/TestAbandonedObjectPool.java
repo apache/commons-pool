@@ -354,7 +354,7 @@ class PooledTestObject implements TrackedUse {
     private boolean destroyed = false;
     private int _hash = 0;
     private boolean _abandoned = false;
-    private static AtomicInteger hash = new AtomicInteger();
+    private static final AtomicInteger hash = new AtomicInteger();
 
     public PooledTestObject() {
         _hash = hash.incrementAndGet();
