@@ -1334,13 +1334,13 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             wtt[i] = new WaitingTestThread(pool,Integer.toString(i % keyCount),holdTime);
         }
         long origin = System.currentTimeMillis()-1000;
-        for(int i=0; i < wtt.length; i++){
-            wtt[i].start();
+        for (WaitingTestThread element : wtt) {
+            element.start();
         }
         int failed = 0;
-        for(int i=0; i < wtt.length; i++){
-            wtt[i].join();
-            if (wtt[i]._thrown != null){
+        for (WaitingTestThread element : wtt) {
+            element.join();
+            if (element._thrown != null){
                 failed++;
             }
         }
@@ -1353,8 +1353,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                     " Threads: " + wtt.length +
                     " Failed: " + failed
                     );
-            for(int i=0; i < wtt.length; i++){
-                WaitingTestThread wt = wtt[i];
+            for (WaitingTestThread wt : wtt) {
                 System.out.println(
                         "Preborrow: " + (wt.preborrow-origin) +
                         " Postborrow: " + (wt.postborrow != 0 ? wt.postborrow-origin : -1) +
