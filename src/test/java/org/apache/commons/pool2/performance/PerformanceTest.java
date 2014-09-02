@@ -81,8 +81,8 @@ public class PerformanceTest {
                 long rend = System.currentTimeMillis();
                 Thread.yield();
                 taskStats.complete++;
-                borrowTime = (bend-bbegin);
-                returnTime = (rend-rbegin);
+                borrowTime = bend-bbegin;
+                returnTime = rend-rbegin;
             } catch (Exception e) {
                 e.printStackTrace();
             }
