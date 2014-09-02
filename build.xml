@@ -36,8 +36,8 @@
       <!-- command line classpath, if any -->
       <property name="cp" value=""/>
 
-   	  <!-- now combine the classpaths -->
-   	  <property name="classpath" value="${cp}:${cglib.jar}:${asm.jar}:${asm-util.jar}:${junit.jar}"/>     
+      <!-- now combine the classpaths -->
+      <property name="classpath" value="${cp}:${cglib.jar}:${asm.jar}:${asm-util.jar}:${junit.jar}"/>     
 
       <property name="name" value="commons-pool2"/>
       <property name="title" value="Apache Commons Object Pooling Package"/>
