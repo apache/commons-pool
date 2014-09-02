@@ -72,6 +72,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="update" issue="POOL-273">
       Update cglib to 3.1 from 3.0.
     </action>
+    <action dev="ggregory" type="update" issue="POOL-274">
+      Update asm-util to 5.0.3 from 4.0.
+    </action>
   </release>
   <release version="2.2" date="2014-02-24" description=
 "This is a maintenance release that adds a new testOnCreate configuration option
