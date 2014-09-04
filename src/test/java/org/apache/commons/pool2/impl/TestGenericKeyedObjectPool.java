@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -1051,7 +1053,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             }
         }
     }
-    
+
     /*
      * Note: This test relies on timing for correct execution. There *should* be
      * enough margin for this to work correctly on most (all?) systems but be
@@ -1062,7 +1064,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     })
     @Test(timeout=60000)
     public void testBorrowObjectFairness() throws Exception {
-        
+
         int numThreads = 40;
         int maxTotal = 40;
 
@@ -1071,9 +1073,9 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         config.setFairness(true);
         config.setLifo(false);
         config.setMaxIdlePerKey(maxTotal);
-        
+
         pool = new GenericKeyedObjectPool<String, String>(factory, config);
-        
+
         // Exhaust the pool
         String[] objects = new String[maxTotal];
         for (int i = 0; i < maxTotal; i++) {
@@ -1093,7 +1095,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                 fail(e.toString());
             }
         }
-        
+
         // Return objects, other threads should get served in order
         for (int i = 0; i < maxTotal; i++) {
             pool.returnObject("0", objects[i]);
@@ -1567,7 +1569,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         }
         Assert.assertEquals(nIterations, pool.getDestroyedCount());
     }
-    
+
     // POOL-259
     @Test
     public void testClientWaitStats() throws Exception {
@@ -1584,8 +1586,36 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         pool.borrowObject("one");
         // Second borrow does not have to wait on create, average should be about 50
         Assert.assertTrue(pool.getMaxBorrowWaitTimeMillis() >= 100);
-        Assert.assertTrue(pool.getMeanBorrowWaitTimeMillis() < 60);  
-        Assert.assertTrue(pool.getMeanBorrowWaitTimeMillis() > 40);  
+        Assert.assertTrue(pool.getMeanBorrowWaitTimeMillis() < 60);
+        Assert.assertTrue(pool.getMeanBorrowWaitTimeMillis() > 40);
+    }
+
+    // POOL-276
+    @Test
+    public void testValidationOnCreateOnly() throws Exception {
+        factory.enableValidation = true;
+
+        pool.setMaxTotal(1);
+        pool.setTestOnCreate(true);
+        pool.setTestOnBorrow(false);
+        pool.setTestOnReturn(false);
+        pool.setTestWhileIdle(false);
+
+        final String o1 = pool.borrowObject("KEY");
+        Assert.assertEquals("KEY0", o1);
+        Timer t = new Timer();
+        t.schedule(
+                new TimerTask() {
+                    @Override
+                    public void run() {
+                        pool.returnObject("KEY", o1);
+                    }
+                }, 3000);
+
+        String o2 = pool.borrowObject("KEY");
+        Assert.assertEquals("KEY0", o2);
+
+        Assert.assertEquals(1, factory.validateCounter);
     }
 
     /**
@@ -1712,7 +1742,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         public TestThread(KeyedObjectPool<String,T> pool, int iter) {
             this(pool, iter, 50, 50, true, null, null);
         }
-        
+
         public TestThread(KeyedObjectPool<String,T> pool, int iter, int delay) {
             this(pool, iter, delay, delay, true, null, null);
         }
@@ -1726,7 +1756,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             _randomDelay = randomDelay;
             _expectedObject = expectedObject;
             _key = key;
-            
+
         }
 
         public boolean complete() {
@@ -1755,7 +1785,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                     _complete = true;
                     break;
                 }
-                
+
                 if (_expectedObject != null && !_expectedObject.equals(obj)) {
                     _exception = new Exception("Expected: "+_expectedObject+ " found: "+obj);
                     _failed = true;

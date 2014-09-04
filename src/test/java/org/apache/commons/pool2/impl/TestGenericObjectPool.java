@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.management.MBeanServer;
@@ -1802,7 +1804,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 hurl = exceptionOnActivate;
                 evenTest = evenValid;
                 oddTest = oddValid;
-                counter = validateCounter++;
+                counter = activationCounter++;
             }
             if (hurl) {
                 if (!(counter%2 == 0 ? evenTest : oddTest)) {
@@ -1821,6 +1823,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             }
         }
         int makeCounter = 0;
+        int activationCounter = 0;
         int validateCounter = 0;
         int activeCount = 0;
         boolean evenValid = true;
@@ -2367,6 +2370,32 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         Assert.assertTrue(pool.getMaxBorrowWaitTimeMillis() >= 100);
         Assert.assertTrue(pool.getMeanBorrowWaitTimeMillis() < 60);
         Assert.assertTrue(pool.getMeanBorrowWaitTimeMillis() > 40);
+    }
+
+    // POOL-276
+    @Test
+    public void testValidationOnCreateOnly() throws Exception {
+        pool.setMaxTotal(1);
+        pool.setTestOnCreate(true);
+        pool.setTestOnBorrow(false);
+        pool.setTestOnReturn(false);
+        pool.setTestWhileIdle(false);
+
+        final String o1 = pool.borrowObject();
+        Assert.assertEquals("0", o1);
+        Timer t = new Timer();
+        t.schedule(
+                new TimerTask() {
+                    @Override
+                    public void run() {
+                        pool.returnObject(o1);
+                    }
+                }, 3000);
+
+        String o2 = pool.borrowObject();
+        Assert.assertEquals("0", o2);
+
+        Assert.assertEquals(1, factory.validateCounter);
     }
 
     private static final class DummyFactory
