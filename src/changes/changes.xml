@@ -44,6 +44,11 @@ The <action> type attribute can be add,update,fix,remove.
   </properties>
   <body>
   <release version="2.3" date="TBD" description="TBD">
+    <action dev="markt" type="fix" issue="POOL-276">
+      Ensure that objects are not validated on borrow when testOnBorrow is set
+      to false, testOnCreate is set to true and the pool is exhausted at the
+      point borrowObject() is called.
+    </action>
     <action dev="psteitz" type="fix" issue="POOL-270" due-to="Michael Berman">
       Fixed error in GenericKeyedObjectPool constructor causing minEvictableIdleTimeMillis
       to be used in place of timeBetweenEvictionRunsMillis in eviction timer setup
