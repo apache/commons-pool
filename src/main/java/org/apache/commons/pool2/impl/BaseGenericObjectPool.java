@@ -112,7 +112,7 @@ public abstract class BaseGenericObjectPool<T> {
     private final StatsStore activeTimes = new StatsStore(MEAN_TIMING_STATS_CACHE_SIZE);
     private final StatsStore idleTimes = new StatsStore(MEAN_TIMING_STATS_CACHE_SIZE);
     private final StatsStore waitTimes = new StatsStore(MEAN_TIMING_STATS_CACHE_SIZE);
-    private MaxBorrowWaitTimeMillisStore maxBorrowWaitTimeMillis = new MaxBorrowWaitTimeMillisStore(MEAN_TIMING_STATS_CACHE_SIZE);
+    private BorrowWaitTimeMillisStore borrowWaitTimeMillis = new BorrowWaitTimeMillisStore(MEAN_TIMING_STATS_CACHE_SIZE);
     private volatile SwallowedExceptionListener swallowedExceptionListener = null;
 
 
@@ -802,7 +802,7 @@ public abstract class BaseGenericObjectPool<T> {
      * @return maximum wait time in milliseconds since the pool was created
      */
     public final long getMaxBorrowWaitTimeMillis() {
-        return maxBorrowWaitTimeMillis.getMax();
+        return borrowWaitTimeMillis.getMax();
     }
 
     /**
@@ -866,7 +866,7 @@ public abstract class BaseGenericObjectPool<T> {
         borrowedCount.incrementAndGet();
         idleTimes.add(p.getIdleTimeMillis());
         waitTimes.add(waitTime);
-        maxBorrowWaitTimeMillis.add(waitTime);
+        borrowWaitTimeMillis.add(waitTime);
     }
 
     /**
@@ -1050,13 +1050,13 @@ public abstract class BaseGenericObjectPool<T> {
         }
     }
 
-    private class MaxBorrowWaitTimeMillisStore {
+    private class BorrowWaitTimeMillisStore {
 
         private final ConcurrentLinkedQueue<Long> values;
 
         private final int size;
 
-        public MaxBorrowWaitTimeMillisStore(int size) {
+        public BorrowWaitTimeMillisStore(int size) {
             this.size = size;
             values = new ConcurrentLinkedQueue<Long>();
         }
