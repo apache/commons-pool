@@ -802,7 +802,7 @@ public abstract class BaseGenericObjectPool<T> {
      * @return maximum wait time in milliseconds since the pool was created
      */
     public final long getMaxBorrowWaitTimeMillis() {
-        return maxBorrowWaitTimeMillis.getMean();
+        return maxBorrowWaitTimeMillis.getMax();
     }
 
     /**
@@ -1065,7 +1065,7 @@ public abstract class BaseGenericObjectPool<T> {
             values.offer(value);
             if (values.size() > size) {
                 // Clean queue
-                getMean();
+                getMax();
             }
         }
 
@@ -1073,7 +1073,7 @@ public abstract class BaseGenericObjectPool<T> {
          * Get max value and clean queue
          * @return
          */
-        public long getMean() {
+        public long getMax() {
             long maxBorrowWaitTimeMillis = 0;
             while (values.peek() != null) {
                 maxBorrowWaitTimeMillis = Math.max(maxBorrowWaitTimeMillis, values.poll());
