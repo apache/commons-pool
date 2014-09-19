@@ -22,8 +22,9 @@ import java.io.Writer;
 import java.lang.management.ManagementFactory;
 import java.util.Iterator;
 import java.util.TimerTask;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicLongArray;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
@@ -54,9 +55,9 @@ public abstract class BaseGenericObjectPool<T> {
     // Constants
     /**
      * The size of the caches used to store historical data for some attributes
-     * so that rolling means may be calculated.
+     * so that rolling means may be calculated. Must be power of two.
      */
-    public static final int MEAN_TIMING_STATS_CACHE_SIZE = 100;
+    public static final int MEAN_TIMING_STATS_CACHE_SIZE = 1 << 7;
 
     // Configuration attributes
     private volatile int maxTotal =
@@ -112,7 +113,6 @@ public abstract class BaseGenericObjectPool<T> {
     private final StatsStore activeTimes = new StatsStore(MEAN_TIMING_STATS_CACHE_SIZE);
     private final StatsStore idleTimes = new StatsStore(MEAN_TIMING_STATS_CACHE_SIZE);
     private final StatsStore waitTimes = new StatsStore(MEAN_TIMING_STATS_CACHE_SIZE);
-    private BorrowWaitTimeMillisStore borrowWaitTimeMillis = new BorrowWaitTimeMillisStore(MEAN_TIMING_STATS_CACHE_SIZE);
     private volatile SwallowedExceptionListener swallowedExceptionListener = null;
 
 
@@ -802,7 +802,7 @@ public abstract class BaseGenericObjectPool<T> {
      * @return maximum wait time in milliseconds since the pool was created
      */
     public final long getMaxBorrowWaitTimeMillis() {
-        return borrowWaitTimeMillis.getMax();
+        return waitTimes.getMax();
     }
 
     /**
@@ -866,7 +866,6 @@ public abstract class BaseGenericObjectPool<T> {
         borrowedCount.incrementAndGet();
         idleTimes.add(p.getIdleTimeMillis());
         waitTimes.add(waitTime);
-        borrowWaitTimeMillis.add(waitTime);
     }
 
     /**
@@ -1021,66 +1020,50 @@ public abstract class BaseGenericObjectPool<T> {
 
     private class StatsStore {
 
-        private final ConcurrentLinkedQueue<Long> values;
-
+        private final AtomicLongArray values;
         private final int size;
+        private final AtomicLong maximum = new AtomicLong(0l);
+        private final AtomicInteger index = new AtomicInteger(0);
 
         public StatsStore(int size) {
+            if (Integer.bitCount(size) != 1) {
+                throw new IllegalArgumentException("StatsStore can only handle power of two history size");
+            }
             this.size = size;
-            values = new ConcurrentLinkedQueue<Long>();
+            values = new AtomicLongArray(size);
+            for (int i = 0; i < size; i++) {
+                values.set(i,-1);
+            }
         }
 
         public void add(long value) {
-            values.offer(value);
-            if (values.size() > size) {
-                values.poll();
-            }
+            // lock free ringbuffer
+            int i = index.getAndIncrement() & (size - 1);
+            values.lazySet(i, value);
+
+            // lock-free maximum
+            long currentMax;
+            do {
+                currentMax = maximum.get();
+            } while (value > currentMax && !maximum.compareAndSet(currentMax, value));
         }
 
         public long getMean() {
-            double result = 0;
+            long sum = 0;
             int counter = 0;
-            for (long value : values) {
-                counter++;
-                result = result * ((counter - 1) / (double) counter) +
-                        value / (double) counter;
+            for (int i = 0; i < size; i++) {
+                long value = values.get(i);
+                if (value != -1) {
+                    sum += value;
+                    counter++;
+                }
             }
-            return (long) result;
-
-        }
-    }
-
-    private class BorrowWaitTimeMillisStore {
-
-        private final ConcurrentLinkedQueue<Long> values;
-
-        private final int size;
-
-        public BorrowWaitTimeMillisStore(int size) {
-            this.size = size;
-            values = new ConcurrentLinkedQueue<Long>();
+            return sum / counter;
         }
 
-        public void add(long value) {
-            values.offer(value);
-            if (values.size() > size) {
-                // Clean queue
-                getMax();
-            }
-        }
-
-        /**
-         * Get max value and clean queue
-         * @return
-         */
         public long getMax() {
-            long maxBorrowWaitTimeMillis = 0;
-            while (values.peek() != null) {
-                maxBorrowWaitTimeMillis = Math.max(maxBorrowWaitTimeMillis, values.poll());
-            }
-            values.add(maxBorrowWaitTimeMillis);
-            return maxBorrowWaitTimeMillis;
-
+           return maximum.get();
         }
+
     }
 }
