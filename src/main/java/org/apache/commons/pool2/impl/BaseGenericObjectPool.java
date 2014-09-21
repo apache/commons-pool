@@ -1026,9 +1026,8 @@ public abstract class BaseGenericObjectPool<T> {
         private final AtomicInteger index = new AtomicInteger(0);
 
         public StatsStore(int size) {
-            if (Integer.bitCount(size) != 1) {
-                throw new IllegalArgumentException("StatsStore can only handle power of two history size");
-            }
+        	assert ((Integer.bitCount(size) == 1) && (size >= 2));
+        	 
             this.size = size;
             values = new AtomicLongArray(size);
             for (int i = 0; i < size; i++) {
@@ -1049,16 +1048,16 @@ public abstract class BaseGenericObjectPool<T> {
         }
 
         public long getMean() {
-            long sum = 0;
-            int counter = 0;
+            long sum = 0L;
+            int count = 0;
             for (int i = 0; i < size; i++) {
                 long value = values.get(i);
                 if (value != -1) {
+                    count++;
                     sum += value;
-                    counter++;
                 }
             }
-            return sum / counter;
+            return (count == 0) ? 0 : (sum / count);
         }
 
         public long getMax() {
