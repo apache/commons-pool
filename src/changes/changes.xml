@@ -84,6 +84,10 @@ The <action> type attribute can be add,update,fix,remove.
       Prevent potential memory leaks when the Pool is dereferenced without being
       closed.
     </action>
+    <action dev="markt" type="fix">
+      Prevent potential memory leaks with using an Evictor in a container
+      environment.
+    </action>
   </release>
   <release version="2.2" date="2014-02-24" description=
 "This is a maintenance release that adds a new testOnCreate configuration option
