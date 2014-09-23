@@ -935,8 +935,23 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                     continue;
                 }
 
-                if (evictionPolicy.evict(evictionConfig, underTest,
-                        poolMap.get(evictionKey).getIdleObjects().size())) {
+                // User provided eviction policy could throw all sorts of
+                // crazy exceptions. Protect against such an exception
+                // killing the eviction thread.
+                boolean evict;
+                try {
+                    evict = evictionPolicy.evict(evictionConfig, underTest,
+                            poolMap.get(evictionKey).getIdleObjects().size());
+                } catch (Throwable t) {
+                    // Slightly convoluted as SwallowedExceptionListener
+                    // uses Exception rather than Throwable
+                    PoolUtils.checkRethrow(t);
+                    swallowException(new Exception(t));
+                    // Don't evict on error conditions
+                    evict = false;
+                }
+
+                if (evict) {
                     destroy(evictionKey, underTest, true);
                     destroyedByEvictorCount.incrementAndGet();
                 } else {
