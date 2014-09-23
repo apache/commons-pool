@@ -591,7 +591,8 @@ public abstract class BaseGenericObjectPool<T> {
     public final void setEvictionPolicyClassName(
             String evictionPolicyClassName) {
         try {
-            Class<?> clazz = Class.forName(evictionPolicyClassName);
+            Class<?> clazz = Class.forName(evictionPolicyClassName, true,
+                    Thread.currentThread().getContextClassLoader());
             Object policy = clazz.newInstance();
             if (policy instanceof EvictionPolicy<?>) {
                 @SuppressWarnings("unchecked") // safe, because we just checked the class
