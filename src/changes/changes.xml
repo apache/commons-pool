@@ -88,6 +88,10 @@ The <action> type attribute can be add,update,fix,remove.
       Prevent potential memory leaks with using an Evictor in a container
       environment.
     </action>
+    <action dev="markt" type="fix">
+      Protect against a user provided eviction policy throwing an exception and
+      stopping the Evictor thread.
+    </action>
   </release>
   <release version="2.2" date="2014-02-24" description=
 "This is a maintenance release that adds a new testOnCreate configuration option
