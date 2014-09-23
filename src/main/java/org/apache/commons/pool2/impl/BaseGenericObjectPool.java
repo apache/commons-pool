@@ -20,6 +20,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.management.ManagementFactory;
+import java.lang.ref.WeakReference;
 import java.util.Iterator;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicLong;
@@ -94,9 +95,10 @@ public abstract class BaseGenericObjectPool<T> {
     /*
      * Class loader for evictor thread to use since in a J2EE or similar
      * environment the context class loader for the evictor thread may have
-     * visibility of the correct factory. See POOL-161.
+     * visibility of the correct factory. See POOL-161. Uses a weak reference to
+     * avoid potential memory leaks if the Pool is discarded rather than closed.
      */
-    private final ClassLoader factoryClassLoader;
+    private final WeakReference<ClassLoader> factoryClassLoader;
 
 
     // Monitoring (primarily JMX) attributes
@@ -137,7 +139,8 @@ public abstract class BaseGenericObjectPool<T> {
         this.creationStackTrace = getStackTrace(new Exception());
 
         // save the current CCL to be used later by the evictor Thread
-        factoryClassLoader = Thread.currentThread().getContextClassLoader();
+        factoryClassLoader = new WeakReference<ClassLoader>(
+                Thread.currentThread().getContextClassLoader());
         fairness = config.getFairness();
     }
 
@@ -251,7 +254,7 @@ public abstract class BaseGenericObjectPool<T> {
     public final boolean getLifo() {
         return lifo;
     }
-    
+
     /**
      * Returns whether or not the pool serves threads waiting to borrow objects fairly.
      * True means that waiting threads are served as if waiting in a FIFO queue.
@@ -997,8 +1000,14 @@ public abstract class BaseGenericObjectPool<T> {
                     Thread.currentThread().getContextClassLoader();
             try {
                 // Set the class loader for the factory
-                Thread.currentThread().setContextClassLoader(
-                        factoryClassLoader);
+                ClassLoader cl = factoryClassLoader.get();
+                if (cl == null) {
+                    // The pool has been dereferenced and the class loader GC'd.
+                    // Cancel this timer so the pool can be GC'd as well.
+                    cancel();
+                    return;
+                }
+                Thread.currentThread().setContextClassLoader(cl);
 
                 // Evict from the pool
                 try {
