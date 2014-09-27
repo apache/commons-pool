@@ -113,8 +113,7 @@ public abstract class BaseGenericObjectPool<T> {
     private final StatsStore activeTimes = new StatsStore(MEAN_TIMING_STATS_CACHE_SIZE);
     private final StatsStore idleTimes = new StatsStore(MEAN_TIMING_STATS_CACHE_SIZE);
     private final StatsStore waitTimes = new StatsStore(MEAN_TIMING_STATS_CACHE_SIZE);
-    private final Object maxBorrowWaitTimeMillisLock = new Object();
-    private volatile long maxBorrowWaitTimeMillis = 0; // @GuardedBy("maxBorrowWaitTimeMillisLock")
+    private final AtomicLong maxBorrowWaitTimeMillis = new AtomicLong(0L);
     private volatile SwallowedExceptionListener swallowedExceptionListener = null;
 
 
@@ -811,7 +810,7 @@ public abstract class BaseGenericObjectPool<T> {
      * @return maximum wait time in milliseconds since the pool was created
      */
     public final long getMaxBorrowWaitTimeMillis() {
-        return maxBorrowWaitTimeMillis;
+        return maxBorrowWaitTimeMillis.get();
     }
 
     /**
@@ -875,11 +874,15 @@ public abstract class BaseGenericObjectPool<T> {
         borrowedCount.incrementAndGet();
         idleTimes.add(p.getIdleTimeMillis());
         waitTimes.add(waitTime);
-        synchronized (maxBorrowWaitTimeMillisLock) {
-            if (waitTime > maxBorrowWaitTimeMillis) {
-                maxBorrowWaitTimeMillis = waitTime;
+
+        // lock-free optimistic-locking maximum
+        long currentMax;
+        do {
+            currentMax = maxBorrowWaitTimeMillis.get();
+            if (currentMax >= waitTime) {
+                break;
             }
-        }
+        } while (maxBorrowWaitTimeMillis.compareAndSet(currentMax, waitTime));
     }
 
     /**
