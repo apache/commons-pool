@@ -23,7 +23,9 @@ import java.lang.management.ManagementFactory;
 import java.lang.ref.WeakReference;
 import java.util.Iterator;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicLongArray;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
@@ -54,9 +56,9 @@ public abstract class BaseGenericObjectPool<T> {
     // Constants
     /**
      * The size of the caches used to store historical data for some attributes
-     * so that rolling means may be calculated.
+     * so that rolling means may be calculated. Must be power of two.
      */
-    public static final int MEAN_TIMING_STATS_CACHE_SIZE = 100;
+    public static final int MEAN_TIMING_STATS_CACHE_SIZE = 1 << 7;
 
     // Configuration attributes
     private volatile int maxTotal =
@@ -113,8 +115,6 @@ public abstract class BaseGenericObjectPool<T> {
     private final StatsStore activeTimes = new StatsStore(MEAN_TIMING_STATS_CACHE_SIZE);
     private final StatsStore idleTimes = new StatsStore(MEAN_TIMING_STATS_CACHE_SIZE);
     private final StatsStore waitTimes = new StatsStore(MEAN_TIMING_STATS_CACHE_SIZE);
-    private final Object maxBorrowWaitTimeMillisLock = new Object();
-    private volatile long maxBorrowWaitTimeMillis = 0; // @GuardedBy("maxBorrowWaitTimeMillisLock")
     private volatile SwallowedExceptionListener swallowedExceptionListener = null;
 
 
@@ -811,7 +811,7 @@ public abstract class BaseGenericObjectPool<T> {
      * @return maximum wait time in milliseconds since the pool was created
      */
     public final long getMaxBorrowWaitTimeMillis() {
-        return maxBorrowWaitTimeMillis;
+        return waitTimes.getMax();
     }
 
     /**
@@ -875,11 +875,6 @@ public abstract class BaseGenericObjectPool<T> {
         borrowedCount.incrementAndGet();
         idleTimes.add(p.getIdleTimeMillis());
         waitTimes.add(waitTime);
-        synchronized (maxBorrowWaitTimeMillisLock) {
-            if (waitTime > maxBorrowWaitTimeMillis) {
-                maxBorrowWaitTimeMillis = waitTime;
-            }
-        }
     }
 
     /**
@@ -1043,39 +1038,49 @@ public abstract class BaseGenericObjectPool<T> {
 
     private class StatsStore {
 
-        private final AtomicLong values[];
+        private final AtomicLongArray values;
         private final int size;
-        private int index;
+        private final AtomicLong maximum = new AtomicLong(0l);
+        private final AtomicInteger index = new AtomicInteger(0);
 
         public StatsStore(int size) {
+        	assert ((Integer.bitCount(size) == 1) && (size >= 2));
+        	 
             this.size = size;
-            values = new AtomicLong[size];
+            values = new AtomicLongArray(size);
             for (int i = 0; i < size; i++) {
-                values[i] = new AtomicLong(-1);
+                values.set(i,-1);
             }
         }
 
-        public synchronized void add(long value) {
-            values[index].set(value);
-            index++;
-            if (index == size) {
-                index = 0;
-            }
+        public void add(long value) {
+            // lock free ringbuffer
+            int i = index.getAndIncrement() & (size - 1);
+            values.lazySet(i, value);
+
+            // lock-free maximum
+            long currentMax;
+            do {
+                currentMax = maximum.get();
+            } while (value > currentMax && !maximum.compareAndSet(currentMax, value));
         }
 
         public long getMean() {
-            double result = 0;
-            int counter = 0;
+            long sum = 0L;
+            int count = 0;
             for (int i = 0; i < size; i++) {
-                long value = values[i].get();
+                long value = values.get(i);
                 if (value != -1) {
-                    counter++;
-                    result = result * ((counter - 1) / (double) counter) +
-                            value/(double) counter;
+                    count++;
+                    sum += value;
                 }
             }
-            return (long) result;
-
+            return (count == 0) ? 0 : (sum / count);
         }
+
+        public long getMax() {
+           return maximum.get();
+        }
+
     }
 }
