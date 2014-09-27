@@ -33,7 +33,7 @@ public class Waiter {
     private long latency = 0;
     private long lastPassivated = 0;
     private long lastIdleTimeMs = 0;
-    private int id = instanceCount.getAndIncrement();
+    private final int id = instanceCount.getAndIncrement();
 
     public Waiter(boolean active, boolean valid, long latency) {
         this.active = active;

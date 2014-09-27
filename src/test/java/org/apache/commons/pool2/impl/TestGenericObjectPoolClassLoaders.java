@@ -86,7 +86,7 @@ public class TestGenericObjectPoolClassLoaders {
 
     private static class CustomClassLoaderObjectFactory extends
             BasePooledObjectFactory<URL> {
-        private int n;
+        private final int n;
 
         CustomClassLoaderObjectFactory(int n) {
             this.n = n;
@@ -109,7 +109,7 @@ public class TestGenericObjectPoolClassLoaders {
     }
 
     private static class CustomClassLoader extends URLClassLoader {
-        private int n;
+        private final int n;
 
         CustomClassLoader(int n) {
             super(new URL[] { BASE_URL });

@@ -1030,7 +1030,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
     public static class TestEvictionPolicy<T> implements EvictionPolicy<T> {
 
-        private AtomicInteger callCount = new AtomicInteger(0);
+        private final AtomicInteger callCount = new AtomicInteger(0);
 
         @Override
         public boolean evict(EvictionConfig config, PooledObject<T> underTest,
@@ -1490,7 +1490,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     private class ConcurrentBorrowAndEvictThread extends Thread {
-        private boolean borrow;
+        private final boolean borrow;
         public String obj;
 
         public ConcurrentBorrowAndEvictThread(boolean borrow) {
