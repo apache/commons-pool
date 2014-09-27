@@ -263,7 +263,7 @@ public class TestAbandonedObjectPool {
     }
 
     class ConcurrentBorrower extends Thread {
-        private ArrayList<PooledTestObject> _borrowed;
+        private final ArrayList<PooledTestObject> _borrowed;
 
         public ConcurrentBorrower(ArrayList<PooledTestObject> borrowed) {
             _borrowed = borrowed;
@@ -280,7 +280,7 @@ public class TestAbandonedObjectPool {
     }
 
     class ConcurrentReturner extends Thread {
-        private PooledTestObject returned;
+        private final PooledTestObject returned;
         public ConcurrentReturner(PooledTestObject obj) {
             returned = obj;
         }

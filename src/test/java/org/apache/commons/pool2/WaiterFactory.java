@@ -59,7 +59,7 @@ KeyedPooledObjectFactory<K,Waiter> {
     private long activeCount = 0;
 
     /** Count of (makes - destroys) per key since last reset */
-    private Map<K,Integer> activeCounts = new HashMap<K,Integer>();
+    private final Map<K,Integer> activeCounts = new HashMap<K,Integer>();
 
     /** Maximum of (makes - destroys) - if exceeded IllegalStateException */
     private final long maxActive;  // GKOP 1.x calls this maxTotal
