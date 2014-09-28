@@ -882,7 +882,7 @@ public abstract class BaseGenericObjectPool<T> {
             if (currentMax >= waitTime) {
                 break;
             }
-        } while (maxBorrowWaitTimeMillis.compareAndSet(currentMax, waitTime));
+        } while (!maxBorrowWaitTimeMillis.compareAndSet(currentMax, waitTime));
     }
 
     /**

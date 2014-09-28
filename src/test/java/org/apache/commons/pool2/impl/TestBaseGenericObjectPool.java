@@ -46,13 +46,26 @@ public class TestBaseGenericObjectPool {
     
     @Test
     public void testBorrowWaitStatistics() {
-    	DefaultPooledObject<String> p = (DefaultPooledObject<String>) factory.makeObject();
-    	pool.updateStatsBorrow(p, 10);
-    	pool.updateStatsBorrow(p, 20);
-    	pool.updateStatsBorrow(p, 20);
-    	pool.updateStatsBorrow(p, 30);
-    	Assert.assertEquals(20, pool.getMeanBorrowWaitTimeMillis(), Double.MIN_VALUE);
-    	Assert.assertEquals(30, pool.getMaxBorrowWaitTimeMillis(), 0);
+        DefaultPooledObject<String> p = (DefaultPooledObject<String>) factory.makeObject();
+        pool.updateStatsBorrow(p, 10);
+        pool.updateStatsBorrow(p, 20);
+        pool.updateStatsBorrow(p, 20);
+        pool.updateStatsBorrow(p, 30);
+        Assert.assertEquals(20, pool.getMeanBorrowWaitTimeMillis(), Double.MIN_VALUE);
+        Assert.assertEquals(30, pool.getMaxBorrowWaitTimeMillis(), 0);
+    }
+
+    public void testBorrowWaitStatisticsMax() {
+        DefaultPooledObject<String> p = (DefaultPooledObject<String>) factory.makeObject();
+        Assert.assertEquals(0, pool.getMaxBorrowWaitTimeMillis(), Double.MIN_VALUE);
+        pool.updateStatsBorrow(p, 0);
+        Assert.assertEquals(0, pool.getMaxBorrowWaitTimeMillis(), Double.MIN_VALUE);
+        pool.updateStatsBorrow(p, 20);
+        Assert.assertEquals(20, pool.getMaxBorrowWaitTimeMillis(), Double.MIN_VALUE);
+        pool.updateStatsBorrow(p, 20);
+        Assert.assertEquals(20, pool.getMaxBorrowWaitTimeMillis(), Double.MIN_VALUE);
+        pool.updateStatsBorrow(p, 10);
+        Assert.assertEquals(20, pool.getMaxBorrowWaitTimeMillis(), Double.MIN_VALUE);
     }
     
     @Test
