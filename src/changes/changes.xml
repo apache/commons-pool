@@ -44,6 +44,9 @@ The <action> type attribute can be add,update,fix,remove.
   </properties>
   <body>
   <release version="2.3" date="TBD" description="TBD">
+    <action dev="psteitz" type="fix" issue="POOL-275">
+      Made wrapped BaseProxyHandler.pooledObject volatile.
+    </action>
     <action dev="ecki" type="fix" issue="POOL-277" due-to="Lucas Pouzac">
       Replace synchronisation with lock-free maxBorrowWaitTimeMillis to
       increase scalability.

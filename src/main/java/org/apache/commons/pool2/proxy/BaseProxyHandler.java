@@ -30,7 +30,7 @@ import org.apache.commons.pool2.UsageTracking;
  */
 class BaseProxyHandler<T> {
 
-    private T pooledObject;
+    private volatile T pooledObject;
     private final UsageTracking<T> usageTracking;
 
 
