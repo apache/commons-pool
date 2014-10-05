@@ -162,7 +162,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     public LinkedBlockingDeque() {
         this(Integer.MAX_VALUE);
     }
-    
+
     /**
      * Creates a {@code LinkedBlockingDeque} with a capacity of
      * {@link Integer#MAX_VALUE} and the given fairness policy.
@@ -182,7 +182,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     public LinkedBlockingDeque(int capacity) {
         this(capacity, false);
     }
-    
+
     /**
      * Creates a {@code LinkedBlockingDeque} with the given (fixed) capacity
      * and fairness policy.
