@@ -1044,12 +1044,21 @@ public abstract class BaseGenericObjectPool<T> {
         }
     }
 
+    /**
+     * Maintains a cache of values for a single metric and reports
+     * statistics on the cached values.
+     */
     private class StatsStore {
 
         private final AtomicLong values[];
         private final int size;
         private int index;
 
+        /**
+         * Create a StatsStore with the given cache size.
+         *
+         * @param size number of values to maintain in the cache.
+         */
         public StatsStore(int size) {
             this.size = size;
             values = new AtomicLong[size];
@@ -1058,6 +1067,12 @@ public abstract class BaseGenericObjectPool<T> {
             }
         }
 
+        /**
+         * Adds a value to the cache.  If the cache is full, one of the
+         * existing values is replaced by the new value.
+         *
+         * @param value new value to add to the cache.
+         */
         public synchronized void add(long value) {
             values[index].set(value);
             index++;
@@ -1066,6 +1081,11 @@ public abstract class BaseGenericObjectPool<T> {
             }
         }
 
+        /**
+         * Returns the mean of the cached values.
+         *
+         * @return the mean of the cache, truncated to long
+         */
         public long getMean() {
             double result = 0;
             int counter = 0;
@@ -1078,7 +1098,6 @@ public abstract class BaseGenericObjectPool<T> {
                 }
             }
             return (long) result;
-
         }
     }
 }
