@@ -104,6 +104,9 @@ The <action> type attribute can be add,update,fix,remove.
       allows application provided eviction policies to be used in a container
       environment when the pooling implementation is provided by the container.
     </action>
+    <action dev="markt" type="fix">
+      Fix a potential infinite loop in the underlying Deque implementation.
+    </action>
   </release>
   <release version="2.2" date="2014-02-24" description=
 "This is a maintenance release that adds a new testOnCreate configuration option

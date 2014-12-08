@@ -482,4 +482,29 @@ public class TestLinkedBlockingDeque {
         assertEquals(Integer.valueOf(1), iter.next());
     }
 
+    /*
+     * https://issues.apache.org/jira/browse/POOL-281
+     *
+     * Should complete almost instantly when the issue is fixed.
+     */
+    @Test(timeout=10000)
+    public void testPossibleBug() {
+
+        deque = new LinkedBlockingDeque<Integer>();
+        for (int i = 0; i < 3; i++) {
+            deque.add(Integer.valueOf(i));
+        }
+
+        // This particular sequence of method calls() (there may be others)
+        // creates an internal state that triggers an infinite loop in the
+        // iterator.
+        Iterator<Integer> iter = deque.iterator();
+        iter.next();
+
+        deque.remove(Integer.valueOf(1));
+        deque.remove(Integer.valueOf(0));
+        deque.remove(Integer.valueOf(2));
+
+        iter.next();
+    }
 }
