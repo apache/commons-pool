@@ -43,7 +43,12 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Pool Changes</title>
   </properties>
   <body>
-  <release version="2.3" date="TBD" description="TBD">
+  <release version="2.3" date="TBD" description="TBD">  
+    <action dev="psteitz" type="fix" issue="POOL-279" due-to="Jacopo Cappellato">
+      Eliminated possibility that DefaultPoolObject#getIdleTimeMillis() could
+      return a negative value. Use by pool implementations would not hit this
+      bug. 
+    </action>
     <action dev="psteitz" type="fix" issue="POOL-275">
       Made wrapped BaseProxyHandler.pooledObject volatile.
     </action>
