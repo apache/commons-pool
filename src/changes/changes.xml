@@ -109,7 +109,7 @@ The <action> type attribute can be add,update,fix,remove.
       allows application provided eviction policies to be used in a container
       environment when the pooling implementation is provided by the container.
     </action>
-    <action dev="markt" type="fix">
+    <action dev="markt" type="fix" issue="POOL-281">
       Fix a potential infinite loop in the underlying Deque implementation.
     </action>
   </release>
