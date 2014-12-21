@@ -220,9 +220,7 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
                 state == PooledObjectState.RETURNING) {
             state = PooledObjectState.IDLE;
             lastReturnTime = System.currentTimeMillis();
-            if (borrowedBy != null) {
-                borrowedBy = null;
-            }
+            borrowedBy = null;
             return true;
         }
 
