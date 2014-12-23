@@ -25,6 +25,6 @@
 #
 # $Revision$ $Date$
 # ----------------------------------------------------------------------------
-
-mvn changes:announcement-generate -Prelease-notes # [-Dchanges.version=nnn]
-mvn commons:download-page -Dcommons.componentid=pool  # Override to get download_pool
+version=2.3
+mvn changes:announcement-generate -Prelease-notes -Dchanges.version=${version}
+mvn commons:download-page -Dcommons.componentid=pool  -Dcommons.release.version=${version}
