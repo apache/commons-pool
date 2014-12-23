@@ -41,7 +41,7 @@
 
       <property name="name" value="commons-pool2"/>
       <property name="title" value="Apache Commons Object Pooling Package"/>
-      <property name="version" value="2.2-SNAPSHOT"/>
+      <property name="version" value="2.3-SNAPSHOT"/>
       <property name="package" value="org.apache.commons.pool2.*"/>
 
       <property name="src.dir" value="${basedir}/src"/>
@@ -57,7 +57,7 @@
       <property name="test.failonerror" value="true" /> 
      
       <property name="javadoc.dir" value="${dist.dir}/docs/api"/>
-      <property name="javadoc.bottom" value="&lt;small&gt;Copyright &amp;copy; 2001-2013 Apache Software Foundation. Documenation generated ${TODAY}&lt;/small&gt;."/>
+      <property name="javadoc.bottom" value="&lt;small&gt;Copyright &amp;copy; 2001-2014 Apache Software Foundation. Documenation generated ${TODAY}&lt;/small&gt;."/>
       <property name="javadoc.overview" value="${src.java.dir}/org/apache/commons/pool2/overview.html" />
 
       <property name="javac.optimize" value="false"/>
