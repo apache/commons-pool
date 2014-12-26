@@ -2357,19 +2357,20 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     public void testClientWaitStats() throws Exception {
         SimpleFactory factory = new SimpleFactory();
         // Give makeObject a little latency
-        factory.setMakeLatency(1000);
+        factory.setMakeLatency(200);
         final GenericObjectPool<String> pool = new GenericObjectPool<String>(
                 factory, new GenericObjectPoolConfig());
         String s = pool.borrowObject();
-        // First borrow waits on create, so wait time should be at least 100 ms
+        // First borrow waits on create, so wait time should be at least 200 ms
+        // Allow 100ms error in clock times
         Assert.assertTrue(pool.getMaxBorrowWaitTimeMillis() >= 100);
         Assert.assertTrue(pool.getMeanBorrowWaitTimeMillis() >= 100);
         pool.returnObject(s);
         pool.borrowObject();
-        // Second borrow does not have to wait on create, average should be about 50
-        Assert.assertTrue(pool.getMaxBorrowWaitTimeMillis() > 500);
-        Assert.assertTrue(pool.getMeanBorrowWaitTimeMillis() < 800);
-        Assert.assertTrue(pool.getMeanBorrowWaitTimeMillis() > 100);
+        // Second borrow does not have to wait on create, average should be about 100
+        Assert.assertTrue(pool.getMaxBorrowWaitTimeMillis() > 100);
+        Assert.assertTrue(pool.getMeanBorrowWaitTimeMillis() < 200);
+        Assert.assertTrue(pool.getMeanBorrowWaitTimeMillis() > 20);
     }
 
     // POOL-276
