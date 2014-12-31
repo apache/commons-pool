@@ -43,7 +43,9 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Pool Changes</title>
   </properties>
   <body>
-  <release version="2.3" date="TBD" description=
+  <release version="2.4" date="TBD" description="TBD">
+  </release>
+  <release version="2.3" date="2014-12-30" description=
 "This is a maintenance release that includes bug fixes and minor enhancements.">  
     <action dev="psteitz" type="fix" issue="POOL-279" due-to="Jacopo Cappellato">
       Eliminated possibility that DefaultPoolObject#getIdleTimeMillis() could
