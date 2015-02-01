@@ -940,6 +940,9 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     /**
      * Create an object, and place it into the pool. addObject() is useful for
      * "pre-loading" a pool with idle objects.
+     * <p>
+     * If there is no capacity available to add to the pool, this is a no-op
+     * (no exception, no impact to the pool). </p>
      */
     @Override
     public void addObject() throws Exception {
@@ -954,7 +957,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
 
     /**
      * Add the provided wrapped pooled object to the set of idle objects for
-     * this pool. The object must already be part of the pool.
+     * this pool. The object must already be part of the pool.  If {@code p}
+     * is null, this is a no-op (no exception, but no impact on the pool).
      *
      * @param p The object to make idle
      *
