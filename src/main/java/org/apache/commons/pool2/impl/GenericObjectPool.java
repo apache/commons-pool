@@ -752,11 +752,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
 
                 for (int i = 0, m = getNumTests(); i < m; i++) {
                     if (evictionIterator == null || !evictionIterator.hasNext()) {
-                        if (getLifo()) {
-                            evictionIterator = idleObjects.descendingIterator();
-                        } else {
-                            evictionIterator = idleObjects.iterator();
-                        }
+                        evictionIterator = new EvictionIterator(idleObjects);
                     }
                     if (!evictionIterator.hasNext()) {
                         // Pool exhausted, nothing to do here

@@ -1848,6 +1848,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         }
         @Override
         public boolean validateObject(K key, PooledObject<String> obj) {
+            doWait(validateLatency);
             if (enableValidation) {
                 return validateCounter++%2 == 0 ? evenValid : oddValid;
             } else {
@@ -1877,6 +1878,9 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         }
         public void setMakeLatency(long makeLatency) {
             this.makeLatency = makeLatency;
+        }
+        public void setValidateLatency(long validateLatency) {
+            this.validateLatency = validateLatency;
         }
         public void setValidationEnabled(boolean b) {
             enableValidation = b;
@@ -1911,6 +1915,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         boolean enableValidation = false;
         long destroyLatency = 0;
         long makeLatency = 0;
+        long validateLatency = 0;
         volatile int maxTotalPerKey = Integer.MAX_VALUE;
         boolean exceptionOnPassivate = false;
         boolean exceptionOnActivate = false;
@@ -2135,6 +2140,41 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         }
         factory.exceptionOnCreate = false;
         pool.borrowObject("One");
+    }
+    
+    /**
+     * JIRA: POOL-287
+     * 
+     * Verify that when an attempt is made to borrow an instance from the pool
+     * while the evictor is visiting it, there is no capacity leak.
+     * 
+     * Test creates the scenario described in POOL-287.
+     */
+    @Test
+    public void testReturnToHead() throws Exception {
+        SimpleFactory<String> factory = new SimpleFactory<String>();
+        factory.setValidateLatency(100);
+        factory.setValid(true);  // Validation always succeeds
+        GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<String, String>(factory);
+        pool.setMaxWaitMillis(1000);
+        pool.setTestWhileIdle(true);
+        pool.setMaxTotalPerKey(2);
+        pool.setNumTestsPerEvictionRun(1);
+        pool.setTimeBetweenEvictionRunsMillis(500);
+        
+        // Load pool with two objects
+        pool.addObject("one");  // call this o1
+        pool.addObject("one");  // call this o2
+        // Default is LIFO, so "one" pool is now [o2, o1] in offer order.
+        // Evictor will visit in oldest-to-youngest order, so o1 then o2
+        
+        Thread.sleep(800); // Wait for first eviction run to complete
+        
+        // At this point, one eviction run should have completed, visiting o1
+        // and eviction cursor should be pointed at o2, which is the next offered instance
+        Thread.sleep(250);         // Wait for evictor to start
+        pool.borrowObject("one");  // o2 is under eviction, so this will return o1
+        pool.borrowObject("one");  // Once validation completes, o2 should be offered
     }
 
     private static class DummyFactory

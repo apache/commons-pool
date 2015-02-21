@@ -17,6 +17,7 @@
 package org.apache.commons.pool2.impl;
 
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -879,8 +880,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
             boolean testWhileIdle = getTestWhileIdle();
 
-            LinkedBlockingDeque<PooledObject<T>> idleObjects = null;
-
             for (int i = 0, m = getNumTests(); i < m; i++) {
                 if(evictionIterator == null || !evictionIterator.hasNext()) {
                     if (evictionKeyIterator == null ||
@@ -901,13 +900,9 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                         if (objectDeque == null) {
                             continue;
                         }
-                        idleObjects = objectDeque.getIdleObjects();
-
-                        if (getLifo()) {
-                            evictionIterator = idleObjects.descendingIterator();
-                        } else {
-                            evictionIterator = idleObjects.iterator();
-                        }
+                        
+                        final Deque<PooledObject<T>> idleObjects = objectDeque.getIdleObjects();
+                        evictionIterator = new EvictionIterator(idleObjects);
                         if (evictionIterator.hasNext()) {
                             break;
                         }
@@ -918,8 +913,10 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                     // Pools exhausted
                     return;
                 }
+                final Deque<PooledObject<T>> idleObjects;
                 try {
                     underTest = evictionIterator.next();
+                    idleObjects = evictionIterator.getIdleObjects();
                 } catch (NoSuchElementException nsee) {
                     // Object was borrowed in another thread
                     // Don't count this as an eviction test so reduce i;
@@ -965,14 +962,12 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                             destroyedByEvictorCount.incrementAndGet();
                         }
                         if (active) {
-                            if (!factory.validateObject(evictionKey,
-                                    underTest)) {
+                            if (!factory.validateObject(evictionKey, underTest)) {
                                 destroy(evictionKey, underTest, true);
                                 destroyedByEvictorCount.incrementAndGet();
                             } else {
                                 try {
-                                    factory.passivateObject(evictionKey,
-                                            underTest);
+                                    factory.passivateObject(evictionKey, underTest);
                                 } catch (Exception e) {
                                     destroy(evictionKey, underTest, true);
                                     destroyedByEvictorCount.incrementAndGet();
@@ -1493,6 +1488,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         public Map<S, PooledObject<S>> getAllObjects() {
             return allObjects;
         }
+
     }
 
     //--- configuration attributes ---------------------------------------------

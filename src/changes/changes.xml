@@ -44,6 +44,10 @@ The <action> type attribute can be add,update,fix,remove.
   </properties>
   <body>
   <release version="2.4" date="TBD" description="TBD">
+    <action dev="psteitz" type="fix" issue="POOL-287" due-to="Caleb Spare and Thomas Neidhart">
+      Fixed capacity leak when an object is offered from a GenericKeyedObjectPool while it is
+      being validated by the evictor. 
+    </action>
   </release>
   <release version="2.3" date="2014-12-30" description=
 "This is a maintenance release that includes bug fixes and minor enhancements.">  

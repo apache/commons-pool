@@ -21,6 +21,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.management.ManagementFactory;
 import java.lang.ref.WeakReference;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicLong;
@@ -91,7 +92,7 @@ public abstract class BaseGenericObjectPool<T> {
     volatile boolean closed = false;
     final Object evictionLock = new Object();
     private Evictor evictor = null; // @GuardedBy("evictionLock")
-    Iterator<PooledObject<T>> evictionIterator = null; // @GuardedBy("evictionLock")
+    EvictionIterator evictionIterator = null; // @GuardedBy("evictionLock")
     /*
      * Class loader for evictor thread to use since, in a JavaEE or similar
      * environment, the context class loader for the evictor thread may not have
@@ -1100,4 +1101,55 @@ public abstract class BaseGenericObjectPool<T> {
             return (long) result;
         }
     }
+    
+    /**
+     * The idle object eviction iterator. Holds a reference to the idle objects.
+     */
+    class EvictionIterator implements Iterator<PooledObject<T>> {
+
+        private final Deque<PooledObject<T>> idleObjects;
+        private final Iterator<PooledObject<T>> idleObjectIterator;
+
+        /**
+         * Create an EvictionIterator for the provided idle instance deque.
+         * @param idleObjects underlying deque
+         */
+        EvictionIterator(final Deque<PooledObject<T>> idleObjects) {
+            this.idleObjects = idleObjects;
+
+            if (getLifo()) {
+                idleObjectIterator = idleObjects.descendingIterator();
+            } else {
+                idleObjectIterator = idleObjects.iterator();
+            }
+        }
+
+        /**
+         * Returns the idle object deque referenced by this iterator.
+         * @return the idle object deque
+         */
+        public Deque<PooledObject<T>> getIdleObjects() {
+            return idleObjects;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean hasNext() {
+            return idleObjectIterator.hasNext();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public PooledObject<T> next() {
+            return idleObjectIterator.next();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void remove() {
+            idleObjectIterator.remove();
+        }
+        
+    }
+
 }
