@@ -2152,10 +2152,10 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
      */
     @Test
     public void testReturnToHead() throws Exception {
-        SimpleFactory<String> factory = new SimpleFactory<String>();
+        final SimpleFactory<String> factory = new SimpleFactory<String>();
         factory.setValidateLatency(100);
         factory.setValid(true);  // Validation always succeeds
-        GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<String, String>(factory);
+        final GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<String, String>(factory);
         pool.setMaxWaitMillis(1000);
         pool.setTestWhileIdle(true);
         pool.setMaxTotalPerKey(2);
@@ -2173,8 +2173,11 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         // At this point, one eviction run should have completed, visiting o1
         // and eviction cursor should be pointed at o2, which is the next offered instance
         Thread.sleep(250);         // Wait for evictor to start
-        pool.borrowObject("one");  // o2 is under eviction, so this will return o1
-        pool.borrowObject("one");  // Once validation completes, o2 should be offered
+        final String o1 = pool.borrowObject("one");  // o2 is under eviction, so this will return o1
+        final String o2 = pool.borrowObject("one");  // Once validation completes, o2 should be offered
+        pool.returnObject("one", o1);
+        pool.returnObject("one", o2);
+        pool.close();
     }
 
     private static class DummyFactory
