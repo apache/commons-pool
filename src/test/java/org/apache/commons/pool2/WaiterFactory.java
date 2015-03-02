@@ -144,6 +144,9 @@ KeyedPooledObjectFactory<K,Waiter> {
     }
 
     protected void doWait(long latency) {
+        if (latency == 0) {
+            return;
+        }
         try {
             Thread.sleep(latency);
         } catch (InterruptedException ex) {

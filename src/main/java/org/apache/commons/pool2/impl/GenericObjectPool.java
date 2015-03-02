@@ -1120,7 +1120,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * wrappers used internally by the pool.
      */
     private final Map<T, PooledObject<T>> allObjects =
-        new ConcurrentHashMap<T, PooledObject<T>>();
+        new StaticBucketMap<T, PooledObject<T>>();
+        //new ConcurrentHashMap<T, PooledObject<T>>();
     /*
      * The combined count of the currently created objects and those in the
      * process of being created. Under load, it may exceed {@link #_maxActive}
