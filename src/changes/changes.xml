@@ -51,6 +51,15 @@ The <action> type attribute can be add,update,fix,remove.
   </release>
   <release version="2.3" date="2014-12-30" description=
 "This is a maintenance release that includes bug fixes and minor enhancements.">  
+    <action dev="psteitz" type="fix" issue="POOL-283">
+      Eliminated the requirement that objects managed by GenericObjectPool or
+      GenericKeyedObjectPool be discernible by equals.  Prior to this fix,
+      equal but distinct object instances could not be stored in the same pool.
+    </action>
+    <action dev="psteitz" type="fix" issue="POOL-284">
+      Eliminated the requirement that object equality and hashcodes do not change
+      while objects are under management by GenericObjectPool or GenericKeyedObjectPool.
+    </action>
     <action dev="psteitz" type="fix" issue="POOL-279" due-to="Jacopo Cappellato">
       Eliminated possibility that DefaultPoolObject#getIdleTimeMillis() could
       return a negative value. Use by pool implementations would not hit this

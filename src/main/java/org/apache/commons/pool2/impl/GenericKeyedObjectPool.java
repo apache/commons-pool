@@ -471,7 +471,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
         ObjectDeque<T> objectDeque = poolMap.get(key);
 
-        PooledObject<T> p = objectDeque.getAllObjects().get(obj);
+        PooledObject<T> p = objectDeque.getAllObjects().get(new IdentityWrapper<T>(obj));
 
         if (p == null) {
             throw new IllegalStateException(
@@ -575,7 +575,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
         ObjectDeque<T> objectDeque = poolMap.get(key);
 
-        PooledObject<T> p = objectDeque.getAllObjects().get(obj);
+        PooledObject<T> p = objectDeque.getAllObjects().get(new IdentityWrapper<T>(obj));
         if (p == null) {
             throw new IllegalStateException(
                     "Object not currently part of this pool");
@@ -1036,7 +1036,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         }
 
         createdCount.incrementAndGet();
-        objectDeque.getAllObjects().put(p.getObject(), p);
+        objectDeque.getAllObjects().put(new IdentityWrapper<T>(p.getObject()), p);
         return p;
     }
 
@@ -1059,7 +1059,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
             boolean isIdle = objectDeque.getIdleObjects().remove(toDestroy);
 
             if (isIdle || always) {
-                objectDeque.getAllObjects().remove(toDestroy.getObject());
+                objectDeque.getAllObjects().remove(new IdentityWrapper<T>(toDestroy.getObject()));
                 toDestroy.invalidate();
 
                 try {
@@ -1428,12 +1428,11 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         private final AtomicInteger createCount = new AtomicInteger(0);
 
         /*
-         * The map is keyed on pooled instances.  Note: pooled instances
-         * <em>must</em> be distinguishable by equals for this structure to
-         * work properly.
+         * The map is keyed on pooled instances, wrapped to ensure that
+         * they work properly as keys.  
          */
-        private final Map<S, PooledObject<S>> allObjects =
-                new ConcurrentHashMap<S, PooledObject<S>>();
+        private final Map<IdentityWrapper<S>, PooledObject<S>> allObjects =
+                new ConcurrentHashMap<IdentityWrapper<S>, PooledObject<S>>();
 
         /*
          * Number of threads with registered interest in this key.
@@ -1485,7 +1484,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
          *
          * @return All the objects
          */
-        public Map<S, PooledObject<S>> getAllObjects() {
+        public Map<IdentityWrapper<S>, PooledObject<S>> getAllObjects() {
             return allObjects;
         }
 

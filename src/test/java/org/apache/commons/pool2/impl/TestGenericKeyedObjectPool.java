@@ -29,6 +29,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.Set;
@@ -2179,6 +2180,46 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         pool.returnObject("one", o2);
         pool.close();
     }
+    
+    /**
+     * Verifies that when a factory's makeObject produces instances that are not
+     * discernible by equals, the pool can handle them.  
+     * 
+     * JIRA: POOL-283
+     */
+    @Test
+    public void testEqualsIndiscernible() throws Exception {
+        final HashSetFactory factory = new HashSetFactory();
+        final GenericKeyedObjectPool<String,HashSet<String>> pool =
+                new GenericKeyedObjectPool<String, HashSet<String>>(
+                        factory, new GenericKeyedObjectPoolConfig());
+        final HashSet<String> s1 = pool.borrowObject("a");
+        final HashSet<String> s2 = pool.borrowObject("a");
+        pool.returnObject("a", s1);
+        pool.returnObject("a", s2);
+        pool.close();
+    }
+    
+    /**
+     * Verifies that when a borrowed object is mutated in a way that does not
+     * preserve equality and hashcode, the pool can recognized it on return.
+     * 
+     * JIRA: POOL-284
+     */
+    @Test
+    public void testMutable() throws Exception {
+        final HashSetFactory factory = new HashSetFactory();
+        final GenericKeyedObjectPool<String,HashSet<String>> pool =
+                new GenericKeyedObjectPool<String, HashSet<String>>(
+                        factory, new GenericKeyedObjectPoolConfig());
+        final HashSet<String> s1 = pool.borrowObject("a");
+        final HashSet<String> s2 = pool.borrowObject("a");
+        s1.add("One");
+        s2.add("One");
+        pool.returnObject("a", s1);
+        pool.returnObject("a", s2);
+        pool.close();
+    }
 
     private static class DummyFactory
             extends BaseKeyedPooledObjectFactory<Object,Object> {
@@ -2189,6 +2230,23 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         @Override
         public PooledObject<Object> wrap(Object value) {
             return new DefaultPooledObject<Object>(value);
+        }
+    }
+    
+    /** 
+     * Factory that creates HashSets.  Note that this means
+     *  0) All instances are initially equal (not discernible by equals)
+     *  1) Instances are mutable and mutation can cause change in identity / hashcode.
+     */
+    private static final class HashSetFactory 
+            extends BaseKeyedPooledObjectFactory<String, HashSet<String>> {
+        @Override
+        public HashSet<String> create(String key) throws Exception {
+            return new HashSet<String>();
+        }
+        @Override
+        public PooledObject<HashSet<String>> wrap(HashSet<String> value) {
+            return new DefaultPooledObject<HashSet<String>>(value);
         }
     }
 

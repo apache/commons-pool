@@ -87,11 +87,6 @@ public interface PooledObjectFactory&lt;T&gt; {
           where <code>Foo</code> is the type of the objects being pooled (the return type of <code>create()</code>).
           </p>
           <p>
-            Another important difference between 1.x and version 2 pools is that the implementations provided maintain references
-            to all objects under management by the pool. Correct behavior depends on underlying instances being discernable by 
-            equals - i.e., if A and B are two different instances being managed by the pool, A.equals(B) should return false.
-          </p> 
-          <p>
              <a href="./apidocs/org/apache/commons/pool2/KeyedPooledObjectFactory.html"><code>KeyedPooledObjectFactory</code></a>
              defines a similar interface for <code>KeyedObjectPool</code>s:
           </p>

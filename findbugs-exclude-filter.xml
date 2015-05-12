@@ -161,4 +161,16 @@
     <Method name="allocate" />
     <Bug pattern="VO_VOLATILE_INCREMENT" />
   </Match>
+  <Match>
+    <!-- Only used internally in hashmap to compare keys known to be of the same type -->
+    <Class name="org.apache.commons.pool2.impl.BaseGenericObjectPool$IdentityWrapper" />
+    <Method name="equals" />
+    <Bug pattern="BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS" />
+  </Match>
+  <Match>
+    <!-- Only used internally in hashmap to compare keys that can't be null -->
+    <Class name="org.apache.commons.pool2.impl.BaseGenericObjectPool$IdentityWrapper" />
+    <Method name="equals" />
+    <Bug pattern="NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT" />
+  </Match>
 </FindBugsFilter>

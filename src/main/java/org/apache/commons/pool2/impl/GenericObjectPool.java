@@ -534,7 +534,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      */
     @Override
     public void returnObject(T obj) {
-        PooledObject<T> p = allObjects.get(obj);
+        PooledObject<T> p = allObjects.get(new IdentityWrapper<T>(obj));
 
         if (!isAbandonedConfig()) {
             if (p == null) {
@@ -635,7 +635,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      */
     @Override
     public void invalidateObject(T obj) throws Exception {
-        PooledObject<T> p = allObjects.get(obj);
+        PooledObject<T> p = allObjects.get(new IdentityWrapper<T>(obj));
         if (p == null) {
             if (isAbandonedConfig()) {
                 return;
@@ -866,7 +866,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         }
 
         createdCount.incrementAndGet();
-        allObjects.put(p.getObject(), p);
+        allObjects.put(new IdentityWrapper<T>(p.getObject()), p);
         return p;
     }
 
@@ -881,7 +881,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     private void destroy(PooledObject<T> toDestory) throws Exception {
         toDestory.invalidate();
         idleObjects.remove(toDestory);
-        allObjects.remove(toDestory.getObject());
+        allObjects.remove(new IdentityWrapper<T>(toDestory.getObject()));
         try {
             factory.destroyObject(toDestory);
         } finally {
@@ -1033,7 +1033,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     public void use(T pooledObject) {
         AbandonedConfig ac = this.abandonedConfig;
         if (ac != null && ac.getUseUsageTracking()) {
-            PooledObject<T> wrapper = allObjects.get(pooledObject);
+            PooledObject<T> wrapper = allObjects.get(new IdentityWrapper<T>(pooledObject));
             wrapper.use();
         }
     }
@@ -1119,8 +1119,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * #_maxActive}. Map keys are pooled objects, values are the PooledObject
      * wrappers used internally by the pool.
      */
-    private final Map<T, PooledObject<T>> allObjects =
-        new ConcurrentHashMap<T, PooledObject<T>>();
+    private final Map<IdentityWrapper<T>, PooledObject<T>> allObjects =
+        new ConcurrentHashMap<IdentityWrapper<T>, PooledObject<T>>();
     /*
      * The combined count of the currently created objects and those in the
      * process of being created. Under load, it may exceed {@link #_maxActive}
@@ -1137,4 +1137,5 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
 
     // Additional configuration properties for abandoned object tracking
     private volatile AbandonedConfig abandonedConfig = null;
+    
 }

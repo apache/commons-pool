@@ -2406,7 +2406,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
      * 
      * JIRA: POOL-283
      */
-    //@Test
+    @Test
     public void testEqualsIndiscernible() throws Exception {
         final HashSetFactory factory = new HashSetFactory();
         final GenericObjectPool<HashSet<String>> pool = new GenericObjectPool<HashSet<String>>(
@@ -2424,7 +2424,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
      * 
      * JIRA: POOL-284
      */
-    //@Test
+    @Test
     public void testMutable() throws Exception {
         final HashSetFactory factory = new HashSetFactory();
         final GenericObjectPool<HashSet<String>> pool = new GenericObjectPool<HashSet<String>>(
