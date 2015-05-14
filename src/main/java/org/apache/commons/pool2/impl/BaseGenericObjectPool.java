@@ -586,7 +586,9 @@ public abstract class BaseGenericObjectPool<T> {
 
     /**
      * Sets the name of the {@link EvictionPolicy} implementation that is
-     * used by this pool.
+     * used by this pool. The Pool will attempt to load the class using the
+     * thread context class loader. If that fails, the Pool will attempt to load
+     * the class using the class loader that loaded this class.
      *
      * @param evictionPolicyClassName   the fully qualified class name of the
      *                                  new eviction policy
@@ -596,8 +598,13 @@ public abstract class BaseGenericObjectPool<T> {
     public final void setEvictionPolicyClassName(
             String evictionPolicyClassName) {
         try {
-            Class<?> clazz = Class.forName(evictionPolicyClassName, true,
-                    Thread.currentThread().getContextClassLoader());
+            Class<?> clazz;
+            try {
+                clazz = Class.forName(evictionPolicyClassName, true,
+                        Thread.currentThread().getContextClassLoader());
+            } catch (ClassNotFoundException e) {
+                clazz = Class.forName(evictionPolicyClassName);
+            }
             Object policy = clazz.newInstance();
             if (policy instanceof EvictionPolicy<?>) {
                 @SuppressWarnings("unchecked") // safe, because we just checked the class
@@ -1101,7 +1108,7 @@ public abstract class BaseGenericObjectPool<T> {
             return (long) result;
         }
     }
-    
+
     /**
      * The idle object eviction iterator. Holds a reference to the idle objects.
      */
@@ -1149,7 +1156,7 @@ public abstract class BaseGenericObjectPool<T> {
         public void remove() {
             idleObjectIterator.remove();
         }
-        
+
     }
     
     /**
