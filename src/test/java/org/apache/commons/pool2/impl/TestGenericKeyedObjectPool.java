@@ -2220,6 +2220,32 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         pool.returnObject("a", s2);
         pool.close();
     }
+    
+    /**
+     * Verifies that returning an object twice (without borrow in between) causes ISE
+     * but does not re-validate or re-passivate the instance.
+     * 
+     * JIRA: POOL-285
+     */
+    @Test
+    public void testMultipleReturn() throws Exception {
+        final WaiterFactory<String> factory = new WaiterFactory<String>(0, 0, 0, 0, 0, 0);
+        final GenericKeyedObjectPool<String, Waiter> pool =
+                new GenericKeyedObjectPool<String, Waiter>(factory);
+        pool.setTestOnReturn(true);
+        Waiter waiter = pool.borrowObject("a");
+        pool.returnObject("a",waiter);
+        Assert.assertEquals(1, waiter.getValidationCount());
+        Assert.assertEquals(1, waiter.getPassivationCount());
+        try {
+            pool.returnObject("a",waiter);
+            fail("Expecting IllegalStateException from multiple return");
+        } catch (IllegalStateException ex) {
+            // Exception is expected, now check no repeat validation/passivation
+            Assert.assertEquals(1, waiter.getValidationCount());
+            Assert.assertEquals(1, waiter.getPassivationCount());
+        }
+    }
 
     private static class DummyFactory
             extends BaseKeyedPooledObjectFactory<Object,Object> {

@@ -57,10 +57,15 @@ The <action> type attribute can be add,update,fix,remove.
       Eliminated the requirement that object equality and hashcodes do not change
       while objects are under management by GenericObjectPool or GenericKeyedObjectPool.
     </action>
-    <action dev="markt" type="fix" issues="POOL-289" due-to="Luke Winkenbach">
+    <action dev="markt" type="fix" issue="POOL-289" due-to="Luke Winkenbach">
       Fixed class loading for custom EvictionPolicy implementations that may not
       be present in the class loader hierarchy of the Pool classes by falling
       back to the class loader of the current class.
+    </action>
+    <action dev="psteitz" type="fix" issue="POOL-285">
+      Ensured that when an instance that has already been returned to a pool is
+      returned again, the expected IllegalStateException is generated before the
+      returning object is re-validated or re-passivated.
     </action>
   </release>
   <release version="2.3" date="2014-12-30" description=

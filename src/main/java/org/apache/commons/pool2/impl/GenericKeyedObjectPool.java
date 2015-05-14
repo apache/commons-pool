@@ -477,6 +477,16 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
             throw new IllegalStateException(
                     "Returned object not currently part of this pool");
         }
+        
+        synchronized(p) {
+            final PooledObjectState state = p.getState();
+            if (state != PooledObjectState.ALLOCATED) {
+                throw new IllegalStateException(
+                        "Object has already been returned to this pool or is invalid");
+            } else {
+                p.markReturning(); // Keep from being marked abandoned (once GKOP does this)
+            }
+        }
 
         long activeTime = p.getActiveTimeMillis();
 

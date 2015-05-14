@@ -47,6 +47,8 @@ import org.apache.commons.pool2.SwallowedExceptionListener;
 import org.apache.commons.pool2.TestBaseObjectPool;
 import org.apache.commons.pool2.VisitTracker;
 import org.apache.commons.pool2.VisitTrackerFactory;
+import org.apache.commons.pool2.Waiter;
+import org.apache.commons.pool2.WaiterFactory;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -2436,6 +2438,31 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.returnObject(s1);
         pool.returnObject(s2);
         pool.close();
+    }
+    
+    /**
+     * Verifies that returning an object twice (without borrow in between) causes ISE
+     * but does not re-validate or re-passivate the instance.
+     * 
+     * JIRA: POOL-285
+     */
+    @Test
+    public void testMultipleReturn() throws Exception {
+        final WaiterFactory<String> factory = new WaiterFactory<String>(0, 0, 0, 0, 0, 0);
+        final GenericObjectPool<Waiter> pool = new GenericObjectPool<Waiter>(factory);
+        pool.setTestOnReturn(true);
+        Waiter waiter = pool.borrowObject();
+        pool.returnObject(waiter);
+        Assert.assertEquals(1, waiter.getValidationCount());
+        Assert.assertEquals(1, waiter.getPassivationCount());
+        try {
+            pool.returnObject(waiter);
+            fail("Expecting IllegalStateException from multiple return");
+        } catch (IllegalStateException ex) {
+            // Exception is expected, now check no repeat validation/passivation
+            Assert.assertEquals(1, waiter.getValidationCount());
+            Assert.assertEquals(1, waiter.getPassivationCount());
+        }
     }
 
     private static final class DummyFactory

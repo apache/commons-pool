@@ -535,26 +535,23 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     @Override
     public void returnObject(T obj) {
         PooledObject<T> p = allObjects.get(new IdentityWrapper<T>(obj));
-
-        if (!isAbandonedConfig()) {
-            if (p == null) {
+        
+        if (p == null) {
+            if (!isAbandonedConfig()) {
                 throw new IllegalStateException(
                         "Returned object not currently part of this pool");
-            }
-        } else {
-            if (p == null) {
-                return;  // Object was abandoned and removed
             } else {
-                // Make sure object is not being reclaimed
-                synchronized(p) {
-                    final PooledObjectState state = p.getState();
-                    if (state != PooledObjectState.ALLOCATED) {
-                        throw new IllegalStateException(
-                                "Object has already been returned to this pool or is invalid");
-                    } else {
-                        p.markReturning(); // Keep from being marked abandoned
-                    }
-                }
+                return; // Object was abandoned and removed
+            }
+        }
+
+        synchronized(p) {
+            final PooledObjectState state = p.getState();
+            if (state != PooledObjectState.ALLOCATED) {
+                throw new IllegalStateException(
+                        "Object has already been returned to this pool or is invalid");
+            } else {
+                p.markReturning(); // Keep from being marked abandoned
             }
         }
 

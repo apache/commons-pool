@@ -33,6 +33,8 @@ public class Waiter {
     private long latency = 0;
     private long lastPassivated = 0;
     private long lastIdleTimeMs = 0;
+    private long passivationCount = 0;
+    private long validationCount = 0;
     private final int id = instanceCount.getAndIncrement();
 
     public Waiter(boolean active, boolean valid, long latency) {
@@ -89,6 +91,7 @@ public class Waiter {
             lastIdleTimeMs = currentTime - lastPassivated;
         } else {       // passivating
             lastPassivated = currentTime;
+            passivationCount++;
         }
     }
 
@@ -101,6 +104,7 @@ public class Waiter {
     }
 
     public boolean isValid() {
+        validationCount++;
         return valid;
     }
 
@@ -131,6 +135,20 @@ public class Waiter {
      */
     public long getLastIdleTimeMs() {
         return lastIdleTimeMs;
+    }
+    
+    /**
+     * @return how many times this instance has been validated
+     */
+    public long getValidationCount() {
+        return validationCount;
+    }
+    
+    /**
+     * @return how many times this instance has been passivated
+     */
+    public long getPassivationCount() {
+        return passivationCount;
     }
 
     @Override
