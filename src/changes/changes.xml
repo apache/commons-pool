@@ -48,14 +48,6 @@ The <action> type attribute can be add,update,fix,remove.
       Fixed capacity leak when an object is offered from a GenericKeyedObjectPool while it is
       being validated by the evictor. 
     </action>
-    <action dev="markt" type="fix" issues="POOL-289" due-to="Luke Winkenbach">
-      Fixed class loading for custom EvictionPolicy implementations that may not
-      be present in the class loader hierarchy of the Pool classes by falling
-      back to the class loader of the current class.
-    </action>
-  </release>
-  <release version="2.3" date="2014-12-30" description=
-"This is a maintenance release that includes bug fixes and minor enhancements.">  
     <action dev="psteitz" type="fix" issue="POOL-283">
       Eliminated the requirement that objects managed by GenericObjectPool or
       GenericKeyedObjectPool be discernible by equals.  Prior to this fix,
@@ -65,6 +57,14 @@ The <action> type attribute can be add,update,fix,remove.
       Eliminated the requirement that object equality and hashcodes do not change
       while objects are under management by GenericObjectPool or GenericKeyedObjectPool.
     </action>
+    <action dev="markt" type="fix" issues="POOL-289" due-to="Luke Winkenbach">
+      Fixed class loading for custom EvictionPolicy implementations that may not
+      be present in the class loader hierarchy of the Pool classes by falling
+      back to the class loader of the current class.
+    </action>
+  </release>
+  <release version="2.3" date="2014-12-30" description=
+"This is a maintenance release that includes bug fixes and minor enhancements.">  
     <action dev="psteitz" type="fix" issue="POOL-279" due-to="Jacopo Cappellato">
       Eliminated possibility that DefaultPoolObject#getIdleTimeMillis() could
       return a negative value. Use by pool implementations would not hit this
