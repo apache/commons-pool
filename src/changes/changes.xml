@@ -67,6 +67,9 @@ The <action> type attribute can be add,update,fix,remove.
       returned again, the expected IllegalStateException is generated before the
       returning object is re-validated or re-passivated.
     </action>
+    <action dev="psteitz" type="add" issue="POOL-286">
+      Added preparePool method to GenericObjectPool.
+    </action>
   </release>
   <release version="2.3" date="2014-12-30" description=
 "This is a maintenance release that includes bug fixes and minor enhancements.">  

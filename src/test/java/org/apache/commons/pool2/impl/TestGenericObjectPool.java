@@ -2464,6 +2464,20 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             Assert.assertEquals(1, waiter.getPassivationCount());
         }
     }
+    
+    public void testPreparePool() throws Exception {
+        pool.setMinIdle(1);
+        pool.setMaxTotal(1);
+        pool.preparePool();
+        Assert.assertEquals(1, pool.getNumIdle());
+        String obj = pool.borrowObject();
+        pool.preparePool();
+        Assert.assertEquals(0, pool.getNumIdle());
+        pool.setMinIdle(0);
+        pool.returnObject(obj);
+        pool.preparePool();
+        Assert.assertEquals(0, pool.getNumIdle());
+    }
 
     private static final class DummyFactory
             extends BasePooledObjectFactory<Object> {

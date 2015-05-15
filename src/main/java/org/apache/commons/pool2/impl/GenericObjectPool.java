@@ -829,6 +829,20 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             removeAbandoned(ac);
         }
     }
+    
+    /**
+     * Tries to ensure that {@link #getMinIdle()} idle instances are available
+     * in the pool.
+     *
+     * @throws Exception If the associated factory throws an exception
+     * @since 2.4
+     */
+    public void preparePool() throws Exception {
+        if (getMinIdle() < 1) {
+            return;
+        }
+        ensureMinIdle();
+    }
 
     /**
      * Attempts to create a new wrapped pooled object.
