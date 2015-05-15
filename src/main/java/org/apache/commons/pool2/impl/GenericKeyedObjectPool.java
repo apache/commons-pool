@@ -1253,8 +1253,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      *
      * @param key - The key to register for pool control.
      *
-     * @throws Exception If the associated factory fails to create the necessary
-     *                   number of idle instances
+     * @throws Exception If the associated factory throws an exception
      */
     public void preparePool(K key) throws Exception {
         int minIdlePerKeySave = getMinIdlePerKey();
