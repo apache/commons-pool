@@ -70,6 +70,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="psteitz" type="add" issue="POOL-286">
       Added preparePool method to GenericObjectPool.
     </action>
+    <action dev="ggregory" type="update" issue="POOL-295">
+      Update tests from JUnit 4.11 to 4.12.
+    </action>
   </release>
   <release version="2.3" date="2014-12-30" description=
 "This is a maintenance release that includes bug fixes and minor enhancements.">  
