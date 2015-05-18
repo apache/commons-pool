@@ -73,6 +73,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="update" issue="POOL-295">
       Update tests from JUnit 4.11 to 4.12.
     </action>
+    <action dev="ggregory" type="update" issue="POOL-296">
+      Update asm-util from 5.0.3 to 5.0.4.
+    </action>
   </release>
   <release version="2.3" date="2014-12-30" description=
 "This is a maintenance release that includes bug fixes and minor enhancements.">  
