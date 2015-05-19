@@ -655,9 +655,11 @@ public abstract class BaseGenericObjectPool<T> {
 
     /**
      * Returns the {@link EvictionPolicy} defined for this pool.
+     *
      * @return the eviction policy
+     * @since 2.4
      */
-    final EvictionPolicy<T> getEvictionPolicy() {
+    protected EvictionPolicy<T> getEvictionPolicy() {
         return evictionPolicy;
     }
 
