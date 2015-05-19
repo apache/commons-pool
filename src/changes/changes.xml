@@ -73,7 +73,7 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="update" issue="POOL-296">
       Update asm-util from 5.0.3 to 5.0.4.
     </action>
-    <action dev="psteitz" type="update" issue="POOL-283">
+    <action dev="psteitz" type="update" issue="POOL-293">
       Exposed getEvictionPolicy as protected in BaseGenericObjectPool.
     </action>
   </release>
