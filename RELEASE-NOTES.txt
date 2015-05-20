@@ -1,13 +1,13 @@
-              Apache Commons Pool 2.3 RELEASE NOTES
+              Apache Commons Pool 2.4 RELEASE NOTES
 
-The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.3.
+The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.4.
 
 Apache Commons Pool provides an object-pooling API and a number of object pool implementations.
 Version 2 contains a completely re-written pooling implementation compared to the 1.x series.
 In addition to performance and scalability improvements, version 2 includes robust instance
 tracking and pool monitoring. Version 2 requires JDK level 1.6 or above. 
 
-No client code changes are required to migrate from version 2.0, 2.1, or 2.2 to 2.3.
+No client code changes are required to migrate from versions 2.0-2.3 to version 2.4.
 Users of version 1.x should consult the migration guide on the Commons Pool web site.
 
 NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPoolMXBean
@@ -20,47 +20,29 @@ NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPool
 
 This is a maintenance release that includes bug fixes and minor enhancements.
 
-Changes in version 2.3 include:
+Changes in version 2.4 include:
 
 New features:
-o POOL-262:  Made fairness configurable for GenericObjectPool, GenericKeyedObjectPool.
+o POOL-286:  Added preparePool method to GenericObjectPool.
 
 Fixed Bugs:
-o POOL-279:  Eliminated possibility that DefaultPoolObject#getIdleTimeMillis() could
-             return a negative value. Use by pool implementations would not hit this
-             bug. Thanks to Jacopo Cappellato.
-o POOL-275:  Made wrapped BaseProxyHandler.pooledObject volatile.
-o POOL-277:  Replace synchronisation with lock-free maxBorrowWaitTimeMillis to
-             increase scalability. Thanks to Lucas Pouzac.
-o POOL-276:  Ensure that objects are not validated on borrow when testOnBorrow is set
-             to false, testOnCreate is set to true and the pool is exhausted at the
-             point borrowObject() is called.
-o POOL-270:  Fixed error in GenericKeyedObjectPool constructor causing minEvictableIdleTimeMillis
-             to be used in place of timeBetweenEvictionRunsMillis in eviction timer setup
-             when a GenericKeyedObjectPoolConfig instance is supplied to the constructor. Thanks to Michael Berman.
-o POOL-263:  Fix a threading issue that meant that concurrent calls to close() and
-             returnObject() could result in some returned objects not being destroyed.
-o POOL-261:  Correctly mark cglib as an optional dependency and ensure that the OSGi
-             manifest information reflects that.
-o            Improve performance of statistics collection for pools that extend
-             BaseGenericObjectPool.
-o POOL-259:  Made client wait time statistics accurate when pools are configured to
-             block indefinitely.  Also modified computation to include latency clients
-             experience due to waiting on factory methods.
-o            Prevent potential memory leaks when the Pool is dereferenced without being
-             closed.
-o            Prevent potential memory leaks with using an Evictor in a container
-             environment.
-o            Protect against a user provided eviction policy throwing an exception and
-             stopping the Evictor thread.
-o            Use the thread context class loader to load custom eviction policies. This
-             allows application provided eviction policies to be used in a container
-             environment when the pooling implementation is provided by the container.
-o POOL-281:  Fix a potential infinite loop in the underlying Deque implementation.
+o POOL-287:  Fixed capacity leak when an object is offered from a GenericKeyedObjectPool while it is
+             being validated by the evictor. Thanks to Caleb Spare and Thomas Neidhart.
+o POOL-283:  Eliminated the requirement that objects managed by GenericObjectPool or
+             GenericKeyedObjectPool be discernible by equals.  Prior to this fix,
+             equal but distinct object instances could not be stored in the same pool.
+o POOL-284:  Eliminated the requirement that object equality and hashcodes do not change
+             while objects are under management by GenericObjectPool or GenericKeyedObjectPool.
+o POOL-289:  Fixed class loading for custom EvictionPolicy implementations that may not
+             be present in the class loader hierarchy of the Pool classes by falling
+             back to the class loader of the current class. Thanks to Luke Winkenbach.
+o POOL-285:  Ensured that when an instance that has already been returned to a pool is
+             returned again, the expected IllegalStateException is generated before the
+             returning object is re-validated or re-passivated.
 
 Changes:
-o POOL-273:  Update cglib to 3.1 from 3.0.
-o POOL-274:  Update asm-util to 5.0.3 from 4.0.
+o POOL-296:  Update asm-util from 5.0.3 to 5.0.4.
+o POOL-293:  Exposed getEvictionPolicy as protected in BaseGenericObjectPool.
 
 
 For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
