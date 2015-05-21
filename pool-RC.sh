@@ -28,7 +28,7 @@
 # $Revision$ $Date$
 # -----------------------------------------------------------------------------
 # Set script variables
-version=2.3
+version=2.4
 repo_path=~/.m2/repository/org/apache/commons/commons-pool2/${version}
 release_path=~/pool-rc  #checkout of https://dist.apache.org/repos/dist/dev/commons/pool
 #
