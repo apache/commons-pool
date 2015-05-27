@@ -36,6 +36,13 @@
     <release>
       <Version>
         <name>commons-pool</name>
+        <created>2015-05-27</created>
+        <revision>2.3</revision>
+      </Version>
+    </release>
+    <release>
+      <Version>
+        <name>commons-pool</name>
         <created>2014-12-30</created>
         <revision>2.3</revision>
       </Version>

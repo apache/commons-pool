@@ -42,7 +42,7 @@
 
       <property name="name" value="commons-pool2"/>
       <property name="title" value="Apache Commons Object Pooling Package"/>
-      <property name="version" value="2.4-SNAPSHOT"/>
+      <property name="version" value="2.5-SNAPSHOT"/>
       <property name="package" value="org.apache.commons.pool2.*"/>
 
       <property name="src.dir" value="${basedir}/src"/>
