@@ -19,8 +19,8 @@ NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPool
       changes.
 
 This is a patch release, replacing a defective binary jar in version 2.4.  Other
-than the build configuration (pom.xml), the source distribution for version 2.4.1
-is identical to version 2.4.
+than the build configuration the source distribution for version 2.4.1 is identical
+to version 2.4.
 
 Changes in version 2.4.1 include:
 
