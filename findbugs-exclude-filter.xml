@@ -173,4 +173,34 @@
     <Method name="equals" />
     <Bug pattern="NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT" />
   </Match>
+  <Match>
+    <!-- Code needs to use get to ensure latest queue is retrieved -->
+    <Class name="org.apache.commons.pool2.impl.GenericKeyedObjectPool" />
+    <Method name="clearOldest" />
+    <Bug pattern="WMI_WRONG_MAP_ITERATOR" />
+  </Match>
+  <Match>
+    <!-- Code needs to use get to ensure latest queue is retrieved -->
+    <Class name="org.apache.commons.pool2.impl.GenericKeyedObjectPool" />
+    <Method name="getNumWaitersByKey" />
+    <Bug pattern="WMI_WRONG_MAP_ITERATOR" />
+  </Match>
+  <Match>
+    <!-- Code needs to use get to ensure latest queue is retrieved -->
+    <Class name="org.apache.commons.pool2.impl.GenericKeyedObjectPool" />
+    <Method name="hasBorrowWaiters" />
+    <Bug pattern="WMI_WRONG_MAP_ITERATOR" />
+  </Match>
+  <Match>
+    <!-- Code needs to use get to ensure latest queue is retrieved -->
+    <Class name="org.apache.commons.pool2.impl.GenericKeyedObjectPool" />
+    <Method name="listAllObjects" />
+    <Bug pattern="WMI_WRONG_MAP_ITERATOR" />
+  </Match>
+  <Match>
+    <!-- Code needs to use get to ensure latest queue is retrieved -->
+    <Class name="org.apache.commons.pool2.impl.GenericKeyedObjectPool" />
+    <Method name="reuseCapacity" />
+    <Bug pattern="WMI_WRONG_MAP_ITERATOR" />
+  </Match>
 </FindBugsFilter>
