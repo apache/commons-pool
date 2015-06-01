@@ -50,7 +50,7 @@ The <action> type attribute can be add,update,fix,remove.
 than the build configuration, the source distribution for version 2.4.1 is identical
 to version 2.4.">
     <action dev="psteitz" issue="POOL-297" type="fix">
-      Reverted coburta plugin update that caused binary jar corruption.
+      Reverted cobertura plugin update that caused binary jar corruption.
     </action>
   </release>
   <release version="2.4" date="2015-05-27" description=
