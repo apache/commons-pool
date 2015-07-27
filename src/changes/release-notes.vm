@@ -23,7 +23,7 @@ Version 2 contains a completely re-written pooling implementation compared to th
 In addition to performance and scalability improvements, version 2 includes robust instance
 tracking and pool monitoring. Version 2 requires JDK level 1.6 or above. 
 
-No client code changes are required to migrate from versions 2.0-2.3 to version 2.4.1.
+No client code changes are required to migrate from versions 2.0-2.3 to version 2.4.2.
 Users of version 1.x should consult the migration guide on the Commons Pool web site.
 
 NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPoolMXBean
