@@ -43,7 +43,10 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Pool Changes</title>
   </properties>
   <body>
-  <release version="2.5" date="TBD" description="TBD">
+  <release version="2.4.2" date="TBD" description="TBD">
+    <action dev="psteitz" issue="POOL-300" type="fix">
+      Added PrintWriter flush to DefaultPooledObject's printStackTrace method.
+    </action>
   </release>
   <release version="2.4.1" date="2015-05-30" description=
  "This is a patch release, replacing a defective binary jar in version 2.4. Other

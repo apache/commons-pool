@@ -17,6 +17,9 @@
 
 package org.apache.commons.pool2.impl;
 
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintWriter;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Set;
@@ -260,6 +263,25 @@ public class TestAbandonedObjectPool {
         pool.returnObject(o2);
 
         Assert.assertTrue (end - start < 5000);
+    }
+    
+    /**
+     * JIRA: POOL-300
+     */
+    @Test
+    public void testStackTrace() throws Exception {
+        abandonedConfig.setRemoveAbandonedOnMaintenance(true);
+        abandonedConfig.setLogAbandoned(true);
+        abandonedConfig.setRemoveAbandonedTimeout(1);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintWriter pw = new PrintWriter(new BufferedOutputStream(baos));
+        abandonedConfig.setLogWriter(pw);
+        pool.setAbandonedConfig(abandonedConfig);
+        pool.setTimeBetweenEvictionRunsMillis(100);
+        PooledTestObject o1 = pool.borrowObject();
+        Thread.sleep(2000);
+        Assert.assertTrue(o1.isDestroyed());
+        Assert.assertTrue(baos.toString().indexOf("Pooled object") >= 0);
     }
 
     class ConcurrentBorrower extends Thread {
