@@ -157,6 +157,31 @@
         </batchtest>
       </junit>
    </target>
+	
+   <target name="test-jar" depends="compile-test" description="runs (junit) unit tests">
+      <echo message="Because we need to sleep to test the eviction threads, this takes a little while (around 2 minutes)..."/>
+      <junit printsummary="true" showoutput="true" fork="yes" haltonerror="${test.failonerror}">
+        <classpath>
+          <pathelement location="${build.test-classes.dir}" /> 
+          <pathelement path="${classpath}:${pool.jar}" /> 
+          <pathelement location="${src.testresources.dir}" /> 
+        </classpath>
+        <!-- If test.entry is defined, run a single test, otherwise run all valid tests -->
+        <test name="${test.entry}" if="test.entry"/>
+        <batchtest todir="${build.dir}/ant-reports" unless="test.entry">
+          <fileset dir="${src.test.dir}">
+            <include name="**/Test*.java"/>
+            <exclude name="org/apache/commons/pool2/impl/TestSoftRefOutOfMemory.java"/>
+            <!-- abstract classes -->
+            <exclude name="**/TestObjectPool.java"/>
+            <exclude name="**/TestObjectPoolFactory.java"/>
+            <exclude name="**/TestKeyedObjectPool.java"/>
+            <exclude name="**/TestKeyedObjectPoolFactory.java"/>
+          </fileset>
+          <formatter type="plain" usefile="false"/>
+        </batchtest>
+      </junit>
+   </target>
 
    <target name="build-jar" depends="compile">
       <mkdir dir="${dist.dir}"/>
