@@ -1,13 +1,13 @@
-              Apache Commons Pool 2.4.1 RELEASE NOTES
+              Apache Commons Pool 2.4.2 RELEASE NOTES
 
-The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.4.1.
+The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.4.2.
 
 Apache Commons Pool provides an object-pooling API and a number of object pool implementations.
 Version 2 contains a completely re-written pooling implementation compared to the 1.x series.
 In addition to performance and scalability improvements, version 2 includes robust instance
 tracking and pool monitoring. Version 2 requires JDK level 1.6 or above. 
 
-No client code changes are required to migrate from versions 2.0-2.3 to version 2.4.1.
+No client code changes are required to migrate from versions 2.0-2.3 to version 2.4.2.
 Users of version 1.x should consult the migration guide on the Commons Pool web site.
 
 NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPoolMXBean
@@ -18,38 +18,17 @@ NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPool
       be able to upgrade to a new minor or patch release without requiring code
       changes.
 
-This is a patch release, replacing a defective binary jar in version 2.4.  Other
-than the build configuration the source distribution for version 2.4.1 is identical
-to version 2.4.
+This is a patch release, including bug fixes only.
 
-Changes in version 2.4.1 include:
+Changes in version 2.4.2 include:
 
-Fixed Bugs:
-o POOL-297:  Reverted coburta plugin update that caused binary jar corruption.
-
-Changes in version 2.4 include:
-
-New features:
-o POOL-286:  Added preparePool method to GenericObjectPool.
 
 Fixed Bugs:
-o POOL-287:  Fixed capacity leak when an object is offered from a GenericKeyedObjectPool while it is
-             being validated by the evictor. Thanks to Caleb Spare and Thomas Neidhart.
-o POOL-283:  Eliminated the requirement that objects managed by GenericObjectPool or
-             GenericKeyedObjectPool be discernible by equals.  Prior to this fix,
-             equal but distinct object instances could not be stored in the same pool.
-o POOL-284:  Eliminated the requirement that object equality and hashcodes do not change
-             while objects are under management by GenericObjectPool or GenericKeyedObjectPool.
-o POOL-289:  Fixed class loading for custom EvictionPolicy implementations that may not
-             be present in the class loader hierarchy of the Pool classes by falling
-             back to the class loader of the current class. Thanks to Luke Winkenbach.
-o POOL-285:  Ensured that when an instance that has already been returned to a pool is
-             returned again, the expected IllegalStateException is generated before the
-             returning object is re-validated or re-passivated.
+o POOL-298:  Changed default jmxNameBase in BaseObjectPoolConfig to the correct (null)
+             default.
+o POOL-300:  Added PrintWriter flush to DefaultPooledObject's printStackTrace method.
 
-Changes:
-o POOL-296:  Update asm-util from 5.0.3 to 5.0.4.
-o POOL-293:  Exposed getEvictionPolicy as protected in BaseGenericObjectPool.
+
 
 For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
 patches, or suggestions for improvement, see the Apache Apache Commons Pool website:
