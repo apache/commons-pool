@@ -43,7 +43,9 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Pool Changes</title>
   </properties>
   <body>
-  <release version="2.4.2" date="TBD" description=
+  <release version="2.4.3" date="TBD" description="TBD">
+  </release>
+  <release version="2.4.2" date="2015-08-01" description=
  "This is a patch release, including bug fixes only.">
     <action dev="psteitz" issue="POOL-298" type="fix">
       Changed default jmxNameBase in BaseObjectPoolConfig to the correct (null)
