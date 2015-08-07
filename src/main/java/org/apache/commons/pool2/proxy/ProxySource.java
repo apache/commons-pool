@@ -19,7 +19,7 @@ package org.apache.commons.pool2.proxy;
 import org.apache.commons.pool2.UsageTracking;
 
 /**
- * The interface that any provide of proxy instances must implement to allow the
+ * The interface that any provider of proxy instances must implement to allow the
  * {@link ProxiedObjectPool} to create proxies as required.
  *
  * @param <T> type of the pooled object to be proxied
@@ -45,7 +45,7 @@ interface ProxySource<T> {
      *
      * @param proxy The proxy object
      *
-     * @return The pooled objetc wrapped by the given proxy
+     * @return The pooled object wrapped by the given proxy
      */
     T resolveProxy(T proxy);
 }
