@@ -116,4 +116,19 @@ public class ProxiedKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
     public void close() {
         pool.close();
     }
+
+
+    /**
+     * @since 2.4.3
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("ProxiedKeyedObjectPool [pool=");
+        builder.append(pool);
+        builder.append(", proxySource=");
+        builder.append(proxySource);
+        builder.append("]");
+        return builder.toString();
+    }
 }

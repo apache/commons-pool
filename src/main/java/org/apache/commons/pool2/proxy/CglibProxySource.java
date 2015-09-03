@@ -65,4 +65,16 @@ public class CglibProxySource<T> implements ProxySource<T> {
         T pooledObject = cglibProxyHandler.disableProxy();
         return pooledObject;
     }
+
+    /**
+     * @since 2.4.3
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("CglibProxySource [superclass=");
+        builder.append(superclass);
+        builder.append("]");
+        return builder.toString();
+    }
 }

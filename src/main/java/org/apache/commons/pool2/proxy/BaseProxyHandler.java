@@ -102,4 +102,20 @@ class BaseProxyHandler<T> {
         }
         return method.invoke(object, args);
     }
+
+
+    /**
+     * @since 2.4.3
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(getClass().getName());
+        builder.append(" [pooledObject=");
+        builder.append(pooledObject);
+        builder.append(", usageTracking=");
+        builder.append(usageTracking);
+        builder.append("]");
+        return builder.toString();
+    }
 }

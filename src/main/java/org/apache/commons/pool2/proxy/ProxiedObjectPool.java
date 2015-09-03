@@ -108,4 +108,19 @@ public class ProxiedObjectPool<T> implements ObjectPool<T> {
     public void close() {
         pool.close();
     }
+
+
+    /**
+     * @since 2.4.3
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("ProxiedObjectPool [pool=");
+        builder.append(pool);
+        builder.append(", proxySource=");
+        builder.append(proxySource);
+        builder.append("]");
+        return builder.toString();
+    }
 }

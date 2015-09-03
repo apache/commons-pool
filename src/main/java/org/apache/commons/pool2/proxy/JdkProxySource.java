@@ -17,6 +17,7 @@
 package org.apache.commons.pool2.proxy;
 
 import java.lang.reflect.Proxy;
+import java.util.Arrays;
 
 import org.apache.commons.pool2.UsageTracking;
 
@@ -63,5 +64,20 @@ public class JdkProxySource<T> implements ProxySource<T> {
                 (JdkProxyHandler<T>) Proxy.getInvocationHandler(proxy);
         T pooledObject = jdkProxyHandler.disableProxy();
         return pooledObject;
+    }
+
+
+    /**
+     * @since 2.4.3
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("JdkProxySource [classLoader=");
+        builder.append(classLoader);
+        builder.append(", interfaces=");
+        builder.append(Arrays.toString(interfaces));
+        builder.append("]");
+        return builder.toString();
     }
 }
