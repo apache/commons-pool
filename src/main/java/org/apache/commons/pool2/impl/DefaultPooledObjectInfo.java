@@ -99,4 +99,13 @@ public class DefaultPooledObjectInfo implements DefaultPooledObjectInfoMBean {
         }
         return -1;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("DefaultPooledObjectInfo [pooledObject=");
+        builder.append(pooledObject);
+        builder.append("]");
+        return builder.toString();
+    }
 }
