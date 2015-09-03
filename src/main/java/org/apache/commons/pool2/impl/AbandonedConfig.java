@@ -230,6 +230,9 @@ public class AbandonedConfig {
         this.useUsageTracking = useUsageTracking;
     }
 
+    /**
+     * @since 2.4
+     */
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
