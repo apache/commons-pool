@@ -100,6 +100,9 @@ public class DefaultPooledObjectInfo implements DefaultPooledObjectInfoMBean {
         return -1;
     }
 
+    /**
+     * @since 2.4.3
+     */
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
