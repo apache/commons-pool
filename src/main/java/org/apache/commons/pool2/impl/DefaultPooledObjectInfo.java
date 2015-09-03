@@ -96,8 +96,7 @@ public class DefaultPooledObjectInfo implements DefaultPooledObjectInfoMBean {
         // TODO Simplify this once getBorrowedCount has been added to PooledObject
         if (pooledObject instanceof DefaultPooledObject) {
             return ((DefaultPooledObject<?>) pooledObject).getBorrowedCount();
-        } else {
-            return -1;
         }
+        return -1;
     }
 }

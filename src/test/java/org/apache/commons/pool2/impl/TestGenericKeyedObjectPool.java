@@ -1852,9 +1852,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             doWait(validateLatency);
             if (enableValidation) {
                 return validateCounter++%2 == 0 ? evenValid : oddValid;
-            } else {
-                return valid;
             }
+            return valid;
         }
         @Override
         public void activateObject(K key, PooledObject<String> obj) throws Exception {

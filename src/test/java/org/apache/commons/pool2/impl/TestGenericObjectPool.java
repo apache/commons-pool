@@ -1040,9 +1040,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 int idleCount) {
             if (callCount.incrementAndGet() > 1500) {
                 return true;
-            } else {
-                return false;
             }
+            return false;
         }
     }
 
@@ -1793,9 +1792,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             if (validate) {
                 return counter%2 == 0 ? evenTest : oddTest;
             }
-            else {
-                return true;
-            }
+            return true;
         }
         @Override
         public void activateObject(PooledObject<String> obj) throws Exception {
@@ -2307,9 +2304,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             public void onSwallowException(Exception e) {
                 if (swallowedExceptions.size() == 2) {
                     throw new OutOfMemoryError();
-                } else {
-                    swallowedExceptions.add(e);
                 }
+                swallowedExceptions.add(e);
             }
         };
         pool.setSwallowedExceptionListener(listener);

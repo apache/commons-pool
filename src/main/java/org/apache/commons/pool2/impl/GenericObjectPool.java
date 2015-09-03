@@ -219,9 +219,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         int maxIdleSave = getMaxIdle();
         if (this.minIdle > maxIdleSave) {
             return maxIdleSave;
-        } else {
-            return minIdle;
         }
+        return minIdle;
     }
 
     /**
@@ -540,9 +539,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             if (!isAbandonedConfig()) {
                 throw new IllegalStateException(
                         "Returned object not currently part of this pool");
-            } else {
-                return; // Object was abandoned and removed
             }
+            return; // Object was abandoned and removed
         }
 
         synchronized(p) {
@@ -550,9 +548,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             if (state != PooledObjectState.ALLOCATED) {
                 throw new IllegalStateException(
                         "Object has already been returned to this pool or is invalid");
-            } else {
-                p.markReturning(); // Keep from being marked abandoned
             }
+            p.markReturning(); // Keep from being marked abandoned
         }
 
         long activeTime = p.getActiveTimeMillis();
@@ -636,10 +633,9 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         if (p == null) {
             if (isAbandonedConfig()) {
                 return;
-            } else {
-                throw new IllegalStateException(
-                        "Invalidated object not currently part of this pool");
             }
+            throw new IllegalStateException(
+                    "Invalidated object not currently part of this pool");
         }
         synchronized (p) {
             if (p.getState() != PooledObjectState.INVALID) {
@@ -992,10 +988,9 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         int numTestsPerEvictionRun = getNumTestsPerEvictionRun();
         if (numTestsPerEvictionRun >= 0) {
             return Math.min(numTestsPerEvictionRun, idleObjects.size());
-        } else {
-            return (int) (Math.ceil(idleObjects.size() /
-                    Math.abs((double) numTestsPerEvictionRun)));
         }
+        return (int) (Math.ceil(idleObjects.size() /
+                Math.abs((double) numTestsPerEvictionRun)));
     }
 
     /**
@@ -1066,9 +1061,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     public int getNumWaiters() {
         if (getBlockWhenExhausted()) {
             return idleObjects.getTakeQueueLength();
-        } else {
-            return 0;
         }
+        return 0;
     }
 
     /**

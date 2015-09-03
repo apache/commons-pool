@@ -124,14 +124,13 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
             if (idleReferences.isEmpty()) {
                 if (null == factory) {
                     throw new NoSuchElementException();
-                } else {
-                    newlyCreated = true;
-                    obj = factory.makeObject().getObject();
-                    createCount++;
-                    // Do not register with the queue
-                    ref = new PooledSoftReference<T>(new SoftReference<T>(obj));
-                    allReferences.add(ref);
                 }
+                newlyCreated = true;
+                obj = factory.makeObject().getObject();
+                createCount++;
+                // Do not register with the queue
+                ref = new PooledSoftReference<T>(new SoftReference<T>(obj));
+                allReferences.add(ref);
             } else {
                 ref = idleReferences.pollFirst();
                 obj = ref.getObject();

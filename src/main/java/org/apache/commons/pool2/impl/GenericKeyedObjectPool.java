@@ -225,9 +225,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         int maxIdlePerKeySave = getMaxIdlePerKey();
         if (this.minIdlePerKey > maxIdlePerKeySave) {
             return maxIdlePerKeySave;
-        } else {
-            return minIdlePerKey;
         }
+        return minIdlePerKey;
     }
 
     /**
@@ -483,9 +482,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
             if (state != PooledObjectState.ALLOCATED) {
                 throw new IllegalStateException(
                         "Object has already been returned to this pool or is invalid");
-            } else {
-                p.markReturning(); // Keep from being marked abandoned (once GKOP does this)
             }
+            p.markReturning(); // Keep from being marked abandoned (once GKOP does this)
         }
 
         long activeTime = p.getActiveTimeMillis();
@@ -687,9 +685,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         if (objectDeque != null) {
             return objectDeque.getAllObjects().size() -
                     objectDeque.getIdleObjects().size();
-        } else {
-            return 0;
         }
+        return 0;
     }
 
 
@@ -1016,9 +1013,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                 numTotal.decrementAndGet();
                 if (getNumIdle() == 0) {
                     return null;
-                } else {
-                    clearOldest();
                 }
+                clearOldest();
             } else {
                 loop = false;
             }
@@ -1080,9 +1076,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                     numTotal.decrementAndGet();
                 }
                 return true;
-            } else {
-                return false;
             }
+            return false;
         } finally {
             deregister(key);
         }

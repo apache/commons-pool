@@ -276,9 +276,8 @@ public class TestSoftRefOutOfMemory {
             }
             if (trigger.equals(OomeTrigger.DESTROY)) {
                 return false;
-            } else {
-                return true;
             }
+            return true;
         }
 
         @Override

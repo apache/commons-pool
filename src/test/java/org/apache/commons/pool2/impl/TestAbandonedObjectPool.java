@@ -413,10 +413,9 @@ class PooledTestObject implements TrackedUse {
             // Abandoned object sweep will occur no matter what the value of removeAbandonedTimeout,
             // because this indicates that this object was last used decades ago
             return 1;
-        } else {
-            // Abandoned object sweep won't clean up this object
-            return 0;
         }
+        // Abandoned object sweep won't clean up this object
+        return 0;
     }
 
     @Override

@@ -120,9 +120,8 @@ KeyedPooledObjectFactory<K,Waiter> {
             if (activeCount >= maxActive) {
                 throw new IllegalStateException("Too many active instances: " +
                 activeCount + " in circulation with maxActive = " + maxActive);
-            } else {
-                activeCount++;
             }
+            activeCount++;
         }
         doWait(makeLatency);
         return new DefaultPooledObject<Waiter>(new Waiter(false, true, waiterLatency));
@@ -202,9 +201,8 @@ KeyedPooledObjectFactory<K,Waiter> {
                     "instances for key = " + key + ": " + count.intValue() +
                     " in circulation " + "with maxActivePerKey = " +
                     maxActivePerKey);
-                } else {
-                    activeCounts.put(key, Integer.valueOf(count.intValue() + 1));
                 }
+                activeCounts.put(key, Integer.valueOf(count.intValue() + 1));
             }
         }
         return makeObject();
