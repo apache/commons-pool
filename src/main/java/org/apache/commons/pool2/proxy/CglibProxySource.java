@@ -41,7 +41,6 @@ public class CglibProxySource<T> implements ProxySource<T> {
         this.superclass = superclass;
     }
 
-
     @Override
     public T createProxy(T pooledObject, UsageTracking<T> usageTracking) {
         Enhancer enhancer = new Enhancer();
