@@ -105,6 +105,11 @@
       <id>simonetripodi</id>
       <organization>The Apache Software Foundation</organization>
     </developer>
+    <developer>
+      <name>Gary Gregory</name>
+      <id>ggregory</id>
+      <organization>The Apache Software Foundation</organization>
+    </developer>
   </developers>
   <contributors>
     <contributor>
