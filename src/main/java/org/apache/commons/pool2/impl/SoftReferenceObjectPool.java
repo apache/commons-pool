@@ -431,4 +431,23 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
             }
         }
     }
+
+    @Override
+    protected void toStringAppendFields(StringBuilder builder) {
+        super.toStringAppendFields(builder);
+        builder.append(", factory=");
+        builder.append(factory);
+        builder.append(", refQueue=");
+        builder.append(refQueue);
+        builder.append(", numActive=");
+        builder.append(numActive);
+        builder.append(", destroyCount=");
+        builder.append(destroyCount);
+        builder.append(", createCount=");
+        builder.append(createCount);
+        builder.append(", idleReferences=");
+        builder.append(idleReferences);
+        builder.append(", allReferences=");
+        builder.append(allReferences);
+    }
 }

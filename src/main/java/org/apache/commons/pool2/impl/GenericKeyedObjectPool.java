@@ -1492,6 +1492,21 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
             return allObjects;
         }
 
+        @Override
+        public String toString() {
+            StringBuilder builder = new StringBuilder();
+            builder.append("ObjectDeque [idleObjects=");
+            builder.append(idleObjects);
+            builder.append(", createCount=");
+            builder.append(createCount);
+            builder.append(", allObjects=");
+            builder.append(allObjects);
+            builder.append(", numInterested=");
+            builder.append(numInterested);
+            builder.append("]");
+            return builder.toString();
+        }
+
     }
 
     //--- configuration attributes ---------------------------------------------
@@ -1535,4 +1550,31 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
     // JMX specific attributes
     private static final String ONAME_BASE =
         "org.apache.commons.pool2:type=GenericKeyedObjectPool,name=";
+
+    @Override
+    protected void toStringAppendFields(StringBuilder builder) {
+        super.toStringAppendFields(builder);
+        builder.append(", maxIdlePerKey=");
+        builder.append(maxIdlePerKey);
+        builder.append(", minIdlePerKey=");
+        builder.append(minIdlePerKey);
+        builder.append(", maxTotalPerKey=");
+        builder.append(maxTotalPerKey);
+        builder.append(", factory=");
+        builder.append(factory);
+        builder.append(", fairness=");
+        builder.append(fairness);
+        builder.append(", poolMap=");
+        builder.append(poolMap);
+        builder.append(", poolKeyList=");
+        builder.append(poolKeyList);
+        builder.append(", keyLock=");
+        builder.append(keyLock);
+        builder.append(", numTotal=");
+        builder.append(numTotal);
+        builder.append(", evictionKeyIterator=");
+        builder.append(evictionKeyIterator);
+        builder.append(", evictionKey=");
+        builder.append(evictionKey);
+    }
 }

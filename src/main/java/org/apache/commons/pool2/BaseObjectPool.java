@@ -29,7 +29,7 @@ package org.apache.commons.pool2;
  *
  * @since 2.0
  */
-public abstract class BaseObjectPool<T> implements ObjectPool<T> {
+public abstract class BaseObjectPool<T> extends BaseObject implements ObjectPool<T> {
 
     @Override
     public abstract T borrowObject() throws Exception;
@@ -118,4 +118,9 @@ public abstract class BaseObjectPool<T> implements ObjectPool<T> {
     }
 
     private volatile boolean closed = false;
+
+    protected void toStringAppendFields(StringBuilder builder) {
+        builder.append("closed=");
+        builder.append(closed);
+    }
 }

@@ -1142,5 +1142,26 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
 
     // Additional configuration properties for abandoned object tracking
     private volatile AbandonedConfig abandonedConfig = null;
+
+    @Override
+    protected void toStringAppendFields(StringBuilder builder) {
+        super.toStringAppendFields(builder);
+        builder.append(", factoryType=");
+        builder.append(factoryType);
+        builder.append(", maxIdle=");
+        builder.append(maxIdle);
+        builder.append(", minIdle=");
+        builder.append(minIdle);
+        builder.append(", factory=");
+        builder.append(factory);
+        builder.append(", allObjects=");
+        builder.append(allObjects);
+        builder.append(", createCount=");
+        builder.append(createCount);
+        builder.append(", idleObjects=");
+        builder.append(idleObjects);
+        builder.append(", abandonedConfig=");
+        builder.append(abandonedConfig);
+    }
     
 }
