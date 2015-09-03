@@ -229,4 +229,23 @@ public class AbandonedConfig {
     public void setUseUsageTracking(boolean useUsageTracking) {
         this.useUsageTracking = useUsageTracking;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("AbandonedConfig [removeAbandonedOnBorrow=");
+        builder.append(removeAbandonedOnBorrow);
+        builder.append(", removeAbandonedOnMaintenance=");
+        builder.append(removeAbandonedOnMaintenance);
+        builder.append(", removeAbandonedTimeout=");
+        builder.append(removeAbandonedTimeout);
+        builder.append(", logAbandoned=");
+        builder.append(logAbandoned);
+        builder.append(", logWriter=");
+        builder.append(logWriter);
+        builder.append(", useUsageTracking=");
+        builder.append(useUsageTracking);
+        builder.append("]");
+        return builder.toString();
+    }
 }
