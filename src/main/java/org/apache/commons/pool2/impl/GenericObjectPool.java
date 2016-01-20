@@ -327,7 +327,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      *
      * @see AbandonedConfig
      */
-    public void setAbandonedConfig(AbandonedConfig abandonedConfig) throws IllegalArgumentException {
+    public void setAbandonedConfig(AbandonedConfig abandonedConfig) {
         if (abandonedConfig == null) {
             this.abandonedConfig = null;
         } else {
@@ -534,7 +534,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     @Override
     public void returnObject(T obj) {
         PooledObject<T> p = allObjects.get(new IdentityWrapper<T>(obj));
-        
+
         if (p == null) {
             if (!isAbandonedConfig()) {
                 throw new IllegalStateException(
@@ -825,7 +825,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             removeAbandoned(ac);
         }
     }
-    
+
     /**
      * Tries to ensure that {@link #getMinIdle()} idle instances are available
      * in the pool.
@@ -1163,5 +1163,5 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         builder.append(", abandonedConfig=");
         builder.append(abandonedConfig);
     }
-    
+
 }
