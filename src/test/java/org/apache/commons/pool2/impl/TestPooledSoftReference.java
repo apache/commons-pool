@@ -34,7 +34,7 @@ public class TestPooledSoftReference {
 
     @Before
     public void setUp() {
-        SoftReference<String> softRef = new SoftReference<String>(REFERENT);
+        final SoftReference<String> softRef = new SoftReference<String>(REFERENT);
         ref = new PooledSoftReference<String>(softRef);
     }
 
@@ -58,7 +58,7 @@ public class TestPooledSoftReference {
 
     @Test
     public void testToString() {
-        String expected = "Referenced Object: test, State: IDLE";
+        final String expected = "Referenced Object: test, State: IDLE";
         assertEquals(expected, ref.toString());
     }
 

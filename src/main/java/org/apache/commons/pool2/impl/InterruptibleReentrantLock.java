@@ -49,8 +49,8 @@ class InterruptibleReentrantLock extends ReentrantLock {
      * @param condition the condition on which the threads are waiting.
      */
     public void interruptWaiters(Condition condition) {
-        Collection<Thread> threads = getWaitingThreads(condition);
-        for (Thread thread : threads) {
+        final Collection<Thread> threads = getWaitingThreads(condition);
+        for (final Thread thread : threads) {
             thread.interrupt();
         }
     }

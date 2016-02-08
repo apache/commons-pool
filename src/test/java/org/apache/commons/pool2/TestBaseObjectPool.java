@@ -81,7 +81,7 @@ public class TestBaseObjectPool extends TestObjectPool {
         if (!getClass().equals(TestBaseObjectPool.class)) {
             return; // skip redundant tests
         }
-        ObjectPool<Object> pool = new TestObjectPool();
+        final ObjectPool<Object> pool = new TestObjectPool();
 
         assertTrue("Negative expected.", pool.getNumIdle() < 0);
         assertTrue("Negative expected.", pool.getNumActive() < 0);
@@ -89,21 +89,21 @@ public class TestBaseObjectPool extends TestObjectPool {
         try {
             pool.clear();
             fail("Expected UnsupportedOperationException");
-        } catch(UnsupportedOperationException e) {
+        } catch(final UnsupportedOperationException e) {
             // expected
         }
 
         try {
             pool.addObject();
             fail("Expected UnsupportedOperationException");
-        } catch(UnsupportedOperationException e) {
+        } catch(final UnsupportedOperationException e) {
             // expected
         }
     }
 
     @Test
     public void testClose() throws Exception {
-        ObjectPool<Object> pool = new TestObjectPool();
+        final ObjectPool<Object> pool = new TestObjectPool();
 
         pool.close();
         pool.close(); // should not error as of Pool 2.0.
@@ -113,7 +113,7 @@ public class TestBaseObjectPool extends TestObjectPool {
     public void testBaseBorrow() throws Exception {
         try {
             _pool = makeEmptyPool(3);
-        } catch(UnsupportedOperationException e) {
+        } catch(final UnsupportedOperationException e) {
             return; // skip this test if unsupported
         }
         assertEquals(getNthObject(0),_pool.borrowObject());
@@ -126,7 +126,7 @@ public class TestBaseObjectPool extends TestObjectPool {
     public void testBaseAddObject() throws Exception {
         try {
             _pool = makeEmptyPool(3);
-        } catch(UnsupportedOperationException e) {
+        } catch(final UnsupportedOperationException e) {
             return; // skip this test if unsupported
         }
         try {
@@ -135,14 +135,14 @@ public class TestBaseObjectPool extends TestObjectPool {
             _pool.addObject();
             assertEquals(1,_pool.getNumIdle());
             assertEquals(0,_pool.getNumActive());
-            String obj = _pool.borrowObject();
+            final String obj = _pool.borrowObject();
             assertEquals(getNthObject(0),obj);
             assertEquals(0,_pool.getNumIdle());
             assertEquals(1,_pool.getNumActive());
             _pool.returnObject(obj);
             assertEquals(1,_pool.getNumIdle());
             assertEquals(0,_pool.getNumActive());
-        } catch(UnsupportedOperationException e) {
+        } catch(final UnsupportedOperationException e) {
             return; // skip this test if one of those calls is unsupported
         } finally {
             _pool.close();
@@ -153,7 +153,7 @@ public class TestBaseObjectPool extends TestObjectPool {
     public void testBaseBorrowReturn() throws Exception {
         try {
             _pool = makeEmptyPool(3);
-        } catch(UnsupportedOperationException e) {
+        } catch(final UnsupportedOperationException e) {
             return; // skip this test if unsupported
         }
         String obj0 = _pool.borrowObject();
@@ -192,15 +192,15 @@ public class TestBaseObjectPool extends TestObjectPool {
     public void testBaseNumActiveNumIdle() throws Exception {
         try {
             _pool = makeEmptyPool(3);
-        } catch(UnsupportedOperationException e) {
+        } catch(final UnsupportedOperationException e) {
             return; // skip this test if unsupported
         }
         assertEquals(0,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
-        String obj0 = _pool.borrowObject();
+        final String obj0 = _pool.borrowObject();
         assertEquals(1,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
-        String obj1 = _pool.borrowObject();
+        final String obj1 = _pool.borrowObject();
         assertEquals(2,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
         _pool.returnObject(obj1);
@@ -216,13 +216,13 @@ public class TestBaseObjectPool extends TestObjectPool {
     public void testBaseClear() throws Exception {
         try {
             _pool = makeEmptyPool(3);
-        } catch(UnsupportedOperationException e) {
+        } catch(final UnsupportedOperationException e) {
             return; // skip this test if unsupported
         }
         assertEquals(0,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
-        String obj0 = _pool.borrowObject();
-        String obj1 = _pool.borrowObject();
+        final String obj0 = _pool.borrowObject();
+        final String obj1 = _pool.borrowObject();
         assertEquals(2,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
         _pool.returnObject(obj1);
@@ -232,7 +232,7 @@ public class TestBaseObjectPool extends TestObjectPool {
         _pool.clear();
         assertEquals(0,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
-        Object obj2 = _pool.borrowObject();
+        final Object obj2 = _pool.borrowObject();
         assertEquals(getNthObject(2),obj2);
         _pool.close();
     }
@@ -241,13 +241,13 @@ public class TestBaseObjectPool extends TestObjectPool {
     public void testBaseInvalidateObject() throws Exception {
         try {
             _pool = makeEmptyPool(3);
-        } catch(UnsupportedOperationException e) {
+        } catch(final UnsupportedOperationException e) {
             return; // skip this test if unsupported
         }
         assertEquals(0,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
-        String obj0 = _pool.borrowObject();
-        String obj1 = _pool.borrowObject();
+        final String obj0 = _pool.borrowObject();
+        final String obj1 = _pool.borrowObject();
         assertEquals(2,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
         _pool.invalidateObject(obj0);
@@ -263,17 +263,17 @@ public class TestBaseObjectPool extends TestObjectPool {
     public void testBaseClosePool() throws Exception {
         try {
             _pool = makeEmptyPool(3);
-        } catch(UnsupportedOperationException e) {
+        } catch(final UnsupportedOperationException e) {
             return; // skip this test if unsupported
         }
-        String obj = _pool.borrowObject();
+        final String obj = _pool.borrowObject();
         _pool.returnObject(obj);
 
         _pool.close();
         try {
             _pool.borrowObject();
             fail("Expected IllegalStateException");
-        } catch(IllegalStateException e) {
+        } catch(final IllegalStateException e) {
             // expected
         }
     }

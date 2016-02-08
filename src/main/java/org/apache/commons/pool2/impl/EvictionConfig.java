@@ -103,7 +103,7 @@ public class EvictionConfig {
      */
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         builder.append("EvictionConfig [idleEvictTime=");
         builder.append(idleEvictTime);
         builder.append(", idleSoftEvictTime=");

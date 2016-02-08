@@ -36,9 +36,9 @@ public class TestDefaultPooledObject {
     public void testgetIdleTimeMillis() throws Exception {
         final DefaultPooledObject<Object> dpo = new DefaultPooledObject<Object>(new Object());
         final AtomicBoolean negativeIdleTimeReturned = new AtomicBoolean(false);
-        ExecutorService executor = Executors.newFixedThreadPool(
+        final ExecutorService executor = Executors.newFixedThreadPool(
                                       Runtime.getRuntime().availableProcessors()*3);
-        Runnable allocateAndDeallocateTask = new Runnable() {
+        final Runnable allocateAndDeallocateTask = new Runnable() {
             public void run() {
                 for (int i=0;i<10000;i++) {
                     if (dpo.getIdleTimeMillis() < 0) {
@@ -56,7 +56,7 @@ public class TestDefaultPooledObject {
                 dpo.deallocate();
             }
         };
-        Runnable getIdleTimeTask = new Runnable() {
+        final Runnable getIdleTimeTask = new Runnable() {
             public void run() {
                 for (int i=0;i<10000;i++) {
                     if (dpo.getIdleTimeMillis() < 0) {
@@ -66,14 +66,14 @@ public class TestDefaultPooledObject {
                 }
             }
         };
-        double probabilityOfAllocationTask = 0.7;
-        List<Future<?>> futures = new ArrayList<Future<?>>();
+        final double probabilityOfAllocationTask = 0.7;
+        final List<Future<?>> futures = new ArrayList<Future<?>>();
         for (int i = 1; i <= 10000; i++) {
-            Runnable randomTask = Math.random() < probabilityOfAllocationTask ?
+            final Runnable randomTask = Math.random() < probabilityOfAllocationTask ?
                                   allocateAndDeallocateTask : getIdleTimeTask;
             futures.add(executor.submit(randomTask));
         }
-        for (Future<?> future: futures) {
+        for (final Future<?> future: futures) {
             future.get();
         }
         Assert.assertFalse(

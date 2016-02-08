@@ -63,7 +63,7 @@ public class PooledSoftReference<T> extends DefaultPooledObject<T> {
      */
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder();
+        final StringBuilder result = new StringBuilder();
         result.append("Referenced Object: ");
         result.append(getObject().toString());
         result.append(", State: ");

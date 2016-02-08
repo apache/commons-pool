@@ -47,20 +47,20 @@ public abstract class BaseTestProxiedObjectPool {
     public void setUp() {
         log = new StringWriter();
 
-        PrintWriter pw = new PrintWriter(log);
-        AbandonedConfig abandonedConfig = new AbandonedConfig();
+        final PrintWriter pw = new PrintWriter(log);
+        final AbandonedConfig abandonedConfig = new AbandonedConfig();
         abandonedConfig.setLogAbandoned(true);
         abandonedConfig.setRemoveAbandonedOnBorrow(true);
         abandonedConfig.setUseUsageTracking(true);
         abandonedConfig.setRemoveAbandonedTimeout(ABANDONED_TIMEOUT_SECS);
         abandonedConfig.setLogWriter(pw);
 
-        GenericObjectPoolConfig config = new GenericObjectPoolConfig();
+        final GenericObjectPoolConfig config = new GenericObjectPoolConfig();
         config.setMaxTotal(3);
 
-        PooledObjectFactory<TestObject> factory = new TestObjectFactory();
+        final PooledObjectFactory<TestObject> factory = new TestObjectFactory();
 
-        ObjectPool<TestObject> innerPool =
+        final ObjectPool<TestObject> innerPool =
                 new GenericObjectPool<TestObject>(factory, config, abandonedConfig);
 
         pool = new ProxiedObjectPool<TestObject>(innerPool, getproxySource());
@@ -71,7 +71,7 @@ public abstract class BaseTestProxiedObjectPool {
 
     @Test
     public void testBorrowObject() throws Exception {
-        TestObject obj = pool.borrowObject();
+        final TestObject obj = pool.borrowObject();
         assertNotNull(obj);
 
         // Make sure proxied methods are working
@@ -84,7 +84,7 @@ public abstract class BaseTestProxiedObjectPool {
 
     @Test(expected=IllegalStateException.class)
     public void testAccessAfterReturn() throws Exception {
-        TestObject obj = pool.borrowObject();
+        final TestObject obj = pool.borrowObject();
         assertNotNull(obj);
 
         // Make sure proxied methods are working
@@ -101,7 +101,7 @@ public abstract class BaseTestProxiedObjectPool {
 
     @Test(expected=IllegalStateException.class)
     public void testAccessAfterInvalidate() throws Exception {
-        TestObject obj = pool.borrowObject();
+        final TestObject obj = pool.borrowObject();
         assertNotNull(obj);
 
         // Make sure proxied methods are working
@@ -118,7 +118,7 @@ public abstract class BaseTestProxiedObjectPool {
 
     @Test
     public void testUsageTracking() throws Exception {
-        TestObject obj = pool.borrowObject();
+        final TestObject obj = pool.borrowObject();
         assertNotNull(obj);
 
         // Use the object to trigger collection of last used stack trace
@@ -130,7 +130,7 @@ public abstract class BaseTestProxiedObjectPool {
         // Borrow another object to trigger the abandoned object processing
         pool.borrowObject();
 
-        String logOutput = log.getBuffer().toString();
+        final String logOutput = log.getBuffer().toString();
 
         assertTrue(logOutput.contains("Pooled object created"));
         assertTrue(logOutput.contains("The last code to use this object was"));

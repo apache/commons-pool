@@ -56,25 +56,25 @@ public abstract class TestObjectPool {
         final ObjectPool<Object> pool;
         try {
             pool = makeEmptyPool(new MethodCallPoolableObjectFactory());
-        } catch (UnsupportedOperationException uoe) {
+        } catch (final UnsupportedOperationException uoe) {
             return; // test not supported
         }
-        Object o1 = pool.borrowObject();
-        Object o2 = pool.borrowObject();
+        final Object o1 = pool.borrowObject();
+        final Object o2 = pool.borrowObject();
 
         pool.close();
 
         try {
             pool.addObject();
             fail("A closed pool must throw an IllegalStateException when addObject is called.");
-        } catch (IllegalStateException ise) {
+        } catch (final IllegalStateException ise) {
             // expected
         }
 
         try {
             pool.borrowObject();
             fail("A closed pool must throw an IllegalStateException when borrowObject is called.");
-        } catch (IllegalStateException ise) {
+        } catch (final IllegalStateException ise) {
             // expected
         }
 
@@ -114,7 +114,7 @@ public abstract class TestObjectPool {
         final ObjectPool<Object> pool;
         try {
             pool = makeEmptyPool(factory);
-        } catch(UnsupportedOperationException uoe) {
+        } catch(final UnsupportedOperationException uoe) {
             return; // test not supported
         }
         final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
@@ -142,7 +142,7 @@ public abstract class TestObjectPool {
         try {
             pool.addObject();
             fail("Expected addObject to propagate makeObject exception.");
-        } catch (PrivateException pe) {
+        } catch (final PrivateException pe) {
             // expected
         }
         expectedMethods.add(new MethodCall("makeObject"));
@@ -156,7 +156,7 @@ public abstract class TestObjectPool {
         try {
             pool.addObject();
             fail("Expected addObject to propagate passivateObject exception.");
-        } catch (PrivateException pe) {
+        } catch (final PrivateException pe) {
             // expected
         }
         expectedMethods.add(new MethodCall("makeObject").returned(ONE));
@@ -176,7 +176,7 @@ public abstract class TestObjectPool {
         final ObjectPool<Object> pool;
         try {
             pool = makeEmptyPool(factory);
-        } catch (UnsupportedOperationException uoe) {
+        } catch (final UnsupportedOperationException uoe) {
             return; // test not supported
         }
         if (pool instanceof GenericObjectPool) {
@@ -204,7 +204,7 @@ public abstract class TestObjectPool {
         try {
             obj = pool.borrowObject();
             fail("Expected borrowObject to propagate makeObject exception.");
-        } catch (PrivateException pe) {
+        } catch (final PrivateException pe) {
             // expected
         }
         expectedMethods.add(new MethodCall("makeObject"));
@@ -221,7 +221,7 @@ public abstract class TestObjectPool {
         try {
             pool.borrowObject();
             fail("Expecting NoSuchElementException");
-        } catch (NoSuchElementException ex) {
+        } catch (final NoSuchElementException ex) {
             // Expected - newly created object will also fail to activate
         }
         // Idle object fails activation, new one created, also fails
@@ -240,7 +240,7 @@ public abstract class TestObjectPool {
         expectedMethods.add(new MethodCall("validateObject", ZERO));
         try {
             pool.borrowObject();
-        } catch (NoSuchElementException ex) {
+        } catch (final NoSuchElementException ex) {
             // Expected - newly created object will also fail to validate
         }
         // Idle object is activated, but fails validation.
@@ -260,7 +260,7 @@ public abstract class TestObjectPool {
         final ObjectPool<Object> pool;
         try {
             pool = makeEmptyPool(factory);
-        } catch (UnsupportedOperationException uoe) {
+        } catch (final UnsupportedOperationException uoe) {
             return; // test not supported
         }
         final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
@@ -321,7 +321,7 @@ public abstract class TestObjectPool {
         final ObjectPool<Object> pool;
         try {
             pool = makeEmptyPool(factory);
-        } catch (UnsupportedOperationException uoe) {
+        } catch (final UnsupportedOperationException uoe) {
             return; // test not supported
         }
         final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
@@ -345,7 +345,7 @@ public abstract class TestObjectPool {
         try {
             pool.invalidateObject(obj);
             fail("Expecting destroy exception to propagate");
-        } catch (PrivateException ex) {
+        } catch (final PrivateException ex) {
             // Expected
         }
         Thread.sleep(250); // could be defered
@@ -360,7 +360,7 @@ public abstract class TestObjectPool {
         final ObjectPool<Object> pool;
         try {
             pool = makeEmptyPool(factory);
-        } catch (UnsupportedOperationException uoe) {
+        } catch (final UnsupportedOperationException uoe) {
             return; // test not supported
         }
         final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
@@ -383,7 +383,7 @@ public abstract class TestObjectPool {
         ObjectPool<Object> pool;
         try {
             pool = makeEmptyPool(factory);
-        } catch (UnsupportedOperationException uoe) {
+        } catch (final UnsupportedOperationException uoe) {
             return; // test not supported
         }
         final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
@@ -396,7 +396,7 @@ public abstract class TestObjectPool {
         //// Test exception handling close should swallow failures
         try {
             pool = makeEmptyPool(factory);
-        } catch (UnsupportedOperationException uoe) {
+        } catch (final UnsupportedOperationException uoe) {
             return; // test not supported
         }
         reset(pool, factory, expectedMethods);
@@ -410,7 +410,7 @@ public abstract class TestObjectPool {
         ObjectPool<Object> pool;
         try {
             pool = makeEmptyPool(new MethodCallPoolableObjectFactory());
-        } catch (UnsupportedOperationException uoe) {
+        } catch (final UnsupportedOperationException uoe) {
             return; // test not supported
         }
         pool.toString();
@@ -418,9 +418,9 @@ public abstract class TestObjectPool {
     }
 
     static void removeDestroyObjectCall(List<MethodCall> calls) {
-        Iterator<MethodCall> iter = calls.iterator();
+        final Iterator<MethodCall> iter = calls.iterator();
         while (iter.hasNext()) {
-            MethodCall call = iter.next();
+            final MethodCall call = iter.next();
             if ("destroyObject".equals(call.getName())) {
                 iter.remove();
             }

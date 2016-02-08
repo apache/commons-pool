@@ -26,13 +26,13 @@ public class TestPoolImplUtils {
 
     @Test
     public void testFactoryTypeSimple() {
-        Class<?> result = PoolImplUtils.getFactoryType(SimpleFactory.class);
+        final Class<?> result = PoolImplUtils.getFactoryType(SimpleFactory.class);
         assertEquals(String.class, result);
     }
 
     @Test
     public void testFactoryTypeNotSimple() {
-        Class<?> result = PoolImplUtils.getFactoryType(NotSimpleFactory.class);
+        final Class<?> result = PoolImplUtils.getFactoryType(NotSimpleFactory.class);
         assertEquals(Long.class, result);
     }
 

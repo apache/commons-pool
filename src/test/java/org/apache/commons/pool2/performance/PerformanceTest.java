@@ -59,31 +59,31 @@ public class PerformanceTest {
             try {
                 taskStats.waiting++;
                 if (logLevel >= 5) {
-                    String name = "thread" + Thread.currentThread().getName();
+                    final String name = "thread" + Thread.currentThread().getName();
                     System.out.println(name +
                             "   waiting: " + taskStats.waiting +
                             "   complete: " + taskStats.complete);
                 }
-                long bbegin = System.currentTimeMillis();
-                Integer o = pool.borrowObject();
-                long bend = System.currentTimeMillis();
+                final long bbegin = System.currentTimeMillis();
+                final Integer o = pool.borrowObject();
+                final long bend = System.currentTimeMillis();
                 taskStats.waiting--;
 
                 if (logLevel >= 3) {
-                    String name = "thread" + Thread.currentThread().getName();
+                    final String name = "thread" + Thread.currentThread().getName();
                     System.out.println(name +
                             "    waiting: " + taskStats.waiting +
                             "   complete: " + taskStats.complete);
                 }
 
-                long rbegin = System.currentTimeMillis();
+                final long rbegin = System.currentTimeMillis();
                 pool.returnObject(o);
-                long rend = System.currentTimeMillis();
+                final long rend = System.currentTimeMillis();
                 Thread.yield();
                 taskStats.complete++;
                 borrowTime = bend-bbegin;
                 returnTime = rend-rbegin;
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 e.printStackTrace();
             }
         }
@@ -97,7 +97,7 @@ public class PerformanceTest {
                taskStats.totalReturnTime += returnTime;
                taskStats.nrSamples++;
                if (logLevel >= 2) {
-                   String name = "thread" + Thread.currentThread().getName();
+                   final String name = "thread" + Thread.currentThread().getName();
                    System.out.println("result " + taskStats.nrSamples + "\t" +
                            name + "\t" + "borrow time: " + borrowTime + "\t" +
                            "return time: " + returnTime + "\t" + "waiting: " +
@@ -112,16 +112,16 @@ public class PerformanceTest {
     private void run(int iterations, int nrThreads, int maxTotal, int maxIdle) {
         this.nrIterations = iterations;
 
-        SleepingObjectFactory factory = new SleepingObjectFactory();
+        final SleepingObjectFactory factory = new SleepingObjectFactory();
         if (logLevel >= 4) { factory.setDebug(true); }
         pool = new GenericObjectPool<Integer>(factory);
         pool.setMaxTotal(maxTotal);
         pool.setMaxIdle(maxIdle);
         pool.setTestOnBorrow(true);
 
-        ExecutorService threadPool = Executors.newFixedThreadPool(nrThreads);
+        final ExecutorService threadPool = Executors.newFixedThreadPool(nrThreads);
 
-        List<Callable<TaskStats>> tasks = new ArrayList<Callable<TaskStats>>();
+        final List<Callable<TaskStats>> tasks = new ArrayList<Callable<TaskStats>>();
         for (int i = 0; i < nrThreads; i++) {
             tasks.add(new PerfTask());
             Thread.yield();
@@ -134,7 +134,7 @@ public class PerformanceTest {
         List<Future<TaskStats>> futures = null;
         try {
             futures = threadPool.invokeAll(tasks);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             e.printStackTrace();
         }
 
@@ -146,15 +146,15 @@ public class PerformanceTest {
 
         if (logLevel >= 1) { System.out.println("finish"); }
 
-        TaskStats aggregate = new TaskStats();
+        final TaskStats aggregate = new TaskStats();
         if (futures != null) {
-            for (Future<TaskStats> future : futures) {
+            for (final Future<TaskStats> future : futures) {
                 TaskStats taskStats = null;
                 try {
                     taskStats = future.get();
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
                     e.printStackTrace();
-                } catch (ExecutionException e) {
+                } catch (final ExecutionException e) {
                     e.printStackTrace();
                 }
                 if (taskStats != null) {
@@ -184,7 +184,7 @@ public class PerformanceTest {
     }
 
     public static void main(String[] args) {
-        PerformanceTest test = new PerformanceTest();
+        final PerformanceTest test = new PerformanceTest();
         test.setLogLevel(0);
         System.out.println("Increase threads");
         test.run(1,  50,  5,  5);

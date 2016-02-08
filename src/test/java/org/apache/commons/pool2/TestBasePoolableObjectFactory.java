@@ -28,7 +28,7 @@ public class TestBasePoolableObjectFactory {
 
     @Test
     public void testDefaultMethods() throws Exception {
-        PooledObjectFactory<Object> factory = new TestFactory();
+        final PooledObjectFactory<Object> factory = new TestFactory();
 
         factory.activateObject(null); // a no-op
         factory.passivateObject(null); // a no-op

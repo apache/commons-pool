@@ -66,7 +66,7 @@ class BaseProxyHandler<T> {
      * @return the object that this proxy was wrapping
      */
     T disableProxy() {
-        T result = pooledObject;
+        final T result = pooledObject;
         pooledObject = null;
         return result;
     }
@@ -96,7 +96,7 @@ class BaseProxyHandler<T> {
      */
     Object doInvoke(Method method, Object[] args) throws Throwable {
         validateProxiedObject();
-        T object = getPooledObject();
+        final T object = getPooledObject();
         if (usageTracking != null) {
             usageTracking.use(object);
         }
@@ -109,7 +109,7 @@ class BaseProxyHandler<T> {
      */
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         builder.append(getClass().getName());
         builder.append(" [pooledObject=");
         builder.append(pooledObject);

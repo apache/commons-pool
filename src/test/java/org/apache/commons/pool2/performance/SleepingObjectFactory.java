@@ -35,7 +35,7 @@ public class SleepingObjectFactory implements PooledObjectFactory<Integer> {
     public PooledObject<Integer> makeObject() throws Exception {
         // Deliberate choice to create a new object in case future unit tests
         // check for a specific object.
-        Integer obj = new Integer(counter++);
+        final Integer obj = new Integer(counter++);
         debug("makeObject", obj);
         sleep(500);
         return new DefaultPooledObject<Integer>(obj);
@@ -68,7 +68,7 @@ public class SleepingObjectFactory implements PooledObjectFactory<Integer> {
 
     private void debug(String method, Object obj) {
         if (debug) {
-            String thread = "thread" + Thread.currentThread().getName();
+            final String thread = "thread" + Thread.currentThread().getName();
             System.out.println(thread + ": " + method + " " + obj);
         }
     }
@@ -77,7 +77,7 @@ public class SleepingObjectFactory implements PooledObjectFactory<Integer> {
         try {
             Thread.sleep(millis);
         }
-        catch (InterruptedException e) {
+        catch (final InterruptedException e) {
         }
     }
 

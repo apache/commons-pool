@@ -28,7 +28,7 @@ public class TestBaseKeyedPoolableObjectFactory {
 
     @Test
     public void testDefaultMethods() throws Exception {
-        KeyedPooledObjectFactory<Object,Object> factory = new TestFactory();
+        final KeyedPooledObjectFactory<Object,Object> factory = new TestFactory();
 
         factory.activateObject("key",null); // a no-op
         factory.passivateObject("key",null); // a no-op

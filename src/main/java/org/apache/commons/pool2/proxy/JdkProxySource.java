@@ -51,6 +51,7 @@ public class JdkProxySource<T> implements ProxySource<T> {
     @Override
     public T createProxy(T pooledObject, UsageTracking<T> usageTracking) {
         @SuppressWarnings("unchecked")
+        final
         T proxy = (T) Proxy.newProxyInstance(classLoader, interfaces,
                 new JdkProxyHandler<T>(pooledObject, usageTracking));
         return proxy;
@@ -60,9 +61,10 @@ public class JdkProxySource<T> implements ProxySource<T> {
     @Override
     public T resolveProxy(T proxy) {
         @SuppressWarnings("unchecked")
+        final
         JdkProxyHandler<T> jdkProxyHandler =
                 (JdkProxyHandler<T>) Proxy.getInvocationHandler(proxy);
-        T pooledObject = jdkProxyHandler.disableProxy();
+        final T pooledObject = jdkProxyHandler.disableProxy();
         return pooledObject;
     }
 
@@ -72,7 +74,7 @@ public class JdkProxySource<T> implements ProxySource<T> {
      */
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         builder.append("JdkProxySource [classLoader=");
         builder.append(classLoader);
         builder.append(", interfaces=");

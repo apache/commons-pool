@@ -34,15 +34,15 @@ public class TestGenericObjectPoolClassLoaders {
     @Test
     public void testContextClassLoader() throws Exception {
 
-        ClassLoader savedClassloader =
+        final ClassLoader savedClassloader =
                 Thread.currentThread().getContextClassLoader();
 
         try {
-            CustomClassLoader cl1 = new CustomClassLoader(1);
+            final CustomClassLoader cl1 = new CustomClassLoader(1);
             Thread.currentThread().setContextClassLoader(cl1);
-            CustomClassLoaderObjectFactory factory1 =
+            final CustomClassLoaderObjectFactory factory1 =
                     new CustomClassLoaderObjectFactory(1);
-            GenericObjectPool<URL> pool1 = new GenericObjectPool<URL>(factory1);
+            final GenericObjectPool<URL> pool1 = new GenericObjectPool<URL>(factory1);
             pool1.setMinIdle(1);
             pool1.setTimeBetweenEvictionRunsMillis(100);
             int counter = 0;
@@ -54,11 +54,11 @@ public class TestGenericObjectPoolClassLoaders {
                     pool1.getNumIdle());
 
             // ---------------
-            CustomClassLoader cl2 = new CustomClassLoader(2);
+            final CustomClassLoader cl2 = new CustomClassLoader(2);
             Thread.currentThread().setContextClassLoader(cl2);
-            CustomClassLoaderObjectFactory factory2 =
+            final CustomClassLoaderObjectFactory factory2 =
                     new CustomClassLoaderObjectFactory(2);
-            GenericObjectPool<URL> pool2 =
+            final GenericObjectPool<URL> pool2 =
                     new GenericObjectPool<URL>(factory2);
             pool2.setMinIdle(1);
 
@@ -94,7 +94,7 @@ public class TestGenericObjectPoolClassLoaders {
 
         @Override
         public URL create() throws Exception {
-            URL url = Thread.currentThread().getContextClassLoader()
+            final URL url = Thread.currentThread().getContextClassLoader()
                     .getResource("test" + n);
             if (url == null) {
                 throw new IllegalStateException("Object should not be null");

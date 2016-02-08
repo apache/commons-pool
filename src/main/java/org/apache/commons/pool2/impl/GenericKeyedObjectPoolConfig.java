@@ -177,7 +177,7 @@ public class GenericKeyedObjectPoolConfig extends BaseObjectPoolConfig {
     public GenericKeyedObjectPoolConfig clone() {
         try {
             return (GenericKeyedObjectPoolConfig) super.clone();
-        } catch (CloneNotSupportedException e) {
+        } catch (final CloneNotSupportedException e) {
             throw new AssertionError(); // Can't happen
         }
     }

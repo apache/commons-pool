@@ -65,7 +65,7 @@ public class TestSoftRefOutOfMemory {
                     freeMemory = Integer.MAX_VALUE;
                 }
                 garbage.add(new byte[Math.min(1024 * 1024, (int)freeMemory/2)]);
-            } catch (OutOfMemoryError oome) {
+            } catch (final OutOfMemoryError oome) {
                 System.gc();
             }
             System.gc();
@@ -105,7 +105,7 @@ public class TestSoftRefOutOfMemory {
                     freeMemory = Integer.MAX_VALUE;
                 }
                 garbage.add(new byte[Math.min(1024 * 1024, (int)freeMemory/2)]);
-            } catch (OutOfMemoryError oome) {
+            } catch (final OutOfMemoryError oome) {
                 System.gc();
             }
             System.gc();
@@ -141,7 +141,7 @@ public class TestSoftRefOutOfMemory {
                     freeMemory = Integer.MAX_VALUE;
                 }
                 garbage.add(new byte[Math.min(1024 * 1024, (int)freeMemory/2)]);
-            } catch (OutOfMemoryError oome) {
+            } catch (final OutOfMemoryError oome) {
                 System.gc();
             }
             System.gc();
@@ -171,7 +171,7 @@ public class TestSoftRefOutOfMemory {
             pool.borrowObject();
             fail("Expected out of memory.");
         }
-        catch (OutOfMemoryError ex) {
+        catch (final OutOfMemoryError ex) {
             // expected
         }
         pool.close();
@@ -183,7 +183,7 @@ public class TestSoftRefOutOfMemory {
             pool.borrowObject();
             fail("Expected out of memory.");
         }
-        catch (OutOfMemoryError ex) {
+        catch (final OutOfMemoryError ex) {
             // expected
         }
         pool.close();
@@ -195,7 +195,7 @@ public class TestSoftRefOutOfMemory {
             pool.borrowObject();
             fail("Expected out of memory.");
         }
-        catch (OutOfMemoryError ex) {
+        catch (final OutOfMemoryError ex) {
             // expected
         }
         pool.close();
@@ -226,7 +226,7 @@ public class TestSoftRefOutOfMemory {
         private int counter = 0;
 
         public LargePoolableObjectFactory(int size) {
-            char[] data = new char[size];
+            final char[] data = new char[size];
             Arrays.fill(data, '.');
             buffer = new String(data);
         }

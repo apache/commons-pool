@@ -39,13 +39,13 @@ public abstract class BaseTestProxiedKeyedObjectPool {
 
     @Before
     public void setUp() {
-        GenericKeyedObjectPoolConfig config = new GenericKeyedObjectPoolConfig();
+        final GenericKeyedObjectPoolConfig config = new GenericKeyedObjectPoolConfig();
         config.setMaxTotal(3);
 
-        KeyedPooledObjectFactory<String, TestObject> factory =
+        final KeyedPooledObjectFactory<String, TestObject> factory =
                 new TestKeyedObjectFactory();
 
-        KeyedObjectPool<String,TestObject> innerPool =
+        final KeyedObjectPool<String,TestObject> innerPool =
                 new GenericKeyedObjectPool<String,TestObject>(
                         factory, config);
 
@@ -57,7 +57,7 @@ public abstract class BaseTestProxiedKeyedObjectPool {
 
     @Test
     public void testBorrowObject() throws Exception {
-        TestObject obj = pool.borrowObject(KEY1);
+        final TestObject obj = pool.borrowObject(KEY1);
         assertNotNull(obj);
 
         // Make sure proxied methods are working
@@ -70,7 +70,7 @@ public abstract class BaseTestProxiedKeyedObjectPool {
 
     @Test(expected=IllegalStateException.class)
     public void testAccessAfterReturn() throws Exception {
-        TestObject obj = pool.borrowObject(KEY1);
+        final TestObject obj = pool.borrowObject(KEY1);
         assertNotNull(obj);
 
         // Make sure proxied methods are working
@@ -87,7 +87,7 @@ public abstract class BaseTestProxiedKeyedObjectPool {
 
     @Test(expected=IllegalStateException.class)
     public void testAccessAfterInvalidate() throws Exception {
-        TestObject obj = pool.borrowObject(KEY1);
+        final TestObject obj = pool.borrowObject(KEY1);
         assertNotNull(obj);
 
         // Make sure proxied methods are working

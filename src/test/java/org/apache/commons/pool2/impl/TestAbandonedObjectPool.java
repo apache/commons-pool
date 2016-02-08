@@ -62,20 +62,20 @@ public class TestAbandonedObjectPool {
 
     @After
     public void tearDown() throws Exception {
-        String poolName = pool.getJmxName().toString();
+        final String poolName = pool.getJmxName().toString();
         pool.clear();
         pool.close();
         pool = null;
 
-        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-        Set<ObjectName> result = mbs.queryNames(new ObjectName(
+        final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        final Set<ObjectName> result = mbs.queryNames(new ObjectName(
                 "org.apache.commoms.pool2:type=GenericObjectPool,*"), null);
         // There should be no registered pools at this point
-        int registeredPoolCount = result.size();
-        StringBuilder msg = new StringBuilder("Current pool is: ");
+        final int registeredPoolCount = result.size();
+        final StringBuilder msg = new StringBuilder("Current pool is: ");
         msg.append(poolName);
         msg.append("  Still open pools are: ");
-        for (ObjectName name : result) {
+        for (final ObjectName name : result) {
             // Clean these up ready for the next test
             msg.append(name.toString());
             msg.append(" created via\n");
@@ -100,7 +100,7 @@ public class TestAbandonedObjectPool {
         pool.setBlockWhenExhausted(false);
 
         // Exhaust the connection pool
-        ArrayList<PooledTestObject> vec = new ArrayList<PooledTestObject>();
+        final ArrayList<PooledTestObject> vec = new ArrayList<PooledTestObject>();
         for (int i = 0; i < POOL_SIZE; i++) {
             vec.add(pool.borrowObject());
         }
@@ -112,7 +112,7 @@ public class TestAbandonedObjectPool {
 
         // Try launching a bunch of borrows concurrently.  Abandoned sweep will be triggered for each.
         final int CONCURRENT_BORROWS = 5;
-        Thread[] threads = new Thread[CONCURRENT_BORROWS];
+        final Thread[] threads = new Thread[CONCURRENT_BORROWS];
         for (int i = 0; i < CONCURRENT_BORROWS; i++) {
             threads[i] = new ConcurrentBorrower(vec);
             threads[i].start();
@@ -125,7 +125,7 @@ public class TestAbandonedObjectPool {
 
         // Return all objects that have not been destroyed
         for (int i = 0; i < vec.size(); i++) {
-            PooledTestObject pto = vec.get(i);
+            final PooledTestObject pto = vec.get(i);
             if (pto.isActive()) {
                 pool.returnObject(pto);
             }
@@ -162,7 +162,7 @@ public class TestAbandonedObjectPool {
             throw new NullPointerException("Unable to borrow object from pool");
         }
         final int deadMansHash = obj.hashCode();
-        ConcurrentReturner returner = new ConcurrentReturner(obj);
+        final ConcurrentReturner returner = new ConcurrentReturner(obj);
         Thread.sleep(2000);  // abandon checked out instances
         // Now start a race - returner waits until borrowObject has kicked
         // off removeAbandoned and then returns an instance that borrowObject
@@ -228,10 +228,10 @@ public class TestAbandonedObjectPool {
         // Borrow an object, wait long enough for it to be abandoned
         // then arrange for evictor to run while it is being returned
         // validation takes a second, evictor runs every 500 ms
-        PooledTestObject obj = pool.borrowObject();
+        final PooledTestObject obj = pool.borrowObject();
         Thread.sleep(50);       // abandon obj
         pool.returnObject(obj); // evictor will run during validation
-        PooledTestObject obj2 = pool.borrowObject();
+        final PooledTestObject obj2 = pool.borrowObject();
         Assert.assertEquals(obj, obj2);          // should get original back
         Assert.assertTrue(!obj2.isDestroyed());  // and not destroyed
     }
@@ -254,11 +254,12 @@ public class TestAbandonedObjectPool {
         pool.setMaxTotal(1);
 
         @SuppressWarnings("unused") // This is going to be abandoned
+        final
         PooledTestObject o1 = pool.borrowObject();
 
-        long start = System.currentTimeMillis();
-        PooledTestObject o2 = pool.borrowObject(5000);
-        long end = System.currentTimeMillis();
+        final long start = System.currentTimeMillis();
+        final PooledTestObject o2 = pool.borrowObject(5000);
+        final long end = System.currentTimeMillis();
 
         pool.returnObject(o2);
 
@@ -273,12 +274,12 @@ public class TestAbandonedObjectPool {
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
         abandonedConfig.setLogAbandoned(true);
         abandonedConfig.setRemoveAbandonedTimeout(1);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintWriter pw = new PrintWriter(new BufferedOutputStream(baos));
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final PrintWriter pw = new PrintWriter(new BufferedOutputStream(baos));
         abandonedConfig.setLogWriter(pw);
         pool.setAbandonedConfig(abandonedConfig);
         pool.setTimeBetweenEvictionRunsMillis(100);
-        PooledTestObject o1 = pool.borrowObject();
+        final PooledTestObject o1 = pool.borrowObject();
         Thread.sleep(2000);
         Assert.assertTrue(o1.isDestroyed());
         Assert.assertTrue(baos.toString().indexOf("Pooled object") >= 0);
@@ -295,7 +296,7 @@ public class TestAbandonedObjectPool {
         public void run() {
             try {
                 _borrowed.add(pool.borrowObject());
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 // expected in most cases
             }
         }
@@ -311,7 +312,7 @@ public class TestAbandonedObjectPool {
             try {
                 sleep(20);
                 pool.returnObject(returned);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 // ignore
             }
         }
@@ -341,7 +342,7 @@ public class TestAbandonedObjectPool {
         public boolean validateObject(PooledObject<PooledTestObject> obj) {
             try {
                 Thread.sleep(validateLatency);
-            } catch (Exception ex) {
+            } catch (final Exception ex) {
                 // ignore
             }
             return true;

@@ -89,26 +89,26 @@ public abstract class TestKeyedObjectPool {
         final KeyedObjectPool<Object,Object> pool;
         try {
             pool = makeEmptyPool(new TestFactory());
-        } catch(UnsupportedOperationException uoe) {
+        } catch(final UnsupportedOperationException uoe) {
             return; // test not supported
         }
 
-        Object o1 = pool.borrowObject(KEY);
-        Object o2 = pool.borrowObject(KEY);
+        final Object o1 = pool.borrowObject(KEY);
+        final Object o2 = pool.borrowObject(KEY);
 
         pool.close();
 
         try {
             pool.addObject(KEY);
             fail("A closed pool must throw an IllegalStateException when addObject is called.");
-        } catch (IllegalStateException ise) {
+        } catch (final IllegalStateException ise) {
             // expected
         }
 
         try {
             pool.borrowObject(KEY);
             fail("A closed pool must throw an IllegalStateException when borrowObject is called.");
-        } catch (IllegalStateException ise) {
+        } catch (final IllegalStateException ise) {
             // expected
         }
 
@@ -137,7 +137,7 @@ public abstract class TestKeyedObjectPool {
         final KeyedObjectPool<Object,Object> pool;
         try {
             pool = makeEmptyPool(factory);
-        } catch(UnsupportedOperationException uoe) {
+        } catch(final UnsupportedOperationException uoe) {
             return; // test not supported
         }
         final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
@@ -156,7 +156,7 @@ public abstract class TestKeyedObjectPool {
         try {
             pool.addObject(KEY);
             fail("Expected addObject to propagate makeObject exception.");
-        } catch (PrivateException pe) {
+        } catch (final PrivateException pe) {
             // expected
         }
         expectedMethods.add(new MethodCall("makeObject", KEY));
@@ -170,7 +170,7 @@ public abstract class TestKeyedObjectPool {
         try {
             pool.addObject(KEY);
             fail("Expected addObject to propagate passivateObject exception.");
-        } catch (PrivateException pe) {
+        } catch (final PrivateException pe) {
             // expected
         }
         expectedMethods.add(new MethodCall("makeObject", KEY).returned(ONE));
@@ -185,7 +185,7 @@ public abstract class TestKeyedObjectPool {
         final KeyedObjectPool<Object,Object> pool;
         try {
             pool = makeEmptyPool(factory);
-        } catch(UnsupportedOperationException uoe) {
+        } catch(final UnsupportedOperationException uoe) {
             return; // test not supported
         }
         final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
@@ -214,7 +214,7 @@ public abstract class TestKeyedObjectPool {
         try {
             obj = pool.borrowObject(KEY);
             fail("Expected borrowObject to propagate makeObject exception.");
-        } catch (PrivateException pe) {
+        } catch (final PrivateException pe) {
             // expected
         }
         expectedMethods.add(new MethodCall("makeObject", KEY));
@@ -231,7 +231,7 @@ public abstract class TestKeyedObjectPool {
         try {
             pool.borrowObject(KEY);
             fail("Expecting NoSuchElementException");
-        } catch (NoSuchElementException e) {
+        } catch (final NoSuchElementException e) {
             //Activate should fail
         }
         // After idle object fails validation, new on is created and activation
@@ -252,7 +252,7 @@ public abstract class TestKeyedObjectPool {
         try {
             pool.borrowObject(KEY);
             fail("Expecting NoSuchElementException");
-        } catch (NoSuchElementException ex) {
+        } catch (final NoSuchElementException ex) {
             // expected
         }
         // Activate, then validate for idle instance
@@ -273,7 +273,7 @@ public abstract class TestKeyedObjectPool {
         final KeyedObjectPool<Object,Object> pool;
         try {
             pool = makeEmptyPool(factory);
-        } catch(UnsupportedOperationException uoe) {
+        } catch(final UnsupportedOperationException uoe) {
             return; // test not supported
         }
         final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
@@ -319,7 +319,7 @@ public abstract class TestKeyedObjectPool {
             if (!(pool instanceof GenericKeyedObjectPool)) { // ugh, 1.3-compat
                 fail("Expecting destroyObject exception to be propagated");
             }
-        } catch (PrivateException ex) {
+        } catch (final PrivateException ex) {
             // Expected
         }
         pool.close();
@@ -331,7 +331,7 @@ public abstract class TestKeyedObjectPool {
         final KeyedObjectPool<Object,Object> pool;
         try {
             pool = makeEmptyPool(factory);
-        } catch(UnsupportedOperationException uoe) {
+        } catch(final UnsupportedOperationException uoe) {
             return; // test not supported
         }
         final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
@@ -355,7 +355,7 @@ public abstract class TestKeyedObjectPool {
         try {
             pool.invalidateObject(KEY, obj);
             fail("Expecting destroy exception to propagate");
-        } catch (PrivateException ex) {
+        } catch (final PrivateException ex) {
             // Expected
         }
         Thread.sleep(250); // could be defered
@@ -370,7 +370,7 @@ public abstract class TestKeyedObjectPool {
         final KeyedObjectPool<Object,Object> pool;
         try {
             pool = makeEmptyPool(factory);
-        } catch(UnsupportedOperationException uoe) {
+        } catch(final UnsupportedOperationException uoe) {
             return; // test not supported
         }
         final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
@@ -393,7 +393,7 @@ public abstract class TestKeyedObjectPool {
         KeyedObjectPool<Object,Object> pool;
         try {
             pool = makeEmptyPool(factory);
-        } catch(UnsupportedOperationException uoe) {
+        } catch(final UnsupportedOperationException uoe) {
             return; // test not supported
         }
         final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
@@ -415,10 +415,10 @@ public abstract class TestKeyedObjectPool {
     public void testToString() throws Exception {
         final FailingKeyedPooledObjectFactory factory =
                 new FailingKeyedPooledObjectFactory();
-        KeyedObjectPool<Object,Object> pool = makeEmptyPool(factory);
+        final KeyedObjectPool<Object,Object> pool = makeEmptyPool(factory);
         try {
             pool.toString();
-        } catch(UnsupportedOperationException uoe) {
+        } catch(final UnsupportedOperationException uoe) {
             return; // test not supported
         } finally {
             pool.close();
@@ -429,10 +429,10 @@ public abstract class TestKeyedObjectPool {
     public void testBaseBorrowReturn() throws Exception {
         try {
             _pool = makeEmptyPool(3);
-        } catch(UnsupportedOperationException uoe) {
+        } catch(final UnsupportedOperationException uoe) {
             return; // skip this test if unsupported
         }
-        Object keya = makeKey(0);
+        final Object keya = makeKey(0);
         Object obj0 = _pool.borrowObject(keya);
         assertEquals(getNthObject(keya,0),obj0);
         Object obj1 = _pool.borrowObject(keya);
@@ -468,11 +468,11 @@ public abstract class TestKeyedObjectPool {
     public void testBaseBorrow() throws Exception {
         try {
             _pool = makeEmptyPool(3);
-        } catch(UnsupportedOperationException uoe) {
+        } catch(final UnsupportedOperationException uoe) {
             return; // skip this test if unsupported
         }
-        Object keya = makeKey(0);
-        Object keyb = makeKey(1);
+        final Object keya = makeKey(0);
+        final Object keyb = makeKey(1);
         assertEquals("1",getNthObject(keya,0),_pool.borrowObject(keya));
         assertEquals("2",getNthObject(keyb,0),_pool.borrowObject(keyb));
         assertEquals("3",getNthObject(keyb,1),_pool.borrowObject(keyb));
@@ -486,16 +486,16 @@ public abstract class TestKeyedObjectPool {
     public void testBaseNumActiveNumIdle() throws Exception {
         try {
             _pool = makeEmptyPool(3);
-        } catch(UnsupportedOperationException uoe) {
+        } catch(final UnsupportedOperationException uoe) {
             return; // skip this test if unsupported
         }
-        Object keya = makeKey(0);
+        final Object keya = makeKey(0);
         assertEquals(0,_pool.getNumActive(keya));
         assertEquals(0,_pool.getNumIdle(keya));
-        Object obj0 = _pool.borrowObject(keya);
+        final Object obj0 = _pool.borrowObject(keya);
         assertEquals(1,_pool.getNumActive(keya));
         assertEquals(0,_pool.getNumIdle(keya));
-        Object obj1 = _pool.borrowObject(keya);
+        final Object obj1 = _pool.borrowObject(keya);
         assertEquals(2,_pool.getNumActive(keya));
         assertEquals(0,_pool.getNumIdle(keya));
         _pool.returnObject(keya,obj1);
@@ -515,11 +515,11 @@ public abstract class TestKeyedObjectPool {
     public void testBaseNumActiveNumIdle2() throws Exception {
         try {
             _pool = makeEmptyPool(6);
-        } catch(UnsupportedOperationException uoe) {
+        } catch(final UnsupportedOperationException uoe) {
             return; // skip this test if unsupported
         }
-        Object keya = makeKey(0);
-        Object keyb = makeKey(1);
+        final Object keya = makeKey(0);
+        final Object keyb = makeKey(1);
         assertEquals(0,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
         assertEquals(0,_pool.getNumActive(keya));
@@ -527,8 +527,8 @@ public abstract class TestKeyedObjectPool {
         assertEquals(0,_pool.getNumActive(keyb));
         assertEquals(0,_pool.getNumIdle(keyb));
 
-        Object objA0 = _pool.borrowObject(keya);
-        Object objB0 = _pool.borrowObject(keyb);
+        final Object objA0 = _pool.borrowObject(keya);
+        final Object objB0 = _pool.borrowObject(keyb);
 
         assertEquals(2,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
@@ -537,8 +537,8 @@ public abstract class TestKeyedObjectPool {
         assertEquals(1,_pool.getNumActive(keyb));
         assertEquals(0,_pool.getNumIdle(keyb));
 
-        Object objA1 = _pool.borrowObject(keya);
-        Object objB1 = _pool.borrowObject(keyb);
+        final Object objA1 = _pool.borrowObject(keya);
+        final Object objB1 = _pool.borrowObject(keyb);
 
         assertEquals(4,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
@@ -574,14 +574,14 @@ public abstract class TestKeyedObjectPool {
     public void testBaseClear() throws Exception {
         try {
             _pool = makeEmptyPool(3);
-        } catch(UnsupportedOperationException uoe) {
+        } catch(final UnsupportedOperationException uoe) {
             return; // skip this test if unsupported
         }
-        Object keya = makeKey(0);
+        final Object keya = makeKey(0);
         assertEquals(0,_pool.getNumActive(keya));
         assertEquals(0,_pool.getNumIdle(keya));
-        Object obj0 = _pool.borrowObject(keya);
-        Object obj1 = _pool.borrowObject(keya);
+        final Object obj0 = _pool.borrowObject(keya);
+        final Object obj1 = _pool.borrowObject(keya);
         assertEquals(2,_pool.getNumActive(keya));
         assertEquals(0,_pool.getNumIdle(keya));
         _pool.returnObject(keya,obj1);
@@ -591,7 +591,7 @@ public abstract class TestKeyedObjectPool {
         _pool.clear(keya);
         assertEquals(0,_pool.getNumActive(keya));
         assertEquals(0,_pool.getNumIdle(keya));
-        Object obj2 = _pool.borrowObject(keya);
+        final Object obj2 = _pool.borrowObject(keya);
         assertEquals(getNthObject(keya,2),obj2);
         _pool.close();
     }
@@ -600,14 +600,14 @@ public abstract class TestKeyedObjectPool {
     public void testBaseInvalidateObject() throws Exception {
         try {
             _pool = makeEmptyPool(3);
-        } catch(UnsupportedOperationException uoe) {
+        } catch(final UnsupportedOperationException uoe) {
             return; // skip this test if unsupported
         }
-        Object keya = makeKey(0);
+        final Object keya = makeKey(0);
         assertEquals(0,_pool.getNumActive(keya));
         assertEquals(0,_pool.getNumIdle(keya));
-        Object obj0 = _pool.borrowObject(keya);
-        Object obj1 = _pool.borrowObject(keya);
+        final Object obj0 = _pool.borrowObject(keya);
+        final Object obj1 = _pool.borrowObject(keya);
         assertEquals(2,_pool.getNumActive(keya));
         assertEquals(0,_pool.getNumIdle(keya));
         _pool.invalidateObject(keya,obj0);
@@ -623,10 +623,10 @@ public abstract class TestKeyedObjectPool {
     public void testBaseAddObject() throws Exception {
         try {
             _pool = makeEmptyPool(3);
-        } catch(UnsupportedOperationException uoe) {
+        } catch(final UnsupportedOperationException uoe) {
             return; // skip this test if unsupported
         }
-        Object key = makeKey(0);
+        final Object key = makeKey(0);
         try {
             assertEquals(0,_pool.getNumIdle());
             assertEquals(0,_pool.getNumActive());
@@ -637,7 +637,7 @@ public abstract class TestKeyedObjectPool {
             assertEquals(0,_pool.getNumActive());
             assertEquals(1,_pool.getNumIdle(key));
             assertEquals(0,_pool.getNumActive(key));
-            Object obj = _pool.borrowObject(key);
+            final Object obj = _pool.borrowObject(key);
             assertEquals(getNthObject(key,0),obj);
             assertEquals(0,_pool.getNumIdle());
             assertEquals(1,_pool.getNumActive());
@@ -648,7 +648,7 @@ public abstract class TestKeyedObjectPool {
             assertEquals(0,_pool.getNumActive());
             assertEquals(1,_pool.getNumIdle(key));
             assertEquals(0,_pool.getNumActive(key));
-        } catch(UnsupportedOperationException e) {
+        } catch(final UnsupportedOperationException e) {
             return; // skip this test if one of those calls is unsupported
         } finally {
             _pool.close();
@@ -757,7 +757,7 @@ public abstract class TestKeyedObjectPool {
         public PooledObject<Object> makeObject(final Object key) throws Exception {
             final MethodCall call = new MethodCall("makeObject", key);
             methodCalls.add(call);
-            int originalCount = this.count++;
+            final int originalCount = this.count++;
             if (makeObjectFail) {
                 throw new PrivateException("makeObject");
             }

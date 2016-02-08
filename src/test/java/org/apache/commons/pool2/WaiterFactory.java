@@ -148,7 +148,7 @@ KeyedPooledObjectFactory<K,Waiter> {
         }
         try {
             Thread.sleep(latency);
-        } catch (InterruptedException ex) {
+        } catch (final InterruptedException ex) {
             // ignore
         }
     }
@@ -158,9 +158,9 @@ KeyedPooledObjectFactory<K,Waiter> {
         if (activeCounts.isEmpty()) {
             return;
         }
-        Iterator<K> it = activeCounts.keySet().iterator();
+        final Iterator<K> it = activeCounts.keySet().iterator();
         while (it.hasNext()) {
-            K key = it.next();
+            final K key = it.next();
             activeCounts.put(key, Integer.valueOf(0));
         }
     }
@@ -183,7 +183,7 @@ KeyedPooledObjectFactory<K,Waiter> {
     public void destroyObject(K key,PooledObject<Waiter> obj) throws Exception {
         destroyObject(obj);
         synchronized (this) {
-            Integer count = activeCounts.get(key);
+            final Integer count = activeCounts.get(key);
             activeCounts.put(key, Integer.valueOf(count.intValue() - 1));
         }
     }

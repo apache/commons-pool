@@ -59,22 +59,22 @@ public class ProxiedObjectPool<T> implements ObjectPool<T> {
         if (pool instanceof UsageTracking) {
             usageTracking = (UsageTracking<T>) pool;
         }
-        T pooledObject = pool.borrowObject();
-        T proxy = proxySource.createProxy(pooledObject, usageTracking);
+        final T pooledObject = pool.borrowObject();
+        final T proxy = proxySource.createProxy(pooledObject, usageTracking);
         return proxy;
     }
 
 
     @Override
     public void returnObject(T proxy) throws Exception {
-        T pooledObject = proxySource.resolveProxy(proxy);
+        final T pooledObject = proxySource.resolveProxy(proxy);
         pool.returnObject(pooledObject);
     }
 
 
     @Override
     public void invalidateObject(T proxy) throws Exception {
-        T pooledObject = proxySource.resolveProxy(proxy);
+        final T pooledObject = proxySource.resolveProxy(proxy);
         pool.invalidateObject(pooledObject);
     }
 
@@ -115,7 +115,7 @@ public class ProxiedObjectPool<T> implements ObjectPool<T> {
      */
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         builder.append("ProxiedObjectPool [pool=");
         builder.append(pool);
         builder.append(", proxySource=");

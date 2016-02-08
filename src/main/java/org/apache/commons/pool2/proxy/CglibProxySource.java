@@ -43,14 +43,15 @@ public class CglibProxySource<T> implements ProxySource<T> {
 
     @Override
     public T createProxy(T pooledObject, UsageTracking<T> usageTracking) {
-        Enhancer enhancer = new Enhancer();
+        final Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(superclass);
 
-        CglibProxyHandler<T> proxyInterceptor =
+        final CglibProxyHandler<T> proxyInterceptor =
                 new CglibProxyHandler<T>(pooledObject, usageTracking);
         enhancer.setCallback(proxyInterceptor);
 
         @SuppressWarnings("unchecked")
+        final
         T proxy = (T) enhancer.create();
 
         return proxy;
@@ -60,9 +61,10 @@ public class CglibProxySource<T> implements ProxySource<T> {
     @Override
     public T resolveProxy(T proxy) {
         @SuppressWarnings("unchecked")
+        final
         CglibProxyHandler<T> cglibProxyHandler =
                 (CglibProxyHandler<T>) ((Factory) proxy).getCallback(0);
-        T pooledObject = cglibProxyHandler.disableProxy();
+        final T pooledObject = cglibProxyHandler.disableProxy();
         return pooledObject;
     }
 
@@ -71,7 +73,7 @@ public class CglibProxySource<T> implements ProxySource<T> {
      */
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         builder.append("CglibProxySource [superclass=");
         builder.append(superclass);
         builder.append("]");

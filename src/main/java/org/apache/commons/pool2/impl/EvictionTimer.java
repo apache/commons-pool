@@ -62,7 +62,7 @@ class EvictionTimer {
         if (null == _timer) {
             // Force the new Timer thread to be created with a context class
             // loader set to the class loader that loaded this library
-            ClassLoader ccl = AccessController.doPrivileged(
+            final ClassLoader ccl = AccessController.doPrivileged(
                     new PrivilegedGetTccl());
             try {
                 AccessController.doPrivileged(new PrivilegedSetTccl(
@@ -130,7 +130,7 @@ class EvictionTimer {
 
         @Override
         public String toString() {
-            StringBuilder builder = new StringBuilder();
+            final StringBuilder builder = new StringBuilder();
             builder.append("PrivilegedSetTccl [classLoader=");
             builder.append(classLoader);
             builder.append("]");
@@ -162,7 +162,7 @@ class EvictionTimer {
      */
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         builder.append("EvictionTimer []");
         return builder.toString();
     }

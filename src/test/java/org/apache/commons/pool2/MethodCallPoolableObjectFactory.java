@@ -114,7 +114,7 @@ public class MethodCallPoolableObjectFactory implements PooledObjectFactory<Obje
     public PooledObject<Object> makeObject() throws Exception {
         final MethodCall call = new MethodCall("makeObject");
         methodCalls.add(call);
-        int originalCount = this.count++;
+        final int originalCount = this.count++;
         if (makeObjectFail) {
             throw new PrivateException("makeObject");
         }

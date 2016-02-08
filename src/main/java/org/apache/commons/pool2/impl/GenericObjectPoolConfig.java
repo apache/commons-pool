@@ -139,7 +139,7 @@ public class GenericObjectPoolConfig extends BaseObjectPoolConfig {
     public GenericObjectPoolConfig clone() {
         try {
             return (GenericObjectPoolConfig) super.clone();
-        } catch (CloneNotSupportedException e) {
+        } catch (final CloneNotSupportedException e) {
             throw new AssertionError(); // Can't happen
         }
     }

@@ -235,7 +235,7 @@ public class AbandonedConfig {
      */
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         builder.append("AbandonedConfig [removeAbandonedOnBorrow=");
         builder.append(removeAbandonedOnBorrow);
         builder.append(", removeAbandonedOnMaintenance=");

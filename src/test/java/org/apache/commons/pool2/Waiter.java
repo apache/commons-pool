@@ -50,7 +50,7 @@ public class Waiter {
     public void doWait() {
         try {
             Thread.sleep(latency);
-        } catch (InterruptedException ex) {
+        } catch (final InterruptedException ex) {
             // ignore
         }
     }
@@ -166,7 +166,7 @@ public class Waiter {
 
     @Override
     public String toString() {
-        StringBuilder buff = new StringBuilder();
+        final StringBuilder buff = new StringBuilder();
         buff.append("ID = " + id + "\n");
         buff.append("valid = " + valid + "\n");
         buff.append("active = " + active + "\n");

@@ -141,7 +141,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         this.creationStackTrace = getStackTrace(new Exception());
 
         // save the current TCCL (if any) to be used later by the evictor Thread
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        final ClassLoader cl = Thread.currentThread().getContextClassLoader();
         if (cl == null) {
             factoryClassLoader = null;
         } else {
@@ -604,24 +604,25 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
             try {
                 clazz = Class.forName(evictionPolicyClassName, true,
                         Thread.currentThread().getContextClassLoader());
-            } catch (ClassNotFoundException e) {
+            } catch (final ClassNotFoundException e) {
                 clazz = Class.forName(evictionPolicyClassName);
             }
-            Object policy = clazz.newInstance();
+            final Object policy = clazz.newInstance();
             if (policy instanceof EvictionPolicy<?>) {
                 @SuppressWarnings("unchecked") // safe, because we just checked the class
+                final
                 EvictionPolicy<T> evicPolicy = (EvictionPolicy<T>) policy;
                 this.evictionPolicy = evicPolicy;
             }
-        } catch (ClassNotFoundException e) {
+        } catch (final ClassNotFoundException e) {
             throw new IllegalArgumentException(
                     "Unable to create EvictionPolicy instance of type " +
                     evictionPolicyClassName, e);
-        } catch (InstantiationException e) {
+        } catch (final InstantiationException e) {
             throw new IllegalArgumentException(
                     "Unable to create EvictionPolicy instance of type " +
                     evictionPolicyClassName, e);
-        } catch (IllegalAccessException e) {
+        } catch (final IllegalAccessException e) {
             throw new IllegalArgumentException(
                     "Unable to create EvictionPolicy instance of type " +
                     evictionPolicyClassName, e);
@@ -860,7 +861,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * @param e exception to be swallowed
      */
     final void swallowException(Exception e) {
-        SwallowedExceptionListener listener = getSwallowedExceptionListener();
+        final SwallowedExceptionListener listener = getSwallowedExceptionListener();
 
         if (listener == null) {
             return;
@@ -868,11 +869,11 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
 
         try {
             listener.onSwallowException(e);
-        } catch (OutOfMemoryError oome) {
+        } catch (final OutOfMemoryError oome) {
             throw oome;
-        } catch (VirtualMachineError vme) {
+        } catch (final VirtualMachineError vme) {
             throw vme;
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
             // Ignore. Enjoy the irony.
         }
     }
@@ -915,9 +916,9 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
             try {
                 ManagementFactory.getPlatformMBeanServer().unregisterMBean(
                         oname);
-            } catch (MBeanRegistrationException e) {
+            } catch (final MBeanRegistrationException e) {
                 swallowException(e);
-            } catch (InstanceNotFoundException e) {
+            } catch (final InstanceNotFoundException e) {
                 swallowException(e);
             }
         }
@@ -939,7 +940,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     private ObjectName jmxRegister(BaseObjectPoolConfig config,
             String jmxNameBase, String jmxNamePrefix) {
         ObjectName objectName = null;
-        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         int i = 1;
         boolean registered = false;
         String base = config.getJmxNameBase();
@@ -959,7 +960,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
                 mbs.registerMBean(this, objName);
                 objectName = objName;
                 registered = true;
-            } catch (MalformedObjectNameException e) {
+            } catch (final MalformedObjectNameException e) {
                 if (BaseObjectPoolConfig.DEFAULT_JMX_NAME_PREFIX.equals(
                         jmxNamePrefix) && jmxNameBase.equals(base)) {
                     // Shouldn't happen. Skip registration if it does.
@@ -970,13 +971,13 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
                             BaseObjectPoolConfig.DEFAULT_JMX_NAME_PREFIX;
                     base = jmxNameBase;
                 }
-            } catch (InstanceAlreadyExistsException e) {
+            } catch (final InstanceAlreadyExistsException e) {
                 // Increment the index and try again
                 i++;
-            } catch (MBeanRegistrationException e) {
+            } catch (final MBeanRegistrationException e) {
                 // Shouldn't happen. Skip registration if it does.
                 registered = true;
-            } catch (NotCompliantMBeanException e) {
+            } catch (final NotCompliantMBeanException e) {
                 // Shouldn't happen. Skip registration if it does.
                 registered = true;
             }
@@ -993,8 +994,8 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         // Need the exception in string form to prevent the retention of
         // references to classes in the stack trace that could trigger a memory
         // leak in a container environment.
-        Writer w = new StringWriter();
-        PrintWriter pw = new PrintWriter(w);
+        final Writer w = new StringWriter();
+        final PrintWriter pw = new PrintWriter(w);
         e.printStackTrace(pw);
         return w.toString();
     }
@@ -1017,12 +1018,12 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
          */
         @Override
         public void run() {
-            ClassLoader savedClassLoader =
+            final ClassLoader savedClassLoader =
                     Thread.currentThread().getContextClassLoader();
             try {
                 if (factoryClassLoader != null) {
                     // Set the class loader for the factory
-                    ClassLoader cl = factoryClassLoader.get();
+                    final ClassLoader cl = factoryClassLoader.get();
                     if (cl == null) {
                         // The pool has been dereferenced and the class loader
                         // GC'd. Cancel this timer so the pool can be GC'd as
@@ -1036,9 +1037,9 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
                 // Evict from the pool
                 try {
                     evict();
-                } catch(Exception e) {
+                } catch(final Exception e) {
                     swallowException(e);
-                } catch(OutOfMemoryError oome) {
+                } catch(final OutOfMemoryError oome) {
                     // Log problem but give evictor thread a chance to continue
                     // in case error is recoverable
                     oome.printStackTrace(System.err);
@@ -1046,7 +1047,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
                 // Re-create idle instances.
                 try {
                     ensureMinIdle();
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     swallowException(e);
                 }
             } finally {
@@ -1102,7 +1103,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
             double result = 0;
             int counter = 0;
             for (int i = 0; i < size; i++) {
-                long value = values[i].get();
+                final long value = values[i].get();
                 if (value != -1) {
                     counter++;
                     result = result * ((counter - 1) / (double) counter) +
@@ -1114,7 +1115,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
 
         @Override
         public String toString() {
-            StringBuilder builder = new StringBuilder();
+            final StringBuilder builder = new StringBuilder();
             builder.append("StatsStore [values=");
             builder.append(Arrays.toString(values));
             builder.append(", size=");
@@ -1218,7 +1219,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
 
         @Override
         public String toString() {
-            StringBuilder builder = new StringBuilder();
+            final StringBuilder builder = new StringBuilder();
             builder.append("IdentityWrapper [instance=");
             builder.append(instance);
             builder.append("]");

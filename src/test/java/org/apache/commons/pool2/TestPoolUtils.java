@@ -64,23 +64,23 @@ public class TestPoolUtils {
     public void testCheckRethrow() {
         try {
             PoolUtils.checkRethrow(new Exception());
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
             fail("PoolUtils.checkRethrow(Throwable) must rethrow only ThreadDeath and VirtualMachineError.");
         }
         try {
             PoolUtils.checkRethrow(new ThreadDeath());
             fail("PoolUtils.checkRethrow(Throwable) must rethrow ThreadDeath.");
-        } catch (ThreadDeath td) {
+        } catch (final ThreadDeath td) {
             // expected
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
             fail("PoolUtils.checkRethrow(Throwable) must rethrow only ThreadDeath and VirtualMachineError.");
         }
         try {
             PoolUtils.checkRethrow(new InternalError()); // InternalError extends VirtualMachineError
             fail("PoolUtils.checkRethrow(Throwable) must rethrow VirtualMachineError.");
-        } catch (VirtualMachineError td) {
+        } catch (final VirtualMachineError td) {
             // expected
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
             fail("PoolUtils.checkRethrow(Throwable) must rethrow only ThreadDeath and VirtualMachineError.");
         }
     }
@@ -95,7 +95,7 @@ public class TestPoolUtils {
         try {
             PoolUtils.checkMinIdle(null, 1, 1);
             fail("PoolUtils.checkMinIdle(ObjectPool,,) must not allow null pool.");
-        } catch (IllegalArgumentException iae) {
+        } catch (final IllegalArgumentException iae) {
             // expected
         }
         try {
@@ -103,7 +103,7 @@ public class TestPoolUtils {
             final ObjectPool<Object> pool = createProxy(ObjectPool.class, (List<String>)null);
             PoolUtils.checkMinIdle(pool, -1, 1);
             fail("PoolUtils.checkMinIdle(ObjectPool,,) must not accept negative min idle values.");
-        } catch (IllegalArgumentException iae) {
+        } catch (final IllegalArgumentException iae) {
             // expected
         }
 
@@ -149,7 +149,7 @@ public class TestPoolUtils {
                 }
                 expectedMethods.add("toString");
                 assertEquals(expectedMethods, calledMethods); // may fail because of the thread scheduler
-            } catch (AssertionFailedError e) {
+            } catch (final AssertionFailedError e) {
                 afe = e;
             }
         } while (--triesLeft > 0 && afe != null);
@@ -163,7 +163,7 @@ public class TestPoolUtils {
         try {
             PoolUtils.checkMinIdle(null, new Object(), 1, 1);
             fail("PoolUtils.checkMinIdle(KeyedObjectPool,Object,int,long) must not allow null pool.");
-        } catch (IllegalArgumentException iae) {
+        } catch (final IllegalArgumentException iae) {
             // expected
         }
         try {
@@ -171,7 +171,7 @@ public class TestPoolUtils {
             final KeyedObjectPool<Object,Object> pool = createProxy(KeyedObjectPool.class, (List<String>)null);
             PoolUtils.checkMinIdle(pool, (Object)null, 1, 1);
             fail("PoolUtils.checkMinIdle(KeyedObjectPool,Object,int,long) must not accept null keys.");
-        } catch (IllegalArgumentException iae) {
+        } catch (final IllegalArgumentException iae) {
             // expected
         }
         try {
@@ -179,7 +179,7 @@ public class TestPoolUtils {
             final KeyedObjectPool<Object,Object> pool = createProxy(KeyedObjectPool.class, (List<String>)null);
             PoolUtils.checkMinIdle(pool, new Object(), -1, 1);
             fail("PoolUtils.checkMinIdle(KeyedObjectPool,Object,int,long) must not accept negative min idle values.");
-        } catch (IllegalArgumentException iae) {
+        } catch (final IllegalArgumentException iae) {
             // expected
         }
 
@@ -229,7 +229,7 @@ public class TestPoolUtils {
                 }
                 expectedMethods.add("toString");
                 assertEquals(expectedMethods, calledMethods); // may fail because of the thread scheduler
-            } catch (AssertionFailedError e) {
+            } catch (final AssertionFailedError e) {
                 afe = e;
             }
         } while (--triesLeft > 0 && afe != null);
@@ -245,7 +245,7 @@ public class TestPoolUtils {
             final KeyedObjectPool<Object,Object> pool = createProxy(KeyedObjectPool.class, (List<String>)null);
             PoolUtils.checkMinIdle(pool, (Collection<?>) null, 1, 1);
             fail("PoolUtils.checkMinIdle(KeyedObjectPool,Collection,int,long) must not accept null keys.");
-        } catch (IllegalArgumentException iae) {
+        } catch (final IllegalArgumentException iae) {
             // expected
         }
 
@@ -253,7 +253,7 @@ public class TestPoolUtils {
             @SuppressWarnings("unchecked")
             final KeyedObjectPool<Object,Object> pool = createProxy(KeyedObjectPool.class, (List<String>)null);
             PoolUtils.checkMinIdle(pool, (Collection<?>) Collections.emptyList(), 1, 1);
-        } catch (IllegalArgumentException iae) {
+        } catch (final IllegalArgumentException iae) {
             fail("PoolUtils.checkMinIdle(KeyedObjectPool,Collection,int,long) must accept empty lists.");
         }
 
@@ -272,7 +272,7 @@ public class TestPoolUtils {
                 final Map<String, TimerTask> tasks = PoolUtils.checkMinIdle(pool, keys, 1, CHECK_PERIOD); // checks minIdle immediately
 
                 Thread.sleep(CHECK_SLEEP_PERIOD); // will check CHECK_COUNT more times.
-                for (TimerTask task : tasks.values()) {
+                for (final TimerTask task : tasks.values()) {
                     task.cancel();
                 }
 
@@ -282,7 +282,7 @@ public class TestPoolUtils {
                     expectedMethods.add("addObject");
                 }
                 assertEquals(expectedMethods, calledMethods); // may fail because of the thread scheduler
-            } catch (AssertionFailedError e) {
+            } catch (final AssertionFailedError e) {
                 afe = e;
             }
         } while (--triesLeft > 0 && afe != null);
@@ -296,7 +296,7 @@ public class TestPoolUtils {
         try {
             PoolUtils.prefill(null, 1);
             fail("PoolUtils.prefill(ObjectPool,int) must not allow null pool.");
-        } catch (IllegalArgumentException iae) {
+        } catch (final IllegalArgumentException iae) {
             // expected
         }
 
@@ -321,7 +321,7 @@ public class TestPoolUtils {
         try {
             PoolUtils.prefill(null, new Object(), 1);
             fail("PoolUtils.prefill(KeyedObjectPool,Object,int) must not accept null pool.");
-        } catch (IllegalArgumentException iae) {
+        } catch (final IllegalArgumentException iae) {
             // expected
         }
         try {
@@ -329,7 +329,7 @@ public class TestPoolUtils {
             final KeyedObjectPool<Object,Object> pool = createProxy(KeyedObjectPool.class, (List<String>)null);
             PoolUtils.prefill(pool, (Object)null, 1);
             fail("PoolUtils.prefill(KeyedObjectPool,Object,int) must not accept null key.");
-        } catch (IllegalArgumentException iae) {
+        } catch (final IllegalArgumentException iae) {
             // expected
         }
 
@@ -356,7 +356,7 @@ public class TestPoolUtils {
             final KeyedObjectPool<String,String> pool = createProxy(KeyedObjectPool.class, (List<String>)null);
             PoolUtils.prefill(pool, (Collection<String>)null, 1);
             fail("PoolUtils.prefill(KeyedObjectPool,Collection,int) must not accept null keys.");
-        } catch (IllegalArgumentException iae) {
+        } catch (final IllegalArgumentException iae) {
             // expected
         }
 
@@ -385,7 +385,7 @@ public class TestPoolUtils {
         try {
             PoolUtils.synchronizedPool((ObjectPool<Object>)null);
             fail("PoolUtils.synchronizedPool(ObjectPool) must not allow a null pool.");
-        } catch(IllegalArgumentException iae) {
+        } catch(final IllegalArgumentException iae) {
             // expected
         }
 
@@ -405,7 +405,7 @@ public class TestPoolUtils {
         try {
             PoolUtils.synchronizedPool((KeyedObjectPool<Object,Object>)null);
             fail("PoolUtils.synchronizedPool(KeyedObjectPool) must not allow a null pool.");
-        } catch(IllegalArgumentException iae) {
+        } catch(final IllegalArgumentException iae) {
             // expected
         }
 
@@ -425,7 +425,7 @@ public class TestPoolUtils {
         try {
             PoolUtils.synchronizedPooledFactory((PooledObjectFactory<Object>)null);
             fail("PoolUtils.synchronizedPoolableFactory(PoolableObjectFactory) must not allow a null factory.");
-        } catch(IllegalArgumentException iae) {
+        } catch(final IllegalArgumentException iae) {
             // expected
         }
 
@@ -446,7 +446,7 @@ public class TestPoolUtils {
         try {
             PoolUtils.synchronizedKeyedPooledFactory((KeyedPooledObjectFactory<Object,Object>)null);
             fail("PoolUtils.synchronizedPoolableFactory(KeyedPoolableObjectFactory) must not allow a null factory.");
-        } catch(IllegalArgumentException iae) {
+        } catch(final IllegalArgumentException iae) {
             // expected
         }
 
@@ -467,14 +467,14 @@ public class TestPoolUtils {
         try {
             PoolUtils.erodingPool((ObjectPool<Object>)null);
             fail("PoolUtils.erodingPool(ObjectPool) must not allow a null pool.");
-        } catch(IllegalArgumentException iae) {
+        } catch(final IllegalArgumentException iae) {
             // expected
         }
 
         try {
             PoolUtils.erodingPool((ObjectPool<Object>)null, 1f);
             fail("PoolUtils.erodingPool(ObjectPool, float) must not allow a null pool.");
-        } catch(IllegalArgumentException iae) {
+        } catch(final IllegalArgumentException iae) {
             // expected
         }
 
@@ -493,14 +493,15 @@ public class TestPoolUtils {
 
         try {
             @SuppressWarnings({"unchecked", "unused"})
+            final
             Object o = PoolUtils.erodingPool(createProxy(ObjectPool.class, handler), -1f);
             fail("PoolUtils.erodingPool(ObjectPool, float) must not allow a non-positive factor.");
-        } catch(IllegalArgumentException iae) {
+        } catch(final IllegalArgumentException iae) {
             // expected
         }
 
         // If the logic behind PoolUtils.erodingPool changes then this will need to be tweaked.
-        float factor = 0.01f; // about ~9 seconds until first discard
+        final float factor = 0.01f; // about ~9 seconds until first discard
         @SuppressWarnings("unchecked")
         final ObjectPool<Object> pool = PoolUtils.erodingPool(
                 createProxy(ObjectPool.class, handler), factor);
@@ -559,6 +560,7 @@ public class TestPoolUtils {
     @Test
     public void testErodingObjectPoolDefaultFactor() {
         @SuppressWarnings("unchecked")
+        final
         ObjectPool<Object> internalPool = createProxy(ObjectPool.class, new InvocationHandler() {
             @Override
             public Object invoke(Object arg0, Method arg1, Object[] arg2)
@@ -566,8 +568,8 @@ public class TestPoolUtils {
                 return null;
             }
         });
-        ObjectPool<Object> pool = PoolUtils.erodingPool(internalPool);
-        String expectedToString = "ErodingObjectPool{factor=ErodingFactor{factor=1.0, idleHighWaterMark=1}, pool=" + internalPool + "}";
+        final ObjectPool<Object> pool = PoolUtils.erodingPool(internalPool);
+        final String expectedToString = "ErodingObjectPool{factor=ErodingFactor{factor=1.0, idleHighWaterMark=1}, pool=" + internalPool + "}";
         // The factor is not exposed, but will be printed in the toString() method
         // In this case since we didn't pass one, the default 1.0f will be printed
         assertEquals(expectedToString, pool.toString());
@@ -578,21 +580,21 @@ public class TestPoolUtils {
         try {
             PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null);
             fail("PoolUtils.erodingPool(KeyedObjectPool) must not allow a null pool.");
-        } catch(IllegalArgumentException iae) {
+        } catch(final IllegalArgumentException iae) {
             // expected
         }
 
         try {
             PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null, 1f);
             fail("PoolUtils.erodingPool(KeyedObjectPool, float) must not allow a null pool.");
-        } catch(IllegalArgumentException iae) {
+        } catch(final IllegalArgumentException iae) {
             // expected
         }
 
         try {
             PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null, 1f, true);
             fail("PoolUtils.erodingPool(KeyedObjectPool, float, boolean) must not allow a null pool.");
-        } catch(IllegalArgumentException iae) {
+        } catch(final IllegalArgumentException iae) {
             // expected
         }
 
@@ -611,22 +613,24 @@ public class TestPoolUtils {
 
         try {
             @SuppressWarnings({"unchecked", "unused"})
+            final
             Object o = PoolUtils.erodingPool(createProxy(KeyedObjectPool.class, handler), 0f);
             fail("PoolUtils.erodingPool(ObjectPool, float) must not allow a non-positive factor.");
-        } catch(IllegalArgumentException iae) {
+        } catch(final IllegalArgumentException iae) {
             // expected
         }
 
         try {
             @SuppressWarnings({"unchecked", "unused"})
+            final
             Object o = PoolUtils.erodingPool(createProxy(KeyedObjectPool.class, handler), 0f, false);
             fail("PoolUtils.erodingPool(ObjectPool, float, boolean) must not allow a non-positive factor.");
-        } catch(IllegalArgumentException iae) {
+        } catch(final IllegalArgumentException iae) {
             // expected
         }
 
         // If the logic behind PoolUtils.erodingPool changes then this will need to be tweaked.
-        float factor = 0.01f; // about ~9 seconds until first discard
+        final float factor = 0.01f; // about ~9 seconds until first discard
         @SuppressWarnings("unchecked")
         final KeyedObjectPool<Object,Object> pool =
             PoolUtils.erodingPool(createProxy(KeyedObjectPool.class, handler), factor);
@@ -687,6 +691,7 @@ public class TestPoolUtils {
     @Test
     public void testErodingPoolKeyedObjectPoolDefaultFactor() {
         @SuppressWarnings("unchecked")
+        final
         KeyedObjectPool<Object, Object> internalPool = createProxy(KeyedObjectPool.class, new InvocationHandler() {
             @Override
             public Object invoke(Object arg0, Method arg1, Object[] arg2)
@@ -694,8 +699,8 @@ public class TestPoolUtils {
                 return null;
             }
         });
-        KeyedObjectPool<Object, Object> pool = PoolUtils.erodingPool(internalPool);
-        String expectedToString = "ErodingKeyedObjectPool{factor=ErodingFactor{factor=1.0, idleHighWaterMark=1}, keyedPool=" + internalPool + "}";
+        final KeyedObjectPool<Object, Object> pool = PoolUtils.erodingPool(internalPool);
+        final String expectedToString = "ErodingKeyedObjectPool{factor=ErodingFactor{factor=1.0, idleHighWaterMark=1}, keyedPool=" + internalPool + "}";
         // The factor is not exposed, but will be printed in the toString() method
         // In this case since we didn't pass one, the default 1.0f will be printed
         assertEquals(expectedToString, pool.toString());
@@ -706,21 +711,21 @@ public class TestPoolUtils {
         try {
             PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null, 1f, true);
             fail("PoolUtils.erodingPool(KeyedObjectPool) must not allow a null pool.");
-        } catch(IllegalArgumentException iae) {
+        } catch(final IllegalArgumentException iae) {
             // expected
         }
 
         try {
             PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null, 0f, true);
             fail("PoolUtils.erodingPool(ObjectPool, float, boolean) must not allow a non-positive factor.");
-        } catch(IllegalArgumentException iae) {
+        } catch(final IllegalArgumentException iae) {
             // expected
         }
 
         try {
             PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null, 1f, true);
             fail("PoolUtils.erodingPool(KeyedObjectPool, float, boolean) must not allow a null pool.");
-        } catch(IllegalArgumentException iae) {
+        } catch(final IllegalArgumentException iae) {
             // expected
         }
 
@@ -738,7 +743,7 @@ public class TestPoolUtils {
         };
 
         // If the logic behind PoolUtils.erodingPool changes then this will need to be tweaked.
-        float factor = 0.01f; // about ~9 seconds until first discard
+        final float factor = 0.01f; // about ~9 seconds until first discard
         @SuppressWarnings("unchecked")
         final KeyedObjectPool<Object,Object> pool = PoolUtils.erodingPool(
                 createProxy(KeyedObjectPool.class, handler), factor, true);
@@ -782,7 +787,7 @@ public class TestPoolUtils {
         expectedMethods.add("invalidateObject");
         assertEquals(expectedMethods, calledMethods);
 
-        String expectedToString = "ErodingPerKeyKeyedObjectPool{factor="+factor+", keyedPool=null}";
+        final String expectedToString = "ErodingPerKeyKeyedObjectPool{factor="+factor+", keyedPool=null}";
         assertEquals(expectedToString, pool.toString());
     }
 
@@ -791,7 +796,7 @@ public class TestPoolUtils {
      */
     @Test
     public void testTimerHolder() {
-        PoolUtils.TimerHolder h = new PoolUtils.TimerHolder();
+        final PoolUtils.TimerHolder h = new PoolUtils.TimerHolder();
         assertNotNull(h);
         assertNotNull(PoolUtils.TimerHolder.MIN_IDLE_TIMER);
     }
@@ -873,6 +878,7 @@ public class TestPoolUtils {
 
     private static <T> T createProxy(final Class<T> clazz, final InvocationHandler handler) {
         @SuppressWarnings("unchecked")
+        final
         T ret = (T) Proxy.newProxyInstance(
                 clazz.getClassLoader(), new Class[] { clazz }, handler);
         return ret;

@@ -46,7 +46,7 @@ public class TestBaseGenericObjectPool {
     
     @Test
     public void testBorrowWaitStatistics() {
-        DefaultPooledObject<String> p = (DefaultPooledObject<String>) factory.makeObject();
+        final DefaultPooledObject<String> p = (DefaultPooledObject<String>) factory.makeObject();
         pool.updateStatsBorrow(p, 10);
         pool.updateStatsBorrow(p, 20);
         pool.updateStatsBorrow(p, 20);
@@ -56,7 +56,7 @@ public class TestBaseGenericObjectPool {
     }
 
     public void testBorrowWaitStatisticsMax() {
-        DefaultPooledObject<String> p = (DefaultPooledObject<String>) factory.makeObject();
+        final DefaultPooledObject<String> p = (DefaultPooledObject<String>) factory.makeObject();
         Assert.assertEquals(0, pool.getMaxBorrowWaitTimeMillis(), Double.MIN_VALUE);
         pool.updateStatsBorrow(p, 0);
         Assert.assertEquals(0, pool.getMaxBorrowWaitTimeMillis(), Double.MIN_VALUE);

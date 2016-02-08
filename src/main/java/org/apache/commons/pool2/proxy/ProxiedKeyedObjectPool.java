@@ -59,20 +59,20 @@ public class ProxiedKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
         if (pool instanceof UsageTracking) {
             usageTracking = (UsageTracking<V>) pool;
         }
-        V pooledObject = pool.borrowObject(key);
-        V proxy = proxySource.createProxy(pooledObject, usageTracking);
+        final V pooledObject = pool.borrowObject(key);
+        final V proxy = proxySource.createProxy(pooledObject, usageTracking);
         return proxy;
     }
 
     @Override
     public void returnObject(K key, V proxy) throws Exception {
-        V pooledObject = proxySource.resolveProxy(proxy);
+        final V pooledObject = proxySource.resolveProxy(proxy);
         pool.returnObject(key, pooledObject);
     }
 
     @Override
     public void invalidateObject(K key, V proxy) throws Exception {
-        V pooledObject = proxySource.resolveProxy(proxy);
+        final V pooledObject = proxySource.resolveProxy(proxy);
         pool.invalidateObject(key, pooledObject);
     }
 
@@ -123,7 +123,7 @@ public class ProxiedKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
      */
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         builder.append("ProxiedKeyedObjectPool [pool=");
         builder.append(pool);
         builder.append(", proxySource=");

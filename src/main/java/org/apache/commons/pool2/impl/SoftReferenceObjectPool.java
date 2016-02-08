@@ -146,11 +146,11 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
                     if (!factory.validateObject(ref)) {
                         throw new Exception("ValidateObject failed");
                     }
-                } catch (Throwable t) {
+                } catch (final Throwable t) {
                     PoolUtils.checkRethrow(t);
                     try {
                         destroy(ref);
-                    } catch (Throwable t2) {
+                    } catch (final Throwable t2) {
                         PoolUtils.checkRethrow(t2);
                         // Swallowed
                     } finally {
@@ -202,13 +202,13 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
             } else {
                 try {
                     factory.passivateObject(ref);
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     success = false;
                 }
             }
         }
 
-        boolean shouldDestroy = !success;
+        final boolean shouldDestroy = !success;
         numActive--;
         if (success) {
 
@@ -221,7 +221,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
         if (shouldDestroy && factory != null) {
             try {
                 destroy(ref);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 // ignored
             }
         }
@@ -273,10 +273,10 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
             throw new IllegalStateException(
                     "Cannot add objects without a factory.");
         }
-        T obj = factory.makeObject().getObject();
+        final T obj = factory.makeObject().getObject();
         createCount++;
         // Create and register with the queue
-        PooledSoftReference<T> ref = new PooledSoftReference<T>(
+        final PooledSoftReference<T> ref = new PooledSoftReference<T>(
                 new SoftReference<T>(obj, refQueue));
         allReferences.add(ref);
 
@@ -287,7 +287,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
             factory.passivateObject(ref);
         }
 
-        boolean shouldDestroy = !success;
+        final boolean shouldDestroy = !success;
         if (success) {
             idleReferences.add(ref);
             notifyAll(); // numActive has changed
@@ -296,7 +296,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
         if (shouldDestroy) {
             try {
                 destroy(ref);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 // ignored
             }
         }
@@ -330,14 +330,14 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
     @Override
     public synchronized void clear() {
         if (null != factory) {
-            Iterator<PooledSoftReference<T>> iter = idleReferences.iterator();
+            final Iterator<PooledSoftReference<T>> iter = idleReferences.iterator();
             while (iter.hasNext()) {
                 try {
                     final PooledSoftReference<T> ref = iter.next();
                     if (null != ref.getObject()) {
                         factory.destroyObject(ref);
                     }
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     // ignore error, keep destroying the rest
                 }
             }
@@ -388,7 +388,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
      * @return PooledSoftReference wrapping a soft reference to obj
      */
     private PooledSoftReference<T> findReference(T obj) {
-        Iterator<PooledSoftReference<T>> iterator = allReferences.iterator();
+        final Iterator<PooledSoftReference<T>> iterator = allReferences.iterator();
         while (iterator.hasNext()) {
             final PooledSoftReference<T> reference = iterator.next();
             if (reference.getObject() != null && reference.getObject().equals(obj)) {
