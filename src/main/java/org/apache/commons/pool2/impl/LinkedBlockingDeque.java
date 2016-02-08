@@ -1250,14 +1250,15 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
             // are possible if multiple interior nodes are removed.
             for (;;) {
                 final Node<E> s = nextNode(n);
-                if (s == null)
+                if (s == null) {
                     return null;
-                else if (s.item != null)
+                } else if (s.item != null) {
                     return s;
-                else if (s == n)
+                } else if (s == n) {
                     return firstNode();
-                else
+                } else {
                     n = s;
+                }
             }
         }
 
