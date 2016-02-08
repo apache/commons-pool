@@ -86,7 +86,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * @param factory The object factory to be used to create object instances
      *                used by this pool
      */
-    public GenericObjectPool(PooledObjectFactory<T> factory) {
+    public GenericObjectPool(final PooledObjectFactory<T> factory) {
         this(factory, new GenericObjectPoolConfig());
     }
 
@@ -101,8 +101,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      *                  the configuration object will not be reflected in the
      *                  pool.
      */
-    public GenericObjectPool(PooledObjectFactory<T> factory,
-            GenericObjectPoolConfig config) {
+    public GenericObjectPool(final PooledObjectFactory<T> factory,
+            final GenericObjectPoolConfig config) {
 
         super(config, ONAME_BASE, config.getJmxNamePrefix());
 
@@ -132,8 +132,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * @param abandonedConfig  Configuration for abandoned object identification
      *                         and removal.  The configuration is used by value.
      */
-    public GenericObjectPool(PooledObjectFactory<T> factory,
-            GenericObjectPoolConfig config, AbandonedConfig abandonedConfig) {
+    public GenericObjectPool(final PooledObjectFactory<T> factory,
+            final GenericObjectPoolConfig config, final AbandonedConfig abandonedConfig) {
         this(factory, config);
         setAbandonedConfig(abandonedConfig);
     }
@@ -173,7 +173,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      *
      * @see #getMaxIdle
      */
-    public void setMaxIdle(int maxIdle) {
+    public void setMaxIdle(final int maxIdle) {
         this.maxIdle = maxIdle;
     }
 
@@ -194,7 +194,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * @see #getMaxIdle()
      * @see #getTimeBetweenEvictionRunsMillis()
      */
-    public void setMinIdle(int minIdle) {
+    public void setMinIdle(final int minIdle) {
         this.minIdle = minIdle;
     }
 
@@ -300,7 +300,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      *
      * @see GenericObjectPoolConfig
      */
-    public void setConfig(GenericObjectPoolConfig conf) {
+    public void setConfig(final GenericObjectPoolConfig conf) {
         setLifo(conf.getLifo());
         setMaxIdle(conf.getMaxIdle());
         setMinIdle(conf.getMinIdle());
@@ -327,7 +327,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      *
      * @see AbandonedConfig
      */
-    public void setAbandonedConfig(AbandonedConfig abandonedConfig) {
+    public void setAbandonedConfig(final AbandonedConfig abandonedConfig) {
         if (abandonedConfig == null) {
             this.abandonedConfig = null;
         } else {
@@ -407,7 +407,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * @throws Exception if an object instance cannot be returned due to an
      *                   error
      */
-    public T borrowObject(long borrowMaxWaitMillis) throws Exception {
+    public T borrowObject(final long borrowMaxWaitMillis) throws Exception {
         assertOpen();
 
         final AbandonedConfig ac = this.abandonedConfig;
@@ -532,7 +532,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * but notified via a {@link SwallowedExceptionListener}.
      */
     @Override
-    public void returnObject(T obj) {
+    public void returnObject(final T obj) {
         final PooledObject<T> p = allObjects.get(new IdentityWrapper<T>(obj));
 
         if (p == null) {
@@ -628,7 +628,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * @throws IllegalStateException if obj does not belong to this pool
      */
     @Override
-    public void invalidateObject(T obj) throws Exception {
+    public void invalidateObject(final T obj) throws Exception {
         final PooledObject<T> p = allObjects.get(new IdentityWrapper<T>(obj));
         if (p == null) {
             if (isAbandonedConfig()) {
@@ -885,7 +885,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * @throws Exception If the factory fails to destroy the pooled object
      *                   cleanly
      */
-    private void destroy(PooledObject<T> toDestory) throws Exception {
+    private void destroy(final PooledObject<T> toDestory) throws Exception {
         toDestory.invalidate();
         idleObjects.remove(toDestory);
         allObjects.remove(new IdentityWrapper<T>(toDestory.getObject()));
@@ -914,7 +914,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * @param always true means create instances even if the pool has no threads waiting
      * @throws Exception if the factory's makeObject throws
      */
-    private void ensureIdle(int idleCount, boolean always) throws Exception {
+    private void ensureIdle(final int idleCount, final boolean always) throws Exception {
         if (idleCount < 1 || isClosed() || (!always && !idleObjects.hasTakeWaiters())) {
             return;
         }
@@ -967,7 +967,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      *
      * @throws Exception If the factory fails to passivate the object
      */
-    private void addIdleObject(PooledObject<T> p) throws Exception {
+    private void addIdleObject(final PooledObject<T> p) throws Exception {
         if (p != null) {
             factory.passivateObject(p);
             if (getLifo()) {
@@ -999,7 +999,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      *
      * @param ac The configuration to use to identify abandoned objects
      */
-    private void removeAbandoned(AbandonedConfig ac) {
+    private void removeAbandoned(final AbandonedConfig ac) {
         // Generate a list of abandoned objects to remove
         final long now = System.currentTimeMillis();
         final long timeout =
@@ -1036,7 +1036,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     //--- Usage tracking support -----------------------------------------------
 
     @Override
-    public void use(T pooledObject) {
+    public void use(final T pooledObject) {
         final AbandonedConfig ac = this.abandonedConfig;
         if (ac != null && ac.getUseUsageTracking()) {
             final PooledObject<T> wrapper = allObjects.get(new IdentityWrapper<T>(pooledObject));
@@ -1144,7 +1144,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     private volatile AbandonedConfig abandonedConfig = null;
 
     @Override
-    protected void toStringAppendFields(StringBuilder builder) {
+    protected void toStringAppendFields(final StringBuilder builder) {
         super.toStringAppendFields(builder);
         builder.append(", factoryType=");
         builder.append(factoryType);

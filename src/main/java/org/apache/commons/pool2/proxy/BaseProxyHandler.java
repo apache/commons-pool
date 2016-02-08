@@ -42,7 +42,7 @@ class BaseProxyHandler<T> {
      *                      be provided with usage tracking information for this
      *                      wrapped object
      */
-    BaseProxyHandler(T pooledObject, UsageTracking<T> usageTracking) {
+    BaseProxyHandler(final T pooledObject, final UsageTracking<T> usageTracking) {
         this.pooledObject = pooledObject;
         this.usageTracking = usageTracking;
     }
@@ -94,7 +94,7 @@ class BaseProxyHandler<T> {
      * @return          The result of the method call
      * @throws Throwable    If the method invocation fails
      */
-    Object doInvoke(Method method, Object[] args) throws Throwable {
+    Object doInvoke(final Method method, final Object[] args) throws Throwable {
         validateProxiedObject();
         final T object = getPooledObject();
         if (usageTracking != null) {

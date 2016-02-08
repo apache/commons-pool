@@ -34,13 +34,13 @@ public class VisitTracker<K> {
         reset();
     }
 
-    public VisitTracker(int id) {
+    public VisitTracker(final int id) {
         super();
         this.id = id;
         reset();
     }
 
-    public VisitTracker(int id, K key) {
+    public VisitTracker(final int id, final K key) {
         super();
         this.id = id;
         this.key = key;
@@ -98,7 +98,7 @@ public class VisitTracker<K> {
         return "Key: " + key + " id: " + id;
     }
 
-    private void fail(String message) {
+    private void fail(final String message) {
         throw new IllegalStateException(message);
     }
 }

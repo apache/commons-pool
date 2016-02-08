@@ -37,7 +37,7 @@ class PoolImplUtils {
      * @return the type of object the factory creates
      */
     @SuppressWarnings("rawtypes")
-    static Class<?> getFactoryType(Class<? extends PooledObjectFactory> factory) {
+    static Class<?> getFactoryType(final Class<? extends PooledObjectFactory> factory) {
         return (Class<?>) getGenericType(PooledObjectFactory.class, factory);
     }
 
@@ -52,8 +52,8 @@ class PoolImplUtils {
      *
      * @return concrete type used by the implementation
      */
-    private static <T> Object getGenericType(Class<T> type,
-            Class<? extends T> clazz) {
+    private static <T> Object getGenericType(final Class<T> type,
+            final Class<? extends T> clazz) {
 
         // Look to see if this class implements the generic interface
 
@@ -111,7 +111,7 @@ class PoolImplUtils {
      *         type parameter or an instance of {@link Integer} representing
      *         the index for the type in the definition of the defining class
      */
-    private static Object getTypeParameter(Class<?> clazz, Type argType) {
+    private static Object getTypeParameter(final Class<?> clazz, final Type argType) {
         if (argType instanceof Class<?>) {
             return argType;
         }

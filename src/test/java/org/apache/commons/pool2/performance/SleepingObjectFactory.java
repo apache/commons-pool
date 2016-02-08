@@ -42,38 +42,38 @@ public class SleepingObjectFactory implements PooledObjectFactory<Integer> {
     }
 
     @Override
-    public void destroyObject(PooledObject<Integer> obj) throws Exception {
+    public void destroyObject(final PooledObject<Integer> obj) throws Exception {
         debug("destroyObject", obj);
         sleep(250);
     }
 
     @Override
-    public boolean validateObject(PooledObject<Integer> obj) {
+    public boolean validateObject(final PooledObject<Integer> obj) {
         debug("validateObject", obj);
         sleep(30);
         return true;
     }
 
     @Override
-    public void activateObject(PooledObject<Integer> obj) throws Exception {
+    public void activateObject(final PooledObject<Integer> obj) throws Exception {
         debug("activateObject", obj);
         sleep(10);
     }
 
     @Override
-    public void passivateObject(PooledObject<Integer> obj) throws Exception {
+    public void passivateObject(final PooledObject<Integer> obj) throws Exception {
         debug("passivateObject", obj);
         sleep(10);
     }
 
-    private void debug(String method, Object obj) {
+    private void debug(final String method, final Object obj) {
         if (debug) {
             final String thread = "thread" + Thread.currentThread().getName();
             System.out.println(thread + ": " + method + " " + obj);
         }
     }
 
-    private void sleep(long millis) {
+    private void sleep(final long millis) {
         try {
             Thread.sleep(millis);
         }
@@ -85,7 +85,7 @@ public class SleepingObjectFactory implements PooledObjectFactory<Integer> {
         return debug;
     }
 
-    public void setDebug(boolean b) {
+    public void setDebug(final boolean b) {
         debug = b;
     }
 }

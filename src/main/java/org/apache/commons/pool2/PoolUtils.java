@@ -68,7 +68,7 @@ public final class PoolUtils {
      * @throws VirtualMachineError
      *             if that is passed in
      */
-    public static void checkRethrow(Throwable t) {
+    public static void checkRethrow(final Throwable t) {
         if (t instanceof ThreadDeath) {
             throw (ThreadDeath) t;
         }

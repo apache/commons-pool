@@ -34,7 +34,7 @@ public class TestBaseObjectPool extends TestObjectPool {
      *
      * @return A newly created empty pool
      */
-    protected ObjectPool<String> makeEmptyPool(int mincapacity) {
+    protected ObjectPool<String> makeEmptyPool(final int mincapacity) {
         if (this.getClass() != TestBaseObjectPool.class) {
             fail("Subclasses of TestBaseObjectPool must reimplement this method.");
         }
@@ -284,10 +284,10 @@ public class TestBaseObjectPool extends TestObjectPool {
             return null;
         }
         @Override
-        public void returnObject(Object obj) {
+        public void returnObject(final Object obj) {
         }
         @Override
-        public void invalidateObject(Object obj) {
+        public void invalidateObject(final Object obj) {
         }
     }
 }

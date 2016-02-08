@@ -168,7 +168,7 @@ public abstract class BaseTestProxiedObjectPool {
             return new TestObjectImpl();
         }
         @Override
-        public PooledObject<TestObject> wrap(TestObject value) {
+        public PooledObject<TestObject> wrap(final TestObject value) {
             return new DefaultPooledObject<TestObject>(value);
         }
     }
@@ -190,7 +190,7 @@ public abstract class BaseTestProxiedObjectPool {
         }
 
         @Override
-        public void setData(String data) {
+        public void setData(final String data) {
             this.data = data;
         }
     }

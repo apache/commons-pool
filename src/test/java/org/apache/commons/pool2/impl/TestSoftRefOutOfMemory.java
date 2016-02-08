@@ -216,7 +216,7 @@ public class TestSoftRefOutOfMemory {
             return new String(String.valueOf(counter));
         }
         @Override
-        public PooledObject<String> wrap(String value) {
+        public PooledObject<String> wrap(final String value) {
             return new DefaultPooledObject<String>(value);
         }
     }
@@ -225,7 +225,7 @@ public class TestSoftRefOutOfMemory {
         private final String buffer;
         private int counter = 0;
 
-        public LargePoolableObjectFactory(int size) {
+        public LargePoolableObjectFactory(final int size) {
             final char[] data = new char[size];
             Arrays.fill(data, '.');
             buffer = new String(data);
@@ -238,7 +238,7 @@ public class TestSoftRefOutOfMemory {
         }
 
         @Override
-        public PooledObject<String> wrap(String value) {
+        public PooledObject<String> wrap(final String value) {
             return new DefaultPooledObject<String>(value);
         }
     }
@@ -247,7 +247,7 @@ public class TestSoftRefOutOfMemory {
 
         private final OomeTrigger trigger;
 
-        public OomeFactory(OomeTrigger trigger) {
+        public OomeFactory(final OomeTrigger trigger) {
             this.trigger = trigger;
         }
 
@@ -265,12 +265,12 @@ public class TestSoftRefOutOfMemory {
         }
 
         @Override
-        public PooledObject<String> wrap(String value) {
+        public PooledObject<String> wrap(final String value) {
             return new DefaultPooledObject<String>(value);
         }
 
         @Override
-        public boolean validateObject(PooledObject<String> p) {
+        public boolean validateObject(final PooledObject<String> p) {
             if (trigger.equals(OomeTrigger.VALIDATE)) {
                 throw new OutOfMemoryError();
             }
@@ -281,7 +281,7 @@ public class TestSoftRefOutOfMemory {
         }
 
         @Override
-        public void destroyObject(PooledObject<String> p) throws Exception {
+        public void destroyObject(final PooledObject<String> p) throws Exception {
             if (trigger.equals(OomeTrigger.DESTROY)) {
                 throw new OutOfMemoryError();
             }

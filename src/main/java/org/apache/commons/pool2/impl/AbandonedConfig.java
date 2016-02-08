@@ -60,7 +60,7 @@ public class AbandonedConfig {
      *   removed by borrowObject
      * @see #getRemoveAbandonedOnBorrow()
      */
-    public void setRemoveAbandonedOnBorrow(boolean removeAbandonedOnBorrow) {
+    public void setRemoveAbandonedOnBorrow(final boolean removeAbandonedOnBorrow) {
         this.removeAbandonedOnBorrow = removeAbandonedOnBorrow;
     }
 
@@ -97,7 +97,7 @@ public class AbandonedConfig {
      *   removed by pool maintenance
      * @see #getRemoveAbandonedOnMaintenance
      */
-    public void setRemoveAbandonedOnMaintenance(boolean removeAbandonedOnMaintenance) {
+    public void setRemoveAbandonedOnMaintenance(final boolean removeAbandonedOnMaintenance) {
         this.removeAbandonedOnMaintenance = removeAbandonedOnMaintenance;
     }
 
@@ -133,7 +133,7 @@ public class AbandonedConfig {
      * @param removeAbandonedTimeout new abandoned timeout in seconds
      * @see #getRemoveAbandonedTimeout()
      */
-    public void setRemoveAbandonedTimeout(int removeAbandonedTimeout) {
+    public void setRemoveAbandonedTimeout(final int removeAbandonedTimeout) {
         this.removeAbandonedTimeout = removeAbandonedTimeout;
     }
 
@@ -167,7 +167,7 @@ public class AbandonedConfig {
      * @see #getLogAbandoned()
      *
      */
-    public void setLogAbandoned(boolean logAbandoned) {
+    public void setLogAbandoned(final boolean logAbandoned) {
         this.logAbandoned = logAbandoned;
     }
 
@@ -194,7 +194,7 @@ public class AbandonedConfig {
      *
      * @param logWriter The new log writer
      */
-    public void setLogWriter(PrintWriter logWriter) {
+    public void setLogWriter(final PrintWriter logWriter) {
         this.logWriter = logWriter;
     }
 
@@ -226,7 +226,7 @@ public class AbandonedConfig {
      *                              the recording of a stack trace on every use
      *                              of a pooled object
      */
-    public void setUseUsageTracking(boolean useUsageTracking) {
+    public void setUseUsageTracking(final boolean useUsageTracking) {
         this.useUsageTracking = useUsageTracking;
     }
 

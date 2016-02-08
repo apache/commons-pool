@@ -33,7 +33,7 @@ public abstract class BaseObject {
         return builder.toString();
     }
 
-    protected void toStringAppendFields(StringBuilder builder) {
+    protected void toStringAppendFields(final StringBuilder builder) {
         // do nothing by default, needed for b/w compatibility.
     }
 

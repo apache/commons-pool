@@ -44,8 +44,8 @@ public class ProxiedKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
      * @param pool  The object pool to wrap
      * @param proxySource The source of the proxy objects
      */
-    public ProxiedKeyedObjectPool(KeyedObjectPool<K,V> pool,
-            ProxySource<V> proxySource) {
+    public ProxiedKeyedObjectPool(final KeyedObjectPool<K,V> pool,
+            final ProxySource<V> proxySource) {
         this.pool = pool;
         this.proxySource = proxySource;
     }
@@ -53,7 +53,7 @@ public class ProxiedKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public V borrowObject(K key) throws Exception, NoSuchElementException,
+    public V borrowObject(final K key) throws Exception, NoSuchElementException,
             IllegalStateException {
         UsageTracking<V> usageTracking = null;
         if (pool instanceof UsageTracking) {
@@ -65,30 +65,30 @@ public class ProxiedKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
     }
 
     @Override
-    public void returnObject(K key, V proxy) throws Exception {
+    public void returnObject(final K key, final V proxy) throws Exception {
         final V pooledObject = proxySource.resolveProxy(proxy);
         pool.returnObject(key, pooledObject);
     }
 
     @Override
-    public void invalidateObject(K key, V proxy) throws Exception {
+    public void invalidateObject(final K key, final V proxy) throws Exception {
         final V pooledObject = proxySource.resolveProxy(proxy);
         pool.invalidateObject(key, pooledObject);
     }
 
     @Override
-    public void addObject(K key) throws Exception, IllegalStateException,
+    public void addObject(final K key) throws Exception, IllegalStateException,
             UnsupportedOperationException {
         pool.addObject(key);
     }
 
     @Override
-    public int getNumIdle(K key) {
+    public int getNumIdle(final K key) {
         return pool.getNumIdle(key);
     }
 
     @Override
-    public int getNumActive(K key) {
+    public int getNumActive(final K key) {
         return pool.getNumActive(key);
     }
 
@@ -108,7 +108,7 @@ public class ProxiedKeyedObjectPool<K,V> implements KeyedObjectPool<K,V> {
     }
 
     @Override
-    public void clear(K key) throws Exception, UnsupportedOperationException {
+    public void clear(final K key) throws Exception, UnsupportedOperationException {
         pool.clear(key);
     }
 

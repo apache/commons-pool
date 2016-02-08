@@ -42,7 +42,7 @@ public class TestPoolImplUtils {
             return null;
         }
         @Override
-        public PooledObject<String> wrap(String obj) {
+        public PooledObject<String> wrap(final String obj) {
             return null;
         }
     }
@@ -69,7 +69,7 @@ public class TestPoolImplUtils {
             return null;
         }
         @Override
-        public PooledObject<Long> wrap(Long obj) {
+        public PooledObject<Long> wrap(final Long obj) {
             return null;
         }
     }

@@ -37,7 +37,7 @@ public class DefaultPooledObjectInfo implements DefaultPooledObjectInfoMBean {
      *
      * @param pooledObject The pooled object that this instance will represent
      */
-    public DefaultPooledObjectInfo(PooledObject<?> pooledObject) {
+    public DefaultPooledObjectInfo(final PooledObject<?> pooledObject) {
         this.pooledObject = pooledObject;
     }
 

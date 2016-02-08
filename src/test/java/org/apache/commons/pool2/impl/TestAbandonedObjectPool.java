@@ -288,7 +288,7 @@ public class TestAbandonedObjectPool {
     class ConcurrentBorrower extends Thread {
         private final ArrayList<PooledTestObject> _borrowed;
 
-        public ConcurrentBorrower(ArrayList<PooledTestObject> borrowed) {
+        public ConcurrentBorrower(final ArrayList<PooledTestObject> borrowed) {
             _borrowed = borrowed;
         }
 
@@ -304,7 +304,7 @@ public class TestAbandonedObjectPool {
 
     class ConcurrentReturner extends Thread {
         private final PooledTestObject returned;
-        public ConcurrentReturner(PooledTestObject obj) {
+        public ConcurrentReturner(final PooledTestObject obj) {
             returned = obj;
         }
         @Override
@@ -328,7 +328,7 @@ public class TestAbandonedObjectPool {
             validateLatency = 0;
         }
 
-        public SimpleFactory(long destroyLatency, long validateLatency) {
+        public SimpleFactory(final long destroyLatency, final long validateLatency) {
             this.destroyLatency = destroyLatency;
             this.validateLatency = validateLatency;
         }
@@ -339,7 +339,7 @@ public class TestAbandonedObjectPool {
         }
 
         @Override
-        public boolean validateObject(PooledObject<PooledTestObject> obj) {
+        public boolean validateObject(final PooledObject<PooledTestObject> obj) {
             try {
                 Thread.sleep(validateLatency);
             } catch (final Exception ex) {
@@ -349,17 +349,17 @@ public class TestAbandonedObjectPool {
         }
 
         @Override
-        public void activateObject(PooledObject<PooledTestObject> obj) {
+        public void activateObject(final PooledObject<PooledTestObject> obj) {
             obj.getObject().setActive(true);
         }
 
         @Override
-        public void passivateObject(PooledObject<PooledTestObject> obj) {
+        public void passivateObject(final PooledObject<PooledTestObject> obj) {
             obj.getObject().setActive(false);
         }
 
         @Override
-        public void destroyObject(PooledObject<PooledTestObject> obj) throws Exception {
+        public void destroyObject(final PooledObject<PooledTestObject> obj) throws Exception {
             obj.getObject().setActive(false);
             // while destroying instances, yield control to other threads
             // helps simulate threading errors
@@ -383,7 +383,7 @@ class PooledTestObject implements TrackedUse {
         _hash = hash.incrementAndGet();
     }
 
-    public synchronized void setActive(boolean b) {
+    public synchronized void setActive(final boolean b) {
         active = b;
     }
 
@@ -404,7 +404,7 @@ class PooledTestObject implements TrackedUse {
         return _hash;
     }
 
-    public void setAbandoned(boolean b) {
+    public void setAbandoned(final boolean b) {
         _abandoned = b;
     }
 
@@ -420,7 +420,7 @@ class PooledTestObject implements TrackedUse {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (!(obj instanceof PooledTestObject)) {
             return false;
         }

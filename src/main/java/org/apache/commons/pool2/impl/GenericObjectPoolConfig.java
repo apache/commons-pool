@@ -77,7 +77,7 @@ public class GenericObjectPoolConfig extends BaseObjectPoolConfig {
      *
      * @see GenericObjectPool#setMaxTotal(int)
      */
-    public void setMaxTotal(int maxTotal) {
+    public void setMaxTotal(final int maxTotal) {
         this.maxTotal = maxTotal;
     }
 
@@ -104,7 +104,7 @@ public class GenericObjectPoolConfig extends BaseObjectPoolConfig {
      *
      * @see GenericObjectPool#setMaxIdle(int)
      */
-    public void setMaxIdle(int maxIdle) {
+    public void setMaxIdle(final int maxIdle) {
         this.maxIdle = maxIdle;
     }
 
@@ -131,7 +131,7 @@ public class GenericObjectPoolConfig extends BaseObjectPoolConfig {
      *
      * @see GenericObjectPool#setMinIdle(int)
      */
-    public void setMinIdle(int minIdle) {
+    public void setMinIdle(final int minIdle) {
         this.minIdle = minIdle;
     }
 
@@ -145,7 +145,7 @@ public class GenericObjectPoolConfig extends BaseObjectPoolConfig {
     }
 
     @Override
-    protected void toStringAppendFields(StringBuilder builder) {
+    protected void toStringAppendFields(final StringBuilder builder) {
         super.toStringAppendFields(builder);
         builder.append(", maxTotal=");
         builder.append(maxTotal);

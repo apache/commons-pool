@@ -39,11 +39,11 @@ public class TestBaseKeyedPoolableObjectFactory {
     private static class TestFactory
             extends BaseKeyedPooledObjectFactory<Object,Object> {
         @Override
-        public Object create(Object key) throws Exception {
+        public Object create(final Object key) throws Exception {
             return null;
         }
         @Override
-        public PooledObject<Object> wrap(Object value) {
+        public PooledObject<Object> wrap(final Object value) {
             return new DefaultPooledObject<Object>(value);
         }
     }

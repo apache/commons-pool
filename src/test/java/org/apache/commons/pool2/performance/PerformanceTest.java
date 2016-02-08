@@ -38,7 +38,7 @@ public class PerformanceTest {
 
     private GenericObjectPool<Integer> pool;
 
-    public void setLogLevel(int i) {
+    public void setLogLevel(final int i) {
         logLevel = i;
     }
 
@@ -109,7 +109,7 @@ public class PerformanceTest {
        }
     }
 
-    private void run(int iterations, int nrThreads, int maxTotal, int maxIdle) {
+    private void run(final int iterations, final int nrThreads, final int maxTotal, final int maxIdle) {
         this.nrIterations = iterations;
 
         final SleepingObjectFactory factory = new SleepingObjectFactory();
@@ -183,7 +183,7 @@ public class PerformanceTest {
         threadPool.shutdown();
     }
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         final PerformanceTest test = new PerformanceTest();
         test.setLogLevel(0);
         System.out.println("Increase threads");

@@ -563,7 +563,7 @@ public class TestPoolUtils {
         final
         ObjectPool<Object> internalPool = createProxy(ObjectPool.class, new InvocationHandler() {
             @Override
-            public Object invoke(Object arg0, Method arg1, Object[] arg2)
+            public Object invoke(final Object arg0, final Method arg1, final Object[] arg2)
                     throws Throwable {
                 return null;
             }
@@ -694,7 +694,7 @@ public class TestPoolUtils {
         final
         KeyedObjectPool<Object, Object> internalPool = createProxy(KeyedObjectPool.class, new InvocationHandler() {
             @Override
-            public Object invoke(Object arg0, Method arg1, Object[] arg2)
+            public Object invoke(final Object arg0, final Method arg1, final Object[] arg2)
                     throws Throwable {
                 return null;
             }
@@ -801,7 +801,7 @@ public class TestPoolUtils {
         assertNotNull(PoolUtils.TimerHolder.MIN_IDLE_TIMER);
     }
 
-    private static List<String> invokeEveryMethod(ObjectPool<Object> op) throws Exception {
+    private static List<String> invokeEveryMethod(final ObjectPool<Object> op) throws Exception {
         op.addObject();
         op.borrowObject();
         op.clear();
@@ -820,7 +820,7 @@ public class TestPoolUtils {
         return expectedMethods;
     }
 
-    private static List<String> invokeEveryMethod(KeyedObjectPool<Object,Object> kop) throws Exception {
+    private static List<String> invokeEveryMethod(final KeyedObjectPool<Object,Object> kop) throws Exception {
         kop.addObject(null);
         kop.borrowObject(null);
         kop.clear();
@@ -842,7 +842,7 @@ public class TestPoolUtils {
         return expectedMethods;
     }
 
-    private static <T> List<String> invokeEveryMethod(PooledObjectFactory<T> pof) throws Exception {
+    private static <T> List<String> invokeEveryMethod(final PooledObjectFactory<T> pof) throws Exception {
         pof.activateObject(null);
         pof.destroyObject(null);
         pof.makeObject();
@@ -857,7 +857,7 @@ public class TestPoolUtils {
         return expectedMethods;
     }
 
-    private static <K,V> List<String> invokeEveryMethod(KeyedPooledObjectFactory<K,V> kpof) throws Exception {
+    private static <K,V> List<String> invokeEveryMethod(final KeyedPooledObjectFactory<K,V> kpof) throws Exception {
         kpof.activateObject(null, null);
         kpof.destroyObject(null, null);
         kpof.makeObject(null);

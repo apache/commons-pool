@@ -68,7 +68,7 @@ import org.junit.Test;
 public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
     @Override
-    protected KeyedObjectPool<Object,Object> makeEmptyPool(int mincapacity) {
+    protected KeyedObjectPool<Object,Object> makeEmptyPool(final int mincapacity) {
         final KeyedPooledObjectFactory<Object,Object> perKeyFactory =
                 new SimplePerKeyFactory();
         final GenericKeyedObjectPool<Object,Object> perKeyPool =
@@ -79,17 +79,17 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     }
 
     @Override
-    protected KeyedObjectPool<Object,Object> makeEmptyPool(KeyedPooledObjectFactory<Object,Object> fac) {
+    protected KeyedObjectPool<Object,Object> makeEmptyPool(final KeyedPooledObjectFactory<Object,Object> fac) {
         return new GenericKeyedObjectPool<Object,Object>(fac);
     }
 
     @Override
-    protected Object getNthObject(Object key, int n) {
+    protected Object getNthObject(final Object key, final int n) {
         return String.valueOf(key) + String.valueOf(n);
     }
 
     @Override
-    protected Object makeKey(int n) {
+    protected Object makeKey(final int n) {
         return String.valueOf(n);
     }
 
@@ -543,7 +543,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
      * @param delay         Maximum delay between iterations
      * @param gkopPool      The keyed object pool to use
      */
-    public <T> void runTestThreads(int numThreads, int iterations, int delay, GenericKeyedObjectPool<String,T> gkopPool) {
+    public <T> void runTestThreads(final int numThreads, final int iterations, final int delay, final GenericKeyedObjectPool<String,T> gkopPool) {
         final ArrayList<TestThread<T>> threads = new ArrayList<TestThread<T>>();
         for(int i=0;i<numThreads;i++) {
             final TestThread<T> testThread = new TestThread<T>(gkopPool, iterations, delay);
@@ -760,7 +760,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         checkEvictionOrder(true);
     }
 
-    private void checkEvictionOrder(boolean lifo) throws Exception {
+    private void checkEvictionOrder(final boolean lifo) throws Exception {
         final SimpleFactory<Integer> intFactory = new SimpleFactory<Integer>();
         final GenericKeyedObjectPool<Integer,String> intPool =
             new GenericKeyedObjectPool<Integer,String>(intFactory);
@@ -886,7 +886,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         checkEvictorVisiting(false);
     }
 
-    private void checkEvictorVisiting(boolean lifo) throws Exception {
+    private void checkEvictorVisiting(final boolean lifo) throws Exception {
         VisitTrackerFactory<Integer> trackerFactory = new VisitTrackerFactory<Integer>();
         GenericKeyedObjectPool<Integer,VisitTracker<Integer>> intPool =
             new GenericKeyedObjectPool<Integer,VisitTracker<Integer>>(trackerFactory);
@@ -1628,7 +1628,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         private final KeyedObjectPool<String, String> pool;
         private final String key;
         private boolean done = false;
-        public InvalidateThread(KeyedObjectPool<String, String> pool, String key, String obj) {
+        public InvalidateThread(final KeyedObjectPool<String, String> pool, final String key, final String obj) {
             this.obj = obj;
             this.pool = pool;
             this.key = key;
@@ -1658,7 +1658,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         private final KeyedObjectPool<String,T> _pool;
         private final String _key;
 
-        public SimpleTestThread(KeyedObjectPool<String,T> pool, String key) {
+        public SimpleTestThread(final KeyedObjectPool<String,T> pool, final String key) {
             _pool = pool;
             _key = key;
         }
@@ -1690,7 +1690,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         private long ended;
         private String objectId;
 
-        public WaitingTestThread(KeyedObjectPool<String,String> pool, String key, long pause) {
+        public WaitingTestThread(final KeyedObjectPool<String,String> pool, final String key, final long pause) {
             _pool = pool;
             _key = key;
             _pause = pause;
@@ -1737,20 +1737,20 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         private volatile boolean _failed = false;
         private volatile Exception _exception;
 
-        public TestThread(KeyedObjectPool<String,T> pool) {
+        public TestThread(final KeyedObjectPool<String,T> pool) {
             this(pool, 100, 50, 50, true, null, null);
         }
 
-        public TestThread(KeyedObjectPool<String,T> pool, int iter) {
+        public TestThread(final KeyedObjectPool<String,T> pool, final int iter) {
             this(pool, iter, 50, 50, true, null, null);
         }
 
-        public TestThread(KeyedObjectPool<String,T> pool, int iter, int delay) {
+        public TestThread(final KeyedObjectPool<String,T> pool, final int iter, final int delay) {
             this(pool, iter, delay, delay, true, null, null);
         }
 
-        public TestThread(KeyedObjectPool<String,T> pool, int iter, int startDelay,
-            int holdTime, boolean randomDelay, T expectedObject, String key) {
+        public TestThread(final KeyedObjectPool<String,T> pool, final int iter, final int startDelay,
+            final int holdTime, final boolean randomDelay, final T expectedObject, final String key) {
             _pool = pool;
             _iter = iter;
             _startDelay = startDelay;
@@ -1817,11 +1817,11 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         public SimpleFactory() {
             this(true);
         }
-        public SimpleFactory(boolean valid) {
+        public SimpleFactory(final boolean valid) {
             this.valid = valid;
         }
         @Override
-        public PooledObject<String> makeObject(K key) throws Exception {
+        public PooledObject<String> makeObject(final K key) throws Exception {
             if (exceptionOnCreate) {
                 throw new Exception();
             }
@@ -1838,7 +1838,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             return new DefaultPooledObject<String>(out);
         }
         @Override
-        public void destroyObject(K key, PooledObject<String> obj) throws Exception {
+        public void destroyObject(final K key, final PooledObject<String> obj) throws Exception {
             doWait(destroyLatency);
             synchronized(this) {
                 activeCount--;
@@ -1848,7 +1848,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             }
         }
         @Override
-        public boolean validateObject(K key, PooledObject<String> obj) {
+        public boolean validateObject(final K key, final PooledObject<String> obj) {
             doWait(validateLatency);
             if (enableValidation) {
                 return validateCounter++%2 == 0 ? evenValid : oddValid;
@@ -1856,7 +1856,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             return valid;
         }
         @Override
-        public void activateObject(K key, PooledObject<String> obj) throws Exception {
+        public void activateObject(final K key, final PooledObject<String> obj) throws Exception {
             if (exceptionOnActivate) {
                 if (!(validateCounter++%2 == 0 ? evenValid : oddValid)) {
                     throw new Exception();
@@ -1864,44 +1864,44 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             }
         }
         @Override
-        public void passivateObject(K key, PooledObject<String> obj) throws Exception {
+        public void passivateObject(final K key, final PooledObject<String> obj) throws Exception {
             if (exceptionOnPassivate) {
                 throw new Exception();
             }
         }
 
-        public void setMaxTotalPerKey(int maxTotalPerKey) {
+        public void setMaxTotalPerKey(final int maxTotalPerKey) {
             this.maxTotalPerKey = maxTotalPerKey;
         }
-        public void setDestroyLatency(long destroyLatency) {
+        public void setDestroyLatency(final long destroyLatency) {
             this.destroyLatency = destroyLatency;
         }
-        public void setMakeLatency(long makeLatency) {
+        public void setMakeLatency(final long makeLatency) {
             this.makeLatency = makeLatency;
         }
-        public void setValidateLatency(long validateLatency) {
+        public void setValidateLatency(final long validateLatency) {
             this.validateLatency = validateLatency;
         }
-        public void setValidationEnabled(boolean b) {
+        public void setValidationEnabled(final boolean b) {
             enableValidation = b;
         }
-        void setEvenValid(boolean valid) {
+        void setEvenValid(final boolean valid) {
             evenValid = valid;
         }
-        void setValid(boolean valid) {
+        void setValid(final boolean valid) {
             evenValid = valid;
             oddValid = valid;
         }
 
-        public void setThrowExceptionOnActivate(boolean b) {
+        public void setThrowExceptionOnActivate(final boolean b) {
             exceptionOnActivate = b;
         }
 
-        public void setThrowExceptionOnDestroy(boolean b) {
+        public void setThrowExceptionOnDestroy(final boolean b) {
             exceptionOnDestroy = b;
         }
 
-        public void setThrowExceptionOnPassivate(boolean b) {
+        public void setThrowExceptionOnPassivate(final boolean b) {
             exceptionOnPassivate = b;
         }
 
@@ -1922,7 +1922,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         boolean exceptionOnDestroy = false;
         boolean exceptionOnCreate = false;
 
-        private void doWait(long latency) {
+        private void doWait(final long latency) {
             try {
                 Thread.sleep(latency);
             } catch (final InterruptedException ex) {
@@ -1941,14 +1941,14 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         return false;
     }
 
-    private String getExceptionTrace(Throwable t){
+    private String getExceptionTrace(final Throwable t){
         final StringWriter sw = new StringWriter();
         t.printStackTrace(new PrintWriter(sw));
         return sw.toString();
     }
 
-    private String formatSettings(String title, String s, int i, String s0, boolean b0, String s1, int i1, String s2, int i2, String s3, int i3,
-            String s4, int i4, String s5, int i5, String s6, int i6, int zeroLength, int oneLength, int twoLength){
+    private String formatSettings(final String title, final String s, final int i, final String s0, final boolean b0, final String s1, final int i1, final String s2, final int i2, final String s3, final int i3,
+            final String s4, final int i4, final String s5, final int i5, final String s6, final int i6, final int zeroLength, final int oneLength, final int twoLength){
         final StringBuilder sb = new StringBuilder(80);
         sb.append(title).append(' ');
         sb.append(s).append('=').append(i).append(' ');
@@ -2047,7 +2047,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
     private static class DaemonThreadFactory implements ThreadFactory {
         @Override
-        public Thread newThread(Runnable r) {
+        public Thread newThread(final Runnable r) {
             final Thread t = new Thread(r);
             t.setDaemon(true);
             return t;
@@ -2249,11 +2249,11 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     private static class DummyFactory
             extends BaseKeyedPooledObjectFactory<Object,Object> {
         @Override
-        public Object create(Object key) throws Exception {
+        public Object create(final Object key) throws Exception {
             return null;
         }
         @Override
-        public PooledObject<Object> wrap(Object value) {
+        public PooledObject<Object> wrap(final Object value) {
             return new DefaultPooledObject<Object>(value);
         }
     }
@@ -2266,11 +2266,11 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     private static final class HashSetFactory 
             extends BaseKeyedPooledObjectFactory<String, HashSet<String>> {
         @Override
-        public HashSet<String> create(String key) throws Exception {
+        public HashSet<String> create(final String key) throws Exception {
             return new HashSet<String>();
         }
         @Override
-        public PooledObject<HashSet<String>> wrap(HashSet<String> value) {
+        public PooledObject<HashSet<String>> wrap(final HashSet<String> value) {
             return new DefaultPooledObject<HashSet<String>>(value);
         }
     }
@@ -2280,7 +2280,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         ConcurrentHashMap<Object,AtomicInteger> map =
                 new ConcurrentHashMap<Object,AtomicInteger>();
         @Override
-        public Object create(Object key) throws Exception {
+        public Object create(final Object key) throws Exception {
             int counter = 0;
             final AtomicInteger Counter = map.get(key);
             if(null != Counter) {
@@ -2292,7 +2292,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             return String.valueOf(key) + String.valueOf(counter);
         }
         @Override
-        public PooledObject<Object> wrap(Object value) {
+        public PooledObject<Object> wrap(final Object value) {
             return new DefaultPooledObject<Object>(value);
         }
     }
@@ -2301,13 +2301,13 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         extends BaseKeyedPooledObjectFactory<Integer, Object> {
 
         @Override
-        public Object create(Integer key)
+        public Object create(final Integer key)
             throws Exception {
             return new Object();
         }
 
         @Override
-        public PooledObject<Object> wrap(Object value) {
+        public PooledObject<Object> wrap(final Object value) {
             return new DefaultPooledObject<Object>(value);
         }
     }

@@ -129,8 +129,8 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      *                      overridden by the config
      * @param jmxNamePrefix Prefix to be used for JMX name for the new pool
      */
-    public BaseGenericObjectPool(BaseObjectPoolConfig config,
-            String jmxNameBase, String jmxNamePrefix) {
+    public BaseGenericObjectPool(final BaseObjectPoolConfig config,
+            final String jmxNameBase, final String jmxNamePrefix) {
         if (config.getJmxEnabled()) {
             this.oname = jmxRegister(config, jmxNameBase, jmxNamePrefix);
         } else {
@@ -178,7 +178,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      *
      * @see #getMaxTotal
      */
-    public final void setMaxTotal(int maxTotal) {
+    public final void setMaxTotal(final int maxTotal) {
         this.maxTotal = maxTotal;
     }
 
@@ -207,7 +207,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      *
      * @see #getBlockWhenExhausted
      */
-    public final void setBlockWhenExhausted(boolean blockWhenExhausted) {
+    public final void setBlockWhenExhausted(final boolean blockWhenExhausted) {
         this.blockWhenExhausted = blockWhenExhausted;
     }
 
@@ -242,7 +242,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * @see #getMaxWaitMillis
      * @see #setBlockWhenExhausted
      */
-    public final void setMaxWaitMillis(long maxWaitMillis) {
+    public final void setMaxWaitMillis(final long maxWaitMillis) {
         this.maxWaitMillis = maxWaitMillis;
     }
 
@@ -285,7 +285,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      *
      * @see #getLifo()
      */
-    public final void setLifo(boolean lifo) {
+    public final void setLifo(final boolean lifo) {
         this.lifo = lifo;
     }
 
@@ -322,7 +322,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      *
      * @since 2.2
      */
-    public final void setTestOnCreate(boolean testOnCreate) {
+    public final void setTestOnCreate(final boolean testOnCreate) {
         this.testOnCreate = testOnCreate;
     }
 
@@ -357,7 +357,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      *
      * @see #getTestOnBorrow
      */
-    public final void setTestOnBorrow(boolean testOnBorrow) {
+    public final void setTestOnBorrow(final boolean testOnBorrow) {
         this.testOnBorrow = testOnBorrow;
     }
 
@@ -390,7 +390,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      *
      * @see #getTestOnReturn
      */
-    public final void setTestOnReturn(boolean testOnReturn) {
+    public final void setTestOnReturn(final boolean testOnReturn) {
         this.testOnReturn = testOnReturn;
     }
 
@@ -427,7 +427,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * @see #getTestWhileIdle
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    public final void setTestWhileIdle(boolean testWhileIdle) {
+    public final void setTestWhileIdle(final boolean testWhileIdle) {
         this.testWhileIdle = testWhileIdle;
     }
 
@@ -455,7 +455,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * @see #getTimeBetweenEvictionRunsMillis
      */
     public final void setTimeBetweenEvictionRunsMillis(
-            long timeBetweenEvictionRunsMillis) {
+            final long timeBetweenEvictionRunsMillis) {
         this.timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
         startEvictor(timeBetweenEvictionRunsMillis);
     }
@@ -495,7 +495,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * @see #getNumTestsPerEvictionRun
      * @see #setTimeBetweenEvictionRunsMillis
      */
-    public final void setNumTestsPerEvictionRun(int numTestsPerEvictionRun) {
+    public final void setNumTestsPerEvictionRun(final int numTestsPerEvictionRun) {
         this.numTestsPerEvictionRun = numTestsPerEvictionRun;
     }
 
@@ -529,7 +529,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * @see #setTimeBetweenEvictionRunsMillis
      */
     public final void setMinEvictableIdleTimeMillis(
-            long minEvictableIdleTimeMillis) {
+            final long minEvictableIdleTimeMillis) {
         this.minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
     }
 
@@ -570,7 +570,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * @see #getSoftMinEvictableIdleTimeMillis
      */
     public final void setSoftMinEvictableIdleTimeMillis(
-            long softMinEvictableIdleTimeMillis) {
+            final long softMinEvictableIdleTimeMillis) {
         this.softMinEvictableIdleTimeMillis = softMinEvictableIdleTimeMillis;
     }
 
@@ -598,7 +598,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * @see #getEvictionPolicyClassName()
      */
     public final void setEvictionPolicyClassName(
-            String evictionPolicyClassName) {
+            final String evictionPolicyClassName) {
         try {
             Class<?> clazz;
             try {
@@ -686,7 +686,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      *
      * @param delay time in milliseconds before start and between eviction runs
      */
-    final void startEvictor(long delay) {
+    final void startEvictor(final long delay) {
         synchronized (evictionLock) {
             if (null != evictor) {
                 EvictionTimer.cancel(evictor);
@@ -850,7 +850,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      *                                      for no listener
      */
     public final void setSwallowedExceptionListener(
-            SwallowedExceptionListener swallowedExceptionListener) {
+            final SwallowedExceptionListener swallowedExceptionListener) {
         this.swallowedExceptionListener = swallowedExceptionListener;
     }
 
@@ -860,7 +860,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      *
      * @param e exception to be swallowed
      */
-    final void swallowException(Exception e) {
+    final void swallowException(final Exception e) {
         final SwallowedExceptionListener listener = getSwallowedExceptionListener();
 
         if (listener == null) {
@@ -883,7 +883,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * @param p object borrowed from the pool
      * @param waitTime time (in milliseconds) that the borrowing thread had to wait
      */
-    final void updateStatsBorrow(PooledObject<T> p, long waitTime) {
+    final void updateStatsBorrow(final PooledObject<T> p, final long waitTime) {
         borrowedCount.incrementAndGet();
         idleTimes.add(p.getIdleTimeMillis());
         waitTimes.add(waitTime);
@@ -903,7 +903,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * @param activeTime the amount of time (in milliseconds) that the returning
      * object was checked out
      */
-    final void updateStatsReturn(long activeTime) {
+    final void updateStatsReturn(final long activeTime) {
         returnedCount.incrementAndGet();
         activeTimes.add(activeTime);
     }
@@ -937,8 +937,8 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * @param jmxNamePrefix name prefix
      * @return registered ObjectName, null if registration fails
      */
-    private ObjectName jmxRegister(BaseObjectPoolConfig config,
-            String jmxNameBase, String jmxNamePrefix) {
+    private ObjectName jmxRegister(final BaseObjectPoolConfig config,
+            final String jmxNameBase, String jmxNamePrefix) {
         ObjectName objectName = null;
         final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         int i = 1;
@@ -990,7 +990,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * @param e exception to trace
      * @return exception stack trace as a string
      */
-    private String getStackTrace(Exception e) {
+    private String getStackTrace(final Exception e) {
         // Need the exception in string form to prevent the retention of
         // references to classes in the stack trace that could trigger a memory
         // leak in a container environment.
@@ -1072,7 +1072,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
          *
          * @param size number of values to maintain in the cache.
          */
-        public StatsStore(int size) {
+        public StatsStore(final int size) {
             this.size = size;
             values = new AtomicLong[size];
             for (int i = 0; i < size; i++) {
@@ -1086,7 +1086,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
          *
          * @param value new value to add to the cache.
          */
-        public synchronized void add(long value) {
+        public synchronized void add(final long value) {
             values[index].set(value);
             index++;
             if (index == size) {
@@ -1195,7 +1195,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
          *
          * @param instance object to wrap
          */
-        public IdentityWrapper(T instance) {
+        public IdentityWrapper(final T instance) {
             this.instance = instance;
         }
 
@@ -1206,7 +1206,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
 
         @Override
         @SuppressWarnings("rawtypes")
-        public boolean equals(Object other) {
+        public boolean equals(final Object other) {
             return ((IdentityWrapper) other).instance == instance;
         }
         
@@ -1227,7 +1227,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         }
     }
 
-    protected void toStringAppendFields(StringBuilder builder) {
+    protected void toStringAppendFields(final StringBuilder builder) {
         builder.append("maxTotal=");
         builder.append(maxTotal);
         builder.append(", blockWhenExhausted=");

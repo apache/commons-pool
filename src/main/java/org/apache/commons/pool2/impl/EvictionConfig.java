@@ -45,8 +45,8 @@ public class EvictionConfig {
      *        {@link GenericObjectPool#getMinIdle()} or
      *        {@link GenericKeyedObjectPool#getMinIdlePerKey()}
      */
-    public EvictionConfig(long poolIdleEvictTime, long poolIdleSoftEvictTime,
-            int minIdle) {
+    public EvictionConfig(final long poolIdleEvictTime, final long poolIdleSoftEvictTime,
+            final int minIdle) {
         if (poolIdleEvictTime > 0) {
             idleEvictTime = poolIdleEvictTime;
         } else {

@@ -37,7 +37,7 @@ public class Waiter {
     private long validationCount = 0;
     private final int id = instanceCount.getAndIncrement();
 
-    public Waiter(boolean active, boolean valid, long latency) {
+    public Waiter(final boolean active, final boolean valid, final long latency) {
         this.active = active;
         this.valid = valid;
         this.latency = latency;
@@ -80,7 +80,7 @@ public class Waiter {
      *
      * @param active new active state
      */
-    public void setActive(boolean active) {
+    public void setActive(final boolean active) {
         final boolean activeState = this.active;
         if (activeState == active) {
             return;
@@ -99,7 +99,7 @@ public class Waiter {
         return latency;
     }
 
-    public void setLatency(long latency) {
+    public void setLatency(final long latency) {
         this.latency = latency;
     }
 
@@ -108,7 +108,7 @@ public class Waiter {
         return valid;
     }
 
-    public void setValid(boolean valid) {
+    public void setValid(final boolean valid) {
         this.valid = valid;
     }
 
@@ -157,7 +157,7 @@ public class Waiter {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (!(obj instanceof Waiter)) {
             return false;
         }

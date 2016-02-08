@@ -88,7 +88,7 @@ public class TestGenericObjectPoolClassLoaders {
             BasePooledObjectFactory<URL> {
         private final int n;
 
-        CustomClassLoaderObjectFactory(int n) {
+        CustomClassLoaderObjectFactory(final int n) {
             this.n = n;
         }
 
@@ -103,7 +103,7 @@ public class TestGenericObjectPoolClassLoaders {
         }
 
         @Override
-        public PooledObject<URL> wrap(URL value) {
+        public PooledObject<URL> wrap(final URL value) {
             return new DefaultPooledObject<URL>(value);
         }
     }
@@ -111,13 +111,13 @@ public class TestGenericObjectPoolClassLoaders {
     private static class CustomClassLoader extends URLClassLoader {
         private final int n;
 
-        CustomClassLoader(int n) {
+        CustomClassLoader(final int n) {
             super(new URL[] { BASE_URL });
             this.n = n;
         }
 
         @Override
-        public URL findResource(String name) {
+        public URL findResource(final String name) {
             if (!name.endsWith(String.valueOf(n))) {
                 return null;
             }

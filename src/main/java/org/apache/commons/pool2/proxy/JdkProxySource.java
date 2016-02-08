@@ -40,7 +40,7 @@ public class JdkProxySource<T> implements ProxySource<T> {
      * @param classLoader The class loader with which to create the proxy
      * @param interfaces  The interfaces to proxy
      */
-    public JdkProxySource(ClassLoader classLoader, Class<?>[] interfaces) {
+    public JdkProxySource(final ClassLoader classLoader, final Class<?>[] interfaces) {
         this.classLoader = classLoader;
         // Defensive copy
         this.interfaces = new Class<?>[interfaces.length];
@@ -49,7 +49,7 @@ public class JdkProxySource<T> implements ProxySource<T> {
 
 
     @Override
-    public T createProxy(T pooledObject, UsageTracking<T> usageTracking) {
+    public T createProxy(final T pooledObject, final UsageTracking<T> usageTracking) {
         @SuppressWarnings("unchecked")
         final
         T proxy = (T) Proxy.newProxyInstance(classLoader, interfaces,
@@ -59,7 +59,7 @@ public class JdkProxySource<T> implements ProxySource<T> {
 
 
     @Override
-    public T resolveProxy(T proxy) {
+    public T resolveProxy(final T proxy) {
         @SuppressWarnings("unchecked")
         final
         JdkProxyHandler<T> jdkProxyHandler =

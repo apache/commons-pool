@@ -42,13 +42,13 @@ class CglibProxyHandler<T> extends BaseProxyHandler<T>
      *                      be provided with usage tracking information for this
      *                      wrapped object
      */
-    CglibProxyHandler(T pooledObject, UsageTracking<T> usageTracking) {
+    CglibProxyHandler(final T pooledObject, final UsageTracking<T> usageTracking) {
         super(pooledObject, usageTracking);
     }
 
     @Override
-    public Object intercept(Object object, Method method, Object[] args,
-            MethodProxy methodProxy) throws Throwable {
+    public Object intercept(final Object object, final Method method, final Object[] args,
+            final MethodProxy methodProxy) throws Throwable {
         return doInvoke(method, args);
     }
 }

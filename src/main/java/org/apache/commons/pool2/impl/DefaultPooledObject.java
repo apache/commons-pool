@@ -56,7 +56,7 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
      *
      * @param object The object to wrap
      */
-    public DefaultPooledObject(T object) {
+    public DefaultPooledObject(final T object) {
         this.object = object;
     }
 
@@ -128,7 +128,7 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
     }
 
     @Override
-    public int compareTo(PooledObject<T> other) {
+    public int compareTo(final PooledObject<T> other) {
         final long lastActiveDiff = this.getLastReturnTime() - other.getLastReturnTime();
         if (lastActiveDiff == 0) {
             // Make sure the natural ordering is broadly consistent with equals
@@ -166,7 +166,7 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
 
     @Override
     public synchronized boolean endEvictionTest(
-            Deque<PooledObject<T>> idleQueue) {
+            final Deque<PooledObject<T>> idleQueue) {
         if (state == PooledObjectState.EVICTION) {
             state = PooledObjectState.IDLE;
             return true;
@@ -240,7 +240,7 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
     }
 
     @Override
-    public void printStackTrace(PrintWriter writer) {
+    public void printStackTrace(final PrintWriter writer) {
         boolean written = false;
         final Exception borrowedByCopy = this.borrowedBy;
         if (borrowedByCopy != null) {
@@ -283,7 +283,7 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
     }
 
     @Override
-    public void setLogAbandoned(boolean logAbandoned) {
+    public void setLogAbandoned(final boolean logAbandoned) {
         this.logAbandoned = logAbandoned;
     }
 

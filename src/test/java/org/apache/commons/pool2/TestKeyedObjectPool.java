@@ -674,7 +674,7 @@ public abstract class TestKeyedObjectPool {
             return new Object();
         }
         @Override
-        public PooledObject<Object> wrap(Object value) {
+        public PooledObject<Object> wrap(final Object value) {
             return new DefaultPooledObject<Object>(value);
         }
     }
@@ -717,7 +717,7 @@ public abstract class TestKeyedObjectPool {
             return makeObjectFail;
         }
 
-        public void setMakeObjectFail(boolean makeObjectFail) {
+        public void setMakeObjectFail(final boolean makeObjectFail) {
             this.makeObjectFail = makeObjectFail;
         }
 
@@ -725,7 +725,7 @@ public abstract class TestKeyedObjectPool {
             return destroyObjectFail;
         }
 
-        public void setDestroyObjectFail(boolean destroyObjectFail) {
+        public void setDestroyObjectFail(final boolean destroyObjectFail) {
             this.destroyObjectFail = destroyObjectFail;
         }
 
@@ -733,7 +733,7 @@ public abstract class TestKeyedObjectPool {
             return validateObjectFail;
         }
 
-        public void setValidateObjectFail(boolean validateObjectFail) {
+        public void setValidateObjectFail(final boolean validateObjectFail) {
             this.validateObjectFail = validateObjectFail;
         }
 
@@ -741,7 +741,7 @@ public abstract class TestKeyedObjectPool {
             return activateObjectFail;
         }
 
-        public void setActivateObjectFail(boolean activateObjectFail) {
+        public void setActivateObjectFail(final boolean activateObjectFail) {
             this.activateObjectFail = activateObjectFail;
         }
 
@@ -749,7 +749,7 @@ public abstract class TestKeyedObjectPool {
             return passivateObjectFail;
         }
 
-        public void setPassivateObjectFail(boolean passivateObjectFail) {
+        public void setPassivateObjectFail(final boolean passivateObjectFail) {
             this.passivateObjectFail = passivateObjectFail;
         }
 

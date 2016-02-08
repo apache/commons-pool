@@ -40,7 +40,7 @@ public class PooledSoftReference<T> extends DefaultPooledObject<T> {
      *
      * @param reference SoftReference to be managed by the pool
      */
-    public PooledSoftReference(SoftReference<T> reference) {
+    public PooledSoftReference(final SoftReference<T> reference) {
         super(null);  // Null the hard reference in the parent
         this.reference = reference;
     }
@@ -94,7 +94,7 @@ public class PooledSoftReference<T> extends DefaultPooledObject<T> {
      *
      * @param reference new reference
      */
-    public synchronized void setReference(SoftReference<T> reference) {
+    public synchronized void setReference(final SoftReference<T> reference) {
         this.reference = reference;
     }
 }

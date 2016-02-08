@@ -75,7 +75,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
      *
      * @param factory object factory to use.
      */
-    public SoftReferenceObjectPool(PooledObjectFactory<T> factory) {
+    public SoftReferenceObjectPool(final PooledObjectFactory<T> factory) {
         this.factory = factory;
     }
 
@@ -189,7 +189,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
      *            instance to return to the pool
      */
     @Override
-    public synchronized void returnObject(T obj) throws Exception {
+    public synchronized void returnObject(final T obj) throws Exception {
         boolean success = !isClosed();
         final PooledSoftReference<T> ref = findReference(obj);
         if (ref == null) {
@@ -231,7 +231,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
      * {@inheritDoc}
      */
     @Override
-    public synchronized void invalidateObject(T obj) throws Exception {
+    public synchronized void invalidateObject(final T obj) throws Exception {
         final PooledSoftReference<T> ref = findReference(obj);
         if (ref == null) {
             throw new IllegalStateException(
@@ -387,7 +387,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
      * @param obj returning object
      * @return PooledSoftReference wrapping a soft reference to obj
      */
-    private PooledSoftReference<T> findReference(T obj) {
+    private PooledSoftReference<T> findReference(final T obj) {
         final Iterator<PooledSoftReference<T>> iterator = allReferences.iterator();
         while (iterator.hasNext()) {
             final PooledSoftReference<T> reference = iterator.next();
@@ -406,7 +406,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
      *
      * @throws Exception If an error occurs while trying to destroy the object
      */
-    private void destroy(PooledSoftReference<T> toDestroy) throws Exception {
+    private void destroy(final PooledSoftReference<T> toDestroy) throws Exception {
         toDestroy.invalidate();
         idleReferences.remove(toDestroy);
         allReferences.remove(toDestroy);
@@ -422,7 +422,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
      * Clears cleared references from iterator's collection
      * @param iterator iterator over idle/allReferences
      */
-    private void removeClearedReferences(Iterator<PooledSoftReference<T>> iterator) {
+    private void removeClearedReferences(final Iterator<PooledSoftReference<T>> iterator) {
         PooledSoftReference<T> ref;
         while (iterator.hasNext()) {
             ref = iterator.next();
@@ -433,7 +433,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
     }
 
     @Override
-    protected void toStringAppendFields(StringBuilder builder) {
+    protected void toStringAppendFields(final StringBuilder builder) {
         super.toStringAppendFields(builder);
         builder.append(", factory=");
         builder.append(factory);

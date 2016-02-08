@@ -129,11 +129,11 @@ public abstract class BaseTestProxiedKeyedObjectPool {
             BaseKeyedPooledObjectFactory<String,TestObject> {
 
         @Override
-        public TestObject create(String key) throws Exception {
+        public TestObject create(final String key) throws Exception {
             return new TestObjectImpl();
         }
         @Override
-        public PooledObject<TestObject> wrap(TestObject value) {
+        public PooledObject<TestObject> wrap(final TestObject value) {
             return new DefaultPooledObject<TestObject>(value);
         }
     }
@@ -155,7 +155,7 @@ public abstract class BaseTestProxiedKeyedObjectPool {
         }
 
         @Override
-        public void setData(String data) {
+        public void setData(final String data) {
             this.data = data;
         }
     }

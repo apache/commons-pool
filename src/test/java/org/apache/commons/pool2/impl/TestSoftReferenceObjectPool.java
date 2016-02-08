@@ -28,7 +28,7 @@ import org.apache.commons.pool2.TestBaseObjectPool;
 public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
 
     @Override
-    protected ObjectPool<String> makeEmptyPool(int cap) {
+    protected ObjectPool<String> makeEmptyPool(final int cap) {
         return new SoftReferenceObjectPool<String>(new SimpleFactory());
     }
 
@@ -38,7 +38,7 @@ public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
     }
 
     @Override
-    protected Object getNthObject(int n) {
+    protected Object getNthObject(final int n) {
         return String.valueOf(n);
     }
 
@@ -60,7 +60,7 @@ public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
             return String.valueOf(counter++);
         }
         @Override
-        public PooledObject<String> wrap(String value) {
+        public PooledObject<String> wrap(final String value) {
             return new DefaultPooledObject<String>(value);
         }
     }

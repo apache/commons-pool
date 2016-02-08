@@ -91,7 +91,7 @@ public class GenericKeyedObjectPoolConfig extends BaseObjectPoolConfig {
      *
      * @see GenericKeyedObjectPool#setMaxTotal(int)
      */
-    public void setMaxTotal(int maxTotal) {
+    public void setMaxTotal(final int maxTotal) {
         this.maxTotal = maxTotal;
     }
 
@@ -117,7 +117,7 @@ public class GenericKeyedObjectPoolConfig extends BaseObjectPoolConfig {
      *
      * @see GenericKeyedObjectPool#setMaxTotalPerKey(int)
      */
-    public void setMaxTotalPerKey(int maxTotalPerKey) {
+    public void setMaxTotalPerKey(final int maxTotalPerKey) {
         this.maxTotalPerKey = maxTotalPerKey;
     }
 
@@ -143,7 +143,7 @@ public class GenericKeyedObjectPoolConfig extends BaseObjectPoolConfig {
      *
      * @see GenericKeyedObjectPool#setMinIdlePerKey(int)
      */
-    public void setMinIdlePerKey(int minIdlePerKey) {
+    public void setMinIdlePerKey(final int minIdlePerKey) {
         this.minIdlePerKey = minIdlePerKey;
     }
 
@@ -169,7 +169,7 @@ public class GenericKeyedObjectPoolConfig extends BaseObjectPoolConfig {
      *
      * @see GenericKeyedObjectPool#setMaxIdlePerKey(int)
      */
-    public void setMaxIdlePerKey(int maxIdlePerKey) {
+    public void setMaxIdlePerKey(final int maxIdlePerKey) {
         this.maxIdlePerKey = maxIdlePerKey;
     }
 
@@ -182,7 +182,7 @@ public class GenericKeyedObjectPoolConfig extends BaseObjectPoolConfig {
         }
     }
 
-    protected void toStringAppendFields(StringBuilder builder) {
+    protected void toStringAppendFields(final StringBuilder builder) {
         super.toStringAppendFields(builder);
         builder.append(", minIdlePerKey=");
         builder.append(minIdlePerKey);

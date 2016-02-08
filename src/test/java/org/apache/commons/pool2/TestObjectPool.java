@@ -417,7 +417,7 @@ public abstract class TestObjectPool {
         pool.close();
     }
 
-    static void removeDestroyObjectCall(List<MethodCall> calls) {
+    static void removeDestroyObjectCall(final List<MethodCall> calls) {
         final Iterator<MethodCall> iter = calls.iterator();
         while (iter.hasNext()) {
             final MethodCall call = iter.next();

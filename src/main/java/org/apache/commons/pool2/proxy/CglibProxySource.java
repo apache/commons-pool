@@ -37,12 +37,12 @@ public class CglibProxySource<T> implements ProxySource<T> {
      *
      * @param superclass The class to proxy
      */
-    public CglibProxySource(Class<? extends T> superclass) {
+    public CglibProxySource(final Class<? extends T> superclass) {
         this.superclass = superclass;
     }
 
     @Override
-    public T createProxy(T pooledObject, UsageTracking<T> usageTracking) {
+    public T createProxy(final T pooledObject, final UsageTracking<T> usageTracking) {
         final Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(superclass);
 
@@ -59,7 +59,7 @@ public class CglibProxySource<T> implements ProxySource<T> {
 
 
     @Override
-    public T resolveProxy(T proxy) {
+    public T resolveProxy(final T proxy) {
         @SuppressWarnings("unchecked")
         final
         CglibProxyHandler<T> cglibProxyHandler =

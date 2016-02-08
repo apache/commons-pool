@@ -71,7 +71,7 @@ public class MethodCall {
         this.returned = returned;
     }
 
-    public MethodCall returned(Object obj) {
+    public MethodCall returned(final Object obj) {
         setReturned(obj);
         return this;
     }

@@ -67,10 +67,10 @@ KeyedPooledObjectFactory<K,Waiter> {
     /** Maximum of (makes - destroys) per key */
     private final long maxActivePerKey;  // GKOP 1.x calls this maxActive
 
-    public WaiterFactory(long activateLatency, long destroyLatency,
-            long makeLatency, long passivateLatency, long validateLatency,
-            long waiterLatency,long maxActive, long maxActivePerKey,
-            double passivateInvalidationProbability) {
+    public WaiterFactory(final long activateLatency, final long destroyLatency,
+            final long makeLatency, final long passivateLatency, final long validateLatency,
+            final long waiterLatency,final long maxActive, final long maxActivePerKey,
+            final double passivateInvalidationProbability) {
         this.activateLatency = activateLatency;
         this.destroyLatency = destroyLatency;
         this.makeLatency = makeLatency;
@@ -82,28 +82,28 @@ KeyedPooledObjectFactory<K,Waiter> {
         this.passivateInvalidationProbability = passivateInvalidationProbability;
     }
 
-    public WaiterFactory(long activateLatency, long destroyLatency,
-            long makeLatency, long passivateLatency, long validateLatency,
-            long waiterLatency) {
+    public WaiterFactory(final long activateLatency, final long destroyLatency,
+            final long makeLatency, final long passivateLatency, final long validateLatency,
+            final long waiterLatency) {
         this(activateLatency, destroyLatency, makeLatency, passivateLatency,
                 validateLatency, waiterLatency, Long.MAX_VALUE, Long.MAX_VALUE, 0);
     }
 
-    public WaiterFactory(long activateLatency, long destroyLatency,
-            long makeLatency, long passivateLatency, long validateLatency,
-            long waiterLatency,long maxActive) {
+    public WaiterFactory(final long activateLatency, final long destroyLatency,
+            final long makeLatency, final long passivateLatency, final long validateLatency,
+            final long waiterLatency,final long maxActive) {
         this(activateLatency, destroyLatency, makeLatency, passivateLatency,
                 validateLatency, waiterLatency, maxActive, Long.MAX_VALUE, 0);
     }
 
     @Override
-    public void activateObject(PooledObject<Waiter> obj) throws Exception {
+    public void activateObject(final PooledObject<Waiter> obj) throws Exception {
         doWait(activateLatency);
         obj.getObject().setActive(true);
     }
 
     @Override
-    public void destroyObject(PooledObject<Waiter> obj) throws Exception {
+    public void destroyObject(final PooledObject<Waiter> obj) throws Exception {
         doWait(destroyLatency);
         obj.getObject().setValid(false);
         obj.getObject().setActive(false);
@@ -128,7 +128,7 @@ KeyedPooledObjectFactory<K,Waiter> {
     }
 
     @Override
-    public void passivateObject(PooledObject<Waiter> obj) throws Exception {
+    public void passivateObject(final PooledObject<Waiter> obj) throws Exception {
         obj.getObject().setActive(false);
         doWait(passivateLatency);
         if (Math.random() < passivateInvalidationProbability) {
@@ -137,12 +137,12 @@ KeyedPooledObjectFactory<K,Waiter> {
     }
 
     @Override
-    public boolean validateObject(PooledObject<Waiter> obj) {
+    public boolean validateObject(final PooledObject<Waiter> obj) {
         doWait(validateLatency);
         return obj.getObject().isValid();
     }
 
-    protected void doWait(long latency) {
+    protected void doWait(final long latency) {
         if (latency == 0) {
             return;
         }
@@ -175,12 +175,12 @@ KeyedPooledObjectFactory<K,Waiter> {
     // KeyedPoolableObjectFactory methods
 
     @Override
-    public void activateObject(K key, PooledObject<Waiter> obj) throws Exception {
+    public void activateObject(final K key, final PooledObject<Waiter> obj) throws Exception {
         activateObject(obj);
     }
 
     @Override
-    public void destroyObject(K key,PooledObject<Waiter> obj) throws Exception {
+    public void destroyObject(final K key,final PooledObject<Waiter> obj) throws Exception {
         destroyObject(obj);
         synchronized (this) {
             final Integer count = activeCounts.get(key);
@@ -189,7 +189,7 @@ KeyedPooledObjectFactory<K,Waiter> {
     }
 
     @Override
-    public PooledObject<Waiter> makeObject(K key) throws Exception {
+    public PooledObject<Waiter> makeObject(final K key) throws Exception {
         synchronized (this) {
             Integer count = activeCounts.get(key);
             if (count == null) {
@@ -209,12 +209,12 @@ KeyedPooledObjectFactory<K,Waiter> {
     }
 
     @Override
-    public void passivateObject(K key, PooledObject<Waiter> obj) throws Exception {
+    public void passivateObject(final K key, final PooledObject<Waiter> obj) throws Exception {
         passivateObject(obj);
     }
 
     @Override
-    public boolean validateObject(K key, PooledObject<Waiter> obj) {
+    public boolean validateObject(final K key, final PooledObject<Waiter> obj) {
         return validateObject(obj);
     }
 

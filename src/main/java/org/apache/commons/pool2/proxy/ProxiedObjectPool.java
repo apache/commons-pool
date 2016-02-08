@@ -43,7 +43,7 @@ public class ProxiedObjectPool<T> implements ObjectPool<T> {
      * @param pool  The object pool to wrap
      * @param proxySource The source of the proxy objects
      */
-    public ProxiedObjectPool(ObjectPool<T> pool, ProxySource<T> proxySource) {
+    public ProxiedObjectPool(final ObjectPool<T> pool, final ProxySource<T> proxySource) {
         this.pool = pool;
         this.proxySource = proxySource;
     }
@@ -66,14 +66,14 @@ public class ProxiedObjectPool<T> implements ObjectPool<T> {
 
 
     @Override
-    public void returnObject(T proxy) throws Exception {
+    public void returnObject(final T proxy) throws Exception {
         final T pooledObject = proxySource.resolveProxy(proxy);
         pool.returnObject(pooledObject);
     }
 
 
     @Override
-    public void invalidateObject(T proxy) throws Exception {
+    public void invalidateObject(final T proxy) throws Exception {
         final T pooledObject = proxySource.resolveProxy(proxy);
         pool.invalidateObject(pooledObject);
     }
