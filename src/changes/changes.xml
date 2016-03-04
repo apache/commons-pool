@@ -44,6 +44,9 @@ The <action> type attribute can be add,update,fix,remove.
   </properties>
   <body>
   <release version="2.4.3" date="TBD" description="TBD">
+    <action dev="ggregory" issue="POOL-309" type="fix">
+      Fix misspellings from "destory" to "destroy".
+    </action>
   </release>
   <release version="2.4.2" date="2015-08-01" description=
  "This is a patch release, including bug fixes only.">

@@ -880,17 +880,17 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     /**
      * Destroys a wrapped pooled object.
      *
-     * @param toDestory The wrapped pooled object to destroy
+     * @param toDestroy The wrapped pooled object to destroy
      *
      * @throws Exception If the factory fails to destroy the pooled object
      *                   cleanly
      */
-    private void destroy(final PooledObject<T> toDestory) throws Exception {
-        toDestory.invalidate();
-        idleObjects.remove(toDestory);
-        allObjects.remove(new IdentityWrapper<T>(toDestory.getObject()));
+    private void destroy(final PooledObject<T> toDestroy) throws Exception {
+        toDestroy.invalidate();
+        idleObjects.remove(toDestroy);
+        allObjects.remove(new IdentityWrapper<T>(toDestroy.getObject()));
         try {
-            factory.destroyObject(toDestory);
+            factory.destroyObject(toDestroy);
         } finally {
             destroyedCount.incrementAndGet();
             createCount.decrementAndGet();

@@ -379,7 +379,7 @@ public abstract class TestKeyedObjectPool {
         PoolUtils.prefill(pool, KEY, 5);
         pool.clear();
 
-        //// Test exception handling clear should swallow destory object failures
+        //// Test exception handling clear should swallow destroy object failures
         reset(pool, factory, expectedMethods);
         factory.setDestroyObjectFail(true);
         PoolUtils.prefill(pool, KEY, 5);
