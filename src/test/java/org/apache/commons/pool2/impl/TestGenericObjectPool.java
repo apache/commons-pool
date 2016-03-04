@@ -248,7 +248,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         Thread.sleep(200);
         wtt.interrupt();
 
-        // Give interupt time to take effect
+        // Give interrupt time to take effect
         Thread.sleep(200);
 
         // Check thread was interrupted
