@@ -640,6 +640,7 @@ public abstract class BaseObjectPoolConfig extends BaseObject implements Cloneab
         this.jmxNamePrefix = jmxNamePrefix;
     }
 
+    @Override
     protected void toStringAppendFields(final StringBuilder builder) {
         builder.append("lifo=");
         builder.append(lifo);

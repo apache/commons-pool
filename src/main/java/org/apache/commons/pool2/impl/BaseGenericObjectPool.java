@@ -1176,7 +1176,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         }
 
     }
-    
+
     /**
      * Wrapper for objects under management by the pool.
      *
@@ -1189,7 +1189,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     static class IdentityWrapper<T> {
         /** Wrapped object */
         private final T instance;
-        
+
         /**
          * Create a wrapper for an instance.
          *
@@ -1209,7 +1209,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         public boolean equals(final Object other) {
             return ((IdentityWrapper) other).instance == instance;
         }
-        
+
         /**
          * @return the wrapped object
          */
@@ -1227,6 +1227,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         }
     }
 
+    @Override
     protected void toStringAppendFields(final StringBuilder builder) {
         builder.append("maxTotal=");
         builder.append(maxTotal);

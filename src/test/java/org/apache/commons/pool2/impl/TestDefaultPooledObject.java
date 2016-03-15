@@ -27,7 +27,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class TestDefaultPooledObject {
-    
+
     /**
      * JIRA: POOL-279
      * @throws Exception
@@ -39,6 +39,7 @@ public class TestDefaultPooledObject {
         final ExecutorService executor = Executors.newFixedThreadPool(
                                       Runtime.getRuntime().availableProcessors()*3);
         final Runnable allocateAndDeallocateTask = new Runnable() {
+            @Override
             public void run() {
                 for (int i=0;i<10000;i++) {
                     if (dpo.getIdleTimeMillis() < 0) {
@@ -57,6 +58,7 @@ public class TestDefaultPooledObject {
             }
         };
         final Runnable getIdleTimeTask = new Runnable() {
+            @Override
             public void run() {
                 for (int i=0;i<10000;i++) {
                     if (dpo.getIdleTimeMillis() < 0) {

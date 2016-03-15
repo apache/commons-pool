@@ -182,6 +182,7 @@ public class GenericKeyedObjectPoolConfig extends BaseObjectPoolConfig {
         }
     }
 
+    @Override
     protected void toStringAppendFields(final StringBuilder builder) {
         super.toStringAppendFields(builder);
         builder.append(", minIdlePerKey=");

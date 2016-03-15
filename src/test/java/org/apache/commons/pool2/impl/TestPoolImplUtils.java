@@ -47,6 +47,7 @@ public class TestPoolImplUtils {
         }
     }
 
+    @SuppressWarnings("unused")
     private abstract static class FactoryAB<A,B>
             extends BasePooledObjectFactory<B> {
     }
@@ -57,6 +58,7 @@ public class TestPoolImplUtils {
     private abstract static class FactoryC<C> extends FactoryBA<C, String> {
     }
 
+    @SuppressWarnings("unused")
     private abstract static class FactoryDE<D,E> extends FactoryC<D>{
     }
 
