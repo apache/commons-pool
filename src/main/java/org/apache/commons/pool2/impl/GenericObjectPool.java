@@ -428,14 +428,14 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
 
         while (p == null) {
             create = false;
-            if (blockWhenExhausted) {
-                p = idleObjects.pollFirst();
-                if (p == null) {
-                    p = create();
-                    if (p != null) {
-                        create = true;
-                    }
+            p = idleObjects.pollFirst();
+            if (p == null) {
+                p = create();
+                if (p != null) {
+                    create = true;
                 }
+            }
+            if (blockWhenExhausted) {
                 if (p == null) {
                     if (borrowMaxWaitMillis < 0) {
                         p = idleObjects.takeFirst();
@@ -448,23 +448,13 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                     throw new NoSuchElementException(
                             "Timeout waiting for idle object");
                 }
-                if (!p.allocate()) {
-                    p = null;
-                }
             } else {
-                p = idleObjects.pollFirst();
-                if (p == null) {
-                    p = create();
-                    if (p != null) {
-                        create = true;
-                    }
-                }
                 if (p == null) {
                     throw new NoSuchElementException("Pool exhausted");
                 }
-                if (!p.allocate()) {
-                    p = null;
-                }
+            }
+            if (!p.allocate()) {
+                p = null;
             }
 
             if (p != null) {

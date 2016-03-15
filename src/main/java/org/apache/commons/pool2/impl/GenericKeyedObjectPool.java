@@ -350,14 +350,14 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         try {
             while (p == null) {
                 create = false;
-                if (blockWhenExhausted) {
-                    p = objectDeque.getIdleObjects().pollFirst();
-                    if (p == null) {
-                        p = create(key);
-                        if (p != null) {
-                            create = true;
-                        }
+                p = objectDeque.getIdleObjects().pollFirst();
+                if (p == null) {
+                    p = create(key);
+                    if (p != null) {
+                        create = true;
                     }
+                }
+                if (blockWhenExhausted) {
                     if (p == null) {
                         if (borrowMaxWaitMillis < 0) {
                             p = objectDeque.getIdleObjects().takeFirst();
@@ -370,23 +370,13 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                         throw new NoSuchElementException(
                                 "Timeout waiting for idle object");
                     }
-                    if (!p.allocate()) {
-                        p = null;
-                    }
                 } else {
-                    p = objectDeque.getIdleObjects().pollFirst();
-                    if (p == null) {
-                        p = create(key);
-                        if (p != null) {
-                            create = true;
-                        }
-                    }
                     if (p == null) {
                         throw new NoSuchElementException("Pool exhausted");
                     }
-                    if (!p.allocate()) {
-                        p = null;
-                    }
+                }
+                if (!p.allocate()) {
+                    p = null;
                 }
 
                 if (p != null) {

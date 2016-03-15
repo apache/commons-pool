@@ -56,6 +56,9 @@ The <action> type attribute can be add,update,fix,remove.
       threads try to borrow an object at the same time and the factory fails to
       create any objects. 
     </action>
+    <action dev="markt" issue="POOL-280" tyoe="update" due-to="Jacopo Cappellato">
+      Small refactoring of borrowObject() to reduce code duplication.
+    </action>
   </release>
   <release version="2.4.2" date="2015-08-01" description=
  "This is a patch release, including bug fixes only.">
