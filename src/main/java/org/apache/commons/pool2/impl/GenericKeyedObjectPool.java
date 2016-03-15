@@ -738,13 +738,14 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         // build sorted map of idle objects
         final Map<PooledObject<T>, K> map = new TreeMap<PooledObject<T>, K>();
 
-        for (final K k : poolMap.keySet()) {
-            final ObjectDeque<T> queue = poolMap.get(k);
+        for (Map.Entry<K, ObjectDeque<T>> entry : poolMap.entrySet()) {
+            final K k = entry.getKey();
+            final ObjectDeque<T> deque = entry.getValue();
             // Protect against possible NPE if key has been removed in another
             // thread. Not worth locking the keys while this loop completes.
-            if (queue != null) {
+            if (deque != null) {
                 final LinkedBlockingDeque<PooledObject<T>> idleObjects =
-                    queue.getIdleObjects();
+                        deque.getIdleObjects();
                 for (final PooledObject<T> p : idleObjects) {
                     // each item into the map using the PooledObject object as the
                     // key. It then gets sorted based on the idle time
@@ -800,8 +801,9 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         int maxQueueLength = 0;
         LinkedBlockingDeque<PooledObject<T>> mostLoaded = null;
         K loadedKey = null;
-        for (final K k : poolMap.keySet()) {
-            final ObjectDeque<T> deque = poolMap.get(k);
+        for (Map.Entry<K, ObjectDeque<T>> entry : poolMap.entrySet()) {
+            final K k = entry.getKey();
+            final ObjectDeque<T> deque = entry.getValue();
             if (deque != null) {
                 final LinkedBlockingDeque<PooledObject<T>> pool = deque.getIdleObjects();
                 final int queueLength = pool.getTakeQueueLength();
@@ -837,8 +839,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      *         {@code false}
      */
     private boolean hasBorrowWaiters() {
-        for (final K k : poolMap.keySet()) {
-            final ObjectDeque<T> deque = poolMap.get(k);
+        for (Map.Entry<K, ObjectDeque<T>> entry : poolMap.entrySet()) {
+            final ObjectDeque<T> deque = entry.getValue();
             if (deque != null) {
                 final LinkedBlockingDeque<PooledObject<T>> pool =
                     deque.getIdleObjects();
@@ -1371,14 +1373,15 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
     public Map<String,Integer> getNumWaitersByKey() {
         final Map<String,Integer> result = new HashMap<String,Integer>();
 
-        for (final K key : poolMap.keySet()) {
-            final ObjectDeque<T> queue = poolMap.get(key);
-            if (queue != null) {
+        for (Map.Entry<K, ObjectDeque<T>> entry : poolMap.entrySet()) {
+            final K k = entry.getKey();
+            final ObjectDeque<T> deque = entry.getValue();
+            if (deque != null) {
                 if (getBlockWhenExhausted()) {
-                    result.put(key.toString(), Integer.valueOf(
-                            queue.getIdleObjects().getTakeQueueLength()));
+                    result.put(k.toString(), Integer.valueOf(
+                            deque.getIdleObjects().getTakeQueueLength()));
                 } else {
-                    result.put(key.toString(), Integer.valueOf(0));
+                    result.put(k.toString(), Integer.valueOf(0));
                 }
             }
         }
@@ -1401,13 +1404,14 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         final Map<String,List<DefaultPooledObjectInfo>> result =
                 new HashMap<String,List<DefaultPooledObjectInfo>>();
 
-        for (final K key : poolMap.keySet()) {
-            final ObjectDeque<T> queue = poolMap.get(key);
-            if (queue != null) {
+        for (Map.Entry<K, ObjectDeque<T>> entry : poolMap.entrySet()) {
+            final K k = entry.getKey();
+            final ObjectDeque<T> deque = entry.getValue();
+            if (deque != null) {
                 final List<DefaultPooledObjectInfo> list =
                         new ArrayList<DefaultPooledObjectInfo>();
-                result.put(key.toString(), list);
-                for (final PooledObject<T> p : queue.getAllObjects().values()) {
+                result.put(k.toString(), list);
+                for (final PooledObject<T> p : deque.getAllObjects().values()) {
                     list.add(new DefaultPooledObjectInfo(p));
                 }
             }
