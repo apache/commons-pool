@@ -476,7 +476,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
             throw new IllegalStateException(
                     "Returned object not currently part of this pool");
         }
-        
+
         synchronized(p) {
             final PooledObjectState state = p.getState();
             if (state != PooledObjectState.ALLOCATED) {
@@ -907,7 +907,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                         if (objectDeque == null) {
                             continue;
                         }
-                        
+
                         final Deque<PooledObject<T>> idleObjects = objectDeque.getIdleObjects();
                         evictionIterator = new EvictionIterator(idleObjects);
                         if (evictionIterator.hasNext()) {
@@ -1004,6 +1004,8 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         final int maxTotalPerKeySave = getMaxTotalPerKey(); // Per key
         final int maxTotal = getMaxTotal();   // All keys
 
+        final ObjectDeque<T> objectDeque = poolMap.get(key);
+
         // Check against the overall limit
         boolean loop = true;
 
@@ -1012,6 +1014,9 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
             if (maxTotal > -1 && newNumTotal > maxTotal) {
                 numTotal.decrementAndGet();
                 if (getNumIdle() == 0) {
+                    // POOL-303. There may be threads waiting on an object
+                    // return that isn't going to happen. Unblock them.
+                    objectDeque.idleObjects.interuptTakeWaiters();
                     return null;
                 }
                 clearOldest();
@@ -1020,7 +1025,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
             }
         }
 
-        final ObjectDeque<T> objectDeque = poolMap.get(key);
         final long newCreateCount = objectDeque.getCreateCount().incrementAndGet();
 
         // Check against the per key limit
@@ -1028,6 +1032,9 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                 newCreateCount > Integer.MAX_VALUE) {
             numTotal.decrementAndGet();
             objectDeque.getCreateCount().decrementAndGet();
+            // POOL-303. There may be threads waiting on an object return that
+            // isn't going to happen. Unblock them.
+            objectDeque.idleObjects.interuptTakeWaiters();
             return null;
         }
 
@@ -1038,6 +1045,9 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         } catch (final Exception e) {
             numTotal.decrementAndGet();
             objectDeque.getCreateCount().decrementAndGet();
+            // POOL-303. There may be threads waiting on an object return that
+            // isn't going to happen. Unblock them.
+            objectDeque.idleObjects.interuptTakeWaiters();
             throw e;
         }
 
@@ -1433,7 +1443,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
         /*
          * The map is keyed on pooled instances, wrapped to ensure that
-         * they work properly as keys.  
+         * they work properly as keys.
          */
         private final Map<IdentityWrapper<S>, PooledObject<S>> allObjects =
                 new ConcurrentHashMap<IdentityWrapper<S>, PooledObject<S>>();

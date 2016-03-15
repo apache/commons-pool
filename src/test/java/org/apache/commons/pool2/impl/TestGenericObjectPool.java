@@ -33,6 +33,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.management.MBeanServer;
@@ -2397,11 +2398,11 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
         Assert.assertEquals(1, factory.validateCounter);
     }
-    
+
     /**
      * Verifies that when a factory's makeObject produces instances that are not
-     * discernible by equals, the pool can handle them.  
-     * 
+     * discernible by equals, the pool can handle them.
+     *
      * JIRA: POOL-283
      */
     @Test
@@ -2415,11 +2416,11 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.returnObject(s2);
         pool.close();
     }
-    
+
     /**
      * Verifies that when a borrowed object is mutated in a way that does not
      * preserve equality and hashcode, the pool can recognized it on return.
-     * 
+     *
      * JIRA: POOL-284
      */
     @Test
@@ -2435,11 +2436,11 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.returnObject(s2);
         pool.close();
     }
-    
+
     /**
      * Verifies that returning an object twice (without borrow in between) causes ISE
      * but does not re-validate or re-passivate the instance.
-     * 
+     *
      * JIRA: POOL-285
      */
     @Test
@@ -2460,7 +2461,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             Assert.assertEquals(1, waiter.getPassivationCount());
         }
     }
-    
+
     public void testPreparePool() throws Exception {
         pool.setMinIdle(1);
         pool.setMaxTotal(1);
@@ -2486,13 +2487,13 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             return new DefaultPooledObject<Object>(value);
         }
     }
-    
-    /** 
+
+    /**
      * Factory that creates HashSets.  Note that this means
      *  0) All instances are initially equal (not discernible by equals)
      *  1) Instances are mutable and mutation can cause change in identity / hashcode.
      */
-    private static final class HashSetFactory 
+    private static final class HashSetFactory
             extends BasePooledObjectFactory<HashSet<String>> {
         @Override
         public HashSet<String> create() throws Exception {
@@ -2542,6 +2543,76 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             } catch (final Exception e) {
                 // Ignore
             }
+        }
+    }
+
+    @Test
+    public void testFailingFactoryDoesNotBlockThreads() throws Exception {
+
+        final CreateFailFactory factory = new CreateFailFactory();
+        final GenericObjectPool<String> createFailFactoryPool =
+                new GenericObjectPool<String>(factory);
+
+        createFailFactoryPool.setMaxTotal(1);
+
+        // Try and borrow the first object from the pool
+        final WaitingTestThread thread1 = new WaitingTestThread(createFailFactoryPool, 0);
+        thread1.start();
+
+        // Wait for thread to reach semaphore
+        while(!factory.hasQueuedThreads()) {
+            Thread.sleep(200);
+        }
+
+        // Try and borrow the second object from the pool
+        final WaitingTestThread thread2 = new WaitingTestThread(createFailFactoryPool, 0);
+        thread2.start();
+        // Pool will not call factory since maximum number of object creations
+        // are already queued.
+
+        // Thread 2 will wait on an object being returned to the pool
+        // Give thread 2 a chance to reach this state
+        Thread.sleep(1000);
+
+        // Release thread1
+        factory.release();
+        // Pre-release thread2
+        factory.release();
+
+        // Both threads should now complete.
+        boolean threadRunning = true;
+        int count = 0;
+        while (threadRunning && count < 15) {
+            threadRunning = thread1.isAlive();
+            threadRunning = thread2.isAlive();
+            Thread.sleep(200);
+            count++;
+        }
+        Assert.assertFalse(thread1.isAlive());
+        Assert.assertFalse(thread2.isAlive());
+    }
+
+    private static class CreateFailFactory extends BasePooledObjectFactory<String> {
+
+        private final Semaphore semaphore = new Semaphore(0);
+
+        @Override
+        public String create() throws Exception {
+            semaphore.acquire();
+            throw new Exception();
+        }
+
+        @Override
+        public PooledObject<String> wrap(String obj) {
+            return new DefaultPooledObject<String>(obj);
+        }
+
+        public void release() {
+            semaphore.release();
+        }
+
+        public boolean hasQueuedThreads() {
+            return semaphore.hasQueuedThreads();
         }
     }
 }

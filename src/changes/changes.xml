@@ -51,6 +51,11 @@ The <action> type attribute can be add,update,fix,remove.
       Ensure BaseGenericObjectPool.IdentityWrapper#equals() follows the expected
       contract for equals(). 
     </action>
+    <action dev="markt" issue="POOL-303" type="fix">
+      Ensure that threads do not block indefinitely if more than maxTotal
+      threads try to borrow an object at the same time and the factory fails to
+      create any objects. 
+    </action>
   </release>
   <release version="2.4.2" date="2015-08-01" description=
  "This is a patch release, including bug fixes only.">

@@ -856,6 +856,9 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         if (localMaxTotal > -1 && newCreateCount > localMaxTotal ||
                 newCreateCount > Integer.MAX_VALUE) {
             createCount.decrementAndGet();
+            // POOL-303. There may be threads waiting on an object return that
+            // isn't going to happen. Unblock them.
+            idleObjects.interuptTakeWaiters();
             return null;
         }
 
@@ -864,6 +867,9 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             p = factory.makeObject();
         } catch (final Exception e) {
             createCount.decrementAndGet();
+            // POOL-303. There may be threads waiting on an object return that
+            // isn't going to happen. Unblock them.
+            idleObjects.interuptTakeWaiters();
             throw e;
         }
 
