@@ -47,6 +47,10 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" issue="POOL-309" type="fix" due-to="jolestar, Roopam Patekar">
       Fix misspellings from "destory" to "destroy".
     </action>
+    <action dev="markt" issue="POOL-306" type="fix" due-to="Adrian Crum">
+      Ensure BaseGenericObjectPool.IdentityWrapper#equals() follows the expected
+      contract for equals(). 
+    </action>
   </release>
   <release version="2.4.2" date="2015-08-01" description=
  "This is a patch release, including bug fixes only.">
