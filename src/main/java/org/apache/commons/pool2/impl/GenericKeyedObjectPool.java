@@ -1030,7 +1030,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                 if (newCreateCount > maxTotalPerKeySave) {
                     // The key is currently at capacity or in the process of
                     // making enough new objects to take it to capacity.
-                    numTotal.decrementAndGet();
                     objectDeque.getCreateCount().decrementAndGet();
                     if (objectDeque.makeObjectCount == 0) {
                         // There are no makeObject() calls in progress for this
@@ -1054,6 +1053,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         }
 
         if (!create.booleanValue()) {
+            numTotal.decrementAndGet();
             return null;
         }
 
