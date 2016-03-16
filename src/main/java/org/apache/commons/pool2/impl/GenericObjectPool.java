@@ -842,24 +842,59 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      */
     private PooledObject<T> create() throws Exception {
         int localMaxTotal = getMaxTotal();
+        // This simplifies the code later in this method
         if (localMaxTotal < 0) {
             localMaxTotal = Integer.MAX_VALUE;
         }
-        final long newCreateCount = createCount.incrementAndGet();
-        if (newCreateCount > localMaxTotal) {
-            createCount.decrementAndGet();
+
+        // Flag that indicates if create should:
+        // - TRUE:  call the factory to create an object
+        // - FALSE: return null
+        // - null:  loop and re-test the condition that determines whether to
+        //          call the factory
+        Boolean create = null;
+        while (create == null) {
+            synchronized (makeObjectCountLock) {
+                final long newCreateCount = createCount.incrementAndGet();
+                if (newCreateCount > localMaxTotal) {
+                    // The pool is currently at capacity or in the process of
+                    // making enough new objects to take it to capacity.
+                    createCount.decrementAndGet();
+                    if (makeObjectCount == 0) {
+                        // There are no makeObject() calls in progress so the
+                        // pool is at capacity. Do not attempt to create a new
+                        // object. Return and wait for an object to be returned
+                        create = Boolean.FALSE;
+                    } else {
+                        // There are makeObject() calls in progress that might
+                        // bring the pool to capacity. Those calls might also
+                        // fail so wait until they complete and then re-test if
+                        // the pool is at capacity or not.
+                        makeObjectCountLock.wait();
+                    }
+                } else {
+                    // The pool is not at capacity. Create a new object.
+                    makeObjectCount++;
+                    create = Boolean.TRUE;
+                }
+            }
+        }
+
+        if (!create.booleanValue()) {
             return null;
         }
 
         final PooledObject<T> p;
         try {
             p = factory.makeObject();
-        } catch (final Exception e) {
+        } catch (Exception e) {
             createCount.decrementAndGet();
-            // POOL-303. There may be threads waiting on an object return that
-            // isn't going to happen. Unblock them.
-            idleObjects.interuptTakeWaiters();
             throw e;
+        } finally {
+            synchronized (makeObjectCountLock) {
+                makeObjectCount--;
+                makeObjectCountLock.notifyAll();
+            }
         }
 
         final AbandonedConfig ac = this.abandonedConfig;
@@ -1129,6 +1164,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * {@link #_maxActive} objects created at any one time.
      */
     private final AtomicLong createCount = new AtomicLong(0);
+    private long makeObjectCount = 0;
+    private final Object makeObjectCountLock = new Object();
     private final LinkedBlockingDeque<PooledObject<T>> idleObjects;
 
     // JMX specific attributes

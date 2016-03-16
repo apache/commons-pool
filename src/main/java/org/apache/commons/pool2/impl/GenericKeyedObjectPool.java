@@ -1017,15 +1017,45 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
             }
         }
 
-        final long newCreateCount = objectDeque.getCreateCount().incrementAndGet();
-
-        // Check against the per key limit
-        if (newCreateCount > maxTotalPerKeySave) {
-            numTotal.decrementAndGet();
-            objectDeque.getCreateCount().decrementAndGet();
-            return null;
+        // Flag that indicates if create should:
+        // - TRUE:  call the factory to create an object
+        // - FALSE: return null
+        // - null:  loop and re-test the condition that determines whether to
+        //          call the factory
+        Boolean create = null;
+        while (create == null) {
+            synchronized (objectDeque.makeObjectCountLock) {
+                final long newCreateCount = objectDeque.getCreateCount().incrementAndGet();
+                // Check against the per key limit
+                if (newCreateCount > maxTotalPerKeySave) {
+                    // The key is currently at capacity or in the process of
+                    // making enough new objects to take it to capacity.
+                    numTotal.decrementAndGet();
+                    objectDeque.getCreateCount().decrementAndGet();
+                    if (objectDeque.makeObjectCount == 0) {
+                        // There are no makeObject() calls in progress for this
+                        // key so the key is at capacity. Do not attempt to
+                        // create a new object. Return and wait for an object to
+                        // be returned.
+                        create = Boolean.FALSE;
+                    } else {
+                        // There are makeObject() calls in progress that might
+                        // bring the pool to capacity. Those calls might also
+                        // fail so wait until they complete and then re-test if
+                        // the pool is at capacity or not.
+                        objectDeque.makeObjectCountLock.wait();
+                    }
+                } else {
+                    // The pool is not at capacity. Create a new object.
+                    objectDeque.makeObjectCount++;
+                    create = Boolean.TRUE;
+                }
+            }
         }
 
+        if (!create.booleanValue()) {
+            return null;
+        }
 
         PooledObject<T> p = null;
         try {
@@ -1033,10 +1063,12 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         } catch (final Exception e) {
             numTotal.decrementAndGet();
             objectDeque.getCreateCount().decrementAndGet();
-            // POOL-303. There may be threads waiting on an object return that
-            // isn't going to happen. Unblock them.
-            objectDeque.idleObjects.interuptTakeWaiters();
             throw e;
+        } finally {
+            synchronized (objectDeque.makeObjectCountLock) {
+                objectDeque.makeObjectCount--;
+                objectDeque.makeObjectCountLock.notifyAll();
+            }
         }
 
         createdCount.incrementAndGet();
@@ -1430,6 +1462,9 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
          * Invariant: createCount <= maxTotalPerKey
          */
         private final AtomicInteger createCount = new AtomicInteger(0);
+
+        private long makeObjectCount = 0;
+        private final Object makeObjectCountLock = new Object();
 
         /*
          * The map is keyed on pooled instances, wrapped to ensure that

@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.lang.management.ManagementFactory;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -2590,6 +2591,9 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
         Assert.assertFalse(thread1.isAlive());
         Assert.assertFalse(thread2.isAlive());
+
+        Assert.assertTrue(thread1._thrown instanceof UnsupportedCharsetException);
+        Assert.assertTrue(thread2._thrown instanceof UnsupportedCharsetException);
     }
 
     private static class CreateFailFactory extends BasePooledObjectFactory<String> {
@@ -2599,7 +2603,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         @Override
         public String create() throws Exception {
             semaphore.acquire();
-            throw new Exception();
+            throw new UnsupportedCharsetException("wibble");
         }
 
         @Override
