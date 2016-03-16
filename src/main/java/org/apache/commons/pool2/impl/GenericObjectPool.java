@@ -841,10 +841,12 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * @throws Exception if the object factory's {@code makeObject} fails
      */
     private PooledObject<T> create() throws Exception {
-        final int localMaxTotal = getMaxTotal();
+        int localMaxTotal = getMaxTotal();
+        if (localMaxTotal < 0) {
+            localMaxTotal = Integer.MAX_VALUE;
+        }
         final long newCreateCount = createCount.incrementAndGet();
-        if (localMaxTotal > -1 && newCreateCount > localMaxTotal ||
-                newCreateCount > Integer.MAX_VALUE) {
+        if (newCreateCount > localMaxTotal) {
             createCount.decrementAndGet();
             // POOL-303. There may be threads waiting on an object return that
             // isn't going to happen. Unblock them.

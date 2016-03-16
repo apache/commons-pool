@@ -993,7 +993,10 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      * @throws Exception If the objection creation fails
      */
     private PooledObject<T> create(final K key) throws Exception {
-        final int maxTotalPerKeySave = getMaxTotalPerKey(); // Per key
+        int maxTotalPerKeySave = getMaxTotalPerKey(); // Per key
+        if (maxTotalPerKeySave < 0) {
+            maxTotalPerKeySave = Integer.MAX_VALUE;
+        }
         final int maxTotal = getMaxTotal();   // All keys
 
         final ObjectDeque<T> objectDeque = poolMap.get(key);
@@ -1020,8 +1023,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         final long newCreateCount = objectDeque.getCreateCount().incrementAndGet();
 
         // Check against the per key limit
-        if (maxTotalPerKeySave > -1 && newCreateCount > maxTotalPerKeySave ||
-                newCreateCount > Integer.MAX_VALUE) {
+        if (newCreateCount > maxTotalPerKeySave) {
             numTotal.decrementAndGet();
             objectDeque.getCreateCount().decrementAndGet();
             // POOL-303. There may be threads waiting on an object return that
