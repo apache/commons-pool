@@ -1009,9 +1009,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
             if (maxTotal > -1 && newNumTotal > maxTotal) {
                 numTotal.decrementAndGet();
                 if (getNumIdle() == 0) {
-                    // POOL-303. There may be threads waiting on an object
-                    // return that isn't going to happen. Unblock them.
-                    objectDeque.idleObjects.interuptTakeWaiters();
                     return null;
                 }
                 clearOldest();
@@ -1026,9 +1023,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         if (newCreateCount > maxTotalPerKeySave) {
             numTotal.decrementAndGet();
             objectDeque.getCreateCount().decrementAndGet();
-            // POOL-303. There may be threads waiting on an object return that
-            // isn't going to happen. Unblock them.
-            objectDeque.idleObjects.interuptTakeWaiters();
             return null;
         }
 

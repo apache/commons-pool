@@ -848,9 +848,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         final long newCreateCount = createCount.incrementAndGet();
         if (newCreateCount > localMaxTotal) {
             createCount.decrementAndGet();
-            // POOL-303. There may be threads waiting on an object return that
-            // isn't going to happen. Unblock them.
-            idleObjects.interuptTakeWaiters();
             return null;
         }
 
