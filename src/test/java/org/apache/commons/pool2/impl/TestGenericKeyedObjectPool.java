@@ -416,8 +416,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             assertFalse(pool.getBlockWhenExhausted());
         }
     }
-    
-    /** 
+
+    /**
      * JIRA: POOL-270 - make sure constructor correctly sets run
      * frequency of evictor timer.
      */
@@ -437,7 +437,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         assertEquals(0, p.getNumIdle("one"));
         p.close();
     }
-    
+
 
     @Test(timeout=60000)
     public void testEviction() throws Exception {
@@ -2141,13 +2141,13 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         factory.exceptionOnCreate = false;
         pool.borrowObject("One");
     }
-    
+
     /**
      * JIRA: POOL-287
-     * 
+     *
      * Verify that when an attempt is made to borrow an instance from the pool
      * while the evictor is visiting it, there is no capacity leak.
-     * 
+     *
      * Test creates the scenario described in POOL-287.
      */
     @Test
@@ -2161,15 +2161,15 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         pool.setMaxTotalPerKey(2);
         pool.setNumTestsPerEvictionRun(1);
         pool.setTimeBetweenEvictionRunsMillis(500);
-        
+
         // Load pool with two objects
         pool.addObject("one");  // call this o1
         pool.addObject("one");  // call this o2
         // Default is LIFO, so "one" pool is now [o2, o1] in offer order.
         // Evictor will visit in oldest-to-youngest order, so o1 then o2
-        
+
         Thread.sleep(800); // Wait for first eviction run to complete
-        
+
         // At this point, one eviction run should have completed, visiting o1
         // and eviction cursor should be pointed at o2, which is the next offered instance
         Thread.sleep(250);         // Wait for evictor to start
@@ -2179,11 +2179,11 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         pool.returnObject("one", o2);
         pool.close();
     }
-    
+
     /**
      * Verifies that when a factory's makeObject produces instances that are not
-     * discernible by equals, the pool can handle them.  
-     * 
+     * discernible by equals, the pool can handle them.
+     *
      * JIRA: POOL-283
      */
     @Test
@@ -2198,11 +2198,11 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         pool.returnObject("a", s2);
         pool.close();
     }
-    
+
     /**
      * Verifies that when a borrowed object is mutated in a way that does not
      * preserve equality and hashcode, the pool can recognized it on return.
-     * 
+     *
      * JIRA: POOL-284
      */
     @Test
@@ -2219,11 +2219,11 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         pool.returnObject("a", s2);
         pool.close();
     }
-    
+
     /**
      * Verifies that returning an object twice (without borrow in between) causes ISE
      * but does not re-validate or re-passivate the instance.
-     * 
+     *
      * JIRA: POOL-285
      */
     @Test
@@ -2246,6 +2246,48 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         }
     }
 
+    /**
+     * Verifies that if a borrow of a new key is blocked because maxTotal has
+     * been reached, that that borrow continues once another object is returned.
+     *
+     * JIRA: POOL-310
+     */
+    @Test
+    public void testMaxTotalWithThreads() throws Exception {
+
+        pool.setMaxTotalPerKey(2);
+        pool.setMaxTotal(1);
+
+        final int holdTime = 2000;
+
+        TestThread<String> testA = new TestThread<String>(pool, 1, 0, holdTime, false, null, "a");
+        TestThread<String> testB = new TestThread<String>(pool, 1, 0, holdTime, false, null, "b");
+
+        Thread threadA = new Thread(testA);
+        Thread threadB = new Thread(testB);
+
+        threadA.start();
+        threadB.start();
+
+        Thread.sleep(holdTime * 2);
+
+        // Both threads should be complete now.
+        boolean threadRunning = true;
+        int count = 0;
+        while (threadRunning && count < 15) {
+            threadRunning = threadA.isAlive();
+            threadRunning = threadB.isAlive();
+            Thread.sleep(200);
+            count++;
+        }
+        Assert.assertFalse(threadA.isAlive());
+        Assert.assertFalse(threadB.isAlive());
+
+        Assert.assertFalse(testA._failed);
+        Assert.assertFalse(testB._failed);
+    }
+
+
     private static class DummyFactory
             extends BaseKeyedPooledObjectFactory<Object,Object> {
         @Override
@@ -2257,13 +2299,13 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             return new DefaultPooledObject<Object>(value);
         }
     }
-    
-    /** 
+
+    /**
      * Factory that creates HashSets.  Note that this means
      *  0) All instances are initially equal (not discernible by equals)
      *  1) Instances are mutable and mutation can cause change in identity / hashcode.
      */
-    private static final class HashSetFactory 
+    private static final class HashSetFactory
             extends BaseKeyedPooledObjectFactory<String, HashSet<String>> {
         @Override
         public HashSet<String> create(final String key) throws Exception {
