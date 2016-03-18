@@ -478,8 +478,29 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
         final long activeTime = p.getActiveTimeMillis();
 
-        if (getTestOnReturn()) {
-            if (!factory.validateObject(key, p)) {
+        try {
+            if (getTestOnReturn()) {
+                if (!factory.validateObject(key, p)) {
+                    try {
+                        destroy(key, p, true);
+                    } catch (final Exception e) {
+                        swallowException(e);
+                    }
+                    if (objectDeque.idleObjects.hasTakeWaiters()) {
+                        try {
+                            addObject(key);
+                        } catch (final Exception e) {
+                            swallowException(e);
+                        }
+                    }
+                    return;
+                }
+            }
+
+            try {
+                factory.passivateObject(key, p);
+            } catch (final Exception e1) {
+                swallowException(e1);
                 try {
                     destroy(key, p, true);
                 } catch (final Exception e) {
@@ -492,65 +513,43 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                         swallowException(e);
                     }
                 }
-                updateStatsReturn(activeTime);
                 return;
             }
-        }
 
-        try {
-            factory.passivateObject(key, p);
-        } catch (final Exception e1) {
-            swallowException(e1);
-            try {
-                destroy(key, p, true);
-            } catch (final Exception e) {
-                swallowException(e);
+            if (!p.deallocate()) {
+                throw new IllegalStateException(
+                        "Object has already been returned to this pool");
             }
-            if (objectDeque.idleObjects.hasTakeWaiters()) {
+
+            final int maxIdle = getMaxIdlePerKey();
+            final LinkedBlockingDeque<PooledObject<T>> idleObjects =
+                objectDeque.getIdleObjects();
+
+            if (isClosed() || maxIdle > -1 && maxIdle <= idleObjects.size()) {
                 try {
-                    addObject(key);
+                    destroy(key, p, true);
                 } catch (final Exception e) {
                     swallowException(e);
                 }
+            } else {
+                if (getLifo()) {
+                    idleObjects.addFirst(p);
+                } else {
+                    idleObjects.addLast(p);
+                }
+                if (isClosed()) {
+                    // Pool closed while object was being added to idle objects.
+                    // Make sure the returned object is destroyed rather than left
+                    // in the idle object pool (which would effectively be a leak)
+                    clear(key);
+                }
+            }
+        } finally {
+            if (hasBorrowWaiters()) {
+                reuseCapacity();
             }
             updateStatsReturn(activeTime);
-            return;
         }
-
-        if (!p.deallocate()) {
-            throw new IllegalStateException(
-                    "Object has already been returned to this pool");
-        }
-
-        final int maxIdle = getMaxIdlePerKey();
-        final LinkedBlockingDeque<PooledObject<T>> idleObjects =
-            objectDeque.getIdleObjects();
-
-        if (isClosed() || maxIdle > -1 && maxIdle <= idleObjects.size()) {
-            try {
-                destroy(key, p, true);
-            } catch (final Exception e) {
-                swallowException(e);
-            }
-        } else {
-            if (getLifo()) {
-                idleObjects.addFirst(p);
-            } else {
-                idleObjects.addLast(p);
-            }
-            if (isClosed()) {
-                // Pool closed while object was being added to idle objects.
-                // Make sure the returned object is destroyed rather than left
-                // in the idle object pool (which would effectively be a leak)
-                clear(key);
-            }
-        }
-
-        if (hasBorrowWaiters()) {
-            reuseCapacity();
-        }
-
-        updateStatsReturn(activeTime);
     }
 
 

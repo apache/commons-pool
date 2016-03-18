@@ -62,6 +62,11 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="markt" issue="POOL-307" type="update" due-to="Anthony Whitford">
       Replace inefficient use of keySet with entrySet in GKOP.
     </action>
+    <action dev="markt" issue="POOL-310" type="fix" due-to="Ivan Iliev">
+      Ensure that threads using GKOP do not block indefinitely if more than
+      maxTotal threads try to borrow objects with different keys at the same
+      time and the factory destroys objects on return. 
+    </action>
   </release>
   <release version="2.4.2" date="2015-08-01" description=
  "This is a patch release, including bug fixes only.">
