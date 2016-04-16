@@ -142,24 +142,24 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         GenericObjectPool<Object> dummyPool =
                 new GenericObjectPool<Object>(dummyFactory);
         assertEquals(GenericObjectPoolConfig.DEFAULT_MAX_IDLE, dummyPool.getMaxIdle());
-        assertEquals(GenericObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS, dummyPool.getMaxWaitMillis());
+        assertEquals(BaseObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS, dummyPool.getMaxWaitMillis());
         assertEquals(GenericObjectPoolConfig.DEFAULT_MIN_IDLE, dummyPool.getMinIdle());
         assertEquals(GenericObjectPoolConfig.DEFAULT_MAX_TOTAL, dummyPool.getMaxTotal());
-        assertEquals(GenericObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
+        assertEquals(BaseObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
                 dummyPool.getMinEvictableIdleTimeMillis());
-        assertEquals(GenericObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
+        assertEquals(BaseObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
                 dummyPool.getNumTestsPerEvictionRun());
-        assertEquals(Boolean.valueOf(GenericObjectPoolConfig.DEFAULT_TEST_ON_BORROW),
+        assertEquals(Boolean.valueOf(BaseObjectPoolConfig.DEFAULT_TEST_ON_BORROW),
                 Boolean.valueOf(dummyPool.getTestOnBorrow()));
-        assertEquals(Boolean.valueOf(GenericObjectPoolConfig.DEFAULT_TEST_ON_RETURN),
+        assertEquals(Boolean.valueOf(BaseObjectPoolConfig.DEFAULT_TEST_ON_RETURN),
                 Boolean.valueOf(dummyPool.getTestOnReturn()));
-        assertEquals(Boolean.valueOf(GenericObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE),
+        assertEquals(Boolean.valueOf(BaseObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE),
                 Boolean.valueOf(dummyPool.getTestWhileIdle()));
-        assertEquals(GenericObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
+        assertEquals(BaseObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
                 dummyPool.getTimeBetweenEvictionRunsMillis());
-        assertEquals(Boolean.valueOf(GenericObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED),
+        assertEquals(Boolean.valueOf(BaseObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED),
                 Boolean.valueOf(dummyPool.getBlockWhenExhausted()));
-        assertEquals(Boolean.valueOf(GenericObjectPoolConfig.DEFAULT_LIFO),
+        assertEquals(Boolean.valueOf(BaseObjectPoolConfig.DEFAULT_LIFO),
                 Boolean.valueOf(dummyPool.getLifo()));
         dummyPool.close();
 
