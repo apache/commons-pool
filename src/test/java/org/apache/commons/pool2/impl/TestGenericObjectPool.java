@@ -1705,6 +1705,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertEquals("maxWait",expected.getMaxWaitMillis(),actual.getMaxWaitMillis());
         assertEquals("minEvictableIdleTimeMillis",expected.getMinEvictableIdleTimeMillis(),actual.getMinEvictableIdleTimeMillis());
         assertEquals("numTestsPerEvictionRun",expected.getNumTestsPerEvictionRun(),actual.getNumTestsPerEvictionRun());
+        assertEquals("evictorShutdownTimeoutMillis",expected.getEvictorShutdownTimeoutMillis(),actual.getEvictorShutdownTimeoutMillis());
         assertEquals("timeBetweenEvictionRunsMillis",expected.getTimeBetweenEvictionRunsMillis(),actual.getTimeBetweenEvictionRunsMillis());
     }
 

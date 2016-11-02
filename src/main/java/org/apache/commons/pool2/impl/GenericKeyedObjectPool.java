@@ -255,6 +255,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         setTimeBetweenEvictionRunsMillis(
                 conf.getTimeBetweenEvictionRunsMillis());
         setEvictionPolicyClassName(conf.getEvictionPolicyClassName());
+        setEvictorShutdownTimeoutMillis(conf.getEvictorShutdownTimeoutMillis());
     }
 
     /**
