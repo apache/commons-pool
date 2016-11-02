@@ -49,6 +49,18 @@ class EvictionTimer {
         // Hide the default constructor
     }
 
+
+    /**
+     * @since 2.4.3
+     */
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("EvictionTimer []");
+        return builder.toString();
+    }
+
+
     /**
      * Add the specified eviction task to the timer. Tasks that are added with a
      * call to this method *must* call {@link #cancel(TimerTask)} to cancel the
@@ -155,15 +167,5 @@ class EvictionTimer {
         public Timer run() {
             return new Timer("commons-pool-EvictionTimer", true);
         }
-    }
-
-    /**
-     * @since 2.4.3
-     */
-    @Override
-    public String toString() {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("EvictionTimer []");
-        return builder.toString();
     }
 }
