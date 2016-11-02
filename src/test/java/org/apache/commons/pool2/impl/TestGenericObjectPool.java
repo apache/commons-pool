@@ -1080,6 +1080,14 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             // expected
         }
 
+        try {
+            pool.setEvictionPolicyClassName(java.lang.String.class.getName());
+            fail("setEvictionPolicyClassName must throw an error if a class that does not "
+                    + "implement EvictionPolicy is specified.");
+        } catch (final IllegalArgumentException e) {
+            // expected
+        }
+
         pool.setEvictionPolicyClassName(TestEvictionPolicy.class.getName());
         assertEquals(TestEvictionPolicy.class.getName(), pool.getEvictionPolicyClassName());
 
@@ -1704,49 +1712,49 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         public SimpleFactory() {
             this(true);
         }
-        
+
         public SimpleFactory(final boolean valid) {
             this(valid,valid);
         }
-        
+
         public SimpleFactory(final boolean evalid, final boolean ovalid) {
             evenValid = evalid;
             oddValid = ovalid;
         }
-        
+
         public synchronized void setValid(final boolean valid) {
             setEvenValid(valid);
             setOddValid(valid);
         }
-        
+
         public synchronized void setEvenValid(final boolean valid) {
             evenValid = valid;
         }
-        
+
         public synchronized void setOddValid(final boolean valid) {
             oddValid = valid;
         }
-        
+
         public synchronized void setThrowExceptionOnPassivate(final boolean bool) {
             exceptionOnPassivate = bool;
         }
-        
+
         public synchronized void setMaxTotal(final int maxTotal) {
             this.maxTotal = maxTotal;
         }
-        
+
         public synchronized void setDestroyLatency(final long destroyLatency) {
             this.destroyLatency = destroyLatency;
         }
-        
+
         public synchronized void setMakeLatency(final long makeLatency) {
             this.makeLatency = makeLatency;
         }
-        
+
         public synchronized void setValidateLatency(final long validateLatency) {
             this.validateLatency = validateLatency;
         }
-        
+
         @Override
         public PooledObject<String> makeObject() {
             final long waitLatency;
@@ -1767,7 +1775,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             }
             return new DefaultPooledObject<String>(String.valueOf(counter));
         }
-        
+
         @Override
         public void destroyObject(final PooledObject<String> obj) throws Exception {
             final long waitLatency;
@@ -1786,7 +1794,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 throw new Exception();
             }
         }
-        
+
         @Override
         public boolean validateObject(final PooledObject<String> obj) {
             final boolean validate;
@@ -1809,7 +1817,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             }
             return true;
         }
-        
+
         @Override
         public void activateObject(final PooledObject<String> obj) throws Exception {
             final boolean hurl;
@@ -1828,7 +1836,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 }
             }
         }
-        
+
         @Override
         public void passivateObject(final PooledObject<String> obj) throws Exception {
             final boolean hurl;

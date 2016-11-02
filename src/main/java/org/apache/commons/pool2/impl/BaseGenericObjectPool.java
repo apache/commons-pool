@@ -613,6 +613,9 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
                 final
                 EvictionPolicy<T> evicPolicy = (EvictionPolicy<T>) policy;
                 this.evictionPolicy = evicPolicy;
+            } else {
+                throw new IllegalArgumentException("[" + evictionPolicyClassName +
+                        "] does not implement EvictionPolicy");
             }
         } catch (final ClassNotFoundException e) {
             throw new IllegalArgumentException(
