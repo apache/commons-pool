@@ -110,8 +110,7 @@ class EvictionTimer {
 
         @Override
         public Thread newThread(final Runnable r) {
-            final Thread t = new Thread(null, r, "commons-pool-evictor-thrreads");
-            t.setName("commons-pool-evictor");
+            final Thread t = new Thread(null, r, "commons-pool-evictor-thread");
 
             AccessController.doPrivileged(new PrivilegedAction<Void>() {
                 @Override
