@@ -88,7 +88,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     private volatile long softMinEvictableIdleTimeMillis =
             BaseObjectPoolConfig.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
     private volatile EvictionPolicy<T> evictionPolicy;
-    private long evictorShutdownTimeoutMillis =
+    private volatile long evictorShutdownTimeoutMillis =
             BaseObjectPoolConfig.DEFAULT_EVICTOR_SHUTDOWN_TIMEOUT_MILLIS;
 
 
@@ -643,7 +643,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * @return  The timeout in milliseconds that will be used while waiting for
      *          the Evictor to shut down.
      */
-    public long getEvictorShutdownTimeoutMillis() {
+    public final long getEvictorShutdownTimeoutMillis() {
         return evictorShutdownTimeoutMillis;
     }
 
@@ -656,7 +656,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      *                                      will be used while waiting for the
      *                                      Evictor to shut down.
      */
-    public void setEvictorShutdownTimeoutMillis(
+    public final void setEvictorShutdownTimeoutMillis(
             final long evictorShutdownTimeoutMillis) {
         this.evictorShutdownTimeoutMillis = evictorShutdownTimeoutMillis;
     }
@@ -720,7 +720,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     final void startEvictor(final long delay) {
         synchronized (evictionLock) {
             if (null != evictor) {
-                EvictionTimer.cancel(evictor, 10, TimeUnit.SECONDS);
+                EvictionTimer.cancel(evictor, evictorShutdownTimeoutMillis, TimeUnit.SECONDS);
                 evictor = null;
                 evictionIterator = null;
             }

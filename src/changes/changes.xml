@@ -71,7 +71,7 @@ The <action> type attribute can be add,update,fix,remove.
       Ensure that any class name used for evictionPolicyClassName represents a
       class that implements EvictionPolicy.
     </action>
-    <action dev="markt" issue="POOL-315" type="fix">
+    <action dev="markt" issue="POOL-315" type="fix" due-to="KeiichiFujino">
       Add a configurable delay (default 10 seconds) to wait when shutting down
       an Evictor to allow the associated thread time to complete and current
       evictions and to terminate.
