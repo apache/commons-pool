@@ -720,7 +720,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     final void startEvictor(final long delay) {
         synchronized (evictionLock) {
             if (null != evictor) {
-                EvictionTimer.cancel(evictor, evictorShutdownTimeoutMillis, TimeUnit.SECONDS);
+                EvictionTimer.cancel(evictor, evictorShutdownTimeoutMillis, TimeUnit.MILLISECONDS);
                 evictor = null;
                 evictionIterator = null;
             }
