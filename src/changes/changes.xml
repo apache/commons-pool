@@ -44,6 +44,9 @@ The <action> type attribute can be add,update,fix,remove.
   </properties>
   <body>
   <release version="2.4.3" date="TBD" description="TBD">
+    <action dev="ggregory" issue="POOL-317" type="fix" due-to="KeiichiFujino">
+      Correction of default value of softMinEvictableIdleTimeMillis in BaseObjectPoolConfig.
+    </action>
     <action dev="ggregory" issue="POOL-309" type="fix" due-to="jolestar, Roopam Patekar">
       Fix misspellings from "destory" to "destroy".
     </action>

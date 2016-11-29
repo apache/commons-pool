@@ -178,7 +178,7 @@ public abstract class BaseObjectPoolConfig extends BaseObject implements Cloneab
             DEFAULT_EVICTOR_SHUTDOWN_TIMEOUT_MILLIS;
 
     private long softMinEvictableIdleTimeMillis =
-            DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+            DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 
     private int numTestsPerEvictionRun =
             DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
