@@ -79,6 +79,10 @@ The <action> type attribute can be add,update,fix,remove.
       an Evictor to allow the associated thread time to complete and current
       evictions and to terminate.
     </action>
+    <action dev="markt" type="fix">
+      Ensure that a call to GKOP preparePool() takes account of other threads
+      that might create objects concurrently, particularly the Evictor.
+    </action>
   </release>
   <release version="2.4.2" date="2015-08-01" description=
  "This is a patch release, including bug fixes only.">

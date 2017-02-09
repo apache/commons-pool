@@ -76,7 +76,7 @@ import org.apache.commons.pool2.SwallowedExceptionListener;
  * @since 2.0
  */
 public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
-        implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMXBean<K> {
+implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMXBean<K> {
 
     /**
      * Create a new <code>GenericKeyedObjectPool</code> using defaults from
@@ -524,7 +524,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
             final int maxIdle = getMaxIdlePerKey();
             final LinkedBlockingDeque<PooledObject<T>> idleObjects =
-                objectDeque.getIdleObjects();
+                    objectDeque.getIdleObjects();
 
             if (isClosed() || maxIdle > -1 && maxIdle <= idleObjects.size()) {
                 try {
@@ -758,7 +758,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         // for zero
         int itemsToRemove = ((int) (map.size() * 0.15)) + 1;
         final Iterator<Map.Entry<PooledObject<T>, K>> iter =
-            map.entrySet().iterator();
+                map.entrySet().iterator();
 
         while (iter.hasNext() && itemsToRemove > 0) {
             final Map.Entry<PooledObject<T>, K> entry = iter.next();
@@ -843,7 +843,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
             final ObjectDeque<T> deque = entry.getValue();
             if (deque != null) {
                 final LinkedBlockingDeque<PooledObject<T>> pool =
-                    deque.getIdleObjects();
+                        deque.getIdleObjects();
                 if(pool.hasTakeWaiters()) {
                     return true;
                 }
@@ -1210,7 +1210,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
      */
     private void ensureMinIdle(final K key) throws Exception {
         // Calculate current pool objects
-        final ObjectDeque<T> objectDeque = poolMap.get(key);
+        ObjectDeque<T> objectDeque = poolMap.get(key);
 
         // objectDeque == null is OK here. It is handled correctly by both
         // methods called below.
@@ -1224,6 +1224,12 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
         for (int i = 0; i < deficit && calculateDeficit(objectDeque) > 0; i++) {
             addObject(key);
+            // If objectDeque was null, it won't be any more. Obtain a reference
+            // to it so the deficit can be correctly calculated. It needs to
+            // take account of objects created in other threads.
+            if (objectDeque == null) {
+                objectDeque = poolMap.get(key);
+            }
         }
     }
 
@@ -1548,9 +1554,9 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
     private volatile int maxIdlePerKey =
             GenericKeyedObjectPoolConfig.DEFAULT_MAX_IDLE_PER_KEY;
     private volatile int minIdlePerKey =
-        GenericKeyedObjectPoolConfig.DEFAULT_MIN_IDLE_PER_KEY;
+            GenericKeyedObjectPoolConfig.DEFAULT_MIN_IDLE_PER_KEY;
     private volatile int maxTotalPerKey =
-        GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL_PER_KEY;
+            GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL_PER_KEY;
     private final KeyedPooledObjectFactory<K,T> factory;
     private final boolean fairness;
 
@@ -1584,7 +1590,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
 
     // JMX specific attributes
     private static final String ONAME_BASE =
-        "org.apache.commons.pool2:type=GenericKeyedObjectPool,name=";
+            "org.apache.commons.pool2:type=GenericKeyedObjectPool,name=";
 
     @Override
     protected void toStringAppendFields(final StringBuilder builder) {
