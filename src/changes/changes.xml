@@ -83,6 +83,9 @@ The <action> type attribute can be add,update,fix,remove.
       Ensure that a call to GKOP preparePool() takes account of other threads
       that might create objects concurrently, particularly the Evictor.
     </action>
+    <action dev="mattsicker" issue="POOL-320" type="add">
+      Use more efficient stack walking mechanisms for usage tracking when possible.
+    </action>
   </release>
   <release version="2.4.2" date="2015-08-01" description=
  "This is a patch release, including bug fixes only.">

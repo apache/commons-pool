@@ -16,13 +16,12 @@
  */
 package org.apache.commons.pool2.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Set;
-
-import org.apache.commons.pool2.impl.DefaultPooledObject.AbandonedObjectCreatedException;
 import org.apache.commons.pool2.impl.TestGenericObjectPool.SimpleFactory;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.text.SimpleDateFormat;
+import java.util.Set;
 
 public class TestDefaultPooledObjectInfo {
 
@@ -120,17 +119,13 @@ public class TestDefaultPooledObjectInfo {
                 new GenericObjectPoolConfig(),
                 abandonedConfig);
 
-        try {
-            pool.borrowObject();
-            //pool.returnObject(s1); // Object not returned, causes abandoned object created exception
-        } catch (final AbandonedObjectCreatedException e) {
-            // do nothing. We will print the stack trace later
-        }
+        pool.borrowObject();
+        //pool.returnObject(s1); // Object not returned, causes abandoned object created exception
 
         final Set<DefaultPooledObjectInfo> strings = pool.listAllObjects();
         final DefaultPooledObjectInfo s1Info = strings.iterator().next();
         final String lastBorrowTrace = s1Info.getLastBorrowTrace();
 
-        Assert.assertTrue(lastBorrowTrace.startsWith(AbandonedObjectCreatedException.class.getName()));
+        Assert.assertTrue(lastBorrowTrace.startsWith("Pooled object created"));
     }
 }
