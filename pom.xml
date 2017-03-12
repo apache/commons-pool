@@ -40,9 +40,9 @@
   </issueManagement>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/pool/trunk</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/pool/trunk</developerConnection>
-    <url>http://svn.apache.org/viewvc/commons/proper/pool/trunk</url>
+    <connection>scm:git:https://git-wip-us.apache.org/repos/asf/commons-pool.git</connection>
+    <developerConnection>https://git-wip-us.apache.org/repos/asf/commons-pool.git</developerConnection>
+    <url>https://git-wip-us.apache.org/repos/asf?p=commons-pool.git</url>
   </scm>
 
   <developers>
