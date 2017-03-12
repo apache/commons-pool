@@ -104,6 +104,11 @@
       <id>ggregory</id>
       <organization>The Apache Software Foundation</organization>
     </developer>
+    <developer>
+      <name>Matt Sicker</name>
+      <id>mattsicker</id>
+      <organization>The Apache Software Foundation</organization>
+    </developer>
   </developers>
   <contributors>
     <contributor>
