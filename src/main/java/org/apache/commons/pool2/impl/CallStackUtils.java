@@ -32,7 +32,7 @@ public final class CallStackUtils {
     }
 
     private static boolean canCreateSecurityManager() {
-        SecurityManager manager = System.getSecurityManager();
+        final SecurityManager manager = System.getSecurityManager();
         if (manager == null) {
             return true;
         }

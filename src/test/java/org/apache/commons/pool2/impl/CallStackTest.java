@@ -32,7 +32,7 @@ public class CallStackTest {
     private final CallStack stack;
     private final StringWriter writer = new StringWriter();
 
-    public CallStackTest(CallStack stack) {
+    public CallStackTest(final CallStack stack) {
         this.stack = stack;
     }
 
@@ -49,7 +49,7 @@ public class CallStackTest {
         stack.fillInStackTrace();
         stack.clear();
         stack.printStackTrace(new PrintWriter(writer));
-        String stackTrace = writer.toString();
+        final String stackTrace = writer.toString();
         assertEquals("", stackTrace);
     }
 
@@ -57,7 +57,7 @@ public class CallStackTest {
     public void testPrintFilledStackTrace() throws Exception {
         stack.fillInStackTrace();
         stack.printStackTrace(new PrintWriter(writer));
-        String stackTrace = writer.toString();
+        final String stackTrace = writer.toString();
         assertTrue(stackTrace.contains(getClass().getName()));
     }
 }

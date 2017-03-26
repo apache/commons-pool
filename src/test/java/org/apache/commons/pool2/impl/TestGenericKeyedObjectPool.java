@@ -2260,11 +2260,11 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
         final int holdTime = 2000;
 
-        TestThread<String> testA = new TestThread<String>(pool, 1, 0, holdTime, false, null, "a");
-        TestThread<String> testB = new TestThread<String>(pool, 1, 0, holdTime, false, null, "b");
+        final TestThread<String> testA = new TestThread<String>(pool, 1, 0, holdTime, false, null, "a");
+        final TestThread<String> testB = new TestThread<String>(pool, 1, 0, holdTime, false, null, "b");
 
-        Thread threadA = new Thread(testA);
-        Thread threadB = new Thread(testB);
+        final Thread threadA = new Thread(testA);
+        final Thread threadB = new Thread(testB);
 
         threadA.start();
         threadB.start();

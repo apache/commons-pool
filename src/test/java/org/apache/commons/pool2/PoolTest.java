@@ -25,11 +25,11 @@ public class PoolTest {
         }
 
         @Override
-        public void destroyObject(PooledObject<Foo> pooledObject) throws Exception {
+        public void destroyObject(final PooledObject<Foo> pooledObject) throws Exception {
         }
 
         @Override
-        public boolean validateObject(PooledObject<Foo> pooledObject) {
+        public boolean validateObject(final PooledObject<Foo> pooledObject) {
             try {
                 Thread.sleep(VALIDATION_WAIT_IN_MILLIS);
             } catch (final InterruptedException e) {
@@ -39,11 +39,11 @@ public class PoolTest {
         }
 
         @Override
-        public void activateObject(PooledObject<Foo> pooledObject) throws Exception {
+        public void activateObject(final PooledObject<Foo> pooledObject) throws Exception {
         }
 
         @Override
-        public void passivateObject(PooledObject<Foo> pooledObject) throws Exception {
+        public void passivateObject(final PooledObject<Foo> pooledObject) throws Exception {
         }
     }
 

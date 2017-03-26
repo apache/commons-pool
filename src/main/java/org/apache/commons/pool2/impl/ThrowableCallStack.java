@@ -42,8 +42,8 @@ public class ThrowableCallStack implements CallStack {
     }
 
     @Override
-    public synchronized boolean printStackTrace(PrintWriter writer) {
-        Snapshot snapshot = this.snapshot;
+    public synchronized boolean printStackTrace(final PrintWriter writer) {
+        final Snapshot snapshot = this.snapshot;
         if (snapshot == null) {
             return false;
         }

@@ -888,7 +888,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         final PooledObject<T> p;
         try {
             p = factory.makeObject();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             createCount.decrementAndGet();
             throw e;
         } finally {

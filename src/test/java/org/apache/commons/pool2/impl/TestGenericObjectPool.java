@@ -2631,7 +2631,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
 
         @Override
-        public PooledObject<String> wrap(String obj) {
+        public PooledObject<String> wrap(final String obj) {
             return new DefaultPooledObject<String>(obj);
         }
 

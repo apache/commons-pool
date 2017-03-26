@@ -55,7 +55,7 @@ public class SecurityManagerCallStack implements CallStack {
     }
 
     @Override
-    public boolean printStackTrace(PrintWriter writer) {
+    public boolean printStackTrace(final PrintWriter writer) {
         final Snapshot snapshot = this.snapshot;
         if (snapshot == null) {
             return false;
@@ -100,7 +100,7 @@ public class SecurityManagerCallStack implements CallStack {
         private final long timestamp = System.currentTimeMillis();
         private final List<WeakReference<Class<?>>> stack;
 
-        private Snapshot(List<WeakReference<Class<?>>> stack) {
+        private Snapshot(final List<WeakReference<Class<?>>> stack) {
             this.stack = stack;
         }
     }

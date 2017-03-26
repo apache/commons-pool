@@ -90,14 +90,14 @@ class EvictionTimer {
      *                  terminate?
      * @param unit      The units for the specified timeout
      */
-    static synchronized void cancel(final TimerTask task, long timeout, TimeUnit unit) {
+    static synchronized void cancel(final TimerTask task, final long timeout, final TimeUnit unit) {
         task.cancel();
         usageCount--;
         if (usageCount == 0) {
             executor.shutdown();
             try {
                 executor.awaitTermination(timeout, unit);
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 // Swallow
                 // Significant API changes would be required to propagate this
             }

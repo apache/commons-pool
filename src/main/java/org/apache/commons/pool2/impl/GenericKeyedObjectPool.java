@@ -738,7 +738,7 @@ implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMXBean<K> {
         // build sorted map of idle objects
         final Map<PooledObject<T>, K> map = new TreeMap<PooledObject<T>, K>();
 
-        for (Map.Entry<K, ObjectDeque<T>> entry : poolMap.entrySet()) {
+        for (final Map.Entry<K, ObjectDeque<T>> entry : poolMap.entrySet()) {
             final K k = entry.getKey();
             final ObjectDeque<T> deque = entry.getValue();
             // Protect against possible NPE if key has been removed in another
@@ -801,7 +801,7 @@ implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMXBean<K> {
         int maxQueueLength = 0;
         LinkedBlockingDeque<PooledObject<T>> mostLoaded = null;
         K loadedKey = null;
-        for (Map.Entry<K, ObjectDeque<T>> entry : poolMap.entrySet()) {
+        for (final Map.Entry<K, ObjectDeque<T>> entry : poolMap.entrySet()) {
             final K k = entry.getKey();
             final ObjectDeque<T> deque = entry.getValue();
             if (deque != null) {
@@ -839,7 +839,7 @@ implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMXBean<K> {
      *         {@code false}
      */
     private boolean hasBorrowWaiters() {
-        for (Map.Entry<K, ObjectDeque<T>> entry : poolMap.entrySet()) {
+        for (final Map.Entry<K, ObjectDeque<T>> entry : poolMap.entrySet()) {
             final ObjectDeque<T> deque = entry.getValue();
             if (deque != null) {
                 final LinkedBlockingDeque<PooledObject<T>> pool =
@@ -1407,7 +1407,7 @@ implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMXBean<K> {
     public Map<String,Integer> getNumWaitersByKey() {
         final Map<String,Integer> result = new HashMap<String,Integer>();
 
-        for (Map.Entry<K, ObjectDeque<T>> entry : poolMap.entrySet()) {
+        for (final Map.Entry<K, ObjectDeque<T>> entry : poolMap.entrySet()) {
             final K k = entry.getKey();
             final ObjectDeque<T> deque = entry.getValue();
             if (deque != null) {
@@ -1438,7 +1438,7 @@ implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMXBean<K> {
         final Map<String,List<DefaultPooledObjectInfo>> result =
                 new HashMap<String,List<DefaultPooledObjectInfo>>();
 
-        for (Map.Entry<K, ObjectDeque<T>> entry : poolMap.entrySet()) {
+        for (final Map.Entry<K, ObjectDeque<T>> entry : poolMap.entrySet()) {
             final K k = entry.getKey();
             final ObjectDeque<T> deque = entry.getValue();
             if (deque != null) {
