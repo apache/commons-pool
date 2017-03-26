@@ -86,6 +86,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="mattsicker" issue="POOL-320" type="add">
       Use more efficient stack walking mechanisms for usage tracking when possible.
     </action>
+    <action dev="ggregory" issue="POOL-322" type="update">
+      Update optional cglib library from 3.1 to 3.2.5.
+    </action>
   </release>
   <release version="2.4.2" date="2015-08-01" description=
  "This is a patch release, including bug fixes only.">
