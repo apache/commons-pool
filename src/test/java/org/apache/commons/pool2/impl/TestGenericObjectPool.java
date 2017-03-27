@@ -54,6 +54,7 @@ import org.apache.commons.pool2.WaiterFactory;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -2643,4 +2644,64 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             return semaphore.hasQueuedThreads();
         }
     }
+    
+	@Test
+	public void testGetFactoryType() {
+		GenericObjectPool<String> pool = new GenericObjectPool<String>(
+				new BasePooledObjectFactory<String>() {
+					@Override
+					public String create() {
+						// fake
+						return null;
+					}
+
+					@Override
+					public PooledObject<String> wrap(String obj) {
+						// fake
+						return null;
+					}
+				});
+		Assert.assertNotNull((pool.getFactoryType()));
+	}
+
+	@Test
+	@Ignore
+	public void testGetFactoryType_PoolUtilssynchronizedPooledFactory() {
+		GenericObjectPool<String> pool = new GenericObjectPool<String>(
+				PoolUtils.synchronizedPooledFactory(new BasePooledObjectFactory<String>() {
+					@Override
+					public String create() {
+						// fake
+						return null;
+					}
+
+					@Override
+					public PooledObject<String> wrap(String obj) {
+						// fake
+						return null;
+					}
+				}));
+		Assert.assertNotNull((pool.getFactoryType()));
+	}
+
+	@Test
+	@Ignore
+	public void testGetFactoryType_SynchronizedPooledObjectFactory() {
+		GenericObjectPool<String> pool = new GenericObjectPool<String>(
+				new TestSynchronizedPooledObjectFactory<String>(new BasePooledObjectFactory<String>() {
+					@Override
+					public String create() {
+						// fake
+						return null;
+					}
+
+					@Override
+					public PooledObject<String> wrap(String obj) {
+						// fake
+						return null;
+					}
+				}));
+		Assert.assertNotNull((pool.getFactoryType()));
+	}
+
 }
