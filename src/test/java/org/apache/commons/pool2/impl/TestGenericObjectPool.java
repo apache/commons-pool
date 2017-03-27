@@ -2645,22 +2645,25 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
     }
     
+	private BasePooledObjectFactory<String> createBasePooledObjectfactory() {
+		return new BasePooledObjectFactory<String>() {
+			@Override
+			public String create() {
+				// fake
+				return null;
+			}
+
+			@Override
+			public PooledObject<String> wrap(String obj) {
+				// fake
+				return null;
+			}
+		};
+	}
+
 	@Test
 	public void testGetFactoryType() {
-		GenericObjectPool<String> pool = new GenericObjectPool<String>(
-				new BasePooledObjectFactory<String>() {
-					@Override
-					public String create() {
-						// fake
-						return null;
-					}
-
-					@Override
-					public PooledObject<String> wrap(String obj) {
-						// fake
-						return null;
-					}
-				});
+		GenericObjectPool<String> pool = new GenericObjectPool<String>(createBasePooledObjectfactory());
 		Assert.assertNotNull((pool.getFactoryType()));
 	}
 
@@ -2668,19 +2671,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 	@Ignore
 	public void testGetFactoryType_PoolUtilssynchronizedPooledFactory() {
 		GenericObjectPool<String> pool = new GenericObjectPool<String>(
-				PoolUtils.synchronizedPooledFactory(new BasePooledObjectFactory<String>() {
-					@Override
-					public String create() {
-						// fake
-						return null;
-					}
-
-					@Override
-					public PooledObject<String> wrap(String obj) {
-						// fake
-						return null;
-					}
-				}));
+				PoolUtils.synchronizedPooledFactory(createBasePooledObjectfactory()));
 		Assert.assertNotNull((pool.getFactoryType()));
 	}
 
@@ -2688,19 +2679,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 	@Ignore
 	public void testGetFactoryType_SynchronizedPooledObjectFactory() {
 		GenericObjectPool<String> pool = new GenericObjectPool<String>(
-				new TestSynchronizedPooledObjectFactory<String>(new BasePooledObjectFactory<String>() {
-					@Override
-					public String create() {
-						// fake
-						return null;
-					}
-
-					@Override
-					public PooledObject<String> wrap(String obj) {
-						// fake
-						return null;
-					}
-				}));
+				new TestSynchronizedPooledObjectFactory<String>(createBasePooledObjectfactory()));
 		Assert.assertNotNull((pool.getFactoryType()));
 	}
 
