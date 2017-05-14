@@ -52,6 +52,10 @@ import org.apache.commons.pool2.SwallowedExceptionListener;
  * provided to one of these methods, a sub-new pool is created under the given
  * key to be managed by the containing <code>GenericKeyedObjectPool.</code>
  * <p>
+ * Note that the current implementation uses a ConcurrentHashMap which uses
+ * equals() to compare keys.
+ * This means that distinct instance keys must be distinguishable using equals.
+ * <p>
  * Optionally, one may configure the pool to examine and possibly evict objects
  * as they sit idle in the pool and to ensure that a minimum number of idle
  * objects is maintained for each key. This is performed by an "idle object
