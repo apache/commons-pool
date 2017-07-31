@@ -151,7 +151,7 @@ implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMXBean<K> {
      * If maxIdlePerKey is set too low on heavily loaded systems it is possible
      * you will see objects being destroyed and almost immediately new objects
      * being created. This is a result of the active threads momentarily
-     * returning objects faster than they are requesting them them, causing the
+     * returning objects faster than they are requesting them, causing the
      * number of idle objects to rise above maxIdlePerKey. The best value for
      * maxIdlePerKey for heavily loaded system will vary but the default is a
      * good starting point.
@@ -171,7 +171,7 @@ implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMXBean<K> {
      * If maxIdlePerKey is set too low on heavily loaded systems it is possible
      * you will see objects being destroyed and almost immediately new objects
      * being created. This is a result of the active threads momentarily
-     * returning objects faster than they are requesting them them, causing the
+     * returning objects faster than they are requesting them, causing the
      * number of idle objects to rise above maxIdlePerKey. The best value for
      * maxIdlePerKey for heavily loaded system will vary but the default is a
      * good starting point.

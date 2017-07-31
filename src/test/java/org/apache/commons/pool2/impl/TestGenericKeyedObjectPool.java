@@ -2248,7 +2248,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
     /**
      * Verifies that if a borrow of a new key is blocked because maxTotal has
-     * been reached, that that borrow continues once another object is returned.
+     * been reached, that borrow continues once another object is returned.
      *
      * JIRA: POOL-310
      */

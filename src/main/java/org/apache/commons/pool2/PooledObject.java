@@ -50,7 +50,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     long getCreateTime();
 
     /**
-     * Obtain the time in milliseconds that this object last spent in the the
+     * Obtain the time in milliseconds that this object last spent in the
      * active state (it may still be active in which case subsequent calls will
      * return an increased value).
      *
@@ -59,7 +59,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     long getActiveTimeMillis();
 
     /**
-     * Obtain the time in milliseconds that this object last spend in the the
+     * Obtain the time in milliseconds that this object last spend in the
      * idle state (it may still be idle in which case subsequent calls will
      * return an increased value).
      *

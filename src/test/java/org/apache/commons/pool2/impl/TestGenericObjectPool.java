@@ -765,7 +765,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     /**
      * This is the test case for POOL-263. It is disabled since it will always
      * pass without artificial delay being injected into GOP.returnObject() and
-     * a way to this this hasn't currently been found that doesn't involve
+     * a way to this hasn't currently been found that doesn't involve
      * polluting the GOP implementation. The artificial delay needs to be
      * inserted just before the final call to isLifo() in the returnObject()
      * method.

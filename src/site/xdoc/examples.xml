@@ -61,7 +61,7 @@ public class ReaderUtil {
 }
 </source>
        <p>
-        For the sake of this example, let's assume we want to to pool the <code>StringBuffer</code>s 
+        For the sake of this example, let's assume we want to pool the <code>StringBuffer</code>s 
         used to buffer the <code>Reader</code>'s contents. (A pool of <code>StringBuffer</code>s 
         may or may not be useful in practice. We're just using it as a simple example here.)
        </p>
