@@ -43,7 +43,7 @@
 Apache Commons Pool
 ===================
 
-[![Build Status](https://travis-ci.org/apache/commons-pool2.svg?branch=master)](https://travis-ci.org/apache/commons-pool2)
+[![Build Status](https://travis-ci.org/apache/commons-pool.svg?branch=master)](https://travis-ci.org/apache/commons-pool)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-pool2/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-pool2/)
 
 Apache Commons Object Pooling Library
