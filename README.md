@@ -51,7 +51,7 @@ Apache Commons Object Pooling Library
 Documentation
 -------------
 
-More information can be found on the [Apache Commons Pool homepage](https://commons.apache.org/proper/commons-pool2).
+More information can be found on the [Apache Commons Pool homepage](https://commons.apache.org/proper/commons-pool/).
 The [JavaDoc](https://commons.apache.org/proper/commons-pool2/javadocs/api-release) can be browsed.
 Questions related to the usage of Apache Commons Pool should be posted to the [user mailing list][ml].
 
