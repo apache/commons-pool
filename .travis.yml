@@ -16,6 +16,8 @@
 language: java
 sudo: false
 
+dist: precise
+
 jdk:
   - openjdk6
   - openjdk7
