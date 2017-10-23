@@ -2653,7 +2653,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 			}
 
 			@Override
-			public PooledObject<String> wrap(String obj) {
+			public PooledObject<String> wrap(final String obj) {
 				// fake
 				return null;
 			}
@@ -2662,14 +2662,14 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
 	@Test
 	public void testGetFactoryType() {
-		GenericObjectPool<String> pool = new GenericObjectPool<String>(createBasePooledObjectfactory());
+		final GenericObjectPool<String> pool = new GenericObjectPool<String>(createBasePooledObjectfactory());
 		Assert.assertNotNull((pool.getFactoryType()));
 	}
 
 	@Test
 	@Ignore
 	public void testGetFactoryType_PoolUtilssynchronizedPooledFactory() {
-		GenericObjectPool<String> pool = new GenericObjectPool<String>(
+		final GenericObjectPool<String> pool = new GenericObjectPool<String>(
 				PoolUtils.synchronizedPooledFactory(createBasePooledObjectfactory()));
 		Assert.assertNotNull((pool.getFactoryType()));
 	}
@@ -2677,7 +2677,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 	@Test
 	@Ignore
 	public void testGetFactoryType_SynchronizedPooledObjectFactory() {
-		GenericObjectPool<String> pool = new GenericObjectPool<String>(
+		final GenericObjectPool<String> pool = new GenericObjectPool<String>(
 				new TestSynchronizedPooledObjectFactory<String>(createBasePooledObjectfactory()));
 		Assert.assertNotNull((pool.getFactoryType()));
 	}
