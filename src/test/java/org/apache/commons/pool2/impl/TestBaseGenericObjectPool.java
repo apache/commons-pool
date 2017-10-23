@@ -24,7 +24,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * @version $Revision:$
  */
 public class TestBaseGenericObjectPool {
 
