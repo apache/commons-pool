@@ -72,8 +72,6 @@ import org.apache.commons.pool2.UsageTracking;
  *
  * @param <T> Type of element pooled in this pool.
  *
- * @version $Revision$
- *
  * @since 2.0
  */
 public class GenericObjectPool<T> extends BaseGenericObjectPool<T>

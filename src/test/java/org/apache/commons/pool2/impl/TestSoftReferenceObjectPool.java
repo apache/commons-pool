@@ -23,7 +23,6 @@ import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.TestBaseObjectPool;
 
 /**
- * @version $Revision$
  */
 public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
 

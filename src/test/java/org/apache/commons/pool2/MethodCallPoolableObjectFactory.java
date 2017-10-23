@@ -26,7 +26,6 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
 /**
  * A poolable object factory that tracks how {@link MethodCall methods are called}.
  *
- * @version $Revision$
  * @see MethodCall
  */
 public class MethodCallPoolableObjectFactory implements PooledObjectFactory<Object> {

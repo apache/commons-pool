@@ -24,7 +24,6 @@ import org.junit.Test;
 
 
 /**
- * @version $Revision$
  */
 public class TestBaseObjectPool extends TestObjectPool {
     private ObjectPool<String> _pool = null;

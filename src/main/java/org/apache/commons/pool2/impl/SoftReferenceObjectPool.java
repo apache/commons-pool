@@ -36,8 +36,6 @@ import org.apache.commons.pool2.PooledObjectFactory;
  * @param <T>
  *            Type of element pooled in this pool.
  *
- * @version $Revision$
- *
  * @since 2.0
  */
 public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {

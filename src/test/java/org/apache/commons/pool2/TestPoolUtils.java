@@ -46,8 +46,6 @@ import org.junit.Test;
 
 /**
  * Unit tests for {@link PoolUtils}.
- *
- * @version $Revision$
  */
 public class TestPoolUtils {
 

@@ -31,7 +31,6 @@ import org.junit.After;
 import org.junit.Test;
 
 /**
- * @version $Revision$
  */
 public class TestSoftRefOutOfMemory {
     private SoftReferenceObjectPool<String> pool;

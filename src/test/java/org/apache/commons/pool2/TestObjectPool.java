@@ -32,7 +32,6 @@ import java.util.NoSuchElementException;
 
 /**
  * Abstract test case for {@link ObjectPool} implementations.
- * @version $Revision$
  */
 public abstract class TestObjectPool {
 

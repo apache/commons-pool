@@ -25,8 +25,6 @@ package org.apache.commons.pool2;
  *
  * @param <T> Type of element pooled in this pool.
  *
- * @version $Revision$
- *
  * @since 2.0
  */
 public abstract class BaseObjectPool<T> extends BaseObject implements ObjectPool<T> {

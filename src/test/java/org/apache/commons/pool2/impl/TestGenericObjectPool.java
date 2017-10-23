@@ -58,7 +58,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- * @version $Revision$
  */
 public class TestGenericObjectPool extends TestBaseObjectPool {
 

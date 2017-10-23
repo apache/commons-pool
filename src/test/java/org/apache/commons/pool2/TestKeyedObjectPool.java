@@ -30,7 +30,6 @@ import org.junit.Test;
 
 /**
  * Abstract test case for {@link ObjectPool} implementations.
- * @version $Revision$
  */
 public abstract class TestKeyedObjectPool {
 

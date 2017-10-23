@@ -23,8 +23,6 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
 
 /**
  * Sleepy ObjectFactory (everything takes a while longer)
- *
- * @version $Revision$
  */
 public class SleepingObjectFactory implements PooledObjectFactory<Integer> {
 

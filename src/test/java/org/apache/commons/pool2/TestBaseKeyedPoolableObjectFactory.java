@@ -22,7 +22,6 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.junit.Test;
 
 /**
- * @version $Revision$
  */
 public class TestBaseKeyedPoolableObjectFactory {
 
