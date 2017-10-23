@@ -66,8 +66,6 @@ package org.apache.commons.pool2;
  *
  * @see ObjectPool
  *
- * @version $Revision: 1333925 $
- *
  * @since 2.0
  */
 public interface PooledObjectFactory<T> {

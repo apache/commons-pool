@@ -38,8 +38,6 @@ import org.junit.Test;
 
 /**
  * TestCase for AbandonedObjectPool
- *
- * @version $Revision: 1158659 $ $Date: 2011-08-17 05:37:26 -0700 (Wed, 17 Aug 2011) $
  */
 public class TestAbandonedObjectPool {
     private GenericObjectPool<PooledTestObject> pool = null;

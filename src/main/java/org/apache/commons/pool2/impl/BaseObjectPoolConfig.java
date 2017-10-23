@@ -25,8 +25,6 @@ import org.apache.commons.pool2.BaseObject;
  * <p>
  * This class is not thread-safe.
  *
- * @version $Revision: $
- *
  * @since 2.0
  */
 public abstract class BaseObjectPoolConfig extends BaseObject implements Cloneable {

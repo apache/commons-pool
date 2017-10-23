@@ -19,8 +19,6 @@ package org.apache.commons.pool2;
 /**
  * Provides the possible states that a {@link PooledObject} may be in.
  *
- * @version $Revision: $
- *
  * @since 2.0
  */
 public enum PooledObjectState {
