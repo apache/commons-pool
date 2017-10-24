@@ -48,7 +48,7 @@ Apache Commons Pool
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-pool2/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-pool2/)
 [![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
-Apache Commons Object Pooling Library
+The Apache Commons Object Pooling Library.
 
 Documentation
 -------------
