@@ -1,3 +1,62 @@
+              Apache Commons Pool 2.4.3 RELEASE NOTES
+
+The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.4.3.
+
+Apache Commons Pool provides an object-pooling API and a number of object pool implementations.
+Version 2 contains a completely re-written pooling implementation compared to the 1.x series.
+In addition to performance and scalability improvements, version 2 includes robust instance
+tracking and pool monitoring. Version 2 requires JDK level 1.6 or above. 
+
+No client code changes are required to migrate from versions 2.0-2.3 to version 2.4.3.
+Users of version 1.x should consult the migration guide on the Commons Pool web site.
+
+NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPoolMXBean
+      and GenericKeyedObjectPoolMXBean) exist only to define the attributes and methods
+      that will be made available via JMX. They must not be implemented by clients as
+      they are subject to change between major, minor and patch version releases of
+      Commons Pool. Clients that implement any of these interfaces may not, therefore,
+      be able to upgrade to a new minor or patch release without requiring code
+      changes.
+
+Changes in version 2.4.3 include:
+
+New features:
+o POOL-320:  Use more efficient stack walking mechanisms for usage tracking when possible.
+
+Fixed Bugs:
+o POOL-328:  Documentation with repeated words (sources, tests, and examples). Thanks to Lorenzo Solano Martinez.
+o POOL-317:  Correction of default value of softMinEvictableIdleTimeMillis in BaseObjectPoolConfig. Thanks to KeiichiFujino.
+o POOL-309:  Fix misspellings from "destory" to "destroy". Thanks to jolestar, Roopam Patekar.
+o POOL-306:  Ensure BaseGenericObjectPool.IdentityWrapper#equals() follows the expected
+             contract for equals(). Thanks to Adrian Crum.
+o POOL-303:  Ensure that threads do not block indefinitely if more than maxTotal
+             threads try to borrow an object at the same time and the factory fails to
+             create any objects.
+o POOL-310:  Ensure that threads using GKOP do not block indefinitely if more than
+             maxTotal threads try to borrow objects with different keys at the same
+             time and the factory destroys objects on return. Thanks to Ivan Iliev.
+o            Ensure that any class name used for evictionPolicyClassName represents a
+             class that implements EvictionPolicy.
+o POOL-315:  Add a configurable delay (default 10 seconds) to wait when shutting down
+             an Evictor to allow the associated thread time to complete and current
+             evictions and to terminate. Thanks to KeiichiFujino.
+o            Ensure that a call to GKOP preparePool() takes account of other threads
+             that might create objects concurrently, particularly the Evictor.
+
+Changes:
+o POOL-280:  Small refactoring of borrowObject() to reduce code duplication. Thanks to Jacopo Cappellato.
+o POOL-307:  Replace inefficient use of keySet with entrySet in GKOP. Thanks to Anthony Whitford.
+o POOL-322:  Update optional cglib library from 3.1 to 3.2.5.
+o POOL-323:  Update optional OW2 ASM from 5.0.4 to 5.2.
+
+
+For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Apache Commons Pool website:
+
+http://commons.apache.org/proper/commons-pool/
+
+-----------------------------------------------------------------------------------------------
+
               Apache Commons Pool 2.4.2 RELEASE NOTES
 
 The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.4.2.
