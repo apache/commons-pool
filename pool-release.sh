@@ -31,8 +31,8 @@
 # $Revision$ $Date$
 # -----------------------------------------------------------------------------
 # Set script variables
-version=2.4.2        # version being released
-last_version=2.4.1   # previous version, will be replaced in README.html
+version=2.4.3        # version being released
+last_version=2.4.2   # previous version, will be replaced in README.html
 rc_path=~/pool-rc  # checkout of https://dist.apache.org/repos/dist/dev/commons/pool
 release_path=~/pool-release #https://dist.apache.org/repos/dist/release/commons/pool
 #

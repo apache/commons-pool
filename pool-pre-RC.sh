@@ -25,6 +25,6 @@
 #
 # $Revision$ $Date$
 # ----------------------------------------------------------------------------
-version=2.4.2
+version=2.4.3
 mvn changes:announcement-generate -Prelease-notes -Dchanges.version=${version}
-mvn commons:download-page -Dcommons.componentid=pool  -Dcommons.release.version=${version}
+mvn commons:download-page -Dcommons.componentid=pool -Dcommons.release.version=${version}
