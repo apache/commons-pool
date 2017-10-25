@@ -23,6 +23,8 @@ jdk:
   - openjdk7
   - oraclejdk8
 
+script:
+  - mvn
+
 after_success:
   - mvn clean cobertura:cobertura coveralls:report -Ptravis-cobertura
-  

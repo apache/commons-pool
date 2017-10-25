@@ -170,6 +170,7 @@
   </properties> 
 
   <build>
+      <defaultGoal>clean verify apache-rat:check clirr:check javadoc:javadoc</defaultGoal>
       <plugins>
         <plugin>
           <groupId>org.apache.rat</groupId>
