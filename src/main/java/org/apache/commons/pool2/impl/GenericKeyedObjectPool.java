@@ -1460,6 +1460,8 @@ implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMXBean<K> {
 
     /**
      * Maintains information on the per key queue for a given key.
+     *
+     * @param <S> type of objects in the pool
      */
     private class ObjectDeque<S> {
 

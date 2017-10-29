@@ -31,6 +31,10 @@ public final class CallStackUtils {
         CAN_CREATE_SECURITY_MANAGER = canCreateSecurityManager();
     }
 
+    /**
+     * @return {@code true} if it is able to create a security manager in the current environment, {@code false}
+     *         otherwise.
+     */
     private static boolean canCreateSecurityManager() {
         final SecurityManager manager = System.getSecurityManager();
         if (manager == null) {
@@ -53,10 +57,13 @@ public final class CallStackUtils {
      * @return a new CallStack
      */
     public static CallStack newCallStack(final String messageFormat, final boolean useTimestamp) {
-        return CAN_CREATE_SECURITY_MANAGER ? new SecurityManagerCallStack(messageFormat, useTimestamp)
-            : new ThrowableCallStack(messageFormat, useTimestamp);
+        return CAN_CREATE_SECURITY_MANAGER ? new SecurityManagerCallStack(messageFormat, useTimestamp) :
+            new ThrowableCallStack(messageFormat, useTimestamp);
     }
 
+    /**
+     * Hidden constructor.
+     */
     private CallStackUtils() {
     }
 }

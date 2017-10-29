@@ -106,6 +106,9 @@ class EvictionTimer {
         }
     }
 
+    /**
+     * Thread factory that creates a thread, with the context classloader from this class.
+     */
     private static class EvictorThreadFactory implements ThreadFactory {
 
         @Override
