@@ -35,7 +35,7 @@ public interface CallStack {
      * Prints the current stack trace if available to a PrintWriter. The format is undefined and is primarily useful
      * for debugging issues with {@link PooledObject} usage in user code.
      *
-     * @param writer a PrintWriter to write the curren stack trace to if available
+     * @param writer a PrintWriter to write the current stack trace to if available
      * @return true if a stack trace was available to print or false if nothing was printed
      */
     boolean printStackTrace(final PrintWriter writer);
