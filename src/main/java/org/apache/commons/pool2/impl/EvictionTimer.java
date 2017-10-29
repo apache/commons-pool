@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
  * Provides a shared idle object eviction timer for all pools. This class is
  * currently implemented using {@link ScheduledThreadPoolExecutor}. This
  * implementation may change in any future release. This class keeps track of
- * how many pools are using it. If no pools are using the timer, it is canceled.
+ * how many pools are using it. If no pools are using the timer, it is cancelled.
  * This prevents a thread being left running which, in application server
  * environments, can lead to memory leads and/or prevent applications from
  * shutting down or reloading cleanly.
