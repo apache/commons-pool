@@ -43,6 +43,12 @@ public class SecurityManagerCallStack implements CallStack {
 
     private volatile Snapshot snapshot;
 
+    /**
+     * Create a new instance.
+     *
+     * @param messageFormat message format
+     * @param useTimestamp whether to format the dates in the output message or not
+     */
     public SecurityManagerCallStack(final String messageFormat, final boolean useTimestamp) {
         this.messageFormat = messageFormat;
         this.dateFormat = useTimestamp ? new SimpleDateFormat(messageFormat) : null;
@@ -85,7 +91,15 @@ public class SecurityManagerCallStack implements CallStack {
         snapshot = null;
     }
 
+    /**
+     * A custom security manager.
+     */
     private static class PrivateSecurityManager extends SecurityManager {
+        /**
+         * Get the class stack.
+         *
+         * @return class stack
+         */
         private List<WeakReference<Class<?>>> getCallStack() {
             final Class<?>[] classes = getClassContext();
             final List<WeakReference<Class<?>>> stack = new ArrayList<>(classes.length);
@@ -96,10 +110,18 @@ public class SecurityManagerCallStack implements CallStack {
         }
     }
 
+    /**
+     * A snapshot of a class stack.
+     */
     private static class Snapshot {
         private final long timestamp = System.currentTimeMillis();
         private final List<WeakReference<Class<?>>> stack;
 
+        /**
+         * Create a new snapshot with a class stack.
+         *
+         * @param stack class stack
+         */
         private Snapshot(final List<WeakReference<Class<?>>> stack) {
             this.stack = stack;
         }

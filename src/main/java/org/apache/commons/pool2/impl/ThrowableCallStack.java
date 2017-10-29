@@ -36,6 +36,12 @@ public class ThrowableCallStack implements CallStack {
 
     private volatile Snapshot snapshot;
 
+    /**
+     * Create a new instance.
+     *
+     * @param messageFormat message format
+     * @param useTimestamp whether to format the dates in the output message or not
+     */
     public ThrowableCallStack(final String messageFormat, final boolean useTimestamp) {
         this.messageFormat = messageFormat;
         this.dateFormat = useTimestamp ? new SimpleDateFormat(messageFormat) : null;
@@ -70,6 +76,9 @@ public class ThrowableCallStack implements CallStack {
         snapshot = null;
     }
 
+    /**
+     * A snapshot of a throwable.
+     */
     private static class Snapshot extends Throwable {
         private final long timestamp = System.currentTimeMillis();
     }
