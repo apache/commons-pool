@@ -21,6 +21,6 @@ public class TestProxiedKeyedObjectPoolWithCglibProxy extends
 
     @Override
     protected ProxySource<TestObject> getproxySource() {
-        return new CglibProxySource<TestObject>(TestObject.class);
+        return new CglibProxySource<>(TestObject.class);
     }
 }

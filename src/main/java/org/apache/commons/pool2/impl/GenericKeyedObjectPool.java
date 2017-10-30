@@ -463,7 +463,7 @@ implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMXBean<K> {
 
         final ObjectDeque<T> objectDeque = poolMap.get(key);
 
-        final PooledObject<T> p = objectDeque.getAllObjects().get(new IdentityWrapper<T>(obj));
+        final PooledObject<T> p = objectDeque.getAllObjects().get(new IdentityWrapper<>(obj));
 
         if (p == null) {
             throw new IllegalStateException(
@@ -575,7 +575,7 @@ implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMXBean<K> {
 
         final ObjectDeque<T> objectDeque = poolMap.get(key);
 
-        final PooledObject<T> p = objectDeque.getAllObjects().get(new IdentityWrapper<T>(obj));
+        final PooledObject<T> p = objectDeque.getAllObjects().get(new IdentityWrapper<>(obj));
         if (p == null) {
             throw new IllegalStateException(
                     "Object not currently part of this pool");
@@ -738,7 +738,7 @@ implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMXBean<K> {
     public void clearOldest() {
 
         // build sorted map of idle objects
-        final Map<PooledObject<T>, K> map = new TreeMap<PooledObject<T>, K>();
+        final Map<PooledObject<T>, K> map = new TreeMap<>();
 
         for (final Map.Entry<K, ObjectDeque<T>> entry : poolMap.entrySet()) {
             final K k = entry.getKey();
@@ -885,7 +885,7 @@ implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMXBean<K> {
                 if(evictionIterator == null || !evictionIterator.hasNext()) {
                     if (evictionKeyIterator == null ||
                             !evictionKeyIterator.hasNext()) {
-                        final List<K> keyCopy = new ArrayList<K>();
+                        final List<K> keyCopy = new ArrayList<>();
                         final Lock readLock = keyLock.readLock();
                         readLock.lock();
                         try {
@@ -1074,7 +1074,7 @@ implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMXBean<K> {
         }
 
         createdCount.incrementAndGet();
-        objectDeque.getAllObjects().put(new IdentityWrapper<T>(p.getObject()), p);
+        objectDeque.getAllObjects().put(new IdentityWrapper<>(p.getObject()), p);
         return p;
     }
 
@@ -1097,7 +1097,7 @@ implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMXBean<K> {
             final boolean isIdle = objectDeque.getIdleObjects().remove(toDestroy);
 
             if (isIdle || always) {
-                objectDeque.getAllObjects().remove(new IdentityWrapper<T>(toDestroy.getObject()));
+                objectDeque.getAllObjects().remove(new IdentityWrapper<>(toDestroy.getObject()));
                 toDestroy.invalidate();
 
                 try {
@@ -1140,7 +1140,7 @@ implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMXBean<K> {
                 lock.lock();
                 objectDeque = poolMap.get(k);
                 if (objectDeque == null) {
-                    objectDeque = new ObjectDeque<T>(fairness);
+                    objectDeque = new ObjectDeque<>(fairness);
                     objectDeque.getNumInterested().incrementAndGet();
                     // NOTE: Keys must always be added to both poolMap and
                     //       poolKeyList at the same time while protected by
@@ -1355,7 +1355,7 @@ implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMXBean<K> {
 
     @Override
     public Map<String,Integer> getNumActivePerKey() {
-        final HashMap<String,Integer> result = new HashMap<String,Integer>();
+        final HashMap<String,Integer> result = new HashMap<>();
 
         final Iterator<Entry<K,ObjectDeque<T>>> iter = poolMap.entrySet().iterator();
         while (iter.hasNext()) {
@@ -1407,7 +1407,7 @@ implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMXBean<K> {
      */
     @Override
     public Map<String,Integer> getNumWaitersByKey() {
-        final Map<String,Integer> result = new HashMap<String,Integer>();
+        final Map<String,Integer> result = new HashMap<>();
 
         for (final Map.Entry<K, ObjectDeque<T>> entry : poolMap.entrySet()) {
             final K k = entry.getKey();
@@ -1438,14 +1438,14 @@ implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMXBean<K> {
     @Override
     public Map<String,List<DefaultPooledObjectInfo>> listAllObjects() {
         final Map<String,List<DefaultPooledObjectInfo>> result =
-                new HashMap<String,List<DefaultPooledObjectInfo>>();
+                new HashMap<>();
 
         for (final Map.Entry<K, ObjectDeque<T>> entry : poolMap.entrySet()) {
             final K k = entry.getKey();
             final ObjectDeque<T> deque = entry.getValue();
             if (deque != null) {
                 final List<DefaultPooledObjectInfo> list =
-                        new ArrayList<DefaultPooledObjectInfo>();
+                        new ArrayList<>();
                 result.put(k.toString(), list);
                 for (final PooledObject<T> p : deque.getAllObjects().values()) {
                     list.add(new DefaultPooledObjectInfo(p));
@@ -1479,7 +1479,7 @@ implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMXBean<K> {
          * they work properly as keys.
          */
         private final Map<IdentityWrapper<S>, PooledObject<S>> allObjects =
-                new ConcurrentHashMap<IdentityWrapper<S>, PooledObject<S>>();
+                new ConcurrentHashMap<>();
 
         /*
          * Number of threads with registered interest in this key.
@@ -1495,7 +1495,7 @@ implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMXBean<K> {
          * will be served as if waiting in a FIFO queue.
          */
         public ObjectDeque(final boolean fairness) {
-            idleObjects = new LinkedBlockingDeque<PooledObject<S>>(fairness);
+            idleObjects = new LinkedBlockingDeque<>(fairness);
         }
 
         /**
@@ -1571,14 +1571,14 @@ implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMXBean<K> {
      * changes to the list of current keys is made in a thread-safe manner.
      */
     private final Map<K,ObjectDeque<T>> poolMap =
-            new ConcurrentHashMap<K,ObjectDeque<T>>(); // @GuardedBy("keyLock") for write access (and some read access)
+            new ConcurrentHashMap<>(); // @GuardedBy("keyLock") for write access (and some read access)
     /*
      * List of pool keys - used to control eviction order. The list of keys
      * <b>must</b> be kept in step with {@link #poolMap} using {@link #keyLock}
      * to ensure any changes to the list of current keys is made in a
      * thread-safe manner.
      */
-    private final List<K> poolKeyList = new ArrayList<K>(); // @GuardedBy("keyLock")
+    private final List<K> poolKeyList = new ArrayList<>(); // @GuardedBy("keyLock")
     private final ReadWriteLock keyLock = new ReentrantReadWriteLock(true);
     /*
      * The combined count of the currently active objects for all keys and those

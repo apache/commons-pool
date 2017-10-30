@@ -42,7 +42,7 @@ public class TestGenericObjectPoolClassLoaders {
             Thread.currentThread().setContextClassLoader(cl1);
             final CustomClassLoaderObjectFactory factory1 =
                     new CustomClassLoaderObjectFactory(1);
-            final GenericObjectPool<URL> pool1 = new GenericObjectPool<URL>(factory1);
+            final GenericObjectPool<URL> pool1 = new GenericObjectPool<>(factory1);
             pool1.setMinIdle(1);
             pool1.setTimeBetweenEvictionRunsMillis(100);
             int counter = 0;
@@ -59,7 +59,7 @@ public class TestGenericObjectPoolClassLoaders {
             final CustomClassLoaderObjectFactory factory2 =
                     new CustomClassLoaderObjectFactory(2);
             final GenericObjectPool<URL> pool2 =
-                    new GenericObjectPool<URL>(factory2);
+                    new GenericObjectPool<>(factory2);
             pool2.setMinIdle(1);
 
             pool2.addObject();
@@ -104,7 +104,7 @@ public class TestGenericObjectPoolClassLoaders {
 
         @Override
         public PooledObject<URL> wrap(final URL value) {
-            return new DefaultPooledObject<URL>(value);
+            return new DefaultPooledObject<>(value);
         }
     }
 

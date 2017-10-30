@@ -48,7 +48,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
      * <code>_pool</code>. This is used to help {@link #getNumIdle()} be more
      * accurate with minimal performance overhead.
      */
-    private final ReferenceQueue<T> refQueue = new ReferenceQueue<T>();
+    private final ReferenceQueue<T> refQueue = new ReferenceQueue<>();
 
     /** Count of instances that have been checkout out to pool clients */
     private int numActive = 0; // @GuardedBy("this")
@@ -62,11 +62,11 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
 
     /** Idle references - waiting to be borrowed */
     private final LinkedBlockingDeque<PooledSoftReference<T>> idleReferences =
-        new LinkedBlockingDeque<PooledSoftReference<T>>();
+        new LinkedBlockingDeque<>();
 
     /** All references - checked out or waiting to be borrowed. */
     private final ArrayList<PooledSoftReference<T>> allReferences =
-        new ArrayList<PooledSoftReference<T>>();
+        new ArrayList<>();
 
     /**
      * Create a <code>SoftReferenceObjectPool</code> with the specified factory.
@@ -127,7 +127,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
                 obj = factory.makeObject().getObject();
                 createCount++;
                 // Do not register with the queue
-                ref = new PooledSoftReference<T>(new SoftReference<T>(obj));
+                ref = new PooledSoftReference<>(new SoftReference<>(obj));
                 allReferences.add(ref);
             } else {
                 ref = idleReferences.pollFirst();
@@ -136,7 +136,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
                 // a new, non-registered reference so we can still track this object
                 // in allReferences
                 ref.getReference().clear();
-                ref.setReference(new SoftReference<T>(obj));
+                ref.setReference(new SoftReference<>(obj));
             }
             if (null != factory && null != obj) {
                 try {
@@ -274,8 +274,8 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
         final T obj = factory.makeObject().getObject();
         createCount++;
         // Create and register with the queue
-        final PooledSoftReference<T> ref = new PooledSoftReference<T>(
-                new SoftReference<T>(obj, refQueue));
+        final PooledSoftReference<T> ref = new PooledSoftReference<>(
+                new SoftReference<>(obj, refQueue));
         allReferences.add(ref);
 
         boolean success = true;

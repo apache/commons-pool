@@ -46,10 +46,10 @@ public abstract class BaseTestProxiedKeyedObjectPool {
                 new TestKeyedObjectFactory();
 
         final KeyedObjectPool<String,TestObject> innerPool =
-                new GenericKeyedObjectPool<String,TestObject>(
+                new GenericKeyedObjectPool<>(
                         factory, config);
 
-        pool = new ProxiedKeyedObjectPool<String,TestObject>(innerPool, getproxySource());
+        pool = new ProxiedKeyedObjectPool<>(innerPool, getproxySource());
     }
 
 
@@ -134,7 +134,7 @@ public abstract class BaseTestProxiedKeyedObjectPool {
         }
         @Override
         public PooledObject<TestObject> wrap(final TestObject value) {
-            return new DefaultPooledObject<TestObject>(value);
+            return new DefaultPooledObject<>(value);
         }
     }
 

@@ -113,14 +113,14 @@ public class PerformanceTest {
 
         final SleepingObjectFactory factory = new SleepingObjectFactory();
         if (logLevel >= 4) { factory.setDebug(true); }
-        pool = new GenericObjectPool<Integer>(factory);
+        pool = new GenericObjectPool<>(factory);
         pool.setMaxTotal(maxTotal);
         pool.setMaxIdle(maxIdle);
         pool.setTestOnBorrow(true);
 
         final ExecutorService threadPool = Executors.newFixedThreadPool(nrThreads);
 
-        final List<Callable<TaskStats>> tasks = new ArrayList<Callable<TaskStats>>();
+        final List<Callable<TaskStats>> tasks = new ArrayList<>();
         for (int i = 0; i < nrThreads; i++) {
             tasks.add(new PerfTask());
             Thread.yield();

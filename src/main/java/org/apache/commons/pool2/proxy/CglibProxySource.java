@@ -47,7 +47,7 @@ public class CglibProxySource<T> implements ProxySource<T> {
         enhancer.setSuperclass(superclass);
 
         final CglibProxyHandler<T> proxyInterceptor =
-                new CglibProxyHandler<T>(pooledObject, usageTracking);
+                new CglibProxyHandler<>(pooledObject, usageTracking);
         enhancer.setCallback(proxyInterceptor);
 
         @SuppressWarnings("unchecked")

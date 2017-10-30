@@ -52,7 +52,7 @@ public class TestAbandonedObjectPool {
 
         abandonedConfig.setRemoveAbandonedOnBorrow(true);
         abandonedConfig.setRemoveAbandonedTimeout(1);
-        pool = new GenericObjectPool<PooledTestObject>(
+        pool = new GenericObjectPool<>(
                new SimpleFactory(),
                new GenericObjectPoolConfig(),
                abandonedConfig);
@@ -98,7 +98,7 @@ public class TestAbandonedObjectPool {
         pool.setBlockWhenExhausted(false);
 
         // Exhaust the connection pool
-        final ArrayList<PooledTestObject> vec = new ArrayList<PooledTestObject>();
+        final ArrayList<PooledTestObject> vec = new ArrayList<>();
         for (int i = 0; i < POOL_SIZE; i++) {
             vec.add(pool.borrowObject());
         }
@@ -146,7 +146,7 @@ public class TestAbandonedObjectPool {
         abandonedConfig.setRemoveAbandonedOnBorrow(true);
         abandonedConfig.setRemoveAbandonedTimeout(1);
         pool.close();  // Unregister pool created by setup
-        pool = new GenericObjectPool<PooledTestObject>(
+        pool = new GenericObjectPool<>(
                 new SimpleFactory(200, 0),
                 new GenericObjectPoolConfig(), abandonedConfig);
         final int n = 10;
@@ -183,7 +183,7 @@ public class TestAbandonedObjectPool {
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
         abandonedConfig.setRemoveAbandonedTimeout(1);
         pool.close();  // Unregister pool created by setup
-        pool = new GenericObjectPool<PooledTestObject>(
+        pool = new GenericObjectPool<>(
                 // destroys take 200 ms
                 new SimpleFactory(200, 0),
                 new GenericObjectPoolConfig(), abandonedConfig);
@@ -214,7 +214,7 @@ public class TestAbandonedObjectPool {
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
         abandonedConfig.setRemoveAbandonedTimeout(1);
         pool.close();  // Unregister pool created by setup
-        pool = new GenericObjectPool<PooledTestObject>(
+        pool = new GenericObjectPool<>(
              // validate takes 1 second
                 new SimpleFactory(0, 1000),
                 new GenericObjectPoolConfig(), abandonedConfig);
@@ -333,7 +333,7 @@ public class TestAbandonedObjectPool {
 
         @Override
         public PooledObject<PooledTestObject> makeObject() {
-            return new DefaultPooledObject<PooledTestObject>(new PooledTestObject());
+            return new DefaultPooledObject<>(new PooledTestObject());
         }
 
         @Override

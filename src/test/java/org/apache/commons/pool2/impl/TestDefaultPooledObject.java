@@ -34,7 +34,7 @@ public class TestDefaultPooledObject {
      */
     @Test
     public void testgetIdleTimeMillis() throws Exception {
-        final DefaultPooledObject<Object> dpo = new DefaultPooledObject<Object>(new Object());
+        final DefaultPooledObject<Object> dpo = new DefaultPooledObject<>(new Object());
         final AtomicBoolean negativeIdleTimeReturned = new AtomicBoolean(false);
         final ExecutorService executor = Executors.newFixedThreadPool(
                                       Runtime.getRuntime().availableProcessors()*3);
@@ -69,7 +69,7 @@ public class TestDefaultPooledObject {
             }
         };
         final double probabilityOfAllocationTask = 0.7;
-        final List<Future<?>> futures = new ArrayList<Future<?>>();
+        final List<Future<?>> futures = new ArrayList<>();
         for (int i = 1; i <= 10000; i++) {
             final Runnable randomTask = Math.random() < probabilityOfAllocationTask ?
                                   allocateAndDeallocateTask : getIdleTimeTask;

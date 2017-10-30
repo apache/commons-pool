@@ -46,7 +46,7 @@ public class TestSoftRefOutOfMemory {
 
     @Test
     public void testOutOfMemory() throws Exception {
-        pool = new SoftReferenceObjectPool<String>(new SmallPoolableObjectFactory());
+        pool = new SoftReferenceObjectPool<>(new SmallPoolableObjectFactory());
 
         String obj = pool.borrowObject();
         assertEquals("1", obj);
@@ -55,7 +55,7 @@ public class TestSoftRefOutOfMemory {
 
         assertEquals(1, pool.getNumIdle());
 
-        final List<byte[]> garbage = new LinkedList<byte[]>();
+        final List<byte[]> garbage = new LinkedList<>();
         final Runtime runtime = Runtime.getRuntime();
         while (pool.getNumIdle() > 0) {
             try {
@@ -82,7 +82,7 @@ public class TestSoftRefOutOfMemory {
 
     @Test
     public void testOutOfMemory1000() throws Exception {
-        pool = new SoftReferenceObjectPool<String>(new SmallPoolableObjectFactory());
+        pool = new SoftReferenceObjectPool<>(new SmallPoolableObjectFactory());
 
         for (int i = 0 ; i < 1000 ; i++) {
             pool.addObject();
@@ -95,7 +95,7 @@ public class TestSoftRefOutOfMemory {
 
         assertEquals(1000, pool.getNumIdle());
 
-        final List<byte[]> garbage = new LinkedList<byte[]>();
+        final List<byte[]> garbage = new LinkedList<>();
         final Runtime runtime = Runtime.getRuntime();
         while (pool.getNumIdle() > 0) {
             try {
@@ -122,7 +122,7 @@ public class TestSoftRefOutOfMemory {
 
     @Test
     public void testOutOfMemoryLarge() throws Exception {
-        pool = new SoftReferenceObjectPool<String>(new LargePoolableObjectFactory(1000000));
+        pool = new SoftReferenceObjectPool<>(new LargePoolableObjectFactory(1000000));
 
         String obj = pool.borrowObject();
         assertTrue(obj.startsWith("1."));
@@ -131,7 +131,7 @@ public class TestSoftRefOutOfMemory {
 
         assertEquals(1, pool.getNumIdle());
 
-        final List<byte[]> garbage = new LinkedList<byte[]>();
+        final List<byte[]> garbage = new LinkedList<>();
         final Runtime runtime = Runtime.getRuntime();
         while (pool.getNumIdle() > 0) {
             try {
@@ -163,7 +163,7 @@ public class TestSoftRefOutOfMemory {
      */
     @Test
     public void testOutOfMemoryError() throws Exception {
-        pool = new SoftReferenceObjectPool<String>(
+        pool = new SoftReferenceObjectPool<>(
                 new OomeFactory(OomeTrigger.CREATE));
 
         try {
@@ -175,7 +175,7 @@ public class TestSoftRefOutOfMemory {
         }
         pool.close();
 
-        pool = new SoftReferenceObjectPool<String>(
+        pool = new SoftReferenceObjectPool<>(
                 new OomeFactory(OomeTrigger.VALIDATE));
 
         try {
@@ -187,7 +187,7 @@ public class TestSoftRefOutOfMemory {
         }
         pool.close();
 
-        pool = new SoftReferenceObjectPool<String>(
+        pool = new SoftReferenceObjectPool<>(
                 new OomeFactory(OomeTrigger.DESTROY));
 
         try {
@@ -216,7 +216,7 @@ public class TestSoftRefOutOfMemory {
         }
         @Override
         public PooledObject<String> wrap(final String value) {
-            return new DefaultPooledObject<String>(value);
+            return new DefaultPooledObject<>(value);
         }
     }
 
@@ -238,7 +238,7 @@ public class TestSoftRefOutOfMemory {
 
         @Override
         public PooledObject<String> wrap(final String value) {
-            return new DefaultPooledObject<String>(value);
+            return new DefaultPooledObject<>(value);
         }
     }
 
@@ -265,7 +265,7 @@ public class TestSoftRefOutOfMemory {
 
         @Override
         public PooledObject<String> wrap(final String value) {
-            return new DefaultPooledObject<String>(value);
+            return new DefaultPooledObject<>(value);
         }
 
         @Override

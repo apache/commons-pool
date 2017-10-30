@@ -53,7 +53,7 @@ public class JdkProxySource<T> implements ProxySource<T> {
         @SuppressWarnings("unchecked")
         final
         T proxy = (T) Proxy.newProxyInstance(classLoader, interfaces,
-                new JdkProxyHandler<T>(pooledObject, usageTracking));
+                new JdkProxyHandler<>(pooledObject, usageTracking));
         return proxy;
     }
 

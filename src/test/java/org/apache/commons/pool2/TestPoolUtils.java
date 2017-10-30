@@ -105,12 +105,12 @@ public class TestPoolUtils {
             // expected
         }
 
-        final List<String> calledMethods = new ArrayList<String>();
+        final List<String> calledMethods = new ArrayList<>();
 
         // Test that the minIdle check doesn't add too many idle objects
         @SuppressWarnings("unchecked")
         final PooledObjectFactory<Object> pof = createProxy(PooledObjectFactory.class, calledMethods);
-        final ObjectPool<Object> op = new GenericObjectPool<Object>(pof);
+        final ObjectPool<Object> op = new GenericObjectPool<>(pof);
         PoolUtils.checkMinIdle(op, 2, 100);
         Thread.sleep(1000);
         assertEquals(2, op.getNumIdle());
@@ -140,7 +140,7 @@ public class TestPoolUtils {
                 task.cancel();
                 task.toString();
 
-                final List<String> expectedMethods = new ArrayList<String>();
+                final List<String> expectedMethods = new ArrayList<>();
                 for (int i=0; i < CHECK_COUNT; i++) {
                     expectedMethods.add("getNumIdle");
                     expectedMethods.add("addObject");
@@ -181,7 +181,7 @@ public class TestPoolUtils {
             // expected
         }
 
-        final List<String> calledMethods = new ArrayList<String>();
+        final List<String> calledMethods = new ArrayList<>();
         final Object key = new Object();
 
         // Test that the minIdle check doesn't add too many idle objects
@@ -189,7 +189,7 @@ public class TestPoolUtils {
         final KeyedPooledObjectFactory<Object,Object> kpof =
             createProxy(KeyedPooledObjectFactory.class, calledMethods);
         final KeyedObjectPool<Object,Object> kop =
-                new GenericKeyedObjectPool<Object,Object>(kpof);
+                new GenericKeyedObjectPool<>(kpof);
         PoolUtils.checkMinIdle(kop, key, 2, 100);
         Thread.sleep(400);
         assertEquals(2, kop.getNumIdle(key));
@@ -220,7 +220,7 @@ public class TestPoolUtils {
                 task.cancel();
                 task.toString();
 
-                final List<String> expectedMethods = new ArrayList<String>();
+                final List<String> expectedMethods = new ArrayList<>();
                 for (int i=0; i < CHECK_COUNT; i++) {
                     expectedMethods.add("getNumIdle");
                     expectedMethods.add("addObject");
@@ -261,10 +261,10 @@ public class TestPoolUtils {
         do {
             afe = null;
             try {
-                final List<String> calledMethods = new ArrayList<String>();
+                final List<String> calledMethods = new ArrayList<>();
                 @SuppressWarnings("unchecked")
                 final KeyedObjectPool<String,Object> pool = createProxy(KeyedObjectPool.class, calledMethods);
-                final Collection<String> keys = new ArrayList<String>(2);
+                final Collection<String> keys = new ArrayList<>(2);
                 keys.add("one");
                 keys.add("two");
                 final Map<String, TimerTask> tasks = PoolUtils.checkMinIdle(pool, keys, 1, CHECK_PERIOD); // checks minIdle immediately
@@ -274,7 +274,7 @@ public class TestPoolUtils {
                     task.cancel();
                 }
 
-                final List<String> expectedMethods = new ArrayList<String>();
+                final List<String> expectedMethods = new ArrayList<>();
                 for (int i=0; i < CHECK_COUNT * keys.size(); i++) {
                     expectedMethods.add("getNumIdle");
                     expectedMethods.add("addObject");
@@ -298,12 +298,12 @@ public class TestPoolUtils {
             // expected
         }
 
-        final List<String> calledMethods = new ArrayList<String>();
+        final List<String> calledMethods = new ArrayList<>();
         @SuppressWarnings("unchecked")
         final ObjectPool<Object> pool = createProxy(ObjectPool.class, calledMethods);
 
         PoolUtils.prefill(pool, 0);
-        final List<String> expectedMethods = new ArrayList<String>();
+        final List<String> expectedMethods = new ArrayList<>();
         assertEquals(expectedMethods, calledMethods);
 
         calledMethods.clear();
@@ -331,12 +331,12 @@ public class TestPoolUtils {
             // expected
         }
 
-        final List<String> calledMethods = new ArrayList<String>();
+        final List<String> calledMethods = new ArrayList<>();
         @SuppressWarnings("unchecked")
         final KeyedObjectPool<Object,Object> pool = createProxy(KeyedObjectPool.class, calledMethods);
 
         PoolUtils.prefill(pool, new Object(), 0);
-        final List<String> expectedMethods = new ArrayList<String>();
+        final List<String> expectedMethods = new ArrayList<>();
         assertEquals(expectedMethods, calledMethods);
 
         calledMethods.clear();
@@ -358,13 +358,13 @@ public class TestPoolUtils {
             // expected
         }
 
-        final List<String> calledMethods = new ArrayList<String>();
+        final List<String> calledMethods = new ArrayList<>();
         @SuppressWarnings("unchecked")
         final KeyedObjectPool<String,Object> pool = createProxy(KeyedObjectPool.class, calledMethods);
 
-        final Set<String> keys = new HashSet<String>();
+        final Set<String> keys = new HashSet<>();
         PoolUtils.prefill(pool, keys, 0);
-        final List<String> expectedMethods = new ArrayList<String>();
+        final List<String> expectedMethods = new ArrayList<>();
         assertEquals(expectedMethods, calledMethods);
 
         calledMethods.clear();
@@ -387,7 +387,7 @@ public class TestPoolUtils {
             // expected
         }
 
-        final List<String> calledMethods = new ArrayList<String>();
+        final List<String> calledMethods = new ArrayList<>();
         @SuppressWarnings("unchecked")
         final ObjectPool<Object> op = createProxy(ObjectPool.class, calledMethods);
 
@@ -407,7 +407,7 @@ public class TestPoolUtils {
             // expected
         }
 
-        final List<String> calledMethods = new ArrayList<String>();
+        final List<String> calledMethods = new ArrayList<>();
         @SuppressWarnings("unchecked")
         final KeyedObjectPool<Object,Object> kop = createProxy(KeyedObjectPool.class, calledMethods);
 
@@ -427,7 +427,7 @@ public class TestPoolUtils {
             // expected
         }
 
-        final List<String> calledMethods = new ArrayList<String>();
+        final List<String> calledMethods = new ArrayList<>();
         @SuppressWarnings("unchecked")
         final PooledObjectFactory<Object> pof =
                 createProxy(PooledObjectFactory.class, calledMethods);
@@ -448,7 +448,7 @@ public class TestPoolUtils {
             // expected
         }
 
-        final List<String> calledMethods = new ArrayList<String>();
+        final List<String> calledMethods = new ArrayList<>();
         @SuppressWarnings("unchecked")
         final KeyedPooledObjectFactory<Object,Object> kpof =
                 createProxy(KeyedPooledObjectFactory.class, calledMethods);
@@ -476,7 +476,7 @@ public class TestPoolUtils {
             // expected
         }
 
-        final List<String> calledMethods = new ArrayList<String>();
+        final List<String> calledMethods = new ArrayList<>();
         final InvocationHandler handler = new MethodCallLogger(calledMethods) {
             @Override
             public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
@@ -504,7 +504,7 @@ public class TestPoolUtils {
         final ObjectPool<Object> pool = PoolUtils.erodingPool(
                 createProxy(ObjectPool.class, handler), factor);
 
-        final List<String> expectedMethods = new ArrayList<String>();
+        final List<String> expectedMethods = new ArrayList<>();
         assertEquals(expectedMethods, calledMethods);
 
         pool.addObject();
@@ -596,7 +596,7 @@ public class TestPoolUtils {
             // expected
         }
 
-        final List<String> calledMethods = new ArrayList<String>();
+        final List<String> calledMethods = new ArrayList<>();
         final InvocationHandler handler = new MethodCallLogger(calledMethods) {
             @Override
             public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
@@ -633,7 +633,7 @@ public class TestPoolUtils {
         final KeyedObjectPool<Object,Object> pool =
             PoolUtils.erodingPool(createProxy(KeyedObjectPool.class, handler), factor);
 
-        final List<String> expectedMethods = new ArrayList<String>();
+        final List<String> expectedMethods = new ArrayList<>();
         assertEquals(expectedMethods, calledMethods);
 
         final Object key = "key";
@@ -727,7 +727,7 @@ public class TestPoolUtils {
             // expected
         }
 
-        final List<String> calledMethods = new ArrayList<String>();
+        final List<String> calledMethods = new ArrayList<>();
         final InvocationHandler handler = new MethodCallLogger(calledMethods) {
             @Override
             public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
@@ -746,7 +746,7 @@ public class TestPoolUtils {
         final KeyedObjectPool<Object,Object> pool = PoolUtils.erodingPool(
                 createProxy(KeyedObjectPool.class, handler), factor, true);
 
-        final List<String> expectedMethods = new ArrayList<String>();
+        final List<String> expectedMethods = new ArrayList<>();
         assertEquals(expectedMethods, calledMethods);
 
         final Object key = "key";
@@ -901,7 +901,7 @@ public class TestPoolUtils {
             } else if (Object.class.equals(method.getReturnType())) {
                 return new Object();
             } else if (PooledObject.class.equals(method.getReturnType())) {
-                return new DefaultPooledObject<Object>(new Object());
+                return new DefaultPooledObject<>(new Object());
             } else {
                 return null;
             }

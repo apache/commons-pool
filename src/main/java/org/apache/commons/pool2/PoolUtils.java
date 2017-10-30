@@ -106,7 +106,7 @@ public final class PoolUtils {
         if (minIdle < 0) {
             throw new IllegalArgumentException("minIdle must be non-negative.");
         }
-        final TimerTask task = new ObjectPoolMinIdleTimerTask<T>(pool, minIdle);
+        final TimerTask task = new ObjectPoolMinIdleTimerTask<>(pool, minIdle);
         getMinIdleTimer().schedule(task, 0L, period);
         return task;
     }
@@ -150,7 +150,7 @@ public final class PoolUtils {
         if (minIdle < 0) {
             throw new IllegalArgumentException("minIdle must be non-negative.");
         }
-        final TimerTask task = new KeyedObjectPoolMinIdleTimerTask<K, V>(
+        final TimerTask task = new KeyedObjectPoolMinIdleTimerTask<>(
                 keyedPool, key, minIdle);
         getMinIdleTimer().schedule(task, 0L, period);
         return task;
@@ -190,7 +190,7 @@ public final class PoolUtils {
         if (keys == null) {
             throw new IllegalArgumentException("keys must not be null.");
         }
-        final Map<K, TimerTask> tasks = new HashMap<K, TimerTask>(keys.size());
+        final Map<K, TimerTask> tasks = new HashMap<>(keys.size());
         final Iterator<K> iter = keys.iterator();
         while (iter.hasNext()) {
             final K key = iter.next();
@@ -321,7 +321,7 @@ public final class PoolUtils {
          * .equals(pool.getClass().getName()) :
          * "CompositeObjectPools are already thread-safe";
          */
-        return new SynchronizedObjectPool<T>(pool);
+        return new SynchronizedObjectPool<>(pool);
     }
 
     /**
@@ -354,7 +354,7 @@ public final class PoolUtils {
          * .equals(keyedPool.getClass().getName()) :
          * "CompositeKeyedObjectPools are already thread-safe";
          */
-        return new SynchronizedKeyedObjectPool<K, V>(keyedPool);
+        return new SynchronizedKeyedObjectPool<>(keyedPool);
     }
 
     /**
@@ -369,7 +369,7 @@ public final class PoolUtils {
      */
     public static <T> PooledObjectFactory<T> synchronizedPooledFactory(
             final PooledObjectFactory<T> factory) {
-        return new SynchronizedPooledObjectFactory<T>(factory);
+        return new SynchronizedPooledObjectFactory<>(factory);
     }
 
     /**
@@ -385,7 +385,7 @@ public final class PoolUtils {
      */
     public static <K, V> KeyedPooledObjectFactory<K, V> synchronizedKeyedPooledFactory(
             final KeyedPooledObjectFactory<K, V> keyedFactory) {
-        return new SynchronizedKeyedPooledObjectFactory<K, V>(keyedFactory);
+        return new SynchronizedKeyedPooledObjectFactory<>(keyedFactory);
     }
 
     /**
@@ -441,7 +441,7 @@ public final class PoolUtils {
         if (factor <= 0f) {
             throw new IllegalArgumentException("factor must be positive.");
         }
-        return new ErodingObjectPool<T>(pool, factor);
+        return new ErodingObjectPool<>(pool, factor);
     }
 
     /**
@@ -544,9 +544,9 @@ public final class PoolUtils {
             throw new IllegalArgumentException("factor must be positive.");
         }
         if (perKey) {
-            return new ErodingPerKeyKeyedObjectPool<K, V>(keyedPool, factor);
+            return new ErodingPerKeyKeyedObjectPool<>(keyedPool, factor);
         }
-        return new ErodingKeyedObjectPool<K, V>(keyedPool, factor);
+        return new ErodingKeyedObjectPool<>(keyedPool, factor);
     }
 
     /**

@@ -42,7 +42,7 @@ public class TestBasePoolableObjectFactory {
         }
         @Override
         public PooledObject<Object> wrap(final Object value) {
-            return new DefaultPooledObject<Object>(value);
+            return new DefaultPooledObject<>(value);
         }
     }
 }

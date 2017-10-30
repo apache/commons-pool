@@ -36,7 +36,7 @@ public class SleepingObjectFactory implements PooledObjectFactory<Integer> {
         final Integer obj = new Integer(counter++);
         debug("makeObject", obj);
         sleep(500);
-        return new DefaultPooledObject<Integer>(obj);
+        return new DefaultPooledObject<>(obj);
     }
 
     @Override

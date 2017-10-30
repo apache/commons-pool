@@ -116,7 +116,7 @@ public abstract class TestObjectPool {
         } catch(final UnsupportedOperationException uoe) {
             return; // test not supported
         }
-        final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
+        final List<MethodCall> expectedMethods = new ArrayList<>();
 
         assertEquals(0, pool.getNumActive());
         assertEquals(0, pool.getNumIdle());
@@ -181,7 +181,7 @@ public abstract class TestObjectPool {
         if (pool instanceof GenericObjectPool) {
             ((GenericObjectPool<Object>) pool).setTestOnBorrow(true);
         }
-        final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
+        final List<MethodCall> expectedMethods = new ArrayList<>();
         Object obj;
 
         /// Test correct behavior code paths
@@ -262,7 +262,7 @@ public abstract class TestObjectPool {
         } catch (final UnsupportedOperationException uoe) {
             return; // test not supported
         }
-        final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
+        final List<MethodCall> expectedMethods = new ArrayList<>();
         Object obj;
 
         /// Test correct behavior code paths
@@ -323,7 +323,7 @@ public abstract class TestObjectPool {
         } catch (final UnsupportedOperationException uoe) {
             return; // test not supported
         }
-        final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
+        final List<MethodCall> expectedMethods = new ArrayList<>();
         Object obj;
 
         /// Test correct behavior code paths
@@ -362,7 +362,7 @@ public abstract class TestObjectPool {
         } catch (final UnsupportedOperationException uoe) {
             return; // test not supported
         }
-        final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
+        final List<MethodCall> expectedMethods = new ArrayList<>();
 
         /// Test correct behavior code paths
         PoolUtils.prefill(pool, 5);
@@ -385,7 +385,7 @@ public abstract class TestObjectPool {
         } catch (final UnsupportedOperationException uoe) {
             return; // test not supported
         }
-        final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
+        final List<MethodCall> expectedMethods = new ArrayList<>();
 
         /// Test correct behavior code paths
         PoolUtils.prefill(pool, 5);

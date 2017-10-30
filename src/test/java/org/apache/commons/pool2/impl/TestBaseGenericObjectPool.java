@@ -33,7 +33,7 @@ public class TestBaseGenericObjectPool {
     @Before
     public void setUp() throws Exception {
         factory = new SimpleFactory();
-        pool = new GenericObjectPool<String>(factory);
+        pool = new GenericObjectPool<>(factory);
     }
 
     @After

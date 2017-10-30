@@ -29,7 +29,7 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
  * @see MethodCall
  */
 public class MethodCallPoolableObjectFactory implements PooledObjectFactory<Object> {
-    private final List<MethodCall> methodCalls = new ArrayList<MethodCall>();
+    private final List<MethodCall> methodCalls = new ArrayList<>();
     private int count = 0;
     private boolean valid = true;
     private boolean makeObjectFail;

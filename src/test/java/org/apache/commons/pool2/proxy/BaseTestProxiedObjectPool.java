@@ -61,9 +61,9 @@ public abstract class BaseTestProxiedObjectPool {
         final PooledObjectFactory<TestObject> factory = new TestObjectFactory();
 
         final ObjectPool<TestObject> innerPool =
-                new GenericObjectPool<TestObject>(factory, config, abandonedConfig);
+                new GenericObjectPool<>(factory, config, abandonedConfig);
 
-        pool = new ProxiedObjectPool<TestObject>(innerPool, getproxySource());
+        pool = new ProxiedObjectPool<>(innerPool, getproxySource());
     }
 
 
@@ -169,7 +169,7 @@ public abstract class BaseTestProxiedObjectPool {
         }
         @Override
         public PooledObject<TestObject> wrap(final TestObject value) {
-            return new DefaultPooledObject<TestObject>(value);
+            return new DefaultPooledObject<>(value);
         }
     }
 

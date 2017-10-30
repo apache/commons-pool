@@ -45,22 +45,22 @@ public class TestLinkedBlockingDeque {
 
     @Before
     public void setUp() {
-        deque = new LinkedBlockingDeque<Integer>(2);
+        deque = new LinkedBlockingDeque<>(2);
     }
 
     @Test
     public void testConstructors() {
-        LinkedBlockingDeque<Integer> deque = new LinkedBlockingDeque<Integer>();
+        LinkedBlockingDeque<Integer> deque = new LinkedBlockingDeque<>();
         assertEquals(Integer.MAX_VALUE, deque.remainingCapacity());
 
-        deque = new LinkedBlockingDeque<Integer>(2);
+        deque = new LinkedBlockingDeque<>(2);
         assertEquals(2, deque.remainingCapacity());
 
-        deque = new LinkedBlockingDeque<Integer>(Arrays.asList(ONE, TWO));
+        deque = new LinkedBlockingDeque<>(Arrays.asList(ONE, TWO));
         assertEquals(2, deque.size());
 
         try {
-            deque = new LinkedBlockingDeque<Integer>(Arrays.asList(ONE, null));
+            deque = new LinkedBlockingDeque<>(Arrays.asList(ONE, null));
             fail("Not supposed to get here");
         } catch (final NullPointerException npe) {
             // OK
@@ -374,13 +374,13 @@ public class TestLinkedBlockingDeque {
 
     @Test
     public void testDrainTo() {
-        Collection<Integer> c = new ArrayList<Integer>();
+        Collection<Integer> c = new ArrayList<>();
         deque.add(ONE);
         deque.add(TWO);
         assertEquals(2, deque.drainTo(c));
         assertEquals(2, c.size());
 
-        c = new ArrayList<Integer>();
+        c = new ArrayList<>();
         deque.add(ONE);
         deque.add(TWO);
         assertEquals(1, deque.drainTo(c, 1));
@@ -490,7 +490,7 @@ public class TestLinkedBlockingDeque {
     @Test(timeout=10000)
     public void testPossibleBug() {
 
-        deque = new LinkedBlockingDeque<Integer>();
+        deque = new LinkedBlockingDeque<>();
         for (int i = 0; i < 3; i++) {
             deque.add(Integer.valueOf(i));
         }

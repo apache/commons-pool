@@ -21,7 +21,7 @@ public class TestProxiedKeyedObjectPoolWithJdkProxy
 
     @Override
     protected ProxySource<TestObject> getproxySource() {
-        return new JdkProxySource<TestObject>(this.getClass().getClassLoader(),
+        return new JdkProxySource<>(this.getClass().getClassLoader(),
                 new Class<?>[] { TestObject.class });
     }
 }

@@ -34,8 +34,8 @@ public class TestPooledSoftReference {
 
     @Before
     public void setUp() {
-        final SoftReference<String> softRef = new SoftReference<String>(REFERENT);
-        ref = new PooledSoftReference<String>(softRef);
+        final SoftReference<String> softRef = new SoftReference<>(REFERENT);
+        ref = new PooledSoftReference<>(softRef);
     }
 
     @Test
@@ -46,7 +46,7 @@ public class TestPooledSoftReference {
         assertEquals(REFERENT, softRef.get());
         softRef.clear();
 
-        softRef = new SoftReference<String>(REFERENT2);
+        softRef = new SoftReference<>(REFERENT2);
         ref.setReference(softRef);
 
         assertEquals(REFERENT2, ref.getObject());

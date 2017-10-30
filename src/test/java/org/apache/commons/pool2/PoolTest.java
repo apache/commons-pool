@@ -38,7 +38,7 @@ public class PoolTest {
 
         @Override
         public PooledObject<Foo> makeObject() throws Exception {
-            return new DefaultPooledObject<Foo>(new Foo());
+            return new DefaultPooledObject<>(new Foo());
         }
 
         @Override
@@ -71,7 +71,7 @@ public class PoolTest {
         final PooledFooFactory pooledFooFactory = new PooledFooFactory();
         GenericObjectPool<Foo> pool = null;
         try {
-            pool = new GenericObjectPool<Foo>(pooledFooFactory, poolConfig);
+            pool = new GenericObjectPool<>(pooledFooFactory, poolConfig);
             pool.setTimeBetweenEvictionRunsMillis(EVICTION_PERIOD_IN_MILLIS);
             pool.addObject();
             try {

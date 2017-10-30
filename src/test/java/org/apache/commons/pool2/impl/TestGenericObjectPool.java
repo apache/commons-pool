@@ -64,7 +64,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Override
     protected ObjectPool<String> makeEmptyPool(final int mincap) {
        final GenericObjectPool<String> mtPool =
-               new GenericObjectPool<String>(new SimpleFactory());
+               new GenericObjectPool<>(new SimpleFactory());
        mtPool.setMaxTotal(mincap);
        mtPool.setMaxIdle(mincap);
        return mtPool;
@@ -73,7 +73,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Override
     protected ObjectPool<Object> makeEmptyPool(
             final PooledObjectFactory<Object> fac) {
-        return new GenericObjectPool<Object>(fac);
+        return new GenericObjectPool<>(fac);
     }
 
     @Override
@@ -84,7 +84,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Before
     public void setUp() throws Exception {
         factory = new SimpleFactory();
-        pool = new GenericObjectPool<String>(factory);
+        pool = new GenericObjectPool<>(factory);
     }
 
     @After
@@ -140,7 +140,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         final boolean lifo = false;
         final PooledObjectFactory<Object> dummyFactory = new DummyFactory();
         GenericObjectPool<Object> dummyPool =
-                new GenericObjectPool<Object>(dummyFactory);
+                new GenericObjectPool<>(dummyFactory);
         assertEquals(GenericObjectPoolConfig.DEFAULT_MAX_IDLE, dummyPool.getMaxIdle());
         assertEquals(BaseObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS, dummyPool.getMaxWaitMillis());
         assertEquals(GenericObjectPoolConfig.DEFAULT_MIN_IDLE, dummyPool.getMinIdle());
@@ -177,7 +177,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         config.setTestWhileIdle(testWhileIdle);
         config.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
         config.setBlockWhenExhausted(blockWhenExhausted);
-        dummyPool = new GenericObjectPool<Object>(dummyFactory, config);
+        dummyPool = new GenericObjectPool<>(dummyFactory, config);
         assertEquals(maxIdle, dummyPool.getMaxIdle());
         assertEquals(maxWait, dummyPool.getMaxWaitMillis());
         assertEquals(minIdle, dummyPool.getMinIdle());
@@ -296,7 +296,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.borrowObject(); // numActive = 1, numIdle = 0
         // Create a test thread that will run once and try a borrow after
         // 150ms fixed delay
-        final TestThread<String> borrower = new TestThread<String>(pool, 1, 150, false);
+        final TestThread<String> borrower = new TestThread<>(pool, 1, 150, false);
         final Thread borrowerThread = new Thread(borrower);
         // Set evictor to run in 100 ms - will create idle instance
         pool.setTimeBetweenEvictionRunsMillis(100);
@@ -407,9 +407,9 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     private void checkEvictorVisiting(final boolean lifo) throws Exception {
-        VisitTrackerFactory<Object> trackerFactory = new VisitTrackerFactory<Object>();
+        VisitTrackerFactory<Object> trackerFactory = new VisitTrackerFactory<>();
         GenericObjectPool<VisitTracker<Object>> trackerPool =
-                new GenericObjectPool<VisitTracker<Object>>(trackerFactory);
+                new GenericObjectPool<>(trackerFactory);
         trackerPool.setNumTestsPerEvictionRun(2);
         trackerPool.setMinEvictableIdleTimeMillis(-1);
         trackerPool.setTestWhileIdle(true);
@@ -441,8 +441,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
         trackerPool.close();
 
-        trackerFactory = new VisitTrackerFactory<Object>();
-        trackerPool = new GenericObjectPool<VisitTracker<Object>>(trackerFactory);
+        trackerFactory = new VisitTrackerFactory<>();
+        trackerPool = new GenericObjectPool<>(trackerFactory);
         trackerPool.setNumTestsPerEvictionRun(3);
         trackerPool.setMinEvictableIdleTimeMillis(-1);
         trackerPool.setTestWhileIdle(true);
@@ -487,7 +487,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         random.setSeed(System.currentTimeMillis());
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 5; j++) {
-                trackerPool = new GenericObjectPool<VisitTracker<Object>>(trackerFactory);
+                trackerPool = new GenericObjectPool<>(trackerFactory);
                 trackerPool.setNumTestsPerEvictionRun(smallPrimes[i]);
                 trackerPool.setMinEvictableIdleTimeMillis(-1);
                 trackerPool.setTestWhileIdle(true);
@@ -703,7 +703,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             // Factor of 2 on iterations so main thread does work whilst other
             // threads are running. Factor of 2 on delay so average delay for
             // other threads == actual delay for main thread
-            threads[i] = new TestThread<String>(pool, numIter * 2, delay * 2);
+            threads[i] = new TestThread<>(pool, numIter * 2, delay * 2);
             final Thread t = new Thread(threads[i]);
             t.start();
         }
@@ -1124,7 +1124,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             }
             @Override
             public PooledObject<TimeTest> wrap(final TimeTest value) {
-                return new DefaultPooledObject<TimeTest>(value);
+                return new DefaultPooledObject<>(value);
             }
             public long getCreateTime() {
                 return createTime;
@@ -1132,7 +1132,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
 
         final GenericObjectPool<TimeTest> timePool =
-            new GenericObjectPool<TimeTest>(new TimeTest());
+            new GenericObjectPool<>(new TimeTest());
 
         timePool.setMaxIdle(5);
         timePool.setMaxTotal(5);
@@ -1168,7 +1168,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     public void testEvictionInvalid() throws Exception {
 
         final GenericObjectPool<Object> invalidFactoryPool =
-                new GenericObjectPool<Object>(new InvalidFactory());
+                new GenericObjectPool<>(new InvalidFactory());
 
         invalidFactoryPool.setMaxIdle(1);
         invalidFactoryPool.setMaxTotal(1);
@@ -1182,7 +1182,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         invalidFactoryPool.returnObject(p);
 
         // Run eviction in a separate thread
-        final Thread t = new EvictionThread<Object>(invalidFactoryPool);
+        final Thread t = new EvictionThread<>(invalidFactoryPool);
         t.start();
 
         // Sleep to make sure evictor has started
@@ -1228,7 +1228,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         final int nIterations = 60;
         final InvalidateThread[] threads = new InvalidateThread[nThreads];
         // Randomly generated list of distinct invalidation targets
-        final ArrayList<Integer> targets = new ArrayList<Integer>();
+        final ArrayList<Integer> targets = new ArrayList<>();
         final Random random = new Random();
         for (int j = 0; j < nIterations; j++) {
             // Get a random invalidation target
@@ -1460,7 +1460,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         final int delay = 1;
         final int iterations = 1000;
         final AtomicIntegerFactory factory = new AtomicIntegerFactory();
-        final GenericObjectPool<AtomicInteger> pool = new GenericObjectPool<AtomicInteger>(factory);
+        final GenericObjectPool<AtomicInteger> pool = new GenericObjectPool<>(factory);
         pool.setMaxTotal(maxTotal);
         pool.setMaxIdle(maxTotal);
         pool.setTestOnBorrow(true);
@@ -1774,7 +1774,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             synchronized(this) {
                 counter = makeCounter++;
             }
-            return new DefaultPooledObject<String>(String.valueOf(counter));
+            return new DefaultPooledObject<>(String.valueOf(counter));
         }
 
         @Override
@@ -1915,7 +1915,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
     @Override
     public PooledObject<AtomicInteger> wrap(final AtomicInteger integer) {
-        return new DefaultPooledObject<AtomicInteger>(integer);
+        return new DefaultPooledObject<>(integer);
     }
 
     @Override
@@ -2245,13 +2245,13 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
         final GenericObjectPoolConfig config = new GenericObjectPoolConfig();
         config.setJmxEnabled(false);
-        final GenericObjectPool<String> poolWithoutJmx = new GenericObjectPool<String>(factory, config);
+        final GenericObjectPool<String> poolWithoutJmx = new GenericObjectPool<>(factory, config);
         assertNull(poolWithoutJmx.getJmxName());
         config.setJmxEnabled(true);
         poolWithoutJmx.jmxUnregister();
 
         config.setJmxNameBase(null);
-        final GenericObjectPool<String> poolWithDefaultJmxNameBase = new GenericObjectPool<String>(factory, config);
+        final GenericObjectPool<String> poolWithDefaultJmxNameBase = new GenericObjectPool<>(factory, config);
         assertNotNull(poolWithDefaultJmxNameBase.getJmxName());
     }
 
@@ -2267,7 +2267,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     public void testInvalidateFreesCapacity()
         throws Exception {
         final SimpleFactory factory = new SimpleFactory();
-        final GenericObjectPool<String> pool = new GenericObjectPool<String>(factory);
+        final GenericObjectPool<String> pool = new GenericObjectPool<>(factory);
         pool.setMaxTotal(2);
         pool.setMaxWaitMillis(500);
         // Borrow an instance and hold if for 5 seconds
@@ -2301,7 +2301,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         final SimpleFactory factory = new SimpleFactory();
         factory.setValid(false); // Validate will always fail
         factory.setValidationEnabled(true);
-        final GenericObjectPool<String> pool = new GenericObjectPool<String>(factory);
+        final GenericObjectPool<String> pool = new GenericObjectPool<>(factory);
         pool.setMaxTotal(2);
         pool.setMaxWaitMillis(1500);
         pool.setTestOnReturn(true);
@@ -2321,7 +2321,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Test
     public void testSwallowedExceptionListener() {
         pool.setSwallowedExceptionListener(null); // must simply return
-        final List<Exception> swallowedExceptions = new ArrayList<Exception>();
+        final List<Exception> swallowedExceptions = new ArrayList<>();
         /*
          * A simple listener, that will throw a OOM on 3rd exception.
          */
@@ -2355,7 +2355,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     // POOL-248
     @Test(expected=IllegalStateException.class)
     public void testMultipleReturnOfSameObject() throws Exception {
-        final GenericObjectPool<String> pool = new GenericObjectPool<String>(
+        final GenericObjectPool<String> pool = new GenericObjectPool<>(
                 factory, new GenericObjectPoolConfig());
 
         Assert.assertEquals(0, pool.getNumActive());
@@ -2383,7 +2383,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         final SimpleFactory factory = new SimpleFactory();
         // Give makeObject a little latency
         factory.setMakeLatency(200);
-        final GenericObjectPool<String> pool = new GenericObjectPool<String>(
+        final GenericObjectPool<String> pool = new GenericObjectPool<>(
                 factory, new GenericObjectPoolConfig());
         final String s = pool.borrowObject();
         // First borrow waits on create, so wait time should be at least 200 ms
@@ -2433,7 +2433,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Test
     public void testEqualsIndiscernible() throws Exception {
         final HashSetFactory factory = new HashSetFactory();
-        final GenericObjectPool<HashSet<String>> pool = new GenericObjectPool<HashSet<String>>(
+        final GenericObjectPool<HashSet<String>> pool = new GenericObjectPool<>(
                 factory, new GenericObjectPoolConfig());
         final HashSet<String> s1 = pool.borrowObject();
         final HashSet<String> s2 = pool.borrowObject();
@@ -2451,7 +2451,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Test
     public void testMutable() throws Exception {
         final HashSetFactory factory = new HashSetFactory();
-        final GenericObjectPool<HashSet<String>> pool = new GenericObjectPool<HashSet<String>>(
+        final GenericObjectPool<HashSet<String>> pool = new GenericObjectPool<>(
                 factory, new GenericObjectPoolConfig());
         final HashSet<String> s1 = pool.borrowObject();
         final HashSet<String> s2 = pool.borrowObject();
@@ -2470,8 +2470,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
      */
     @Test
     public void testMultipleReturn() throws Exception {
-        final WaiterFactory<String> factory = new WaiterFactory<String>(0, 0, 0, 0, 0, 0);
-        final GenericObjectPool<Waiter> pool = new GenericObjectPool<Waiter>(factory);
+        final WaiterFactory<String> factory = new WaiterFactory<>(0, 0, 0, 0, 0, 0);
+        final GenericObjectPool<Waiter> pool = new GenericObjectPool<>(factory);
         pool.setTestOnReturn(true);
         final Waiter waiter = pool.borrowObject();
         pool.returnObject(waiter);
@@ -2509,7 +2509,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
         @Override
         public PooledObject<Object> wrap(final Object value) {
-            return new DefaultPooledObject<Object>(value);
+            return new DefaultPooledObject<>(value);
         }
     }
 
@@ -2522,11 +2522,11 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             extends BasePooledObjectFactory<HashSet<String>> {
         @Override
         public HashSet<String> create() throws Exception {
-            return new HashSet<String>();
+            return new HashSet<>();
         }
         @Override
         public PooledObject<HashSet<String>> wrap(final HashSet<String> value) {
-            return new DefaultPooledObject<HashSet<String>>(value);
+            return new DefaultPooledObject<>(value);
         }
     }
 
@@ -2539,7 +2539,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
         @Override
         public PooledObject<Object> wrap(final Object value) {
-            return new DefaultPooledObject<Object>(value);
+            return new DefaultPooledObject<>(value);
         }
 
         @Override
@@ -2576,7 +2576,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
         final CreateFailFactory factory = new CreateFailFactory();
         final GenericObjectPool<String> createFailFactoryPool =
-                new GenericObjectPool<String>(factory);
+                new GenericObjectPool<>(factory);
 
         createFailFactoryPool.setMaxTotal(1);
 
@@ -2632,7 +2632,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
         @Override
         public PooledObject<String> wrap(final String obj) {
-            return new DefaultPooledObject<String>(obj);
+            return new DefaultPooledObject<>(obj);
         }
 
         public void release() {
@@ -2662,14 +2662,14 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
 	@Test
 	public void testGetFactoryType() {
-		final GenericObjectPool<String> pool = new GenericObjectPool<String>(createBasePooledObjectfactory());
+		final GenericObjectPool<String> pool = new GenericObjectPool<>(createBasePooledObjectfactory());
 		Assert.assertNotNull((pool.getFactoryType()));
 	}
 
 	@Test
 	@Ignore
 	public void testGetFactoryType_PoolUtilssynchronizedPooledFactory() {
-		final GenericObjectPool<String> pool = new GenericObjectPool<String>(
+		final GenericObjectPool<String> pool = new GenericObjectPool<>(
 				PoolUtils.synchronizedPooledFactory(createBasePooledObjectfactory()));
 		Assert.assertNotNull((pool.getFactoryType()));
 	}
@@ -2677,8 +2677,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 	@Test
 	@Ignore
 	public void testGetFactoryType_SynchronizedPooledObjectFactory() {
-		final GenericObjectPool<String> pool = new GenericObjectPool<String>(
-				new TestSynchronizedPooledObjectFactory<String>(createBasePooledObjectfactory()));
+		final GenericObjectPool<String> pool = new GenericObjectPool<>(
+				new TestSynchronizedPooledObjectFactory<>(createBasePooledObjectfactory()));
 		Assert.assertNotNull((pool.getFactoryType()));
 	}
 

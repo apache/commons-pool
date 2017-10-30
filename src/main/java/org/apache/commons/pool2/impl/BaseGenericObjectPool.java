@@ -146,7 +146,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         if (cl == null) {
             factoryClassLoader = null;
         } else {
-            factoryClassLoader = new WeakReference<ClassLoader>(cl);
+            factoryClassLoader = new WeakReference<>(cl);
         }
 
         fairness = config.getFairness();

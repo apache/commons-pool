@@ -28,12 +28,12 @@ public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
 
     @Override
     protected ObjectPool<String> makeEmptyPool(final int cap) {
-        return new SoftReferenceObjectPool<String>(new SimpleFactory());
+        return new SoftReferenceObjectPool<>(new SimpleFactory());
     }
 
     @Override
     protected ObjectPool<Object> makeEmptyPool(final PooledObjectFactory<Object> factory) {
-        return new SoftReferenceObjectPool<Object>(factory);
+        return new SoftReferenceObjectPool<>(factory);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
         }
         @Override
         public PooledObject<String> wrap(final String value) {
-            return new DefaultPooledObject<String>(value);
+            return new DefaultPooledObject<>(value);
         }
     }
 }

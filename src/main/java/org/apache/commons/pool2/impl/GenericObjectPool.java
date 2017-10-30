@@ -110,7 +110,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         }
         this.factory = factory;
 
-        idleObjects = new LinkedBlockingDeque<PooledObject<T>>(config.getFairness());
+        idleObjects = new LinkedBlockingDeque<>(config.getFairness());
 
         setConfig(config);
 
@@ -522,7 +522,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      */
     @Override
     public void returnObject(final T obj) {
-        final PooledObject<T> p = allObjects.get(new IdentityWrapper<T>(obj));
+        final PooledObject<T> p = allObjects.get(new IdentityWrapper<>(obj));
 
         if (p == null) {
             if (!isAbandonedConfig()) {
@@ -618,7 +618,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      */
     @Override
     public void invalidateObject(final T obj) throws Exception {
-        final PooledObject<T> p = allObjects.get(new IdentityWrapper<T>(obj));
+        final PooledObject<T> p = allObjects.get(new IdentityWrapper<>(obj));
         if (p == null) {
             if (isAbandonedConfig()) {
                 return;
@@ -902,7 +902,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         }
 
         createdCount.incrementAndGet();
-        allObjects.put(new IdentityWrapper<T>(p.getObject()), p);
+        allObjects.put(new IdentityWrapper<>(p.getObject()), p);
         return p;
     }
 
@@ -917,7 +917,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     private void destroy(final PooledObject<T> toDestroy) throws Exception {
         toDestroy.invalidate();
         idleObjects.remove(toDestroy);
-        allObjects.remove(new IdentityWrapper<T>(toDestroy.getObject()));
+        allObjects.remove(new IdentityWrapper<>(toDestroy.getObject()));
         try {
             factory.destroyObject(toDestroy);
         } finally {
@@ -1033,7 +1033,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         final long now = System.currentTimeMillis();
         final long timeout =
                 now - (ac.getRemoveAbandonedTimeout() * 1000L);
-        final ArrayList<PooledObject<T>> remove = new ArrayList<PooledObject<T>>();
+        final ArrayList<PooledObject<T>> remove = new ArrayList<>();
         final Iterator<PooledObject<T>> it = allObjects.values().iterator();
         while (it.hasNext()) {
             final PooledObject<T> pooledObject = it.next();
@@ -1068,7 +1068,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     public void use(final T pooledObject) {
         final AbandonedConfig ac = this.abandonedConfig;
         if (ac != null && ac.getUseUsageTracking()) {
-            final PooledObject<T> wrapper = allObjects.get(new IdentityWrapper<T>(pooledObject));
+            final PooledObject<T> wrapper = allObjects.get(new IdentityWrapper<>(pooledObject));
             wrapper.use();
         }
     }
@@ -1130,7 +1130,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     @Override
     public Set<DefaultPooledObjectInfo> listAllObjects() {
         final Set<DefaultPooledObjectInfo> result =
-                new HashSet<DefaultPooledObjectInfo>(allObjects.size());
+                new HashSet<>(allObjects.size());
         for (final PooledObject<T> p : allObjects.values()) {
             result.add(new DefaultPooledObjectInfo(p));
         }
@@ -1154,7 +1154,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * wrappers used internally by the pool.
      */
     private final Map<IdentityWrapper<T>, PooledObject<T>> allObjects =
-        new ConcurrentHashMap<IdentityWrapper<T>, PooledObject<T>>();
+        new ConcurrentHashMap<>();
     /*
      * The combined count of the currently created objects and those in the
      * process of being created. Under load, it may exceed {@link #_maxActive}

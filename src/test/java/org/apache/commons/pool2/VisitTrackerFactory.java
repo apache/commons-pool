@@ -35,12 +35,12 @@ public class VisitTrackerFactory<K>
 
     @Override
     public PooledObject<VisitTracker<K>> makeObject() {
-        return new DefaultPooledObject<VisitTracker<K>>(new VisitTracker<K>(nextId++));
+        return new DefaultPooledObject<>(new VisitTracker<K>(nextId++));
     }
 
     @Override
     public PooledObject<VisitTracker<K>> makeObject(final K key) {
-        return new DefaultPooledObject<VisitTracker<K>>(new VisitTracker<K>(nextId++, key));
+        return new DefaultPooledObject<>(new VisitTracker<>(nextId++, key));
     }
 
     @Override

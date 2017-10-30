@@ -28,7 +28,7 @@ public class TestDefaultPooledObjectInfo {
     @Test
     public void testTiming() throws Exception {
         final GenericObjectPool<String> pool =
-                new GenericObjectPool<String>(new SimpleFactory());
+                new GenericObjectPool<>(new SimpleFactory());
 
         final long t1 = System.currentTimeMillis();
 
@@ -77,7 +77,7 @@ public class TestDefaultPooledObjectInfo {
     @Test
     public void testGetPooledObjectType() throws Exception {
         final GenericObjectPool<String> pool =
-                new GenericObjectPool<String>(new SimpleFactory());
+                new GenericObjectPool<>(new SimpleFactory());
 
         pool.borrowObject();
 
@@ -94,7 +94,7 @@ public class TestDefaultPooledObjectInfo {
     @Test
     public void testGetPooledObjectToString() throws Exception {
         final GenericObjectPool<String> pool =
-                new GenericObjectPool<String>(new SimpleFactory());
+                new GenericObjectPool<>(new SimpleFactory());
 
         final String s1 = pool.borrowObject();
 
@@ -114,7 +114,7 @@ public class TestDefaultPooledObjectInfo {
         abandonedConfig.setRemoveAbandonedOnBorrow(true);
         abandonedConfig.setRemoveAbandonedTimeout(1);
         abandonedConfig.setLogAbandoned(true);
-        final GenericObjectPool<String> pool = new GenericObjectPool<String>(
+        final GenericObjectPool<String> pool = new GenericObjectPool<>(
                 new SimpleFactory(),
                 new GenericObjectPoolConfig(),
                 abandonedConfig);

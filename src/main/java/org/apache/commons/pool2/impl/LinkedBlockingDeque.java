@@ -245,7 +245,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
             return false;
         }
         final Node<E> f = first;
-        final Node<E> x = new Node<E>(e, null, f);
+        final Node<E> x = new Node<>(e, null, f);
         first = x;
         if (last == null) {
             last = x;
@@ -270,7 +270,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
             return false;
         }
         final Node<E> l = last;
-        final Node<E> x = new Node<E>(e, l, null);
+        final Node<E> x = new Node<>(e, l, null);
         last = x;
         if (first == null) {
             first = x;

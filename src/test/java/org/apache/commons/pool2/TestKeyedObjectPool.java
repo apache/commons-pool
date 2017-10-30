@@ -139,7 +139,7 @@ public abstract class TestKeyedObjectPool {
         } catch(final UnsupportedOperationException uoe) {
             return; // test not supported
         }
-        final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
+        final List<MethodCall> expectedMethods = new ArrayList<>();
 
         // addObject should make a new object, passivate it and put it in the pool
         pool.addObject(KEY);
@@ -187,7 +187,7 @@ public abstract class TestKeyedObjectPool {
         } catch(final UnsupportedOperationException uoe) {
             return; // test not supported
         }
-        final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
+        final List<MethodCall> expectedMethods = new ArrayList<>();
         Object obj;
 
         if (pool instanceof GenericKeyedObjectPool) {
@@ -275,7 +275,7 @@ public abstract class TestKeyedObjectPool {
         } catch(final UnsupportedOperationException uoe) {
             return; // test not supported
         }
-        final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
+        final List<MethodCall> expectedMethods = new ArrayList<>();
         Object obj;
 
         /// Test correct behavior code paths
@@ -333,7 +333,7 @@ public abstract class TestKeyedObjectPool {
         } catch(final UnsupportedOperationException uoe) {
             return; // test not supported
         }
-        final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
+        final List<MethodCall> expectedMethods = new ArrayList<>();
         Object obj;
 
         /// Test correct behavior code paths
@@ -372,7 +372,7 @@ public abstract class TestKeyedObjectPool {
         } catch(final UnsupportedOperationException uoe) {
             return; // test not supported
         }
-        final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
+        final List<MethodCall> expectedMethods = new ArrayList<>();
 
         /// Test correct behavior code paths
         PoolUtils.prefill(pool, KEY, 5);
@@ -395,7 +395,7 @@ public abstract class TestKeyedObjectPool {
         } catch(final UnsupportedOperationException uoe) {
             return; // test not supported
         }
-        final List<MethodCall> expectedMethods = new ArrayList<MethodCall>();
+        final List<MethodCall> expectedMethods = new ArrayList<>();
 
         /// Test correct behavior code paths
         PoolUtils.prefill(pool, KEY, 5);
@@ -674,12 +674,12 @@ public abstract class TestKeyedObjectPool {
         }
         @Override
         public PooledObject<Object> wrap(final Object value) {
-            return new DefaultPooledObject<Object>(value);
+            return new DefaultPooledObject<>(value);
         }
     }
 
     protected static class FailingKeyedPooledObjectFactory implements KeyedPooledObjectFactory<Object,Object> {
-        private final List<MethodCall> methodCalls = new ArrayList<MethodCall>();
+        private final List<MethodCall> methodCalls = new ArrayList<>();
         private int count = 0;
         private boolean makeObjectFail;
         private boolean activateObjectFail;
