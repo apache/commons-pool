@@ -43,6 +43,11 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Pool Changes</title>
   </properties>
   <body>
+  <release version="2.5" date="2017-MM-DD" description="This is a patch release, including bug fixes only.">
+    <action dev="ggregory" issue="POOL-331" type="update">
+      Update from Java 6 to 7.
+    </action>
+  </release>
   <release version="2.4.3" date="2017-10-24" description="This is a patch release, including bug fixes only.">
     <action dev="ggregory" issue="POOL-328" type="fix" due-to="Lorenzo Solano Martinez">
       Documentation with repeated words (sources, tests, and examples).
