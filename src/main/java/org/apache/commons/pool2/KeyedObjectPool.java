@@ -16,6 +16,7 @@
  */
 package org.apache.commons.pool2;
 
+import java.io.Closeable;
 import java.util.NoSuchElementException;
 
 /**
@@ -60,7 +61,7 @@ import java.util.NoSuchElementException;
  *
  * @since 2.0
  */
-public interface KeyedObjectPool<K,V> {
+public interface KeyedObjectPool<K,V> extends Closeable {
     /**
      * Obtains an instance from this pool for the specified <code>key</code>.
      * <p>

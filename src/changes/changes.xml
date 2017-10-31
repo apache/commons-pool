@@ -50,6 +50,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" issue="POOL-330" type="delete">
       Drop Ant build.
     </action>
+    <action dev="ggregory" issue="POOL-332" type="add">
+      ObjectPool and KeyedObject pool should extend Closeable.
+    </action>
   </release>
   <release version="2.4.3" date="2017-10-24" description="This is a patch release, including bug fixes only.">
     <action dev="ggregory" issue="POOL-328" type="fix" due-to="Lorenzo Solano Martinez">
