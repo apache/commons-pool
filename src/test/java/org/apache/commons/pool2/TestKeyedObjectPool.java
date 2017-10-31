@@ -414,13 +414,10 @@ public abstract class TestKeyedObjectPool {
     public void testToString() throws Exception {
         final FailingKeyedPooledObjectFactory factory =
                 new FailingKeyedPooledObjectFactory();
-        final KeyedObjectPool<Object,Object> pool = makeEmptyPool(factory);
-        try {
+        try (final KeyedObjectPool<Object,Object> pool = makeEmptyPool(factory)) {
             pool.toString();
         } catch(final UnsupportedOperationException uoe) {
             return; // test not supported
-        } finally {
-            pool.close();
         }
     }
 
