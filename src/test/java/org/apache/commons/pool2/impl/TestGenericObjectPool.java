@@ -139,32 +139,29 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         final boolean blockWhenExhausted = false;
         final boolean lifo = false;
         final PooledObjectFactory<Object> dummyFactory = new DummyFactory();
-        GenericObjectPool<Object> dummyPool =
-                new GenericObjectPool<>(dummyFactory);
-        assertEquals(GenericObjectPoolConfig.DEFAULT_MAX_IDLE, dummyPool.getMaxIdle());
-        assertEquals(BaseObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS, dummyPool.getMaxWaitMillis());
-        assertEquals(GenericObjectPoolConfig.DEFAULT_MIN_IDLE, dummyPool.getMinIdle());
-        assertEquals(GenericObjectPoolConfig.DEFAULT_MAX_TOTAL, dummyPool.getMaxTotal());
-        assertEquals(BaseObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
-                dummyPool.getMinEvictableIdleTimeMillis());
-        assertEquals(BaseObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
-                dummyPool.getNumTestsPerEvictionRun());
-        assertEquals(Boolean.valueOf(BaseObjectPoolConfig.DEFAULT_TEST_ON_BORROW),
-                Boolean.valueOf(dummyPool.getTestOnBorrow()));
-        assertEquals(Boolean.valueOf(BaseObjectPoolConfig.DEFAULT_TEST_ON_RETURN),
-                Boolean.valueOf(dummyPool.getTestOnReturn()));
-        assertEquals(Boolean.valueOf(BaseObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE),
-                Boolean.valueOf(dummyPool.getTestWhileIdle()));
-        assertEquals(BaseObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
-                dummyPool.getTimeBetweenEvictionRunsMillis());
-        assertEquals(Boolean.valueOf(BaseObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED),
-                Boolean.valueOf(dummyPool.getBlockWhenExhausted()));
-        assertEquals(Boolean.valueOf(BaseObjectPoolConfig.DEFAULT_LIFO),
-                Boolean.valueOf(dummyPool.getLifo()));
-        dummyPool.close();
+        try (GenericObjectPool<Object> dummyPool = new GenericObjectPool<>(dummyFactory)) {
+            assertEquals(GenericObjectPoolConfig.DEFAULT_MAX_IDLE, dummyPool.getMaxIdle());
+            assertEquals(BaseObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS, dummyPool.getMaxWaitMillis());
+            assertEquals(GenericObjectPoolConfig.DEFAULT_MIN_IDLE, dummyPool.getMinIdle());
+            assertEquals(GenericObjectPoolConfig.DEFAULT_MAX_TOTAL, dummyPool.getMaxTotal());
+            assertEquals(BaseObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
+                    dummyPool.getMinEvictableIdleTimeMillis());
+            assertEquals(BaseObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
+                    dummyPool.getNumTestsPerEvictionRun());
+            assertEquals(Boolean.valueOf(BaseObjectPoolConfig.DEFAULT_TEST_ON_BORROW),
+                    Boolean.valueOf(dummyPool.getTestOnBorrow()));
+            assertEquals(Boolean.valueOf(BaseObjectPoolConfig.DEFAULT_TEST_ON_RETURN),
+                    Boolean.valueOf(dummyPool.getTestOnReturn()));
+            assertEquals(Boolean.valueOf(BaseObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE),
+                    Boolean.valueOf(dummyPool.getTestWhileIdle()));
+            assertEquals(BaseObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
+                    dummyPool.getTimeBetweenEvictionRunsMillis());
+            assertEquals(Boolean.valueOf(BaseObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED),
+                    Boolean.valueOf(dummyPool.getBlockWhenExhausted()));
+            assertEquals(Boolean.valueOf(BaseObjectPoolConfig.DEFAULT_LIFO), Boolean.valueOf(dummyPool.getLifo()));
+        }
 
-        final GenericObjectPoolConfig config =
-                new GenericObjectPoolConfig();
+        final GenericObjectPoolConfig config = new GenericObjectPoolConfig();
         config.setLifo(lifo);
         config.setMaxIdle(maxIdle);
         config.setMinIdle(minIdle);
@@ -177,26 +174,20 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         config.setTestWhileIdle(testWhileIdle);
         config.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
         config.setBlockWhenExhausted(blockWhenExhausted);
-        dummyPool = new GenericObjectPool<>(dummyFactory, config);
-        assertEquals(maxIdle, dummyPool.getMaxIdle());
-        assertEquals(maxWait, dummyPool.getMaxWaitMillis());
-        assertEquals(minIdle, dummyPool.getMinIdle());
-        assertEquals(maxTotal, dummyPool.getMaxTotal());
-        assertEquals(minEvictableIdleTimeMillis,
-                dummyPool.getMinEvictableIdleTimeMillis());
-        assertEquals(numTestsPerEvictionRun, dummyPool.getNumTestsPerEvictionRun());
-        assertEquals(Boolean.valueOf(testOnBorrow),
-                Boolean.valueOf(dummyPool.getTestOnBorrow()));
-        assertEquals(Boolean.valueOf(testOnReturn),
-                Boolean.valueOf(dummyPool.getTestOnReturn()));
-        assertEquals(Boolean.valueOf(testWhileIdle),
-                Boolean.valueOf(dummyPool.getTestWhileIdle()));
-        assertEquals(timeBetweenEvictionRunsMillis,
-                dummyPool.getTimeBetweenEvictionRunsMillis());
-        assertEquals(Boolean.valueOf(blockWhenExhausted),
-                Boolean.valueOf(dummyPool.getBlockWhenExhausted()));
-        assertEquals(Boolean.valueOf(lifo), Boolean.valueOf(dummyPool.getLifo()));
-        dummyPool.close();
+        try (GenericObjectPool<Object> dummyPool = new GenericObjectPool<>(dummyFactory, config)) {
+            assertEquals(maxIdle, dummyPool.getMaxIdle());
+            assertEquals(maxWait, dummyPool.getMaxWaitMillis());
+            assertEquals(minIdle, dummyPool.getMinIdle());
+            assertEquals(maxTotal, dummyPool.getMaxTotal());
+            assertEquals(minEvictableIdleTimeMillis, dummyPool.getMinEvictableIdleTimeMillis());
+            assertEquals(numTestsPerEvictionRun, dummyPool.getNumTestsPerEvictionRun());
+            assertEquals(Boolean.valueOf(testOnBorrow), Boolean.valueOf(dummyPool.getTestOnBorrow()));
+            assertEquals(Boolean.valueOf(testOnReturn), Boolean.valueOf(dummyPool.getTestOnReturn()));
+            assertEquals(Boolean.valueOf(testWhileIdle), Boolean.valueOf(dummyPool.getTestWhileIdle()));
+            assertEquals(timeBetweenEvictionRunsMillis, dummyPool.getTimeBetweenEvictionRunsMillis());
+            assertEquals(Boolean.valueOf(blockWhenExhausted), Boolean.valueOf(dummyPool.getBlockWhenExhausted()));
+            assertEquals(Boolean.valueOf(lifo), Boolean.valueOf(dummyPool.getLifo()));
+        }
     }
 
     @Test(timeout=60000)
@@ -407,122 +398,116 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     private void checkEvictorVisiting(final boolean lifo) throws Exception {
+        VisitTracker<Object> obj;
         VisitTrackerFactory<Object> trackerFactory = new VisitTrackerFactory<>();
-        GenericObjectPool<VisitTracker<Object>> trackerPool =
-                new GenericObjectPool<>(trackerFactory);
-        trackerPool.setNumTestsPerEvictionRun(2);
-        trackerPool.setMinEvictableIdleTimeMillis(-1);
-        trackerPool.setTestWhileIdle(true);
-        trackerPool.setLifo(lifo);
-        trackerPool.setTestOnReturn(false);
-        trackerPool.setTestOnBorrow(false);
-        for (int i = 0; i < 8; i++) {
-            trackerPool.addObject();
-        }
-        trackerPool.evict(); // Visit oldest 2 - 0 and 1
-        VisitTracker<Object> obj = trackerPool.borrowObject();
-        trackerPool.returnObject(obj);
-        obj = trackerPool.borrowObject();
-        trackerPool.returnObject(obj);
-        //  borrow, return, borrow, return
-        //  FIFO will move 0 and 1 to end
-        //  LIFO, 7 out, then in, then out, then in
-        trackerPool.evict();  // Should visit 2 and 3 in either case
-        for (int i = 0; i < 8; i++) {
-            final VisitTracker<Object> tracker = trackerPool.borrowObject();
-            if (tracker.getId() >= 4) {
-                assertEquals("Unexpected instance visited " + tracker.getId(),
-                        0, tracker.getValidateCount());
-            } else {
-                assertEquals("Instance " +  tracker.getId() +
-                        " visited wrong number of times.",
-                        1, tracker.getValidateCount());
+        try (GenericObjectPool<VisitTracker<Object>> trackerPool = new GenericObjectPool<>(trackerFactory)) {
+            trackerPool.setNumTestsPerEvictionRun(2);
+            trackerPool.setMinEvictableIdleTimeMillis(-1);
+            trackerPool.setTestWhileIdle(true);
+            trackerPool.setLifo(lifo);
+            trackerPool.setTestOnReturn(false);
+            trackerPool.setTestOnBorrow(false);
+            for (int i = 0; i < 8; i++) {
+                trackerPool.addObject();
+            }
+            trackerPool.evict(); // Visit oldest 2 - 0 and 1
+            obj = trackerPool.borrowObject();
+            trackerPool.returnObject(obj);
+            obj = trackerPool.borrowObject();
+            trackerPool.returnObject(obj);
+            // borrow, return, borrow, return
+            // FIFO will move 0 and 1 to end
+            // LIFO, 7 out, then in, then out, then in
+            trackerPool.evict(); // Should visit 2 and 3 in either case
+            for (int i = 0; i < 8; i++) {
+                final VisitTracker<Object> tracker = trackerPool.borrowObject();
+                if (tracker.getId() >= 4) {
+                    assertEquals("Unexpected instance visited " + tracker.getId(), 0, tracker.getValidateCount());
+                } else {
+                    assertEquals("Instance " + tracker.getId() + " visited wrong number of times.", 1,
+                            tracker.getValidateCount());
+                }
             }
         }
-        trackerPool.close();
 
         trackerFactory = new VisitTrackerFactory<>();
-        trackerPool = new GenericObjectPool<>(trackerFactory);
-        trackerPool.setNumTestsPerEvictionRun(3);
-        trackerPool.setMinEvictableIdleTimeMillis(-1);
-        trackerPool.setTestWhileIdle(true);
-        trackerPool.setLifo(lifo);
-        trackerPool.setTestOnReturn(false);
-        trackerPool.setTestOnBorrow(false);
-        for (int i = 0; i < 8; i++) {
-            trackerPool.addObject();
-        }
-        trackerPool.evict(); // 0, 1, 2
-        trackerPool.evict(); // 3, 4, 5
-        obj = trackerPool.borrowObject();
-        trackerPool.returnObject(obj);
-        obj = trackerPool.borrowObject();
-        trackerPool.returnObject(obj);
-        obj = trackerPool.borrowObject();
-        trackerPool.returnObject(obj);
-        // borrow, return, borrow, return
-        //  FIFO 3,4,5,6,7,0,1,2
-        //  LIFO 7,6,5,4,3,2,1,0
-        // In either case, pointer should be at 6
-        trackerPool.evict();
-        // Should hit 6,7,0 - 0 for second time
-        for (int i = 0; i < 8; i++) {
-            final VisitTracker<Object> tracker = trackerPool.borrowObject();
-            if (tracker.getId() != 0) {
-                assertEquals("Instance " +  tracker.getId() +
-                        " visited wrong number of times.",
-                        1, tracker.getValidateCount());
-            } else {
-                assertEquals("Instance " +  tracker.getId() +
-                        " visited wrong number of times.",
-                        2, tracker.getValidateCount());
+        try (GenericObjectPool<VisitTracker<Object>> trackerPool = new GenericObjectPool<>(trackerFactory)) {
+            trackerPool.setNumTestsPerEvictionRun(3);
+            trackerPool.setMinEvictableIdleTimeMillis(-1);
+            trackerPool.setTestWhileIdle(true);
+            trackerPool.setLifo(lifo);
+            trackerPool.setTestOnReturn(false);
+            trackerPool.setTestOnBorrow(false);
+            for (int i = 0; i < 8; i++) {
+                trackerPool.addObject();
+            }
+            trackerPool.evict(); // 0, 1, 2
+            trackerPool.evict(); // 3, 4, 5
+            obj = trackerPool.borrowObject();
+            trackerPool.returnObject(obj);
+            obj = trackerPool.borrowObject();
+            trackerPool.returnObject(obj);
+            obj = trackerPool.borrowObject();
+            trackerPool.returnObject(obj);
+            // borrow, return, borrow, return
+            // FIFO 3,4,5,6,7,0,1,2
+            // LIFO 7,6,5,4,3,2,1,0
+            // In either case, pointer should be at 6
+            trackerPool.evict();
+            // Should hit 6,7,0 - 0 for second time
+            for (int i = 0; i < 8; i++) {
+                final VisitTracker<Object> tracker = trackerPool.borrowObject();
+                if (tracker.getId() != 0) {
+                    assertEquals("Instance " + tracker.getId() + " visited wrong number of times.", 1,
+                            tracker.getValidateCount());
+                } else {
+                    assertEquals("Instance " + tracker.getId() + " visited wrong number of times.", 2,
+                            tracker.getValidateCount());
+                }
             }
         }
-        trackerPool.close();
 
         // Randomly generate a pools with random numTests
         // and make sure evictor cycles through elements appropriately
-        final int[] smallPrimes = {2, 3, 5, 7};
+        final int[] smallPrimes = { 2, 3, 5, 7 };
         final Random random = new Random();
         random.setSeed(System.currentTimeMillis());
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 5; j++) {
-                trackerPool = new GenericObjectPool<>(trackerFactory);
-                trackerPool.setNumTestsPerEvictionRun(smallPrimes[i]);
-                trackerPool.setMinEvictableIdleTimeMillis(-1);
-                trackerPool.setTestWhileIdle(true);
-                trackerPool.setLifo(lifo);
-                trackerPool.setTestOnReturn(false);
-                trackerPool.setTestOnBorrow(false);
-                trackerPool.setMaxIdle(-1);
-                final int instanceCount = 10 + random.nextInt(20);
-                trackerPool.setMaxTotal(instanceCount);
-                for (int k = 0; k < instanceCount; k++) {
-                    trackerPool.addObject();
-                }
+                try (GenericObjectPool<VisitTracker<Object>> trackerPool = new GenericObjectPool<>(trackerFactory)) {
+                    trackerPool.setNumTestsPerEvictionRun(smallPrimes[i]);
+                    trackerPool.setMinEvictableIdleTimeMillis(-1);
+                    trackerPool.setTestWhileIdle(true);
+                    trackerPool.setLifo(lifo);
+                    trackerPool.setTestOnReturn(false);
+                    trackerPool.setTestOnBorrow(false);
+                    trackerPool.setMaxIdle(-1);
+                    final int instanceCount = 10 + random.nextInt(20);
+                    trackerPool.setMaxTotal(instanceCount);
+                    for (int k = 0; k < instanceCount; k++) {
+                        trackerPool.addObject();
+                    }
 
-                // Execute a random number of evictor runs
-                final int runs = 10 + random.nextInt(50);
-                for (int k = 0; k < runs; k++) {
-                    trackerPool.evict();
-                }
+                    // Execute a random number of evictor runs
+                    final int runs = 10 + random.nextInt(50);
+                    for (int k = 0; k < runs; k++) {
+                        trackerPool.evict();
+                    }
 
-                // Number of times evictor should have cycled through the pool
-                final int cycleCount = (runs * trackerPool.getNumTestsPerEvictionRun()) /
-                        instanceCount;
+                    // Number of times evictor should have cycled through the pool
+                    final int cycleCount = (runs * trackerPool.getNumTestsPerEvictionRun()) / instanceCount;
 
-                // Look at elements and make sure they are visited cycleCount
-                // or cycleCount + 1 times
-                VisitTracker<Object> tracker = null;
-                int visitCount = 0;
-                for (int k = 0; k < instanceCount; k++) {
-                    tracker = trackerPool.borrowObject();
-                    assertTrue(trackerPool.getNumActive() <= trackerPool.getMaxTotal());
-                    visitCount = tracker.getValidateCount();
-                    assertTrue(visitCount >= cycleCount &&
-                            visitCount <= cycleCount + 1);
+                    // Look at elements and make sure they are visited cycleCount
+                    // or cycleCount + 1 times
+                    VisitTracker<Object> tracker = null;
+                    int visitCount = 0;
+                    for (int k = 0; k < instanceCount; k++) {
+                        tracker = trackerPool.borrowObject();
+                        assertTrue(trackerPool.getNumActive() <= trackerPool.getMaxTotal());
+                        visitCount = tracker.getValidateCount();
+                        assertTrue(visitCount >= cycleCount && visitCount <= cycleCount + 1);
+                    }
                 }
-                trackerPool.close();
             }
         }
     }
@@ -1115,92 +1100,94 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     public void testEvictionSoftMinIdle() throws Exception {
         class TimeTest extends BasePooledObjectFactory<TimeTest> {
             private final long createTime;
+
             public TimeTest() {
                 createTime = System.currentTimeMillis();
             }
+
             @Override
             public TimeTest create() throws Exception {
                 return new TimeTest();
             }
+
             @Override
             public PooledObject<TimeTest> wrap(final TimeTest value) {
                 return new DefaultPooledObject<>(value);
             }
+
             public long getCreateTime() {
                 return createTime;
             }
         }
 
-        final GenericObjectPool<TimeTest> timePool =
-            new GenericObjectPool<>(new TimeTest());
+        try (final GenericObjectPool<TimeTest> timePool = new GenericObjectPool<>(new TimeTest())) {
 
-        timePool.setMaxIdle(5);
-        timePool.setMaxTotal(5);
-        timePool.setNumTestsPerEvictionRun(5);
-        timePool.setMinEvictableIdleTimeMillis(3000L);
-        timePool.setSoftMinEvictableIdleTimeMillis(1000L);
-        timePool.setMinIdle(2);
+            timePool.setMaxIdle(5);
+            timePool.setMaxTotal(5);
+            timePool.setNumTestsPerEvictionRun(5);
+            timePool.setMinEvictableIdleTimeMillis(3000L);
+            timePool.setSoftMinEvictableIdleTimeMillis(1000L);
+            timePool.setMinIdle(2);
 
-        final TimeTest[] active = new TimeTest[5];
-        final Long[] creationTime = new Long[5] ;
-        for(int i=0;i<5;i++) {
-            active[i] = timePool.borrowObject();
-            creationTime[i] = Long.valueOf((active[i]).getCreateTime());
+            final TimeTest[] active = new TimeTest[5];
+            final Long[] creationTime = new Long[5];
+            for (int i = 0; i < 5; i++) {
+                active[i] = timePool.borrowObject();
+                creationTime[i] = Long.valueOf((active[i]).getCreateTime());
+            }
+
+            for (int i = 0; i < 5; i++) {
+                timePool.returnObject(active[i]);
+            }
+
+            // Soft evict all but minIdle(2)
+            Thread.sleep(1500L);
+            timePool.evict();
+            assertEquals("Idle count different than expected.", 2, timePool.getNumIdle());
+
+            // Hard evict the rest.
+            Thread.sleep(2000L);
+            timePool.evict();
+            assertEquals("Idle count different than expected.", 0, timePool.getNumIdle());
         }
-
-        for(int i=0;i<5;i++) {
-            timePool.returnObject(active[i]);
-        }
-
-        // Soft evict all but minIdle(2)
-        Thread.sleep(1500L);
-        timePool.evict();
-        assertEquals("Idle count different than expected.", 2, timePool.getNumIdle());
-
-        // Hard evict the rest.
-        Thread.sleep(2000L);
-        timePool.evict();
-        assertEquals("Idle count different than expected.", 0, timePool.getNumIdle());
-        timePool.close();
     }
 
     @Test(timeout=60000)
     public void testEvictionInvalid() throws Exception {
 
-        final GenericObjectPool<Object> invalidFactoryPool =
-                new GenericObjectPool<>(new InvalidFactory());
+        try (final GenericObjectPool<Object> invalidFactoryPool = new GenericObjectPool<>(new InvalidFactory())) {
 
-        invalidFactoryPool.setMaxIdle(1);
-        invalidFactoryPool.setMaxTotal(1);
-        invalidFactoryPool.setTestOnBorrow(false);
-        invalidFactoryPool.setTestOnReturn(false);
-        invalidFactoryPool.setTestWhileIdle(true);
-        invalidFactoryPool.setMinEvictableIdleTimeMillis(100000);
-        invalidFactoryPool.setNumTestsPerEvictionRun(1);
+            invalidFactoryPool.setMaxIdle(1);
+            invalidFactoryPool.setMaxTotal(1);
+            invalidFactoryPool.setTestOnBorrow(false);
+            invalidFactoryPool.setTestOnReturn(false);
+            invalidFactoryPool.setTestWhileIdle(true);
+            invalidFactoryPool.setMinEvictableIdleTimeMillis(100000);
+            invalidFactoryPool.setNumTestsPerEvictionRun(1);
 
-        final Object p = invalidFactoryPool.borrowObject();
-        invalidFactoryPool.returnObject(p);
+            final Object p = invalidFactoryPool.borrowObject();
+            invalidFactoryPool.returnObject(p);
 
-        // Run eviction in a separate thread
-        final Thread t = new EvictionThread<>(invalidFactoryPool);
-        t.start();
+            // Run eviction in a separate thread
+            final Thread t = new EvictionThread<>(invalidFactoryPool);
+            t.start();
 
-        // Sleep to make sure evictor has started
-        Thread.sleep(300);
+            // Sleep to make sure evictor has started
+            Thread.sleep(300);
 
-        try {
-            invalidFactoryPool.borrowObject(1);
-        } catch (final NoSuchElementException nsee) {
-            // Ignore
+            try {
+                invalidFactoryPool.borrowObject(1);
+            } catch (final NoSuchElementException nsee) {
+                // Ignore
+            }
+
+            // Make sure evictor has finished
+            Thread.sleep(1000);
+
+            // Should have an empty pool
+            assertEquals("Idle count different than expected.", 0, invalidFactoryPool.getNumIdle());
+            assertEquals("Total count different than expected.", 0, invalidFactoryPool.getNumActive());
         }
-
-        // Make sure evictor has finished
-        Thread.sleep(1000);
-
-        // Should have an empty pool
-        assertEquals("Idle count different than expected.", 0, invalidFactoryPool.getNumIdle());
-        assertEquals("Total count different than expected.", 0, invalidFactoryPool.getNumActive());
-        invalidFactoryPool.close();
     }
 
     /**
@@ -2433,13 +2420,13 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Test
     public void testEqualsIndiscernible() throws Exception {
         final HashSetFactory factory = new HashSetFactory();
-        final GenericObjectPool<HashSet<String>> pool = new GenericObjectPool<>(
-                factory, new GenericObjectPoolConfig());
-        final HashSet<String> s1 = pool.borrowObject();
-        final HashSet<String> s2 = pool.borrowObject();
-        pool.returnObject(s1);
-        pool.returnObject(s2);
-        pool.close();
+        try (final GenericObjectPool<HashSet<String>> pool = new GenericObjectPool<>(factory,
+                new GenericObjectPoolConfig())) {
+            final HashSet<String> s1 = pool.borrowObject();
+            final HashSet<String> s2 = pool.borrowObject();
+            pool.returnObject(s1);
+            pool.returnObject(s2);
+        }
     }
 
     /**
@@ -2451,15 +2438,15 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Test
     public void testMutable() throws Exception {
         final HashSetFactory factory = new HashSetFactory();
-        final GenericObjectPool<HashSet<String>> pool = new GenericObjectPool<>(
-                factory, new GenericObjectPoolConfig());
-        final HashSet<String> s1 = pool.borrowObject();
-        final HashSet<String> s2 = pool.borrowObject();
-        s1.add("One");
-        s2.add("One");
-        pool.returnObject(s1);
-        pool.returnObject(s2);
-        pool.close();
+        try (final GenericObjectPool<HashSet<String>> pool = new GenericObjectPool<>(factory,
+                new GenericObjectPoolConfig())) {
+            final HashSet<String> s1 = pool.borrowObject();
+            final HashSet<String> s2 = pool.borrowObject();
+            s1.add("One");
+            s2.add("One");
+            pool.returnObject(s1);
+            pool.returnObject(s2);
+        }
     }
 
     /**
