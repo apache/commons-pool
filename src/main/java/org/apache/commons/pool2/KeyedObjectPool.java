@@ -225,5 +225,6 @@ public interface KeyedObjectPool<K,V> extends Closeable {
      * <p>
      * Implementations should silently fail if not all resources can be freed.
      */
+    @Override
     void close();
 }
