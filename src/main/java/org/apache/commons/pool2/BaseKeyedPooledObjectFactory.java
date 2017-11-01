@@ -71,6 +71,7 @@ public abstract class BaseKeyedPooledObjectFactory<K,V> extends BaseObject
     @Override
     public void destroyObject(final K key, final PooledObject<V> p)
         throws Exception {
+        // The default implementation is a no-op.
     }
 
     /**
@@ -98,6 +99,7 @@ public abstract class BaseKeyedPooledObjectFactory<K,V> extends BaseObject
     @Override
     public void activateObject(final K key, final PooledObject<V> p)
         throws Exception {
+        // The default implementation is a no-op.
     }
 
     /**
@@ -111,5 +113,6 @@ public abstract class BaseKeyedPooledObjectFactory<K,V> extends BaseObject
     @Override
     public void passivateObject(final K key, final PooledObject<V> p)
         throws Exception {
+        // The default implementation is a no-op.
     }
 }
