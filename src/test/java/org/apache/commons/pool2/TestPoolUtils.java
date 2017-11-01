@@ -493,7 +493,7 @@ public class TestPoolUtils {
             }
         };
 
-        try (@SuppressWarnings({ "unchecked", "unused" })
+        try (@SuppressWarnings({ "unchecked" })
             final ObjectPool<?> o = PoolUtils.erodingPool(createProxy(ObjectPool.class, handler), -1f)) {
             fail("PoolUtils.erodingPool(ObjectPool, float) must not allow a non-positive factor.");
         } catch (final IllegalArgumentException iae) {
