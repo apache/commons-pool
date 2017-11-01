@@ -557,19 +557,21 @@ public class TestPoolUtils {
 
     @Test
     public void testErodingObjectPoolDefaultFactor() {
-        @SuppressWarnings("unchecked")
-        final ObjectPool<Object> internalPool = createProxy(ObjectPool.class, new InvocationHandler() {
+        try (@SuppressWarnings("unchecked")
+            final ObjectPool<Object> internalPool = createProxy(ObjectPool.class, new InvocationHandler() {
+                
             @Override
             public Object invoke(final Object arg0, final Method arg1, final Object[] arg2) throws Throwable {
                 return null;
             }
-        });
-        final ObjectPool<Object> pool = PoolUtils.erodingPool(internalPool);
-        final String expectedToString = "ErodingObjectPool{factor=ErodingFactor{factor=1.0, idleHighWaterMark=1}, pool="
-                + internalPool + "}";
-        // The factor is not exposed, but will be printed in the toString() method
-        // In this case since we didn't pass one, the default 1.0f will be printed
-        assertEquals(expectedToString, pool.toString());
+        })) {
+            final ObjectPool<Object> pool = PoolUtils.erodingPool(internalPool);
+            final String expectedToString = "ErodingObjectPool{factor=ErodingFactor{factor=1.0, idleHighWaterMark=1}, pool="
+                    + internalPool + "}";
+            // The factor is not exposed, but will be printed in the toString() method
+            // In this case since we didn't pass one, the default 1.0f will be printed
+            assertEquals(expectedToString, pool.toString());
+        }
     }
 
     @Test
@@ -682,20 +684,21 @@ public class TestPoolUtils {
 
     @Test
     public void testErodingPoolKeyedObjectPoolDefaultFactor() {
-        @SuppressWarnings("unchecked")
-        final
-        KeyedObjectPool<Object, Object> internalPool = createProxy(KeyedObjectPool.class, new InvocationHandler() {
-            @Override
-            public Object invoke(final Object arg0, final Method arg1, final Object[] arg2)
-                    throws Throwable {
-                return null;
-            }
-        });
-        final KeyedObjectPool<Object, Object> pool = PoolUtils.erodingPool(internalPool);
-        final String expectedToString = "ErodingKeyedObjectPool{factor=ErodingFactor{factor=1.0, idleHighWaterMark=1}, keyedPool=" + internalPool + "}";
-        // The factor is not exposed, but will be printed in the toString() method
-        // In this case since we didn't pass one, the default 1.0f will be printed
-        assertEquals(expectedToString, pool.toString());
+        try (@SuppressWarnings("unchecked")
+        final KeyedObjectPool<Object, Object> internalPool = createProxy(KeyedObjectPool.class,
+                new InvocationHandler() {
+                    @Override
+                    public Object invoke(final Object arg0, final Method arg1, final Object[] arg2) throws Throwable {
+                        return null;
+                    }
+                })) {
+            final KeyedObjectPool<Object, Object> pool = PoolUtils.erodingPool(internalPool);
+            final String expectedToString = "ErodingKeyedObjectPool{factor=ErodingFactor{factor=1.0, idleHighWaterMark=1}, keyedPool="
+                    + internalPool + "}";
+            // The factor is not exposed, but will be printed in the toString() method
+            // In this case since we didn't pass one, the default 1.0f will be printed
+            assertEquals(expectedToString, pool.toString());
+        }
     }
 
     @Test
