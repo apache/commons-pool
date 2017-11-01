@@ -80,28 +80,30 @@ public class TestBaseObjectPool extends TestObjectPool {
         if (!getClass().equals(TestBaseObjectPool.class)) {
             return; // skip redundant tests
         }
-        final ObjectPool<Object> pool = new TestObjectPool();
+        try (final ObjectPool<Object> pool = new TestObjectPool()) {
 
-        assertTrue("Negative expected.", pool.getNumIdle() < 0);
-        assertTrue("Negative expected.", pool.getNumActive() < 0);
+            assertTrue("Negative expected.", pool.getNumIdle() < 0);
+            assertTrue("Negative expected.", pool.getNumActive() < 0);
 
-        try {
-            pool.clear();
-            fail("Expected UnsupportedOperationException");
-        } catch(final UnsupportedOperationException e) {
-            // expected
-        }
+            try {
+                pool.clear();
+                fail("Expected UnsupportedOperationException");
+            } catch (final UnsupportedOperationException e) {
+                // expected
+            }
 
-        try {
-            pool.addObject();
-            fail("Expected UnsupportedOperationException");
-        } catch(final UnsupportedOperationException e) {
-            // expected
+            try {
+                pool.addObject();
+                fail("Expected UnsupportedOperationException");
+            } catch (final UnsupportedOperationException e) {
+                // expected
+            }
         }
     }
 
     @Test
     public void testClose() throws Exception {
+        @SuppressWarnings("resource")
         final ObjectPool<Object> pool = new TestObjectPool();
 
         pool.close();

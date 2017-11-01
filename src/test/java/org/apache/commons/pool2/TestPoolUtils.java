@@ -704,23 +704,23 @@ public class TestPoolUtils {
     @Test
     public void testErodingPerKeyKeyedObjectPool() throws Exception {
         try {
-            PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null, 1f, true);
+            PoolUtils.erodingPool((KeyedObjectPool<Object, Object>) null, 1f, true);
             fail("PoolUtils.erodingPool(KeyedObjectPool) must not allow a null pool.");
-        } catch(final IllegalArgumentException iae) {
+        } catch (final IllegalArgumentException iae) {
             // expected
         }
 
         try {
-            PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null, 0f, true);
+            PoolUtils.erodingPool((KeyedObjectPool<Object, Object>) null, 0f, true);
             fail("PoolUtils.erodingPool(ObjectPool, float, boolean) must not allow a non-positive factor.");
-        } catch(final IllegalArgumentException iae) {
+        } catch (final IllegalArgumentException iae) {
             // expected
         }
 
         try {
-            PoolUtils.erodingPool((KeyedObjectPool<Object,Object>)null, 1f, true);
+            PoolUtils.erodingPool((KeyedObjectPool<Object, Object>) null, 1f, true);
             fail("PoolUtils.erodingPool(KeyedObjectPool, float, boolean) must not allow a null pool.");
-        } catch(final IllegalArgumentException iae) {
+        } catch (final IllegalArgumentException iae) {
             // expected
         }
 
@@ -739,51 +739,51 @@ public class TestPoolUtils {
 
         // If the logic behind PoolUtils.erodingPool changes then this will need to be tweaked.
         final float factor = 0.01f; // about ~9 seconds until first discard
-        @SuppressWarnings("unchecked")
-        final KeyedObjectPool<Object,Object> pool = PoolUtils.erodingPool(
-                createProxy(KeyedObjectPool.class, handler), factor, true);
+        try (@SuppressWarnings("unchecked")
+        final KeyedObjectPool<Object, Object> pool = PoolUtils.erodingPool(createProxy(KeyedObjectPool.class, handler),
+                factor, true)) {
 
-        final List<String> expectedMethods = new ArrayList<>();
-        assertEquals(expectedMethods, calledMethods);
+            final List<String> expectedMethods = new ArrayList<>();
+            assertEquals(expectedMethods, calledMethods);
 
-        final Object key = "key";
+            final Object key = "key";
 
-        Object o = pool.borrowObject(key);
-        expectedMethods.add("borrowObject");
-
-        assertEquals(expectedMethods, calledMethods);
-
-        pool.returnObject(key, o);
-        expectedMethods.add("returnObject");
-        assertEquals(expectedMethods, calledMethods);
-
-        for (int i=0; i < 5; i ++) {
-            o = pool.borrowObject(key);
+            Object o = pool.borrowObject(key);
             expectedMethods.add("borrowObject");
-
-            Thread.sleep(50);
-
-            pool.returnObject(key, o);
-            expectedMethods.add("returnObject");
 
             assertEquals(expectedMethods, calledMethods);
 
-            expectedMethods.clear();
-            calledMethods.clear();
+            pool.returnObject(key, o);
+            expectedMethods.add("returnObject");
+            assertEquals(expectedMethods, calledMethods);
+
+            for (int i = 0; i < 5; i++) {
+                o = pool.borrowObject(key);
+                expectedMethods.add("borrowObject");
+
+                Thread.sleep(50);
+
+                pool.returnObject(key, o);
+                expectedMethods.add("returnObject");
+
+                assertEquals(expectedMethods, calledMethods);
+
+                expectedMethods.clear();
+                calledMethods.clear();
+            }
+
+            Thread.sleep(10000); // 10 seconds
+
+            o = pool.borrowObject(key);
+            expectedMethods.add("borrowObject");
+            pool.returnObject(key, o);
+            expectedMethods.add("getNumIdle");
+            expectedMethods.add("invalidateObject");
+            assertEquals(expectedMethods, calledMethods);
+
+            final String expectedToString = "ErodingPerKeyKeyedObjectPool{factor=" + factor + ", keyedPool=null}";
+            assertEquals(expectedToString, pool.toString());
         }
-
-        Thread.sleep(10000); // 10 seconds
-
-
-        o = pool.borrowObject(key);
-        expectedMethods.add("borrowObject");
-        pool.returnObject(key, o);
-        expectedMethods.add("getNumIdle");
-        expectedMethods.add("invalidateObject");
-        assertEquals(expectedMethods, calledMethods);
-
-        final String expectedToString = "ErodingPerKeyKeyedObjectPool{factor="+factor+", keyedPool=null}";
-        assertEquals(expectedToString, pool.toString());
     }
 
     /**

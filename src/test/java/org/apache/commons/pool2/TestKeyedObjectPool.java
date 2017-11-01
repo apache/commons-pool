@@ -389,10 +389,10 @@ public abstract class TestKeyedObjectPool {
     @Test
     public void testKPOFCloseUsages() throws Exception {
         final FailingKeyedPooledObjectFactory factory = new FailingKeyedPooledObjectFactory();
-        KeyedObjectPool<Object,Object> pool;
+        KeyedObjectPool<Object, Object> pool;
         try {
             pool = makeEmptyPool(factory);
-        } catch(final UnsupportedOperationException uoe) {
+        } catch (final UnsupportedOperationException uoe) {
             return; // test not supported
         }
         final List<MethodCall> expectedMethods = new ArrayList<>();
@@ -401,13 +401,12 @@ public abstract class TestKeyedObjectPool {
         PoolUtils.prefill(pool, KEY, 5);
         pool.close();
 
-
         //// Test exception handling close should swallow failures
-        pool = makeEmptyPool(factory);
-        reset(pool, factory, expectedMethods);
-        factory.setDestroyObjectFail(true);
-        PoolUtils.prefill(pool, KEY, 5);
-        pool.close();
+        try (final KeyedObjectPool<Object, Object> pool2 = makeEmptyPool(factory)) {
+            reset(pool2, factory, expectedMethods);
+            factory.setDestroyObjectFail(true);
+            PoolUtils.prefill(pool2, KEY, 5);
+        }
     }
 
     @Test

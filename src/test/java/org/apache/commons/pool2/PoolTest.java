@@ -69,19 +69,13 @@ public class PoolTest {
         final GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
         poolConfig.setTestWhileIdle(true /* testWhileIdle */);
         final PooledFooFactory pooledFooFactory = new PooledFooFactory();
-        GenericObjectPool<Foo> pool = null;
-        try {
-            pool = new GenericObjectPool<>(pooledFooFactory, poolConfig);
+        try (GenericObjectPool<Foo> pool = new GenericObjectPool<>(pooledFooFactory, poolConfig)) {
             pool.setTimeBetweenEvictionRunsMillis(EVICTION_PERIOD_IN_MILLIS);
             pool.addObject();
             try {
                 Thread.sleep(EVICTION_PERIOD_IN_MILLIS);
             } catch (final InterruptedException e) {
                 Thread.interrupted();
-            }
-        } finally {
-            if (pool != null) {
-                pool.close();
             }
         }
         final Thread[] threads = new Thread[Thread.activeCount()];
