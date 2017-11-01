@@ -27,84 +27,82 @@ public class TestDefaultPooledObjectInfo {
 
     @Test
     public void testTiming() throws Exception {
-        final GenericObjectPool<String> pool =
-                new GenericObjectPool<>(new SimpleFactory());
+        try (final GenericObjectPool<String> pool = new GenericObjectPool<>(new SimpleFactory())) {
 
-        final long t1 = System.currentTimeMillis();
+            final long t1 = System.currentTimeMillis();
 
-        Thread.sleep(50);
-        final String s1 = pool.borrowObject();
-        Thread.sleep(50);
+            Thread.sleep(50);
+            final String s1 = pool.borrowObject();
+            Thread.sleep(50);
 
-        final long t2 = System.currentTimeMillis();
+            final long t2 = System.currentTimeMillis();
 
-        Thread.sleep(50);
-        pool.returnObject(s1);
-        Thread.sleep(50);
+            Thread.sleep(50);
+            pool.returnObject(s1);
+            Thread.sleep(50);
 
-        final long t3 = System.currentTimeMillis();
+            final long t3 = System.currentTimeMillis();
 
-        Thread.sleep(50);
-        pool.borrowObject();
-        Thread.sleep(50);
+            Thread.sleep(50);
+            pool.borrowObject();
+            Thread.sleep(50);
 
-        final long t4 = System.currentTimeMillis();
+            final long t4 = System.currentTimeMillis();
 
-        final Set<DefaultPooledObjectInfo> strings = pool.listAllObjects();
+            final Set<DefaultPooledObjectInfo> strings = pool.listAllObjects();
 
-        Assert.assertEquals(1, strings.size());
+            Assert.assertEquals(1, strings.size());
 
-        final DefaultPooledObjectInfo s1Info = strings.iterator().next();
+            final DefaultPooledObjectInfo s1Info = strings.iterator().next();
 
-        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+            final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
 
-        Assert.assertTrue(s1Info.getCreateTime() > t1);
-        Assert.assertEquals(sdf.format(Long.valueOf(s1Info.getCreateTime())),
-                s1Info.getCreateTimeFormatted());
-        Assert.assertTrue(s1Info.getCreateTime() < t2);
+            Assert.assertTrue(s1Info.getCreateTime() > t1);
+            Assert.assertEquals(sdf.format(Long.valueOf(s1Info.getCreateTime())), s1Info.getCreateTimeFormatted());
+            Assert.assertTrue(s1Info.getCreateTime() < t2);
 
-        Assert.assertTrue(s1Info.getLastReturnTime() > t2);
-        Assert.assertEquals(sdf.format(Long.valueOf(s1Info.getLastReturnTime())),
-                s1Info.getLastReturnTimeFormatted());
-        Assert.assertTrue(s1Info.getLastReturnTime() < t3);
+            Assert.assertTrue(s1Info.getLastReturnTime() > t2);
+            Assert.assertEquals(sdf.format(Long.valueOf(s1Info.getLastReturnTime())),
+                    s1Info.getLastReturnTimeFormatted());
+            Assert.assertTrue(s1Info.getLastReturnTime() < t3);
 
-        Assert.assertTrue(s1Info.getLastBorrowTime() > t3);
-        Assert.assertEquals(sdf.format(Long.valueOf(s1Info.getLastBorrowTime())),
-                s1Info.getLastBorrowTimeFormatted());
-        Assert.assertTrue(s1Info.getLastBorrowTime() < t4);
+            Assert.assertTrue(s1Info.getLastBorrowTime() > t3);
+            Assert.assertEquals(sdf.format(Long.valueOf(s1Info.getLastBorrowTime())),
+                    s1Info.getLastBorrowTimeFormatted());
+            Assert.assertTrue(s1Info.getLastBorrowTime() < t4);
+        }
     }
 
     @Test
     public void testGetPooledObjectType() throws Exception {
-        final GenericObjectPool<String> pool =
-                new GenericObjectPool<>(new SimpleFactory());
+        try (final GenericObjectPool<String> pool = new GenericObjectPool<>(new SimpleFactory())) {
 
-        pool.borrowObject();
+            pool.borrowObject();
 
-        final Set<DefaultPooledObjectInfo> strings = pool.listAllObjects();
+            final Set<DefaultPooledObjectInfo> strings = pool.listAllObjects();
 
-        Assert.assertEquals(1, strings.size());
+            Assert.assertEquals(1, strings.size());
 
-        final DefaultPooledObjectInfo s1Info = strings.iterator().next();
+            final DefaultPooledObjectInfo s1Info = strings.iterator().next();
 
-        Assert.assertEquals(String.class.getName(),
-                s1Info.getPooledObjectType());
+            Assert.assertEquals(String.class.getName(), s1Info.getPooledObjectType());
+        }
     }
 
     @Test
     public void testGetPooledObjectToString() throws Exception {
-        final GenericObjectPool<String> pool =
-                new GenericObjectPool<>(new SimpleFactory());
+        try (final GenericObjectPool<String> pool = new GenericObjectPool<>(new SimpleFactory())) {
 
-        final String s1 = pool.borrowObject();
+            final String s1 = pool.borrowObject();
 
-        final Set<DefaultPooledObjectInfo> strings = pool.listAllObjects();
+            final Set<DefaultPooledObjectInfo> strings = pool.listAllObjects();
 
-        Assert.assertEquals(1, strings.size());
+            Assert.assertEquals(1, strings.size());
 
-        final DefaultPooledObjectInfo s1Info = strings.iterator().next();
+            final DefaultPooledObjectInfo s1Info = strings.iterator().next();
 
-        Assert.assertEquals(s1, s1Info.getPooledObjectToString());
+            Assert.assertEquals(s1, s1Info.getPooledObjectToString());
+        }
     }
 
     @Test
@@ -114,18 +112,17 @@ public class TestDefaultPooledObjectInfo {
         abandonedConfig.setRemoveAbandonedOnBorrow(true);
         abandonedConfig.setRemoveAbandonedTimeout(1);
         abandonedConfig.setLogAbandoned(true);
-        final GenericObjectPool<String> pool = new GenericObjectPool<>(
-                new SimpleFactory(),
-                new GenericObjectPoolConfig(),
-                abandonedConfig);
+        try (final GenericObjectPool<String> pool = new GenericObjectPool<>(new SimpleFactory(),
+                new GenericObjectPoolConfig(), abandonedConfig)) {
 
-        pool.borrowObject();
-        //pool.returnObject(s1); // Object not returned, causes abandoned object created exception
+            pool.borrowObject();
+            // pool.returnObject(s1); // Object not returned, causes abandoned object created exception
 
-        final Set<DefaultPooledObjectInfo> strings = pool.listAllObjects();
-        final DefaultPooledObjectInfo s1Info = strings.iterator().next();
-        final String lastBorrowTrace = s1Info.getLastBorrowTrace();
+            final Set<DefaultPooledObjectInfo> strings = pool.listAllObjects();
+            final DefaultPooledObjectInfo s1Info = strings.iterator().next();
+            final String lastBorrowTrace = s1Info.getLastBorrowTrace();
 
-        Assert.assertTrue(lastBorrowTrace.startsWith("Pooled object created"));
+            Assert.assertTrue(lastBorrowTrace.startsWith("Pooled object created"));
+        }
     }
 }
