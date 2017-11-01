@@ -49,8 +49,8 @@ public class ThrowableCallStack implements CallStack {
 
     @Override
     public synchronized boolean printStackTrace(final PrintWriter writer) {
-        final Snapshot snapshot = this.snapshot;
-        if (snapshot == null) {
+        final Snapshot snapshotRef = this.snapshot;
+        if (snapshotRef == null) {
             return false;
         }
         final String message;
@@ -58,11 +58,11 @@ public class ThrowableCallStack implements CallStack {
             message = messageFormat;
         } else {
             synchronized (dateFormat) {
-                message = dateFormat.format(snapshot.timestamp);
+                message = dateFormat.format(snapshotRef.timestamp);
             }
         }
         writer.println(message);
-        snapshot.printStackTrace(writer);
+        snapshotRef.printStackTrace(writer);
         return true;
     }
 

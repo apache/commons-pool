@@ -62,8 +62,8 @@ public class SecurityManagerCallStack implements CallStack {
 
     @Override
     public boolean printStackTrace(final PrintWriter writer) {
-        final Snapshot snapshot = this.snapshot;
-        if (snapshot == null) {
+        final Snapshot snapshotRef = this.snapshot;
+        if (snapshotRef == null) {
             return false;
         }
         final String message;
@@ -71,11 +71,11 @@ public class SecurityManagerCallStack implements CallStack {
             message = messageFormat;
         } else {
             synchronized (dateFormat) {
-                message = dateFormat.format(snapshot.timestamp);
+                message = dateFormat.format(snapshotRef.timestamp);
             }
         }
         writer.println(message);
-        for (final WeakReference<Class<?>> reference : snapshot.stack) {
+        for (final WeakReference<Class<?>> reference : snapshotRef.stack) {
             writer.println(reference.get());
         }
         return true;
