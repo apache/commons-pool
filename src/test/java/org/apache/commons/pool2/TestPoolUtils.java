@@ -253,7 +253,7 @@ public class TestPoolUtils {
             fail("PoolUtils.checkMinIdle(KeyedObjectPool,Collection,int,long) must accept empty lists.");
         }
     }
-    
+
     @Test
     public void testCheckMinIdleKeyedObjectPoolKeys() throws Exception {
         // Because this isn't deterministic and you can get false failures, try more than once.
@@ -559,7 +559,7 @@ public class TestPoolUtils {
     public void testErodingObjectPoolDefaultFactor() {
         try (@SuppressWarnings("unchecked")
             final ObjectPool<Object> internalPool = createProxy(ObjectPool.class, new InvocationHandler() {
-                
+
             @Override
             public Object invoke(final Object arg0, final Method arg1, final Object[] arg2) throws Throwable {
                 return null;

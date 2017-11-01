@@ -25,7 +25,7 @@ import org.apache.commons.pool2.PooledObjectFactory;
 
 /**
  * Copies PoolUtil's private static class SynchronizedPooledObjectFactory.
- * 
+ *
  * A fully synchronized PooledObjectFactory that wraps a PooledObjectFactory and
  * synchronizes access to the wrapped factory methods.
  * <p>
@@ -35,7 +35,7 @@ import org.apache.commons.pool2.PooledObjectFactory;
  * </p>
  */
 final class TestSynchronizedPooledObjectFactory<T> implements PooledObjectFactory<T> {
-	
+
 	/** Synchronization lock */
 	private final WriteLock writeLock = new ReentrantReadWriteLock().writeLock();
 

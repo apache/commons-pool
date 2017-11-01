@@ -263,7 +263,7 @@ public class TestAbandonedObjectPool {
 
         Assert.assertTrue (end - start < 5000);
     }
-    
+
     /**
      * JIRA: POOL-300
      */

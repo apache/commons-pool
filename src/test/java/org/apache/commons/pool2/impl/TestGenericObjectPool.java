@@ -2634,7 +2634,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             return semaphore.hasQueuedThreads();
         }
     }
-    
+
 	private BasePooledObjectFactory<String> createBasePooledObjectfactory() {
 		return new BasePooledObjectFactory<String>() {
 			@Override

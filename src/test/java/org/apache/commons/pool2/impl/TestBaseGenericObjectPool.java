@@ -40,9 +40,9 @@ public class TestBaseGenericObjectPool {
     public void tearDown() throws Exception {
         pool.close();
         pool = null;
-        factory = null; 
+        factory = null;
     }
-    
+
     @Test
     public void testBorrowWaitStatistics() {
         final DefaultPooledObject<String> p = (DefaultPooledObject<String>) factory.makeObject();
@@ -66,7 +66,7 @@ public class TestBaseGenericObjectPool {
         pool.updateStatsBorrow(p, 10);
         Assert.assertEquals(20, pool.getMaxBorrowWaitTimeMillis(), Double.MIN_VALUE);
     }
-    
+
     @Test
     public void testActiveTimeStatistics() {
     	for (int i = 0; i < 99; i++) {  // must be < MEAN_TIMING_STATS_CACHE_SIZE

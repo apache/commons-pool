@@ -136,14 +136,14 @@ public class Waiter {
     public long getLastIdleTimeMs() {
         return lastIdleTimeMs;
     }
-    
+
     /**
      * @return how many times this instance has been validated
      */
     public long getValidationCount() {
         return validationCount;
     }
-    
+
     /**
      * @return how many times this instance has been passivated
      */
