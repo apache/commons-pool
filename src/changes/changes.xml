@@ -53,6 +53,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" issue="POOL-332" type="add">
       ObjectPool and KeyedObject pool should extend Closeable.
     </action>
+    <action dev="ggregory" issue="POOL-333" type="update">
+      Update optional dependency asm-util from 5.2 to 6.0.
+    </action>
   </release>
   <release version="2.4.3" date="2017-10-24" description="This is a patch release, including bug fixes only.">
     <action dev="ggregory" issue="POOL-328" type="fix" due-to="Lorenzo Solano Martinez">

@@ -133,7 +133,7 @@
     <dependency>
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm-util</artifactId>
-      <version>5.2</version>
+      <version>6.0</version>
       <optional>true</optional>
     </dependency>
     
@@ -167,6 +167,7 @@
     <commons.scmPubUrl>https://svn.apache.org/repos/infra/websites/production/commons/content/proper/commons-pool</commons.scmPubUrl>
     <commons.scmPubCheckoutDirectory>site-content</commons.scmPubCheckoutDirectory>
     <commons.osgi.import>net.sf.cglib.proxy;resolution:=optional,*</commons.osgi.import>
+    <commons.animal-sniffer.version>1.16</commons.animal-sniffer.version>
   </properties> 
 
   <build>
