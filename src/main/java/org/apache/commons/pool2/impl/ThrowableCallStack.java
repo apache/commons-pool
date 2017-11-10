@@ -21,9 +21,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 /**
- * CallStack strategy that uses the stack trace from a {@link Throwable}. While being the most portable method of
- * obtaining the current call stack, this is also the slowest way to do it. In environments where a new SecurityManager
- * can be created, it is preferred to use {@link SecurityManagerCallStack}.
+ * CallStack strategy that uses the stack trace from a {@link Throwable}. This strategy, while slower than the
+ * SecurityManager implementation, provides call stack method names and other metadata in addition to the call stack
+ * of classes.
  *
  * @see Throwable#fillInStackTrace()
  * @since 2.4.3

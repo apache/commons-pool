@@ -167,6 +167,18 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      */
     void setLogAbandoned(boolean logAbandoned);
 
+// TODO: uncomment in 3.0 (API compatibility)
+//    /**
+//     * Configures the stack trace generation strategy based on whether or not fully
+//     * detailed stack traces are required. When set to false, abandoned logs may
+//     * only include caller class information rather than method names, line numbers,
+//     * and other normal metadata available in a full stack trace.
+//     *
+//     * @param requireFullStackTrace the new configuration setting for abandoned object
+//     *                              logging
+//     */
+//    void setRequireFullStackTrace(boolean requireFullStackTrace);
+
     /**
      * Record the current stack trace as the last time the object was used.
      */

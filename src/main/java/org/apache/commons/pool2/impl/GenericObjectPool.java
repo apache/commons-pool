@@ -16,6 +16,15 @@
  */
 package org.apache.commons.pool2.impl;
 
+import org.apache.commons.pool2.ObjectPool;
+import org.apache.commons.pool2.PoolUtils;
+import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.PooledObjectFactory;
+import org.apache.commons.pool2.PooledObjectState;
+import org.apache.commons.pool2.SwallowedExceptionListener;
+import org.apache.commons.pool2.TrackedUse;
+import org.apache.commons.pool2.UsageTracking;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -25,15 +34,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-
-import org.apache.commons.pool2.ObjectPool;
-import org.apache.commons.pool2.PoolUtils;
-import org.apache.commons.pool2.PooledObject;
-import org.apache.commons.pool2.PooledObjectFactory;
-import org.apache.commons.pool2.PooledObjectState;
-import org.apache.commons.pool2.SwallowedExceptionListener;
-import org.apache.commons.pool2.TrackedUse;
-import org.apache.commons.pool2.UsageTracking;
 
 /**
  * A configurable {@link ObjectPool} implementation.
@@ -337,6 +337,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             this.abandonedConfig.setRemoveAbandonedOnMaintenance(abandonedConfig.getRemoveAbandonedOnMaintenance());
             this.abandonedConfig.setRemoveAbandonedTimeout(abandonedConfig.getRemoveAbandonedTimeout());
             this.abandonedConfig.setUseUsageTracking(abandonedConfig.getUseUsageTracking());
+            this.abandonedConfig.setRequireFullStackTrace(abandonedConfig.getRequireFullStackTrace());
         }
     }
 
@@ -899,6 +900,10 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         final AbandonedConfig ac = this.abandonedConfig;
         if (ac != null && ac.getLogAbandoned()) {
             p.setLogAbandoned(true);
+            // TODO: in 3.0, this can use the method defined on PooledObject
+            if (p instanceof DefaultPooledObject<?>) {
+                ((DefaultPooledObject<T>) p).setRequireFullStackTrace(ac.getRequireFullStackTrace());
+            }
         }
 
         createdCount.incrementAndGet();

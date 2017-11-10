@@ -59,6 +59,10 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" issue="POOL-334" type="update">
       org.apache.commons.pool2.impl.ThrowableCallStack.Snapshot is missing serialVersionUID.
     </action>
+    <action dev="mattsicker" issue="POOL-335" type="add">
+      Make abandoned logging stack trace requirements configurable. This also reverts
+      the default behavior introduced by POOL-320.
+    </action>
   </release>
   <release version="2.4.3" date="2017-10-24" description="This is a patch release, including bug fixes only.">
     <action dev="ggregory" issue="POOL-328" type="fix" due-to="Lorenzo Solano Martinez">

@@ -55,10 +55,30 @@ public final class CallStackUtils {
      * @param useTimestamp  if true, interpret message as a SimpleDateFormat and print the created timestamp; otherwise,
      *                      print message format literally
      * @return a new CallStack
+     * @deprecated use {@link #newCallStack(String, boolean, boolean)}
      */
+    @Deprecated
     public static CallStack newCallStack(final String messageFormat, final boolean useTimestamp) {
-        return CAN_CREATE_SECURITY_MANAGER ? new SecurityManagerCallStack(messageFormat, useTimestamp) :
-            new ThrowableCallStack(messageFormat, useTimestamp);
+        return newCallStack(messageFormat, useTimestamp, false);
+    }
+
+    /**
+     * Constructs a new {@link CallStack} using the fasted allowed strategy.
+     *
+     * @param messageFormat         message (or format) to print first in stack traces
+     * @param useTimestamp          if true, interpret message as a SimpleDateFormat and print the created timestamp;
+     *                              otherwise, print message format literally
+     * @param requireFullStackTrace if true, forces the use of a stack walking mechanism that includes full stack trace
+     *                              information; otherwise, uses a faster implementation if possible
+     * @return a new CallStack
+     * @since 2.5
+     */
+    public static CallStack newCallStack(final String messageFormat,
+                                         final boolean useTimestamp,
+                                         final boolean requireFullStackTrace) {
+        return CAN_CREATE_SECURITY_MANAGER && !requireFullStackTrace
+            ? new SecurityManagerCallStack(messageFormat, useTimestamp)
+            : new ThrowableCallStack(messageFormat, useTimestamp);
     }
 
     /**

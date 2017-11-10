@@ -24,7 +24,7 @@ import java.io.PrintWriter;
 /**
  * Strategy for obtaining and printing the current call stack. This is primarily useful for
  * {@linkplain UsageTracking usage tracking} so that different JVMs and configurations can use more efficient strategies
- * for obtaining the current call stack.
+ * for obtaining the current call stack depending on metadata needs.
  *
  * @see CallStackUtils
  * @since 2.4.3
