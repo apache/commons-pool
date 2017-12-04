@@ -71,7 +71,7 @@ public class SecurityManagerCallStack implements CallStack {
             message = messageFormat;
         } else {
             synchronized (dateFormat) {
-                message = dateFormat.format(snapshotRef.timestamp);
+                message = dateFormat.format(Long.valueOf(snapshotRef.timestamp));
             }
         }
         writer.println(message);
