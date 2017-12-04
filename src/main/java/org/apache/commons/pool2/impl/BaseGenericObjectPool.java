@@ -21,6 +21,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.management.ManagementFactory;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.Iterator;
@@ -608,7 +609,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
             } catch (final ClassNotFoundException e) {
                 clazz = Class.forName(evictionPolicyClassName);
             }
-            final Object policy = clazz.newInstance();
+            final Object policy = clazz.getConstructor().newInstance();
             if (policy instanceof EvictionPolicy<?>) {
                 @SuppressWarnings("unchecked") // safe, because we just checked the class
                 final
@@ -627,6 +628,14 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
                     "Unable to create EvictionPolicy instance of type " +
                     evictionPolicyClassName, e);
         } catch (final IllegalAccessException e) {
+            throw new IllegalArgumentException(
+                    "Unable to create EvictionPolicy instance of type " +
+                    evictionPolicyClassName, e);
+        } catch (final InvocationTargetException e) {
+            throw new IllegalArgumentException(
+                    "Unable to create EvictionPolicy instance of type " +
+                    evictionPolicyClassName, e);
+        } catch (final NoSuchMethodException e) {
             throw new IllegalArgumentException(
                     "Unable to create EvictionPolicy instance of type " +
                     evictionPolicyClassName, e);
