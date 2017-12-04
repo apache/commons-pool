@@ -78,7 +78,7 @@ import org.apache.commons.pool2.SwallowedExceptionListener;
  * @since 2.0
  */
 public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
-implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMXBean<K> {
+        implements KeyedObjectPool<K,T>, GenericKeyedObjectPoolMXBean<K> {
 
     /**
      * Create a new <code>GenericKeyedObjectPool</code> using defaults from
