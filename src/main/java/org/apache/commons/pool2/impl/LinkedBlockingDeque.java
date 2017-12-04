@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * An optionally-bounded {@linkplain java.util.concurrent.BlockingDeque blocking
@@ -1381,7 +1380,8 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
 
     /**
      * Returns true if there are threads waiting to take instances from this deque.
-     * See disclaimer on accuracy in {@link ReentrantLock#hasWaiters(Condition)}.
+     * See disclaimer on accuracy in
+     * {@link java.util.concurrent.locks.ReentrantLock#hasWaiters(Condition)}.
      *
      * @return true if there is at least one thread waiting on this deque's notEmpty condition.
      */
