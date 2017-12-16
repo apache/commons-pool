@@ -155,12 +155,17 @@
     <maven.compiler.target>1.7</maven.compiler.target>
     <commons.componentid>pool2</commons.componentid>
     <commons.module.name>org.apache.commons.pool2</commons.module.name>
+    <!-- Java 7 -->
     <commons.release.version>2.5.0</commons.release.version>
-    <commons.release.desc>(Java 6.0+)</commons.release.desc>
-    <commons.release.2.version>1.6</commons.release.2.version>
-    <commons.release.2.desc>(Java 5.0+)</commons.release.2.desc>
+    <commons.release.desc>(Java 7)</commons.release.desc>
+    <!-- Java 6 -->
+    <commons.release.2.version>2.4.3</commons.release.2.version>
+    <commons.release.2.desc>(Java 6)</commons.release.2.desc>
+    <!-- Java 5 -->
+    <commons.release.3.version>1.6</commons.release.3.version>
+    <commons.release.3.desc>(Java 5)</commons.release.3.desc>
     <!-- override parent name, because 1.x uses different artifactId -->
-    <commons.release.2.name>commons-pool-${commons.release.2.version}</commons.release.2.name>
+    <commons.release.3.name>commons-pool-${commons.release.3.version}</commons.release.3.name>
     <commons.jira.id>POOL</commons.jira.id>
     <commons.jira.pid>12310488</commons.jira.pid>
     <commons.site.path>pool</commons.site.path>
