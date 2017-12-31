@@ -2126,7 +2126,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 Thread.sleep(_pause);
                 _pool.returnObject(obj);
                 postreturn = System.currentTimeMillis();
-            } catch (final Exception e) {
+            } catch (final Throwable e) {
                 _thrown = e;
             } finally{
                 ended = System.currentTimeMillis();
@@ -2619,6 +2619,79 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         public String create() throws Exception {
             semaphore.acquire();
             throw new UnsupportedCharsetException("wibble");
+        }
+
+        @Override
+        public PooledObject<String> wrap(final String obj) {
+            return new DefaultPooledObject<>(obj);
+        }
+
+        public void release() {
+            semaphore.release();
+        }
+
+        public boolean hasQueuedThreads() {
+            return semaphore.hasQueuedThreads();
+        }
+    }
+
+    @Test
+    public void testErrorFactoryDoesNotBlockThreads() throws Exception {
+
+        final CreateErrorFactory factory = new CreateErrorFactory();
+        try (final GenericObjectPool<String> createFailFactoryPool = new GenericObjectPool<>(factory)) {
+
+            createFailFactoryPool.setMaxTotal(1);
+
+            // Try and borrow the first object from the pool
+            final WaitingTestThread thread1 = new WaitingTestThread(createFailFactoryPool, 0);
+            thread1.start();
+
+            // Wait for thread to reach semaphore
+            while (!factory.hasQueuedThreads()) {
+                Thread.sleep(200);
+            }
+
+            // Try and borrow the second object from the pool
+            final WaitingTestThread thread2 = new WaitingTestThread(createFailFactoryPool, 0);
+            thread2.start();
+            // Pool will not call factory since maximum number of object creations
+            // are already queued.
+
+            // Thread 2 will wait on an object being returned to the pool
+            // Give thread 2 a chance to reach this state
+            Thread.sleep(1000);
+
+            // Release thread1
+            factory.release();
+            // Pre-release thread2
+            factory.release();
+
+            // Both threads should now complete.
+            boolean threadRunning = true;
+            int count = 0;
+            while (threadRunning && count < 15) {
+                threadRunning = thread1.isAlive();
+                threadRunning = thread2.isAlive();
+                Thread.sleep(200);
+                count++;
+            }
+            Assert.assertFalse(thread1.isAlive());
+            Assert.assertFalse(thread2.isAlive());
+
+            Assert.assertTrue(thread1._thrown instanceof UnknownError);
+            Assert.assertTrue(thread2._thrown instanceof UnknownError);
+        }
+    }
+
+    private static class CreateErrorFactory extends BasePooledObjectFactory<String> {
+
+        private final Semaphore semaphore = new Semaphore(0);
+
+        @Override
+        public String create() throws Exception {
+            semaphore.acquire();
+            throw new UnknownError("wiggle");
         }
 
         @Override
