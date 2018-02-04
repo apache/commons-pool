@@ -43,8 +43,8 @@
 Apache Commons Pool
 ===================
 
-[![Build Status](https://travis-ci.org/apache/commons-pool2.svg?branch=master)](https://travis-ci.org/apache/commons-pool2)
-[![Coverage Status](https://coveralls.io/repos/apache/commons-pool2/badge.svg?branch=master)](https://coveralls.io/r/apache/commons-pool2)
+[![Build Status](https://travis-ci.org/apache/commons-pool.svg)](https://travis-ci.org/apache/commons-pool)
+[![Coverage Status](https://coveralls.io/repos/github/apache/commons-pool/badge.svg?branch=master)](https://coveralls.io/github/apache/commons-pool?branch=master)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-pool2/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-pool2/)
 [![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
