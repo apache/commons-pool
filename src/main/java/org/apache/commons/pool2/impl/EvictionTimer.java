@@ -18,7 +18,10 @@ package org.apache.commons.pool2.impl;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TimerTask;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
@@ -46,6 +49,9 @@ class EvictionTimer {
 
     /** Static usage count tracker */
     private static int usageCount; //@GuardedBy("EvictionTimer.class")
+
+    /** Keep the futures to be able to cancel them later. */
+    private static Map<Runnable, ScheduledFuture<?>> futures = new HashMap<>();
 
     /** Prevent instantiation */
     private EvictionTimer() {
@@ -78,7 +84,7 @@ class EvictionTimer {
             executor = new ScheduledThreadPoolExecutor(1, new EvictorThreadFactory());
         }
         usageCount++;
-        executor.scheduleWithFixedDelay(task, delay, period, TimeUnit.MILLISECONDS);
+        futures.put(task, executor.scheduleWithFixedDelay(task, delay, period, TimeUnit.MILLISECONDS));
     }
 
     /**
@@ -92,6 +98,12 @@ class EvictionTimer {
      */
     static synchronized void cancel(final TimerTask task, final long timeout, final TimeUnit unit) {
         task.cancel();
+        if (executor != null) {
+            if (futures.containsKey(task)) {
+                futures.remove(task).cancel(false);
+                executor.purge();
+            }
+        }
         usageCount--;
         if (usageCount == 0) {
             executor.shutdown();
