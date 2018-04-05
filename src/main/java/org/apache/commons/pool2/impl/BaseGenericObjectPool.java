@@ -619,15 +619,8 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
                 throw new IllegalArgumentException(
                         "[" + evictionPolicyClassName + "] does not implement " + EVICTION_POLICY_TYPE_NAME);
             }
-        } catch (final ClassNotFoundException e) {
-            throw new IllegalArgumentException(exMessage, e);
-        } catch (final InstantiationException e) {
-            throw new IllegalArgumentException(exMessage, e);
-        } catch (final IllegalAccessException e) {
-            throw new IllegalArgumentException(exMessage, e);
-        } catch (final InvocationTargetException e) {
-            throw new IllegalArgumentException(exMessage, e);
-        } catch (final NoSuchMethodException e) {
+        } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException
+                | InvocationTargetException | NoSuchMethodException e) {
             throw new IllegalArgumentException(exMessage, e);
         }
     }
