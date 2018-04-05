@@ -68,6 +68,9 @@ The <action> type attribute can be add,update,fix,remove.
       Make abandoned logging stack trace requirements configurable. This also reverts
       the default behavior introduced by POOL-320.
     </action>
+    <action dev="ggregory" issue="POOL-339" type="update">
+      Update optional library cglib from 3.2.5 to 3.2.6.
+    </action>
   </release>
   <release version="2.4.3" date="2017-10-24" description="This is a patch release, including bug fixes only.">
     <action dev="ggregory" issue="POOL-328" type="fix" due-to="Lorenzo Solano Martinez">
