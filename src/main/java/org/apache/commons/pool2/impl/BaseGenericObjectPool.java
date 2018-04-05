@@ -935,9 +935,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
             try {
                 ManagementFactory.getPlatformMBeanServer().unregisterMBean(
                         oname);
-            } catch (final MBeanRegistrationException e) {
-                swallowException(e);
-            } catch (final InstanceNotFoundException e) {
+            } catch (final MBeanRegistrationException | InstanceNotFoundException e) {
                 swallowException(e);
             }
         }
@@ -993,10 +991,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
             } catch (final InstanceAlreadyExistsException e) {
                 // Increment the index and try again
                 i++;
-            } catch (final MBeanRegistrationException e) {
-                // Shouldn't happen. Skip registration if it does.
-                registered = true;
-            } catch (final NotCompliantMBeanException e) {
+            } catch (final MBeanRegistrationException | NotCompliantMBeanException e) {
                 // Shouldn't happen. Skip registration if it does.
                 registered = true;
             }
