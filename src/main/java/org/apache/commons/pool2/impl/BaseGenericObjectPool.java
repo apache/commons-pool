@@ -599,46 +599,36 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      *
      * @see #getEvictionPolicyClassName()
      */
-    public final void setEvictionPolicyClassName(
-            final String evictionPolicyClassName) {
+    public final void setEvictionPolicyClassName(final String evictionPolicyClassName) {
+        final String EVICTION_POLICY_TYPE_NAME = EvictionPolicy.class.getName();
+        final String exMessage = "Unable to create " + EVICTION_POLICY_TYPE_NAME + " instance of type "
+                + evictionPolicyClassName;
         try {
             Class<?> clazz;
             try {
-                clazz = Class.forName(evictionPolicyClassName, true,
-                        Thread.currentThread().getContextClassLoader());
+                clazz = Class.forName(evictionPolicyClassName, true, Thread.currentThread().getContextClassLoader());
             } catch (final ClassNotFoundException e) {
                 clazz = Class.forName(evictionPolicyClassName);
             }
             final Object policy = clazz.getConstructor().newInstance();
             if (policy instanceof EvictionPolicy<?>) {
                 @SuppressWarnings("unchecked") // safe, because we just checked the class
-                final
-                EvictionPolicy<T> evicPolicy = (EvictionPolicy<T>) policy;
+                final EvictionPolicy<T> evicPolicy = (EvictionPolicy<T>) policy;
                 this.evictionPolicy = evicPolicy;
             } else {
-                throw new IllegalArgumentException("[" + evictionPolicyClassName +
-                        "] does not implement EvictionPolicy");
+                throw new IllegalArgumentException(
+                        "[" + evictionPolicyClassName + "] does not implement " + EVICTION_POLICY_TYPE_NAME);
             }
         } catch (final ClassNotFoundException e) {
-            throw new IllegalArgumentException(
-                    "Unable to create EvictionPolicy instance of type " +
-                    evictionPolicyClassName, e);
+            throw new IllegalArgumentException(exMessage, e);
         } catch (final InstantiationException e) {
-            throw new IllegalArgumentException(
-                    "Unable to create EvictionPolicy instance of type " +
-                    evictionPolicyClassName, e);
+            throw new IllegalArgumentException(exMessage, e);
         } catch (final IllegalAccessException e) {
-            throw new IllegalArgumentException(
-                    "Unable to create EvictionPolicy instance of type " +
-                    evictionPolicyClassName, e);
+            throw new IllegalArgumentException(exMessage, e);
         } catch (final InvocationTargetException e) {
-            throw new IllegalArgumentException(
-                    "Unable to create EvictionPolicy instance of type " +
-                    evictionPolicyClassName, e);
+            throw new IllegalArgumentException(exMessage, e);
         } catch (final NoSuchMethodException e) {
-            throw new IllegalArgumentException(
-                    "Unable to create EvictionPolicy instance of type " +
-                    evictionPolicyClassName, e);
+            throw new IllegalArgumentException(exMessage, e);
         }
     }
 
