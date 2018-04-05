@@ -879,9 +879,9 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * Swallows an exception and notifies the configured listener for swallowed
      * exceptions queue.
      *
-     * @param e exception to be swallowed
+     * @param swallowException exception to be swallowed
      */
-    final void swallowException(final Exception e) {
+    final void swallowException(final Exception swallowException) {
         final SwallowedExceptionListener listener = getSwallowedExceptionListener();
 
         if (listener == null) {
@@ -889,11 +889,9 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         }
 
         try {
-            listener.onSwallowException(e);
-        } catch (final OutOfMemoryError oome) {
-            throw oome;
-        } catch (final VirtualMachineError vme) {
-            throw vme;
+            listener.onSwallowException(swallowException);
+        } catch (final VirtualMachineError e) {
+            throw e;
         } catch (final Throwable t) {
             // Ignore. Enjoy the irony.
         }
