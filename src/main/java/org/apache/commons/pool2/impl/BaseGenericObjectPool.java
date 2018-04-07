@@ -605,9 +605,13 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
                 + evictionPolicyClassName;
         try {
             Class<?> clazz;
+            final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            String epcnClassLoaderDesc;
             try {
-                clazz = Class.forName(evictionPolicyClassName, true, Thread.currentThread().getContextClassLoader());
+                epcnClassLoaderDesc = "Thread context class loader: " + classLoader;
+                clazz = Class.forName(evictionPolicyClassName, true, classLoader);
             } catch (final ClassNotFoundException e) {
+                epcnClassLoaderDesc = "Default class loader";
                 clazz = Class.forName(evictionPolicyClassName);
             }
             final Object policy = clazz.getConstructor().newInstance();
@@ -616,8 +620,9 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
                 final EvictionPolicy<T> evicPolicy = (EvictionPolicy<T>) policy;
                 this.evictionPolicy = evicPolicy;
             } else {
-                throw new IllegalArgumentException(
-                        "[" + evictionPolicyClassName + "] does not implement " + EVICTION_POLICY_TYPE_NAME);
+                throw new IllegalArgumentException("Class " + evictionPolicyClassName + " from class loader ["
+                        + epcnClassLoaderDesc + "] does not implement " + EVICTION_POLICY_TYPE_NAME
+                        + " from class loader [" + EvictionPolicy.class.getClassLoader() + "]");
             }
         } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException
                 | InvocationTargetException | NoSuchMethodException e) {
