@@ -47,6 +47,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" issue="POOL-336" type="update" due-to="Wolfgang Glas">
       GenericObjectPool's borrowObject lock if create() fails with Error.
     </action>
+    <action dev="ggregory" issue="POOL-339" type="update">
+      Update optional library cglib from 3.2.5 to 3.2.6.
+    </action>
   </release>
   <release version="2.5.0" date="2017-12-16" description="This is a minor release, updating to Java 7.">
     <action dev="ggregory" issue="POOL-331" type="update">
@@ -67,9 +70,6 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="mattsicker" issue="POOL-335" type="add">
       Make abandoned logging stack trace requirements configurable. This also reverts
       the default behavior introduced by POOL-320.
-    </action>
-    <action dev="ggregory" issue="POOL-339" type="update">
-      Update optional library cglib from 3.2.5 to 3.2.6.
     </action>
   </release>
   <release version="2.4.3" date="2017-10-24" description="This is a patch release, including bug fixes only.">
