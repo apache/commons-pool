@@ -1379,8 +1379,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     // Monitoring methods
 
     /**
-     * Returns true if there are threads waiting to take instances from this deque.
-     * See disclaimer on accuracy in
+     * Returns true if there are threads waiting to take instances from this deque. See disclaimer on accuracy in
      * {@link java.util.concurrent.locks.ReentrantLock#hasWaiters(Condition)}.
      *
      * @return true if there is at least one thread waiting on this deque's notEmpty condition.
@@ -1395,8 +1394,8 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     }
 
     /**
-     * Returns the length of the queue of threads waiting to take instances from this deque.
-     * See disclaimer on accuracy in {@link ReentrantLock#getWaitQueueLength(Condition)}.
+     * Returns the length of the queue of threads waiting to take instances from this deque. See disclaimer on accuracy
+     * in {@link java.util.concurrent.locks.ReentrantLock#getWaitQueueLength(Condition)}.
      *
      * @return number of threads waiting on this deque's notEmpty condition.
      */
@@ -1410,9 +1409,8 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     }
 
     /**
-     * Interrupts the threads currently waiting to take an object from the pool.
-     * See disclaimer on accuracy in
-     * {@link ReentrantLock#getWaitingThreads(Condition)}.
+     * Interrupts the threads currently waiting to take an object from the pool. See disclaimer on accuracy in
+     * {@link java.util.concurrent.locks.ReentrantLock#getWaitingThreads(Condition)}.
      */
     public void interuptTakeWaiters() {
         lock.lock();
