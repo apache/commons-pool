@@ -901,7 +901,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     }
 
     /**
-     * Empty the queue to the specified collection.
+     * Drains the queue to the specified collection.
      *
      * @param c The collection to add the elements to
      *
@@ -920,7 +920,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     }
 
     /**
-     * Empty no more than the specified number of elements from the queue to the
+     * Drains no more than the specified number of elements from the queue to the
      * specified collection.
      *
      * @param c           collection to add the elements to
@@ -1330,7 +1330,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     }
 
     /**
-     * Save the state of this deque to a stream (that is, serialize it).
+     * Saves the state of this deque to a stream (that is, serialize it).
      *
      * @serialData The capacity (int), followed by elements (each an
      * {@code Object}) in the proper order, followed by a null
@@ -1354,7 +1354,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     }
 
     /**
-     * Reconstitute this deque from a stream (that is,
+     * Reconstitutes this deque from a stream (that is,
      * deserialize it).
      * @param s the stream
      */
