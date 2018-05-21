@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.TimerTask;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -1026,7 +1027,10 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      *
      * @see GenericKeyedObjectPool#setTimeBetweenEvictionRunsMillis
      */
-    class Evictor extends TimerTask {
+    class Evictor implements Runnable {
+
+        private ScheduledFuture<?> scheduledFuture;
+
         /**
          * Run pool maintenance.  Evict objects qualifying for eviction and then
          * ensure that the minimum number of idle instances are available.
@@ -1073,6 +1077,16 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
                 // Restore the previous CCL
                 Thread.currentThread().setContextClassLoader(savedClassLoader);
             }
+        }
+
+
+        void setScheduledFuture(ScheduledFuture<?> scheduledFuture) {
+            this.scheduledFuture = scheduledFuture;
+        }
+
+
+        void cancel() {
+            scheduledFuture.cancel(false);
         }
     }
 

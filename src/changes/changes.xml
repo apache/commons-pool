@@ -50,6 +50,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" issue="POOL-339" type="update">
       Update optional library cglib from 3.2.5 to 3.2.6.
     </action>
+    <action dev="markt" issue="POOL-337" type="fix" due-to="Reinald Verheij">
+      Ensure cancelled eviction tasks are removed from scheduler.
+    </action>
   </release>
   <release version="2.5.0" date="2017-12-16" description="This is a minor release, updating to Java 7.">
     <action dev="ggregory" issue="POOL-331" type="update">
