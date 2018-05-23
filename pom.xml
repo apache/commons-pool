@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
-    <version>43</version>
+    <version>46</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>commons-pool2</artifactId>
@@ -133,7 +133,7 @@
     <dependency>
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm-util</artifactId>
-      <version>6.0</version>
+      <version>6.1.1</version>
       <optional>true</optional>
     </dependency>
     
@@ -288,6 +288,16 @@
             </excludes>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>com.github.siom79.japicmp</groupId>
+          <artifactId>japicmp-maven-plugin</artifactId>
+          <version>${commons.japicmp.version}</version>
+          <configuration>
+            <parameter>
+              <ignoreMissingClasses>true</ignoreMissingClasses>
+            </parameter>
+          </configuration>
+        </plugin>        
     </plugins>
   </reporting>
     
