@@ -110,7 +110,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
 
 
     // Monitoring (primarily JMX) attributes
-    private final ObjectName oname;
+    private final ObjectName objectName;
     private final String creationStackTrace;
     private final AtomicLong borrowedCount = new AtomicLong(0);
     private final AtomicLong returnedCount = new AtomicLong(0);
@@ -137,9 +137,9 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     public BaseGenericObjectPool(final BaseObjectPoolConfig<T> config,
             final String jmxNameBase, final String jmxNamePrefix) {
         if (config.getJmxEnabled()) {
-            this.oname = jmxRegister(config, jmxNameBase, jmxNamePrefix);
+            this.objectName = jmxRegister(config, jmxNameBase, jmxNamePrefix);
         } else {
-            this.oname = null;
+            this.objectName = null;
         }
 
         // Populate the creation stack trace
@@ -777,7 +777,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * @return the JMX name
      */
     public final ObjectName getJmxName() {
-        return oname;
+        return objectName;
     }
 
     /**
@@ -970,10 +970,10 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * Unregisters this pool's MBean.
      */
     final void jmxUnregister() {
-        if (oname != null) {
+        if (objectName != null) {
             try {
                 ManagementFactory.getPlatformMBeanServer().unregisterMBean(
-                        oname);
+                        objectName);
             } catch (final MBeanRegistrationException | InstanceNotFoundException e) {
                 swallowException(e);
             }
@@ -1337,7 +1337,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         builder.append(", factoryClassLoader=");
         builder.append(factoryClassLoader);
         builder.append(", oname=");
-        builder.append(oname);
+        builder.append(objectName);
         builder.append(", creationStackTrace=");
         builder.append(creationStackTrace);
         builder.append(", borrowedCount=");
