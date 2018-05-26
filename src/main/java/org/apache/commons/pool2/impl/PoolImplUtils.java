@@ -78,12 +78,10 @@ class PoolImplUtils {
 
         final Object result = getGenericType(type, superClazz);
         if (result instanceof Class<?>) {
-            // Superclass implements interface and defines explicit type for
-            // generic
+            // Superclass implements interface and defines explicit type for generic
             return result;
         } else if (result instanceof Integer) {
-            // Superclass implements interface and defines unknown type for
-            // generic
+            // Superclass implements interface and defines unknown type for generic
             // Map that unknown type to the generic types defined in this class
             final ParameterizedType superClassType = (ParameterizedType) clazz.getGenericSuperclass();
             return getTypeParameter(clazz, superClassType.getActualTypeArguments()[((Integer) result).intValue()]);
