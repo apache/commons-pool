@@ -50,19 +50,24 @@ public class TestPoolImplUtils {
     @SuppressWarnings("unused")
     private abstract static class FactoryAB<A,B>
             extends BasePooledObjectFactory<B> {
+        // empty by design
     }
 
     private abstract static class FactoryBA<A,B> extends FactoryAB<B,A> {
+        // empty by design
     }
 
     private abstract static class FactoryC<C> extends FactoryBA<C, String> {
+        // empty by design
     }
 
     @SuppressWarnings("unused")
     private abstract static class FactoryDE<D,E> extends FactoryC<D>{
+        // empty by design
     }
 
     private abstract static class FactoryF<F> extends FactoryDE<Long,F>{
+        // empty by design
     }
 
     private static class NotSimpleFactory extends FactoryF<Integer> {
