@@ -593,7 +593,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
 
     /**
      * Sets the eviction policy for this pool.
-     * 
+     *
      * @param evictionPolicy
      *            the eviction policy for this pool.
      * @since 2.6.0

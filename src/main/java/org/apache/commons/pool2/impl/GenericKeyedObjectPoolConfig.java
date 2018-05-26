@@ -24,7 +24,7 @@ package org.apache.commons.pool2.impl;
  * This class is not thread-safe; it is only intended to be used to provide
  * attributes used when creating a pool.
  * </p>
- * 
+ *
  * @param <T> Type of element pooled.
  * @since 2.0
  */

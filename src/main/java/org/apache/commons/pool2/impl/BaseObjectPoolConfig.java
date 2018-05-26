@@ -25,7 +25,7 @@ import org.apache.commons.pool2.BaseObject;
  * <p>
  * This class is not thread-safe.
  * </p>
- * 
+ *
  * @param <T> Type of element pooled.
  * @since 2.0
  */

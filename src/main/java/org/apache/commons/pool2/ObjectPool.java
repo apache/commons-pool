@@ -56,7 +56,7 @@ import java.util.NoSuchElementException;
  * @since 2.0
  */
 public interface ObjectPool<T> extends Closeable {
-    
+
     /**
      * Obtains an instance from this pool.
      * <p>
