@@ -43,7 +43,7 @@ class PoolImplUtils {
 
 
     /**
-     * Obtain the concrete type used by an implementation of an interface that
+     * Obtains the concrete type used by an implementation of an interface that
      * uses a generic type.
      *
      * @param type  The interface that defines a generic type
