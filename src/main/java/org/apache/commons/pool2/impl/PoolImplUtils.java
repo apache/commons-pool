@@ -66,8 +66,7 @@ class PoolImplUtils {
                 // Look for the generic interface
                 if (pi.getRawType() instanceof Class) {
                     if (type.isAssignableFrom((Class<?>) pi.getRawType())) {
-                        return getTypeParameter(
-                                clazz, pi.getActualTypeArguments()[0]);
+                        return getTypeParameter(clazz, pi.getActualTypeArguments()[0]);
                     }
                 }
             }
@@ -75,9 +74,7 @@ class PoolImplUtils {
 
         // Interface not found on this class. Look at the superclass.
         @SuppressWarnings("unchecked")
-        final
-        Class<? extends T> superClazz =
-                (Class<? extends T>) clazz.getSuperclass();
+        final Class<? extends T> superClazz = (Class<? extends T>) clazz.getSuperclass();
 
         final Object result = getGenericType(type, superClazz);
         if (result instanceof Class<?>) {
@@ -88,11 +85,8 @@ class PoolImplUtils {
             // Superclass implements interface and defines unknown type for
             // generic
             // Map that unknown type to the generic types defined in this class
-            final ParameterizedType superClassType =
-                    (ParameterizedType) clazz.getGenericSuperclass();
-            return getTypeParameter(clazz,
-                    superClassType.getActualTypeArguments()[
-                            ((Integer) result).intValue()]);
+            final ParameterizedType superClassType = (ParameterizedType) clazz.getGenericSuperclass();
+            return getTypeParameter(clazz, superClassType.getActualTypeArguments()[((Integer) result).intValue()]);
         } else {
             // Error will be logged further up the call stack
             return null;
