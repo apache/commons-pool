@@ -2711,43 +2711,84 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
     }
 
-	private BasePooledObjectFactory<String> createBasePooledObjectfactory() {
-		return new BasePooledObjectFactory<String>() {
-			@Override
-			public String create() {
-				// fake
-				return null;
-			}
+    private BasePooledObjectFactory<String> createNullPooledObjectFactory() {
+        return new BasePooledObjectFactory<String>() {
+            @Override
+            public String create() {
+                // fake
+                return null;
+            }
 
-			@Override
-			public PooledObject<String> wrap(final String obj) {
-				// fake
-				return null;
-			}
-		};
-	}
+            @Override
+            public PooledObject<String> wrap(final String obj) {
+                // fake
+                return null;
+            }
+        };
+    }
+    
+    private BasePooledObjectFactory<String> createDefaultPooledObjectFactory() {
+        return new BasePooledObjectFactory<String>() {
+            @Override
+            public String create() {
+                // fake
+                return null;
+            }
+
+            @Override
+            public PooledObject<String> wrap(final String obj) {
+                // fake
+                return new DefaultPooledObject<String>(obj);
+            }
+        };
+    }
 
     @Test
-    public void testGetFactoryType() {
-        try (final GenericObjectPool<String> pool = new GenericObjectPool<>(createBasePooledObjectfactory())) {
+    public void testGetFactoryType_NullPooledObjectFactory() {
+        try (final GenericObjectPool<String> pool = new GenericObjectPool<>(createNullPooledObjectFactory())) {
             Assert.assertNotNull((pool.getFactoryType()));
         }
     }
 
     @Test
-    @Ignore
-    public void testGetFactoryType_PoolUtilssynchronizedPooledFactory() {
-        try (final GenericObjectPool<String> pool = new GenericObjectPool<>(
-                PoolUtils.synchronizedPooledFactory(createBasePooledObjectfactory()))) {
+    public void testGetFactoryType_DefaultPooledObjectFactory() {
+        try (final GenericObjectPool<String> pool = new GenericObjectPool<>(createDefaultPooledObjectFactory())) {
             Assert.assertNotNull((pool.getFactoryType()));
         }
     }
 
     @Test
-    @Ignore
-    public void testGetFactoryType_SynchronizedPooledObjectFactory() {
+    @Ignore("https://issues.apache.org/jira/browse/POOL-324")
+    public void testGetFactoryType_PoolUtilsSynchronizedNullPooledFactory() {
         try (final GenericObjectPool<String> pool = new GenericObjectPool<>(
-                new TestSynchronizedPooledObjectFactory<>(createBasePooledObjectfactory()))) {
+                PoolUtils.synchronizedPooledFactory(createNullPooledObjectFactory()))) {
+            Assert.assertNotNull((pool.getFactoryType()));
+        }
+    }
+
+    @Test
+    @Ignore("https://issues.apache.org/jira/browse/POOL-324")
+    public void testGetFactoryType_PoolUtilsSynchronizedDefaultPooledFactory() {
+        try (final GenericObjectPool<String> pool = new GenericObjectPool<>(
+                PoolUtils.synchronizedPooledFactory(createDefaultPooledObjectFactory()))) {
+            Assert.assertNotNull((pool.getFactoryType()));
+        }
+    }
+
+    @Test
+    @Ignore("https://issues.apache.org/jira/browse/POOL-324")
+    public void testGetFactoryType_SynchronizedNullPooledObjectFactory() {
+        try (final GenericObjectPool<String> pool = new GenericObjectPool<>(
+                new TestSynchronizedPooledObjectFactory<>(createNullPooledObjectFactory()))) {
+            Assert.assertNotNull((pool.getFactoryType()));
+        }
+    }
+
+    @Test
+    @Ignore("https://issues.apache.org/jira/browse/POOL-324")
+    public void testGetFactoryType_SynchronizedDefaultPooledObjectFactory() {
+        try (final GenericObjectPool<String> pool = new GenericObjectPool<>(
+                new TestSynchronizedPooledObjectFactory<>(createDefaultPooledObjectFactory()))) {
             Assert.assertNotNull((pool.getFactoryType()));
         }
     }
