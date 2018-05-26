@@ -598,7 +598,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      *            the eviction policy for this pool.
      * @since 2.6.0
      */
-    public void setEvictionPolicy(EvictionPolicy<T> evictionPolicy) {
+    public void setEvictionPolicy(final EvictionPolicy<T> evictionPolicy) {
         this.evictionPolicy = evictionPolicy;
     }
 
@@ -1113,7 +1113,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         }
 
 
-        void setScheduledFuture(ScheduledFuture<?> scheduledFuture) {
+        void setScheduledFuture(final ScheduledFuture<?> scheduledFuture) {
             this.scheduledFuture = scheduledFuture;
         }
 

@@ -32,7 +32,7 @@ public class NoOpCallStack implements CallStack {
     }
 
     @Override
-    public boolean printStackTrace(PrintWriter writer) {
+    public boolean printStackTrace(final PrintWriter writer) {
         return false;
     }
 

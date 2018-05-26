@@ -25,9 +25,9 @@ import java.io.StringWriter;
 public class NoOpCallStackTest {
     @Test
     public void printStackTraceIsNoOp() throws Exception {
-        CallStack stack = NoOpCallStack.INSTANCE;
+        final CallStack stack = NoOpCallStack.INSTANCE;
         stack.fillInStackTrace();
-        StringWriter writer = new StringWriter();
+        final StringWriter writer = new StringWriter();
         stack.printStackTrace(new PrintWriter(writer));
         Assert.assertEquals("", writer.toString());
     }

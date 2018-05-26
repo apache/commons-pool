@@ -77,7 +77,7 @@ class EvictionTimer {
             executor = new ScheduledThreadPoolExecutor(1, new EvictorThreadFactory());
             executor.setRemoveOnCancelPolicy(true);
         }
-        ScheduledFuture<?> scheduledFuture =
+        final ScheduledFuture<?> scheduledFuture =
                 executor.scheduleWithFixedDelay(task, delay, period, TimeUnit.MILLISECONDS);
         task.setScheduledFuture(scheduledFuture);
     }
