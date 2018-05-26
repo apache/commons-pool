@@ -32,13 +32,13 @@ class PoolImplUtils {
     /**
      * Identifies the concrete type of object that an object factory creates.
      *
-     * @param factory The factory to examine
+     * @param factoryClass The factory to examine
      *
      * @return the type of object the factory creates
      */
     @SuppressWarnings("rawtypes")
-    static Class<?> getFactoryType(final Class<? extends PooledObjectFactory> factory) {
-        return (Class<?>) getGenericType(PooledObjectFactory.class, factory);
+    static Class<?> getFactoryType(final Class<? extends PooledObjectFactory> factoryClass) {
+        return (Class<?>) getGenericType(PooledObjectFactory.class, factoryClass);
     }
 
 
