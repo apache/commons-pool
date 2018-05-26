@@ -153,7 +153,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.compiler.source>1.7</maven.compiler.source>
     <maven.compiler.target>1.7</maven.compiler.target>
-    <commons.componentid>pool2</commons.componentid>
+    <commons.componentid>pool</commons.componentid>
     <commons.module.name>org.apache.commons.pool2</commons.module.name>
     <!-- Java 7 -->
     <commons.release.version>2.6.0</commons.release.version>
