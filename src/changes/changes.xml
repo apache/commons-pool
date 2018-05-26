@@ -62,6 +62,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" issue="POOL-338" type="fix" due-to="Michael C, Gary Gregory">
       GenericObjectPool constructor may throw an exception under OSGi.
     </action>
+    <action dev="ggregory" issue="POOL-324" type="fix" due-to="Jay Xu, Gary Gregory">
+      org.apache.commons.pool2.impl.GenericObjectPool.getFactoryType() throws java.lang.ClassCastException.
+    </action>
   </release>
   <release version="2.5.0" date="2017-12-16" description="This is a minor release, updating to Java 7.">
     <action dev="ggregory" issue="POOL-331" type="update">
@@ -78,6 +81,10 @@ The <action> type attribute can be add,update,fix,remove.
     </action>
     <action dev="ggregory" issue="POOL-334" type="update">
       org.apache.commons.pool2.impl.ThrowableCallStack.Snapshot is missing serialVersionUID.
+    </action>
+    <action dev="mattsicker" issue="POOL-335" type="add">
+      Make abandoned logging stack trace requirements configurable. This also reverts
+      the default behavior introduced by POOL-320.
     </action>
     <action dev="mattsicker" issue="POOL-335" type="add">
       Make abandoned logging stack trace requirements configurable. This also reverts

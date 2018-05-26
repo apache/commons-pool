@@ -54,7 +54,6 @@ import org.apache.commons.pool2.WaiterFactory;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -2726,7 +2725,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             }
         };
     }
-    
+
     private BasePooledObjectFactory<String> createDefaultPooledObjectFactory() {
         return new BasePooledObjectFactory<String>() {
             @Override
@@ -2758,7 +2757,6 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     @Test
-    @Ignore("https://issues.apache.org/jira/browse/POOL-324")
     public void testGetFactoryType_PoolUtilsSynchronizedNullPooledFactory() {
         try (final GenericObjectPool<String> pool = new GenericObjectPool<>(
                 PoolUtils.synchronizedPooledFactory(createNullPooledObjectFactory()))) {
@@ -2767,7 +2765,6 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     @Test
-    @Ignore("https://issues.apache.org/jira/browse/POOL-324")
     public void testGetFactoryType_PoolUtilsSynchronizedDefaultPooledFactory() {
         try (final GenericObjectPool<String> pool = new GenericObjectPool<>(
                 PoolUtils.synchronizedPooledFactory(createDefaultPooledObjectFactory()))) {
@@ -2776,7 +2773,6 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     @Test
-    @Ignore("https://issues.apache.org/jira/browse/POOL-324")
     public void testGetFactoryType_SynchronizedNullPooledObjectFactory() {
         try (final GenericObjectPool<String> pool = new GenericObjectPool<>(
                 new TestSynchronizedPooledObjectFactory<>(createNullPooledObjectFactory()))) {
@@ -2785,7 +2781,6 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     @Test
-    @Ignore("https://issues.apache.org/jira/browse/POOL-324")
     public void testGetFactoryType_SynchronizedDefaultPooledObjectFactory() {
         try (final GenericObjectPool<String> pool = new GenericObjectPool<>(
                 new TestSynchronizedPooledObjectFactory<>(createDefaultPooledObjectFactory()))) {
