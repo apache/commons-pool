@@ -639,7 +639,7 @@ public final class PoolUtils {
      */
     private static final class KeyedObjectPoolMinIdleTimerTask<K, V> extends
             TimerTask {
-        
+
         /** Minimum number of idle instances. Not the same as pool.getMinIdle(). */
         private final int minIdle;
 
@@ -1119,7 +1119,7 @@ public final class PoolUtils {
      */
     private static final class SynchronizedPooledObjectFactory<T> implements
             PooledObjectFactory<T> {
-        
+
         /** Synchronization lock */
         private final WriteLock writeLock = new ReentrantReadWriteLock().writeLock();
 
@@ -1236,7 +1236,7 @@ public final class PoolUtils {
      */
     private static final class SynchronizedKeyedPooledObjectFactory<K, V>
             implements KeyedPooledObjectFactory<K, V> {
-        
+
         /** Synchronization lock */
         private final WriteLock writeLock = new ReentrantReadWriteLock().writeLock();
 
@@ -1421,7 +1421,7 @@ public final class PoolUtils {
      * @param <T> type of objects in the pool
      */
     private static class ErodingObjectPool<T> implements ObjectPool<T> {
-        
+
         /** Underlying object pool */
         private final ObjectPool<T> pool;
 
@@ -1567,7 +1567,7 @@ public final class PoolUtils {
      */
     private static class ErodingKeyedObjectPool<K, V> implements
             KeyedObjectPool<K, V> {
-        
+
         /** Underlying pool */
         private final KeyedObjectPool<K, V> keyedPool;
 
@@ -1781,7 +1781,7 @@ public final class PoolUtils {
      */
     private static final class ErodingPerKeyKeyedObjectPool<K, V> extends
             ErodingKeyedObjectPool<K, V> {
-        
+
         /** Erosion factor - same for all pools */
         private final float factor;
 
