@@ -78,7 +78,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         implements ObjectPool<T>, GenericObjectPoolMXBean, UsageTracking<T> {
 
     /**
-     * Create a new <code>GenericObjectPool</code> using defaults from
+     * Creates a new <code>GenericObjectPool</code> using defaults from
      * {@link GenericObjectPoolConfig}.
      *
      * @param factory The object factory to be used to create object instances
@@ -89,7 +89,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Create a new <code>GenericObjectPool</code> using a specific
+     * Creates a new <code>GenericObjectPool</code> using a specific
      * configuration.
      *
      * @param factory   The object factory to be used to create object instances
@@ -118,7 +118,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Create a new <code>GenericObjectPool</code> that tracks and destroys
+     * Creates a new <code>GenericObjectPool</code> that tracks and destroys
      * objects that are checked out, but never returned to the pool.
      *
      * @param factory   The object factory to be used to create object instances
@@ -222,7 +222,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Whether or not abandoned object removal is configured for this pool.
+     * Gets whether or not abandoned object removal is configured for this pool.
      *
      * @return true if this pool is configured to detect and remove
      * abandoned objects
@@ -233,7 +233,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Will this pool identify and log any abandoned objects?
+     * Gets whether this pool identifies and logs any abandoned objects.
      *
      * @return {@code true} if abandoned object removal is configured for this
      *         pool and removal events are to be logged otherwise {@code false}
@@ -247,8 +247,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Will a check be made for abandoned objects when an object is borrowed
-     * from this pool?
+     * Gets whether a check is made for abandoned objects when an object is borrowed
+     * from this pool.
      *
      * @return {@code true} if abandoned object removal is configured to be
      *         activated by borrowObject otherwise {@code false}
@@ -262,7 +262,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Will a check be made for abandoned objects when the evictor runs?
+     * Gets whether a check is made for abandoned objects when the evictor runs.
      *
      * @return {@code true} if abandoned object removal is configured to be
      *         activated when the evictor runs otherwise {@code false}
@@ -276,7 +276,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Obtain the timeout before which an object will be considered to be
+     * Obtains the timeout before which an object will be considered to be
      * abandoned by this pool.
      *
      * @return The abandoned object timeout in seconds if abandoned object
@@ -347,7 +347,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Obtain a reference to the factory used to create, destroy and validate
+     * Obtains a reference to the factory used to create, destroy and validate
      * the objects used by this pool.
      *
      * @return the factory
@@ -368,7 +368,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Borrow an object from the pool using the specific waiting time which only
+     * Borrows an object from the pool using the specific waiting time which only
      * applies if {@link #getBlockWhenExhausted()} is true.
      * <p>
      * If there is one or more idle instance available in the pool, then an
@@ -980,7 +980,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Create an object, and place it into the pool. addObject() is useful for
+     * Creates an object, and place it into the pool. addObject() is useful for
      * "pre-loading" a pool with idle objects.
      * <p>
      * If there is no capacity available to add to the pool, this is a no-op
@@ -998,7 +998,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Add the provided wrapped pooled object to the set of idle objects for
+     * Adds the provided wrapped pooled object to the set of idle objects for
      * this pool. The object must already be part of the pool.  If {@code p}
      * is null, this is a no-op (no exception, but no impact on the pool).
      *
@@ -1018,7 +1018,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Calculate the number of objects to test in a run of the idle object
+     * Calculates the number of objects to test in a run of the idle object
      * evictor.
      *
      * @return The number of objects to test for validity
@@ -1033,7 +1033,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Recover abandoned objects which have been checked out but
+     * Recovers abandoned objects which have been checked out but
      * not used since longer than the removeAbandonedTimeout.
      *
      * @param ac The configuration to use to identify abandoned objects
@@ -1089,7 +1089,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     private volatile String factoryType = null;
 
     /**
-     * Return an estimate of the number of threads currently blocked waiting for
+     * Returns an estimate of the number of threads currently blocked waiting for
      * an object from the pool. This is intended for monitoring only, not for
      * synchronization control.
      *
@@ -1105,7 +1105,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Return the type - including the specific type rather than the generic -
+     * Returns the type - including the specific type rather than the generic -
      * of the factory.
      *
      * @return A string representation of the factory type
