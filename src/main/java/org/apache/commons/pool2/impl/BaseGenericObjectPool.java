@@ -62,6 +62,8 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      */
     public static final int MEAN_TIMING_STATS_CACHE_SIZE = 100;
 
+    private static final String EVICTION_POLICY_TYPE_NAME = EvictionPolicy.class.getName();
+
     // Configuration attributes
     private volatile int maxTotal =
             GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL;
@@ -132,7 +134,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      *                      overridden by the config
      * @param jmxNamePrefix Prefix to be used for JMX name for the new pool
      */
-    public BaseGenericObjectPool(final BaseObjectPoolConfig config,
+    public BaseGenericObjectPool(final BaseObjectPoolConfig<T> config,
             final String jmxNameBase, final String jmxNamePrefix) {
         if (config.getJmxEnabled()) {
             this.oname = jmxRegister(config, jmxNameBase, jmxNamePrefix);
@@ -590,45 +592,75 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     }
 
     /**
-     * Sets the name of the {@link EvictionPolicy} implementation that is
-     * used by this pool. The Pool will attempt to load the class using the
-     * thread context class loader. If that fails, the Pool will attempt to load
-     * the class using the class loader that loaded this class.
+     * Sets the eviction policy for this pool.
+     * 
+     * @param evictionPolicy
+     *            the eviction policy for this pool.
+     * @since 2.6.0
+     */
+    public void setEvictionPolicy(EvictionPolicy<T> evictionPolicy) {
+        this.evictionPolicy = evictionPolicy;
+    }
+
+    /**
+     * Sets the name of the {@link EvictionPolicy} implementation that is used by this pool. The Pool will attempt to
+     * load the class using the given class loader. If that fails, use the class loader for the {@link EvictionPolicy}
+     * interface.
      *
-     * @param evictionPolicyClassName   the fully qualified class name of the
-     *                                  new eviction policy
+     * @param evictionPolicyClassName
+     *            the fully qualified class name of the new eviction policy
+     * @param classLoader
+     *            the class loader to load the given {@code evictionPolicyClassName}.
      *
      * @see #getEvictionPolicyClassName()
+     * @since 2.6.0 If loading the class using the given class loader fails, use the class loader for the
+     *        {@link EvictionPolicy} interface.
      */
-    public final void setEvictionPolicyClassName(final String evictionPolicyClassName) {
-        final String EVICTION_POLICY_TYPE_NAME = EvictionPolicy.class.getName();
-        final String exMessage = "Unable to create " + EVICTION_POLICY_TYPE_NAME + " instance of type "
-                + evictionPolicyClassName;
+    public final void setEvictionPolicyClassName(final String evictionPolicyClassName, final ClassLoader classLoader) {
         try {
             Class<?> clazz;
-            final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
             String epcnClassLoaderDesc;
+            // Getting epClass here and now best matches the caller's environment
+            final Class<?> epClass = EvictionPolicy.class;
+            final ClassLoader epClassLoader = epClass.getClassLoader();
             try {
-                epcnClassLoaderDesc = "Thread context class loader: " + classLoader;
+                epcnClassLoaderDesc = classLoader.toString();
                 clazz = Class.forName(evictionPolicyClassName, true, classLoader);
             } catch (final ClassNotFoundException e) {
-                epcnClassLoaderDesc = "Default class loader";
-                clazz = Class.forName(evictionPolicyClassName);
+                epcnClassLoaderDesc = epClassLoader.toString();
+                clazz = Class.forName(evictionPolicyClassName, true, epClassLoader);
             }
             final Object policy = clazz.getConstructor().newInstance();
-            if (policy instanceof EvictionPolicy<?>) {
+            if (epClass.isInstance(policy)) {
                 @SuppressWarnings("unchecked") // safe, because we just checked the class
                 final EvictionPolicy<T> evicPolicy = (EvictionPolicy<T>) policy;
                 this.evictionPolicy = evicPolicy;
             } else {
                 throw new IllegalArgumentException("Class " + evictionPolicyClassName + " from class loader ["
-                        + epcnClassLoaderDesc + "] does not implement " + EVICTION_POLICY_TYPE_NAME
-                        + " from class loader [" + EvictionPolicy.class.getClassLoader() + "]");
+                        + epcnClassLoaderDesc + "] does not implement " + EVICTION_POLICY_TYPE_NAME);
             }
         } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException
                 | InvocationTargetException | NoSuchMethodException e) {
+            final String exMessage = "Unable to create " + EVICTION_POLICY_TYPE_NAME + " instance of type "
+                    + evictionPolicyClassName;
             throw new IllegalArgumentException(exMessage, e);
         }
+    }
+
+    /**
+     * Sets the name of the {@link EvictionPolicy} implementation that is used by this pool. The Pool will attempt to
+     * load the class using the thread context class loader. If that fails, the use the class loader for the
+     * {@link EvictionPolicy} interface.
+     *
+     * @param evictionPolicyClassName
+     *            the fully qualified class name of the new eviction policy
+     *
+     * @see #getEvictionPolicyClassName()
+     * @since 2.6.0 If loading the class using the thread context class loader fails, use the class loader for the
+     *        {@link EvictionPolicy} interface.
+     */
+    public final void setEvictionPolicyClassName(final String evictionPolicyClassName) {
+        setEvictionPolicyClassName(evictionPolicyClassName, Thread.currentThread().getContextClassLoader());
     }
 
     /**
@@ -688,8 +720,9 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      *
      * @return the eviction policy
      * @since 2.4
+     * @since 2.6.0 Changed access from protected to public.
      */
-    protected EvictionPolicy<T> getEvictionPolicy() {
+    public EvictionPolicy<T> getEvictionPolicy() {
         return evictionPolicy;
     }
 
@@ -960,7 +993,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * @param jmxNamePrefix name prefix
      * @return registered ObjectName, null if registration fails
      */
-    private ObjectName jmxRegister(final BaseObjectPoolConfig config,
+    private ObjectName jmxRegister(final BaseObjectPoolConfig<T> config,
             final String jmxNameBase, String jmxNamePrefix) {
         ObjectName objectName = null;
         final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
@@ -1330,5 +1363,6 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         builder.append(", swallowedExceptionListener=");
         builder.append(swallowedExceptionListener);
     }
+
 
 }

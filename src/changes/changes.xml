@@ -43,7 +43,7 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Pool Changes</title>
   </properties>
   <body>
-  <release version="2.5.1" date="2018-MM-DD" description="This is a maintenance release.">
+  <release version="2.6.0" date="2018-MM-DD" description="This is a maintenance release.">
     <action dev="ggregory" issue="POOL-336" type="update" due-to="Wolfgang Glas">
       GenericObjectPool's borrowObject lock if create() fails with Error.
     </action>
@@ -55,6 +55,9 @@ The <action> type attribute can be add,update,fix,remove.
     </action>
     <action dev="ggregory" issue="POOL-341" type="update">
       Update optional library asm-util from 6.0 to 6.1.1.
+    </action>
+    <action dev="ggregory" issue="POOL-338" type="fix" due-to="Michael C, Gary Gregory">
+      GenericObjectPool constructor may throw an exception under OSGi.
     </action>
   </release>
   <release version="2.5.0" date="2017-12-16" description="This is a minor release, updating to Java 7.">

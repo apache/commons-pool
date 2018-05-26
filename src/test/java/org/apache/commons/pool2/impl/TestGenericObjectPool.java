@@ -1073,6 +1073,9 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             // expected
         }
 
+        genericObjectPool.setEvictionPolicy(new TestEvictionPolicy<String>());
+        assertEquals(TestEvictionPolicy.class.getName(), genericObjectPool.getEvictionPolicyClassName());
+
         genericObjectPool.setEvictionPolicyClassName(TestEvictionPolicy.class.getName());
         assertEquals(TestEvictionPolicy.class.getName(), genericObjectPool.getEvictionPolicyClassName());
 

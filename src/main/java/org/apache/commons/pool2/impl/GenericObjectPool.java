@@ -85,7 +85,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      *                used by this pool
      */
     public GenericObjectPool(final PooledObjectFactory<T> factory) {
-        this(factory, new GenericObjectPoolConfig());
+        this(factory, new GenericObjectPoolConfig<T>());
     }
 
     /**
@@ -100,7 +100,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      *                  pool.
      */
     public GenericObjectPool(final PooledObjectFactory<T> factory,
-            final GenericObjectPoolConfig config) {
+            final GenericObjectPoolConfig<T> config) {
 
         super(config, ONAME_BASE, config.getJmxNamePrefix());
 
@@ -131,7 +131,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      *                         and removal.  The configuration is used by value.
      */
     public GenericObjectPool(final PooledObjectFactory<T> factory,
-            final GenericObjectPoolConfig config, final AbandonedConfig abandonedConfig) {
+            final GenericObjectPoolConfig<T> config, final AbandonedConfig abandonedConfig) {
         this(factory, config);
         setAbandonedConfig(abandonedConfig);
     }
@@ -298,7 +298,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      *
      * @see GenericObjectPoolConfig
      */
-    public void setConfig(final GenericObjectPoolConfig conf) {
+    public void setConfig(final GenericObjectPoolConfig<T> conf) {
         setLifo(conf.getLifo());
         setMaxIdle(conf.getMaxIdle());
         setMinIdle(conf.getMinIdle());
@@ -311,11 +311,16 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         setTestWhileIdle(conf.getTestWhileIdle());
         setNumTestsPerEvictionRun(conf.getNumTestsPerEvictionRun());
         setMinEvictableIdleTimeMillis(conf.getMinEvictableIdleTimeMillis());
-        setTimeBetweenEvictionRunsMillis(
-                conf.getTimeBetweenEvictionRunsMillis());
-        setSoftMinEvictableIdleTimeMillis(
-                conf.getSoftMinEvictableIdleTimeMillis());
-        setEvictionPolicyClassName(conf.getEvictionPolicyClassName());
+        setTimeBetweenEvictionRunsMillis(conf.getTimeBetweenEvictionRunsMillis());
+        setSoftMinEvictableIdleTimeMillis(conf.getSoftMinEvictableIdleTimeMillis());
+        final EvictionPolicy<T> policy = conf.getEvictionPolicy();
+        if (policy == null) {
+            // Use the class name (pre-2.6.0 compatible)
+            setEvictionPolicyClassName(conf.getEvictionPolicyClassName());
+        } else {
+            // Otherwise, use the class (2.6.0 feature)
+            setEvictionPolicy(policy);
+        }
         setEvictorShutdownTimeoutMillis(conf.getEvictorShutdownTimeoutMillis());
     }
 
