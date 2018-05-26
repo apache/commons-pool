@@ -181,7 +181,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     private int numTestsPerEvictionRun =
             DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
 
-    private EvictionPolicy<T> evictionPolicy = null; // Only 2.6 applications set this
+    private EvictionPolicy<T> evictionPolicy = null; // Only 2.6.0 applications set this
 
     private String evictionPolicyClassName = DEFAULT_EVICTION_POLICY_CLASS_NAME;
 
