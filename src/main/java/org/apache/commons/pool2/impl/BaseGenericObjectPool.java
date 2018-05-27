@@ -617,34 +617,32 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      *        {@link EvictionPolicy} interface.
      */
     public final void setEvictionPolicyClassName(final String evictionPolicyClassName, final ClassLoader classLoader) {
+        // Getting epClass here and now best matches the caller's environment
+        final Class<?> epClass = EvictionPolicy.class;
+        final ClassLoader epClassLoader = epClass.getClassLoader();
         try {
-            Class<?> clazz;
-            String epcnClassLoaderDesc;
-            // Getting epClass here and now best matches the caller's environment
-            final Class<?> epClass = EvictionPolicy.class;
-            final ClassLoader epClassLoader = epClass.getClassLoader();
             try {
-                epcnClassLoaderDesc = classLoader.toString();
-                clazz = Class.forName(evictionPolicyClassName, true, classLoader);
-            } catch (final ClassNotFoundException e) {
-                epcnClassLoaderDesc = epClassLoader.toString();
-                clazz = Class.forName(evictionPolicyClassName, true, epClassLoader);
+                setEvictionPolicy(evictionPolicyClassName, classLoader);
+            } catch (final ClassCastException | ClassNotFoundException e) {
+                setEvictionPolicy(evictionPolicyClassName, epClassLoader);
             }
-            final Object policy = clazz.getConstructor().newInstance();
-            if (epClass.isInstance(policy)) {
-                @SuppressWarnings("unchecked") // safe, because we just checked the class
-                final EvictionPolicy<T> evicPolicy = (EvictionPolicy<T>) policy;
-                this.evictionPolicy = evicPolicy;
-            } else {
-                throw new IllegalArgumentException("Class " + evictionPolicyClassName + " from class loader ["
-                        + epcnClassLoaderDesc + "] does not implement " + EVICTION_POLICY_TYPE_NAME);
-            }
+        } catch (final ClassCastException e) {
+            throw new IllegalArgumentException("Class " + evictionPolicyClassName + " from class loaders ["
+                    + classLoader + ", " + epClassLoader + "] do not implement " + EVICTION_POLICY_TYPE_NAME);
         } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException
                 | InvocationTargetException | NoSuchMethodException e) {
             final String exMessage = "Unable to create " + EVICTION_POLICY_TYPE_NAME + " instance of type "
                     + evictionPolicyClassName;
             throw new IllegalArgumentException(exMessage, e);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void setEvictionPolicy(final String className, final ClassLoader classLoader)
+            throws ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        final Class<?> clazz = Class.forName(className, true, classLoader);
+        final Object policy = clazz.getConstructor().newInstance();
+        this.evictionPolicy = (EvictionPolicy<T>) policy;
     }
 
     /**
