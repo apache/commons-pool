@@ -177,7 +177,7 @@
     <!-- Commons Release Plugin -->
     <commons.bc.version>2.5.0</commons.bc.version>
     <commons.release.isDistModule>true</commons.release.isDistModule>
-    <commons.distSvnStagingUrl>scm:svn:https://dist.apache.org/repos/dist/dev/commons/${commons.componentid}</commons.distSvnStagingUrl>
+    <commons.distSvnStagingUrl>scm:svn:https://dist.apache.org/repos/dist/dev/commons/${commons.componentid}/${commons.release.version}-${commons.rc.version}</commons.distSvnStagingUrl>    
     <commons.releaseManagerName>Gary Gregory</commons.releaseManagerName>    
     <commons.releaseManagerKey>86FDC7E2A11262CB</commons.releaseManagerKey>    
   </properties> 
