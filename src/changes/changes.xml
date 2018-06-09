@@ -65,6 +65,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" issue="POOL-324" type="fix" due-to="Jay Xu, Gary Gregory">
       org.apache.commons.pool2.impl.GenericObjectPool.getFactoryType() throws java.lang.ClassCastException.
     </action>
+    <action dev="ggregory" issue="POOL-344" type="fix" due-to="Yulin Wang">
+      Delete repeated call startEvictor.
+    </action>
   </release>
   <release version="2.5.0" date="2017-12-16" description="This is a minor release, updating to Java 7.">
     <action dev="ggregory" issue="POOL-331" type="update">

@@ -113,8 +113,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         idleObjects = new LinkedBlockingDeque<>(config.getFairness());
 
         setConfig(config);
-
-        startEvictor(getTimeBetweenEvictionRunsMillis());
     }
 
     /**
