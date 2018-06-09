@@ -112,8 +112,6 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         this.fairness = config.getFairness();
 
         setConfig(config);
-
-        startEvictor(getTimeBetweenEvictionRunsMillis());
     }
 
     /**
