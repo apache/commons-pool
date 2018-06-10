@@ -4,3 +4,5 @@ site-content
 /.project
 /.settings/
 /bin/
+.idea/
+*.iml
