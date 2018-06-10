@@ -536,14 +536,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             return; // Object was abandoned and removed
         }
 
-        synchronized(p) {
-            final PooledObjectState state = p.getState();
-            if (state != PooledObjectState.ALLOCATED) {
-                throw new IllegalStateException(
-                        "Object has already been returned to this pool or is invalid");
-            }
-            p.markReturning(); // Keep from being marked abandoned
-        }
+        markReturningState(p);
 
         final long activeTime = p.getActiveTimeMillis();
 
