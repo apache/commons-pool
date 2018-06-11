@@ -185,7 +185,7 @@ public interface KeyedObjectPool<K,V> extends Closeable {
     int getNumIdle();
 
     /**
-     * Returns the total number of instances current borrowed from this pool but
+     * Returns the total number of instances currently borrowed from this pool but
      * not yet returned. Returns a negative value if this information is not
      * available.
      * @return the total number of instances current borrowed from this pool but
