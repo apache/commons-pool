@@ -473,14 +473,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                     "Returned object not currently part of this pool");
         }
 
-        synchronized(p) {
-            final PooledObjectState state = p.getState();
-            if (state != PooledObjectState.ALLOCATED) {
-                throw new IllegalStateException(
-                        "Object has already been returned to this pool or is invalid");
-            }
-            p.markReturning(); // Keep from being marked abandoned (once GKOP does this)
-        }
+        markReturningState(p);
 
         final long activeTime = p.getActiveTimeMillis();
 
@@ -492,13 +485,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                     } catch (final Exception e) {
                         swallowException(e);
                     }
-                    if (objectDeque.idleObjects.hasTakeWaiters()) {
-                        try {
-                            addObject(key);
-                        } catch (final Exception e) {
-                            swallowException(e);
-                        }
-                    }
+                    whenWaitersAddObject(key, objectDeque.idleObjects);
                     return;
                 }
             }
@@ -512,13 +499,7 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
                 } catch (final Exception e) {
                     swallowException(e);
                 }
-                if (objectDeque.idleObjects.hasTakeWaiters()) {
-                    try {
-                        addObject(key);
-                    } catch (final Exception e) {
-                        swallowException(e);
-                    }
-                }
+                whenWaitersAddObject(key, objectDeque.idleObjects);
                 return;
             }
 
@@ -558,6 +539,20 @@ public class GenericKeyedObjectPool<K,T> extends BaseGenericObjectPool<T>
         }
     }
 
+    /**
+     * Whether there is at least one thread waiting on this deque, add an pool object.
+     * @param key
+     * @param idleObjects
+     */
+    private void whenWaitersAddObject(final K key, LinkedBlockingDeque<PooledObject<T>> idleObjects) {
+        if (idleObjects.hasTakeWaiters()) {
+            try {
+                addObject(key);
+            } catch (final Exception e) {
+                swallowException(e);
+            }
+        }
+    }
 
     /**
      * {@inheritDoc}

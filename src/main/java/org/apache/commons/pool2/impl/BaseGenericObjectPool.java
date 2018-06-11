@@ -40,6 +40,7 @@ import javax.management.ObjectName;
 
 import org.apache.commons.pool2.BaseObject;
 import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.PooledObjectState;
 import org.apache.commons.pool2.SwallowedExceptionListener;
 
 /**
@@ -964,6 +965,21 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     final void updateStatsReturn(final long activeTime) {
         returnedCount.incrementAndGet();
         activeTimes.add(activeTime);
+    }
+
+    /**
+     * Marks the object as returning to the pool.
+     * @param pooledObject instance to return to the keyed pool
+     */
+    protected void markReturningState(PooledObject<T> pooledObject) {
+        synchronized(pooledObject) {
+            final PooledObjectState state = pooledObject.getState();
+            if (state != PooledObjectState.ALLOCATED) {
+                throw new IllegalStateException(
+                        "Object has already been returned to this pool or is invalid");
+            }
+            pooledObject.markReturning(); // Keep from being marked abandoned
+        }
     }
 
     /**
