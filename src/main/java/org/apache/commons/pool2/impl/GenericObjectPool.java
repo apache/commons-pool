@@ -748,7 +748,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                         continue;
                     }
 
-                    if (!underTest.startEvictionTest()) {
+                    if (!startEvictionTest(underTest)) {
                         // Object was borrowed in another thread
                         // Don't count this as an eviction test so reduce i;
                         i--;
@@ -798,7 +798,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                                 }
                             }
                         }
-                        if (!underTest.endEvictionTest(idleObjects)) {
+                        if (!endEvictionTest(underTest, idleObjects)) {
                             // TODO - May need to add code here once additional
                             // states are used
                         }

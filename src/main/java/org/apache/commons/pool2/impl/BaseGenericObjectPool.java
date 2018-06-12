@@ -762,6 +762,48 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     }
 
     /**
+     * Attempts to place the pooled object in the
+     * {@link PooledObjectState#EVICTION} state.
+     *
+     * @param pooledObject instance to start to evict test.
+     * @return <code>true</code> if the object was placed in the
+     *         {@link PooledObjectState#EVICTION} state otherwise
+     *         <code>false</code>
+     */
+    protected boolean startEvictionTest(PooledObject<T> pooledObject) {
+        synchronized (pooledObject) {
+            if (pooledObject.getState() == PooledObjectState.IDLE) {
+                pooledObject.setState(PooledObjectState.EVICTION);
+                return true;
+            }
+            return false;
+        }
+    }
+
+    /**
+     * Called to inform the object that the eviction test has ended.
+     * @param idleObjects The queue of idle objects to which the object should be
+     *                  returned
+     * @param pooledObject instance to return to the queue.
+     * @return Currently not used
+     */
+    protected boolean endEvictionTest(PooledObject<T> pooledObject, Deque<PooledObject<T>> idleObjects) {
+        synchronized (pooledObject) {
+            if(pooledObject.getState() == PooledObjectState.EVICTION) {
+                pooledObject.setState(PooledObjectState.IDLE);
+                return true;
+            } else if(pooledObject.getState() == PooledObjectState.EVICTION_RETURN_TO_HEAD) {
+                pooledObject.setState(PooledObjectState.IDLE);
+                if (!idleObjects.offerFirst(pooledObject)) {
+                    // TODO - Should never happen
+                }
+            }
+        }
+        return false;
+    }
+
+
+    /**
      * Tries to ensure that the configured minimum number of idle instances are
      * available in the pool.
      * @throws Exception if an error occurs creating idle instances

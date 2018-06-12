@@ -125,6 +125,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      *         {@link PooledObjectState#EVICTION} state otherwise
      *         <code>false</code>
      */
+    @Deprecated
     boolean startEvictionTest();
 
     /**
@@ -135,6 +136,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      *
      * @return  Currently not used
      */
+    @Deprecated
     boolean endEvictionTest(Deque<PooledObject<T>> idleQueue);
 
     /**
@@ -198,6 +200,12 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      * @return state
      */
     PooledObjectState getState();
+
+    /**
+     * Sets the state of this object.
+     * @return state
+     */
+    void setState(PooledObjectState newState);
 
     /**
      * Marks the pooled object as abandoned.

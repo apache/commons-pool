@@ -254,6 +254,15 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
     }
 
     /**
+     * {@inheritDoc}
+     * @param newState
+     */
+    @Override
+    public synchronized void setState(PooledObjectState newState) {
+        state = newState;
+    }
+
+    /**
      * Marks the pooled object as abandoned.
      */
     @Override
