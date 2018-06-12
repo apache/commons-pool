@@ -21,7 +21,6 @@ import org.apache.commons.pool2.PooledObjectState;
 import org.apache.commons.pool2.TrackedUse;
 
 import java.io.PrintWriter;
-import java.util.Deque;
 
 /**
  * This wrapper is used to track the additional information, such as state, for
@@ -150,32 +149,6 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
         // TODO add other attributes
     }
 
-    @Override
-    public synchronized boolean startEvictionTest() {
-        if (state == PooledObjectState.IDLE) {
-            state = PooledObjectState.EVICTION;
-            return true;
-        }
-
-        return false;
-    }
-
-    @Override
-    public synchronized boolean endEvictionTest(
-            final Deque<PooledObject<T>> idleQueue) {
-        if (state == PooledObjectState.EVICTION) {
-            state = PooledObjectState.IDLE;
-            return true;
-        } else if (state == PooledObjectState.EVICTION_RETURN_TO_HEAD) {
-            state = PooledObjectState.IDLE;
-            if (!idleQueue.offerFirst(this)) {
-                // TODO - Should never happen
-            }
-        }
-
-        return false;
-    }
-
     /**
      * Allocates the object.
      *
@@ -251,6 +224,15 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
     @Override
     public synchronized PooledObjectState getState() {
         return state;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @param newState
+     */
+    @Override
+    public synchronized void setState(PooledObjectState newState) {
+        state = newState;
     }
 
     /**

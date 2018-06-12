@@ -17,7 +17,6 @@
 package org.apache.commons.pool2;
 
 import java.io.PrintWriter;
-import java.util.Deque;
 
 /**
  * Defines the wrapper that is used to track the additional information, such as
@@ -118,26 +117,6 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     String toString();
 
     /**
-     * Attempts to place the pooled object in the
-     * {@link PooledObjectState#EVICTION} state.
-     *
-     * @return <code>true</code> if the object was placed in the
-     *         {@link PooledObjectState#EVICTION} state otherwise
-     *         <code>false</code>
-     */
-    boolean startEvictionTest();
-
-    /**
-     * Called to inform the object that the eviction test has ended.
-     *
-     * @param idleQueue The queue of idle objects to which the object should be
-     *                  returned
-     *
-     * @return  Currently not used
-     */
-    boolean endEvictionTest(Deque<PooledObject<T>> idleQueue);
-
-    /**
      * Allocates the object.
      *
      * @return {@code true} if the original state was {@link PooledObjectState#IDLE IDLE}
@@ -198,6 +177,12 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      * @return state
      */
     PooledObjectState getState();
+
+    /**
+     * Sets the state of this object.
+     * @return state
+     */
+    void setState(PooledObjectState newState);
 
     /**
      * Marks the pooled object as abandoned.
