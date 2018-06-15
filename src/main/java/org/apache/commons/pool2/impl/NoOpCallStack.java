@@ -26,6 +26,9 @@ import java.io.PrintWriter;
  */
 public class NoOpCallStack implements CallStack {
 
+    /**
+     * Singleton instance.
+     */
     public static final CallStack INSTANCE = new NoOpCallStack();
 
     private NoOpCallStack() {
