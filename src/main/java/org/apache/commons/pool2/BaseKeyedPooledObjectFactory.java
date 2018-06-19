@@ -30,8 +30,8 @@ package org.apache.commons.pool2;
  *
  * @since 2.0
  */
-public abstract class BaseKeyedPooledObjectFactory<K,V> extends BaseObject
-        implements KeyedPooledObjectFactory<K,V> {
+public abstract class BaseKeyedPooledObjectFactory<K, V> extends BaseObject
+        implements KeyedPooledObjectFactory<K, V> {
 
     /**
      * Create an instance that can be served by the pool.

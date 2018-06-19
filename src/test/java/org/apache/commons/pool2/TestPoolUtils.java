@@ -852,7 +852,7 @@ public class TestPoolUtils {
         return expectedMethods;
     }
 
-    private static <K,V> List<String> invokeEveryMethod(final KeyedPooledObjectFactory<K,V> kpof) throws Exception {
+    private static <K, V> List<String> invokeEveryMethod(final KeyedPooledObjectFactory<K, V> kpof) throws Exception {
         kpof.activateObject(null, null);
         kpof.destroyObject(null, null);
         kpof.makeObject(null);
