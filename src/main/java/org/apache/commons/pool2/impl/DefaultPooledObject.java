@@ -28,6 +28,7 @@ import java.util.Deque;
  * the pooled objects.
  * <p>
  * This class is intended to be thread-safe.
+ * </p>
  *
  * @param <T> the type of object in the pool
  *
