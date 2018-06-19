@@ -1011,7 +1011,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      */
     private ObjectName jmxRegister(final BaseObjectPoolConfig<T> config,
             final String jmxNameBase, String jmxNamePrefix) {
-        ObjectName objectName = null;
+        ObjectName newObjectName = null;
         final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         int i = 1;
         boolean registered = false;
@@ -1030,7 +1030,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
                     objName = new ObjectName(base + jmxNamePrefix + i);
                 }
                 mbs.registerMBean(this, objName);
-                objectName = objName;
+                newObjectName = objName;
                 registered = true;
             } catch (final MalformedObjectNameException e) {
                 if (BaseObjectPoolConfig.DEFAULT_JMX_NAME_PREFIX.equals(
@@ -1051,7 +1051,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
                 registered = true;
             }
         }
-        return objectName;
+        return newObjectName;
     }
 
     /**
