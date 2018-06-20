@@ -210,7 +210,7 @@ public interface GenericObjectPoolMXBean {
      * See {@link GenericObjectPool#getFactoryType()}
      * @return See {@link GenericObjectPool#getFactoryType()}
      */
-    public String getFactoryType();
+    String getFactoryType();
     /**
      * See {@link GenericObjectPool#listAllObjects()}
      * @return See {@link GenericObjectPool#listAllObjects()}
