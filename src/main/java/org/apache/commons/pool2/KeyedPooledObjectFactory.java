@@ -75,7 +75,7 @@ package org.apache.commons.pool2;
  * @since 2.0
  */
 public interface KeyedPooledObjectFactory<K, V> {
-    
+
     /**
      * Create an instance that can be served by the pool and
      * wrap it in a {@link PooledObject} to be managed by the pool.
