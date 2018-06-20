@@ -478,16 +478,14 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         final long activeTime = p.getActiveTimeMillis();
 
         try {
-            if (getTestOnReturn()) {
-                if (!factory.validateObject(key, p)) {
-                    try {
-                        destroy(key, p, true);
-                    } catch (final Exception e) {
-                        swallowException(e);
-                    }
-                    whenWaitersAddObject(key, objectDeque.idleObjects);
-                    return;
+            if (getTestOnReturn() && !factory.validateObject(key, p)) {
+                try {
+                    destroy(key, p, true);
+                } catch (final Exception e) {
+                    swallowException(e);
                 }
+                whenWaitersAddObject(key, objectDeque.idleObjects);
+                return;
             }
 
             try {

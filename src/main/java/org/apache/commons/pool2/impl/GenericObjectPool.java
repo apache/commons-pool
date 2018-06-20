@@ -540,21 +540,19 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
 
         final long activeTime = p.getActiveTimeMillis();
 
-        if (getTestOnReturn()) {
-            if (!factory.validateObject(p)) {
-                try {
-                    destroy(p);
-                } catch (final Exception e) {
-                    swallowException(e);
-                }
-                try {
-                    ensureIdle(1, false);
-                } catch (final Exception e) {
-                    swallowException(e);
-                }
-                updateStatsReturn(activeTime);
-                return;
+        if (getTestOnReturn() && !factory.validateObject(p)) {
+            try {
+                destroy(p);
+            } catch (final Exception e) {
+                swallowException(e);
             }
+            try {
+                ensureIdle(1, false);
+            } catch (final Exception e) {
+                swallowException(e);
+            }
+            updateStatsReturn(activeTime);
+            return;
         }
 
         try {
