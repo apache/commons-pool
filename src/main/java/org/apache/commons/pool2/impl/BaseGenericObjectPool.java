@@ -971,7 +971,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * Marks the object as returning to the pool.
      * @param pooledObject instance to return to the keyed pool
      */
-    protected void markReturningState(PooledObject<T> pooledObject) {
+    protected void markReturningState(final PooledObject<T> pooledObject) {
         synchronized(pooledObject) {
             final PooledObjectState state = pooledObject.getState();
             if (state != PooledObjectState.ALLOCATED) {

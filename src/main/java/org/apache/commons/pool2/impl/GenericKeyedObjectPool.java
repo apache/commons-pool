@@ -542,7 +542,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * @param key
      * @param idleObjects
      */
-    private void whenWaitersAddObject(final K key, LinkedBlockingDeque<PooledObject<T>> idleObjects) {
+    private void whenWaitersAddObject(final K key, final LinkedBlockingDeque<PooledObject<T>> idleObjects) {
         if (idleObjects.hasTakeWaiters()) {
             try {
                 addObject(key);
