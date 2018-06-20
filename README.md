@@ -48,7 +48,7 @@ Apache Commons Pool
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-pool2/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-pool2/)
 [![Javadocs](https://javadoc.io/badge/org.apache.commons/commons-pool2/2.6.0.svg)](https://javadoc.io/doc/org.apache.commons/commons-pool2/2.6.0)
 
-${project.description}
+The Apache Commons Object Pooling Library.
 
 Documentation
 -------------
