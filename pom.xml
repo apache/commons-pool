@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
-    <version>46</version>
+    <version>47</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>commons-pool2</artifactId>
@@ -177,7 +177,6 @@
     <!-- Commons Release Plugin -->
     <commons.bc.version>2.5.0</commons.bc.version>
     <commons.release.isDistModule>true</commons.release.isDistModule>
-    <commons.distSvnStagingUrl>scm:svn:https://dist.apache.org/repos/dist/dev/commons/${commons.componentid}/${commons.release.version}-${commons.rc.version}</commons.distSvnStagingUrl>    
     <commons.releaseManagerName>Gary Gregory</commons.releaseManagerName>    
     <commons.releaseManagerKey>86fdc7e2a11262cb</commons.releaseManagerKey>
   </properties> 
