@@ -43,6 +43,11 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Pool Changes</title>
   </properties>
   <body>
+  <release version="2.6.1" date="2018-MM-DD" description="This is a maintenance release.">
+    <action dev="ggregory" issue="POOL-345" type="update">
+      Update optional library cglib from 3.2.6 to 3.2.7.
+    </action>
+  </release>  
   <release version="2.6.0" date="2018-07-06" description="This is a maintenance release.">
     <action dev="ggregory" issue="POOL-336" type="update" due-to="Wolfgang Glas">
       GenericObjectPool's borrowObject lock if create() fails with Error.
