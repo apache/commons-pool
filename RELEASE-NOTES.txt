@@ -48,6 +48,8 @@ patches, or suggestions for improvement, see the Apache Apache Commons Pool webs
 
 http://commons.apache.org/proper/commons-pool/
 
+Download page: https://commons.apache.org/proper/commons-pool/download_pool.cgi
+
 -----------------------------------------------------------------------------------------------
 
               Apache Commons Pool 2.5.0 RELEASE NOTES
