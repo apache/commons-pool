@@ -47,6 +47,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" issue="POOL-345" type="update">
       Update optional library cglib from 3.2.6 to 3.2.7.
     </action>
+    <action dev="ggregory" issue="POOL-346" type="update" due-to="Michael Chen">
+      Move common configuration setter to BaseGenericObjectPool #9.
+    </action>
   </release>  
   <release version="2.6.0" date="2018-07-06" description="This is a maintenance release.">
     <action dev="ggregory" issue="POOL-336" type="update" due-to="Wolfgang Glas">
