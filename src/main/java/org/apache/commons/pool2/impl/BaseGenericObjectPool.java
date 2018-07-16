@@ -690,6 +690,29 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         this.evictorShutdownTimeoutMillis = evictorShutdownTimeoutMillis;
     }
 
+    protected void setBaseConfig(BaseObjectPoolConfig<T> conf) {
+        setLifo(conf.getLifo());
+        setMaxWaitMillis(conf.getMaxWaitMillis());
+        setBlockWhenExhausted(conf.getBlockWhenExhausted());
+        setTestOnCreate(conf.getTestOnCreate());
+        setTestOnBorrow(conf.getTestOnBorrow());
+        setTestOnReturn(conf.getTestOnReturn());
+        setTestWhileIdle(conf.getTestWhileIdle());
+        setNumTestsPerEvictionRun(conf.getNumTestsPerEvictionRun());
+        setMinEvictableIdleTimeMillis(conf.getMinEvictableIdleTimeMillis());
+        setTimeBetweenEvictionRunsMillis(conf.getTimeBetweenEvictionRunsMillis());
+        setSoftMinEvictableIdleTimeMillis(conf.getSoftMinEvictableIdleTimeMillis());
+        final EvictionPolicy<T> policy = conf.getEvictionPolicy();
+        if (policy == null) {
+            // Use the class name (pre-2.6.0 compatible)
+            setEvictionPolicyClassName(conf.getEvictionPolicyClassName());
+        } else {
+            // Otherwise, use the class (2.6.0 feature)
+            setEvictionPolicy(policy);
+        }
+        setEvictorShutdownTimeoutMillis(conf.getEvictorShutdownTimeoutMillis());
+    }
+
     /**
      * Closes the pool, destroys the remaining idle objects and, if registered
      * in JMX, deregisters it.

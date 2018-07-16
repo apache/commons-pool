@@ -237,30 +237,11 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * @see GenericKeyedObjectPoolConfig
      */
     public void setConfig(final GenericKeyedObjectPoolConfig<T> conf) {
-        setLifo(conf.getLifo());
+        setBaseConfig(conf);
         setMaxIdlePerKey(conf.getMaxIdlePerKey());
         setMaxTotalPerKey(conf.getMaxTotalPerKey());
         setMaxTotal(conf.getMaxTotal());
         setMinIdlePerKey(conf.getMinIdlePerKey());
-        setMaxWaitMillis(conf.getMaxWaitMillis());
-        setBlockWhenExhausted(conf.getBlockWhenExhausted());
-        setTestOnCreate(conf.getTestOnCreate());
-        setTestOnBorrow(conf.getTestOnBorrow());
-        setTestOnReturn(conf.getTestOnReturn());
-        setTestWhileIdle(conf.getTestWhileIdle());
-        setNumTestsPerEvictionRun(conf.getNumTestsPerEvictionRun());
-        setMinEvictableIdleTimeMillis(conf.getMinEvictableIdleTimeMillis());
-        setSoftMinEvictableIdleTimeMillis(conf.getSoftMinEvictableIdleTimeMillis());
-        setTimeBetweenEvictionRunsMillis(conf.getTimeBetweenEvictionRunsMillis());
-        final EvictionPolicy<T> policy = conf.getEvictionPolicy();
-        if (policy == null) {
-            // Use the class name (pre-2.6.0 compatible)
-            setEvictionPolicyClassName(conf.getEvictionPolicyClassName());
-        } else {
-            // Otherwise, use the class (2.6.0 feature)
-            setEvictionPolicy(policy);
-        }
-        setEvictorShutdownTimeoutMillis(conf.getEvictorShutdownTimeoutMillis());
     }
 
     /**
