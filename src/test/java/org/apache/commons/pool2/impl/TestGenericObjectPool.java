@@ -2637,6 +2637,48 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
     }
 
+    @Test(timeout = 1200 /* maxWaitMillis x2 + padding */)
+    public void testReturnBorrowObjectWithingMaxWaitMillis() throws Exception {
+        long maxWaitMillis = 500;
+
+        final GenericObjectPool<String> createSlowObjectFactoryPool
+                = new GenericObjectPool<>(createSlowObjectFactory(60000));
+        createSlowObjectFactoryPool.setMaxTotal(1);
+        createSlowObjectFactoryPool.setMaxWaitMillis(maxWaitMillis);
+
+        // thread1 tries creating a slow object to make pool full.
+        final WaitingTestThread thread1 = new WaitingTestThread(createSlowObjectFactoryPool, 0);
+        thread1.start();
+
+        // Wait for thread1's reaching to create(). 
+        Thread.sleep(100);
+
+        // another one tries borrowObject. It should return within maxWaitMillis.
+        try {
+            createSlowObjectFactoryPool.borrowObject(maxWaitMillis);
+            fail("borrowObject must fail due to timeout by maxWaitMillis");
+        } catch (NoSuchElementException e) {
+        }
+
+        Assert.assertTrue(thread1.isAlive());
+    }
+
+    private BasePooledObjectFactory<String> createSlowObjectFactory(final long elapsedTimeMillis) {
+        return new BasePooledObjectFactory<String>() {
+            @Override
+            public String create() throws Exception {
+                Thread.sleep(elapsedTimeMillis);
+                return "created";
+            }
+
+            @Override
+            public PooledObject<String> wrap(final String obj) {
+                // fake
+                return new DefaultPooledObject<String>(obj);
+            }
+        };
+    }
+
     @Test
     public void testErrorFactoryDoesNotBlockThreads() throws Exception {
 
