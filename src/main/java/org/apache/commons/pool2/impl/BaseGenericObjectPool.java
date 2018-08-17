@@ -785,6 +785,12 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     }
 
     /**
+     * Stops the evictor.
+     */
+    void stopEvitor() {
+        startEvictor(-1L);
+    }
+    /**
      * Tries to ensure that the configured minimum number of idle instances are
      * available in the pool.
      * @throws Exception if an error occurs creating idle instances
