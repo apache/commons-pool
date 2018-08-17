@@ -2639,7 +2639,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
     @Test(timeout = 1200 /* maxWaitMillis x2 + padding */)
     public void testReturnBorrowObjectWithingMaxWaitMillis() throws Exception {
-        long maxWaitMillis = 500;
+        final long maxWaitMillis = 500;
 
         final GenericObjectPool<String> createSlowObjectFactoryPool
                 = new GenericObjectPool<>(createSlowObjectFactory(60000));
@@ -2657,7 +2657,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         try {
             createSlowObjectFactoryPool.borrowObject(maxWaitMillis);
             fail("borrowObject must fail due to timeout by maxWaitMillis");
-        } catch (NoSuchElementException e) {
+        } catch (final NoSuchElementException e) {
         }
 
         Assert.assertTrue(thread1.isAlive());

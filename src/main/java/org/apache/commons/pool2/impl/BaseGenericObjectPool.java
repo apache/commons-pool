@@ -217,7 +217,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         this.blockWhenExhausted = blockWhenExhausted;
     }
 
-    protected void setConfig(BaseObjectPoolConfig<T> conf) {
+    protected void setConfig(final BaseObjectPoolConfig<T> conf) {
         setLifo(conf.getLifo());
         setMaxWaitMillis(conf.getMaxWaitMillis());
         setBlockWhenExhausted(conf.getBlockWhenExhausted());
