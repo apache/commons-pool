@@ -2650,7 +2650,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         final WaitingTestThread thread1 = new WaitingTestThread(createSlowObjectFactoryPool, 0);
         thread1.start();
 
-        // Wait for thread1's reaching to create(). 
+        // Wait for thread1's reaching to create().
         Thread.sleep(100);
 
         // another one tries borrowObject. It should return within maxWaitMillis.
