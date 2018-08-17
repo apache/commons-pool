@@ -50,7 +50,7 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" issue="POOL-346" type="update" due-to="Michael Chen">
       Move common configuration setter to BaseGenericObjectPool #9.
     </action>
-    <action dev="ggregory" issue="POOL-347" type=fix" due-to="Shunsuke Nakamura">
+    <action dev="ggregory" issue="POOL-347" type="fix" due-to="Shunsuke Nakamura">
       borrowObject waits for maxWaitMillis over in pool full.
     </action>
     <action dev="ggregory" issue="POOL-349" type="update">
