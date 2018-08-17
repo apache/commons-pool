@@ -174,7 +174,7 @@ public abstract class BaseTestProxiedObjectPool {
     }
 
 
-    protected static interface TestObject {
+    protected interface TestObject {
         String getData();
         void setData(String data);
     }

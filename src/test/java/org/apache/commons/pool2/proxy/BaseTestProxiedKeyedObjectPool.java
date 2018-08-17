@@ -139,7 +139,7 @@ public abstract class BaseTestProxiedKeyedObjectPool {
     }
 
 
-    protected static interface TestObject {
+    protected interface TestObject {
         String getData();
         void setData(String data);
     }
