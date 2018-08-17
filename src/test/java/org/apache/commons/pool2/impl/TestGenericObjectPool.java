@@ -2674,7 +2674,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             @Override
             public PooledObject<String> wrap(final String obj) {
                 // fake
-                return new DefaultPooledObject<String>(obj);
+                return new DefaultPooledObject<>(obj);
             }
         };
     }
@@ -2779,7 +2779,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             @Override
             public PooledObject<String> wrap(final String obj) {
                 // fake
-                return new DefaultPooledObject<String>(obj);
+                return new DefaultPooledObject<>(obj);
             }
         };
     }
