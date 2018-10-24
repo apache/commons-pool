@@ -746,6 +746,90 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     /**
+     * Showcasing a possible deadlock situation as reported in POOL-356
+     */
+    @Test(timeout=60000)
+    @SuppressWarnings("rawtypes")
+    public void testMaxIdleZeroUnderLoad() {
+        // Config
+        final int numThreads = 199; // And main thread makes a round 200.
+        final int numIter = 20;
+        final int delay = 25;
+        final int maxTotal = 10;
+
+        simpleFactory.setMaxTotal(maxTotal);
+        genericObjectPool.setMaxTotal(maxTotal);
+        genericObjectPool.setBlockWhenExhausted(true);
+        genericObjectPool.setTimeBetweenEvictionRunsMillis(-1);
+
+        // this is important to trigger POOL-356
+        genericObjectPool.setMaxIdle(0);
+
+        // Start threads to borrow objects
+        final TestThread[] threads = new TestThread[numThreads];
+        for(int i=0;i<numThreads;i++) {
+            // Factor of 2 on iterations so main thread does work whilst other
+            // threads are running. Factor of 2 on delay so average delay for
+            // other threads == actual delay for main thread
+            threads[i] = new TestThread<>(genericObjectPool, numIter * 2, delay * 2);
+            final Thread t = new Thread(threads[i]);
+            t.start();
+        }
+        // Give the threads a chance to start doing some work
+        try {
+            Thread.sleep(5000);
+        } catch(final InterruptedException e) {
+            // ignored
+        }
+
+        for (int i = 0; i < numIter; i++) {
+            String obj = null;
+            try {
+                try {
+                    Thread.sleep(delay);
+                } catch(final InterruptedException e) {
+                    // ignored
+                }
+                obj = genericObjectPool.borrowObject();
+                // Under load, observed _numActive > _maxTotal
+                if (genericObjectPool.getNumActive() > genericObjectPool.getMaxTotal()) {
+                    throw new IllegalStateException("Too many active objects");
+                }
+                try {
+                    Thread.sleep(delay);
+                } catch(final InterruptedException e) {
+                    // ignored
+                }
+            } catch (final Exception e) {
+                // Shouldn't happen
+                e.printStackTrace();
+                fail("Exception on borrow");
+            } finally {
+                if (obj != null) {
+                    try {
+                        genericObjectPool.returnObject(obj);
+                    } catch (final Exception e) {
+                        // Ignore
+                    }
+                }
+            }
+        }
+
+        for(int i=0;i<numThreads;i++) {
+            while(!(threads[i]).complete()) {
+                try {
+                    Thread.sleep(500L);
+                } catch(final InterruptedException e) {
+                    // ignored
+                }
+            }
+            if(threads[i].failed()) {
+                fail("Thread "+i+" failed: "+threads[i]._error.toString());
+            }
+        }
+    }
+
+    /**
      * This is the test case for POOL-263. It is disabled since it will always
      * pass without artificial delay being injected into GOP.returnObject() and
      * a way to this hasn't currently been found that doesn't involve
