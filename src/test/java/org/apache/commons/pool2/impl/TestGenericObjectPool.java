@@ -777,7 +777,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
         // Give the threads a chance to start doing some work
         try {
-            Thread.sleep(5000);
+            Thread.sleep(100);
         } catch(final InterruptedException e) {
             // ignored
         }
@@ -824,6 +824,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 }
             }
             if(threads[i].failed()) {
+                threads[i]._error.printStackTrace();
                 fail("Thread "+i+" failed: "+threads[i]._error.toString());
             }
         }

@@ -914,6 +914,15 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             destroyedCount.incrementAndGet();
             createCount.decrementAndGet();
         }
+
+        if (idleObjects.isEmpty() && idleObjects.hasTakeWaiters()) {
+            // POOL-356.
+            // In case there are already threads waiting on something in the pool
+            // (e.g. idleObjects.takeFirst(); then we need to provide them a fresh instance.
+            // Otherwise they will be stuck forever (or until timeout)
+            PooledObject<T> freshPooled = create();
+            idleObjects.put(freshPooled);
+        }
     }
 
     @Override
