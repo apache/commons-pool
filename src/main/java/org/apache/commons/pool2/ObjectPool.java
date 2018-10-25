@@ -162,6 +162,13 @@ public interface ObjectPool<T> extends Closeable {
     int getNumActive();
 
     /**
+     * Returns the number of instances maximum borrowed from this pool. Returns
+     * a negative value if this information is not available.
+     * @return the number of instances maximum borrowed from this pool.
+     */
+    int getMaxNumActive();
+
+    /**
      * Clears any objects sitting idle in the pool, releasing any associated
      * resources (optional operation). Idle objects cleared must be
      * {@link PooledObjectFactory#destroyObject(PooledObject)}.

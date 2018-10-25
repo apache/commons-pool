@@ -103,6 +103,11 @@ public class ProxiedKeyedObjectPool<K, V> implements KeyedObjectPool<K, V> {
     }
 
     @Override
+    public int getMaxNumActive() {
+        return pool.getMaxNumActive();
+    }
+
+    @Override
     public void clear() throws Exception, UnsupportedOperationException {
         pool.clear();
     }

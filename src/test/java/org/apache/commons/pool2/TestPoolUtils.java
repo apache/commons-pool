@@ -803,13 +803,14 @@ public class TestPoolUtils {
         op.close();
         op.getNumActive();
         op.getNumIdle();
+        op.getMaxNumActive();
         op.invalidateObject(new Object());
         op.returnObject(new Object());
         op.toString();
 
         final List<String> expectedMethods = Arrays.asList(new String[] {
                 "addObject", "borrowObject", "clear", "close",
-                "getNumActive", "getNumIdle", "invalidateObject",
+                "getNumActive", "getNumIdle", "getMaxNumActive", "invalidateObject",
                 "returnObject", "toString"
         });
         return expectedMethods;
@@ -822,6 +823,7 @@ public class TestPoolUtils {
         kop.clear(null);
         kop.close();
         kop.getNumActive();
+        kop.getMaxNumActive();
         kop.getNumActive(null);
         kop.getNumIdle();
         kop.getNumIdle(null);
@@ -831,7 +833,7 @@ public class TestPoolUtils {
 
         final List<String> expectedMethods = Arrays.asList(new String[] {
                 "addObject", "borrowObject", "clear", "clear", "close",
-                "getNumActive", "getNumActive", "getNumIdle", "getNumIdle", "invalidateObject",
+                "getNumActive", "getMaxNumActive", "getNumActive", "getNumIdle", "getNumIdle", "invalidateObject",
                 "returnObject", "toString"
         });
         return expectedMethods;

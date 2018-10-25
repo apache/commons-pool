@@ -486,6 +486,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             }
         }
 
+        updateMaxNumActive(getNumActive());
         updateStatsBorrow(p, System.currentTimeMillis() - waitTime);
 
         return p.getObject();
@@ -644,6 +645,11 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     @Override
     public int getNumActive() {
         return allObjects.size() - idleObjects.size();
+    }
+
+    @Override
+    public int getMaxNumActive() {
+        return maxNumActive.get();
     }
 
     @Override

@@ -61,6 +61,16 @@ public abstract class BaseObjectPool<T> extends BaseObject implements ObjectPool
     /**
      * Not supported in this base implementation.
      *
+     * @return a negative value.
+     */
+    @Override
+    public int getMaxNumActive() {
+        return -1;
+    }
+
+    /**
+     * Not supported in this base implementation.
+     *
      * @throws UnsupportedOperationException if the pool does not implement this
      *          method
      */

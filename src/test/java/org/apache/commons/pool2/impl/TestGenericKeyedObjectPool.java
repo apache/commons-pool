@@ -149,6 +149,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     public void testNumActiveNumIdle2() throws Exception {
         assertEquals(0,gkoPool.getNumActive());
         assertEquals(0,gkoPool.getNumIdle());
+        assertEquals(0,gkoPool.getMaxNumActive());
         assertEquals(0,gkoPool.getNumActive("A"));
         assertEquals(0,gkoPool.getNumIdle("A"));
         assertEquals(0,gkoPool.getNumActive("B"));
@@ -159,6 +160,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
         assertEquals(2,gkoPool.getNumActive());
         assertEquals(0,gkoPool.getNumIdle());
+        assertEquals(2,gkoPool.getMaxNumActive());
         assertEquals(1,gkoPool.getNumActive("A"));
         assertEquals(0,gkoPool.getNumIdle("A"));
         assertEquals(1,gkoPool.getNumActive("B"));
@@ -169,6 +171,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
         assertEquals(4,gkoPool.getNumActive());
         assertEquals(0,gkoPool.getNumIdle());
+        assertEquals(4,gkoPool.getMaxNumActive());
         assertEquals(2,gkoPool.getNumActive("A"));
         assertEquals(0,gkoPool.getNumIdle("A"));
         assertEquals(2,gkoPool.getNumActive("B"));
@@ -179,6 +182,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
         assertEquals(2,gkoPool.getNumActive());
         assertEquals(2,gkoPool.getNumIdle());
+        assertEquals(4,gkoPool.getMaxNumActive());
         assertEquals(1,gkoPool.getNumActive("A"));
         assertEquals(1,gkoPool.getNumIdle("A"));
         assertEquals(1,gkoPool.getNumActive("B"));
@@ -189,6 +193,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
         assertEquals(0,gkoPool.getNumActive());
         assertEquals(4,gkoPool.getNumIdle());
+        assertEquals(4,gkoPool.getMaxNumActive());
         assertEquals(0,gkoPool.getNumActive("A"));
         assertEquals(2,gkoPool.getNumIdle("A"));
         assertEquals(0,gkoPool.getNumActive("B"));

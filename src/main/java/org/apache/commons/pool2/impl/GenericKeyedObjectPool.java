@@ -414,6 +414,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
             deregister(key);
         }
 
+        updateMaxNumActive(getNumActive());
         updateStatsBorrow(p, System.currentTimeMillis() - waitTime);
 
         return p.getObject();
@@ -634,6 +635,10 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         return numTotal.get() - getNumIdle();
     }
 
+    @Override
+    public int getMaxNumActive() {
+        return maxNumActive.get();
+    }
 
     @Override
     public int getNumIdle() {

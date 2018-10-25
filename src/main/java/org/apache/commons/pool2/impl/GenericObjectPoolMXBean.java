@@ -89,6 +89,12 @@ public interface GenericObjectPoolMXBean {
     int getNumActive();
 
     /**
+     * See {@link GenericObjectPool#getMaxNumActive()}
+     * @return See {@link GenericObjectPool#getMaxNumActive()}
+     */
+    int getMaxNumActive();
+
+    /**
      * See {@link GenericObjectPool#getNumIdle()}
      * @return See {@link GenericObjectPool#getNumIdle()}
      */

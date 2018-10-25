@@ -98,6 +98,12 @@ public interface GenericKeyedObjectPoolMXBean<K> {
     int getNumActive();
 
     /**
+     * See {@link GenericKeyedObjectPool#getMaxNumActive()}
+     * @return See {@link GenericKeyedObjectPool#getMaxNumActive()}
+     */
+    int getMaxNumActive();
+
+    /**
      * See {@link GenericKeyedObjectPool#getNumIdle()}
      * @return See {@link GenericKeyedObjectPool#getNumIdle()}
      */

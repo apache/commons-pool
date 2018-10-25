@@ -53,6 +53,9 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
     /** Count of instances that have been checkout out to pool clients */
     private int numActive = 0; // @GuardedBy("this")
 
+    /** Count of instances that have been checkout out to pool clients ever */
+    private int maxNumActive = 0; // @GuardedBy("this")
+
     /** Total number of instances that have been destroyed */
     private long destroyCount = 0; // @GuardedBy("this")
 
@@ -163,6 +166,9 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
             }
         }
         numActive++;
+        if (numActive > maxNumActive) {
+            maxNumActive = numActive;
+        }
         ref.allocate();
         return obj;
     }
@@ -320,6 +326,16 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
     @Override
     public synchronized int getNumActive() {
         return numActive;
+    }
+
+    /**
+     * Returns the number of instances maximum borrowed from this pool.
+     *
+     * @return the number of instances maximum borrowed from this pool
+     */
+    @Override
+    public synchronized int getMaxNumActive() {
+        return maxNumActive;
     }
 
     /**

@@ -84,6 +84,7 @@ public class TestBaseObjectPool extends TestObjectPool {
 
             assertTrue("Negative expected.", pool.getNumIdle() < 0);
             assertTrue("Negative expected.", pool.getNumActive() < 0);
+            assertTrue("Negative expected.", pool.getMaxNumActive() < 0);
 
             try {
                 pool.clear();
@@ -133,16 +134,20 @@ public class TestBaseObjectPool extends TestObjectPool {
         try {
             assertEquals(0,_pool.getNumIdle());
             assertEquals(0,_pool.getNumActive());
+            assertEquals(0,_pool.getMaxNumActive());
             _pool.addObject();
             assertEquals(1,_pool.getNumIdle());
             assertEquals(0,_pool.getNumActive());
+            assertEquals(0,_pool.getMaxNumActive());
             final String obj = _pool.borrowObject();
             assertEquals(getNthObject(0),obj);
             assertEquals(0,_pool.getNumIdle());
             assertEquals(1,_pool.getNumActive());
+            assertEquals(1,_pool.getMaxNumActive());
             _pool.returnObject(obj);
             assertEquals(1,_pool.getNumIdle());
             assertEquals(0,_pool.getNumActive());
+            assertEquals(1,_pool.getMaxNumActive());
         } catch(final UnsupportedOperationException e) {
             return; // skip this test if one of those calls is unsupported
         } finally {
@@ -198,18 +203,23 @@ public class TestBaseObjectPool extends TestObjectPool {
         }
         assertEquals(0,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
+        assertEquals(0,_pool.getMaxNumActive());
         final String obj0 = _pool.borrowObject();
         assertEquals(1,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
+        assertEquals(1,_pool.getMaxNumActive());
         final String obj1 = _pool.borrowObject();
         assertEquals(2,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
+        assertEquals(2,_pool.getMaxNumActive());
         _pool.returnObject(obj1);
         assertEquals(1,_pool.getNumActive());
         assertEquals(1,_pool.getNumIdle());
+        assertEquals(2,_pool.getMaxNumActive());
         _pool.returnObject(obj0);
         assertEquals(0,_pool.getNumActive());
         assertEquals(2,_pool.getNumIdle());
+        assertEquals(2,_pool.getMaxNumActive());
         _pool.close();
     }
 
@@ -222,17 +232,21 @@ public class TestBaseObjectPool extends TestObjectPool {
         }
         assertEquals(0,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
+        assertEquals(0,_pool.getMaxNumActive());
         final String obj0 = _pool.borrowObject();
         final String obj1 = _pool.borrowObject();
         assertEquals(2,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
+        assertEquals(2,_pool.getMaxNumActive());
         _pool.returnObject(obj1);
         _pool.returnObject(obj0);
         assertEquals(0,_pool.getNumActive());
         assertEquals(2,_pool.getNumIdle());
+        assertEquals(2,_pool.getMaxNumActive());
         _pool.clear();
         assertEquals(0,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
+        assertEquals(2,_pool.getMaxNumActive());
         final Object obj2 = _pool.borrowObject();
         assertEquals(getNthObject(2),obj2);
         _pool.close();
@@ -247,16 +261,20 @@ public class TestBaseObjectPool extends TestObjectPool {
         }
         assertEquals(0,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
+        assertEquals(0,_pool.getMaxNumActive());
         final String obj0 = _pool.borrowObject();
         final String obj1 = _pool.borrowObject();
         assertEquals(2,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
+        assertEquals(2,_pool.getMaxNumActive());
         _pool.invalidateObject(obj0);
         assertEquals(1,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
+        assertEquals(2,_pool.getMaxNumActive());
         _pool.invalidateObject(obj1);
         assertEquals(0,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
+        assertEquals(2,_pool.getMaxNumActive());
         _pool.close();
     }
 

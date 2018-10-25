@@ -99,6 +99,12 @@ public class ProxiedObjectPool<T> implements ObjectPool<T> {
 
 
     @Override
+    public int getMaxNumActive() {
+        return pool.getMaxNumActive();
+    }
+
+
+    @Override
     public void clear() throws Exception, UnsupportedOperationException {
         pool.clear();
     }

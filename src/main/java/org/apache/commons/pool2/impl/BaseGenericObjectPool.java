@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.TimerTask;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -119,6 +120,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     final AtomicLong destroyedCount = new AtomicLong(0);
     final AtomicLong destroyedByEvictorCount = new AtomicLong(0);
     final AtomicLong destroyedByBorrowValidationCount = new AtomicLong(0);
+    final AtomicInteger maxNumActive = new AtomicInteger(0);
     private final StatsStore activeTimes = new StatsStore(MEAN_TIMING_STATS_CACHE_SIZE);
     private final StatsStore idleTimes = new StatsStore(MEAN_TIMING_STATS_CACHE_SIZE);
     private final StatsStore waitTimes = new StatsStore(MEAN_TIMING_STATS_CACHE_SIZE);
@@ -964,6 +966,23 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         } catch (final Throwable t) {
             // Ignore. Enjoy the irony.
         }
+    }
+
+    /**
+     * Updates maximum number of active objects after an object is borrowed from
+     * the pool.
+     *
+     * @param currentNumActive current number of active objects
+     */
+    final void updateMaxNumActive(final int currentNumActive) {
+        // lock-free optimistic-locking maximum
+        int currentMaxNumActive;
+        do {
+            currentMaxNumActive = maxNumActive.get();
+            if (currentMaxNumActive >= currentNumActive) {
+                break;
+            }
+        } while (!maxNumActive.compareAndSet(currentMaxNumActive, currentNumActive));
     }
 
     /**

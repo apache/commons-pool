@@ -846,6 +846,20 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         @Override
+        public int getMaxNumActive() {
+            final ReadLock readLock = readWriteLock.readLock();
+            readLock.lock();
+            try {
+                return pool.getMaxNumActive();
+            } finally {
+                readLock.unlock();
+            }
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
         public void clear() throws Exception, UnsupportedOperationException {
             final WriteLock writeLock = readWriteLock.writeLock();
             writeLock.lock();
@@ -1042,6 +1056,20 @@ public final class PoolUtils {
             readLock.lock();
             try {
                 return keyedPool.getNumActive();
+            } finally {
+                readLock.unlock();
+            }
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public int getMaxNumActive() {
+            final ReadLock readLock = readWriteLock.readLock();
+            readLock.lock();
+            try {
+                return keyedPool.getMaxNumActive();
             } finally {
                 readLock.unlock();
             }
@@ -1531,6 +1559,14 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         @Override
+        public int getMaxNumActive() {
+            return pool.getMaxNumActive();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
         public void clear() throws Exception, UnsupportedOperationException {
             pool.clear();
         }
@@ -1713,6 +1749,14 @@ public final class PoolUtils {
         @Override
         public int getNumActive() {
             return keyedPool.getNumActive();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public int getMaxNumActive() {
+            return keyedPool.getMaxNumActive();
         }
 
         /**

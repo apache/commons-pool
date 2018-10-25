@@ -203,6 +203,15 @@ public interface KeyedObjectPool<K, V> extends Closeable {
     int getNumActive();
 
     /**
+     * Returns the total number of instances maximum borrowed from this pool but
+     * not yet returned. Returns a negative value if this information is not
+     * available.
+     * @return the total number of instances maximum borrowed from this pool but
+     * not yet returned.
+     */
+    int getMaxNumActive();
+
+    /**
      * Clears the pool, removing all pooled instances (optional operation).
      *
      * @throws UnsupportedOperationException when this implementation doesn't

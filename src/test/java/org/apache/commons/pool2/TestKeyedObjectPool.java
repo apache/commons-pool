@@ -517,6 +517,7 @@ public abstract class TestKeyedObjectPool {
         final Object keyb = makeKey(1);
         assertEquals(0,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
+        assertEquals(0,_pool.getMaxNumActive());
         assertEquals(0,_pool.getNumActive(keya));
         assertEquals(0,_pool.getNumIdle(keya));
         assertEquals(0,_pool.getNumActive(keyb));
@@ -527,6 +528,7 @@ public abstract class TestKeyedObjectPool {
 
         assertEquals(2,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
+        assertEquals(2,_pool.getMaxNumActive());
         assertEquals(1,_pool.getNumActive(keya));
         assertEquals(0,_pool.getNumIdle(keya));
         assertEquals(1,_pool.getNumActive(keyb));
@@ -537,6 +539,7 @@ public abstract class TestKeyedObjectPool {
 
         assertEquals(4,_pool.getNumActive());
         assertEquals(0,_pool.getNumIdle());
+        assertEquals(4,_pool.getMaxNumActive());
         assertEquals(2,_pool.getNumActive(keya));
         assertEquals(0,_pool.getNumIdle(keya));
         assertEquals(2,_pool.getNumActive(keyb));
@@ -547,6 +550,7 @@ public abstract class TestKeyedObjectPool {
 
         assertEquals(2,_pool.getNumActive());
         assertEquals(2,_pool.getNumIdle());
+        assertEquals(4,_pool.getMaxNumActive());
         assertEquals(1,_pool.getNumActive(keya));
         assertEquals(1,_pool.getNumIdle(keya));
         assertEquals(1,_pool.getNumActive(keyb));
@@ -557,6 +561,7 @@ public abstract class TestKeyedObjectPool {
 
         assertEquals(0,_pool.getNumActive());
         assertEquals(4,_pool.getNumIdle());
+        assertEquals(4,_pool.getMaxNumActive());
         assertEquals(0,_pool.getNumActive(keya));
         assertEquals(2,_pool.getNumIdle(keya));
         assertEquals(0,_pool.getNumActive(keyb));
@@ -625,22 +630,26 @@ public abstract class TestKeyedObjectPool {
         try {
             assertEquals(0,_pool.getNumIdle());
             assertEquals(0,_pool.getNumActive());
+            assertEquals(0,_pool.getMaxNumActive());
             assertEquals(0,_pool.getNumIdle(key));
             assertEquals(0,_pool.getNumActive(key));
             _pool.addObject(key);
             assertEquals(1,_pool.getNumIdle());
             assertEquals(0,_pool.getNumActive());
+            assertEquals(0,_pool.getMaxNumActive());
             assertEquals(1,_pool.getNumIdle(key));
             assertEquals(0,_pool.getNumActive(key));
             final Object obj = _pool.borrowObject(key);
             assertEquals(getNthObject(key,0),obj);
             assertEquals(0,_pool.getNumIdle());
             assertEquals(1,_pool.getNumActive());
+            assertEquals(1,_pool.getMaxNumActive());
             assertEquals(0,_pool.getNumIdle(key));
             assertEquals(1,_pool.getNumActive(key));
             _pool.returnObject(key,obj);
             assertEquals(1,_pool.getNumIdle());
             assertEquals(0,_pool.getNumActive());
+            assertEquals(1,_pool.getMaxNumActive());
             assertEquals(1,_pool.getNumIdle(key));
             assertEquals(0,_pool.getNumActive(key));
         } catch(final UnsupportedOperationException e) {
