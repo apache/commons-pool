@@ -44,7 +44,10 @@ public class TestGenericObjectPoolFactoryCreateFailure {
         // now borrow
         barrier.countDown();
         try {
-            pool.borrowObject();
+            System.out.println("try borrow in main thread");
+
+            Object o = pool.borrowObject();
+            System.out.println("Success borrow in main thread " + o);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -71,12 +74,7 @@ public class TestGenericObjectPoolFactoryCreateFailure {
 
         @Override
         public boolean validateObject(PooledObject<Object> p) {
-            // return valid once
-            if (!validated.getAndSet(true)) {
-                return true;
-            }
-            System.out.println("invalid");
-            return false;
+            return true;
         }
     }
 
@@ -92,6 +90,7 @@ public class TestGenericObjectPoolFactoryCreateFailure {
         @Override
         public void run() {
             try {
+                System.out.println("start borrowing in parallel thread");
                 Object obj = pool.borrowObject();
 
                 // wait for another thread to start borrowObject
@@ -104,6 +103,7 @@ public class TestGenericObjectPoolFactoryCreateFailure {
                 }
 
                 pool.returnObject(obj);
+                System.out.println("ended borrowing in parallel thread");
             } catch (Exception e) {
                 failed.set(true);
                 e.printStackTrace();
