@@ -44,7 +44,7 @@ The <action> type attribute can be add,update,fix,remove.
   </properties>
   <body>
   <release version="2.6.1" date="2018-MM-DD" description="This is a maintenance release.">
-    <action dev="struberg" issue="POOL-340" type="fix">
+    <action dev="struberg" issue="POOL-340" type="fix" due-to="Pavel Kolesov">
       correct validateObject with concurrent borrowObject
     </action>
     <action dev="struberg" issue="POOL-356" type="fix">
