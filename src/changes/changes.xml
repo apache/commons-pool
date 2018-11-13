@@ -51,7 +51,7 @@ The <action> type attribute can be add,update,fix,remove.
       fix deadlock on massive concurrent requests
     </action>
     <action dev="ggregory" issue="POOL-345" type="update">
-      Update optional library cglib from 3.2.6 to 3.2.7.
+      Update optional library cglib from 3.2.6 to 3.2.9.
     </action>
     <action dev="ggregory" issue="POOL-346" type="update" due-to="Michael Chen">
       Move common configuration setter to BaseGenericObjectPool #9.
@@ -60,7 +60,7 @@ The <action> type attribute can be add,update,fix,remove.
       borrowObject waits for maxWaitMillis over in pool full.
     </action>
     <action dev="ggregory" issue="POOL-349" type="update">
-      Update optional library asm-util from 6.2 to 6.2.1.
+      Update optional library asm-util from 6.2 to 7.0.
     </action>
   </release>  
   <release version="2.6.0" date="2018-07-06" description="This is a maintenance release.">
