@@ -44,6 +44,12 @@ The <action> type attribute can be add,update,fix,remove.
   </properties>
   <body>
   <release version="2.6.1" date="2018-MM-DD" description="This is a maintenance release.">
+    <action dev="struberg" issue="POOL-340" type="fix">
+      correct validateObject with concurrent borrowObject
+    </action>
+    <action dev="struberg" issue="POOL-356" type="fix">
+      fix deadlock on massive concurrent requests
+    </action>
     <action dev="ggregory" issue="POOL-345" type="update">
       Update optional library cglib from 3.2.6 to 3.2.7.
     </action>
