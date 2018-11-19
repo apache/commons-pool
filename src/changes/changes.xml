@@ -62,6 +62,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" issue="POOL-349" type="update">
       Update optional library asm-util from 6.2 to 7.0.
     </action>
+    <action dev="ggregory" issue="POOL-359" type="fix" due-to="Michael Wintermeyer">
+      NullPointerException closing multiple GenericObjectPools.
+    </action>
   </release>  
   <release version="2.6.0" date="2018-07-06" description="This is a maintenance release.">
     <action dev="ggregory" issue="POOL-336" type="update" due-to="Wolfgang Glas">
