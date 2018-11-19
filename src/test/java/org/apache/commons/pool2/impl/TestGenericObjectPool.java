@@ -1168,6 +1168,15 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     @Test(timeout=60000)
+    public void testCloseMultiplePools() throws Exception {
+        GenericObjectPool<String> genericObjectPool2 = new GenericObjectPool<>(simpleFactory);
+        genericObjectPool.setTimeBetweenEvictionRunsMillis(1);
+        genericObjectPool2.setTimeBetweenEvictionRunsMillis(1);
+        genericObjectPool2.close();
+        genericObjectPool.close();
+    }
+
+    @Test(timeout=60000)
     public void testConcurrentBorrowAndEvict() throws Exception {
 
         genericObjectPool.setMaxTotal(1);
@@ -1323,11 +1332,11 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
     }
 
+
     @Test(timeout=60000)
     public void testDefaultConfiguration() throws Exception {
         assertConfiguration(new GenericObjectPoolConfig(),genericObjectPool);
     }
-
 
     /**
      * Verifies that when a factory's makeObject produces instances that are not

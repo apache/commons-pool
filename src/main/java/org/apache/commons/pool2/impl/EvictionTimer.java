@@ -94,7 +94,7 @@ class EvictionTimer {
     static synchronized void cancel(
             final BaseGenericObjectPool<?>.Evictor task, final long timeout, final TimeUnit unit) {
         task.cancel();
-        if (executor.getQueue().size() == 0) {
+        if (executor != null && executor.getQueue().size() == 0) {
             executor.shutdown();
             try {
                 executor.awaitTermination(timeout, unit);
