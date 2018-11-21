@@ -267,8 +267,19 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Test(timeout=60000)
     public void testCloseMultiplePools() throws Exception {
         GenericObjectPool<String> genericObjectPool2 = new GenericObjectPool<>(simpleFactory);
+
+        // Ensure eviction takes a long time, during which time EvictionTimer.executor's queue is empty
+        simpleFactory.setDestroyLatency(1000L);
+
+        // Ensure there is an object to evict, so that above latency takes effect
         genericObjectPool.setTimeBetweenEvictionRunsMillis(1);
         genericObjectPool2.setTimeBetweenEvictionRunsMillis(1);
+        genericObjectPool.setMinEvictableIdleTimeMillis(1);
+        genericObjectPool2.setMinEvictableIdleTimeMillis(1);
+        genericObjectPool.addObject();
+        genericObjectPool2.addObject();
+
+        // Close both pools
         genericObjectPool2.close();
         genericObjectPool.close();
     }
