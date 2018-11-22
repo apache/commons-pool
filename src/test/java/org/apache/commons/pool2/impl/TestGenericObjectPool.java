@@ -1168,10 +1168,27 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     @Test(timeout=60000)
-    public void testCloseMultiplePools() throws Exception {
+    public void testCloseMultiplePools1() throws Exception {
         GenericObjectPool<String> genericObjectPool2 = new GenericObjectPool<>(simpleFactory);
         genericObjectPool.setTimeBetweenEvictionRunsMillis(1);
         genericObjectPool2.setTimeBetweenEvictionRunsMillis(1);
+        genericObjectPool2.close();
+        genericObjectPool.close();
+    }
+
+    @Test(timeout=60000)
+    public void testCloseMultiplePools2() throws Exception {
+        GenericObjectPool<String> genericObjectPool2 = new GenericObjectPool<>(simpleFactory);
+         // Ensure eviction takes a long time, during which time EvictionTimer.executor's queue is empty
+        simpleFactory.setDestroyLatency(1000L);
+         // Ensure there is an object to evict, so that above latency takes effect
+        genericObjectPool.setTimeBetweenEvictionRunsMillis(1);
+        genericObjectPool2.setTimeBetweenEvictionRunsMillis(1);
+        genericObjectPool.setMinEvictableIdleTimeMillis(1);
+        genericObjectPool2.setMinEvictableIdleTimeMillis(1);
+        genericObjectPool.addObject();
+        genericObjectPool2.addObject();
+         // Close both pools
         genericObjectPool2.close();
         genericObjectPool.close();
     }
@@ -1264,6 +1281,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         // Looks like GOP needs to call close() or jmxUnregister() before throwing IAE
     }
 
+
     @Test(timeout=60000)
     public void testConstructors() throws Exception {
 
@@ -1331,7 +1349,6 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             assertEquals(Boolean.valueOf(lifo), Boolean.valueOf(dummyPool.getLifo()));
         }
     }
-
 
     @Test(timeout=60000)
     public void testDefaultConfiguration() throws Exception {

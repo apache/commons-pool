@@ -25,18 +25,20 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Provides a shared idle object eviction timer for all pools. This class is
- * currently implemented using {@link ScheduledThreadPoolExecutor}. This
- * implementation may change in any future release. This class keeps track of
- * how many pools are using it. If no pools are using the timer, it is cancelled.
- * This prevents a thread being left running which, in application server
- * environments, can lead to memory leads and/or prevent applications from
- * shutting down or reloading cleanly.
+ * Provides a shared idle object eviction timer for all pools.
  * <p>
- * This class has package scope to prevent its inclusion in the pool public API.
- * The class declaration below should *not* be changed to public.
+ * This class is currently implemented using {@link ScheduledThreadPoolExecutor}. This implementation may change in any
+ * future release. This class keeps track of how many pools are using it. If no pools are using the timer, it is
+ * cancelled. This prevents a thread being left running which, in application server environments, can lead to memory
+ * leads and/or prevent applications from shutting down or reloading cleanly.
+ * </p>
+ * <p>
+ * This class has package scope to prevent its inclusion in the pool public API. The class declaration below should
+ * *not* be changed to public.
+ * </p>
  * <p>
  * This class is intended to be thread-safe.
+ * </p>
  *
  * @since 2.0
  */
@@ -67,6 +69,7 @@ class EvictionTimer {
      * call to this method *must* call {@link #cancel(TimerTask)} to cancel the
      * task to prevent memory and/or thread leaks in application server
      * environments.
+     * 
      * @param task      Task to be scheduled
      * @param delay     Delay in milliseconds before task is executed
      * @param period    Time in milliseconds between executions
@@ -94,7 +97,7 @@ class EvictionTimer {
     static synchronized void cancel(
             final BaseGenericObjectPool<?>.Evictor task, final long timeout, final TimeUnit unit) {
         task.cancel();
-        if (executor != null && executor.getQueue().size() == 0) {
+        if (executor != null && executor.getQueue().isEmpty()) {
             executor.shutdown();
             try {
                 executor.awaitTermination(timeout, unit);
