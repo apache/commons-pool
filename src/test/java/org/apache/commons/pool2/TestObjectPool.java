@@ -120,7 +120,7 @@ public abstract class TestObjectPool {
 
         assertEquals(0, pool.getNumActive());
         assertEquals(0, pool.getNumIdle());
-        // addObject should make a new object, pasivate it and put it in the pool
+        // addObject should make a new object, passivate it and put it in the pool
         pool.addObject();
         assertEquals(0, pool.getNumActive());
         assertEquals(1, pool.getNumIdle());
@@ -347,7 +347,7 @@ public abstract class TestObjectPool {
         } catch (final PrivateException ex) {
             // Expected
         }
-        Thread.sleep(250); // could be defered
+        Thread.sleep(250); // could be deferred
         removeDestroyObjectCall(factory.getMethodCalls());
         assertEquals(expectedMethods, factory.getMethodCalls());
         pool.close();
@@ -368,7 +368,7 @@ public abstract class TestObjectPool {
         PoolUtils.prefill(pool, 5);
         pool.clear();
 
-        //// Test exception handling clear should swallow destory object failures
+        //// Test exception handling clear should swallow destroy object failures
         reset(pool, factory, expectedMethods);
         factory.setDestroyObjectFail(true);
         PoolUtils.prefill(pool, 5);

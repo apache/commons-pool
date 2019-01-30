@@ -67,13 +67,13 @@ import org.junit.Test;
 public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
     @Override
-    protected KeyedObjectPool<Object,Object> makeEmptyPool(final int mincapacity) {
+    protected KeyedObjectPool<Object,Object> makeEmptyPool(final int minCapacity) {
         final KeyedPooledObjectFactory<Object,Object> perKeyFactory =
                 new SimplePerKeyFactory();
         final GenericKeyedObjectPool<Object,Object> perKeyPool =
             new GenericKeyedObjectPool<>(perKeyFactory);
-        perKeyPool.setMaxTotalPerKey(mincapacity);
-        perKeyPool.setMaxIdlePerKey(mincapacity);
+        perKeyPool.setMaxTotalPerKey(minCapacity);
+        perKeyPool.setMaxIdlePerKey(minCapacity);
         return perKeyPool;
     }
 

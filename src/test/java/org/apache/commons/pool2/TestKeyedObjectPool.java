@@ -62,15 +62,15 @@ public abstract class TestKeyedObjectPool {
 
     /**
      * Create an {@link KeyedObjectPool} instance
-     * that can contain at least <i>mincapacity</i>
+     * that can contain at least <i>minCapacity</i>
      * idle and active objects, or
      * throw {@link IllegalArgumentException}
      * if such a pool cannot be created.
-     * @param mincapacity Minimum capacity of the pool to create
+     * @param minCapacity Minimum capacity of the pool to create
      *
      * @return the newly created keyed object pool
      */
-    protected abstract KeyedObjectPool<Object,Object> makeEmptyPool(int mincapacity);
+    protected abstract KeyedObjectPool<Object,Object> makeEmptyPool(int minCapacity);
 
     /**
      * Return what we expect to be the n<sup>th</sup>

@@ -80,8 +80,8 @@ public class PerformanceTest {
                 final long rend = System.currentTimeMillis();
                 Thread.yield();
                 taskStats.complete++;
-                borrowTime = bend-bbegin;
-                returnTime = rend-rbegin;
+                borrowTime = bend - bbegin;
+                returnTime = rend - rbegin;
             } catch (final Exception e) {
                 e.printStackTrace();
             }
@@ -97,10 +97,10 @@ public class PerformanceTest {
                taskStats.nrSamples++;
                if (logLevel >= 2) {
                    final String name = "thread" + Thread.currentThread().getName();
-                   System.out.println("result " + taskStats.nrSamples + "\t" +
-                           name + "\t" + "borrow time: " + borrowTime + "\t" +
-                           "return time: " + returnTime + "\t" + "waiting: " +
-                           taskStats.waiting + "\t" + "complete: " +
+                   System.out.println("result " + taskStats.nrSamples + '\t' +
+                           name + '\t' + "borrow time: " + borrowTime + '\t' +
+                           "return time: " + returnTime + '\t' + "waiting: " +
+                           taskStats.waiting + '\t' + "complete: " +
                            taskStats.complete);
                }
            }
@@ -175,9 +175,9 @@ public class PerformanceTest {
         System.out.println("totalBorrowTime: " + aggregate.totalBorrowTime);
         System.out.println("totalReturnTime: " + aggregate.totalReturnTime);
         System.out.println("avg BorrowTime: " +
-                aggregate.totalBorrowTime/aggregate.nrSamples);
+                aggregate.totalBorrowTime / aggregate.nrSamples);
         System.out.println("avg ReturnTime: " +
-                aggregate.totalReturnTime/aggregate.nrSamples);
+                aggregate.totalReturnTime / aggregate.nrSamples);
 
         threadPool.shutdown();
     }
@@ -191,7 +191,7 @@ public class PerformanceTest {
         test.run(1, 200,  5,  5);
         test.run(1, 400,  5,  5);
 
-        System.out.println("Increase threads & poolsize");
+        System.out.println("Increase threads & poolSize");
         test.run(1,  50,  5,  5);
         test.run(1, 100, 10, 10);
         test.run(1, 200, 20, 20);
