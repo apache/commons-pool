@@ -30,52 +30,9 @@ import org.junit.Test;
  */
 public class TestGenericObjectPoolFactoryCreateFailure {
 
-    @Test(timeout = 10_000)
-    public void testBorrowObjectStuck() {
-        SingleObjectFactory factory = new SingleObjectFactory();
-        GenericObjectPoolConfig config = new GenericObjectPoolConfig();
-        config.setMaxIdle(1);
-        config.setMaxTotal(1);
-        config.setBlockWhenExhausted(true);
-        config.setMinIdle(0);
-        config.setTestOnBorrow(true);
-        config.setTestOnReturn(true);
-        config.setTestWhileIdle(false);
-        config.setTimeBetweenEvictionRunsMillis(-1);
-        config.setMinEvictableIdleTimeMillis(-1);
-        config.setSoftMinEvictableIdleTimeMillis(-1);
-
-        config.setMaxWaitMillis(-1);
-        GenericObjectPool<Object> pool = new GenericObjectPool<>(factory, config);
-
-        AtomicBoolean failed = new AtomicBoolean();
-        CountDownLatch barrier = new CountDownLatch(1);
-        Thread thread1 = new Thread(new WinnerRunnable(pool, barrier, failed));
-        thread1.start();
-
-        // wait for object to be created
-        while(!factory.created.get()) {
-            sleepIgnoreException(5);
-        }
-
-        // now borrow
-        barrier.countDown();
-        try {
-            System.out.println("try borrow in main thread");
-
-            Object o = pool.borrowObject();
-            System.out.println("Success borrow in main thread " + o);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        Assert.assertFalse(failed.get());
-
-    }
-
     private static class SingleObjectFactory extends BasePooledObjectFactory<Object> {
         private final AtomicBoolean created = new AtomicBoolean();
-        private final AtomicBoolean validated = new AtomicBoolean();
+        
         @Override
         public Object create() throws Exception {
             if (!created.getAndSet(true)) {
@@ -85,20 +42,20 @@ public class TestGenericObjectPoolFactoryCreateFailure {
         }
 
         @Override
-        public PooledObject<Object> wrap(Object obj) {
-            return new DefaultPooledObject<>(new Object());
+        public boolean validateObject(PooledObject<Object> p) {
+            return true;
         }
 
         @Override
-        public boolean validateObject(PooledObject<Object> p) {
-            return true;
+        public PooledObject<Object> wrap(Object obj) {
+            return new DefaultPooledObject<>(new Object());
         }
     }
 
     private static class WinnerRunnable implements Runnable {
-        private final GenericObjectPool<Object> pool;
-        private final AtomicBoolean failed;
         private final CountDownLatch barrier;
+        private final AtomicBoolean failed;
+        private final GenericObjectPool<Object> pool;
         private WinnerRunnable(GenericObjectPool<Object> pool, CountDownLatch barrier, AtomicBoolean failed) {
             this.pool = pool;
             this.failed = failed;
@@ -120,12 +77,16 @@ public class TestGenericObjectPoolFactoryCreateFailure {
                 }
 
                 pool.returnObject(obj);
-                System.out.println("ended borrowing in parallel thread");
+                println("ended borrowing in parallel thread");
             } catch (Exception e) {
                 failed.set(true);
                 e.printStackTrace();
             }
         }
+    }
+
+    private static void println(final String msg) {
+        System.out.println(msg);
     }
 
     private static void sleepIgnoreException(long millis) {
@@ -134,5 +95,49 @@ public class TestGenericObjectPoolFactoryCreateFailure {
         } catch(Throwable e) {
             // ignore
         }
+    }
+    
+    @Test(timeout = 10_000)
+    public void testBorrowObjectStuck() {
+        SingleObjectFactory factory = new SingleObjectFactory();
+        GenericObjectPoolConfig<Object> config = new GenericObjectPoolConfig<>();
+        config.setMaxIdle(1);
+        config.setMaxTotal(1);
+        config.setBlockWhenExhausted(true);
+        config.setMinIdle(0);
+        config.setTestOnBorrow(true);
+        config.setTestOnReturn(true);
+        config.setTestWhileIdle(false);
+        config.setTimeBetweenEvictionRunsMillis(-1);
+        config.setMinEvictableIdleTimeMillis(-1);
+        config.setSoftMinEvictableIdleTimeMillis(-1);
+
+        config.setMaxWaitMillis(-1);
+        try (GenericObjectPool<Object> pool = new GenericObjectPool<>(factory, config)) {
+
+            AtomicBoolean failed = new AtomicBoolean();
+            CountDownLatch barrier = new CountDownLatch(1);
+            Thread thread1 = new Thread(new WinnerRunnable(pool, barrier, failed));
+            thread1.start();
+
+            // wait for object to be created
+            while (!factory.created.get()) {
+                sleepIgnoreException(5);
+            }
+
+            // now borrow
+            barrier.countDown();
+            try {
+                println("try borrow in main thread");
+
+                Object o = pool.borrowObject();
+                println("Success borrow in main thread " + o);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            Assert.assertFalse(failed.get());
+        }
+
     }
 }
