@@ -45,10 +45,10 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
   <release version="2.6.1" date="2018-MM-DD" description="This is a maintenance release.">
     <action dev="struberg" issue="POOL-340" type="fix" due-to="Pavel Kolesov">
-      correct validateObject with concurrent borrowObject
+      Correct validateObject with concurrent borrowObject
     </action>
     <action dev="struberg" issue="POOL-356" type="fix">
-      fix deadlock on massive concurrent requests
+      Fix deadlock on massive concurrent requests
     </action>
     <action dev="ggregory" issue="POOL-345" type="update">
       Update optional library cglib from 3.2.6 to 3.2.9.
@@ -57,13 +57,16 @@ The <action> type attribute can be add,update,fix,remove.
       Move common configuration setter to BaseGenericObjectPool #9.
     </action>
     <action dev="ggregory" issue="POOL-347" type="fix" due-to="Shunsuke Nakamura">
-      borrowObject waits for maxWaitMillis over in pool full.
+      Method borrowObject waits for maxWaitMillis over in pool full.
     </action>
     <action dev="ggregory" issue="POOL-349" type="update">
       Update optional library asm-util from 6.2 to 7.0.
     </action>
     <action dev="ggregory" issue="POOL-359" type="fix" due-to="Michael Wintermeyer, Gary Gregory">
       NullPointerException closing multiple GenericObjectPools.
+    </action>
+    <action dev="ggregory" issue="POOL-360" type="update">
+      Update optional library cglib from 3.2.9 to 3.2.10.
     </action>
   </release>  
   <release version="2.6.0" date="2018-07-06" description="This is a maintenance release.">

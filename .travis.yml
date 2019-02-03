@@ -19,8 +19,10 @@ sudo: false
 jdk:
   - openjdk7
   - openjdk8
+  - openjdk11
   - oraclejdk8
   - oraclejdk9
+  - oraclejdk11
 
 script:
   - mvn
