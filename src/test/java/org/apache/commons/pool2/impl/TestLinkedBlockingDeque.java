@@ -274,7 +274,7 @@ public class TestLinkedBlockingDeque {
     }
 
     @Test
-    public void testRemoveLastOccurence() {
+    public void testRemoveLastOccurrence() {
         assertFalse(deque.removeLastOccurrence(null));
         assertFalse(deque.removeLastOccurrence(ONE));
         deque.add(ONE);

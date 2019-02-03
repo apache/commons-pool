@@ -63,7 +63,7 @@ public class TestSoftRefOutOfMemory {
                 if (freeMemory > Integer.MAX_VALUE) {
                     freeMemory = Integer.MAX_VALUE;
                 }
-                garbage.add(new byte[Math.min(1024 * 1024, (int)freeMemory/2)]);
+                garbage.add(new byte[Math.min(1024 * 1024, (int) freeMemory / 2)]);
             } catch (final OutOfMemoryError oome) {
                 System.gc();
             }
@@ -103,7 +103,7 @@ public class TestSoftRefOutOfMemory {
                 if (freeMemory > Integer.MAX_VALUE) {
                     freeMemory = Integer.MAX_VALUE;
                 }
-                garbage.add(new byte[Math.min(1024 * 1024, (int)freeMemory/2)]);
+                garbage.add(new byte[Math.min(1024 * 1024, (int) freeMemory / 2)]);
             } catch (final OutOfMemoryError oome) {
                 System.gc();
             }
@@ -139,7 +139,7 @@ public class TestSoftRefOutOfMemory {
                 if (freeMemory > Integer.MAX_VALUE) {
                     freeMemory = Integer.MAX_VALUE;
                 }
-                garbage.add(new byte[Math.min(1024 * 1024, (int)freeMemory/2)]);
+                garbage.add(new byte[Math.min(1024 * 1024, (int) freeMemory / 2)]);
             } catch (final OutOfMemoryError oome) {
                 System.gc();
             }

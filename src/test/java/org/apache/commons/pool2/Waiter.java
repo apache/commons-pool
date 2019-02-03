@@ -167,12 +167,12 @@ public class Waiter {
     @Override
     public String toString() {
         final StringBuilder buff = new StringBuilder();
-        buff.append("ID = " + id + "\n");
-        buff.append("valid = " + valid + "\n");
-        buff.append("active = " + active + "\n");
-        buff.append("lastPassivated = " + lastPassivated + "\n");
-        buff.append("lastIdleTimeMs = " + lastIdleTimeMs + "\n");
-        buff.append("latency = " + latency + "\n");
+        buff.append("ID = " + id + '\n');
+        buff.append("valid = " + valid + '\n');
+        buff.append("active = " + active + '\n');
+        buff.append("lastPassivated = " + lastPassivated + '\n');
+        buff.append("lastIdleTimeMs = " + lastIdleTimeMs + '\n');
+        buff.append("latency = " + latency + '\n');
         return buff.toString();
     }
 }
