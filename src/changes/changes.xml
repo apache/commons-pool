@@ -71,6 +71,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" issue="POOL-326" type="fix" due-to="Chris Allison, Phil Steitz">
       Threading issue, NullPointerException and IllegalStateException in GenericKeyedObjectPool.
     </action>
+    <action dev="ggregory" issue="POOL-352" type="fix" due-to="Volker Kleinschmidt, Gary Gregory">
+      CallStackUtils mishandles security manager check (partial fix.)
+    </action>
   </release>  
   <release version="2.6.0" date="2018-07-06" description="This is a maintenance release.">
     <action dev="ggregory" issue="POOL-336" type="update" due-to="Wolfgang Glas">
