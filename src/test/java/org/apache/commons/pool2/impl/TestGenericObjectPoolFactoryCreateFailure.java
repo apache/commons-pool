@@ -42,12 +42,12 @@ public class TestGenericObjectPoolFactoryCreateFailure {
         }
 
         @Override
-        public boolean validateObject(PooledObject<Object> p) {
+        public boolean validateObject(final PooledObject<Object> p) {
             return true;
         }
 
         @Override
-        public PooledObject<Object> wrap(Object obj) {
+        public PooledObject<Object> wrap(final Object obj) {
             return new DefaultPooledObject<>(new Object());
         }
     }
@@ -56,7 +56,7 @@ public class TestGenericObjectPoolFactoryCreateFailure {
         private final CountDownLatch barrier;
         private final AtomicBoolean failed;
         private final GenericObjectPool<Object> pool;
-        private WinnerRunnable(GenericObjectPool<Object> pool, CountDownLatch barrier, AtomicBoolean failed) {
+        private WinnerRunnable(final GenericObjectPool<Object> pool, final CountDownLatch barrier, final AtomicBoolean failed) {
             this.pool = pool;
             this.failed = failed;
             this.barrier = barrier;
@@ -65,7 +65,7 @@ public class TestGenericObjectPoolFactoryCreateFailure {
         public void run() {
             try {
                 System.out.println("start borrowing in parallel thread");
-                Object obj = pool.borrowObject();
+                final Object obj = pool.borrowObject();
 
                 // wait for another thread to start borrowObject
                 if (!barrier.await(5, TimeUnit.SECONDS)) {
@@ -78,7 +78,7 @@ public class TestGenericObjectPoolFactoryCreateFailure {
 
                 pool.returnObject(obj);
                 println("ended borrowing in parallel thread");
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 failed.set(true);
                 e.printStackTrace();
             }
@@ -89,18 +89,18 @@ public class TestGenericObjectPoolFactoryCreateFailure {
         System.out.println(msg);
     }
 
-    private static void sleepIgnoreException(long millis) {
+    private static void sleepIgnoreException(final long millis) {
         try {
             Thread.sleep(millis);
-        } catch(Throwable e) {
+        } catch(final Throwable e) {
             // ignore
         }
     }
     
     @Test(timeout = 10_000)
     public void testBorrowObjectStuck() {
-        SingleObjectFactory factory = new SingleObjectFactory();
-        GenericObjectPoolConfig<Object> config = new GenericObjectPoolConfig<>();
+        final SingleObjectFactory factory = new SingleObjectFactory();
+        final GenericObjectPoolConfig<Object> config = new GenericObjectPoolConfig<>();
         config.setMaxIdle(1);
         config.setMaxTotal(1);
         config.setBlockWhenExhausted(true);
@@ -115,9 +115,9 @@ public class TestGenericObjectPoolFactoryCreateFailure {
         config.setMaxWaitMillis(-1);
         try (GenericObjectPool<Object> pool = new GenericObjectPool<>(factory, config)) {
 
-            AtomicBoolean failed = new AtomicBoolean();
-            CountDownLatch barrier = new CountDownLatch(1);
-            Thread thread1 = new Thread(new WinnerRunnable(pool, barrier, failed));
+            final AtomicBoolean failed = new AtomicBoolean();
+            final CountDownLatch barrier = new CountDownLatch(1);
+            final Thread thread1 = new Thread(new WinnerRunnable(pool, barrier, failed));
             thread1.start();
 
             // wait for object to be created
@@ -130,9 +130,9 @@ public class TestGenericObjectPoolFactoryCreateFailure {
             try {
                 println("try borrow in main thread");
 
-                Object o = pool.borrowObject();
+                final Object o = pool.borrowObject();
                 println("Success borrow in main thread " + o);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 e.printStackTrace();
             }
 
