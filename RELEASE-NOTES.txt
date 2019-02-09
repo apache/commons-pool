@@ -1,6 +1,6 @@
               Apache Commons Pool 2.6.1 RELEASE NOTES
 
-The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.6.1-SNAPSHOT.
+The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.6.1.
 
 Apache Commons Pool provides an object-pooling API and a number of object pool implementations.
 Version 2 contains a completely re-written pooling implementation compared to the 1.x series.
@@ -20,16 +20,22 @@ NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPool
 
 This is a maintenance release.
 
-Changes in version 2.6.1-SNAPSHOT include:
+Changes in version 2.6.1 include:
 
 
 Fixed Bugs:
-o POOL-347:  borrowObject waits for maxWaitMillis over in pool full. Thanks to Shunsuke Nakamura.
+o POOL-340:  Correct validateObject with concurrent borrowObject Thanks to Pavel Kolesov.
+o POOL-356:  Fix deadlock on massive concurrent requests
+o POOL-347:  Method borrowObject waits for maxWaitMillis over in pool full. Thanks to Shunsuke Nakamura.
+o POOL-359:  NullPointerException closing multiple GenericObjectPools. Thanks to Michael Wintermeyer, Gary Gregory.
+o POOL-326:  Threading issue, NullPointerException and IllegalStateException in GenericKeyedObjectPool. Thanks to Chris Allison, Phil Steitz.
+o POOL-352:  CallStackUtils mishandles security manager check (partial fix.) Thanks to Volker Kleinschmidt, Gary Gregory.
 
 Changes:
-o POOL-345:  Update optional library cglib from 3.2.6 to 3.2.7.
+o POOL-345:  Update optional library cglib from 3.2.6 to 3.2.9.
 o POOL-346:  Move common configuration setter to BaseGenericObjectPool #9. Thanks to Michael Chen.
-o POOL-349:  Update optional library asm-util from 6.2 to 6.2.1.
+o POOL-349:  Update optional library asm-util from 6.2 to 7.0.
+o POOL-360:  Update optional library cglib from 3.2.9 to 3.2.10.
 
 
 For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
