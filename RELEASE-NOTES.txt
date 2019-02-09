@@ -47,48 +47,6 @@ Download page: http://commons.apache.org/proper/commons-pool/download_pool.cgi
 
 -----------------------------------------------------------------------------------------------
 
-
-              Apache Commons Pool 2.6.1 RELEASE NOTES
-
-The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.6.1.
-
-Apache Commons Pool provides an object-pooling API and a number of object pool implementations.
-Version 2 contains a completely re-written pooling implementation compared to the 1.x series.
-In addition to performance and scalability improvements, version 2 includes robust instance
-tracking and pool monitoring.  
-
-- Version 2.6.1 requires Java 7 or above.
-
-No client code changes are required to migrate from versions 2.0-2.6.
-Users of version 1.x should consult the migration guide on the Commons Pool web site.
-
-NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPoolMXBean
-      and GenericKeyedObjectPoolMXBean) exist only to define the attributes and methods
-      that will be made available via JMX. They must not be implemented by clients as
-      they are subject to change between major, minor and patch version releases of
-      Commons Pool. Clients that implement any of these interfaces may not, therefore,
-      be able to upgrade to a new minor or patch release without requiring code
-      changes.
-
-This is a maintenance release.
-
-Changes in version 2.6.0 include:
-
-Fixed Bugs:
-o correct validateObject with concurrent borrowObject  Issue: POOL-340. Thanks to Pavel Kolesov.
-o fix deadlock on massive concurrent requests  Issue: POOL-356.
-o borrowObject waits for maxWaitMillis over in pool full.  Issue: POOL-347. Thanks to Shunsuke Nakamura.
-
-Changes:
-o Update optional library cglib from 3.2.6 to 3.2.9.  Issue: POOL-345.
-o Move common configuration setter to BaseGenericObjectPool #9.  Issue: POOL-346. Thanks to Michael Chen.
-o Update optional library asm-util from 6.2 to 7.0.  Issue: POOL-349.
-
-
-
------------------------------------------------------------------------------------------------
-
-
               Apache Commons Pool 2.6.0 RELEASE NOTES
 
 The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.6.0.
