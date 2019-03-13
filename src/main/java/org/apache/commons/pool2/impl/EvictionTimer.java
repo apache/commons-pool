@@ -88,15 +88,17 @@ class EvictionTimer {
     /**
      * Remove the specified eviction task from the timer.
      *
-     * @param task      Task to be cancelled
+     * @param evictor      Task to be cancelled
      * @param timeout   If the associated executor is no longer required, how
      *                  long should this thread wait for the executor to
      *                  terminate?
      * @param unit      The units for the specified timeout
      */
     static synchronized void cancel(
-            final BaseGenericObjectPool<?>.Evictor task, final long timeout, final TimeUnit unit) {
-        task.cancel();
+            final BaseGenericObjectPool<?>.Evictor evictor, final long timeout, final TimeUnit unit) {
+        if (evictor != null) {
+            evictor.cancel();
+        }
         if (executor != null && executor.getQueue().isEmpty()) {
             executor.shutdown();
             try {
