@@ -182,6 +182,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * <p>
      * If the configured value of minIdle is greater than the configured value
      * for maxIdle then the value of maxIdle will be used instead.
+     * </p>
      *
      * @param minIdle
      *            The minimum number of objects.
@@ -203,6 +204,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * <p>
      * If the configured value of minIdle is greater than the configured value
      * for maxIdle then the value of maxIdle will be used instead.
+     * </p>
      *
      * @return The minimum number of objects.
      *
@@ -340,6 +342,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * borrowObject}({@link #getMaxWaitMillis()})</code>.
      * <p>
      * {@inheritDoc}
+     * </p>
      */
     @Override
     public T borrowObject() throws Exception {
@@ -357,6 +360,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * instance is destroyed and the next available instance is examined. This
      * continues until either a valid instance is returned or there are no more
      * idle instances available.
+     * </p>
      * <p>
      * If there are no idle instances available in the pool, behavior depends on
      * the {@link #getMaxTotal() maxTotal}, (if applicable)
@@ -366,6 +370,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * instance is created, activated and (if applicable) validated and returned
      * to the caller. If validation fails, a <code>NoSuchElementException</code>
      * is thrown.
+     * </p>
      * <p>
      * If the pool is exhausted (no available idle instances and no capacity to
      * create new ones), this method will either block (if
@@ -375,11 +380,13 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * method will block when {@link #getBlockWhenExhausted()} is true is
      * determined by the value passed in to the <code>borrowMaxWaitMillis</code>
      * parameter.
+     * </p>
      * <p>
      * When the pool is exhausted, multiple calling threads may be
      * simultaneously blocked waiting for instances to become available. A
      * "fairness" algorithm has been implemented to ensure that threads receive
      * available instances in request arrival order.
+     * </p>
      *
      * @param borrowMaxWaitMillis The time to wait in milliseconds for an object
      *                            to become available
@@ -497,13 +504,16 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * If {@link #getMaxIdle() maxIdle} is set to a positive value and the
      * number of idle instances has reached this value, the returning instance
      * is destroyed.
+     * </p>
      * <p>
      * If {@link #getTestOnReturn() testOnReturn} == true, the returning
      * instance is validated before being returned to the idle instance pool. In
      * this case, if validation fails, the instance is destroyed.
+     * </p>
      * <p>
      * Exceptions encountered destroying objects for any reason are swallowed
      * but notified via a {@link SwallowedExceptionListener}.
+     * </p>
      */
     @Override
     public void returnObject(final T obj) {
@@ -587,6 +597,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * <p>
      * Activation of this method decrements the active count and attempts to
      * destroy the instance.
+     * </p>
      *
      * @throws Exception             if an exception occurs destroying the
      *                               object
@@ -617,6 +628,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * idle instance.
      * <p>
      * Implementation notes:
+     * </p>
      * <ul>
      * <li>This method does not destroy or effect in any way instances that are
      * checked out of the pool when it is invoked.</li>
@@ -658,6 +670,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * objects destroyed on return.
      * <p>
      * Destroys idle instances in the pool by invoking {@link #clear()}.
+     * </p>
      */
     @Override
     public void close() {
@@ -690,6 +703,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * <p>
      * Successive activations of this method examine objects in sequence,
      * cycling through objects in oldest-to-youngest order.
+     * </p>
      */
     @Override
     public void evict() throws Exception {
@@ -810,6 +824,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * <p>
      * If there are {@link #getMaxTotal()} objects already in circulation
      * or in process of being created, this method returns null.
+     * </p>
      *
      * @return The new wrapped pooled object
      *
@@ -937,6 +952,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * or the total number of objects (idle, checked out, or being created) reaches
      * {@link #getMaxTotal()}. If {@code always} is false, no instances are created unless
      * there are threads waiting to check out instances from the pool.
+     * </p>
      *
      * @param idleCount the number of idle instances desired
      * @param always true means create instances even if the pool has no threads waiting
@@ -1123,6 +1139,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * JMX. That means it won't be invoked unless the explicitly requested
      * whereas all attributes will be automatically requested when viewing the
      * attributes for an object in a tool like JConsole.
+     * </p>
      *
      * @return Information grouped on all the objects in the pool
      */
