@@ -22,7 +22,6 @@ jdk:
   - openjdk11
   - openjdk12
   - oraclejdk8
-  - oraclejdk9
   - oraclejdk11
 
 script:
