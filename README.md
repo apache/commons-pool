@@ -54,7 +54,7 @@ Documentation
 -------------
 
 More information can be found on the [Apache Commons Pool homepage](https://commons.apache.org/proper/commons-pool).
-The [Javadoc](https://commons.apache.org/proper/commons-pool/javadocs/api-release) can be browsed.
+The [Javadoc](https://commons.apache.org/proper/commons-dbcp/apidocs) can be browsed.
 Questions related to the usage of Apache Commons Pool should be posted to the [user mailing list][ml].
 
 Where can I get the latest release?
