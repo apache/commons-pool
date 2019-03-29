@@ -47,6 +47,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" issue="POOL-362" type="fix">
        Always null out org.apache.commons.pool2.impl.BaseGenericObjectPool.evictionIterator to match org.apache.commons.pool2.impl.BaseGenericObjectPool.evictor.
     </action>
+    <action dev="ggregory" issue="POOL-363" type="fix" due-to="Josh Landin">
+       Evictor Thread prevents Spring Context shutdown in standalone app.
+    </action>
   </release>
   <release version="2.6.1" date="2019-02-08" description="This is a maintenance release.">
     <action dev="struberg" issue="POOL-340" type="fix" due-to="Pavel Kolesov">
