@@ -50,6 +50,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" issue="POOL-363" type="fix" due-to="Josh Landin">
        Evictor Thread prevents Spring Context shutdown in standalone app.
     </action>
+    <action dev="ggregory" issue="POOL-348" type="fix" due-to="Josh Landin">
+       The commons-pool-evictor-thread should run as a Deamon.
+    </action>
   </release>
   <release version="2.6.1" date="2019-02-08" description="This is a maintenance release.">
     <action dev="struberg" issue="POOL-340" type="fix" due-to="Pavel Kolesov">
