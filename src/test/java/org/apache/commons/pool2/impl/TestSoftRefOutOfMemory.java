@@ -288,7 +288,7 @@ public class TestSoftRefOutOfMemory {
         }
     }
 
-    private static enum OomeTrigger {
+    private enum OomeTrigger {
         CREATE,
         VALIDATE,
         DESTROY

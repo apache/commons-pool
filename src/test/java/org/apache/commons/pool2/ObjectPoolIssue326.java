@@ -150,8 +150,9 @@ public final class ObjectPoolIssue326 {
         private void busyWait(final long timeMillis) {
             // busy waiting intentionally as a simple thread.sleep fails to reproduce
             final long endTime = System.currentTimeMillis() + timeMillis;
-            while (System.currentTimeMillis() < endTime)
-                ;
+            while (System.currentTimeMillis() < endTime) {
+                // empty
+            }
         }
     }
 }
