@@ -34,21 +34,21 @@ import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
 /**
  * On my box with 4 cores this test fails at between 5s and 900s with an average
  * of 240s (data from 10 runs of test).
- * 
+ *
  * It is hard to turn this in a unit test because it can affect the build
  * negatively since you need to run it for a while.
  */
 public final class ObjectPoolIssue326 {
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         try {
             new ObjectPoolIssue326().run();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }
 
     private void run() throws Exception {
-        GenericKeyedObjectPoolConfig poolConfig = new GenericKeyedObjectPoolConfig();
+        final GenericKeyedObjectPoolConfig poolConfig = new GenericKeyedObjectPoolConfig();
         poolConfig.setMaxTotal(10);
         poolConfig.setMaxTotalPerKey(5);
         poolConfig.setMinIdlePerKey(-1);
@@ -70,13 +70,13 @@ public final class ObjectPoolIssue326 {
         poolConfig.setJmxNameBase(null);
         poolConfig.setJmxNamePrefix(null);
 
-        GenericKeyedObjectPool<Integer, Object> pool = new GenericKeyedObjectPool<>(new ObjectFactory(), poolConfig);
+        final GenericKeyedObjectPool<Integer, Object> pool = new GenericKeyedObjectPool<>(new ObjectFactory(), poolConfig);
 
         // number of threads to reproduce is finicky. this count seems to be best for my
         // 4 core box.
         // too many doesn't reproduce it ever, too few doesn't either.
-        ExecutorService service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
-        long startTime = System.currentTimeMillis();
+        final ExecutorService service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+        final long startTime = System.currentTimeMillis();
         long testIter = 0;
         try {
             while (true) {
@@ -84,9 +84,9 @@ public final class ObjectPoolIssue326 {
                 if (testIter % 1000 == 0) {
                     System.out.println(testIter);
                 }
-                List<Task> tasks = createTasks(pool);
-                List<Future<Object>> futures = service.invokeAll(tasks);
-                for (Future<Object> future : futures) {
+                final List<Task> tasks = createTasks(pool);
+                final List<Future<Object>> futures = service.invokeAll(tasks);
+                for (final Future<Object> future : futures) {
                     future.get();
                 }
             }
@@ -96,8 +96,8 @@ public final class ObjectPoolIssue326 {
         }
     }
 
-    private List<Task> createTasks(GenericKeyedObjectPool<Integer, Object> pool) {
-        List<Task> tasks = new ArrayList<>();
+    private List<Task> createTasks(final GenericKeyedObjectPool<Integer, Object> pool) {
+        final List<Task> tasks = new ArrayList<>();
         for (int i = 0; i < 250; i++) {
             tasks.add(new Task(pool, i));
         }
@@ -106,12 +106,12 @@ public final class ObjectPoolIssue326 {
 
     private class ObjectFactory extends BaseKeyedPooledObjectFactory<Integer, Object> {
         @Override
-        public Object create(Integer s) throws Exception {
+        public Object create(final Integer s) throws Exception {
             return new TestObject();
         }
 
         @Override
-        public PooledObject<Object> wrap(Object o) {
+        public PooledObject<Object> wrap(final Object o) {
             return new DefaultPooledObject<>(o);
         }
     }
@@ -123,7 +123,7 @@ public final class ObjectPoolIssue326 {
         private final GenericKeyedObjectPool<Integer, Object> m_pool;
         private final int m_key;
 
-        Task(GenericKeyedObjectPool<Integer, Object> pool, int count) {
+        Task(final GenericKeyedObjectPool<Integer, Object> pool, final int count) {
             m_pool = pool;
             m_key = count % 20;
         }
@@ -139,7 +139,7 @@ public final class ObjectPoolIssue326 {
                 busyWait(System.currentTimeMillis() % 4);
                 m_pool.returnObject(m_key, value);
                 return "success";
-            } catch (NoSuchElementException e) {
+            } catch (final NoSuchElementException e) {
                 // ignore, we've exhausted the pool
                 // not sure whether what we do here matters for reproducing
                 busyWait(System.currentTimeMillis() % 20);
@@ -147,9 +147,9 @@ public final class ObjectPoolIssue326 {
             }
         }
 
-        private void busyWait(long timeMillis) {
+        private void busyWait(final long timeMillis) {
             // busy waiting intentionally as a simple thread.sleep fails to reproduce
-            long endTime = System.currentTimeMillis() + timeMillis;
+            final long endTime = System.currentTimeMillis() + timeMillis;
             while (System.currentTimeMillis() < endTime)
                 ;
         }
@@ -157,7 +157,7 @@ public final class ObjectPoolIssue326 {
 }
 
 /*
- * 
+ *
  * Example stack trace: java.util.concurrent.ExecutionException:
  * java.lang.NullPointerException at
  * java.util.concurrent.FutureTask.report(FutureTask.java:122) at
@@ -179,5 +179,5 @@ public final class ObjectPoolIssue326 {
  * 1142) at
  * java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:
  * 617) at java.lang.Thread.run(Thread.java:745)
- * 
+ *
  */

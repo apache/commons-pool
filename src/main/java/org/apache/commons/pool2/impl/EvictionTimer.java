@@ -69,7 +69,7 @@ class EvictionTimer {
      * call to this method *must* call {@link #cancel(TimerTask)} to cancel the
      * task to prevent memory and/or thread leaks in application server
      * environments.
-     * 
+     *
      * @param task      Task to be scheduled
      * @param delay     Delay in milliseconds before task is executed
      * @param period    Time in milliseconds between executions
@@ -120,7 +120,7 @@ class EvictionTimer {
         @Override
         public Thread newThread(final Runnable runnable) {
             final Thread thread = new Thread(null, runnable, "commons-pool-evictor-thread");
-            thread.setDaemon(true); // POOL-363 - Required for applications using Runtime.addShutdownHook(). --joshlandin 03.27.2019 
+            thread.setDaemon(true); // POOL-363 - Required for applications using Runtime.addShutdownHook(). --joshlandin 03.27.2019
             AccessController.doPrivileged(new PrivilegedAction<Void>() {
                 @Override
                 public Void run() {

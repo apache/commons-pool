@@ -32,7 +32,7 @@ public class TestGenericObjectPoolFactoryCreateFailure {
 
     private static class SingleObjectFactory extends BasePooledObjectFactory<Object> {
         private final AtomicBoolean created = new AtomicBoolean();
-        
+
         @Override
         public Object create() throws Exception {
             if (!created.getAndSet(true)) {
@@ -96,7 +96,7 @@ public class TestGenericObjectPoolFactoryCreateFailure {
             // ignore
         }
     }
-    
+
     @Test(timeout = 10_000)
     public void testBorrowObjectStuck() {
         final SingleObjectFactory factory = new SingleObjectFactory();
