@@ -1190,9 +1190,11 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     @Test(expected=IllegalArgumentException.class)
     public void testConstructorNullFactory() {
         // add dummy assert (won't be invoked because of IAE) to avoid "unused" warning
-        assertNotNull(new GenericKeyedObjectPool<String,String>(null));
-        // TODO this currently causes tearDown to report an error
-        // Looks like GKOP needs to call close() on its parent before throwing IAE
+        try (GenericKeyedObjectPool<String, String> object = new GenericKeyedObjectPool<>(null)) {
+            assertNotNull(object);
+            // TODO this currently causes tearDown to report an error
+            // Looks like GKOP needs to call close() on its parent before throwing IAE
+        }
     }
 
     @Test(timeout=60000)
