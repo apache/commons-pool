@@ -158,9 +158,9 @@
     <maven.compiler.target>1.7</maven.compiler.target>
     <commons.componentid>pool</commons.componentid>
     <commons.module.name>org.apache.commons.pool2</commons.module.name>
-    <commons.rc.version>RC2</commons.rc.version>
+    <commons.rc.version>RC1</commons.rc.version>
     <!-- Java 7 -->
-    <commons.release.version>2.6.1</commons.release.version>
+    <commons.release.version>2.6.2</commons.release.version>
     <commons.release.desc>(Java 7)</commons.release.desc>
     <!-- Java 6 -->
     <commons.release.2.version>2.4.3</commons.release.2.version>
@@ -177,7 +177,7 @@
     <commons.animal-sniffer.version>1.16</commons.animal-sniffer.version>
 
     <!-- Commons Release Plugin -->
-    <commons.bc.version>2.6.0</commons.bc.version>
+    <commons.bc.version>2.6.1</commons.bc.version>
     <commons.release.isDistModule>true</commons.release.isDistModule>
     <commons.releaseManagerName>Gary Gregory</commons.releaseManagerName>    
     <commons.releaseManagerKey>86fdc7e2a11262cb</commons.releaseManagerKey>
