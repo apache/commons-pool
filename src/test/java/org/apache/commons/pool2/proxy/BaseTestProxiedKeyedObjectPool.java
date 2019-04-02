@@ -39,13 +39,14 @@ public abstract class BaseTestProxiedKeyedObjectPool {
 
     @Before
     public void setUp() {
-        final GenericKeyedObjectPoolConfig config = new GenericKeyedObjectPoolConfig();
+        final GenericKeyedObjectPoolConfig<TestObject> config = new GenericKeyedObjectPoolConfig<>();
         config.setMaxTotal(3);
 
         final KeyedPooledObjectFactory<String, TestObject> factory =
                 new TestKeyedObjectFactory();
 
-        final KeyedObjectPool<String,TestObject> innerPool =
+        @SuppressWarnings("resource")
+        final KeyedObjectPool<String, TestObject> innerPool =
                 new GenericKeyedObjectPool<>(
                         factory, config);
 

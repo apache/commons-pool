@@ -54,7 +54,7 @@ public class TestAbandonedObjectPool {
         abandonedConfig.setRemoveAbandonedTimeout(1);
         pool = new GenericObjectPool<>(
                new SimpleFactory(),
-               new GenericObjectPoolConfig(),
+               new GenericObjectPoolConfig<PooledTestObject>(),
                abandonedConfig);
     }
 
@@ -148,7 +148,7 @@ public class TestAbandonedObjectPool {
         pool.close();  // Unregister pool created by setup
         pool = new GenericObjectPool<>(
                 new SimpleFactory(200, 0),
-                new GenericObjectPoolConfig(), abandonedConfig);
+                new GenericObjectPoolConfig<PooledTestObject>(), abandonedConfig);
         final int n = 10;
         pool.setMaxTotal(n);
         pool.setBlockWhenExhausted(false);
@@ -186,7 +186,7 @@ public class TestAbandonedObjectPool {
         pool = new GenericObjectPool<>(
                 // destroys take 200 ms
                 new SimpleFactory(200, 0),
-                new GenericObjectPoolConfig(), abandonedConfig);
+                new GenericObjectPoolConfig<PooledTestObject>(), abandonedConfig);
         final int n = 10;
         pool.setMaxTotal(n);
         pool.setBlockWhenExhausted(false);
@@ -216,8 +216,8 @@ public class TestAbandonedObjectPool {
         pool.close();  // Unregister pool created by setup
         pool = new GenericObjectPool<>(
              // validate takes 1 second
-                new SimpleFactory(0, 1000),
-                new GenericObjectPoolConfig(), abandonedConfig);
+             new SimpleFactory(0, 1000),
+             new GenericObjectPoolConfig<PooledTestObject>(), abandonedConfig);
         final int n = 10;
         pool.setMaxTotal(n);
         pool.setBlockWhenExhausted(false);

@@ -76,6 +76,7 @@ public class SleepingObjectFactory implements PooledObjectFactory<Integer> {
             Thread.sleep(millis);
         }
         catch (final InterruptedException e) {
+            // ignore
         }
     }
 

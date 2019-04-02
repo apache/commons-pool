@@ -113,7 +113,7 @@ public class TestDefaultPooledObjectInfo {
         abandonedConfig.setRemoveAbandonedTimeout(1);
         abandonedConfig.setLogAbandoned(true);
         try (final GenericObjectPool<String> pool = new GenericObjectPool<>(new SimpleFactory(),
-                new GenericObjectPoolConfig(), abandonedConfig)) {
+                new GenericObjectPoolConfig<String>(), abandonedConfig)) {
 
             pool.borrowObject();
             // pool.returnObject(s1); // Object not returned, causes abandoned object created exception

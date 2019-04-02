@@ -422,7 +422,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
      */
     @Test
     public void testContructorEvictionConfig() throws Exception {
-        final GenericKeyedObjectPoolConfig config = new GenericKeyedObjectPoolConfig();
+        final GenericKeyedObjectPoolConfig<String> config = new GenericKeyedObjectPoolConfig<>();
         config.setTimeBetweenEvictionRunsMillis(500);
         config.setMinEvictableIdleTimeMillis(50);
         config.setNumTestsPerEvictionRun(5);
@@ -433,11 +433,13 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             try {
                 Thread.sleep(100);
             } catch (final InterruptedException e) {
+                // ignore
             }
             assertEquals(5, p.getNumIdle("one"));
             try {
                 Thread.sleep(500);
             } catch (final InterruptedException e) {
+                // ignore
             }
             assertEquals(0, p.getNumIdle("one"));
         }
@@ -1156,7 +1158,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             assertEquals(Boolean.valueOf(BaseObjectPoolConfig.DEFAULT_LIFO), Boolean.valueOf(objPool.getLifo()));
         }
 
-        final GenericKeyedObjectPoolConfig config = new GenericKeyedObjectPoolConfig();
+        final GenericKeyedObjectPoolConfig<Object> config = new GenericKeyedObjectPoolConfig<>();
         config.setLifo(lifo);
         config.setMaxTotalPerKey(maxTotalPerKey);
         config.setMaxIdlePerKey(maxIdle);
@@ -1565,7 +1567,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         // Give makeObject a little latency
         factory.setMakeLatency(200);
         try (final GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<>(factory,
-                new GenericKeyedObjectPoolConfig())) {
+                new GenericKeyedObjectPoolConfig<String>())) {
             final String s = pool.borrowObject("one");
             // First borrow waits on create, so wait time should be at least 200 ms
             // Allow 100ms error in clock times
@@ -1974,7 +1976,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     public void testInvalidateWaiting()
             throws Exception {
 
-        final GenericKeyedObjectPoolConfig config = new GenericKeyedObjectPoolConfig();
+        final GenericKeyedObjectPoolConfig<Object> config = new GenericKeyedObjectPoolConfig<>();
         config.setMaxTotal(2);
         config.setBlockWhenExhausted(true);
         config.setMinIdlePerKey(0);
@@ -2178,7 +2180,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     public void testEqualsIndiscernible() throws Exception {
         final HashSetFactory factory = new HashSetFactory();
         try (final GenericKeyedObjectPool<String, HashSet<String>> pool = new GenericKeyedObjectPool<>(factory,
-                new GenericKeyedObjectPoolConfig())) {
+                new GenericKeyedObjectPoolConfig<HashSet<String>>())) {
             final HashSet<String> s1 = pool.borrowObject("a");
             final HashSet<String> s2 = pool.borrowObject("a");
             pool.returnObject("a", s1);
@@ -2196,7 +2198,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     public void testMutable() throws Exception {
         final HashSetFactory factory = new HashSetFactory();
         try (final GenericKeyedObjectPool<String, HashSet<String>> pool = new GenericKeyedObjectPool<>(factory,
-                new GenericKeyedObjectPoolConfig())) {
+                new GenericKeyedObjectPoolConfig<HashSet<String>>())) {
             final HashSet<String> s1 = pool.borrowObject("a");
             final HashSet<String> s2 = pool.borrowObject("a");
             s1.add("One");

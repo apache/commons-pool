@@ -55,11 +55,12 @@ public abstract class BaseTestProxiedObjectPool {
         abandonedConfig.setRemoveAbandonedTimeout(ABANDONED_TIMEOUT_SECS);
         abandonedConfig.setLogWriter(pw);
 
-        final GenericObjectPoolConfig config = new GenericObjectPoolConfig();
+        final GenericObjectPoolConfig<TestObject> config = new GenericObjectPoolConfig<>();
         config.setMaxTotal(3);
 
         final PooledObjectFactory<TestObject> factory = new TestObjectFactory();
 
+        @SuppressWarnings("resource")
         final ObjectPool<TestObject> innerPool =
                 new GenericObjectPool<>(factory, config, abandonedConfig);
 
