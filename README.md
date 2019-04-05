@@ -46,7 +46,7 @@ Apache Commons Pool
 [![Build Status](https://travis-ci.org/apache/commons-pool.svg)](https://travis-ci.org/apache/commons-pool)
 [![Coverage Status](https://coveralls.io/repos/apache/commons-pool/badge.svg)](https://coveralls.io/r/apache/commons-pool)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-pool2/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-pool2/)
-[![Javadocs](https://javadoc.io/badge/org.apache.commons/commons-pool2/2.6.1.svg)](https://javadoc.io/doc/org.apache.commons/commons-pool2/2.6.1)
+[![Javadocs](https://javadoc.io/badge/org.apache.commons/commons-pool2/2.6.2.svg)](https://javadoc.io/doc/org.apache.commons/commons-pool2/2.6.2)
 
 The Apache Commons Object Pooling Library.
 
@@ -54,7 +54,7 @@ Documentation
 -------------
 
 More information can be found on the [Apache Commons Pool homepage](https://commons.apache.org/proper/commons-pool).
-The [Javadoc](https://commons.apache.org/proper/commons-dbcp/apidocs) can be browsed.
+The [Javadoc](https://commons.apache.org/proper/commons-pool/apidocs) can be browsed.
 Questions related to the usage of Apache Commons Pool should be posted to the [user mailing list][ml].
 
 Where can I get the latest release?
@@ -67,7 +67,7 @@ Alternatively you can pull it from the central Maven repositories:
 <dependency>
   <groupId>org.apache.commons</groupId>
   <artifactId>commons-pool2</artifactId>
-  <version>2.6.1</version>
+  <version>2.6.2</version>
 </dependency>
 ```
 
