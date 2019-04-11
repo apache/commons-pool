@@ -43,6 +43,11 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Pool Changes</title>
   </properties>
   <body>
+  <release version="2.7.0" date="2019-MM-DD" description="This is a feature release (Java 8).">
+    <action dev="ggregory" issue="POOL-364" type="update" due-to="Gary Gregory">
+       Update from Java 7 to Java 8.
+    </action>
+  </release>
   <release version="2.6.2" date="2019-03-05" description="This is a maintenance release.">
     <action dev="ggregory" issue="POOL-362" type="fix">
        Always null out org.apache.commons.pool2.impl.BaseGenericObjectPool.evictionIterator to match org.apache.commons.pool2.impl.BaseGenericObjectPool.evictor.

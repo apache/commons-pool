@@ -154,22 +154,25 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <maven.compiler.source>1.7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
     <commons.componentid>pool</commons.componentid>
     <commons.module.name>org.apache.commons.pool2</commons.module.name>
     <commons.rc.version>RC1</commons.rc.version>
+    <!-- Java 8 -->
+    <commons.release.version>2.7.0</commons.release.version>
+    <commons.release.desc>(Java 8)</commons.release.desc>
     <!-- Java 7 -->
-    <commons.release.version>2.6.2</commons.release.version>
-    <commons.release.desc>(Java 7)</commons.release.desc>
+    <commons.release.2.version>2.6.2</commons.release.2.version>
+    <commons.release.2.desc>(Java 7)</commons.release.2.desc>
     <!-- Java 6 -->
-    <commons.release.2.version>2.4.3</commons.release.2.version>
-    <commons.release.2.desc>(Java 6)</commons.release.2.desc>
+    <commons.release.3.version>2.4.3</commons.release.3.version>
+    <commons.release.3.desc>(Java 6)</commons.release.3.desc>
     <!-- Java 5 -->
-    <commons.release.3.version>1.6</commons.release.3.version>
-    <commons.release.3.desc>(Java 5)</commons.release.3.desc>
+    <commons.release.4.version>1.6</commons.release.4.version>
+    <commons.release.4.desc>(Java 5)</commons.release.4.desc>
     <!-- override parent name, because 1.x uses different artifactId -->
-    <commons.release.3.name>commons-pool-${commons.release.3.version}</commons.release.3.name>
+    <commons.release.4.name>commons-pool-${commons.release.4.version}</commons.release.4.name>
     <commons.jira.id>POOL</commons.jira.id>
     <commons.jira.pid>12310488</commons.jira.pid>
     <commons.scmPubCheckoutDirectory>site-content</commons.scmPubCheckoutDirectory>
@@ -177,7 +180,7 @@
     <commons.animal-sniffer.version>1.16</commons.animal-sniffer.version>
 
     <!-- Commons Release Plugin -->
-    <commons.bc.version>2.6.1</commons.bc.version>
+    <commons.bc.version>2.6.2</commons.bc.version>
     <commons.release.isDistModule>true</commons.release.isDistModule>
     <commons.releaseManagerName>Gary Gregory</commons.releaseManagerName>    
     <commons.releaseManagerKey>86fdc7e2a11262cb</commons.releaseManagerKey>
