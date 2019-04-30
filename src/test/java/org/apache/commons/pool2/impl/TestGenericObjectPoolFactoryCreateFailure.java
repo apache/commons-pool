@@ -64,12 +64,12 @@ public class TestGenericObjectPoolFactoryCreateFailure {
         @Override
         public void run() {
             try {
-                System.out.println("start borrowing in parallel thread");
+                println("start borrowing in parallel thread");
                 final Object obj = pool.borrowObject();
 
                 // wait for another thread to start borrowObject
                 if (!barrier.await(5, TimeUnit.SECONDS)) {
-                    System.out.println("Timeout waiting");
+                    println("Timeout waiting");
                     failed.set(true);
                 } else {
                     // just to make sure, borrowObject has started waiting on queue
@@ -86,7 +86,7 @@ public class TestGenericObjectPoolFactoryCreateFailure {
     }
 
     private static void println(final String msg) {
-        System.out.println(msg);
+        // System.out.println(msg);
     }
 
     private static void sleepIgnoreException(final long millis) {
