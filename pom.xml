@@ -186,12 +186,12 @@
     <commons.releaseManagerName>Gary Gregory</commons.releaseManagerName>    
     <commons.releaseManagerKey>86fdc7e2a11262cb</commons.releaseManagerKey>
     
-    <commons.japicmp.version>0.13.1</commons.japicmp.version>
+    <commons.japicmp.version>0.14.0</commons.japicmp.version>
     <japicmp.skip>false</japicmp.skip>
   </properties> 
 
   <build>
-      <defaultGoal>clean verify apache-rat:check clirr:check javadoc:javadoc</defaultGoal>
+      <defaultGoal>clean verify apache-rat:check japicmp:cmp javadoc:javadoc</defaultGoal>
       <pluginManagement>
         <plugins>
           <plugin>
@@ -322,14 +322,6 @@
               <exclude>.fbprefs</exclude>
               <exclude>.pmd</exclude>
             </excludes>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>clirr-maven-plugin</artifactId>
-          <version>${commons.clirr.version}</version>
-          <configuration>
-            <minSeverity>info</minSeverity>
           </configuration>
         </plugin>
         <plugin>
