@@ -183,14 +183,14 @@ public interface KeyedObjectPool<K, V> extends Closeable {
      * @param key the key to query
      * @return the number of instances currently borrowed from but not yet
      * returned to the pool corresponding to the given <code>key</code>.
-=     */
+     */
     int getNumActive(K key);
 
     /**
      * Returns the total number of instances currently idle in this pool.
      * Returns a negative value if this information is not available.
      * @return the total number of instances currently idle in this pool.
- =    */
+     */
     int getNumIdle();
 
     /**
