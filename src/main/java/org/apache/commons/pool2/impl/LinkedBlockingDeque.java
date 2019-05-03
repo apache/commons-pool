@@ -1147,7 +1147,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     public void clear() {
         lock.lock();
         try {
-            for (Node<E> f = first; f != null; ) {
+            for (Node<E> f = first; f != null;) {
                 f.item = null;
                 final Node<E> n = f.next;
                 f.prev = null;
