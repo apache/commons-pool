@@ -40,7 +40,7 @@ The <action> type attribute can be add,update,fix,remove.
 
 <document>
   <properties>
-    <title>Apache Commons Pool Changes</title>
+    <title>Apache Commons Pool Release Notes</title>
   </properties>
   <body>
   <release version="2.7.0" date="2019-MM-DD" description="This is a feature release (Java 8).">
