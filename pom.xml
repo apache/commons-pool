@@ -34,7 +34,7 @@
   <inceptionYear>2001</inceptionYear>
   <description>The Apache Commons Object Pooling Library.</description>
 
-  <url>http://commons.apache.org/proper/commons-pool/</url>
+  <url>https://commons.apache.org/proper/commons-pool/</url>
 
   <issueManagement>
     <system>jira</system>
