@@ -38,7 +38,7 @@
 
   <issueManagement>
     <system>jira</system>
-    <url>http://issues.apache.org/jira/browse/POOL</url>
+    <url>https://issues.apache.org/jira/browse/POOL</url>
   </issueManagement>
 
   <scm>
