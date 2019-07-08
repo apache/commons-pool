@@ -53,6 +53,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" issue="POOL-366" type="update" due-to="Gary Gregory">
       Update optional library cglib from 3.2.10 to 3.2.12.
     </action>
+    <action dev="ggregory" issue="POOL-367" type="update" due-to="Per Lundberg">
+      Fix typo in package private method name stopEvitor() -> stopEvictor() #22.
+    </action>
   </release>
   <release version="2.6.2" date="2019-03-05" description="This is a maintenance release (Java 7).">
     <action dev="ggregory" issue="POOL-362" type="fix">
