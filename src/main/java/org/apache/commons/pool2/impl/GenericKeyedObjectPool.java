@@ -383,7 +383,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
                             throw nsee;
                         }
                     }
-                    if (p != null && (getTestOnBorrow() || create && getTestOnCreate())) {
+                    if (p != null && getTestOnBorrow()) {
                         boolean validate = false;
                         Throwable validationThrowable = null;
                         try {
@@ -1039,6 +1039,11 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         PooledObject<T> p = null;
         try {
             p = factory.makeObject(key);
+            if (getTestOnCreate() && !factory.validateObject(key, p)) {
+                numTotal.decrementAndGet();
+                objectDeque.getCreateCount().decrementAndGet();
+                return null;
+            }
         } catch (final Exception e) {
             numTotal.decrementAndGet();
             objectDeque.getCreateCount().decrementAndGet();
