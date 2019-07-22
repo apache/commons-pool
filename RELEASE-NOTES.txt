@@ -30,9 +30,9 @@ o POOL-348:  The commons-pool-evictor-thread should run as a Deamon. Thanks to J
 For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
 patches, or suggestions for improvement, see the Apache Apache Commons Pool website:
 
-http://commons.apache.org/proper/commons-pool/
+https://commons.apache.org/proper/commons-pool/
 
-Download page: http://commons.apache.org/proper/commons-pool/download_pool.cgi
+Download page: https://commons.apache.org/proper/commons-pool/download_pool.cgi
 
 -----------------------------------------------------------------------------------------------
 
@@ -79,9 +79,9 @@ o POOL-360:  Update optional library cglib from 3.2.9 to 3.2.10.
 For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
 patches, or suggestions for improvement, see the Apache Apache Commons Pool website:
 
-http://commons.apache.org/proper/commons-pool/
+https://commons.apache.org/proper/commons-pool/
 
-Download page: http://commons.apache.org/proper/commons-pool/download_pool.cgi
+Download page: https://commons.apache.org/proper/commons-pool/download_pool.cgi
 
 -----------------------------------------------------------------------------------------------
 
@@ -133,7 +133,7 @@ The value should not change from one run to the next.
 For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
 patches, or suggestions for improvement, see the Apache Apache Commons Pool website:
 
-http://commons.apache.org/proper/commons-pool/
+https://commons.apache.org/proper/commons-pool/
 
 Download page: https://commons.apache.org/proper/commons-pool/download_pool.cgi
 
@@ -178,7 +178,7 @@ o POOL-334:  org.apache.commons.pool2.impl.ThrowableCallStack.Snapshot is missin
 For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
 patches, or suggestions for improvement, see the Apache Apache Commons Pool website:
 
-http://commons.apache.org/proper/commons-pool/
+https://commons.apache.org/proper/commons-pool/
 
 -----------------------------------------------------------------------------------------------
 
@@ -237,7 +237,7 @@ o POOL-323:  Update optional OW2 ASM from 5.0.4 to 5.2.
 For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
 patches, or suggestions for improvement, see the Apache Apache Commons Pool website:
 
-http://commons.apache.org/proper/commons-pool/
+https://commons.apache.org/proper/commons-pool/
 
 -----------------------------------------------------------------------------------------------
 
@@ -276,6 +276,6 @@ o POOL-300:  Added PrintWriter flush to DefaultPooledObject's printStackTrace me
 For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
 patches, or suggestions for improvement, see the Apache Apache Commons Pool website:
 
-http://commons.apache.org/proper/commons-pool/
+https://commons.apache.org/proper/commons-pool/
 
 

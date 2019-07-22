@@ -34,11 +34,11 @@
   <inceptionYear>2001</inceptionYear>
   <description>The Apache Commons Object Pooling Library.</description>
 
-  <url>http://commons.apache.org/proper/commons-pool/</url>
+  <url>https://commons.apache.org/proper/commons-pool/</url>
 
   <issueManagement>
     <system>jira</system>
-    <url>http://issues.apache.org/jira/browse/POOL</url>
+    <url>https://issues.apache.org/jira/browse/POOL</url>
   </issueManagement>
 
   <scm>
@@ -129,7 +129,7 @@
     <dependency>
       <groupId>cglib</groupId>
       <artifactId>cglib</artifactId>
-      <version>3.2.11</version>
+      <version>3.2.12</version>
       <optional>true</optional>
     </dependency>
     <dependency>
@@ -343,7 +343,7 @@
         </plugin>        
         <plugin>
           <artifactId>maven-pmd-plugin</artifactId>
-          <version>3.11.0</version>
+          <version>3.12.0</version>
           <configuration>
             <targetJdk>${maven.compiler.target}</targetJdk>
           </configuration>

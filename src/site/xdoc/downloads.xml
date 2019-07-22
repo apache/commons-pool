@@ -26,7 +26,7 @@
      <section name="Releases">
          <p>
             The latest release binary and source releases are always available on the
-            <a href="http://commons.apache.org/pool/download_pool.cgi">
+            <a href="https://commons.apache.org/pool/download_pool.cgi">
             Apache Commons Pool Downloads page</a>.
          </p>
          <ul>
@@ -47,7 +47,7 @@
            </li>
            <li>
               Version 1.2 depends at runtime on
-            <a href="http://commons.apache.org/collections/">commons-collections</a>.
+            <a href="https://commons.apache.org/collections/">commons-collections</a>.
            </li>
          </ul>
          <p>
@@ -55,12 +55,12 @@
          <p>
             Older releases are retained by the Apache Software Foundation but are 
             moved into a
-            <a href="http://archive.apache.org/dist/commons/pool/">
+            <a href="https://archive.apache.org/dist/commons/pool/">
             special archive area</a>.
          </p>
          <p>
             Access to the source tree to see the latest and greatest code is possible
-            through <a href="source-repository.html">anonymous SVN access</a>.
+            through <a href="scm.html">anonymous SVN access</a>.
          </p>
       </section>
 
