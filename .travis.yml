@@ -14,18 +14,20 @@
 # limitations under the License.
 
 language: java
-os:
-  - linux
-  - linux-ppc64le
+matrix:
+  include:
+    - os: linux
+      jdk:
+        - openjdk8
+        - openjdk11
+        - openjdk12
+        - openjdk-ea
+        - oraclejdk8
+        - oraclejdk11
+    - os: linux-ppc64le
+      jdk:  openjdk8
+  
 sudo: false
-
-jdk:
-  - openjdk8
-  - openjdk11
-  - openjdk12
-  - openjdk-ea
-  - oraclejdk8
-  - oraclejdk11
 
 script:
   - mvn
