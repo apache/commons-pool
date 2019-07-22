@@ -2275,6 +2275,36 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         Assert.assertFalse(testB._failed);
     }
 
+    // Pool-361
+    @Test
+    public void testValidateOnCreate() throws Exception {
+        gkoPool.setTestOnCreate(true);
+        simpleFactory.setValidationEnabled(true);
+        gkoPool.addObject("one");
+        Assert.assertEquals(1, simpleFactory.validateCounter);
+    }
+
+    @Test
+    public void testValidateOnCreateFailure() throws Exception {
+        gkoPool.setTestOnCreate(true);
+        gkoPool.setTestOnBorrow(false);
+        gkoPool.setMaxTotal(2);
+        simpleFactory.setValidationEnabled(true);
+        simpleFactory.setValid(false);
+        // Make sure failed validations do not leak capacity
+        gkoPool.addObject("one");
+        gkoPool.addObject("one");
+        assertEquals(0, gkoPool.getNumIdle());
+        assertEquals(0, gkoPool.getNumActive());
+        simpleFactory.setValid(true);
+        final String obj = gkoPool.borrowObject("one");
+        assertNotNull(obj);
+        gkoPool.addObject("one");
+        // Should have one idle, one out now
+        assertEquals(1, gkoPool.getNumIdle());
+        assertEquals(1, gkoPool.getNumActive());
+    }
+
 
     private static class DummyFactory
             extends BaseKeyedPooledObjectFactory<Object,Object> {

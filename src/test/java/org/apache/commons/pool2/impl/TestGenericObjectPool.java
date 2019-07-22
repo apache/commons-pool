@@ -2839,6 +2839,34 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         Assert.assertEquals(1, simpleFactory.validateCounter);
     }
 
+    // Pool-361
+    @Test
+    public void testValidateOnCreate() throws Exception {
+        genericObjectPool.setTestOnCreate(true);
+        genericObjectPool.addObject();
+        Assert.assertEquals(1, simpleFactory.validateCounter);
+    }
+
+    @Test
+    public void testValidateOnCreateFailure() throws Exception {
+        genericObjectPool.setTestOnCreate(true);
+        genericObjectPool.setTestOnBorrow(false);
+        genericObjectPool.setMaxTotal(2);
+        simpleFactory.setValid(false);
+        // Make sure failed validations do not leak capacity
+        genericObjectPool.addObject();
+        genericObjectPool.addObject();
+        assertEquals(0, genericObjectPool.getNumIdle());
+        assertEquals(0, genericObjectPool.getNumActive());
+        simpleFactory.setValid(true);
+        final String obj = genericObjectPool.borrowObject();
+        assertNotNull(obj);
+        genericObjectPool.addObject();
+        // Should have one idle, one out now
+        assertEquals(1, genericObjectPool.getNumIdle());
+        assertEquals(1, genericObjectPool.getNumActive());
+	}
+
     @Test(timeout = 60000)
     public void testWhenExhaustedBlock() throws Exception {
         genericObjectPool.setMaxTotal(1);
