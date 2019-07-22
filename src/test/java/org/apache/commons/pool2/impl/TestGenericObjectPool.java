@@ -2839,7 +2839,9 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         Assert.assertEquals(1, simpleFactory.validateCounter);
     }
 
-    // Pool-361
+    /**
+     * Tests POOL-361
+     */
     @Test
     public void testValidateOnCreate() throws Exception {
         genericObjectPool.setTestOnCreate(true);
@@ -2847,6 +2849,9 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         Assert.assertEquals(1, simpleFactory.validateCounter);
     }
 
+    /**
+     * Tests POOL-361
+     */
     @Test
     public void testValidateOnCreateFailure() throws Exception {
         genericObjectPool.setTestOnCreate(true);
