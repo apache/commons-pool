@@ -25,7 +25,8 @@ matrix:
         - oraclejdk8
         - oraclejdk11
     - os: linux-ppc64le
-      jdk:  openjdk8
+      jdk:
+        - openjdk8
   
 sudo: false
 
