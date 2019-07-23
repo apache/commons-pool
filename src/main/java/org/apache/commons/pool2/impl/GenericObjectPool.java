@@ -904,10 +904,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         final AbandonedConfig ac = this.abandonedConfig;
         if (ac != null && ac.getLogAbandoned()) {
             p.setLogAbandoned(true);
-            // TODO: in 3.0, this can use the method defined on PooledObject
-            if (p instanceof DefaultPooledObject<?>) {
-                ((DefaultPooledObject<T>) p).setRequireFullStackTrace(ac.getRequireFullStackTrace());
-            }
+            p.setRequireFullStackTrace(ac.getRequireFullStackTrace());
         }
 
         createdCount.incrementAndGet();
