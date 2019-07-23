@@ -66,7 +66,7 @@ limitations under the License.
     <subsection name="Using a Mirror">
       <p>
         We recommend you use a mirror to download our release
-        builds, but you <strong>must</strong> <a href="http://www.apache.org/info/verification.html">verify the integrity</a> of
+        builds, but you <strong>must</strong> <a href="https://www.apache.org/info/verification.html">verify the integrity</a> of
         the downloaded files using signatures downloaded from our main
         distribution directories. Recent releases (48 hours) may not yet
         be available from all the mirrors.
@@ -113,6 +113,36 @@ limitations under the License.
       </p>
     </subsection>
     </section>
+    <section name="Apache Commons Pool 2.7.0 (Java 8)">
+      <subsection name="Binaries">
+        <table>
+          <tr>
+              <td><a href="[preferred]/commons/pool/binaries/commons-pool2-2.7.0-bin.tar.gz">commons-pool2-2.7.0-bin.tar.gz</a></td>
+              <td><a href="https://www.apache.org/dist/commons/pool/binaries/commons-pool2-2.7.0-bin.tar.gz.sha512">sha512</a></td>
+              <td><a href="https://www.apache.org/dist/commons/pool/binaries/commons-pool2-2.7.0-bin.tar.gz.asc">pgp</a></td>
+          </tr>
+          <tr>
+              <td><a href="[preferred]/commons/pool/binaries/commons-pool2-2.7.0-bin.zip">commons-pool2-2.7.0-bin.zip</a></td>
+              <td><a href="https://www.apache.org/dist/commons/pool/binaries/commons-pool2-2.7.0-bin.zip.sha512">sha512</a></td>
+              <td><a href="https://www.apache.org/dist/commons/pool/binaries/commons-pool2-2.7.0-bin.zip.asc">pgp</a></td>
+          </tr>
+        </table>
+      </subsection>
+      <subsection name="Source">
+        <table>
+          <tr>
+              <td><a href="[preferred]/commons/pool/source/commons-pool2-2.7.0-src.tar.gz">commons-pool2-2.7.0-src.tar.gz</a></td>
+              <td><a href="https://www.apache.org/dist/commons/pool/source/commons-pool2-2.7.0-src.tar.gz.sha512">sha512</a></td>
+              <td><a href="https://www.apache.org/dist/commons/pool/source/commons-pool2-2.7.0-src.tar.gz.asc">pgp</a></td>
+          </tr>
+          <tr>
+              <td><a href="[preferred]/commons/pool/source/commons-pool2-2.7.0-src.zip">commons-pool2-2.7.0-src.zip</a></td>
+              <td><a href="https://www.apache.org/dist/commons/pool/source/commons-pool2-2.7.0-src.zip.sha512">sha512</a></td>
+              <td><a href="https://www.apache.org/dist/commons/pool/source/commons-pool2-2.7.0-src.zip.asc">pgp</a></td>
+          </tr>
+        </table>
+      </subsection>
+    </section>
     <section name="Apache Commons Pool 2.6.2 (Java 7)">
       <subsection name="Binaries">
         <table>
@@ -148,12 +178,12 @@ limitations under the License.
         <table>
           <tr>
               <td><a href="[preferred]/commons/pool/binaries/commons-pool2-2.4.3-bin.tar.gz">commons-pool2-2.4.3-bin.tar.gz</a></td>
-              <td><a href="https://www.apache.org/dist/commons/pool/binaries/commons-pool2-2.4.3-bin.tar.gz.sha256">sha256</a></td>
+              <td><a href="https://www.apache.org/dist/commons/pool/binaries/commons-pool2-2.4.3-bin.tar.gz.sha256">sha512</a></td>
               <td><a href="https://www.apache.org/dist/commons/pool/binaries/commons-pool2-2.4.3-bin.tar.gz.asc">pgp</a></td>
           </tr>
           <tr>
               <td><a href="[preferred]/commons/pool/binaries/commons-pool2-2.4.3-bin.zip">commons-pool2-2.4.3-bin.zip</a></td>
-              <td><a href="https://www.apache.org/dist/commons/pool/binaries/commons-pool2-2.4.3-bin.zip.sha256">sha256</a></td>
+              <td><a href="https://www.apache.org/dist/commons/pool/binaries/commons-pool2-2.4.3-bin.zip.sha256">sha512</a></td>
               <td><a href="https://www.apache.org/dist/commons/pool/binaries/commons-pool2-2.4.3-bin.zip.asc">pgp</a></td>
           </tr>
         </table>
@@ -162,12 +192,12 @@ limitations under the License.
         <table>
           <tr>
               <td><a href="[preferred]/commons/pool/source/commons-pool2-2.4.3-src.tar.gz">commons-pool2-2.4.3-src.tar.gz</a></td>
-              <td><a href="https://www.apache.org/dist/commons/pool/source/commons-pool2-2.4.3-src.tar.gz.sha256">sha256</a></td>
+              <td><a href="https://www.apache.org/dist/commons/pool/source/commons-pool2-2.4.3-src.tar.gz.sha256">sha512</a></td>
               <td><a href="https://www.apache.org/dist/commons/pool/source/commons-pool2-2.4.3-src.tar.gz.asc">pgp</a></td>
           </tr>
           <tr>
               <td><a href="[preferred]/commons/pool/source/commons-pool2-2.4.3-src.zip">commons-pool2-2.4.3-src.zip</a></td>
-              <td><a href="https://www.apache.org/dist/commons/pool/source/commons-pool2-2.4.3-src.zip.sha256">sha256</a></td>
+              <td><a href="https://www.apache.org/dist/commons/pool/source/commons-pool2-2.4.3-src.zip.sha256">sha512</a></td>
               <td><a href="https://www.apache.org/dist/commons/pool/source/commons-pool2-2.4.3-src.zip.asc">pgp</a></td>
           </tr>
         </table>
@@ -178,12 +208,12 @@ limitations under the License.
         <table>
           <tr>
               <td><a href="[preferred]/commons/pool/binaries/commons-pool-1.6-bin.tar.gz">commons-pool-1.6-bin.tar.gz</a></td>
-              <td><a href="https://www.apache.org/dist/commons/pool/binaries/commons-pool-1.6-bin.tar.gz.sha256">sha256</a></td>
+              <td><a href="https://www.apache.org/dist/commons/pool/binaries/commons-pool-1.6-bin.tar.gz.sha512">sha512</a></td>
               <td><a href="https://www.apache.org/dist/commons/pool/binaries/commons-pool-1.6-bin.tar.gz.asc">pgp</a></td>
           </tr>
           <tr>
               <td><a href="[preferred]/commons/pool/binaries/commons-pool-1.6-bin.zip">commons-pool-1.6-bin.zip</a></td>
-              <td><a href="https://www.apache.org/dist/commons/pool/binaries/commons-pool-1.6-bin.zip.sha256">sha256</a></td>
+              <td><a href="https://www.apache.org/dist/commons/pool/binaries/commons-pool-1.6-bin.zip.sha512">sha512</a></td>
               <td><a href="https://www.apache.org/dist/commons/pool/binaries/commons-pool-1.6-bin.zip.asc">pgp</a></td>
           </tr>
         </table>
@@ -192,12 +222,12 @@ limitations under the License.
         <table>
           <tr>
               <td><a href="[preferred]/commons/pool/source/commons-pool-1.6-src.tar.gz">commons-pool-1.6-src.tar.gz</a></td>
-              <td><a href="https://www.apache.org/dist/commons/pool/source/commons-pool-1.6-src.tar.gz.sha256">sha256</a></td>
+              <td><a href="https://www.apache.org/dist/commons/pool/source/commons-pool-1.6-src.tar.gz.sha512">sha512</a></td>
               <td><a href="https://www.apache.org/dist/commons/pool/source/commons-pool-1.6-src.tar.gz.asc">pgp</a></td>
           </tr>
           <tr>
               <td><a href="[preferred]/commons/pool/source/commons-pool-1.6-src.zip">commons-pool-1.6-src.zip</a></td>
-              <td><a href="https://www.apache.org/dist/commons/pool/source/commons-pool-1.6-src.zip.sha256">sha256</a></td>
+              <td><a href="https://www.apache.org/dist/commons/pool/source/commons-pool-1.6-src.zip.sha512">sha512</a></td>
               <td><a href="https://www.apache.org/dist/commons/pool/source/commons-pool-1.6-src.zip.asc">pgp</a></td>
           </tr>
         </table>
