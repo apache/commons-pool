@@ -1,3 +1,51 @@
+              Apache Commons Pool 2.7.0 RELEASE NOTES
+              23 July 2019
+
+The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.7.0.
+
+Apache Commons Pool provides an object-pooling API and a number of object pool implementations.
+Version 2 contains a completely re-written pooling implementation compared to the 1.x series.
+In addition to performance and scalability improvements, version 2 includes robust instance
+tracking and pool monitoring. Version 2 requires JDK level 1.6 or above. 
+
+No client code changes are required to migrate from versions 2.0-2.3 to version 2.4.3.
+Users of version 1.x should consult the migration guide on the Commons Pool web site.
+
+NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPoolMXBean
+      and GenericKeyedObjectPoolMXBean) exist only to define the attributes and methods
+      that will be made available via JMX. They must not be implemented by clients as
+      they are subject to change between major, minor and patch version releases of
+      Commons Pool. Clients that implement any of these interfaces may not, therefore,
+      be able to upgrade to a new minor or patch release without requiring code
+      changes.
+
+This is a feature release (Java 8).
+
+Changes in version 2.7.0 include:
+
+New features:
+o POOL-370:  Add org.apache.commons.pool2.PooledObject#getBorrowedCount(). Thanks to Mark Thomas, Gary Gregory.
+o POOL-371:  Add org.apache.commons.pool2.PooledObject#setRequireFullStackTrace(boolean). Thanks to Matt Sicker, Gary Gregory.
+
+Fixed Bugs:
+o POOL-361:  Move validation for newly created objects into create(). Fixes #23. Thanks to Pablo, Phil Steitz, Bruno P. Kinoshita.
+
+Changes:
+o POOL-364:  Update from Java 7 to Java 8. Thanks to Gary Gregory.
+o POOL-365:  Update ASM from 7.0 to 7.1 Thanks to Gary Gregory.
+o POOL-366:  Update optional library cglib from 3.2.10 to 3.2.12. Thanks to Gary Gregory.
+o POOL-367:  Fix typo in package private method name stopEvitor() -> stopEvictor() #22. Thanks to Per Lundberg.
+
+
+For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Apache Commons Pool website:
+
+https://commons.apache.org/proper/commons-pool/
+
+Download page: https://commons.apache.org/proper/commons-pool/download_pool.cgi
+
+-----------------------------------------------------------------------------------------------
+
               Apache Commons Pool 2.6.2 RELEASE NOTES
 
 The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.6.2.
