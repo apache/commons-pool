@@ -57,6 +57,16 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     long getActiveTimeMillis();
 
     /**
+     * Gets the number of times this object has been borrowed.
+     * 
+     * @return -1 by default for old implementations prior to release 2.7.0.
+     * @since 2.7.0
+     */
+    default long getBorrowedCount() {
+        return -1;
+    }
+
+    /**
      * Obtains the time in milliseconds that this object last spend in the
      * idle state (it may still be idle in which case subsequent calls will
      * return an increased value).
@@ -211,10 +221,4 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      */
     void markReturning();
 
-    // TODO: Uncomment this for version 3 (can't add it to 2.x as it will break
-    //       API compatibility)
-    ///**
-    // * Get the number of times this object has been borrowed.
-    // */
-    //long getBorrowedCount();
 }

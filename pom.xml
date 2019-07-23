@@ -186,7 +186,7 @@
     <commons.releaseManagerName>Gary Gregory</commons.releaseManagerName>    
     <commons.releaseManagerKey>86fdc7e2a11262cb</commons.releaseManagerKey>
     
-    <commons.japicmp.version>0.14.0</commons.japicmp.version>
+    <commons.japicmp.version>0.14.1</commons.japicmp.version>
     <japicmp.skip>false</japicmp.skip>
   </properties> 
 
@@ -269,6 +269,22 @@
             </ignorePathsToDelete>
           </configuration>
         </plugin>
+      <plugin>
+        <groupId>com.github.siom79.japicmp</groupId>
+        <artifactId>japicmp-maven-plugin</artifactId>
+        <configuration>
+          <parameter>
+            <overrideCompatibilityChangeParameters>
+              <overrideCompatibilityChangeParameter>
+                <compatibilityChange>METHOD_NEW_DEFAULT</compatibilityChange>
+                <binaryCompatible>true</binaryCompatible>
+                <sourceCompatible>true</sourceCompatible>
+                <semanticVersionLevel>PATCH</semanticVersionLevel>
+              </overrideCompatibilityChangeParameter>
+            </overrideCompatibilityChangeParameters>
+          </parameter>
+        </configuration>
+      </plugin>    
       </plugins>
     </build>
 
@@ -327,20 +343,19 @@
         <plugin>
           <groupId>com.github.siom79.japicmp</groupId>
           <artifactId>japicmp-maven-plugin</artifactId>
-          <version>${commons.japicmp.version}</version>
           <configuration>
             <parameter>
-              <ignoreMissingClasses>true</ignoreMissingClasses>
+              <overrideCompatibilityChangeParameters>
+                <overrideCompatibilityChangeParameter>
+                  <compatibilityChange>METHOD_NEW_DEFAULT</compatibilityChange>
+                  <binaryCompatible>true</binaryCompatible>
+                  <sourceCompatible>true</sourceCompatible>
+                  <semanticVersionLevel>PATCH</semanticVersionLevel>
+                </overrideCompatibilityChangeParameter>
+              </overrideCompatibilityChangeParameters>
             </parameter>
           </configuration>
-          <reportSets>
-            <reportSet>
-              <reports>
-               <report>cmp-report</report>
-              </reports>
-            </reportSet>
-          </reportSets>
-        </plugin>        
+        </plugin>    
         <plugin>
           <artifactId>maven-pmd-plugin</artifactId>
           <version>3.12.0</version>

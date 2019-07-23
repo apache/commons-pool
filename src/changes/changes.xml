@@ -59,6 +59,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" issue="POOL-361" type="fix" due-to="Pablo, Phil Steitz, Bruno P. Kinoshita">
       Move validation for newly created objects into create(). Fixes #23.
     </action>
+    <action dev="ggregory" type="add" issue="POOL-370" due-to="Gary Gregory">
+      Add org.apache.commons.pool2.PooledObject#getBorrowedCount().
+    </action>
   </release>
   <release version="2.6.2" date="2019-03-05" description="This is a maintenance release (Java 7).">
     <action dev="ggregory" issue="POOL-362" type="fix">
