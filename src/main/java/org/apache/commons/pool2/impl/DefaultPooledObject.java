@@ -286,8 +286,7 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
      *                              logging
      * @since 2.5
      */
-    // TODO: uncomment below in 3.0
-    // @Override
+    @Override
     public void setRequireFullStackTrace(final boolean requireFullStackTrace) {
         borrowedBy = CallStackUtils.newCallStack("'Pooled object created' " +
             "yyyy-MM-dd HH:mm:ss Z 'by the following code has not been returned to the pool:'",
