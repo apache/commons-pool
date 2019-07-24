@@ -520,8 +520,8 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
 
     /**
      * Whether there is at least one thread waiting on this deque, add an pool object.
-     * @param key
-     * @param idleObjects
+     * @param key pool key.
+     * @param idleObjects list of idle pool objects.
      */
     private void whenWaitersAddObject(final K key, final LinkedBlockingDeque<PooledObject<T>> idleObjects) {
         if (idleObjects.hasTakeWaiters()) {
