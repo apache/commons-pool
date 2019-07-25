@@ -65,7 +65,7 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="add" issue="POOL-371" due-to="Matt Sicker, Gary Gregory">
       Add org.apache.commons.pool2.PooledObject#setRequireFullStackTrace(boolean).
     </action>
-    <action dev="ggregory" type="add" issue="POOL-352" due-to=" Volker Kleinschmidt">
+    <action dev="ggregory" type="fix" issue="POOL-352" due-to=" Volker Kleinschmidt">
       CallStackUtils mishandles security manager check part 1.
     </action>
   </release>
