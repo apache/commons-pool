@@ -23,9 +23,9 @@ matrix:
     - os: linux
       jdk: openjdk12
     - os: linux
-      jdk: openjdk-ea
+      jdk: openjdk13
     - os: linux
-      jdk: oraclejdk8
+      jdk: openjdk-ea
     - os: linux
       jdk: oraclejdk11
     - os: linux-ppc64le
