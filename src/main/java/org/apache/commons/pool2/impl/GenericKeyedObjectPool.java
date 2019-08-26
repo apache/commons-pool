@@ -447,6 +447,11 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
 
         final ObjectDeque<T> objectDeque = poolMap.get(key);
 
+        if (objectDeque == null) {
+            throw new IllegalStateException(
+                    "Returned object not currently part of this pool");
+        }
+
         final PooledObject<T> p = objectDeque.getAllObjects().get(new IdentityWrapper<>(obj));
 
         if (p == null) {

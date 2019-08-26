@@ -43,7 +43,12 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Pool Release Notes</title>
   </properties>
   <body>
-  <release version="2.7.0" date="2019-MM-DD" description="This is a feature release (Java 8).">
+  <release version="2.7.1" date="2019-MM-DD" description="This is a maintenance release (Java 8).">
+    <action dev="ggregory" issue="POOL-374" type="fix" due-to="Gary Gregory, Phil Steitz">
+       org.apache.commons.pool2.impl.GenericKeyedObjectPool.returnObject(K, T) should throw IllegalStateException instead of NullPointerException when a key is not found in the pool map.
+    </action>
+  </release>
+  <release version="2.7.0" date="2019-07-25" description="This is a feature release (Java 8).">
     <action dev="ggregory" issue="POOL-364" type="update" due-to="Gary Gregory">
        Update from Java 7 to Java 8.
     </action>

@@ -195,6 +195,13 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         assertEquals(2,gkoPool.getNumIdle("B"));
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void testReturnObjectThrowsIllegalStateException() {
+        try (final GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<>(new SimpleFactory<String>())) {
+            pool.returnObject("Foo", "Bar");
+        }
+    }
+
     @Test(timeout=60000)
     public void testMaxIdle() throws Exception {
         gkoPool.setMaxTotalPerKey(100);
@@ -1069,7 +1076,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         final int numThreads = 40;
         final int maxTotal = 40;
 
-        final GenericKeyedObjectPoolConfig config = new GenericKeyedObjectPoolConfig();
+        final GenericKeyedObjectPoolConfig<String> config = new GenericKeyedObjectPoolConfig<String>();
         config.setMaxTotalPerKey(maxTotal);
         config.setFairness(true);
         config.setLifo(false);
@@ -1086,7 +1093,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         // Start and park threads waiting to borrow objects
         final TestThread[] threads = new TestThread[numThreads];
         for(int i=0;i<numThreads;i++) {
-            threads[i] = new TestThread(gkoPool, 1, 0, 2000, false, "0" + String.valueOf(i % maxTotal), "0");
+            threads[i] = new TestThread<String>(gkoPool, 1, 0, 2000, false, "0" + String.valueOf(i % maxTotal), "0");
             final Thread t = new Thread(threads[i]);
             t.start();
             // Short delay to ensure threads start in correct order
@@ -2371,6 +2378,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             return new DefaultPooledObject<>(value);
         }
     }
+    
 }
 
 
