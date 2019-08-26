@@ -85,7 +85,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * {@link GenericKeyedObjectPoolConfig}.
      * @param factory the factory to be used to create entries
      */
-    public GenericKeyedObjectPool(final KeyedPooledObjectFactory<K,T> factory) {
+    public GenericKeyedObjectPool(final KeyedPooledObjectFactory<K, T> factory) {
         this(factory, new GenericKeyedObjectPoolConfig<T>());
     }
 
@@ -1545,7 +1545,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
             GenericKeyedObjectPoolConfig.DEFAULT_MIN_IDLE_PER_KEY;
     private volatile int maxTotalPerKey =
             GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL_PER_KEY;
-    private final KeyedPooledObjectFactory<K,T> factory;
+    private final KeyedPooledObjectFactory<K, T> factory;
     private final boolean fairness;
 
 
@@ -1556,7 +1556,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * in step with {@link #poolKeyList} using {@link #keyLock} to ensure any
      * changes to the list of current keys is made in a thread-safe manner.
      */
-    private final Map<K,ObjectDeque<T>> poolMap =
+    private final Map<K, ObjectDeque<T>> poolMap =
             new ConcurrentHashMap<>(); // @GuardedBy("keyLock") for write access (and some read access)
     /*
      * List of pool keys - used to control eviction order. The list of keys
