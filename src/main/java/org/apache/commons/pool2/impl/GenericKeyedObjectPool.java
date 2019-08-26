@@ -1162,7 +1162,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         Lock lock = keyLock.readLock();
         try {
             lock.lock();
-            ObjectDeque<T> objectDeque = poolMap.get(k);
+            final ObjectDeque<T> objectDeque = poolMap.get(k);
             final long numInterested = objectDeque.getNumInterested().decrementAndGet();
             if (numInterested == 0 && objectDeque.getCreateCount().get() == 0) {
                 // Potential to remove key
