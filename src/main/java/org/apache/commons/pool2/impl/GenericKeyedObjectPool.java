@@ -51,10 +51,12 @@ import org.apache.commons.pool2.SwallowedExceptionListener;
  * {@link #borrowObject borrowObject} methods. Each time a new key value is
  * provided to one of these methods, a sub-new pool is created under the given
  * key to be managed by the containing <code>GenericKeyedObjectPool.</code>
+ * </p>
  * <p>
  * Note that the current implementation uses a ConcurrentHashMap which uses
  * equals() to compare keys.
  * This means that distinct instance keys must be distinguishable using equals.
+ * </p>
  * <p>
  * Optionally, one may configure the pool to examine and possibly evict objects
  * as they sit idle in the pool and to ensure that a minimum number of idle
@@ -63,12 +65,15 @@ import org.apache.commons.pool2.SwallowedExceptionListener;
  * configuring this optional feature. Eviction runs contend with client threads
  * for access to objects in the pool, so if they run too frequently performance
  * issues may result.
+ * </p>
  * <p>
  * Implementation note: To prevent possible deadlocks, care has been taken to
  * ensure that no call to a factory method will occur within a synchronization
  * block. See POOL-125 and DBCP-44 for more information.
+ * </p>
  * <p>
  * This class is intended to be thread-safe.
+ * </p>
  *
  * @see GenericObjectPool
  *

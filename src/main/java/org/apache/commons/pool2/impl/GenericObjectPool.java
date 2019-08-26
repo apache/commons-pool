@@ -40,7 +40,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * <p>
  * When coupled with the appropriate {@link PooledObjectFactory},
  * <code>GenericObjectPool</code> provides robust pooling functionality for
- * arbitrary objects.</p>
+ * arbitrary objects.
+ * </p>
  * <p>
  * Optionally, one may configure the pool to examine and possibly evict objects
  * as they sit idle in the pool and to ensure that a minimum number of idle
@@ -48,7 +49,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * which runs asynchronously. Caution should be used when configuring this
  * optional feature. Eviction runs contend with client threads for access to
  * objects in the pool, so if they run too frequently performance issues may
- * result.</p>
+ * result.
+ * </p>
  * <p>
  * The pool can also be configured to detect and remove "abandoned" objects,
  * i.e. objects that have been checked out of the pool but neither used nor
@@ -60,13 +62,16 @@ import java.util.concurrent.atomic.AtomicLong;
  * implement the {@link TrackedUse} interface, their last use will be queried
  * using the <code>getLastUsed</code> method on that interface; otherwise
  * abandonment is determined by how long an object has been checked out from
- * the pool.</p>
+ * the pool.
+ * </p>
  * <p>
  * Implementation note: To prevent possible deadlocks, care has been taken to
  * ensure that no call to a factory method will occur within a synchronization
- * block. See POOL-125 and DBCP-44 for more information.</p>
+ * block. See POOL-125 and DBCP-44 for more information.
+ * </p>
  * <p>
- * This class is intended to be thread-safe.</p>
+ * This class is intended to be thread-safe.
+ * </p>
  *
  * @see GenericKeyedObjectPool
  *

@@ -32,6 +32,7 @@ import org.apache.commons.pool2.PooledObjectFactory;
  * A {@link java.lang.ref.SoftReference SoftReference} based {@link ObjectPool}.
  * <p>
  * This class is intended to be thread-safe.
+ * </p>
  *
  * @param <T>
  *            Type of element pooled in this pool.

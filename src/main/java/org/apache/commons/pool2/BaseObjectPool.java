@@ -22,6 +22,7 @@ package org.apache.commons.pool2;
  * indicating it is unsupported or throw {@link UnsupportedOperationException}.
  * <p>
  * This class is intended to be thread-safe.
+ * </p>
  *
  * @param <T> Type of element pooled in this pool.
  *
