@@ -942,7 +942,9 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             // (e.g. idleObjects.takeFirst(); then we need to provide them a fresh instance.
             // Otherwise they will be stuck forever (or until timeout)
             final PooledObject<T> freshPooled = create();
-            idleObjects.put(freshPooled);
+            if (freshPooled != null) {
+                idleObjects.put(freshPooled);
+            }
         }
     }
 
