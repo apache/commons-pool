@@ -2126,6 +2126,27 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
     }
 
+    /**
+     * POOL-376
+     */
+    @Test(timeout = 60000)
+    public void testNoInvalidateNPE() throws Exception {
+        genericObjectPool.setMaxTotal(1);
+        genericObjectPool.setTestOnCreate(true);
+        genericObjectPool.setMaxWaitMillis(-1);
+        String obj = genericObjectPool.borrowObject();
+        // Make validation fail - this will cause create() to return null
+        simpleFactory.setValid(false);
+        // Create a take waiter
+        final WaitingTestThread wtt = new WaitingTestThread(genericObjectPool, 200);
+        wtt.start();
+        // Give wtt time to start
+        Thread.sleep(200);
+        genericObjectPool.invalidateObject(obj);
+        // Now allow create to succeed so waiter can be served
+        simpleFactory.setValid(true);
+    }
+
     @Test(timeout = 60000)
     public void testMaxTotal() throws Exception {
         genericObjectPool.setMaxTotal(3);
