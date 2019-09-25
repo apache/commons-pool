@@ -581,6 +581,11 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             } catch (final Exception e) {
                 swallowException(e);
             }
+            try {
+                ensureIdle(1, false);
+            } catch (final Exception e) {
+                swallowException(e);
+            }
         } else {
             if (getLifo()) {
                 idleObjects.addFirst(p);
@@ -934,15 +939,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         } finally {
             destroyedCount.incrementAndGet();
             createCount.decrementAndGet();
-        }
-
-        if (idleObjects.isEmpty() && idleObjects.hasTakeWaiters()) {
-            // POOL-356.
-            // In case there are already threads waiting on something in the pool
-            // (e.g. idleObjects.takeFirst(); then we need to provide them a fresh instance.
-            // Otherwise they will be stuck forever (or until timeout)
-            final PooledObject<T> freshPooled = create();
-            idleObjects.put(freshPooled);
         }
     }
 
