@@ -59,6 +59,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="update" due-to="Gary Gregory">
       Update site build from Apache Commons BCEL 6.3.1 to 6.4.1.
     </action>
+    <action dev="ggregory" issue="POOL-377" type="update" due-to="Gary Gregory">
+      Update optional library org.ow2.asm:asm-utilfrom 7.1 to 7.2
+    </action>
   </release>
   <release version="2.7.0" date="2019-07-25" description="This is a feature release (Java 8).">
     <action dev="ggregory" issue="POOL-364" type="update" due-to="Gary Gregory">
