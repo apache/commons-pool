@@ -56,6 +56,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="psteitz" issue="POOL-326" type="fix" due-to="Phil Steitz">
       Eliminated NPE / ISE exceptions due to keyed pools being prematurely removed.
     </action>
+    <action dev="ggregory" type="update" due-to="Gary Gregory">
+      Update site build from Apache Commons BCEL 6.3.1 to 6.4.1.
+    </action>
   </release>
   <release version="2.7.0" date="2019-07-25" description="This is a feature release (Java 8).">
     <action dev="ggregory" issue="POOL-364" type="update" due-to="Gary Gregory">
