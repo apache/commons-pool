@@ -1086,8 +1086,13 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         final ObjectDeque<T> objectDeque = register(key);
 
         try {
-            final boolean isIdle = objectDeque.getIdleObjects().remove(toDestroy);
-
+            // Check idle state directly
+            boolean isIdle = toDestroy.getState().equals(PooledObjectState.IDLE);
+            // If idle, not under eviction test, or always is true, remove instance,
+            // updating isIdle if instance is found in idle objects
+            if (isIdle || always) {
+                isIdle = objectDeque.getIdleObjects().remove(toDestroy);
+            }
             if (isIdle || always) {
                 objectDeque.getAllObjects().remove(new IdentityWrapper<>(toDestroy.getObject()));
                 toDestroy.invalidate();
@@ -1170,8 +1175,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
                 lock.unlock();
                 lock = keyLock.writeLock();
                 lock.lock();
-                if (objectDeque.getCreateCount().get() == 0 && objectDeque.getNumInterested().get() == 0
-                        && objectDeque.allObjects.isEmpty()) {
+                if (objectDeque.getCreateCount().get() == 0 && objectDeque.getNumInterested().get() == 0) {
                     // NOTE: Keys must always be removed from both poolMap and
                     //       poolKeyList at the same time while protected by
                     //       keyLock.writeLock()

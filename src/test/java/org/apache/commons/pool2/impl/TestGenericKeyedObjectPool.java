@@ -2312,6 +2312,67 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         assertEquals(1, gkoPool.getNumActive());
     }
 
+    // POOL-326
+    @Test
+    public void testEvictorClearOldestRace() throws Exception {
+        gkoPool.setMinEvictableIdleTimeMillis(100);
+        gkoPool.setNumTestsPerEvictionRun(1);
+
+        // Introduce latency between when evictor starts looking at an instance and when
+        // it decides to destroy it
+        gkoPool.setEvictionPolicy(new SlowEvictionPolicy<String>(1000));
+
+        // Borrow an instance
+        String val = gkoPool.borrowObject("foo");
+
+        // Add another idle one
+        gkoPool.addObject("foo");
+
+        // Sleep long enough so idle one is eligible for eviction
+        Thread.sleep(1000);
+
+        // Start evictor and race with clearOldest
+        gkoPool.setTimeBetweenEvictionRunsMillis(10);
+
+        // Wait for evictor to start
+        Thread.sleep(100);
+        gkoPool.clearOldest();
+
+        // Wait for slow evictor to complete
+        Thread.sleep(1500);
+
+        // See if we get NPE on return (POOL-326)
+        gkoPool.returnObject("foo", val);
+    }
+
+
+    /*
+     * DefaultEvictionPolicy modified to add latency
+     */
+    private static class SlowEvictionPolicy<T> extends DefaultEvictionPolicy<T> {
+        private final long delay;
+
+        /**
+         * Create SlowEvictionPolicy with the given delay in ms
+         *
+         * @param delay number of ms of latency to inject in evict
+         */
+        public SlowEvictionPolicy(long delay) {
+            super();
+            this.delay = delay;
+        }
+
+        @Override
+        public boolean evict(final EvictionConfig config, final PooledObject<T> underTest,
+                final int idleCount) {
+            try {
+                Thread.sleep(delay);
+            } catch (InterruptedException e) {
+                // ignore
+            }
+            return super.evict(config, underTest, idleCount);
+        }
+    }
 
     private static class DummyFactory
             extends BaseKeyedPooledObjectFactory<Object,Object> {
@@ -2378,7 +2439,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             return new DefaultPooledObject<>(value);
         }
     }
-    
+
 }
 
 
