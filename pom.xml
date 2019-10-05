@@ -135,7 +135,7 @@
     <dependency>
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm-util</artifactId>
-      <version>7.1</version>
+      <version>7.2</version>
       <optional>true</optional>
     </dependency>
     
@@ -213,7 +213,7 @@
               <dependency>
                 <groupId>org.apache.bcel</groupId>
                 <artifactId>bcel</artifactId>
-                <version>6.3.1</version>
+                <version>6.4.1</version>
               </dependency>
             </dependencies>
           </plugin>
