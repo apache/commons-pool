@@ -59,7 +59,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
 
     /**
      * Gets the number of times this object has been borrowed.
-     * 
+     *
      * @return -1 by default for old implementations prior to release 2.7.0.
      * @since 2.7.0
      */

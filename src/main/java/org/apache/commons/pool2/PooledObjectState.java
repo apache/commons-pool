@@ -22,7 +22,7 @@ package org.apache.commons.pool2;
  * @since 2.0
  */
 public enum PooledObjectState {
-    
+
     /**
      * In the queue, not in use.
      */
