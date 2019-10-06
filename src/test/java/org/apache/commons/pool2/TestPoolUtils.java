@@ -558,13 +558,7 @@ public class TestPoolUtils {
     @Test
     public void testErodingObjectPoolDefaultFactor() {
         try (@SuppressWarnings("unchecked")
-            final ObjectPool<Object> internalPool = createProxy(ObjectPool.class, new InvocationHandler() {
-
-            @Override
-            public Object invoke(final Object arg0, final Method arg1, final Object[] arg2) throws Throwable {
-                return null;
-            }
-        })) {
+            final ObjectPool<Object> internalPool = createProxy(ObjectPool.class, (arg0, arg1, arg2) -> null)) {
             final ObjectPool<Object> pool = PoolUtils.erodingPool(internalPool);
             final String expectedToString = "ErodingObjectPool{factor=ErodingFactor{factor=1.0, idleHighWaterMark=1}, pool="
                     + internalPool + "}";
@@ -686,12 +680,7 @@ public class TestPoolUtils {
     public void testErodingPoolKeyedObjectPoolDefaultFactor() {
         try (@SuppressWarnings("unchecked")
         final KeyedObjectPool<Object, Object> internalPool = createProxy(KeyedObjectPool.class,
-                new InvocationHandler() {
-                    @Override
-                    public Object invoke(final Object arg0, final Method arg1, final Object[] arg2) throws Throwable {
-                        return null;
-                    }
-                })) {
+                (arg0, arg1, arg2) -> null)) {
             final KeyedObjectPool<Object, Object> pool = PoolUtils.erodingPool(internalPool);
             final String expectedToString = "ErodingKeyedObjectPool{factor=ErodingFactor{factor=1.0, idleHighWaterMark=1}, keyedPool="
                     + internalPool + "}";

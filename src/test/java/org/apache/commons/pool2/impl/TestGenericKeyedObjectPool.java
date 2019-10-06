@@ -35,7 +35,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -2004,23 +2003,19 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             // Cause a thread to block waiting for an object
             final ExecutorService executorService = Executors.newSingleThreadExecutor(new DaemonThreadFactory());
             final Semaphore signal = new Semaphore(0);
-            final Future<Exception> result = executorService.submit(new Callable<Exception>() {
-
-                @Override
-                public Exception call() {
-                    try {
-                        signal.release();
-                        final Object object3 = pool.borrowObject(Integer.valueOf(1));
-                        pool.returnObject(Integer.valueOf(1), object3);
-                        signal.release();
-                    } catch (final Exception e) {
-                        return e;
-                    } catch (final Throwable e) {
-                        return new Exception(e);
-                    }
-
-                    return null;
+            final Future<Exception> result = executorService.submit(() -> {
+                try {
+                    signal.release();
+                    final Object object3 = pool.borrowObject(Integer.valueOf(1));
+                    pool.returnObject(Integer.valueOf(1), object3);
+                    signal.release();
+                } catch (final Exception e1) {
+                    return e1;
+                } catch (final Throwable e2) {
+                    return new Exception(e2);
                 }
+
+                return null;
             });
 
             // Wait for the thread to start

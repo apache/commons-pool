@@ -2748,14 +2748,11 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         /*
          * A simple listener, that will throw a OOM on 3rd exception.
          */
-        final SwallowedExceptionListener listener = new SwallowedExceptionListener() {
-            @Override
-            public void onSwallowException(final Exception e) {
-                if (swallowedExceptions.size() == 2) {
-                    throw new OutOfMemoryError();
-                }
-                swallowedExceptions.add(e);
+        final SwallowedExceptionListener listener = e -> {
+            if (swallowedExceptions.size() == 2) {
+                throw new OutOfMemoryError();
             }
+            swallowedExceptions.add(e);
         };
         genericObjectPool.setSwallowedExceptionListener(listener);
 
