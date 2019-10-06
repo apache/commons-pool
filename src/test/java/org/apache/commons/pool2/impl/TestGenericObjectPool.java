@@ -2134,7 +2134,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         genericObjectPool.setMaxTotal(1);
         genericObjectPool.setTestOnCreate(true);
         genericObjectPool.setMaxWaitMillis(-1);
-        String obj = genericObjectPool.borrowObject();
+        final String obj = genericObjectPool.borrowObject();
         // Make validation fail - this will cause create() to return null
         simpleFactory.setValid(false);
         // Create a take waiter

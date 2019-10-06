@@ -2318,7 +2318,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         gkoPool.setEvictionPolicy(new SlowEvictionPolicy<String>(1000));
 
         // Borrow an instance
-        String val = gkoPool.borrowObject("foo");
+        final String val = gkoPool.borrowObject("foo");
 
         // Add another idle one
         gkoPool.addObject("foo");
@@ -2352,7 +2352,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
          *
          * @param delay number of ms of latency to inject in evict
          */
-        public SlowEvictionPolicy(long delay) {
+        public SlowEvictionPolicy(final long delay) {
             super();
             this.delay = delay;
         }
@@ -2362,7 +2362,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                 final int idleCount) {
             try {
                 Thread.sleep(delay);
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 // ignore
             }
             return super.evict(config, underTest, idleCount);
