@@ -1086,12 +1086,15 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         final ObjectDeque<T> objectDeque = register(key);
 
         try {
-            // Check idle state directly
-            boolean isIdle = toDestroy.getState().equals(PooledObjectState.IDLE);
-            // If idle, not under eviction test, or always is true, remove instance,
-            // updating isIdle if instance is found in idle objects
-            if (isIdle || always) {
-                isIdle = objectDeque.getIdleObjects().remove(toDestroy);
+            boolean isIdle;
+            synchronized(toDestroy) {
+                // Check idle state directly
+                isIdle = toDestroy.getState().equals(PooledObjectState.IDLE);
+                // If idle, not under eviction test, or always is true, remove instance,
+                // updating isIdle if instance is found in idle objects
+                if (isIdle || always) {
+                    isIdle = objectDeque.getIdleObjects().remove(toDestroy);
+                }
             }
             if (isIdle || always) {
                 objectDeque.getAllObjects().remove(new IdentityWrapper<>(toDestroy.getObject()));
