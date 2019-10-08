@@ -76,7 +76,7 @@ public interface ObjectPool<T> extends Closeable {
             UnsupportedOperationException;
 
     /**
-     * Calls {@link ObjectPool#addObject()} on <code>pool</code> <code>count</code>
+     * Calls {@link ObjectPool#addObject()} <code>count</code>
      * number of times.
      *
      * @param count

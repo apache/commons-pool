@@ -292,6 +292,7 @@ public class TestPoolUtils {
         }
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testPrefillObjectPool() throws Exception {
         try {
@@ -316,6 +317,7 @@ public class TestPoolUtils {
         }
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testPrefillKeyedObjectPool() throws Exception {
         try {
@@ -324,8 +326,8 @@ public class TestPoolUtils {
         } catch (final IllegalArgumentException iae) {
             // expected
         }
-        try (@SuppressWarnings("unchecked")
-        final KeyedObjectPool<Object, String> pool = new GenericKeyedObjectPool<>(new TestGenericKeyedObjectPool.SimpleFactory<>())) {
+        try (final KeyedObjectPool<Object, String> pool = new GenericKeyedObjectPool<>(
+                new TestGenericKeyedObjectPool.SimpleFactory<>())) {
             PoolUtils.prefill(pool, (Object) null, 1);
             fail("PoolUtils.prefill(KeyedObjectPool,Object,int) must not accept null key.");
         } catch (final IllegalArgumentException iae) {
@@ -347,6 +349,7 @@ public class TestPoolUtils {
         }
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testPrefillKeyedObjectPoolCollection() throws Exception {
         try (@SuppressWarnings("unchecked")
@@ -364,6 +367,7 @@ public class TestPoolUtils {
             final Set<String> keys = new HashSet<>();
             PoolUtils.prefill(pool, keys, 0);
             final List<String> expectedMethods = new ArrayList<>();
+            expectedMethods.add("addObjects");
             assertEquals(expectedMethods, calledMethods);
 
             calledMethods.clear();
@@ -372,9 +376,6 @@ public class TestPoolUtils {
             keys.add("three");
             final int count = 3;
             PoolUtils.prefill(pool, keys, count);
-            for (int i = 0; i < count; i++) {
-                expectedMethods.add("addObjects");
-            }
             assertEquals(expectedMethods, calledMethods);
         }
     }

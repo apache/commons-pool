@@ -40,7 +40,7 @@ public final class PoolUtils {
     private static final String MSG_MIN_IDLE = "minIdle must be non-negative.";
     static final String MSG_NULL_KEY = "key must not be null.";
     private static final String MSG_NULL_KEYED_POOL = "keyedPool must not be null.";
-    private static final String MSG_NULL_KEYS = "keys must not be null.";
+    static final String MSG_NULL_KEYS = "keys must not be null.";
     private static final String MSG_NULL_POOL = "pool must not be null.";
 
     /**
@@ -280,17 +280,16 @@ public final class PoolUtils {
      *             when <code>keyedPool</code>, <code>keys</code>, or any value
      *             in <code>keys</code> is <code>null</code>.
      * @see #prefill(KeyedObjectPool, Object, int)
+     * @deprecated Use {@link KeyedObjectPool#addObjects(Collection, int)}.
      */
+    @Deprecated
     public static <K, V> void prefill(final KeyedObjectPool<K, V> keyedPool,
             final Collection<K> keys, final int count) throws Exception,
             IllegalArgumentException {
         if (keys == null) {
             throw new IllegalArgumentException(MSG_NULL_KEYS);
         }
-        final Iterator<K> iter = keys.iterator();
-        while (iter.hasNext()) {
-            keyedPool.addObjects(iter.next(), count);
-        }
+        keyedPool.addObjects(keys, count);
     }
 
     /**

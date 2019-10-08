@@ -17,6 +17,8 @@
 package org.apache.commons.pool2;
 
 import java.io.Closeable;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
@@ -86,7 +88,34 @@ public interface KeyedObjectPool<K, V> extends Closeable {
             UnsupportedOperationException;
 
     /**
-     * Calls {@link KeyedObjectPool#addObject(Object)} on <code>keyedPool</code> with
+     * Calls {@link KeyedObjectPool#addObject(Object)} with each
+     * key in <code>keys</code> for <code>count</code> number of times. This has
+     * the same effect as calling {@link #addObjects(Object, int)}
+     * for each key in the <code>keys</code> collection.
+     *
+     * @param keys
+     *            {@link Collection} of keys to add objects for.
+     * @param count
+     *            the number of idle objects to add for each <code>key</code>.
+     * @throws Exception
+     *             when {@link KeyedObjectPool#addObject(Object)} fails.
+     * @throws IllegalArgumentException
+     *             when <code>keyedPool</code>, <code>keys</code>, or any value
+     *             in <code>keys</code> is <code>null</code>.
+     * @see #addObjects(Object, int)
+     */
+    default void addObjects(final Collection<K> keys, final int count) throws Exception, IllegalArgumentException {
+        if (keys == null) {
+            throw new IllegalArgumentException(PoolUtils.MSG_NULL_KEYS);
+        }
+        final Iterator<K> iter = keys.iterator();
+        while (iter.hasNext()) {
+            addObjects(iter.next(), count);
+        }
+    }
+
+    /**
+     * Calls {@link KeyedObjectPool#addObject(Object)}
      * <code>key</code> <code>count</code> number of times.
      *
      * @param key
