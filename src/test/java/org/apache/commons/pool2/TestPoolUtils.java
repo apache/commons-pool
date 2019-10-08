@@ -46,7 +46,7 @@ import junit.framework.AssertionFailedError;
 
 /**
  * Unit tests for {@link PoolUtils}.
- * 
+ *
  * TODO Replace our own mocking with a mocking library like Mockito.
  */
 public class TestPoolUtils {

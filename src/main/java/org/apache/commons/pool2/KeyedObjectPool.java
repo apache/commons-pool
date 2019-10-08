@@ -66,7 +66,7 @@ import java.util.NoSuchElementException;
  * @since 2.0
  */
 public interface KeyedObjectPool<K, V> extends Closeable {
-    
+
     /**
      * Create an object using the {@link KeyedPooledObjectFactory factory} or
      * other implementation dependent mechanism, passivate it, and then place it
@@ -107,7 +107,7 @@ public interface KeyedObjectPool<K, V> extends Closeable {
             addObject(key);
         }
     }
-    
+
     /**
      * Obtains an instance from this pool for the specified <code>key</code>.
      * <p>
