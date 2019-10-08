@@ -365,13 +365,13 @@ public abstract class TestObjectPool {
         final List<MethodCall> expectedMethods = new ArrayList<>();
 
         /// Test correct behavior code paths
-        PoolUtils.prefill(pool, 5);
+        pool.addObjects(5);
         pool.clear();
 
         //// Test exception handling clear should swallow destroy object failures
         reset(pool, factory, expectedMethods);
         factory.setDestroyObjectFail(true);
-        PoolUtils.prefill(pool, 5);
+        pool.addObjects(5);
         pool.clear();
         pool.close();
     }
@@ -388,7 +388,7 @@ public abstract class TestObjectPool {
         final List<MethodCall> expectedMethods = new ArrayList<>();
 
         /// Test correct behavior code paths
-        PoolUtils.prefill(pool, 5);
+        pool.addObjects(5);
         pool.close();
 
 
@@ -400,7 +400,7 @@ public abstract class TestObjectPool {
         }
         reset(pool, factory, expectedMethods);
         factory.setDestroyObjectFail(true);
-        PoolUtils.prefill(pool, 5);
+        pool.addObjects(5);
         pool.close();
     }
 

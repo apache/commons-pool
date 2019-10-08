@@ -220,7 +220,9 @@ public final class PoolUtils {
      *             when {@link ObjectPool#addObject()} fails.
      * @throws IllegalArgumentException
      *             when <code>pool</code> is <code>null</code>.
+     * @deprecated Use {@link ObjectPool#addObjects(int)}.
      */
+    @Deprecated
     public static <T> void prefill(final ObjectPool<T> pool, final int count)
             throws Exception, IllegalArgumentException {
         if (pool == null) {

@@ -712,13 +712,13 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         genericObjectPool.setMinIdle(2);
         genericObjectPool.setTestWhileIdle(true);
         genericObjectPool.setLifo(lifo);
-        PoolUtils.prefill(genericObjectPool, 5);
+        genericObjectPool.addObjects(5);
         genericObjectPool.evict();
         simpleFactory.setEvenValid(false);
         simpleFactory.setOddValid(false);
         simpleFactory.setThrowExceptionOnActivate(true);
         genericObjectPool.evict();
-        PoolUtils.prefill(genericObjectPool, 5);
+        genericObjectPool.addObjects(5);
         simpleFactory.setThrowExceptionOnActivate(false);
         simpleFactory.setThrowExceptionOnPassivate(true);
         genericObjectPool.evict();

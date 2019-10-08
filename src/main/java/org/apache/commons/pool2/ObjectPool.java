@@ -76,6 +76,24 @@ public interface ObjectPool<T> extends Closeable {
             UnsupportedOperationException;
 
     /**
+     * Calls {@link ObjectPool#addObject()} on <code>pool</code> <code>count</code>
+     * number of times.
+     *
+     * @param count
+     *            the number of idle objects to add.
+     * @throws Exception
+     *             when {@link ObjectPool#addObject()} fails.
+     * @throws IllegalArgumentException
+     *             when <code>pool</code> is <code>null</code>.
+     * @since 2.8.0
+     */
+    default void addObjects(final int count) throws Exception, IllegalArgumentException {
+        for (int i = 0; i < count; i++) {
+            addObject();
+        }
+    }
+
+    /**
      * Obtains an instance from this pool.
      * <p>
      * Instances returned from this method will have been either newly created
