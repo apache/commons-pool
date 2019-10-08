@@ -17,8 +17,8 @@
 
 package org.apache.commons.pool2;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import java.lang.reflect.InvocationHandler;
@@ -35,17 +35,19 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimerTask;
 
-import org.junit.Assert;
-import junit.framework.AssertionFailedError;
-
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPool;
-
+import org.apache.commons.pool2.impl.TestGenericKeyedObjectPool;
+import org.junit.Assert;
 import org.junit.Test;
+
+import junit.framework.AssertionFailedError;
 
 /**
  * Unit tests for {@link PoolUtils}.
+ * 
+ * TODO Replace our own mocking with a mocking library like Mockito.
  */
 public class TestPoolUtils {
 
@@ -305,13 +307,11 @@ public class TestPoolUtils {
 
             PoolUtils.prefill(pool, 0);
             final List<String> expectedMethods = new ArrayList<>();
+            expectedMethods.add("addObjects");
             assertEquals(expectedMethods, calledMethods);
 
             calledMethods.clear();
             PoolUtils.prefill(pool, 3);
-            for (int i = 0; i < 3; i++) {
-                expectedMethods.add("addObject");
-            }
             assertEquals(expectedMethods, calledMethods);
         }
     }
@@ -325,7 +325,7 @@ public class TestPoolUtils {
             // expected
         }
         try (@SuppressWarnings("unchecked")
-        final KeyedObjectPool<Object, Object> pool = createProxy(KeyedObjectPool.class, (List<String>) null)) {
+        final KeyedObjectPool<Object, String> pool = new GenericKeyedObjectPool<>(new TestGenericKeyedObjectPool.SimpleFactory<>())) {
             PoolUtils.prefill(pool, (Object) null, 1);
             fail("PoolUtils.prefill(KeyedObjectPool,Object,int) must not accept null key.");
         } catch (final IllegalArgumentException iae) {
@@ -338,13 +338,11 @@ public class TestPoolUtils {
 
             PoolUtils.prefill(pool, new Object(), 0);
             final List<String> expectedMethods = new ArrayList<>();
+            expectedMethods.add("addObjects");
             assertEquals(expectedMethods, calledMethods);
 
             calledMethods.clear();
             PoolUtils.prefill(pool, new Object(), 3);
-            for (int i = 0; i < 3; i++) {
-                expectedMethods.add("addObject");
-            }
             assertEquals(expectedMethods, calledMethods);
         }
     }
@@ -372,9 +370,10 @@ public class TestPoolUtils {
             keys.add("one");
             keys.add("two");
             keys.add("three");
-            PoolUtils.prefill(pool, keys, 3);
-            for (int i = 0; i < keys.size() * 3; i++) {
-                expectedMethods.add("addObject");
+            final int count = 3;
+            PoolUtils.prefill(pool, keys, count);
+            for (int i = 0; i < count; i++) {
+                expectedMethods.add("addObjects");
             }
             assertEquals(expectedMethods, calledMethods);
         }

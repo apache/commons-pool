@@ -83,11 +83,9 @@ public interface ObjectPool<T> extends Closeable {
      *            the number of idle objects to add.
      * @throws Exception
      *             when {@link ObjectPool#addObject()} fails.
-     * @throws IllegalArgumentException
-     *             when <code>pool</code> is <code>null</code>.
      * @since 2.8.0
      */
-    default void addObjects(final int count) throws Exception, IllegalArgumentException {
+    default void addObjects(final int count) throws Exception {
         for (int i = 0; i < count; i++) {
             addObject();
         }

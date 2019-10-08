@@ -38,7 +38,7 @@ public final class PoolUtils {
 
     private static final String MSG_FACTOR_NEGATIVE = "factor must be positive.";
     private static final String MSG_MIN_IDLE = "minIdle must be non-negative.";
-    private static final String MSG_NULL_KEY = "key must not be null.";
+    static final String MSG_NULL_KEY = "key must not be null.";
     private static final String MSG_NULL_KEYED_POOL = "keyedPool must not be null.";
     private static final String MSG_NULL_KEYS = "keys must not be null.";
     private static final String MSG_NULL_POOL = "pool must not be null.";
@@ -228,9 +228,7 @@ public final class PoolUtils {
         if (pool == null) {
             throw new IllegalArgumentException(MSG_NULL_POOL);
         }
-        for (int i = 0; i < count; i++) {
-            pool.addObject();
-        }
+        pool.addObjects(count);
     }
 
     /**
@@ -250,19 +248,16 @@ public final class PoolUtils {
      * @throws IllegalArgumentException
      *             when <code>keyedPool</code> or <code>key</code> is
      *             <code>null</code>.
+     * @deprecated Use {@link KeyedObjectPool#addObjects(Object, int)}.
      */
+    @Deprecated
     public static <K, V> void prefill(final KeyedObjectPool<K, V> keyedPool,
             final K key, final int count) throws Exception,
             IllegalArgumentException {
         if (keyedPool == null) {
             throw new IllegalArgumentException(MSG_NULL_KEYED_POOL);
         }
-        if (key == null) {
-            throw new IllegalArgumentException(MSG_NULL_KEY);
-        }
-        for (int i = 0; i < count; i++) {
-            keyedPool.addObject(key);
-        }
+        keyedPool.addObjects(key, count);
     }
 
     /**
@@ -294,7 +289,7 @@ public final class PoolUtils {
         }
         final Iterator<K> iter = keys.iterator();
         while (iter.hasNext()) {
-            prefill(keyedPool, iter.next(), count);
+            keyedPool.addObjects(iter.next(), count);
         }
     }
 

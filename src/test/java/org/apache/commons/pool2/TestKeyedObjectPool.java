@@ -375,13 +375,13 @@ public abstract class TestKeyedObjectPool {
         final List<MethodCall> expectedMethods = new ArrayList<>();
 
         /// Test correct behavior code paths
-        PoolUtils.prefill(pool, KEY, 5);
+        pool.addObjects(KEY, 5);
         pool.clear();
 
         //// Test exception handling clear should swallow destroy object failures
         reset(pool, factory, expectedMethods);
         factory.setDestroyObjectFail(true);
-        PoolUtils.prefill(pool, KEY, 5);
+        pool.addObjects(KEY, 5);
         pool.clear();
         pool.close();
     }
@@ -398,14 +398,14 @@ public abstract class TestKeyedObjectPool {
         final List<MethodCall> expectedMethods = new ArrayList<>();
 
         /// Test correct behavior code paths
-        PoolUtils.prefill(pool, KEY, 5);
+        pool.addObjects(KEY, 5);
         pool.close();
 
         //// Test exception handling close should swallow failures
         try (final KeyedObjectPool<Object, Object> pool2 = makeEmptyPool(factory)) {
             reset(pool2, factory, expectedMethods);
             factory.setDestroyObjectFail(true);
-            PoolUtils.prefill(pool2, KEY, 5);
+            pool2.addObjects(KEY, 5);
         }
     }
 

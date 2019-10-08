@@ -86,6 +86,29 @@ public interface KeyedObjectPool<K, V> extends Closeable {
             UnsupportedOperationException;
 
     /**
+     * Calls {@link KeyedObjectPool#addObject(Object)} on <code>keyedPool</code> with
+     * <code>key</code> <code>count</code> number of times.
+     *
+     * @param key
+     *            the key to add objects for.
+     * @param count
+     *            the number of idle objects to add for <code>key</code>.
+     * @throws Exception
+     *             when {@link KeyedObjectPool#addObject(Object)} fails.
+     * @throws IllegalArgumentException
+     *             when <code>key</code> is <code>null</code>.
+     * @since 2.8.0
+     */
+    default void addObjects(final K key, final int count) throws Exception, IllegalArgumentException {
+        if (key == null) {
+            throw new IllegalArgumentException(PoolUtils.MSG_NULL_KEY);
+        }
+        for (int i = 0; i < count; i++) {
+            addObject(key);
+        }
+    }
+    
+    /**
      * Obtains an instance from this pool for the specified <code>key</code>.
      * <p>
      * Instances returned from this method will have been either newly created

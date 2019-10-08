@@ -1809,7 +1809,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         }
     }
 
-    static class SimpleFactory<K> implements KeyedPooledObjectFactory<K,String> {
+    public static class SimpleFactory<K> implements KeyedPooledObjectFactory<K,String> {
         public SimpleFactory() {
             this(true);
         }
