@@ -273,13 +273,15 @@ public class TestAbandonedObjectPool {
         abandonedConfig.setLogAbandoned(true);
         abandonedConfig.setRemoveAbandonedTimeout(1);
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        final PrintWriter pw = new PrintWriter(new BufferedOutputStream(baos));
+        final BufferedOutputStream bos = new BufferedOutputStream(baos);
+        final PrintWriter pw = new PrintWriter(bos);
         abandonedConfig.setLogWriter(pw);
         pool.setAbandonedConfig(abandonedConfig);
         pool.setTimeBetweenEvictionRunsMillis(100);
         final PooledTestObject o1 = pool.borrowObject();
         Thread.sleep(2000);
         Assert.assertTrue(o1.isDestroyed());
+        bos.flush();
         Assert.assertTrue(baos.toString().indexOf("Pooled object") >= 0);
     }
 
