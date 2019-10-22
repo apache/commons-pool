@@ -120,7 +120,7 @@ public class MethodCallPoolableObjectFactory implements PooledObjectFactory<Obje
         // Generate new object, don't use cache via Integer.valueOf(...)
         final Integer obj = new Integer(originalCount);
         call.setReturned(obj);
-        return new DefaultPooledObject<Object>(obj);
+        return new DefaultPooledObject<>(obj);
     }
 
     @Override

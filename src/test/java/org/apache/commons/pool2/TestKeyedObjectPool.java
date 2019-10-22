@@ -760,7 +760,7 @@ public abstract class TestKeyedObjectPool {
             // checks for a specific object
             final Integer obj = new Integer(originalCount);
             call.setReturned(obj);
-            return new DefaultPooledObject<Object>(obj);
+            return new DefaultPooledObject<>(obj);
         }
 
         @Override

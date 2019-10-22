@@ -1075,7 +1075,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         final int numThreads = 40;
         final int maxTotal = 40;
 
-        final GenericKeyedObjectPoolConfig<String> config = new GenericKeyedObjectPoolConfig<String>();
+        final GenericKeyedObjectPoolConfig<String> config = new GenericKeyedObjectPoolConfig<>();
         config.setMaxTotalPerKey(maxTotal);
         config.setFairness(true);
         config.setLifo(false);
@@ -1092,7 +1092,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         // Start and park threads waiting to borrow objects
         final TestThread[] threads = new TestThread[numThreads];
         for(int i=0;i<numThreads;i++) {
-            threads[i] = new TestThread<String>(gkoPool, 1, 0, 2000, false, "0" + String.valueOf(i % maxTotal), "0");
+            threads[i] = new TestThread<>(gkoPool, 1, 0, 2000, false, "0" + String.valueOf(i % maxTotal), "0");
             final Thread t = new Thread(threads[i]);
             t.start();
             // Short delay to ensure threads start in correct order
