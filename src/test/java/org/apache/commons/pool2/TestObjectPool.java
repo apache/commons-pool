@@ -22,7 +22,6 @@ import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.SoftReferenceObjectPool;
-import org.apache.commons.pool2.PoolUtils;
 import org.junit.Test;
 
 import java.util.List;

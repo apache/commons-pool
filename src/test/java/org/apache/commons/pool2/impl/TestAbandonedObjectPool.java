@@ -104,8 +104,8 @@ public class TestAbandonedObjectPool {
         }
 
         // Abandon all borrowed objects
-        for (int i = 0; i < vec.size(); i++) {
-            vec.get(i).setAbandoned(true);
+        for (final PooledTestObject element : vec) {
+            element.setAbandoned(true);
         }
 
         // Try launching a bunch of borrows concurrently.  Abandoned sweep will be triggered for each.
@@ -122,8 +122,7 @@ public class TestAbandonedObjectPool {
         }
 
         // Return all objects that have not been destroyed
-        for (int i = 0; i < vec.size(); i++) {
-            final PooledTestObject pto = vec.get(i);
+        for (final PooledTestObject pto : vec) {
             if (pto.isActive()) {
                 pool.returnObject(pto);
             }
