@@ -74,6 +74,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="fix" due-to="emopers">
       Close BufferedOutputStream in test before calling toString on underlying BufferedOutputStream #26.
     </action>
+    <action dev="ggregory" type="fix" due-to="Prodigysov">
+      [Javadoc] Add missing @throws comment in SoftReferenceObjectPool. #28.
+    </action>
   </release>
   <release version="2.7.0" date="2019-07-25" description="This is a feature release (Java 8).">
     <action dev="ggregory" issue="POOL-364" type="update" due-to="Gary Gregory">
