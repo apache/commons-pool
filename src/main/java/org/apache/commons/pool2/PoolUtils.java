@@ -307,6 +307,8 @@ public final class PoolUtils {
      * @param pool
      *            the ObjectPool to be "wrapped" in a synchronized ObjectPool.
      * @param <T> the type of objects in the pool
+     * @throws IllegalArgumentException
+     *             when <code>pool</code> is <code>null</code>.
      * @return a synchronized view of the specified ObjectPool.
      */
     public static <T> ObjectPool<T> synchronizedPool(final ObjectPool<T> pool) {
@@ -402,6 +404,8 @@ public final class PoolUtils {
      *            the ObjectPool to be decorated so it shrinks its idle count
      *            when possible.
      * @param <T> the type of objects in the pool
+     * @throws IllegalArgumentException
+     *             when <code>pool</code> is <code>null</code>.
      * @return a pool that adaptively decreases its size when idle objects are
      *         no longer needed.
      * @see #erodingPool(ObjectPool, float)
@@ -432,6 +436,9 @@ public final class PoolUtils {
      *            shrinks more aggressively. If 1 &lt; factor then the pool
      *            shrinks less aggressively.
      * @param <T> the type of objects in the pool
+     * @throws IllegalArgumentException
+     *             when <code>pool</code> is <code>null</code> or when
+     *             <code>factor</code> is not positive.
      * @return a pool that adaptively decreases its size when idle objects are
      *         no longer needed.
      * @see #erodingPool(ObjectPool)
@@ -459,6 +466,8 @@ public final class PoolUtils {
      *            count when possible.
      * @param <K> the type of the pool key
      * @param <V> the type of pool entries
+     * @throws IllegalArgumentException
+     *             when <code>keyedPool</code> is <code>null</code>.
      * @return a pool that adaptively decreases its size when idle objects are
      *         no longer needed.
      * @see #erodingPool(KeyedObjectPool, float)
@@ -492,6 +501,9 @@ public final class PoolUtils {
      *            shrinks less aggressively.
      * @param <K> the type of the pool key
      * @param <V> the type of pool entries
+     * @throws IllegalArgumentException
+     *             when <code>keyedPool</code> is <code>null</code> or
+     *             when <code>factor</code> is not positive.
      * @return a pool that adaptively decreases its size when idle objects are
      *         no longer needed.
      * @see #erodingPool(KeyedObjectPool, float, boolean)
@@ -532,6 +544,9 @@ public final class PoolUtils {
      *            when true, each key is treated independently.
      * @param <K> the type of the pool key
      * @param <V> the type of pool entries
+     * @throws IllegalArgumentException
+     *             when <code>keyedPool</code> is <code>null</code> or
+     *             when <code>factor</code> is not positive.
      * @return a pool that adaptively decreases its size when idle objects are
      *         no longer needed.
      * @see #erodingPool(KeyedObjectPool)
