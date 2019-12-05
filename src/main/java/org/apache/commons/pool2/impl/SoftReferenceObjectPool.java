@@ -186,6 +186,8 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
      *
      * @param obj
      *            instance to return to the pool
+     * @throws IllegalArgumentException
+     *            if obj is not currently part of this pool
      */
     @Override
     public synchronized void returnObject(final T obj) throws Exception {
