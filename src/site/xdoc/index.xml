@@ -33,6 +33,7 @@
           instance tracking and pool monitoring.
          </p>
          <ul>
+          <li>Version 2.8.0 requires Java 8 or above.</li>
           <li>Version 2.7.0 requires Java 8 or above.</li>
           <li>Version 2.6.0 requires Java 7 or above.</li>
           <li>Version 2.5.0 requires Java 7 or above.</li>
