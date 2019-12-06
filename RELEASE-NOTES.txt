@@ -1,3 +1,55 @@
+              Apache Commons Pool 2.8.0 RELEASE NOTES
+              05 December 2019
+
+The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.8.0.
+
+Apache Commons Pool provides an object-pooling API and a number of object pool implementations.
+Version 2 contains a completely re-written pooling implementation compared to the 1.x series.
+In addition to performance and scalability improvements, version 2 includes robust instance
+tracking and pool monitoring. Version 2 requires JDK level 1.6 or above. 
+
+No client code changes are required to migrate from versions 2.0-2.3 to version 2.4.3.
+Users of version 1.x should consult the migration guide on the Commons Pool web site.
+
+NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPoolMXBean
+      and GenericKeyedObjectPoolMXBean) exist only to define the attributes and methods
+      that will be made available via JMX. They must not be implemented by clients as
+      they are subject to change between major, minor and patch version releases of
+      Commons Pool. Clients that implement any of these interfaces may not, therefore,
+      be able to upgrade to a new minor or patch release without requiring code
+      changes.
+
+This is a maintenance release (Java 8).
+
+Changes in version 2.8.0 include:
+
+New features:
+o POOL-378:  Deprecate PoolUtils.prefill(ObjectPool, int) in favor of ObjectPool.addObjects(int). Thanks to Gary Gregory.
+o POOL-379:  Deprecate PoolUtils.prefill(KeyedObjectPool, K, int) in favor of KeyedObjectPool.addObjects(K, int). Thanks to Gary Gregory.
+o POOL-380:  Deprecate PoolUtils.prefill(KeyedObjectPool, Collection, int) in favor of KeyedObjectPool.addObjects(Collection, int). Thanks to Gary Gregory.
+
+Fixed Bugs:
+o POOL-374:  org.apache.commons.pool2.impl.GenericKeyedObjectPool.returnObject(K, T) should throw IllegalStateException instead of NullPointerException when a key is not found in the pool map. Thanks to Gary Gregory, Phil Steitz.
+o POOL-376:  Fixed regression from original fix for POOL-356 which could result in NPE when destroying objects. Thanks to Sazzadul Hoque, Phil Steitz.
+o POOL-326:  Eliminated NPE / ISE exceptions due to keyed pools being prematurely removed. Thanks to Phil Steitz.
+o            Close BufferedOutputStream in test before calling toString on underlying BufferedOutputStream #26. Thanks to emopers.
+o            [Javadoc] Add missing @throws comment in SoftReferenceObjectPool. #28. Thanks to Prodigysov.
+
+Changes:
+o POOL-375:  Update optional library cglib from 3.2.12 to 3.3.0. Thanks to Gary Gregory.
+o            Update site build from Apache Commons BCEL 6.3.1 to 6.4.1. Thanks to Gary Gregory.
+o POOL-377:  Update optional library org.ow2.asm:asm-util from 7.1 to 7.2. Thanks to Gary Gregory.
+
+
+For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Apache Commons Pool website:
+
+https://commons.apache.org/proper/commons-pool/
+
+Download page: https://commons.apache.org/proper/commons-pool/download_pool.cgi
+
+-----------------------------------------------------------------------------------------------
+
               Apache Commons Pool 2.7.0 RELEASE NOTES
               23 July 2019
 
