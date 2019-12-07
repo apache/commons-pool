@@ -217,27 +217,32 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         this.blockWhenExhausted = blockWhenExhausted;
     }
 
-    protected void setConfig(final BaseObjectPoolConfig<T> conf) {
-        setLifo(conf.getLifo());
-        setMaxWaitMillis(conf.getMaxWaitMillis());
-        setBlockWhenExhausted(conf.getBlockWhenExhausted());
-        setTestOnCreate(conf.getTestOnCreate());
-        setTestOnBorrow(conf.getTestOnBorrow());
-        setTestOnReturn(conf.getTestOnReturn());
-        setTestWhileIdle(conf.getTestWhileIdle());
-        setNumTestsPerEvictionRun(conf.getNumTestsPerEvictionRun());
-        setMinEvictableIdleTimeMillis(conf.getMinEvictableIdleTimeMillis());
-        setTimeBetweenEvictionRunsMillis(conf.getTimeBetweenEvictionRunsMillis());
-        setSoftMinEvictableIdleTimeMillis(conf.getSoftMinEvictableIdleTimeMillis());
-        final EvictionPolicy<T> policy = conf.getEvictionPolicy();
+    /**
+     * Initializes the receiver with the given configuration.
+     * 
+     * @param config Initialization source.
+     */
+    protected void setConfig(final BaseObjectPoolConfig<T> config) {
+        setLifo(config.getLifo());
+        setMaxWaitMillis(config.getMaxWaitMillis());
+        setBlockWhenExhausted(config.getBlockWhenExhausted());
+        setTestOnCreate(config.getTestOnCreate());
+        setTestOnBorrow(config.getTestOnBorrow());
+        setTestOnReturn(config.getTestOnReturn());
+        setTestWhileIdle(config.getTestWhileIdle());
+        setNumTestsPerEvictionRun(config.getNumTestsPerEvictionRun());
+        setMinEvictableIdleTimeMillis(config.getMinEvictableIdleTimeMillis());
+        setTimeBetweenEvictionRunsMillis(config.getTimeBetweenEvictionRunsMillis());
+        setSoftMinEvictableIdleTimeMillis(config.getSoftMinEvictableIdleTimeMillis());
+        final EvictionPolicy<T> policy = config.getEvictionPolicy();
         if (policy == null) {
             // Use the class name (pre-2.6.0 compatible)
-            setEvictionPolicyClassName(conf.getEvictionPolicyClassName());
+            setEvictionPolicyClassName(config.getEvictionPolicyClassName());
         } else {
             // Otherwise, use the class (2.6.0 feature)
             setEvictionPolicy(policy);
         }
-        setEvictorShutdownTimeoutMillis(conf.getEvictorShutdownTimeoutMillis());
+        setEvictorShutdownTimeoutMillis(config.getEvictorShutdownTimeoutMillis());
     }
 
     /**
@@ -653,16 +658,22 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
                 setEvictionPolicy(evictionPolicyClassName, epClassLoader);
             }
         } catch (final ClassCastException e) {
-            throw new IllegalArgumentException("Class " + evictionPolicyClassName + " from class loaders ["
-                    + classLoader + ", " + epClassLoader + "] do not implement " + EVICTION_POLICY_TYPE_NAME);
-        } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException
-                | InvocationTargetException | NoSuchMethodException e) {
-            final String exMessage = "Unable to create " + EVICTION_POLICY_TYPE_NAME + " instance of type "
-                    + evictionPolicyClassName;
+            throw new IllegalArgumentException("Class " + evictionPolicyClassName + " from class loaders [" +
+                    classLoader + ", " + epClassLoader + "] do not implement " + EVICTION_POLICY_TYPE_NAME);
+        } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException |
+                InvocationTargetException | NoSuchMethodException e) {
+            final String exMessage = "Unable to create " + EVICTION_POLICY_TYPE_NAME + " instance of type " +
+                    evictionPolicyClassName;
             throw new IllegalArgumentException(exMessage, e);
         }
     }
 
+    /**
+     * Sets the eviction policy.
+     * 
+     * @param className Eviction policy class name.
+     * @param classLoader Load the class from this class loader.
+     */
     @SuppressWarnings("unchecked")
     private void setEvictionPolicy(final String className, final ClassLoader classLoader)
             throws ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
@@ -1156,11 +1167,19 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         }
 
 
+        /**
+         * Sets the scheduled future.
+         * 
+         * @param scheduledFuture the scheduled future.
+         */
         void setScheduledFuture(final ScheduledFuture<?> scheduledFuture) {
             this.scheduledFuture = scheduledFuture;
         }
 
 
+        /**
+         * Cancels the scheduled future.
+         */
         void cancel() {
             scheduledFuture.cancel(false);
         }
