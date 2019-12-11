@@ -45,7 +45,7 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
   <release version="2.8.0" date="2019-12-05" description="This is a maintenance release (Java 8).">
     <action dev="ggregory" type="fix" due-to="Prodigysov, Gary Gregory">
-       
+       [Javadoc] Add missing @throws comment in PoolUtils. #27.
     </action>
   </release>
   <release version="2.8.0" date="2019-12-05" description="This is a maintenance release (Java 8).">
