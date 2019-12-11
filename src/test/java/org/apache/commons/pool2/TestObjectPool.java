@@ -35,7 +35,7 @@ import java.util.NoSuchElementException;
 public abstract class TestObjectPool {
 
     /**
-     * Create an <code>ObjectPool</code> with the specified factory.
+     * Create an {@code ObjectPool} with the specified factory.
      * The pool should be in a default configuration and conform to the expected
      * behaviors described in {@link ObjectPool}.
      * Generally speaking there should be no limits on the various object counts.

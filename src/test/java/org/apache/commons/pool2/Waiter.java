@@ -75,7 +75,7 @@ public class Waiter {
      *
      * <p>{@link WaiterFactory#activateObject(PooledObject)} and
      * {@link WaiterFactory#passivateObject(PooledObject)} invoke this method on
-     * their actual parameter, passing <code>true</code> and <code>false</code>,
+     * their actual parameter, passing {@code true} and {@code false},
      * respectively.</p>
      *
      * @param active new active state
@@ -128,7 +128,7 @@ public class Waiter {
      *
      * <p>When an instance is created, and each subsequent time it is passivated,
      * the {@link #getLastPassivated() lastPassivated} property is updated with the
-     * current time.  When the next activation occurs, <code>lastIdleTime</code> is
+     * current time.  When the next activation occurs, {@code lastIdleTime} is
      * updated with the elapsed time since passivation.<p>
      *
      * @return last idle time

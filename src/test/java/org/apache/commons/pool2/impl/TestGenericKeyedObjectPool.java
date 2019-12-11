@@ -546,8 +546,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     }
 
     /**
-     * Kicks off <code>numThreads</code> test threads, each of which will go
-     * through <code>iterations</code> borrow-return cycles with random delay
+     * Kicks off {@code numThreads} test threads, each of which will go
+     * through {@code iterations} borrow-return cycles with random delay
      * times &lt;= delay in between.
      *
      * @param <T>           Type of object in pool
