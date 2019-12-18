@@ -38,7 +38,7 @@ public class MethodCall {
     }
 
     public MethodCall(final String name, final Object param1, final Object param2) {
-        this(name, Arrays.asList(new Object[] {param1, param2}));
+        this(name, Arrays.asList(param1, param2));
     }
 
     public MethodCall(final String name, final List<Object> params) {

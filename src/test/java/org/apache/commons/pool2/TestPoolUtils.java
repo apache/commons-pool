@@ -796,11 +796,8 @@ public class TestPoolUtils {
         op.returnObject(new Object());
         op.toString();
 
-        final List<String> expectedMethods = Arrays.asList(new String[] {
-                "addObject", "borrowObject", "clear", "close",
-                "getNumActive", "getNumIdle", "invalidateObject",
-                "returnObject", "toString"
-        });
+        final List<String> expectedMethods = Arrays.asList("addObject", "borrowObject", "clear", "close", "getNumActive", "getNumIdle", "invalidateObject",
+                "returnObject", "toString");
         return expectedMethods;
     }
 
@@ -818,11 +815,8 @@ public class TestPoolUtils {
         kop.returnObject(null, new Object());
         kop.toString();
 
-        final List<String> expectedMethods = Arrays.asList(new String[] {
-                "addObject", "borrowObject", "clear", "clear", "close",
-                "getNumActive", "getNumActive", "getNumIdle", "getNumIdle", "invalidateObject",
-                "returnObject", "toString"
-        });
+        final List<String> expectedMethods = Arrays.asList("addObject", "borrowObject", "clear", "clear", "close", "getNumActive", "getNumActive",
+                "getNumIdle", "getNumIdle", "invalidateObject", "returnObject", "toString");
         return expectedMethods;
     }
 
@@ -834,10 +828,7 @@ public class TestPoolUtils {
         pof.validateObject(null);
         pof.toString();
 
-        final List<String> expectedMethods = Arrays.asList(new String[] {
-                "activateObject", "destroyObject", "makeObject",
-                "passivateObject", "validateObject", "toString",
-        });
+        final List<String> expectedMethods = Arrays.asList("activateObject", "destroyObject", "makeObject", "passivateObject", "validateObject", "toString");
         return expectedMethods;
     }
 
@@ -849,10 +840,7 @@ public class TestPoolUtils {
         kpof.validateObject(null, null);
         kpof.toString();
 
-        final List<String> expectedMethods = Arrays.asList(new String[] {
-                "activateObject", "destroyObject", "makeObject",
-                "passivateObject", "validateObject", "toString",
-        });
+        final List<String> expectedMethods = Arrays.asList("activateObject", "destroyObject", "makeObject", "passivateObject", "validateObject", "toString");
         return expectedMethods;
     }
 
