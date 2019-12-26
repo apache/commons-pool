@@ -22,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -155,9 +156,7 @@ public class TestAbandonedObjectPool {
         for (int i = 0; i < n - 2; i++) {
             obj = pool.borrowObject();
         }
-        if (obj == null) {
-            throw new NullPointerException("Unable to borrow object from pool");
-        }
+        Objects.requireNonNull(obj, "Unable to borrow object from pool");
         final int deadMansHash = obj.hashCode();
         final ConcurrentReturner returner = new ConcurrentReturner(obj);
         Thread.sleep(2000);  // abandon checked out instances
