@@ -281,14 +281,14 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     }
 
     /**
-     * Returns whether the pool has LIFO (last in, first out) behaviour with
+     * Returns whether the pool has LIFO (last in, first out) behavior with
      * respect to idle objects - always returning the most recently used object
      * from the pool, or as a FIFO (first in, first out) queue, where the pool
      * always returns the oldest object in the idle object pool.
      *
-     * @return {@code true} if the pool is configured with LIFO behaviour
+     * @return {@code true} if the pool is configured with LIFO behavior
      *         or {@code false} if the pool is configured with FIFO
-     *         behaviour
+     *         behavior
      *
      * @see #setLifo
      */
@@ -308,14 +308,14 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     }
 
     /**
-     * Sets whether the pool has LIFO (last in, first out) behaviour with
+     * Sets whether the pool has LIFO (last in, first out) behavior with
      * respect to idle objects - always returning the most recently used object
      * from the pool, or as a FIFO (first in, first out) queue, where the pool
      * always returns the oldest object in the idle object pool.
      *
      * @param lifo  {@code true} if the pool is to be configured with LIFO
-     *              behaviour or {@code false} if the pool is to be
-     *              configured with FIFO behaviour
+     *              behavior or {@code false} if the pool is to be
+     *              configured with FIFO behavior
      *
      * @see #getLifo()
      */

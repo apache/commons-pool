@@ -441,7 +441,7 @@ including bugfixes and test case improvements.">
 in high concurrency environments. Pools now provide a mechanism for tracking
 objects that have been borrowed from the pool but not returned. There have been
 numerous API changes to support these and other new features as well as to
-clarify behaviour and improve consistency across the API. This release requires
+clarify behavior and improve consistency across the API. This release requires
 JDK level 1.6 or above.">
     <action issue="POOL-211" dev="markt" type="add" due-to="Brad Koehn">
       Add support for proxy wrappers to ObjectPool and KeyedObjectPool. The
@@ -513,7 +513,7 @@ JDK level 1.6 or above.">
       remove deprecated code and unnecessary code.
     </action>
     <action dev="markt" type="update">
-      Introduce an Enum (WhenExhaustedAction) to control pool behaviour when no
+      Introduce an Enum (WhenExhaustedAction) to control pool behavior when no
       more objects are available to allocate.
     </action>
     <action dev="markt" type="update">

@@ -106,7 +106,7 @@ public interface ObjectPool<T> extends Closeable {
      * method as defined in an implementation or sub-interface.
      * </p>
      * <p>
-     * The behaviour of this method when the pool has been exhausted
+     * The behavior of this method when the pool has been exhausted
      * is not strictly specified (although it may be specified by
      * implementations).
      * </p>
