@@ -14,6 +14,10 @@
 # limitations under the License.
 
 language: java
+sudo: false
+cache:
+  directories:
+    - $HOME/.m2
 matrix:
   include:
     - os: linux
@@ -32,8 +36,8 @@ matrix:
       jdk: oraclejdk11
     - os: linux-ppc64le
       jdk: openjdk8
-  
-sudo: false
+  allow_failures:
+    - jdk: openjdk-ea
 
 script:
   - mvn
