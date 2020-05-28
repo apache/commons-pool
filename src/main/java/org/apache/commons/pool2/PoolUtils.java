@@ -101,7 +101,7 @@ public final class PoolUtils {
      *         object count.
      * @throws IllegalArgumentException
      *             when {@code pool} is {@code null} or when {@code minIdle} is
-     *             negative or when {@code period} isn't valid for 
+     *             negative or when {@code period} isn't valid for
      *             {@link Timer#schedule(TimerTask, long, long)}
      */
     public static <T> TimerTask checkMinIdle(final ObjectPool<T> pool,

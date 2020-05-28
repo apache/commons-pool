@@ -219,7 +219,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
 
     /**
      * Initializes the receiver with the given configuration.
-     * 
+     *
      * @param config Initialization source.
      */
     protected void setConfig(final BaseObjectPoolConfig<T> config) {
@@ -670,7 +670,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
 
     /**
      * Sets the eviction policy.
-     * 
+     *
      * @param className Eviction policy class name.
      * @param classLoader Load the class from this class loader.
      */
@@ -1169,7 +1169,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
 
         /**
          * Sets the scheduled future.
-         * 
+         *
          * @param scheduledFuture the scheduled future.
          */
         void setScheduledFuture(final ScheduledFuture<?> scheduledFuture) {
