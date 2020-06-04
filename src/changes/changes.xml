@@ -50,7 +50,7 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" issue="POOL-384" type="update" due-to="Gary Gregory">
       Update optional library org.ow2.asm:asm-util from 7.2 to 8.0.1.
     </action>
-    <action dev="ggregory" type="add" due-to="scholzi100">
+    <action dev="ggregory" issue="POOL-385" type="add" due-to="scholzi100">
       Added Automatic-Module-Name to support JPMS #31.
     </action>
   </release>
