@@ -56,6 +56,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="update" due-to="Gary Gregory">
       Update site reports from org.apache.bcel:bcel 6.4.1 to 6.5.0.
     </action>
+    <action dev="ggregory" type="update" due-to="Gary Gregory">
+      Update site reports from maven-pmd-plugin 3.12.0 to 3.13.0.
+    </action>
   </release>
   <release version="2.8.0" date="2019-12-05" description="This is a maintenance release (Java 8).">
     <action dev="ggregory" issue="POOL-374" type="fix" due-to="Gary Gregory, Phil Steitz">
