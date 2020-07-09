@@ -48,7 +48,7 @@ class PoolImplUtils {
             // A bit hackish, but we must handle cases when getGenericType() does not return a concrete types.
             final ParameterizedType pi = getParameterizedType(type, factoryClass);
             if (pi != null) {
-                final Type[] bounds = ((TypeVariable) pi.getActualTypeArguments()[(Integer) genericType]).getBounds();
+                final Type[] bounds = ((TypeVariable) pi.getActualTypeArguments()[((Integer) genericType).intValue()]).getBounds();
                 if (bounds != null && bounds.length > 0) {
                     final Type bound0 = bounds[0];
                     if (bound0 instanceof Class) {
