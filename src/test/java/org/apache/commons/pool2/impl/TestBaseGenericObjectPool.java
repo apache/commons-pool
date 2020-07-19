@@ -17,6 +17,8 @@
 
 package org.apache.commons.pool2.impl;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.commons.pool2.impl.TestGenericObjectPool.SimpleFactory;
 import org.junit.After;
 import org.junit.Assert;
@@ -73,5 +75,32 @@ public class TestBaseGenericObjectPool {
     		pool.updateStatsReturn(i);
     	}
     	Assert.assertEquals(49, pool.getMeanActiveTimeMillis(), Double.MIN_VALUE);
+    }
+
+    @Test
+    public void testEvictionTimerMultiplePools() throws InterruptedException {
+        final AtomicIntegerFactory factory = new AtomicIntegerFactory();
+        factory.setValidateLatency(50);
+        final GenericObjectPool<AtomicInteger> evictingPool = new GenericObjectPool<>(factory);
+        evictingPool.setTimeBetweenEvictionRunsMillis(100);
+        evictingPool.setNumTestsPerEvictionRun(5);
+        evictingPool.setTestWhileIdle(true);
+        evictingPool.setMinEvictableIdleTimeMillis(50);
+        for (int i = 0; i < 10; i++) {
+            try {
+                evictingPool.addObject();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        for (int i = 0; i < 1000; i++) {
+            GenericObjectPool<AtomicInteger> nonEvictingPool = new GenericObjectPool<>(factory);
+            nonEvictingPool.close();
+        }
+
+        Thread.sleep(1000);
+        Assert.assertEquals(0, evictingPool.getNumIdle());
+        evictingPool.close();
     }
 }

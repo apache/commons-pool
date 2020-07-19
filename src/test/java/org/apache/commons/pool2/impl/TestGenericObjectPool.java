@@ -25,6 +25,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.lang.management.ManagementFactory;
+import java.lang.ref.WeakReference;
+import java.lang.reflect.Field;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -59,100 +61,6 @@ import org.junit.Test;
 /**
  */
 public class TestGenericObjectPool extends TestBaseObjectPool {
-
-    protected static class AtomicIntegerFactory
-    extends BasePooledObjectFactory<AtomicInteger> {
-
-    private long activateLatency = 0;
-    private long passivateLatency = 0;
-    private long createLatency = 0;
-    private long destroyLatency = 0;
-    private long validateLatency = 0;
-
-    @Override
-    public void activateObject(final PooledObject<AtomicInteger> p) {
-        p.getObject().incrementAndGet();
-        try {
-            Thread.sleep(activateLatency);
-        } catch (final InterruptedException ex) {}
-    }
-
-    @Override
-    public AtomicInteger create() {
-        try {
-            Thread.sleep(createLatency);
-        } catch (final InterruptedException ex) {}
-        return new AtomicInteger(0);
-    }
-
-    @Override
-    public void destroyObject(final PooledObject<AtomicInteger> p) {
-        try {
-            Thread.sleep(destroyLatency);
-        } catch (final InterruptedException ex) {}
-    }
-
-    @Override
-    public void passivateObject(final PooledObject<AtomicInteger> p) {
-        p.getObject().decrementAndGet();
-        try {
-            Thread.sleep(passivateLatency);
-        } catch (final InterruptedException ex) {}
-    }
-
-    /**
-     * @param activateLatency the activateLatency to set
-     */
-    public void setActivateLatency(final long activateLatency) {
-        this.activateLatency = activateLatency;
-    }
-
-    /**
-     * @param createLatency the createLatency to set
-     */
-    public void setCreateLatency(final long createLatency) {
-        this.createLatency = createLatency;
-    }
-
-
-    /**
-     * @param destroyLatency the destroyLatency to set
-     */
-    public void setDestroyLatency(final long destroyLatency) {
-        this.destroyLatency = destroyLatency;
-    }
-
-
-    /**
-     * @param passivateLatency the passivateLatency to set
-     */
-    public void setPassivateLatency(final long passivateLatency) {
-        this.passivateLatency = passivateLatency;
-    }
-
-
-    /**
-     * @param validateLatency the validateLatency to set
-     */
-    public void setValidateLatency(final long validateLatency) {
-        this.validateLatency = validateLatency;
-    }
-
-
-    @Override
-    public boolean validateObject(final PooledObject<AtomicInteger> instance) {
-        try {
-            Thread.sleep(validateLatency);
-        } catch (final InterruptedException ex) {}
-        return instance.getObject().intValue() == 1;
-    }
-
-
-    @Override
-    public PooledObject<AtomicInteger> wrap(final AtomicInteger integer) {
-        return new DefaultPooledObject<>(integer);
-    }
-}
 
     private class ConcurrentBorrowAndEvictThread extends Thread {
         private final boolean borrow;
@@ -1022,6 +930,11 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             mbs.unregisterMBean(name);
         }
         Assert.assertEquals(msg.toString(), 0, registeredPoolCount);
+
+        // Make sure that EvictionTimer executor is shut down
+        final Field evictorExecutorField = EvictionTimer.class.getDeclaredField("executor");
+        evictorExecutorField.setAccessible(true);
+        assertNull(evictorExecutorField.get(null));
     }
 
     @Test(timeout = 60000)
@@ -2994,6 +2907,26 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         genericObjectPool.returnObject(obj1);
         assertEquals(1, genericObjectPool.getNumIdle());
         genericObjectPool.close();
+    }
+
+    /**
+     * Check that a pool that starts an evictor, but is never closed does not
+     * leave EvictionTimer executor running. Confirmation check is in teardown.
+     */
+    @Test
+    public void testAbandonedPool() throws Exception {
+        GenericObjectPoolConfig config = new GenericObjectPoolConfig();
+        config.setJmxEnabled(false);
+        GenericObjectPool<String> abandoned = new GenericObjectPool<>(simpleFactory, config);
+        abandoned.setTimeBetweenEvictionRunsMillis(100); // Starts evictor
+
+        // This is ugly, but forces gc to hit the pool
+        WeakReference<GenericObjectPool> ref = new WeakReference<>(abandoned);
+        abandoned = null;
+        while (ref.get() != null) {
+            System.gc();
+            Thread.sleep(100);
+        }
     }
 
 }
