@@ -86,7 +86,6 @@ class EvictionTimer {
         if (null == executor) {
             executor = new ScheduledThreadPoolExecutor(1, new EvictorThreadFactory());
             executor.setRemoveOnCancelPolicy(true);
-            taskMap.clear();
             executor.scheduleAtFixedRate(new Reaper(), delay, period, TimeUnit.MILLISECONDS);
         }
         final WeakReference<Runnable> ref = new WeakReference<>(task);
@@ -205,6 +204,9 @@ class EvictionTimer {
             final Runnable task = ref.get();
             if (task != null) {
                 task.run();
+            } else {
+                executor.remove(this);
+                taskMap.remove(ref);
             }
         }
     }
