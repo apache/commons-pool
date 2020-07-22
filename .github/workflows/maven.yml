@@ -32,6 +32,6 @@ jobs:
       with:
         java-version: ${{ matrix.java }}
     - name: Build with Maven
-      run: mvn -V --file pom.xml
+      run: mvn -V -B --file pom.xml
 
 # For Java 11, you can be more strict: -DadditionalJOption=-Xdoclint/package:-org.apache.commons.configuration2.plist
