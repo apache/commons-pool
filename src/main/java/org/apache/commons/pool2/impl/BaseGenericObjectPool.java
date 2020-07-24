@@ -790,11 +790,13 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
                 }
             } else {  // Stop or restart of existing evictor
                 if (delay > 0) { // Restart
-                    EvictionTimer.cancel(evictor, evictorShutdownTimeoutMillis, TimeUnit.MILLISECONDS, true);
-                    evictor = null;
-                    evictionIterator = null;
-                    evictor = new Evictor();
-                    EvictionTimer.schedule(evictor, delay, delay);
+                    synchronized (EvictionTimer.class) { // Ensure no cancel can happen between cancel / schedule calls
+                        EvictionTimer.cancel(evictor, evictorShutdownTimeoutMillis, TimeUnit.MILLISECONDS, true);
+                        evictor = null;
+                        evictionIterator = null;
+                        evictor = new Evictor();
+                        EvictionTimer.schedule(evictor, delay, delay);
+                    }
                 } else { // Stopping evictor
                     EvictionTimer.cancel(evictor, evictorShutdownTimeoutMillis, TimeUnit.MILLISECONDS, false);
                 }
