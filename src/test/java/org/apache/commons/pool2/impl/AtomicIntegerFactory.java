@@ -22,7 +22,14 @@ import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 
-class AtomicIntegerFactory
+/**
+ * Factory that sources PooledObjects that wrap AtomicIntegers.
+ * {@link #create()} creates an AtomicInteger with value 0, activate increments
+ * the value of the wrapped AtomicInteger and passivate decrements it. Latency
+ * of factory methods is configurable.
+ *
+ */
+public class AtomicIntegerFactory
     extends BasePooledObjectFactory<AtomicInteger> {
 
     private long activateLatency = 0;
