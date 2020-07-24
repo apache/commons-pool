@@ -62,6 +62,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="update" due-to="Gary Gregory">
       Update build from biz.aQute.bnd:biz.aQute.bndlib 5.1.0 -> 5.1.1.
     </action>
+    <action dev="ggregory" type="update" due-to="Dependabot">
+      Update actions/checkout from v1 to v2.3.1 #33.
+    </action>
   </release>
   <release version="2.8.0" date="2019-12-05" description="This is a maintenance release (Java 8).">
     <action dev="ggregory" issue="POOL-374" type="fix" due-to="Gary Gregory, Phil Steitz">
