@@ -16,12 +16,17 @@
  */
 package org.apache.commons.pool2.impl;
 
+import java.lang.ref.WeakReference;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+
 
 /**
  * Provides a shared idle object eviction timer for all pools.
@@ -46,6 +51,9 @@ class EvictionTimer {
     /** Executor instance */
     private static ScheduledThreadPoolExecutor executor; //@GuardedBy("EvictionTimer.class")
 
+    /** Keys are weak references to tasks, values are runners managed by executor. */
+    private static final HashMap<WeakReference<Runnable>, WeakRunner> taskMap = new HashMap<>(); // @GuardedBy("EvictionTimer.class")
+
     /** Prevents instantiation */
     private EvictionTimer() {
         // Hide the default constructor
@@ -61,7 +69,6 @@ class EvictionTimer {
         builder.append("EvictionTimer []");
         return builder.toString();
     }
-
 
     /**
      * Adds the specified eviction task to the timer. Tasks that are added with
@@ -79,10 +86,14 @@ class EvictionTimer {
         if (null == executor) {
             executor = new ScheduledThreadPoolExecutor(1, new EvictorThreadFactory());
             executor.setRemoveOnCancelPolicy(true);
+            executor.scheduleAtFixedRate(new Reaper(), delay, period, TimeUnit.MILLISECONDS);
         }
+        final WeakReference<Runnable> ref = new WeakReference<>(task);
+        final WeakRunner runner = new WeakRunner(ref);
         final ScheduledFuture<?> scheduledFuture =
-                executor.scheduleWithFixedDelay(task, delay, period, TimeUnit.MILLISECONDS);
+                executor.scheduleWithFixedDelay(runner, delay, period, TimeUnit.MILLISECONDS);
         task.setScheduledFuture(scheduledFuture);
+        taskMap.put(ref, runner);
     }
 
     /**
@@ -95,21 +106,47 @@ class EvictionTimer {
      * @param unit      The units for the specified timeout.
      */
     static synchronized void cancel(
-            final BaseGenericObjectPool<?>.Evictor evictor, final long timeout, final TimeUnit unit) {
+            final BaseGenericObjectPool<?>.Evictor evictor, final long timeout, final TimeUnit unit, final boolean restarting) {
         if (evictor != null) {
             evictor.cancel();
+            remove(evictor);
         }
-        if (executor != null && executor.getQueue().isEmpty()) {
-            executor.shutdown();
-            try {
-                executor.awaitTermination(timeout, unit);
-            } catch (final InterruptedException e) {
-                // Swallow
-                // Significant API changes would be required to propagate this
+        if (!restarting && executor != null) {
+            if (taskMap.isEmpty()) {
+                executor.shutdown();
+                try {
+                    executor.awaitTermination(timeout, unit);
+                } catch (final InterruptedException e) {
+                    // Swallow
+                    // Significant API changes would be required to propagate this
+                }
+                executor.setCorePoolSize(0);
+                executor = null;
             }
-            executor.setCorePoolSize(0);
-            executor = null;
         }
+    }
+
+    /**
+     * Removes evictor from the task set and executor.
+     * Only called when holding the class lock.
+     *
+     * @param evictor Eviction task to remove
+     */
+    private static void remove(final BaseGenericObjectPool<?>.Evictor evictor) {
+        for (Entry<WeakReference<Runnable>, WeakRunner> entry : taskMap.entrySet()) {
+            if (entry.getKey().get() == evictor) {
+                executor.remove(entry.getValue());
+                taskMap.remove(entry.getKey());
+                break;
+            }
+        }
+    }
+    
+    /**
+     * @return the number of eviction tasks under management.
+     */
+    static synchronized int getNumTasks() {
+        return taskMap.size();
     }
 
     /**
@@ -127,6 +164,50 @@ class EvictionTimer {
             });
 
             return thread;
+        }
+    }
+
+    /**
+     * Task that removes references to abandoned tasks and shuts
+     * down the executor if there are no live tasks left.
+     */
+    private static class Reaper implements Runnable {
+        @Override
+        public void run() {
+            synchronized (EvictionTimer.class) {
+                for (Entry<WeakReference<Runnable>, WeakRunner> entry : taskMap.entrySet()) {
+                    if (entry.getKey().get() == null) {
+                        executor.remove(entry.getValue());
+                        taskMap.remove(entry.getKey());
+                    }
+                }
+                if (taskMap.isEmpty() && executor != null) {
+                    executor.shutdown();
+                    executor.setCorePoolSize(0);
+                    executor = null;
+                }
+            }
+        }
+    }
+
+    /**
+     * Runnable that runs the referent of a weak reference. When the referent is no
+     * no longer reachable, run is no-op.
+     */
+    private static class WeakRunner implements Runnable {
+        private final WeakReference<Runnable> ref;
+        public WeakRunner(WeakReference<Runnable> ref) {
+           this.ref = ref;
+        }
+        @Override
+        public void run() {
+            final Runnable task = ref.get();
+            if (task != null) {
+                task.run();
+            } else {
+                executor.remove(this);
+                taskMap.remove(ref);
+            }
         }
     }
 }
