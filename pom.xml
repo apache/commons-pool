@@ -182,6 +182,8 @@
     <commons.animal-sniffer.version>1.19</commons.animal-sniffer.version>
     <commons.checkstyle-plugin.version>3.1.1</commons.checkstyle-plugin.version>
     <commons.felix.version>5.1.1</commons.felix.version>
+    <spotbugs.plugin.version>4.0.4</spotbugs.plugin.version>
+    <spotbugs.impl.version>4.0.6</spotbugs.impl.version>
 
     <!-- Commons Release Plugin -->
     <commons.bc.version>2.8.0</commons.bc.version>
@@ -196,7 +198,7 @@
   </properties> 
 
   <build>
-      <defaultGoal>clean verify apache-rat:check checkstyle:check japicmp:cmp javadoc:javadoc</defaultGoal>
+      <defaultGoal>clean verify apache-rat:check checkstyle:check japicmp:cmp javadoc:javadoc spotbugs:check</defaultGoal>
       <pluginManagement>
         <plugins>
           <plugin>
@@ -241,6 +243,21 @@
               <configLocation>${basedir}/checkstyle.xml</configLocation>
               <enableRulesSummary>false</enableRulesSummary>
               <headerLocation>${basedir}/license-header.txt</headerLocation>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs-maven-plugin</artifactId>
+            <version>${spotbugs.plugin.version}</version>
+            <dependencies>
+              <dependency>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs</artifactId>
+                <version>${spotbugs.impl.version}</version>
+              </dependency>
+            </dependencies>
+            <configuration>
+              <excludeFilterFile>${basedir}/findbugs-exclude-filter.xml</excludeFilterFile>
             </configuration>
           </plugin>
         </plugins>
@@ -350,14 +367,8 @@
           <artifactId>maven-checkstyle-plugin</artifactId>
         </plugin>
         <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>findbugs-maven-plugin</artifactId>
-          <version>3.0.5</version>
-          <configuration>
-            <threshold>Normal</threshold>
-            <effort>Default</effort>
-            <excludeFilterFile>${basedir}/findbugs-exclude-filter.xml</excludeFilterFile>
-          </configuration>
+          <groupId>com.github.spotbugs</groupId>
+          <artifactId>spotbugs-maven-plugin</artifactId>
         </plugin>
         <plugin>
           <groupId>org.apache.rat</groupId>

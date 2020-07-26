@@ -78,14 +78,13 @@
     <Bug code="DE" />
   </Match>
   <Match>
-    <!-- Swallowing exception is deliberate design choice -->
+    <!-- TODO, Is this a real issue? -->
     <Class name="org.apache.commons.pool2.impl.SoftReferenceObjectPool" />
     <Or>
-      <Method name="addObject" />
-      <Method name="clear" />
-      <Method name="returnObject" />
+      <Field name="createCount" />
+      <Field name="numActive" />
     </Or>
-    <Bug code="DE" />
+    <Bug pattern="IS2_INCONSISTENT_SYNC" />
   </Match>
   
   <!-- TEST CODE -->
@@ -129,7 +128,7 @@
     <!-- they are the same object                                            -->
     <Class name="org.apache.commons.pool2.impl.TestGenericKeyedObjectPool" />
     <Method name="testMaxTotalLRU" />
-    <bug pattern="ES_COMPARING_STRINGS_WITH_EQ" />
+    <Bug pattern="ES_COMPARING_STRINGS_WITH_EQ" />
   </Match>
   <Match>
     <!-- Exception is ignored as earlier exception is more important -->
