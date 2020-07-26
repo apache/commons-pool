@@ -26,7 +26,7 @@ New features:
 o POOL-385:  Added Automatic-Module-Name to support JPMS #31. Thanks to scholzi100.
 
 Fixed Bugs:
-o POOL-386:  Refactored EvictionTimer usage tracking to fix POOL-386 and handle abandoned pools. #32. Thanks to Phil Steitz, Phil Steitz.
+o POOL-386:  Refactored EvictionTimer usage tracking to fix POOL-386 and handle abandoned pools. #32. Thanks to Phil Steitz, Mark Thomas.
 o            [Javadoc] Add missing @throws comment in PoolUtils. #27. Thanks to Prodigysov, Gary Gregory.
 
 Changes:
