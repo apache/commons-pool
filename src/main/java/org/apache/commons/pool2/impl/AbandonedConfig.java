@@ -17,10 +17,12 @@
 
 package org.apache.commons.pool2.impl;
 
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.nio.charset.Charset;
+
 import org.apache.commons.pool2.TrackedUse;
 import org.apache.commons.pool2.UsageTracking;
-
-import java.io.PrintWriter;
 
 /**
  * Configuration settings for abandoned object removal.
@@ -210,7 +212,7 @@ public class AbandonedConfig {
      * PrintWriter to use to log information on abandoned objects.
      * Use of default system encoding is deliberate.
      */
-    private PrintWriter logWriter = new PrintWriter(System.out);
+    private PrintWriter logWriter = new PrintWriter(new OutputStreamWriter(System.out, Charset.defaultCharset()));
 
     /**
      * Returns the log writer being used by this configuration to log
