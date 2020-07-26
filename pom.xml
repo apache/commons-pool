@@ -193,7 +193,7 @@
   </properties> 
 
   <build>
-      <defaultGoal>clean verify apache-rat:check japicmp:cmp javadoc:javadoc</defaultGoal>
+      <defaultGoal>clean verify apache-rat:check checkstyle:check japicmp:cmp javadoc:javadoc</defaultGoal>
       <pluginManagement>
         <plugins>
           <plugin>
@@ -228,6 +228,16 @@
                 <version>6.5.0</version>
               </dependency>
             </dependencies>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-checkstyle-plugin</artifactId>
+            <version>3.0.0</version>
+            <configuration>
+              <configLocation>${basedir}/checkstyle.xml</configLocation>
+              <enableRulesSummary>false</enableRulesSummary>
+              <headerLocation>${basedir}/license-header.txt</headerLocation>
+            </configuration>
           </plugin>
         </plugins>
       </pluginManagement>
@@ -334,12 +344,6 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
-          <version>3.0.0</version>
-          <configuration>
-            <configLocation>${basedir}/checkstyle.xml</configLocation>
-            <enableRulesSummary>false</enableRulesSummary>
-            <headerLocation>${basedir}/license-header.txt</headerLocation>
-          </configuration>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>

@@ -20,7 +20,6 @@ import java.lang.ref.WeakReference;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -104,6 +103,7 @@ class EvictionTimer {
      *                  long should this thread wait for the executor to
      *                  terminate?
      * @param unit      The units for the specified timeout.
+     * @param restarting The state of the evictor.
      */
     static synchronized void cancel(
             final BaseGenericObjectPool<?>.Evictor evictor, final long timeout, final TimeUnit unit, final boolean restarting) {
@@ -195,10 +195,18 @@ class EvictionTimer {
      * no longer reachable, run is no-op.
      */
     private static class WeakRunner implements Runnable {
+
         private final WeakReference<Runnable> ref;
-        public WeakRunner(WeakReference<Runnable> ref) {
+
+        /**
+         * Constructs a new instance to track the given reference.
+         *
+         * @param ref the reference to track.
+         */
+        private WeakRunner(WeakReference<Runnable> ref) {
            this.ref = ref;
         }
+
         @Override
         public void run() {
             final Runnable task = ref.get();
