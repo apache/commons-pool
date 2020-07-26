@@ -74,6 +74,12 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="update" due-to="Gary Gregory">
       Update Checkstyle plugin from 3.0.0 to 3.1.1.
     </action>
+    <action dev="ggregory" type="update" due-to="Gary Gregory">
+      Update JApiCmp from 0.14.1 to 0.14.3.
+    </action>
+    <action dev="ggregory" type="update" due-to="Gary Gregory">
+      Update animal-sniffer-maven-plugin from 1.16 to 1.19.
+    </action>
   </release>
   <release version="2.8.0" date="2019-12-05" description="This is a maintenance release (Java 8).">
     <action dev="ggregory" issue="POOL-374" type="fix" due-to="Gary Gregory, Phil Steitz">

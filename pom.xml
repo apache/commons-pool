@@ -159,7 +159,7 @@
     <commons.module.name>org.apache.commons.pool2</commons.module.name>
     <commons.rc.version>RC1</commons.rc.version>
     <!-- Java 8 -->
-    <commons.release.version>2.8.0</commons.release.version>
+    <commons.release.version>2.8.1</commons.release.version>
     <commons.release.desc>(Java 8)</commons.release.desc>
     <!-- Java 7 -->
     <commons.release.2.version>2.6.2</commons.release.2.version>
@@ -179,17 +179,18 @@
     <commons.jira.pid>12310488</commons.jira.pid>
     <commons.scmPubCheckoutDirectory>site-content</commons.scmPubCheckoutDirectory>
     <commons.osgi.import>net.sf.cglib.proxy;resolution:=optional,*</commons.osgi.import>
-    <commons.animal-sniffer.version>1.16</commons.animal-sniffer.version>
+    <commons.animal-sniffer.version>1.19</commons.animal-sniffer.version>
     <commons.checkstyle-plugin.version>3.1.1</commons.checkstyle-plugin.version>
     <commons.felix.version>5.1.1</commons.felix.version>
 
     <!-- Commons Release Plugin -->
-    <commons.bc.version>2.7.0</commons.bc.version>
+    <commons.bc.version>2.8.0</commons.bc.version>
     <commons.release.isDistModule>true</commons.release.isDistModule>
     <commons.releaseManagerName>Gary Gregory</commons.releaseManagerName>    
     <commons.releaseManagerKey>86fdc7e2a11262cb</commons.releaseManagerKey>
     
-    <commons.japicmp.version>0.14.1</commons.japicmp.version>
+    <commons.japicmp.version>0.14.3</commons.japicmp.version>
+    <clirr.skip>true</clirr.skip>
     <japicmp.skip>false</japicmp.skip>
     <spotbugs.skip>false</spotbugs.skip>
   </properties> 
