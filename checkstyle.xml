@@ -45,8 +45,6 @@
         
      <!-- Require method javadocs, allow undeclared RTE -->
     <module name="JavadocMethod">
-      <property name="allowUndeclaredRTE" value="true"/>
-      <property name="allowMissingThrowsTags" value="true"/>
     </module>
         
     <!-- Require field javadoc -->
@@ -68,26 +66,12 @@
       <property name="classes" value="java.lang.Boolean, java.lang.String"/>
     </module>
 
-    <!-- Required for SuppressionCommentFilter below -->
-    <module name="FileContentsHolder"/>
-
   </module>
   
   <!-- Require package Javadoc -->
   <module name="JavadocPackage">
     <!-- setting allowLegacy means it will check for package.html instead of just package-info.java -->
     <property name="allowLegacy" value="true"/>
-  </module>
-
-  <!-- Setup special comments to suppress specific checks from source files -->
-  <module name="SuppressionCommentFilter">
-    <property name="offCommentFormat" value="CHECKSTYLE\: stop all checks"/>
-    <property name="onCommentFormat"  value="CHECKSTYLE\: resume checking"/>
-  </module>
-  <module name="SuppressionCommentFilter">
-    <property name="offCommentFormat" value="CHECKSTYLE\: stop VisibilityModifier"/>
-    <property name="onCommentFormat"  value="CHECKSTYLE\: resume VisibilityModifier"/>
-    <property name="checkFormat"      value="VisibilityModifier"/>
   </module>
 
 </module>

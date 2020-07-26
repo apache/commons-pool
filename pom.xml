@@ -180,6 +180,8 @@
     <commons.scmPubCheckoutDirectory>site-content</commons.scmPubCheckoutDirectory>
     <commons.osgi.import>net.sf.cglib.proxy;resolution:=optional,*</commons.osgi.import>
     <commons.animal-sniffer.version>1.16</commons.animal-sniffer.version>
+    <commons.checkstyle-plugin.version>3.1.1</commons.checkstyle-plugin.version>
+    <commons.felix.version>5.1.1</commons.felix.version>
 
     <!-- Commons Release Plugin -->
     <commons.bc.version>2.7.0</commons.bc.version>
@@ -199,6 +201,7 @@
           <plugin>
             <groupId>org.apache.felix</groupId>
             <artifactId>maven-bundle-plugin</artifactId>
+            <version>${commons.felix.version}</version>
             <dependencies>
               <dependency>
                 <groupId>biz.aQute.bnd</groupId>
@@ -232,7 +235,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-checkstyle-plugin</artifactId>
-            <version>3.0.0</version>
+            <version>${commons.checkstyle-plugin.version}</version>
             <configuration>
               <configLocation>${basedir}/checkstyle.xml</configLocation>
               <enableRulesSummary>false</enableRulesSummary>
