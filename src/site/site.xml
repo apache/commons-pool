@@ -24,19 +24,20 @@
 
     <body>
         <menu name="Pool">
-            <item name="Overview"          href="/index.html"/>
-            <item name="Javadoc"           href="/apidocs/index.html"/>
-            <item name="Javadoc Archive"   href="https://javadoc.io/doc/org.apache.commons/commons-pool2/latest/index.html"/>
-            <item name="Examples"          href="/examples.html"/>
-            <item name="Downloads"         href="/download_pool.cgi"/>
-            <item name="Wiki"              href="http://wiki.apache.org/commons/Pool"/>
+            <item name="Overview"            href="/index.html"/>
+            <item name="Javadoc"             href="/apidocs/index.html"/>
+            <item name="Javadoc 2.x Archive" href="https://javadoc.io/doc/org.apache.commons/commons-pool2/latest/index.html"/>
+            <item name="Javadoc 1.x Archive" href="https://javadoc.io/doc/commons-pool/commons-pool/latest/index.html"/>
+            <item name="Examples"            href="/examples.html"/>
+            <item name="Downloads"           href="/download_pool.cgi"/>
+            <item name="Wiki"                href="http://wiki.apache.org/commons/Pool"/>
         </menu>
 
         <menu name="Development">
-            <item name="Mailing Lists"     href="/mail-lists.html"/>
-            <item name="Issue Tracking"    href="/issue-tracking.html"/>
-            <item name="Source Repository" href="/scm.html"/>
-            <item name="Javadoc latest"    href="apidocs/index.html"/>
+            <item name="Mailing Lists"       href="/mail-lists.html"/>
+            <item name="Issue Tracking"      href="/issue-tracking.html"/>
+            <item name="Source Repository"   href="/scm.html"/>
+            <item name="Javadoc latest"      href="apidocs/index.html"/>
         </menu>
     </body>
 
