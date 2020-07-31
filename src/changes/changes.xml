@@ -43,7 +43,7 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Pool Release Notes</title>
   </properties>
   <body>
-  <release version="2.8.1" date="2020-MM-DD" description="This is a maintenance release (Java 8).">
+  <release version="2.8.1" date="2020-07-27" description="This is a maintenance release (Java 8).">
     <action dev="ggregory" issue="POOL-386" type="fix" due-to="Phil Steitz, Mark Thomas">
       Refactored EvictionTimer usage tracking to fix POOL-386 and handle abandoned pools. #32.
     </action>
