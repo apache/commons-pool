@@ -27,7 +27,7 @@ matrix:
     - jdk: openjdk-ea
 
 script:
-  - mvn
+  - mvn -V --no-transfer-progress
 
 after_success:
-  - mvn clean cobertura:cobertura coveralls:report -Ptravis-cobertura
+  - mvn -V --no-transfer-progress clean cobertura:cobertura coveralls:report -Ptravis-cobertura
