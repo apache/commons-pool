@@ -1309,7 +1309,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         Boolean.valueOf(System.getProperty("TestGenericKeyedObjectPool.display.thread.details", "false")).booleanValue();
     // To pass this to a Maven test, use:
     // mvn test -DargLine="-DTestGenericKeyedObjectPool.display.thread.details=true"
-    // @see http://jira.codehaus.org/browse/SUREFIRE-121
+    // @see https://issues.apache.org/jira/browse/SUREFIRE-121
 
     /*
      * Test multi-threaded pool access.

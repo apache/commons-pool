@@ -587,7 +587,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         Boolean.valueOf(System.getProperty("TestGenericObjectPool.display.thread.details", "false")).booleanValue();
     // To pass this to a Maven test, use:
     // mvn test -DargLine="-DTestGenericObjectPool.display.thread.details=true"
-    // @see http://jira.codehaus.org/browse/SUREFIRE-121
+    // @see https://issues.apache.org/jira/browse/SUREFIRE-121
 
     protected GenericObjectPool<String> genericObjectPool = null;
 
