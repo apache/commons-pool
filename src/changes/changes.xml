@@ -520,7 +520,7 @@ JDK level 1.6 or above.">
       GOP/GKOP don't consistently use getters to access fields
     </action>
     <action issue="POOL-199" dev="markt" type="fix" >
-      GOP/GKOP evict() method is not synchronised and is not thread-safe
+      GOP/GKOP evict() method is not synchronized and is not thread-safe
     </action>
     <action issue="POOL-197" dev="markt" type="fix" >
       PooledObject: risky init of lastBorrowTime &amp; lastReturnTime

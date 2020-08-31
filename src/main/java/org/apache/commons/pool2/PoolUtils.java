@@ -1836,6 +1836,7 @@ public final class PoolUtils {
         /**
          * {@inheritDoc}
          */
+        @SuppressWarnings("resource") // getKeyedPool(): ivar access
         @Override
         public String toString() {
             return "ErodingPerKeyKeyedObjectPool{" + "factor=" + factor +
