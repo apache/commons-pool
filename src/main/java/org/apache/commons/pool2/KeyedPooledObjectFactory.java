@@ -112,6 +112,25 @@ public interface KeyedPooledObjectFactory<K, V> {
      * @see KeyedObjectPool#invalidateObject
      */
     void destroyObject(K key, PooledObject<V> p) throws Exception;
+    
+    /**
+     * Destroy an instance no longer needed by the pool, using the provided {@link DestroyMode}.
+     *
+     * @param key the key used when selecting the instance
+     * @param p a {@code PooledObject} wrapping the instance to be destroyed
+     * @param mode DestroyMode providing context to the factory
+     *
+     * @throws Exception should be avoided as it may be swallowed by
+     *    the pool implementation.
+     *
+     * @see #validateObject
+     * @see KeyedObjectPool#invalidateObject
+     * @see #destroyObject(Object, PooledObject)
+     * @see DestroyMode
+     */
+    default void destroyObject(K key, PooledObject<V> p, DestroyMode mode) throws Exception {
+        destroyObject(key, p);
+    }
 
     /**
      * Ensures that the instance is safe to be returned by the pool.
