@@ -183,6 +183,29 @@ public interface ObjectPool<T> extends Closeable {
      * @throws Exception if the instance cannot be invalidated
      */
     void invalidateObject(T obj) throws Exception;
+    
+    /**
+     * Invalidates an object from the pool, using the provided
+     * {@link DestroyMode}
+     * <p>
+     * By contract, {@code obj} <strong>must</strong> have been obtained
+     * using {@link #borrowObject} or a related method as defined in an
+     * implementation or sub-interface.
+     * </p>
+     * <p>
+     * This method should be used when an object that has been borrowed is
+     * determined (due to an exception or other problem) to be invalid.
+     * </p>
+     *
+     * @param obj a {@link #borrowObject borrowed} instance to be disposed.
+     * @param mode destroy activation context provided to the factory
+     *
+     * @throws Exception if the instance cannot be invalidated
+     */
+    default void invalidateObject(T obj, DestroyMode mode)
+                    throws Exception {
+        invalidateObject(obj);
+    }
 
     /**
      * Returns an instance to the pool. By contract, {@code obj}
@@ -201,4 +224,5 @@ public interface ObjectPool<T> extends Closeable {
      * @throws Exception if an instance cannot be returned to the pool
      */
     void returnObject(T obj) throws Exception;
+
 }

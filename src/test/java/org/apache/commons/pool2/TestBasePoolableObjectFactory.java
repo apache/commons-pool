@@ -16,7 +16,10 @@
  */
 package org.apache.commons.pool2;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.junit.Test;
@@ -27,21 +30,45 @@ public class TestBasePoolableObjectFactory {
 
     @Test
     public void testDefaultMethods() throws Exception {
-        final PooledObjectFactory<Object> factory = new TestFactory();
+        final PooledObjectFactory<AtomicInteger> factory = new TestFactory();
 
         factory.activateObject(null); // a no-op
         factory.passivateObject(null); // a no-op
         factory.destroyObject(null); // a no-op
         assertTrue(factory.validateObject(null)); // constant true
     }
+    
+    /**
+     * Default destroy does nothing to underlying AtomicInt, ABANDONED mode
+     * increments the value.  Verify that destroy with no mode does default,
+     * destroy with ABANDONED mode increments.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testDestroyModes() throws Exception {
+        final PooledObjectFactory<AtomicInteger> factory = new TestFactory();
+        final PooledObject<AtomicInteger> pooledObj = factory.makeObject();
+        final AtomicInteger obj = pooledObj.getObject();
+        factory.destroyObject(pooledObj);
+        assertEquals(0, obj.get());
+        factory.destroyObject(pooledObj, DestroyMode.ABANDONED);
+        assertEquals(1, obj.get());    
+    }
 
-    private static class TestFactory extends BasePooledObjectFactory<Object> {
+    private static class TestFactory extends BasePooledObjectFactory<AtomicInteger> {
         @Override
-        public Object create() throws Exception {
-            return null;
+        public AtomicInteger create() throws Exception {
+            return new AtomicInteger(0);
         }
+        @Override 
+        public void destroyObject(PooledObject<AtomicInteger> p, DestroyMode mode){
+            if (mode.equals(DestroyMode.ABANDONED)) {
+                p.getObject().incrementAndGet();
+            }
+        } 
         @Override
-        public PooledObject<Object> wrap(final Object value) {
+        public PooledObject<AtomicInteger> wrap(final AtomicInteger value) {
             return new DefaultPooledObject<>(value);
         }
     }

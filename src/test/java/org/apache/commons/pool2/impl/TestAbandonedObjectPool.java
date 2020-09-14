@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
+import org.apache.commons.pool2.DestroyMode;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.TrackedUse;
@@ -199,6 +200,33 @@ public class TestAbandonedObjectPool {
         Assert.assertEquals(0, pool.getNumActive());
         Assert.assertEquals(5, pool.getDestroyedCount());
     }
+    
+    public void testDestroyModeAbandoned() throws Exception {
+        abandonedConfig = new AbandonedConfig();
+        abandonedConfig.setRemoveAbandonedOnMaintenance(true);
+        abandonedConfig.setRemoveAbandonedTimeout(1);
+        pool.close();  // Unregister pool created by setup
+        pool = new GenericObjectPool<>(
+             // validate takes 1 second
+             new SimpleFactory(0, 0),
+             new GenericObjectPoolConfig<PooledTestObject>(), abandonedConfig);
+        pool.setTimeBetweenEvictionRunsMillis(50);
+        // Borrow an object, wait long enough for it to be abandoned
+        final PooledTestObject obj = pool.borrowObject();
+        Thread.sleep(100);
+        Assert.assertTrue(obj.isDetached());
+    }
+    
+    public void testDestroyModeNormal() throws Exception {
+        abandonedConfig = new AbandonedConfig();
+        pool.close();  // Unregister pool created by setup
+        pool = new GenericObjectPool<>(new SimpleFactory(0, 0));
+        pool.setMaxIdle(0);
+        final PooledTestObject obj = pool.borrowObject();
+        pool.returnObject(obj);
+        Assert.assertTrue(obj.isDestroyed());
+        Assert.assertFalse(obj.isDetached());
+    }
 
     /**
      * Verify that an object that the evictor identifies as abandoned while it
@@ -358,6 +386,11 @@ public class TestAbandonedObjectPool {
 
         @Override
         public void destroyObject(final PooledObject<PooledTestObject> obj) throws Exception {
+            destroyObject(obj, DestroyMode.NORMAL);
+        }
+        
+        @Override
+        public void destroyObject(final PooledObject<PooledTestObject> obj, DestroyMode mode) throws Exception {
             obj.getObject().setActive(false);
             // while destroying instances, yield control to other threads
             // helps simulate threading errors
@@ -365,7 +398,7 @@ public class TestAbandonedObjectPool {
             if (destroyLatency != 0) {
                 Thread.sleep(destroyLatency);
             }
-            obj.getObject().destroy();
+            obj.getObject().destroy(mode);
         }
     }
 }
@@ -376,6 +409,7 @@ class PooledTestObject implements TrackedUse {
     private int _hash = 0;
     private boolean _abandoned = false;
     private static final AtomicInteger hash = new AtomicInteger();
+    private boolean detached = false;  // destroy-abandoned "detaches"
 
     public PooledTestObject() {
         _hash = hash.incrementAndGet();
@@ -389,12 +423,19 @@ class PooledTestObject implements TrackedUse {
         return active;
     }
 
-    public void destroy() {
+    public void destroy(DestroyMode mode) {
         destroyed = true;
+        if (mode.equals(DestroyMode.ABANDONED)) {
+            detached = true;
+        }
     }
 
     public boolean isDestroyed() {
         return destroyed;
+    }
+    
+    public boolean isDetached() {
+        return detached;
     }
 
     @Override
