@@ -2915,13 +2915,13 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
      */
     @Test
     public void testAbandonedPool() throws Exception {
-        GenericObjectPoolConfig config = new GenericObjectPoolConfig();
+        final GenericObjectPoolConfig config = new GenericObjectPoolConfig();
         config.setJmxEnabled(false);
         GenericObjectPool<String> abandoned = new GenericObjectPool<>(simpleFactory, config);
         abandoned.setTimeBetweenEvictionRunsMillis(100); // Starts evictor
 
         // This is ugly, but forces gc to hit the pool
-        WeakReference<GenericObjectPool> ref = new WeakReference<>(abandoned);
+        final WeakReference<GenericObjectPool> ref = new WeakReference<>(abandoned);
         abandoned = null;
         while (ref.get() != null) {
             System.gc();

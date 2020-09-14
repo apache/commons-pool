@@ -17,15 +17,14 @@
 package org.apache.commons.pool2;
 
 /**
- * Destroy context provided to object factories via destroyObject methods.
- * Values provide information about why the pool is asking for a pooled object
- * to be destroyed.
+ * Destroy context provided to object factories via destroyObject methods. Values provide information about why the pool
+ * is asking for a pooled object to be destroyed.
  *
- * @since 2.8.2
+ * @since 2.9.0
  */
 public enum DestroyMode {
-                         /** Normal destroy */
-                         NORMAL,
-                         /** Destroy abandoned object */
-                         ABANDONED
+    /** Normal destroy */
+    NORMAL,
+    /** Destroy abandoned object */
+    ABANDONED
 }

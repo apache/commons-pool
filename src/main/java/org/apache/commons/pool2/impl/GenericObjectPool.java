@@ -629,9 +629,10 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * @throws Exception             if an exception occurs destroying the
      *                               object
      * @throws IllegalStateException if obj does not belong to this pool
+     * @since 2.9.0
      */
     @Override
-    public void invalidateObject(final T obj, DestroyMode mode) throws Exception {
+    public void invalidateObject(final T obj, final DestroyMode mode) throws Exception {
         final PooledObject<T> p = allObjects.get(new IdentityWrapper<>(obj));
         if (p == null) {
             if (isAbandonedConfig()) {

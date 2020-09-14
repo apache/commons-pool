@@ -292,10 +292,10 @@ public interface KeyedObjectPool<K, V> extends Closeable {
      * @param mode destroy activation context provided to the factory
      *
      * @throws Exception if the instance cannot be invalidated
+     * @since 2.9.0
      */
-    default void invalidateObject(K key, V obj, DestroyMode mode)
-                    throws Exception {
-                    invalidateObject(key, obj);
+    default void invalidateObject(final K key, final V obj, final DestroyMode mode) throws Exception {
+        invalidateObject(key, obj);
     }
 
     /**

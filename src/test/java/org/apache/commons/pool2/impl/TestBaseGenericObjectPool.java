@@ -95,7 +95,7 @@ public class TestBaseGenericObjectPool {
         }
 
         for (int i = 0; i < 1000; i++) {
-            GenericObjectPool<AtomicInteger> nonEvictingPool = new GenericObjectPool<>(factory);
+            final GenericObjectPool<AtomicInteger> nonEvictingPool = new GenericObjectPool<>(factory);
             nonEvictingPool.close();
         }
 

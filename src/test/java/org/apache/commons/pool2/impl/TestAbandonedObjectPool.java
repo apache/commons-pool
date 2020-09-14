@@ -390,7 +390,7 @@ public class TestAbandonedObjectPool {
         }
         
         @Override
-        public void destroyObject(final PooledObject<PooledTestObject> obj, DestroyMode mode) throws Exception {
+        public void destroyObject(final PooledObject<PooledTestObject> obj, final DestroyMode mode) throws Exception {
             obj.getObject().setActive(false);
             // while destroying instances, yield control to other threads
             // helps simulate threading errors
@@ -423,7 +423,7 @@ class PooledTestObject implements TrackedUse {
         return active;
     }
 
-    public void destroy(DestroyMode mode) {
+    public void destroy(final DestroyMode mode) {
         destroyed = true;
         if (mode.equals(DestroyMode.ABANDONED)) {
             detached = true;

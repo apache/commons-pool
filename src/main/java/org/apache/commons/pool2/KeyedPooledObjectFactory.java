@@ -127,8 +127,9 @@ public interface KeyedPooledObjectFactory<K, V> {
      * @see KeyedObjectPool#invalidateObject
      * @see #destroyObject(Object, PooledObject)
      * @see DestroyMode
+     * @since 2.9.0
      */
-    default void destroyObject(K key, PooledObject<V> p, DestroyMode mode) throws Exception {
+    default void destroyObject(final K key, final PooledObject<V> p, final DestroyMode mode) throws Exception {
         destroyObject(key, p);
     }
 

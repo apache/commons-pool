@@ -577,9 +577,10 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      *                               object
      * @throws IllegalStateException if obj does not belong to the pool
      *                               under the given key
+     * @since 2.9.0
      */
     @Override
-    public void invalidateObject(final K key, final T obj, DestroyMode mode) throws Exception {
+    public void invalidateObject(final K key, final T obj, final DestroyMode mode) throws Exception {
 
         final ObjectDeque<T> objectDeque = poolMap.get(key);
 
@@ -1103,7 +1104,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * @return {@code true} if the object was destroyed, otherwise {@code false}
      * @throws Exception If the object destruction failed
      */
-    private boolean destroy(final K key, final PooledObject<T> toDestroy, final boolean always, DestroyMode mode)
+    private boolean destroy(final K key, final PooledObject<T> toDestroy, final boolean always, final DestroyMode mode)
             throws Exception {
 
         final ObjectDeque<T> objectDeque = register(key);

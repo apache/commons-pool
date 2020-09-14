@@ -201,9 +201,9 @@ public interface ObjectPool<T> extends Closeable {
      * @param mode destroy activation context provided to the factory
      *
      * @throws Exception if the instance cannot be invalidated
+     * @since 2.9.0
      */
-    default void invalidateObject(T obj, DestroyMode mode)
-                    throws Exception {
+    default void invalidateObject(final T obj, final DestroyMode mode) throws Exception {
         invalidateObject(obj);
     }
 

@@ -120,8 +120,9 @@ public interface PooledObjectFactory<T> {
    * @see ObjectPool#invalidateObject
    * @see #destroyObject(PooledObject)
    * @see DestroyMode
+   * @since 2.9.0
    */
-  default void destroyObject(PooledObject<T> p, DestroyMode mode) throws Exception {
+  default void destroyObject(final PooledObject<T> p, final DestroyMode mode) throws Exception {
       destroyObject(p);
   }
 
