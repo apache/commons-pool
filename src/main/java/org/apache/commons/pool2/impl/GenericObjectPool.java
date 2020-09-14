@@ -318,6 +318,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      *
      * @see AbandonedConfig
      */
+    @SuppressWarnings("resource") // PrintWriter is managed elsewhere
     public void setAbandonedConfig(final AbandonedConfig abandonedConfig) {
         if (abandonedConfig == null) {
             this.abandonedConfig = null;
@@ -1062,13 +1063,14 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * Recovers abandoned objects which have been checked out but
      * not used since longer than the removeAbandonedTimeout.
      *
-     * @param ac The configuration to use to identify abandoned objects
+     * @param abandonedConfig The configuration to use to identify abandoned objects
      */
-    private void removeAbandoned(final AbandonedConfig ac) {
+    @SuppressWarnings("resource") // PrintWriter is managed elsewhere
+    private void removeAbandoned(final AbandonedConfig abandonedConfig) {
         // Generate a list of abandoned objects to remove
         final long now = System.currentTimeMillis();
         final long timeout =
-                now - (ac.getRemoveAbandonedTimeout() * 1000L);
+                now - (abandonedConfig.getRemoveAbandonedTimeout() * 1000L);
         final ArrayList<PooledObject<T>> remove = new ArrayList<>();
         final Iterator<PooledObject<T>> it = allObjects.values().iterator();
         while (it.hasNext()) {
@@ -1086,8 +1088,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         final Iterator<PooledObject<T>> itr = remove.iterator();
         while (itr.hasNext()) {
             final PooledObject<T> pooledObject = itr.next();
-            if (ac.getLogAbandoned()) {
-                pooledObject.printStackTrace(ac.getLogWriter());
+            if (abandonedConfig.getLogAbandoned()) {
+                pooledObject.printStackTrace(abandonedConfig.getLogWriter());
             }
             try {
                 invalidateObject(pooledObject.getObject(), DestroyMode.ABANDONED);
@@ -1102,8 +1104,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
 
     @Override
     public void use(final T pooledObject) {
-        final AbandonedConfig ac = this.abandonedConfig;
-        if (ac != null && ac.getUseUsageTracking()) {
+        final AbandonedConfig abandonedCfg = this.abandonedConfig;
+        if (abandonedCfg != null && abandonedCfg.getUseUsageTracking()) {
             final PooledObject<T> wrapper = allObjects.get(new IdentityWrapper<>(pooledObject));
             wrapper.use();
         }
