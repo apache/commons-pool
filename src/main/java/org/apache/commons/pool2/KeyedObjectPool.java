@@ -270,8 +270,8 @@ public interface KeyedObjectPool<K, V> extends Closeable {
      * @throws Exception if the instance cannot be invalidated
      */
     void invalidateObject(K key, V obj) throws Exception;
-    
-    
+
+
     /**
      * Invalidates an object from the pool, using the provided
      * {@link DestroyMode}.

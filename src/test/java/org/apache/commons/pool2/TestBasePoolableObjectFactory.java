@@ -37,7 +37,7 @@ public class TestBasePoolableObjectFactory {
         factory.destroyObject(null); // a no-op
         assertTrue(factory.validateObject(null)); // constant true
     }
-    
+
     /**
      * Default destroy does nothing to underlying AtomicInt, ABANDONED mode
      * increments the value.  Verify that destroy with no mode does default,
@@ -53,7 +53,7 @@ public class TestBasePoolableObjectFactory {
         factory.destroyObject(pooledObj);
         assertEquals(0, obj.get());
         factory.destroyObject(pooledObj, DestroyMode.ABANDONED);
-        assertEquals(1, obj.get());    
+        assertEquals(1, obj.get());
     }
 
     private static class TestFactory extends BasePooledObjectFactory<AtomicInteger> {
@@ -61,12 +61,12 @@ public class TestBasePoolableObjectFactory {
         public AtomicInteger create() throws Exception {
             return new AtomicInteger(0);
         }
-        @Override 
+        @Override
         public void destroyObject(final PooledObject<AtomicInteger> p, final DestroyMode mode){
             if (mode.equals(DestroyMode.ABANDONED)) {
                 p.getObject().incrementAndGet();
             }
-        } 
+        }
         @Override
         public PooledObject<AtomicInteger> wrap(final AtomicInteger value) {
             return new DefaultPooledObject<>(value);

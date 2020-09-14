@@ -105,7 +105,7 @@ public interface PooledObjectFactory<T> {
    * @see ObjectPool#invalidateObject
    */
   void destroyObject(PooledObject<T> p) throws Exception;
-  
+
   /**
    * Destroys an instance no longer needed by the pool, using the provided
    * DestroyMode.

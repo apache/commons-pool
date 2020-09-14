@@ -618,7 +618,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     public void invalidateObject(final T obj) throws Exception {
         invalidateObject(obj, DestroyMode.NORMAL);
     }
-    
+
     /**
      * {@inheritDoc}
      * <p>

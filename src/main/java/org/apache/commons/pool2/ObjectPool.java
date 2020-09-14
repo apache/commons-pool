@@ -183,7 +183,7 @@ public interface ObjectPool<T> extends Closeable {
      * @throws Exception if the instance cannot be invalidated
      */
     void invalidateObject(T obj) throws Exception;
-    
+
     /**
      * Invalidates an object from the pool, using the provided
      * {@link DestroyMode}

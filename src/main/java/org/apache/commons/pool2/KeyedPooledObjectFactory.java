@@ -112,7 +112,7 @@ public interface KeyedPooledObjectFactory<K, V> {
      * @see KeyedObjectPool#invalidateObject
      */
     void destroyObject(K key, PooledObject<V> p) throws Exception;
-    
+
     /**
      * Destroy an instance no longer needed by the pool, using the provided {@link DestroyMode}.
      *

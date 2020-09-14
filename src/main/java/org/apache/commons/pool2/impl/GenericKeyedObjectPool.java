@@ -543,7 +543,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
             }
         }
     }
-    
+
     /**
      * {@inheritDoc}
      * <p>

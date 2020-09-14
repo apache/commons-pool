@@ -141,7 +141,7 @@ class EvictionTimer {
             }
         }
     }
-    
+
     /**
      * @return the number of eviction tasks under management.
      */

@@ -200,7 +200,7 @@ public class TestAbandonedObjectPool {
         Assert.assertEquals(0, pool.getNumActive());
         Assert.assertEquals(5, pool.getDestroyedCount());
     }
-    
+
     public void testDestroyModeAbandoned() throws Exception {
         abandonedConfig = new AbandonedConfig();
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
@@ -216,7 +216,7 @@ public class TestAbandonedObjectPool {
         Thread.sleep(100);
         Assert.assertTrue(obj.isDetached());
     }
-    
+
     public void testDestroyModeNormal() throws Exception {
         abandonedConfig = new AbandonedConfig();
         pool.close();  // Unregister pool created by setup
@@ -388,7 +388,7 @@ public class TestAbandonedObjectPool {
         public void destroyObject(final PooledObject<PooledTestObject> obj) throws Exception {
             destroyObject(obj, DestroyMode.NORMAL);
         }
-        
+
         @Override
         public void destroyObject(final PooledObject<PooledTestObject> obj, final DestroyMode mode) throws Exception {
             obj.getObject().setActive(false);
@@ -433,7 +433,7 @@ class PooledTestObject implements TrackedUse {
     public boolean isDestroyed() {
         return destroyed;
     }
-    
+
     public boolean isDetached() {
         return detached;
     }
