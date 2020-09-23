@@ -56,6 +56,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="update" due-to="Dependabot">
       Update actions/setup-java from v1.4.0 to v1.4.2 #42.
     </action>
+    <action dev="ggregory" type="update" due-to="Dependabot">
+      Update optional asm-util from 8.0.1 to 9.0 #44.
+    </action>
   </release>
   <release version="2.8.1" date="2020-07-27" description="This is a maintenance release (Java 8).">
     <action dev="ggregory" issue="POOL-386" type="fix" due-to="Phil Steitz, Mark Thomas">
