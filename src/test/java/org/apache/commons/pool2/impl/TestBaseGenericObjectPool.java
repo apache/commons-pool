@@ -71,36 +71,37 @@ public class TestBaseGenericObjectPool {
 
     @Test
     public void testActiveTimeStatistics() {
-    	for (int i = 0; i < 99; i++) {  // must be < MEAN_TIMING_STATS_CACHE_SIZE
-    		pool.updateStatsReturn(i);
-    	}
-    	Assert.assertEquals(49, pool.getMeanActiveTimeMillis(), Double.MIN_VALUE);
+        for (int i = 0; i < 99; i++) { // must be < MEAN_TIMING_STATS_CACHE_SIZE
+            pool.updateStatsReturn(i);
+        }
+        Assert.assertEquals(49, pool.getMeanActiveTimeMillis(), Double.MIN_VALUE);
     }
 
     @Test
     public void testEvictionTimerMultiplePools() throws InterruptedException {
         final AtomicIntegerFactory factory = new AtomicIntegerFactory();
         factory.setValidateLatency(50);
-        final GenericObjectPool<AtomicInteger> evictingPool = new GenericObjectPool<>(factory);
-        evictingPool.setTimeBetweenEvictionRunsMillis(100);
-        evictingPool.setNumTestsPerEvictionRun(5);
-        evictingPool.setTestWhileIdle(true);
-        evictingPool.setMinEvictableIdleTimeMillis(50);
-        for (int i = 0; i < 10; i++) {
-            try {
-                evictingPool.addObject();
-            } catch (Exception e) {
-                e.printStackTrace();
+        try (final GenericObjectPool<AtomicInteger> evictingPool = new GenericObjectPool<>(factory)) {
+            evictingPool.setTimeBetweenEvictionRunsMillis(100);
+            evictingPool.setNumTestsPerEvictionRun(5);
+            evictingPool.setTestWhileIdle(true);
+            evictingPool.setMinEvictableIdleTimeMillis(50);
+            for (int i = 0; i < 10; i++) {
+                try {
+                    evictingPool.addObject();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-        }
 
-        for (int i = 0; i < 1000; i++) {
-            final GenericObjectPool<AtomicInteger> nonEvictingPool = new GenericObjectPool<>(factory);
-            nonEvictingPool.close();
-        }
+            for (int i = 0; i < 1000; i++) {
+                try (final GenericObjectPool<AtomicInteger> nonEvictingPool = new GenericObjectPool<>(factory)) {
+                    // empty
+                }
+            }
 
-        Thread.sleep(1000);
-        Assert.assertEquals(0, evictingPool.getNumIdle());
-        evictingPool.close();
+            Thread.sleep(1000);
+            Assert.assertEquals(0, evictingPool.getNumIdle());
+        }
     }
 }
