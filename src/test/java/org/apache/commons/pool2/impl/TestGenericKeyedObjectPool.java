@@ -1067,7 +1067,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
      * aware of this if you see a failure of this test.
      */
     @SuppressWarnings({
-        "rawtypes", "unchecked"
+        "rawtypes"
     })
     @Test(timeout=60000)
     public void testBorrowObjectFairness() throws Exception {
