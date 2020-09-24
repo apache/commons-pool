@@ -17,8 +17,6 @@
 
 package org.apache.commons.pool2;
 
-import org.apache.commons.pool2.KeyedPooledObjectFactory;
-import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 
 /**

@@ -18,8 +18,6 @@ package org.apache.commons.pool2;
 
 import static org.junit.Assert.*;
 
-import org.apache.commons.pool2.ObjectPool;
-import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.SoftReferenceObjectPool;
 import org.junit.Test;

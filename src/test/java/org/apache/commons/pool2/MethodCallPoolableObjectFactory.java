@@ -20,7 +20,6 @@ package org.apache.commons.pool2;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 
 /**
