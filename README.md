@@ -43,10 +43,11 @@
 Apache Commons Pool
 ===================
 
-[![Build Status](https://travis-ci.org/apache/commons-pool.svg)](https://travis-ci.org/apache/commons-pool)
+[![Travis-CI Status](https://travis-ci.org/apache/commons-pool.svg)](https://travis-ci.org/apache/commons-pool)
+[![GitHub Actions Status](https://github.com/apache/commons-pool/workflows/Java%20CI/badge.svg)](https://github.com/apache/commons-pool/actions)
 [![Coverage Status](https://coveralls.io/repos/apache/commons-pool/badge.svg)](https://coveralls.io/r/apache/commons-pool)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-pool2/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-pool2/)
-[![Javadocs](https://javadoc.io/badge/org.apache.commons/commons-pool2/2.8.1.svg)](https://javadoc.io/doc/org.apache.commons/commons-pool2/2.8.1)
+[![Javadocs](https://javadoc.io/badge/org.apache.commons/commons-pool2/2.9.0.svg)](https://javadoc.io/doc/org.apache.commons/commons-pool2/2.9.0)
 
 The Apache Commons Object Pooling Library.
 
@@ -67,7 +68,7 @@ Alternatively you can pull it from the central Maven repositories:
 <dependency>
   <groupId>org.apache.commons</groupId>
   <artifactId>commons-pool2</artifactId>
-  <version>2.8.1</version>
+  <version>2.9.0</version>
 </dependency>
 ```
 
