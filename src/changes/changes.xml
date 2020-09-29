@@ -43,6 +43,8 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Pool Release Notes</title>
   </properties>
   <body>
+  <release version="2.9.1" date="202Y-MM-DD" description="This is a MMMM release (Java 8).">
+  </release>
   <release version="2.9.0" date="2020-09-25" description="This is a minor release (Java 8).">
     <action issue="POOL-387" dev="ggregory" type="update" due-to=" Phil Steitz">
       Object factory destroy method should carry information on activation context.
