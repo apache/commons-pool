@@ -51,6 +51,18 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="update" due-to="Dependabot">
       Bump actions/setup-java from v1.4.2 to v1.4.3 #47.
     </action>
+    <action dev="ggregory" type="update" due-to="Dependabot">
+      Bump junit from 4.13 to 4.13.1 #50.
+    </action>
+    <action dev="ggregory" type="update" due-to="Dependabot">
+      Bump biz.aQute.bndlib from 5.1.2 to 5.2.0 #51.
+    </action>
+    <action dev="ggregory" type="update" due-to="Dependabot">
+      Bump spotbugs from 4.1.3 to 4.1.4 #52.
+    </action>
+    <action dev="ggregory" type="update" due-to="Dependabot">
+      Bump spotbugs-maven-plugin from 4.1.3 to 4.1.4 #53.
+    </action>
   </release>
   <release version="2.9.0" date="2020-09-25" description="This is a minor release (Java 8).">
     <action issue="POOL-387" dev="ggregory" type="update" due-to=" Phil Steitz">
