@@ -30,18 +30,15 @@ public class VisitTracker<K> {
     private K key = null;
 
     public VisitTracker() {
-        super();
         reset();
     }
 
     public VisitTracker(final int id) {
-        super();
         this.id = id;
         reset();
     }
 
     public VisitTracker(final int id, final K key) {
-        super();
         this.id = id;
         this.key = key;
         reset();

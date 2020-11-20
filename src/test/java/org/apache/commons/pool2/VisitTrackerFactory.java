@@ -28,7 +28,6 @@ public class VisitTrackerFactory<K>
     private int nextId = 0;
 
     public VisitTrackerFactory() {
-        super();
     }
 
     @Override
