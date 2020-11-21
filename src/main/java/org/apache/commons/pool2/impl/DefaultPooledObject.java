@@ -197,7 +197,6 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
         } else if (state == PooledObjectState.EVICTION) {
             // TODO Allocate anyway and ignore eviction test
             state = PooledObjectState.EVICTION_RETURN_TO_HEAD;
-            return false;
         }
         // TODO if validating and testOnBorrow == true then pre-allocate for
         // performance
