@@ -22,8 +22,7 @@ cache:
 jdk:
   - openjdk8
   - openjdk11
-  - oraclejdk11
-  - openjdk14
+  - openjdk15
   - openjdk-ea
 
 matrix:
