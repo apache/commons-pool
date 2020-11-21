@@ -1355,11 +1355,9 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         final int maxTotal = getMaxTotal();
         final int maxTotalPerKeySave = getMaxTotalPerKey();
 
-        int objectDefecit = 0;
-
         // Calculate no of objects needed to be created, in order to have
         // the number of pooled objects < maxTotalPerKey();
-        objectDefecit = getMinIdlePerKey() - objectDeque.getIdleObjects().size();
+        int objectDefecit = getMinIdlePerKey() - objectDeque.getIdleObjects().size();
         if (maxTotalPerKeySave > 0) {
             final int growLimit = Math.max(0,
                     maxTotalPerKeySave - objectDeque.getIdleObjects().size());

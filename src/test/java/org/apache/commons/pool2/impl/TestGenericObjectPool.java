@@ -1759,7 +1759,6 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
     @Test(timeout = 60000)
     public void testFIFO() throws Exception {
-        String o = null;
         genericObjectPool.setLifo(false);
         genericObjectPool.addObject(); // "0"
         genericObjectPool.addObject(); // "1"
@@ -1767,7 +1766,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertEquals("Oldest", "0", genericObjectPool.borrowObject());
         assertEquals("Middle", "1", genericObjectPool.borrowObject());
         assertEquals("Youngest", "2", genericObjectPool.borrowObject());
-        o = genericObjectPool.borrowObject();
+        String o = genericObjectPool.borrowObject();
         assertEquals("new-3", "3", o);
         genericObjectPool.returnObject(o);
         assertEquals("returned-3", o, genericObjectPool.borrowObject());
@@ -1879,7 +1878,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
     @Test(timeout = 60000)
     public void testLIFO() throws Exception {
-        String o = null;
+        String o;
         genericObjectPool.setLifo(true);
         genericObjectPool.addObject(); // "0"
         genericObjectPool.addObject(); // "1"
