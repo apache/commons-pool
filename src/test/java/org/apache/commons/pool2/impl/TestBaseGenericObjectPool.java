@@ -89,7 +89,7 @@ public class TestBaseGenericObjectPool {
             for (int i = 0; i < 10; i++) {
                 try {
                     evictingPool.addObject();
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     e.printStackTrace();
                 }
             }

@@ -1766,7 +1766,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertEquals("Oldest", "0", genericObjectPool.borrowObject());
         assertEquals("Middle", "1", genericObjectPool.borrowObject());
         assertEquals("Youngest", "2", genericObjectPool.borrowObject());
-        String o = genericObjectPool.borrowObject();
+        final String o = genericObjectPool.borrowObject();
         assertEquals("new-3", "3", o);
         genericObjectPool.returnObject(o);
         assertEquals("returned-3", o, genericObjectPool.borrowObject());

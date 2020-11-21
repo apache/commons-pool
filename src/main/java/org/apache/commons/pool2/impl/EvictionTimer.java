@@ -132,7 +132,7 @@ class EvictionTimer {
      * @param evictor Eviction task to remove
      */
     private static void remove(final BaseGenericObjectPool<?>.Evictor evictor) {
-        for (Entry<WeakReference<Runnable>, WeakRunner> entry : taskMap.entrySet()) {
+        for (final Entry<WeakReference<Runnable>, WeakRunner> entry : taskMap.entrySet()) {
             if (entry.getKey().get() == evictor) {
                 executor.remove(entry.getValue());
                 taskMap.remove(entry.getKey());
@@ -174,7 +174,7 @@ class EvictionTimer {
         @Override
         public void run() {
             synchronized (EvictionTimer.class) {
-                for (Entry<WeakReference<Runnable>, WeakRunner> entry : taskMap.entrySet()) {
+                for (final Entry<WeakReference<Runnable>, WeakRunner> entry : taskMap.entrySet()) {
                     if (entry.getKey().get() == null) {
                         executor.remove(entry.getValue());
                         taskMap.remove(entry.getKey());
