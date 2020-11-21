@@ -1403,7 +1403,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             waiterPool.setLifo(false);
             // Load the pool with idle instances - 5 each for 10 keys
             for (int i = 0; i < 10; i++) {
-                final String key = Integer.valueOf(i).toString();
+                final String key = Integer.toString(i);
                 for (int j = 0; j < 5; j++) {
                     waiterPool.addObject(key);
                 }
