@@ -16,13 +16,13 @@
  */
 package org.apache.commons.pool2;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.pool2.impl.DefaultPooledObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  */
@@ -43,7 +43,7 @@ public class TestBasePoolableObjectFactory {
      * increments the value.  Verify that destroy with no mode does default,
      * destroy with ABANDONED mode increments.
      *
-     * @throws Exception
+     * @throws Exception May occur in some failure modes
      */
     @Test
     public void testDestroyModes() throws Exception {

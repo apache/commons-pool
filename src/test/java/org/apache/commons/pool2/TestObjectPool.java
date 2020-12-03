@@ -16,16 +16,19 @@
  */
 package org.apache.commons.pool2;
 
-import static org.junit.Assert.*;
 
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.SoftReferenceObjectPool;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Abstract test case for {@link ObjectPool} implementations.
@@ -76,24 +79,24 @@ public abstract class TestObjectPool {
 
         // The following should not throw exceptions just because the pool is closed.
         if (pool.getNumIdle() >= 0) {
-            assertEquals("A closed pool shouldn't have any idle objects.", 0, pool.getNumIdle());
+            assertEquals( 0, pool.getNumIdle(),"A closed pool shouldn't have any idle objects.");
         }
         if (pool.getNumActive() >= 0) {
-            assertEquals("A closed pool should still keep count of active objects.", 2, pool.getNumActive());
+            assertEquals( 2, pool.getNumActive(),"A closed pool should still keep count of active objects.");
         }
         pool.returnObject(o1);
         if (pool.getNumIdle() >= 0) {
-            assertEquals("returnObject should not add items back into the idle object pool for a closed pool.", 0, pool.getNumIdle());
+            assertEquals( 0, pool.getNumIdle(),"returnObject should not add items back into the idle object pool for a closed pool.");
         }
         if (pool.getNumActive() >= 0) {
-            assertEquals("A closed pool should still keep count of active objects.", 1, pool.getNumActive());
+            assertEquals( 1, pool.getNumActive(),"A closed pool should still keep count of active objects.");
         }
         pool.invalidateObject(o2);
         if (pool.getNumIdle() >= 0) {
-            assertEquals("invalidateObject must not add items back into the idle object pool.", 0, pool.getNumIdle());
+            assertEquals( 0, pool.getNumIdle(),"invalidateObject must not add items back into the idle object pool.");
         }
         if (pool.getNumActive() >= 0) {
-            assertEquals("A closed pool should still keep count of active objects.", 0, pool.getNumActive());
+            assertEquals( 0, pool.getNumActive(),"A closed pool should still keep count of active objects.");
         }
         pool.clear();
         pool.close();

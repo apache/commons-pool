@@ -16,8 +16,8 @@
  */
 package org.apache.commons.pool2;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +25,8 @@ import java.util.NoSuchElementException;
 
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPool;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Abstract test case for {@link ObjectPool} implementations.
@@ -55,7 +55,7 @@ public abstract class TestKeyedObjectPool {
 
     protected abstract boolean isLifo();
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         _pool = null;
     }
@@ -112,13 +112,13 @@ public abstract class TestKeyedObjectPool {
         }
 
         // The following should not throw exceptions just because the pool is closed.
-        assertEquals("A closed pool shouldn't have any idle objects.", 0, pool.getNumIdle(KEY));
-        assertEquals("A closed pool shouldn't have any idle objects.", 0, pool.getNumIdle());
+        assertEquals( 0, pool.getNumIdle(KEY),"A closed pool shouldn't have any idle objects.");
+        assertEquals( 0, pool.getNumIdle(),"A closed pool shouldn't have any idle objects.");
         pool.getNumActive();
         pool.getNumActive(KEY);
         pool.returnObject(KEY, o1);
-        assertEquals("returnObject should not add items back into the idle object pool for a closed pool.", 0, pool.getNumIdle(KEY));
-        assertEquals("returnObject should not add items back into the idle object pool for a closed pool.", 0, pool.getNumIdle());
+        assertEquals( 0, pool.getNumIdle(KEY),"returnObject should not add items back into the idle object pool for a closed pool.");
+        assertEquals( 0, pool.getNumIdle(),"returnObject should not add items back into the idle object pool for a closed pool.");
         pool.invalidateObject(KEY, o2);
         pool.clear(KEY);
         pool.clear();
@@ -468,12 +468,12 @@ public abstract class TestKeyedObjectPool {
         }
         final Object keya = makeKey(0);
         final Object keyb = makeKey(1);
-        assertEquals("1",getNthObject(keya,0),_pool.borrowObject(keya));
-        assertEquals("2",getNthObject(keyb,0),_pool.borrowObject(keyb));
-        assertEquals("3",getNthObject(keyb,1),_pool.borrowObject(keyb));
-        assertEquals("4",getNthObject(keya,1),_pool.borrowObject(keya));
-        assertEquals("5",getNthObject(keyb,2),_pool.borrowObject(keyb));
-        assertEquals("6",getNthObject(keya,2),_pool.borrowObject(keya));
+        assertEquals(getNthObject(keya,0),_pool.borrowObject(keya),"1");
+        assertEquals(getNthObject(keyb,0),_pool.borrowObject(keyb),"2");
+        assertEquals(getNthObject(keyb,1),_pool.borrowObject(keyb),"3");
+        assertEquals(getNthObject(keya,1),_pool.borrowObject(keya),"4");
+        assertEquals(getNthObject(keyb,2),_pool.borrowObject(keyb),"5");
+        assertEquals(getNthObject(keya,2),_pool.borrowObject(keya),"6");
         _pool.close();
     }
 

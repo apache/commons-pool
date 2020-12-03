@@ -16,12 +16,14 @@
  */
 package org.apache.commons.pool2.impl;
 
-import static org.junit.Assert.assertEquals;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.lang.ref.SoftReference;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 /**
  * Tests for PooledSoftReference.
@@ -32,7 +34,7 @@ public class TestPooledSoftReference {
     private static final String REFERENT = "test";
     private static final String REFERENT2 = "test2";
 
-    @Before
+    @BeforeEach
     public void setUp() {
         final SoftReference<String> softRef = new SoftReference<>(REFERENT);
         ref = new PooledSoftReference<>(softRef);

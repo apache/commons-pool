@@ -17,15 +17,16 @@
 
 package org.apache.commons.pool2;
 
-import static org.junit.Assert.assertFalse;
 
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-@Ignore
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+@Disabled
 public class PoolTest {
     private static final CharSequence COMMONS_POOL_EVICTIONS_TIMER_THREAD_NAME = "commons-pool-EvictionTimer";
     private static final long EVICTION_PERIOD_IN_MILLIS = 100;
@@ -85,7 +86,7 @@ public class PoolTest {
                 continue;
             }
             final String name = thread.getName();
-            assertFalse(name, name.contains(COMMONS_POOL_EVICTIONS_TIMER_THREAD_NAME));
+            assertFalse( name.contains(COMMONS_POOL_EVICTIONS_TIMER_THREAD_NAME),name);
         }
     }
 }

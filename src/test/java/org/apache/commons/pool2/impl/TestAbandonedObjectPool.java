@@ -33,10 +33,13 @@ import org.apache.commons.pool2.DestroyMode;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.TrackedUse;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * TestCase for AbandonedObjectPool
@@ -45,7 +48,7 @@ public class TestAbandonedObjectPool {
     private GenericObjectPool<PooledTestObject> pool = null;
     private AbandonedConfig abandonedConfig = null;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         abandonedConfig = new AbandonedConfig();
 
@@ -60,7 +63,7 @@ public class TestAbandonedObjectPool {
                abandonedConfig);
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         final String poolName = pool.getJmxName().toString();
         pool.clear();
@@ -83,7 +86,7 @@ public class TestAbandonedObjectPool {
             msg.append('\n');
             mbs.unregisterMBean(name);
         }
-        Assert.assertEquals(msg.toString(), 0, registeredPoolCount);
+        assertEquals( 0, registeredPoolCount,msg.toString());
     }
 
     /**
@@ -131,7 +134,7 @@ public class TestAbandonedObjectPool {
         }
 
         // Now, the number of active instances should be 0
-        Assert.assertTrue("numActive should have been 0, was " + pool.getNumActive(), pool.getNumActive() == 0);
+        assertTrue( pool.getNumActive() == 0,"numActive should have been 0, was " + pool.getNumActive());
     }
 
     /**
@@ -165,9 +168,9 @@ public class TestAbandonedObjectPool {
         // off removeAbandoned and then returns an instance that borrowObject
         // will deem abandoned.  Make sure it is not returned to the borrower.
         returner.start();    // short delay, then return instance
-        Assert.assertTrue(pool.borrowObject().hashCode() != deadMansHash);
-        Assert.assertEquals(0, pool.getNumIdle());
-        Assert.assertEquals(1, pool.getNumActive());
+        assertTrue(pool.borrowObject().hashCode() != deadMansHash);
+        assertEquals(0, pool.getNumIdle());
+        assertEquals(1, pool.getNumActive());
     }
 
     /**
@@ -197,8 +200,8 @@ public class TestAbandonedObjectPool {
         Thread.sleep(1000);          // abandon checked out instances and let evictor start
         pool.invalidateObject(obj);  // Should not trigger another destroy / decrement
         Thread.sleep(2000);          // give evictor time to finish destroys
-        Assert.assertEquals(0, pool.getNumActive());
-        Assert.assertEquals(5, pool.getDestroyedCount());
+        assertEquals(0, pool.getNumActive());
+        assertEquals(5, pool.getDestroyedCount());
     }
 
     public void testDestroyModeAbandoned() throws Exception {
@@ -214,7 +217,7 @@ public class TestAbandonedObjectPool {
         // Borrow an object, wait long enough for it to be abandoned
         final PooledTestObject obj = pool.borrowObject();
         Thread.sleep(100);
-        Assert.assertTrue(obj.isDetached());
+        assertTrue(obj.isDetached());
     }
 
     public void testDestroyModeNormal() throws Exception {
@@ -224,8 +227,8 @@ public class TestAbandonedObjectPool {
         pool.setMaxIdle(0);
         final PooledTestObject obj = pool.borrowObject();
         pool.returnObject(obj);
-        Assert.assertTrue(obj.isDestroyed());
-        Assert.assertFalse(obj.isDetached());
+        assertTrue(obj.isDestroyed());
+        assertFalse(obj.isDetached());
     }
 
     /**
@@ -256,8 +259,8 @@ public class TestAbandonedObjectPool {
         Thread.sleep(50);       // abandon obj
         pool.returnObject(obj); // evictor will run during validation
         final PooledTestObject obj2 = pool.borrowObject();
-        Assert.assertEquals(obj, obj2);          // should get original back
-        Assert.assertTrue(!obj2.isDestroyed());  // and not destroyed
+        assertEquals(obj, obj2);          // should get original back
+        assertTrue(!obj2.isDestroyed());  // and not destroyed
     }
 
     /**
@@ -287,7 +290,7 @@ public class TestAbandonedObjectPool {
 
         pool.returnObject(o2);
 
-        Assert.assertTrue (end - start < 5000);
+        assertTrue (end - start < 5000);
     }
 
     /**
@@ -306,9 +309,9 @@ public class TestAbandonedObjectPool {
         pool.setTimeBetweenEvictionRunsMillis(100);
         final PooledTestObject o1 = pool.borrowObject();
         Thread.sleep(2000);
-        Assert.assertTrue(o1.isDestroyed());
+        assertTrue(o1.isDestroyed());
         bos.flush();
-        Assert.assertTrue(baos.toString().indexOf("Pooled object") >= 0);
+        assertTrue(baos.toString().indexOf("Pooled object") >= 0);
     }
 
     class ConcurrentBorrower extends Thread {

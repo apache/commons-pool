@@ -16,10 +16,10 @@
  */
 package org.apache.commons.pool2;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.commons.pool2.impl.DefaultPooledObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  */
