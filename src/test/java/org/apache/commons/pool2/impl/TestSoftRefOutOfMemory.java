@@ -17,9 +17,10 @@
 
 package org.apache.commons.pool2.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -27,15 +28,15 @@ import java.util.List;
 
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 /**
  */
 public class TestSoftRefOutOfMemory {
     private SoftReferenceObjectPool<String> pool;
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         if (pool != null) {
             pool.close();

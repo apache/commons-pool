@@ -22,8 +22,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * @author Pavel Kolesov as contributed in POOL-340
@@ -97,7 +99,8 @@ public class TestGenericObjectPoolFactoryCreateFailure {
         }
     }
 
-    @Test(timeout = 10_000)
+    @Test
+    @Timeout(value = 10_000, unit = TimeUnit.MILLISECONDS)
     public void testBorrowObjectStuck() {
         final SingleObjectFactory factory = new SingleObjectFactory();
         final GenericObjectPoolConfig<Object> config = new GenericObjectPoolConfig<>();
@@ -136,7 +139,7 @@ public class TestGenericObjectPoolFactoryCreateFailure {
                 e.printStackTrace();
             }
 
-            Assert.assertFalse(failed.get());
+            assertFalse(failed.get());
         }
 
     }

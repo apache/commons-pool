@@ -121,12 +121,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.13.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>cglib</groupId>
       <artifactId>cglib</artifactId>
       <version>3.3.0</version>
@@ -138,7 +132,12 @@
       <version>9.0</version>
       <optional>true</optional>
     </dependency>
-    
+    <!-- testing -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <distributionManagement>
@@ -194,6 +193,7 @@
     <commons.japicmp.version>0.14.3</commons.japicmp.version>
     <clirr.skip>true</clirr.skip>
     <japicmp.skip>false</japicmp.skip>
+    <junit.version>5.7.0</junit.version>
     <spotbugs.skip>false</spotbugs.skip>
   </properties> 
 
@@ -416,6 +416,18 @@
         </plugin>
     </plugins>
   </reporting>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>${junit.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
     
   <profiles>
     <profile>

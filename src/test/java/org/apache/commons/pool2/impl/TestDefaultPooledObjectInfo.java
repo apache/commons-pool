@@ -17,11 +17,13 @@
 package org.apache.commons.pool2.impl;
 
 import org.apache.commons.pool2.impl.TestGenericObjectPool.SimpleFactory;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.text.SimpleDateFormat;
 import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestDefaultPooledObjectInfo {
 
@@ -51,25 +53,25 @@ public class TestDefaultPooledObjectInfo {
 
             final Set<DefaultPooledObjectInfo> strings = pool.listAllObjects();
 
-            Assert.assertEquals(1, strings.size());
+            assertEquals(1, strings.size());
 
             final DefaultPooledObjectInfo s1Info = strings.iterator().next();
 
             final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
 
-            Assert.assertTrue(s1Info.getCreateTime() > t1);
-            Assert.assertEquals(sdf.format(Long.valueOf(s1Info.getCreateTime())), s1Info.getCreateTimeFormatted());
-            Assert.assertTrue(s1Info.getCreateTime() < t2);
+            assertTrue(s1Info.getCreateTime() > t1);
+            assertEquals(sdf.format(Long.valueOf(s1Info.getCreateTime())), s1Info.getCreateTimeFormatted());
+            assertTrue(s1Info.getCreateTime() < t2);
 
-            Assert.assertTrue(s1Info.getLastReturnTime() > t2);
-            Assert.assertEquals(sdf.format(Long.valueOf(s1Info.getLastReturnTime())),
+            assertTrue(s1Info.getLastReturnTime() > t2);
+            assertEquals(sdf.format(Long.valueOf(s1Info.getLastReturnTime())),
                     s1Info.getLastReturnTimeFormatted());
-            Assert.assertTrue(s1Info.getLastReturnTime() < t3);
+            assertTrue(s1Info.getLastReturnTime() < t3);
 
-            Assert.assertTrue(s1Info.getLastBorrowTime() > t3);
-            Assert.assertEquals(sdf.format(Long.valueOf(s1Info.getLastBorrowTime())),
+            assertTrue(s1Info.getLastBorrowTime() > t3);
+            assertEquals(sdf.format(Long.valueOf(s1Info.getLastBorrowTime())),
                     s1Info.getLastBorrowTimeFormatted());
-            Assert.assertTrue(s1Info.getLastBorrowTime() < t4);
+            assertTrue(s1Info.getLastBorrowTime() < t4);
         }
     }
 
@@ -81,11 +83,11 @@ public class TestDefaultPooledObjectInfo {
 
             final Set<DefaultPooledObjectInfo> strings = pool.listAllObjects();
 
-            Assert.assertEquals(1, strings.size());
+            assertEquals(1, strings.size());
 
             final DefaultPooledObjectInfo s1Info = strings.iterator().next();
 
-            Assert.assertEquals(String.class.getName(), s1Info.getPooledObjectType());
+            assertEquals(String.class.getName(), s1Info.getPooledObjectType());
         }
     }
 
@@ -97,11 +99,11 @@ public class TestDefaultPooledObjectInfo {
 
             final Set<DefaultPooledObjectInfo> strings = pool.listAllObjects();
 
-            Assert.assertEquals(1, strings.size());
+            assertEquals(1, strings.size());
 
             final DefaultPooledObjectInfo s1Info = strings.iterator().next();
 
-            Assert.assertEquals(s1, s1Info.getPooledObjectToString());
+            assertEquals(s1, s1Info.getPooledObjectToString());
         }
     }
 
@@ -122,7 +124,7 @@ public class TestDefaultPooledObjectInfo {
             final DefaultPooledObjectInfo s1Info = strings.iterator().next();
             final String lastBorrowTrace = s1Info.getLastBorrowTrace();
 
-            Assert.assertTrue(lastBorrowTrace.startsWith("Pooled object created"));
+            assertTrue(lastBorrowTrace.startsWith("Pooled object created"));
         }
     }
 }

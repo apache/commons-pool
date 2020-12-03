@@ -16,9 +16,10 @@
  */
 package org.apache.commons.pool2.proxy;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -31,8 +32,8 @@ import org.apache.commons.pool2.impl.AbandonedConfig;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 public abstract class BaseTestProxiedObjectPool {
@@ -43,7 +44,7 @@ public abstract class BaseTestProxiedObjectPool {
     private ObjectPool<TestObject> pool = null;
     private StringWriter log = null;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         log = new StringWriter();
 
@@ -83,7 +84,7 @@ public abstract class BaseTestProxiedObjectPool {
     }
 
 
-    @Test(expected=IllegalStateException.class)
+    @Test
     public void testAccessAfterReturn() throws Exception {
         final TestObject obj = pool.borrowObject();
         assertNotNull(obj);
@@ -96,11 +97,12 @@ public abstract class BaseTestProxiedObjectPool {
 
         assertNotNull(obj);
 
-        obj.getData();
+        assertThrows(IllegalStateException.class,
+                () -> obj.getData());
     }
 
 
-    @Test(expected=IllegalStateException.class)
+    @Test
     public void testAccessAfterInvalidate() throws Exception {
         final TestObject obj = pool.borrowObject();
         assertNotNull(obj);
@@ -113,7 +115,9 @@ public abstract class BaseTestProxiedObjectPool {
 
         assertNotNull(obj);
 
-        obj.getData();
+        assertThrows(IllegalStateException.class,
+                () -> obj.getData());
+
     }
 
 
@@ -155,10 +159,12 @@ public abstract class BaseTestProxiedObjectPool {
     }
 
 
-    @Test(expected=IllegalStateException.class)
+    @Test
     public void testPassThroughMethods02() throws Exception {
         pool.close();
-        pool.addObject();
+
+        assertThrows(IllegalStateException.class,
+                () -> pool.addObject());
     }
 
     private static class TestObjectFactory extends

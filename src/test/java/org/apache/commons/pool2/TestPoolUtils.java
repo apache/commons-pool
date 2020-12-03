@@ -17,9 +17,9 @@
 
 package org.apache.commons.pool2;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -39,10 +39,8 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.TestGenericKeyedObjectPool;
-import org.junit.Assert;
-import org.junit.Test;
-
-import junit.framework.AssertionFailedError;
+import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 
 /**
  * Unit tests for {@link PoolUtils}.
@@ -87,7 +85,7 @@ public class TestPoolUtils {
 
     @Test
     public void testJavaBeanInstantiation() {
-        Assert.assertNotNull(new PoolUtils());
+        assertNotNull(new PoolUtils());
     }
 
     @Test
@@ -124,7 +122,7 @@ public class TestPoolUtils {
                 makeObjectCount++;
             }
         }
-        assertEquals("makeObject should have been called two time", 2, makeObjectCount);
+        assertEquals( 2, makeObjectCount,"makeObject should have been called two time");
 
         // Because this isn't deterministic and you can get false failures, try more than once.
         AssertionFailedError afe = null;
@@ -203,7 +201,7 @@ public class TestPoolUtils {
                 makeObjectCount++;
             }
         }
-        assertEquals("makeObject should have been called two time", 2, makeObjectCount);
+        assertEquals( 2, makeObjectCount,"makeObject should have been called two time");
 
         // Because this isn't deterministic and you can get false failures, try more than once.
         AssertionFailedError afe = null;
@@ -391,7 +389,7 @@ public class TestPoolUtils {
         final List<String> calledMethods = new ArrayList<>();
         try (@SuppressWarnings("unchecked")
         final ObjectPool<Object> op = createProxy(ObjectPool.class, calledMethods);
-                final ObjectPool<Object> sop = PoolUtils.synchronizedPool(op);) {
+                final ObjectPool<Object> sop = PoolUtils.synchronizedPool(op)) {
             final List<String> expectedMethods = invokeEveryMethod(sop);
             assertEquals(expectedMethods, calledMethods);
 
@@ -553,7 +551,7 @@ public class TestPoolUtils {
     public void testErodingObjectPoolDefaultFactor() {
         try (@SuppressWarnings("unchecked")
         final ObjectPool<Object> internalPool = createProxy(ObjectPool.class, (arg0, arg1, arg2) -> null);
-                final ObjectPool<Object> pool = PoolUtils.erodingPool(internalPool);) {
+                final ObjectPool<Object> pool = PoolUtils.erodingPool(internalPool)) {
             final String expectedToString = "ErodingObjectPool{factor=ErodingFactor{factor=1.0, idleHighWaterMark=1}, pool=" +
                     internalPool + "}";
             // The factor is not exposed, but will be printed in the toString() method

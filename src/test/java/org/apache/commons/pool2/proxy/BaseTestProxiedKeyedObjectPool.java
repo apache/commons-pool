@@ -16,8 +16,9 @@
  */
 package org.apache.commons.pool2.proxy;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.apache.commons.pool2.BaseKeyedPooledObjectFactory;
 import org.apache.commons.pool2.KeyedObjectPool;
@@ -26,8 +27,9 @@ import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPool;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 
 
 public abstract class BaseTestProxiedKeyedObjectPool {
@@ -37,7 +39,7 @@ public abstract class BaseTestProxiedKeyedObjectPool {
 
     private KeyedObjectPool<String,TestObject> pool = null;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         final GenericKeyedObjectPoolConfig<TestObject> config = new GenericKeyedObjectPoolConfig<>();
         config.setMaxTotal(3);
@@ -69,7 +71,7 @@ public abstract class BaseTestProxiedKeyedObjectPool {
     }
 
 
-    @Test(expected=IllegalStateException.class)
+    @Test
     public void testAccessAfterReturn() throws Exception {
         final TestObject obj = pool.borrowObject(KEY1);
         assertNotNull(obj);
@@ -81,12 +83,12 @@ public abstract class BaseTestProxiedKeyedObjectPool {
         pool.returnObject(KEY1, obj);
 
         assertNotNull(obj);
-
-        obj.getData();
+        assertThrows(IllegalStateException.class,
+                () -> obj.getData());
     }
 
 
-    @Test(expected=IllegalStateException.class)
+    @Test
     public void testAccessAfterInvalidate() throws Exception {
         final TestObject obj = pool.borrowObject(KEY1);
         assertNotNull(obj);
@@ -99,7 +101,9 @@ public abstract class BaseTestProxiedKeyedObjectPool {
 
         assertNotNull(obj);
 
-        obj.getData();
+        assertThrows(IllegalStateException.class,
+                () -> obj.getData() );
+
     }
 
 
@@ -120,10 +124,11 @@ public abstract class BaseTestProxiedKeyedObjectPool {
     }
 
 
-    @Test(expected=IllegalStateException.class)
+    @Test
     public void testPassThroughMethods02() throws Exception {
         pool.close();
-        pool.addObject(KEY1);
+        assertThrows(IllegalStateException.class,
+                () -> pool.addObject(KEY1));
     }
 
     private static class TestKeyedObjectFactory extends

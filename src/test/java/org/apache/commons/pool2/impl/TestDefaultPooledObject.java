@@ -16,6 +16,8 @@
  */
 package org.apache.commons.pool2.impl;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -23,14 +25,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 
 public class TestDefaultPooledObject {
 
     /**
      * JIRA: POOL-279
-     * @throws Exception
+     * @throws Exception May occur in some failure modes
      */
     @Test
     public void testgetIdleTimeMillis() throws Exception {
@@ -72,9 +74,8 @@ public class TestDefaultPooledObject {
         for (final Future<?> future: futures) {
             future.get();
         }
-        Assert.assertFalse(
-           "DefaultPooledObject.getIdleTimeMillis() returned a negative value",
-           negativeIdleTimeReturned.get());
+        assertFalse(negativeIdleTimeReturned.get(),
+           "DefaultPooledObject.getIdleTimeMillis() returned a negative value");
     }
 
 }

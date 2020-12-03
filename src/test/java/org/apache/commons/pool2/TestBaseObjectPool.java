@@ -16,11 +16,12 @@
  */
 package org.apache.commons.pool2;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 
 
 /**
@@ -82,8 +83,8 @@ public class TestBaseObjectPool extends TestObjectPool {
         }
         try (final ObjectPool<Object> pool = new TestObjectPool()) {
 
-            assertTrue("Negative expected.", pool.getNumIdle() < 0);
-            assertTrue("Negative expected.", pool.getNumActive() < 0);
+            assertTrue( pool.getNumIdle() < 0,"Negative expected.");
+            assertTrue( pool.getNumActive() < 0,"Negative expected.");
 
             try {
                 pool.clear();

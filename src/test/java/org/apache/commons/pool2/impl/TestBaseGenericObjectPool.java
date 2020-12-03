@@ -20,10 +20,11 @@ package org.apache.commons.pool2.impl;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.pool2.impl.TestGenericObjectPool.SimpleFactory;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  */
@@ -32,13 +33,13 @@ public class TestBaseGenericObjectPool {
     BaseGenericObjectPool<String> pool = null;
     SimpleFactory factory = null;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         factory = new SimpleFactory();
         pool = new GenericObjectPool<>(factory);
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         pool.close();
         pool = null;
@@ -52,21 +53,21 @@ public class TestBaseGenericObjectPool {
         pool.updateStatsBorrow(p, 20);
         pool.updateStatsBorrow(p, 20);
         pool.updateStatsBorrow(p, 30);
-        Assert.assertEquals(20, pool.getMeanBorrowWaitTimeMillis(), Double.MIN_VALUE);
-        Assert.assertEquals(30, pool.getMaxBorrowWaitTimeMillis(), 0);
+        assertEquals(20, pool.getMeanBorrowWaitTimeMillis(), Double.MIN_VALUE);
+        assertEquals(30, pool.getMaxBorrowWaitTimeMillis(), 0);
     }
 
     public void testBorrowWaitStatisticsMax() {
         final DefaultPooledObject<String> p = (DefaultPooledObject<String>) factory.makeObject();
-        Assert.assertEquals(0, pool.getMaxBorrowWaitTimeMillis(), Double.MIN_VALUE);
+        assertEquals(0, pool.getMaxBorrowWaitTimeMillis(), Double.MIN_VALUE);
         pool.updateStatsBorrow(p, 0);
-        Assert.assertEquals(0, pool.getMaxBorrowWaitTimeMillis(), Double.MIN_VALUE);
+        assertEquals(0, pool.getMaxBorrowWaitTimeMillis(), Double.MIN_VALUE);
         pool.updateStatsBorrow(p, 20);
-        Assert.assertEquals(20, pool.getMaxBorrowWaitTimeMillis(), Double.MIN_VALUE);
+        assertEquals(20, pool.getMaxBorrowWaitTimeMillis(), Double.MIN_VALUE);
         pool.updateStatsBorrow(p, 20);
-        Assert.assertEquals(20, pool.getMaxBorrowWaitTimeMillis(), Double.MIN_VALUE);
+        assertEquals(20, pool.getMaxBorrowWaitTimeMillis(), Double.MIN_VALUE);
         pool.updateStatsBorrow(p, 10);
-        Assert.assertEquals(20, pool.getMaxBorrowWaitTimeMillis(), Double.MIN_VALUE);
+        assertEquals(20, pool.getMaxBorrowWaitTimeMillis(), Double.MIN_VALUE);
     }
 
     @Test
@@ -74,7 +75,7 @@ public class TestBaseGenericObjectPool {
         for (int i = 0; i < 99; i++) { // must be < MEAN_TIMING_STATS_CACHE_SIZE
             pool.updateStatsReturn(i);
         }
-        Assert.assertEquals(49, pool.getMeanActiveTimeMillis(), Double.MIN_VALUE);
+        assertEquals(49, pool.getMeanActiveTimeMillis(), Double.MIN_VALUE);
     }
 
     @Test
@@ -101,7 +102,7 @@ public class TestBaseGenericObjectPool {
             }
 
             Thread.sleep(1000);
-            Assert.assertEquals(0, evictingPool.getNumIdle());
+            assertEquals(0, evictingPool.getNumIdle());
         }
     }
 }

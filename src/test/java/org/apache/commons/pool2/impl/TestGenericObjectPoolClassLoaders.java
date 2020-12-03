@@ -21,9 +21,10 @@ import java.net.URLClassLoader;
 
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 public class TestGenericObjectPoolClassLoaders {
 
@@ -50,8 +51,7 @@ public class TestGenericObjectPoolClassLoaders {
                 Thread.sleep(100);
                 counter++;
             }
-            Assert.assertEquals("Wrong number of idle objects in pool1", 1,
-                    pool1.getNumIdle());
+            assertEquals( 1, pool1.getNumIdle(),"Wrong number of idle objects in pool1");
 
             // ---------------
             final CustomClassLoader cl2 = new CustomClassLoader(2);
@@ -63,8 +63,7 @@ public class TestGenericObjectPoolClassLoaders {
             pool2.setMinIdle(1);
 
             pool2.addObject();
-            Assert.assertEquals("Wrong number of idle objects in pool2", 1,
-                    pool2.getNumIdle());
+            assertEquals( 1, pool2.getNumIdle(),"Wrong number of idle objects in pool2");
             pool2.clear();
 
             pool2.setTimeBetweenEvictionRunsMillis(100);
@@ -74,8 +73,7 @@ public class TestGenericObjectPoolClassLoaders {
                 Thread.sleep(100);
                 counter++;
             }
-            Assert.assertEquals("Wrong number of  idle objects in pool2", 1,
-                    pool2.getNumIdle());
+            assertEquals( 1, pool2.getNumIdle(),"Wrong number of  idle objects in pool2");
 
             pool1.close();
             pool2.close();
