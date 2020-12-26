@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <p>This class is *not* threadsafe.</p>
  */
 public class Waiter {
-    private static AtomicInteger instanceCount = new AtomicInteger();
+    private static final AtomicInteger instanceCount = new AtomicInteger();
     private boolean active = false;
     private boolean valid = true;
     private long latency = 0;

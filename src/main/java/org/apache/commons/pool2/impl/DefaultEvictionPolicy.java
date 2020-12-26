@@ -45,11 +45,8 @@ public class DefaultEvictionPolicy<T> implements EvictionPolicy<T> {
     public boolean evict(final EvictionConfig config, final PooledObject<T> underTest,
             final int idleCount) {
 
-        if ((config.getIdleSoftEvictTime() < underTest.getIdleTimeMillis() &&
+        return (config.getIdleSoftEvictTime() < underTest.getIdleTimeMillis() &&
                 config.getMinIdle() < idleCount) ||
-                config.getIdleEvictTime() < underTest.getIdleTimeMillis()) {
-            return true;
-        }
-        return false;
+                config.getIdleEvictTime() < underTest.getIdleTimeMillis();
     }
 }

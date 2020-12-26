@@ -72,7 +72,7 @@ class EvictionTimer {
     /**
      * Adds the specified eviction task to the timer. Tasks that are added with
      * a call to this method *must* call {@link
-     * #cancel(org.apache.commons.pool2.impl.BaseGenericObjectPool.Evictor, long, TimeUnit)}
+     * #cancel(BaseGenericObjectPool.Evictor, long, TimeUnit, boolean)}
      * to cancel the task to prevent memory and/or thread leaks in application
      * server environments.
      *

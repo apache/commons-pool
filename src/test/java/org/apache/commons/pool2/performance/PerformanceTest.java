@@ -50,7 +50,7 @@ public class PerformanceTest {
     }
 
     class PerfTask implements Callable<TaskStats> {
-        TaskStats taskStats = new TaskStats();
+        final TaskStats taskStats = new TaskStats();
         long borrowTime;
         long returnTime;
 

@@ -1935,7 +1935,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         }
 
         volatile int counter = 0;
-        boolean valid;
+        final boolean valid;
 
         int activeCount = 0;
         int validateCounter = 0;
@@ -2432,7 +2432,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
     private static class SimplePerKeyFactory
             extends BaseKeyedPooledObjectFactory<Object,Object> {
-        ConcurrentHashMap<Object,AtomicInteger> map =
+        final ConcurrentHashMap<Object,AtomicInteger> map =
                 new ConcurrentHashMap<>();
         @Override
         public Object create(final Object key) throws Exception {
