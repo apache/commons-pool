@@ -274,10 +274,7 @@ public class TestSoftRefOutOfMemory {
             if (trigger.equals(OomeTrigger.VALIDATE)) {
                 throw new OutOfMemoryError();
             }
-            if (trigger.equals(OomeTrigger.DESTROY)) {
-                return false;
-            }
-            return true;
+            return !trigger.equals(OomeTrigger.DESTROY);
         }
 
         @Override

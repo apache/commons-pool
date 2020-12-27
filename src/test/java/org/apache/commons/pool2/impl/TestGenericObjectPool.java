@@ -425,10 +425,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         @Override
         public boolean evict(final EvictionConfig config, final PooledObject<T> underTest,
                 final int idleCount) {
-            if (callCount.incrementAndGet() > 1500) {
-                return true;
-            }
-            return false;
+            return callCount.incrementAndGet() > 1500;
         }
     }
 
@@ -1902,7 +1899,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
     public void testLIFO() throws Exception {
-        String o;
+        final String o;
         genericObjectPool.setLifo(true);
         genericObjectPool.addObject(); // "0"
         genericObjectPool.addObject(); // "1"

@@ -91,11 +91,7 @@ public class MethodCall {
         if (params != null ? !params.equals(that.params) : that.params != null) {
             return false;
         }
-        if (returned != null ? !returned.equals(that.returned) : that.returned != null) {
-            return false;
-        }
-
-        return true;
+        return returned != null ? returned.equals(that.returned) : that.returned == null;
     }
 
     @Override

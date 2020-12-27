@@ -129,7 +129,7 @@ public final class ObjectPoolIssue326 {
         @Override
         public Object call() throws Exception {
             try {
-                Object value;
+                final Object value;
                 value = m_pool.borrowObject(m_key);
                 // don't make this too long or it won't reproduce, and don't make it zero or it
                 // won't reproduce

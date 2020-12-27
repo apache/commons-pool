@@ -406,7 +406,7 @@ public abstract class TestObjectPool {
 
     @Test
     public void testToString() throws Exception {
-        ObjectPool<Object> pool;
+        final ObjectPool<Object> pool;
         try {
             pool = makeEmptyPool(new MethodCallPoolableObjectFactory());
         } catch (final UnsupportedOperationException uoe) {
