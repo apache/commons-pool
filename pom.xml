@@ -190,7 +190,7 @@
     <commons.releaseManagerName>Gary Gregory</commons.releaseManagerName>    
     <commons.releaseManagerKey>86fdc7e2a11262cb</commons.releaseManagerKey>
     
-    <commons.japicmp.version>0.14.4</commons.japicmp.version>
+    <commons.japicmp.version>0.15.1</commons.japicmp.version>
     <clirr.skip>true</clirr.skip>
     <japicmp.skip>false</japicmp.skip>
     <junit.version>5.7.0</junit.version>
