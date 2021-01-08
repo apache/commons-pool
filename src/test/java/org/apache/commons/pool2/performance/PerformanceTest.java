@@ -151,9 +151,7 @@ public class PerformanceTest {
                 TaskStats taskStats = null;
                 try {
                     taskStats = future.get();
-                } catch (final InterruptedException e) {
-                    e.printStackTrace();
-                } catch (final ExecutionException e) {
+                } catch (final InterruptedException | ExecutionException e) {
                     e.printStackTrace();
                 }
                 if (taskStats != null) {
