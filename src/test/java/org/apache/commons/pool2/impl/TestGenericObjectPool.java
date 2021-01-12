@@ -188,7 +188,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     static class InvalidateThread implements Runnable {
         private final String obj;
         private final ObjectPool<String> pool;
-        private boolean done = false;
+        private boolean done;
         public InvalidateThread(final ObjectPool<String> pool, final String obj) {
             this.obj = obj;
             this.pool = pool;
@@ -234,31 +234,31 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     public static class SimpleFactory implements PooledObjectFactory<String> {
-        int makeCounter = 0;
+        int makeCounter;
 
-        int activationCounter = 0;
+        int activationCounter;
 
-        int validateCounter = 0;
+        int validateCounter;
 
-        int activeCount = 0;
+        int activeCount;
 
         boolean evenValid = true;
 
         boolean oddValid = true;
 
-        boolean exceptionOnPassivate = false;
+        boolean exceptionOnPassivate;
 
-        boolean exceptionOnActivate = false;
+        boolean exceptionOnActivate;
 
-        boolean exceptionOnDestroy = false;
+        boolean exceptionOnDestroy;
 
         boolean enableValidation = true;
 
-        long destroyLatency = 0;
+        long destroyLatency;
 
-        long makeLatency = 0;
+        long makeLatency;
 
-        long validateLatency = 0;
+        long validateLatency;
 
         int maxTotal = Integer.MAX_VALUE;
 
@@ -454,8 +454,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         /** object expected to be borrowed (fail otherwise) */
         private final Object _expectedObject;
 
-        private volatile boolean _complete = false;
-        private volatile boolean _failed = false;
+        private volatile boolean _complete;
+        private volatile boolean _failed;
         private volatile Throwable _error;
 
         public TestThread(final ObjectPool<T> pool) {
@@ -591,9 +591,9 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     // mvn test -DargLine="-DTestGenericObjectPool.display.thread.details=true"
     // @see https://issues.apache.org/jira/browse/SUREFIRE-121
 
-    protected GenericObjectPool<String> genericObjectPool = null;
+    protected GenericObjectPool<String> genericObjectPool;
 
-    private SimpleFactory simpleFactory = null;
+    private SimpleFactory simpleFactory;
 
     @SuppressWarnings("deprecation")
     private void assertConfiguration(final GenericObjectPoolConfig<?> expected, final GenericObjectPool<?> actual)

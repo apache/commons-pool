@@ -45,7 +45,7 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
     private volatile boolean logAbandoned = false;
     private volatile CallStack borrowedBy = NoOpCallStack.INSTANCE;
     private volatile CallStack usedBy = NoOpCallStack.INSTANCE;
-    private volatile long borrowedCount = 0;
+    private volatile long borrowedCount;
 
     /**
      * Creates a new instance that wraps the provided object so that the pool can

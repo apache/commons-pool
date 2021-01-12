@@ -31,11 +31,11 @@ import org.apache.commons.pool2.PooledObject;
 public class AtomicIntegerFactory
     extends BasePooledObjectFactory<AtomicInteger> {
 
-    private long activateLatency = 0;
-    private long passivateLatency = 0;
-    private long createLatency = 0;
-    private long destroyLatency = 0;
-    private long validateLatency = 0;
+    private long activateLatency;
+    private long passivateLatency;
+    private long createLatency;
+    private long destroyLatency;
+    private long validateLatency;
 
     @Override
     public void activateObject(final PooledObject<AtomicInteger> p) {

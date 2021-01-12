@@ -25,7 +25,7 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
  */
 public class VisitTrackerFactory<K>
         implements PooledObjectFactory<VisitTracker<K>>, KeyedPooledObjectFactory<K, VisitTracker<K>> {
-    private int nextId = 0;
+    private int nextId;
 
     public VisitTrackerFactory() {
     }

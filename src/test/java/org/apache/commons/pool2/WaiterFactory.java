@@ -56,7 +56,7 @@ KeyedPooledObjectFactory<K,Waiter> {
     private final double passivateInvalidationProbability;
 
     /** Count of (makes - destroys) since last reset */
-    private long activeCount = 0;
+    private long activeCount;
 
     /** Count of (makes - destroys) per key since last reset */
     private final Map<K,Integer> activeCounts = new HashMap<>();

@@ -66,8 +66,7 @@ public class ProxiedKeyedObjectPool<K, V> implements KeyedObjectPool<K, V> {
             usageTracking = (UsageTracking<V>) pool;
         }
         final V pooledObject = pool.borrowObject(key);
-        final V proxy = proxySource.createProxy(pooledObject, usageTracking);
-        return proxy;
+        return proxySource.createProxy(pooledObject, usageTracking);
     }
 
     @Override

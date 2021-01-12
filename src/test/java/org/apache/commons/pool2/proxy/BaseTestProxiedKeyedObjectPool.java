@@ -71,7 +71,7 @@ public abstract class BaseTestProxiedKeyedObjectPool {
 
     private static final String DATA1 = "data1";
 
-    private KeyedObjectPool<String,TestObject> pool = null;
+    private KeyedObjectPool<String,TestObject> pool;
 
 
     protected abstract ProxySource<TestObject> getproxySource();

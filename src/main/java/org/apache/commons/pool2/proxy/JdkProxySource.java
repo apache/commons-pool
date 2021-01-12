@@ -64,8 +64,7 @@ public class JdkProxySource<T> implements ProxySource<T> {
         final
         JdkProxyHandler<T> jdkProxyHandler =
                 (JdkProxyHandler<T>) Proxy.getInvocationHandler(proxy);
-        final T pooledObject = jdkProxyHandler.disableProxy();
-        return pooledObject;
+        return jdkProxyHandler.disableProxy();
     }
 
 

@@ -67,8 +67,7 @@ public class ProxiedObjectPool<T> implements ObjectPool<T> {
             usageTracking = (UsageTracking<T>) pool;
         }
         final T pooledObject = pool.borrowObject();
-        final T proxy = proxySource.createProxy(pooledObject, usageTracking);
-        return proxy;
+        return proxySource.createProxy(pooledObject, usageTracking);
     }
 
 

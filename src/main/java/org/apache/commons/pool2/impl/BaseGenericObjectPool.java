@@ -332,7 +332,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     private volatile Duration evictorShutdownTimeout = BaseObjectPoolConfig.DEFAULT_EVICTOR_SHUTDOWN_TIMEOUT;
     // Internal (primarily state) attributes
     final Object closeLock = new Object();
-    volatile boolean closed = false;
+    volatile boolean closed;
 
 
     final Object evictionLock = new Object();
@@ -1443,7 +1443,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         }
     }
 
-    
+
 
     // Inner classes
 
