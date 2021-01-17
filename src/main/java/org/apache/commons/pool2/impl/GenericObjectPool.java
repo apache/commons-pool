@@ -738,7 +738,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     public void evict() throws Exception {
         assertOpen();
 
-        if (idleObjects.size() > 0) {
+        if (!idleObjects.isEmpty()) {
 
             PooledObject<T> underTest = null;
             final EvictionPolicy<T> evictionPolicy = getEvictionPolicy();
