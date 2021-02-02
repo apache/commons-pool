@@ -1370,7 +1370,7 @@ public final class PoolUtils {
         private final float factor;
 
         /** Time of next shrink event */
-        private transient volatile long nextShrink;
+        private transient volatile long nextShrinkMillis;
 
         /** High water mark - largest numIdle encountered */
         private transient volatile int idleHighWaterMark;
@@ -1383,7 +1383,7 @@ public final class PoolUtils {
          */
         public ErodingFactor(final float factor) {
             this.factor = factor;
-            nextShrink = System.currentTimeMillis() + (long) (900000 * factor); // now
+            nextShrinkMillis = System.currentTimeMillis() + (long) (900000 * factor); // now
                                                                                 // +
                                                                                 // 15
                                                                                 // min
@@ -1395,18 +1395,18 @@ public final class PoolUtils {
         /**
          * Updates internal state using the supplied time and numIdle.
          *
-         * @param now
+         * @param nowMillis
          *            current time
          * @param numIdle
          *            number of idle elements in the pool
          */
-        public void update(final long now, final int numIdle) {
+        public void update(final long nowMillis, final int numIdle) {
             final int idle = Math.max(0, numIdle);
             idleHighWaterMark = Math.max(idle, idleHighWaterMark);
             final float maxInterval = 15f;
             final float minutes = maxInterval +
                     ((1f - maxInterval) / idleHighWaterMark) * idle;
-            nextShrink = now + (long) (minutes * 60000f * factor);
+            nextShrinkMillis = nowMillis + (long) (minutes * 60000f * factor);
         }
 
         /**
@@ -1415,7 +1415,7 @@ public final class PoolUtils {
          * @return next shrink time
          */
         public long getNextShrink() {
-            return nextShrink;
+            return nextShrinkMillis;
         }
 
         /**
@@ -1482,16 +1482,16 @@ public final class PoolUtils {
         @Override
         public void returnObject(final T obj) {
             boolean discard = false;
-            final long now = System.currentTimeMillis();
+            final long nowMillis = System.currentTimeMillis();
             synchronized (pool) {
-                if (factor.getNextShrink() < now) { // XXX: Pool 3: move test
+                if (factor.getNextShrink() < nowMillis) { // XXX: Pool 3: move test
                                                     // out of sync block
                     final int numIdle = pool.getNumIdle();
                     if (numIdle > 0) {
                         discard = true;
                     }
 
-                    factor.update(now, numIdle);
+                    factor.update(nowMillis, numIdle);
                 }
             }
             try {
@@ -1651,16 +1651,16 @@ public final class PoolUtils {
         @Override
         public void returnObject(final K key, final V obj) throws Exception {
             boolean discard = false;
-            final long now = System.currentTimeMillis();
+            final long nowMillis = System.currentTimeMillis();
             final ErodingFactor factor = getErodingFactor(key);
             synchronized (keyedPool) {
-                if (factor.getNextShrink() < now) {
+                if (factor.getNextShrink() < nowMillis) {
                     final int numIdle = getNumIdle(key);
                     if (numIdle > 0) {
                         discard = true;
                     }
 
-                    factor.update(now, numIdle);
+                    factor.update(nowMillis, numIdle);
                 }
             }
             try {

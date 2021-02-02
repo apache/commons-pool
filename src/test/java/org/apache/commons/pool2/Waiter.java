@@ -31,8 +31,8 @@ public class Waiter {
     private boolean active = false;
     private boolean valid = true;
     private long latency = 0;
-    private long lastPassivated = 0;
-    private long lastIdleTimeMs = 0;
+    private long lastPassivatedMillis = 0;
+    private long lastIdleTimeMillis = 0;
     private long passivationCount = 0;
     private long validationCount = 0;
     private final int id = instanceCount.getAndIncrement();
@@ -41,7 +41,7 @@ public class Waiter {
         this.active = active;
         this.valid = valid;
         this.latency = latency;
-        this.lastPassivated = System.currentTimeMillis();
+        this.lastPassivatedMillis = System.currentTimeMillis();
     }
 
     /**
@@ -65,8 +65,8 @@ public class Waiter {
     }
 
     /**
-     * <p>Sets the active state and updates {@link #getLastIdleTimeMs() lastIdleTime}
-     * or {@link #getLastPassivated() lastPassivated} as appropriate.</p>
+     * <p>Sets the active state and updates {@link #getLastIdleTimeMillis() lastIdleTime}
+     * or {@link #getLastPassivatedMillis() lastPassivated} as appropriate.</p>
      *
      * <p>If the active state is changing from inactive to active, lastIdleTime
      * is updated with the current time minus lastPassivated.  If the state is
@@ -86,11 +86,11 @@ public class Waiter {
             return;
         }
         this.active = active;
-        final long currentTime = System.currentTimeMillis();
+        final long currentTimeMillis = System.currentTimeMillis();
         if (active) {  // activating
-            lastIdleTimeMs = currentTime - lastPassivated;
+            lastIdleTimeMillis = currentTimeMillis - lastPassivatedMillis;
         } else {       // passivating
-            lastPassivated = currentTime;
+            lastPassivatedMillis = currentTimeMillis;
             passivationCount++;
         }
     }
@@ -119,22 +119,22 @@ public class Waiter {
      *
      * @return time of last passivation
      */
-    public long getLastPassivated() {
-        return lastPassivated;
+    public long getLastPassivatedMillis() {
+        return lastPassivatedMillis;
     }
 
     /**
      * <p>Returns the last idle time for this instance in ms.</p>
      *
      * <p>When an instance is created, and each subsequent time it is passivated,
-     * the {@link #getLastPassivated() lastPassivated} property is updated with the
+     * the {@link #getLastPassivatedMillis() lastPassivated} property is updated with the
      * current time.  When the next activation occurs, {@code lastIdleTime} is
      * updated with the elapsed time since passivation.<p>
      *
      * @return last idle time
      */
-    public long getLastIdleTimeMs() {
-        return lastIdleTimeMs;
+    public long getLastIdleTimeMillis() {
+        return lastIdleTimeMillis;
     }
 
     /**
@@ -170,8 +170,8 @@ public class Waiter {
         buff.append("ID = " + id + '\n');
         buff.append("valid = " + valid + '\n');
         buff.append("active = " + active + '\n');
-        buff.append("lastPassivated = " + lastPassivated + '\n');
-        buff.append("lastIdleTimeMs = " + lastIdleTimeMs + '\n');
+        buff.append("lastPassivated = " + lastPassivatedMillis + '\n');
+        buff.append("lastIdleTimeMs = " + lastIdleTimeMillis + '\n');
         buff.append("latency = " + latency + '\n');
         return buff.toString();
     }

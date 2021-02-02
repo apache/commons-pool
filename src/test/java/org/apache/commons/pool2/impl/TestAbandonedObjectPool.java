@@ -281,16 +281,15 @@ public class TestAbandonedObjectPool {
         pool.setMaxTotal(1);
 
         @SuppressWarnings("unused") // This is going to be abandoned
-        final
-        PooledTestObject o1 = pool.borrowObject();
+        final PooledTestObject o1 = pool.borrowObject();
 
-        final long start = System.currentTimeMillis();
+        final long startMillis = System.currentTimeMillis();
         final PooledTestObject o2 = pool.borrowObject(5000);
-        final long end = System.currentTimeMillis();
+        final long endMillis = System.currentTimeMillis();
 
         pool.returnObject(o2);
 
-        assertTrue (end - start < 5000);
+        assertTrue(endMillis - startMillis < 5000);
     }
 
     /**

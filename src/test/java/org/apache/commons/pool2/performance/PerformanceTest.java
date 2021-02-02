@@ -51,8 +51,8 @@ public class PerformanceTest {
 
     class PerfTask implements Callable<TaskStats> {
         final TaskStats taskStats = new TaskStats();
-        long borrowTime;
-        long returnTime;
+        long borrowTimeMillis;
+        long returnTimeMillis;
 
         public void runOnce() {
             try {
@@ -63,9 +63,9 @@ public class PerformanceTest {
                             "   waiting: " + taskStats.waiting +
                             "   complete: " + taskStats.complete);
                 }
-                final long bbegin = System.currentTimeMillis();
+                final long bbeginMillis = System.currentTimeMillis();
                 final Integer o = pool.borrowObject();
-                final long bend = System.currentTimeMillis();
+                final long bendMillis = System.currentTimeMillis();
                 taskStats.waiting--;
 
                 if (logLevel >= 3) {
@@ -75,13 +75,13 @@ public class PerformanceTest {
                             "   complete: " + taskStats.complete);
                 }
 
-                final long rbegin = System.currentTimeMillis();
+                final long rbeginMillis = System.currentTimeMillis();
                 pool.returnObject(o);
-                final long rend = System.currentTimeMillis();
+                final long rendMillis = System.currentTimeMillis();
                 Thread.yield();
                 taskStats.complete++;
-                borrowTime = bend - bbegin;
-                returnTime = rend - rbegin;
+                borrowTimeMillis = bendMillis - bbeginMillis;
+                returnTimeMillis = rendMillis - rbeginMillis;
             } catch (final Exception e) {
                 e.printStackTrace();
             }
@@ -92,14 +92,14 @@ public class PerformanceTest {
            runOnce(); // warmup
            for (int i = 0; i < nrIterations; i++) {
                runOnce();
-               taskStats.totalBorrowTime += borrowTime;
-               taskStats.totalReturnTime += returnTime;
+               taskStats.totalBorrowTime += borrowTimeMillis;
+               taskStats.totalReturnTime += returnTimeMillis;
                taskStats.nrSamples++;
                if (logLevel >= 2) {
                    final String name = "thread" + Thread.currentThread().getName();
                    System.out.println("result " + taskStats.nrSamples + '\t' +
-                           name + '\t' + "borrow time: " + borrowTime + '\t' +
-                           "return time: " + returnTime + '\t' + "waiting: " +
+                           name + '\t' + "borrow time: " + borrowTimeMillis + '\t' +
+                           "return time: " + returnTimeMillis + '\t' + "waiting: " +
                            taskStats.waiting + '\t' + "complete: " +
                            taskStats.complete);
                }

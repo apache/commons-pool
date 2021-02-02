@@ -31,25 +31,25 @@ public class TestDefaultPooledObjectInfo {
     public void testTiming() throws Exception {
         try (final GenericObjectPool<String> pool = new GenericObjectPool<>(new SimpleFactory())) {
 
-            final long t1 = System.currentTimeMillis();
+            final long t1Millis = System.currentTimeMillis();
 
             Thread.sleep(50);
             final String s1 = pool.borrowObject();
             Thread.sleep(50);
 
-            final long t2 = System.currentTimeMillis();
+            final long t2Millis = System.currentTimeMillis();
 
             Thread.sleep(50);
             pool.returnObject(s1);
             Thread.sleep(50);
 
-            final long t3 = System.currentTimeMillis();
+            final long t3Millis = System.currentTimeMillis();
 
             Thread.sleep(50);
             pool.borrowObject();
             Thread.sleep(50);
 
-            final long t4 = System.currentTimeMillis();
+            final long t4Millis = System.currentTimeMillis();
 
             final Set<DefaultPooledObjectInfo> strings = pool.listAllObjects();
 
@@ -59,19 +59,19 @@ public class TestDefaultPooledObjectInfo {
 
             final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
 
-            assertTrue(s1Info.getCreateTime() > t1);
+            assertTrue(s1Info.getCreateTime() > t1Millis);
             assertEquals(sdf.format(Long.valueOf(s1Info.getCreateTime())), s1Info.getCreateTimeFormatted());
-            assertTrue(s1Info.getCreateTime() < t2);
+            assertTrue(s1Info.getCreateTime() < t2Millis);
 
-            assertTrue(s1Info.getLastReturnTime() > t2);
+            assertTrue(s1Info.getLastReturnTime() > t2Millis);
             assertEquals(sdf.format(Long.valueOf(s1Info.getLastReturnTime())),
                     s1Info.getLastReturnTimeFormatted());
-            assertTrue(s1Info.getLastReturnTime() < t3);
+            assertTrue(s1Info.getLastReturnTime() < t3Millis);
 
-            assertTrue(s1Info.getLastBorrowTime() > t3);
+            assertTrue(s1Info.getLastBorrowTime() > t3Millis);
             assertEquals(sdf.format(Long.valueOf(s1Info.getLastBorrowTime())),
                     s1Info.getLastBorrowTimeFormatted());
-            assertTrue(s1Info.getLastBorrowTime() < t4);
+            assertTrue(s1Info.getLastBorrowTime() < t4Millis);
         }
     }
 

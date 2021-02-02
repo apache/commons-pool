@@ -66,7 +66,7 @@ public class SecurityManagerCallStack implements CallStack {
             message = messageFormat;
         } else {
             synchronized (dateFormat) {
-                message = dateFormat.format(Long.valueOf(snapshotRef.timestamp));
+                message = dateFormat.format(Long.valueOf(snapshotRef.timestampMillis));
             }
         }
         writer.println(message);
@@ -109,7 +109,7 @@ public class SecurityManagerCallStack implements CallStack {
      * A snapshot of a class stack.
      */
     private static class Snapshot {
-        private final long timestamp = System.currentTimeMillis();
+        private final long timestampMillis = System.currentTimeMillis();
         private final List<WeakReference<Class<?>>> stack;
 
         /**

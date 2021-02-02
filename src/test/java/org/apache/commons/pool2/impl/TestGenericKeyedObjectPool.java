@@ -1314,7 +1314,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         gkoPool.setMaxTotalPerKey(1);
         gkoPool.setMaxTotal(-1);
         gkoPool.borrowObject("one");
-        final long start = System.currentTimeMillis();
+        final long startMillis = System.currentTimeMillis();
         // Needs to be in a separate thread as this will block
         final Runnable simple = new SimpleTestThread<>(gkoPool, "one");
         (new Thread(simple)).start();
@@ -1323,12 +1323,13 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         // Give other thread a chance to start
         Thread.sleep(1000);
         gkoPool.borrowObject("two");
-        final long end = System.currentTimeMillis();
+        final long endMillis = System.currentTimeMillis();
         // If it fails it will be more than 4000ms (5000 less the 1000 sleep)
         // If it passes it should be almost instant
         // Use 3000ms as the threshold - should avoid timing issues on most
         // (all? platforms)
-        assertTrue ((end-start) < 4000,"Elapsed time: "+(end-start)+" should be less than 4000");
+        assertTrue((endMillis - startMillis) < 4000,
+                "Elapsed time: " + (endMillis - startMillis) + " should be less than 4000");
 
     }
 
@@ -1361,7 +1362,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         for(int i=0; i < wtt.length; i++){
             wtt[i] = new WaitingTestThread(gkoPool,Integer.toString(i % keyCount),holdTime);
         }
-        final long origin = System.currentTimeMillis()-1000;
+        final long originMillis = System.currentTimeMillis() - 1000;
         for (final WaitingTestThread element : wtt) {
             element.start();
         }
@@ -1383,11 +1384,11 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                     );
             for (final WaitingTestThread wt : wtt) {
                 System.out.println(
-                        "Preborrow: " + (wt.preborrow-origin) +
-                        " Postborrow: " + (wt.postborrow != 0 ? wt.postborrow-origin : -1) +
-                        " BorrowTime: " + (wt.postborrow != 0 ? wt.postborrow-wt.preborrow : -1) +
-                        " PostReturn: " + (wt.postreturn != 0 ? wt.postreturn-origin : -1) +
-                        " Ended: " + (wt.ended-origin) +
+                        "Preborrow: " + (wt.preBorrowMillis - originMillis) +
+                        " Postborrow: " + (wt.postBorrowMillis != 0 ? wt.postBorrowMillis - originMillis : -1) +
+                        " BorrowTime: " + (wt.postBorrowMillis != 0 ? wt.postBorrowMillis - wt.preBorrowMillis : -1) +
+                        " PostReturn: " + (wt.postReturnMillis != 0 ? wt.postReturnMillis - originMillis : -1) +
+                        " Ended: " + (wt.endedMillis - originMillis) +
                         " Key: " + (wt._key) +
                         " ObjId: " + wt.objectId
                         );
@@ -1713,10 +1714,10 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         private final long _pause;
         private Throwable _thrown;
 
-        private long preborrow; // just before borrow
-        private long postborrow; //  borrow returned
-        private long postreturn; // after object was returned
-        private long ended;
+        private long preBorrowMillis; // just before borrow
+        private long postBorrowMillis; //  borrow returned
+        private long postReturnMillis; // after object was returned
+        private long endedMillis;
         private String objectId;
 
         public WaitingTestThread(final KeyedObjectPool<String,String> pool, final String key, final long pause) {
@@ -1729,17 +1730,17 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         @Override
         public void run() {
             try {
-                preborrow = System.currentTimeMillis();
+                preBorrowMillis = System.currentTimeMillis();
                 final String obj = _pool.borrowObject(_key);
                 objectId = obj;
-                postborrow = System.currentTimeMillis();
+                postBorrowMillis = System.currentTimeMillis();
                 Thread.sleep(_pause);
                 _pool.returnObject(_key, obj);
-                postreturn = System.currentTimeMillis();
+                postReturnMillis = System.currentTimeMillis();
             } catch (final Exception e) {
                 _thrown = e;
             } finally{
-                ended = System.currentTimeMillis();
+                endedMillis = System.currentTimeMillis();
             }
         }
     }

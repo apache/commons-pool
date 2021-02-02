@@ -553,10 +553,10 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         private final long _pause;
         private Throwable _thrown;
 
-        private long preborrow; // just before borrow
-        private long postborrow; //  borrow returned
-        private long postreturn; // after object was returned
-        private long ended;
+        private long preBorrowMillis; // just before borrow
+        private long postBorrowMillis; //  borrow returned
+        private long postReturnMillis; // after object was returned
+        private long endedMillis;
         private String objectId;
 
         public WaitingTestThread(final GenericObjectPool<String> pool, final long pause) {
@@ -568,17 +568,17 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         @Override
         public void run() {
             try {
-                preborrow = System.currentTimeMillis();
+                preBorrowMillis = System.currentTimeMillis();
                 final String obj = _pool.borrowObject();
                 objectId = obj;
-                postborrow = System.currentTimeMillis();
+                postBorrowMillis = System.currentTimeMillis();
                 Thread.sleep(_pause);
                 _pool.returnObject(obj);
-                postreturn = System.currentTimeMillis();
+                postReturnMillis = System.currentTimeMillis();
             } catch (final Throwable e) {
                 _thrown = e;
             } finally{
-                ended = System.currentTimeMillis();
+                endedMillis = System.currentTimeMillis();
             }
         }
     }
@@ -1551,10 +1551,10 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
     public void testEvictionSoftMinIdle() throws Exception {
         class TimeTest extends BasePooledObjectFactory<TimeTest> {
-            private final long createTime;
+            private final long createTimeMillis;
 
             public TimeTest() {
-                createTime = System.currentTimeMillis();
+                createTimeMillis = System.currentTimeMillis();
             }
 
             @Override
@@ -1562,8 +1562,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 return new TimeTest();
             }
 
-            public long getCreateTime() {
-                return createTime;
+            public long getCreateTimeMillis() {
+                return createTimeMillis;
             }
 
             @Override
@@ -1585,7 +1585,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             final Long[] creationTime = new Long[5];
             for (int i = 0; i < 5; i++) {
                 active[i] = timePool.borrowObject();
-                creationTime[i] = Long.valueOf((active[i]).getCreateTime());
+                creationTime[i] = Long.valueOf((active[i]).getCreateTimeMillis());
             }
 
             for (int i = 0; i < 5; i++) {
@@ -2239,7 +2239,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         for (int i = 0; i < wtt.length; i++) {
             wtt[i] = new WaitingTestThread(genericObjectPool,holdTime);
         }
-        final long origin = System.currentTimeMillis() - 1000;
+        final long originMillis = System.currentTimeMillis() - 1000;
         for (final WaitingTestThread element : wtt) {
             element.start();
         }
@@ -2260,11 +2260,11 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                     );
             for (final WaitingTestThread wt : wtt) {
                 System.out.println(
-                        "PreBorrow: " + (wt.preborrow - origin) +
-                        " PostBorrow: " + (wt.postborrow != 0 ? wt.postborrow - origin : -1) +
-                        " BorrowTime: " + (wt.postborrow != 0 ? wt.postborrow - wt.preborrow : -1) +
-                        " PostReturn: " + (wt.postreturn != 0 ? wt.postreturn - origin : -1) +
-                        " Ended: " + (wt.ended - origin) +
+                        "PreBorrow: " + (wt.preBorrowMillis - originMillis) +
+                        " PostBorrow: " + (wt.postBorrowMillis != 0 ? wt.postBorrowMillis - originMillis : -1) +
+                        " BorrowTime: " + (wt.postBorrowMillis != 0 ? wt.postBorrowMillis - wt.preBorrowMillis : -1) +
+                        " PostReturn: " + (wt.postReturnMillis != 0 ? wt.postReturnMillis - originMillis : -1) +
+                        " Ended: " + (wt.endedMillis - originMillis) +
                         " ObjId: " + wt.objectId
                         );
             }

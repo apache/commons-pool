@@ -74,7 +74,7 @@ public final class ObjectPoolIssue326 {
         // 4 core box.
         // too many doesn't reproduce it ever, too few doesn't either.
         final ExecutorService service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
-        final long startTime = System.currentTimeMillis();
+        final long startTimeMillis = System.currentTimeMillis();
         long testIter = 0;
         try {
             while (true) {
@@ -89,7 +89,7 @@ public final class ObjectPoolIssue326 {
                 }
             }
         } finally {
-            System.out.println("Time: " + (System.currentTimeMillis() - startTime) / 1000.0);
+            System.out.println("Time: " + (System.currentTimeMillis() - startTimeMillis) / 1000.0);
             service.shutdown();
         }
     }
@@ -147,8 +147,8 @@ public final class ObjectPoolIssue326 {
 
         private void busyWait(final long timeMillis) {
             // busy waiting intentionally as a simple thread.sleep fails to reproduce
-            final long endTime = System.currentTimeMillis() + timeMillis;
-            while (System.currentTimeMillis() < endTime) {
+            final long endTimeMillis = System.currentTimeMillis() + timeMillis;
+            while (System.currentTimeMillis() < endTimeMillis) {
                 // empty
             }
         }

@@ -422,7 +422,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         final boolean blockWhenExhausted = getBlockWhenExhausted();
 
         boolean create;
-        final long waitTime = System.currentTimeMillis();
+        final long waitTimeMillis = System.currentTimeMillis();
 
         while (p == null) {
             create = false;
@@ -500,7 +500,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             }
         }
 
-        updateStatsBorrow(p, System.currentTimeMillis() - waitTime);
+        updateStatsBorrow(p, System.currentTimeMillis() - waitTimeMillis);
 
         return p.getObject();
     }
@@ -1068,16 +1068,16 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     @SuppressWarnings("resource") // PrintWriter is managed elsewhere
     private void removeAbandoned(final AbandonedConfig abandonedConfig) {
         // Generate a list of abandoned objects to remove
-        final long now = System.currentTimeMillis();
-        final long timeout =
-                now - (abandonedConfig.getRemoveAbandonedTimeout() * 1000L);
+        final long nowMillis = System.currentTimeMillis();
+        final long timeoutMillis =
+                nowMillis - (abandonedConfig.getRemoveAbandonedTimeout() * 1000L);
         final ArrayList<PooledObject<T>> remove = new ArrayList<>();
         final Iterator<PooledObject<T>> it = allObjects.values().iterator();
         while (it.hasNext()) {
             final PooledObject<T> pooledObject = it.next();
             synchronized (pooledObject) {
                 if (pooledObject.getState() == PooledObjectState.ALLOCATED &&
-                        pooledObject.getLastUsedTime() <= timeout) {
+                        pooledObject.getLastUsedTime() <= timeoutMillis) {
                     pooledObject.markAbandoned();
                     remove.add(pooledObject);
                 }
