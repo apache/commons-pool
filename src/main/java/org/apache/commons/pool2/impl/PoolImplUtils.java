@@ -158,6 +158,10 @@ class PoolImplUtils {
         return null;
     }
 
+    static boolean isPositive(final Duration delay) {
+        return !delay.isNegative() && !delay.isZero();
+    }
+
     /**
      * Converts a {@link TimeUnit} to a {@link ChronoUnit}.
      * 
@@ -195,9 +199,5 @@ class PoolImplUtils {
      */
     static Duration toDuration(long amount, TimeUnit timeUnit) {
         return Duration.of(amount, PoolImplUtils.toChronoUnit(timeUnit));
-    }
-
-    static boolean isPositive(final Duration delay) {
-        return !delay.isNegative() && !delay.isZero();
     }
 }
