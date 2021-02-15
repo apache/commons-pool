@@ -2961,12 +2961,14 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
      * Check that a pool that starts an evictor, but is never closed does not
      * leave EvictionTimer executor running. Confirmation check is in teardown.
      */
+    @SuppressWarnings("deprecation")
     @Test
     public void testAbandonedPool() throws Exception {
         final GenericObjectPoolConfig config = new GenericObjectPoolConfig();
         config.setJmxEnabled(false);
         GenericObjectPool<String> abandoned = new GenericObjectPool<>(simpleFactory, config);
         abandoned.setTimeBetweenEvictionRunsMillis(100); // Starts evictor
+        assertEquals(abandoned.getRemoveAbandonedTimeout(), abandoned.getRemoveAbandonedTimeoutDuration().getSeconds());
 
         // This is ugly, but forces gc to hit the pool
         final WeakReference<GenericObjectPool> ref = new WeakReference<>(abandoned);

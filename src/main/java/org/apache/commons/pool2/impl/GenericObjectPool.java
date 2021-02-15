@@ -26,6 +26,7 @@ import org.apache.commons.pool2.SwallowedExceptionListener;
 import org.apache.commons.pool2.TrackedUse;
 import org.apache.commons.pool2.UsageTracking;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -82,6 +83,8 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         implements ObjectPool<T>, GenericObjectPoolMXBean, UsageTracking<T> {
+
+    private static final Duration DEFAULT_REMOVE_ABANDONED_TIMEOUT = Duration.ofSeconds(Integer.MAX_VALUE);
 
     /**
      * Creates a new {@code GenericObjectPool} using defaults from
@@ -290,14 +293,29 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      *
      * @see AbandonedConfig#getRemoveAbandonedTimeout()
      * @see AbandonedConfig#getRemoveAbandonedTimeoutDuration()
+     * @deprecated Use {@link #getRemoveAbandonedTimeoutDuration()}.
      */
-    @SuppressWarnings("deprecation")
     @Override
+    @Deprecated
     public int getRemoveAbandonedTimeout() {
         final AbandonedConfig ac = this.abandonedConfig;
         return ac != null ? ac.getRemoveAbandonedTimeout() : Integer.MAX_VALUE;
     }
 
+    /**
+     * Gets the timeout before which an object will be considered to be
+     * abandoned by this pool.
+     *
+     * @return The abandoned object timeout in seconds if abandoned object
+     *         removal is configured for this pool; Integer.MAX_VALUE otherwise.
+     *
+     * @see AbandonedConfig#getRemoveAbandonedTimeout()
+     * @see AbandonedConfig#getRemoveAbandonedTimeoutDuration()
+     */
+    public Duration getRemoveAbandonedTimeoutDuration() {
+        final AbandonedConfig ac = this.abandonedConfig;
+        return ac != null ? ac.getRemoveAbandonedTimeoutDuration() : DEFAULT_REMOVE_ABANDONED_TIMEOUT;
+    }
 
     /**
      * Sets the base pool configuration.
