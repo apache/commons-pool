@@ -138,7 +138,7 @@ public interface KeyedObjectPool<K, V> extends Closeable {
     }
 
     /**
-     * Obtains an instance from this pool for the specified {@code key}.
+     * Borrows an instance from this pool for the specified {@code key}.
      * <p>
      * Instances returned from this method will have been either newly created
      * with {@link KeyedPooledObjectFactory#makeObject makeObject} or will be

@@ -92,7 +92,7 @@ public interface ObjectPool<T> extends Closeable {
     }
 
     /**
-     * Obtains an instance from this pool.
+     * Borrows an instance from this pool.
      * <p>
      * Instances returned from this method will have been either newly created
      * with {@link PooledObjectFactory#makeObject} or will be a previously

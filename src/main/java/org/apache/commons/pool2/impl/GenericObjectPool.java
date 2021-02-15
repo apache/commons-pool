@@ -715,7 +715,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Obtains a reference to the factory used to create, destroy and validate
+    * Gets  a reference to the factory used to create, destroy and validate
      * the objects used by this pool.
      *
      * @return the factory
