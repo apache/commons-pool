@@ -16,6 +16,8 @@
  */
 package org.apache.commons.pool2.impl;
 
+import java.time.Duration;
+
 import org.apache.commons.pool2.BaseObject;
 
 /**
@@ -53,7 +55,15 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     public static final long DEFAULT_MAX_WAIT_MILLIS = -1L;
 
     /**
-     * The default value for the {@code minEvictableIdleTimeMillis}
+     * The default value for the {@code maxWait} configuration attribute.
+     * @see GenericObjectPool#getMaxWaitMillis()
+     * @see GenericKeyedObjectPool#getMaxWaitMillis()
+     * @since 2.10.0
+     */
+    public static final Duration DEFAULT_MAX_WAIT = Duration.ofMillis(DEFAULT_MAX_WAIT_MILLIS);
+
+    /**
+     * The default value for the {@code minEvictableIdleTime}
      * configuration attribute.
      * @see GenericObjectPool#getMinEvictableIdleTimeMillis()
      * @see GenericKeyedObjectPool#getMinEvictableIdleTimeMillis()
@@ -62,7 +72,17 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
             1000L * 60L * 30L;
 
     /**
-     * The default value for the {@code softMinEvictableIdleTimeMillis}
+     * The default value for the {@code minEvictableIdleTime}
+     * configuration attribute.
+     * @see GenericObjectPool#getMinEvictableIdleTimeMillis()
+     * @see GenericKeyedObjectPool#getMinEvictableIdleTimeMillis()
+     * @since 2.10.0
+     */
+    public static final Duration DEFAULT_MIN_EVICTABLE_IDLE_TIME =
+            Duration.ofMillis(DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS);
+
+    /**
+     * The default value for the {@code softMinEvictableIdleTime}
      * configuration attribute.
      * @see GenericObjectPool#getSoftMinEvictableIdleTimeMillis()
      * @see GenericKeyedObjectPool#getSoftMinEvictableIdleTimeMillis()
@@ -70,13 +90,33 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     public static final long DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS = -1;
 
     /**
-     * The default value for {@code evictorShutdownTimeoutMillis} configuration
+     * The default value for the {@code softMinEvictableIdleTime}
+     * configuration attribute.
+     * @see GenericObjectPool#getSoftMinEvictableIdleTimeMillis()
+     * @see GenericKeyedObjectPool#getSoftMinEvictableIdleTimeMillis()
+     * @since 2.10.0
+     */
+    public static final Duration DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME = 
+            Duration.ofMillis(DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS);
+
+    /**
+     * The default value for {@code evictorShutdownTimeout} configuration
      * attribute.
      * @see GenericObjectPool#getEvictorShutdownTimeoutMillis()
      * @see GenericKeyedObjectPool#getEvictorShutdownTimeoutMillis()
      */
     public static final long DEFAULT_EVICTOR_SHUTDOWN_TIMEOUT_MILLIS =
             10L * 1000L;
+
+    /**
+     * The default value for {@code evictorShutdownTimeout} configuration
+     * attribute.
+     * @see GenericObjectPool#getEvictorShutdownTimeoutMillis()
+     * @see GenericKeyedObjectPool#getEvictorShutdownTimeoutMillis()
+     * @since 2.10.0
+     */
+    public static final Duration DEFAULT_EVICTOR_SHUTDOWN_TIMEOUT =
+            Duration.ofMillis(DEFAULT_EVICTOR_SHUTDOWN_TIMEOUT_MILLIS);
 
     /**
      * The default value for the {@code numTestsPerEvictionRun} configuration
@@ -117,12 +157,21 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     public static final boolean DEFAULT_TEST_WHILE_IDLE = false;
 
     /**
-     * The default value for the {@code timeBetweenEvictionRunsMillis}
+     * The default value for the {@code timeBetweenEvictionRuns}
      * configuration attribute.
      * @see GenericObjectPool#getTimeBetweenEvictionRunsMillis()
      * @see GenericKeyedObjectPool#getTimeBetweenEvictionRunsMillis()
      */
     public static final long DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS = -1L;
+
+    /**
+     * The default value for the {@code timeBetweenEvictionRuns}
+     * configuration attribute.
+     * @see GenericObjectPool#getTimeBetweenEvictionRunsMillis()
+     * @see GenericKeyedObjectPool#getTimeBetweenEvictionRunsMillis()
+     */
+    public static final Duration DEFAULT_TIME_BETWEEN_EVICTION_RUNS = 
+            Duration.ofMillis(DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS);
 
     /**
      * The default value for the {@code blockWhenExhausted} configuration
@@ -167,21 +216,17 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
 
     private boolean fairness = DEFAULT_FAIRNESS;
 
-    private long maxWaitMillis = DEFAULT_MAX_WAIT_MILLIS;
+    private Duration maxWaitMillis = DEFAULT_MAX_WAIT;
 
-    private long minEvictableIdleTimeMillis =
-            DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+    private Duration minEvictableIdleTime = DEFAULT_MIN_EVICTABLE_IDLE_TIME;
 
-    private long evictorShutdownTimeoutMillis =
-            DEFAULT_EVICTOR_SHUTDOWN_TIMEOUT_MILLIS;
+    private Duration evictorShutdownTimeout = DEFAULT_EVICTOR_SHUTDOWN_TIMEOUT;
 
-    private long softMinEvictableIdleTimeMillis =
-            DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+    private Duration softMinEvictableIdleTime = DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME;
 
-    private int numTestsPerEvictionRun =
-            DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
+    private int numTestsPerEvictionRun = DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
 
-    private EvictionPolicy<T> evictionPolicy = null; // Only 2.6.0 applications set this
+    private EvictionPolicy<T> evictionPolicy; // Only 2.6.0 applications set this
 
     private String evictionPolicyClassName = DEFAULT_EVICTION_POLICY_CLASS_NAME;
 
@@ -193,8 +238,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
 
     private boolean testWhileIdle = DEFAULT_TEST_WHILE_IDLE;
 
-    private long timeBetweenEvictionRunsMillis =
-            DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
+    private Duration timeBetweenEvictionRuns = DEFAULT_TIME_BETWEEN_EVICTION_RUNS;
 
     private boolean blockWhenExhausted = DEFAULT_BLOCK_WHEN_EXHAUSTED;
 
@@ -207,7 +251,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
 
 
     /**
-     * Get the value for the {@code lifo} configuration attribute for pools
+     * Gets the value for the {@code lifo} configuration attribute for pools
      * created with this configuration instance.
      *
      * @return  The current setting of {@code lifo} for this configuration
@@ -221,7 +265,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     }
 
     /**
-     * Get the value for the {@code fairness} configuration attribute for pools
+     * Gets the value for the {@code fairness} configuration attribute for pools
      * created with this configuration instance.
      *
      * @return  The current setting of {@code fairness} for this configuration
@@ -235,7 +279,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     }
 
     /**
-     * Set the value for the {@code lifo} configuration attribute for pools
+     * Sets the value for the {@code lifo} configuration attribute for pools
      * created with this configuration instance.
      *
      * @param lifo The new setting of {@code lifo}
@@ -249,7 +293,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     }
 
     /**
-     * Set the value for the {@code fairness} configuration attribute for pools
+     * Sets the value for the {@code fairness} configuration attribute for pools
      * created with this configuration instance.
      *
      * @param fairness The new setting of {@code fairness}
@@ -263,7 +307,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     }
 
     /**
-     * Get the value for the {@code maxWait} configuration attribute for pools
+     * Gets the value for the {@code maxWait} configuration attribute for pools
      * created with this configuration instance.
      *
      * @return  The current setting of {@code maxWait} for this
@@ -273,11 +317,11 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      * @see GenericKeyedObjectPool#getMaxWaitMillis()
      */
     public long getMaxWaitMillis() {
-        return maxWaitMillis;
+        return maxWaitMillis.toMillis();
     }
 
     /**
-     * Set the value for the {@code maxWait} configuration attribute for pools
+     * Sets the value for the {@code maxWait} configuration attribute for pools
      * created with this configuration instance.
      *
      * @param maxWaitMillis The new setting of {@code maxWaitMillis}
@@ -287,59 +331,59 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      * @see GenericKeyedObjectPool#getMaxWaitMillis()
      */
     public void setMaxWaitMillis(final long maxWaitMillis) {
-        this.maxWaitMillis = maxWaitMillis;
+        this.maxWaitMillis = Duration.ofMillis(maxWaitMillis);
     }
 
     /**
-     * Get the value for the {@code minEvictableIdleTimeMillis} configuration
+     * Gets the value for the {@code minEvictableIdleTime} configuration
      * attribute for pools created with this configuration instance.
      *
-     * @return  The current setting of {@code minEvictableIdleTimeMillis} for
+     * @return  The current setting of {@code minEvictableIdleTime} for
      *          this configuration instance
      *
      * @see GenericObjectPool#getMinEvictableIdleTimeMillis()
      * @see GenericKeyedObjectPool#getMinEvictableIdleTimeMillis()
      */
     public long getMinEvictableIdleTimeMillis() {
-        return minEvictableIdleTimeMillis;
+        return minEvictableIdleTime.toMillis();
     }
 
     /**
-     * Set the value for the {@code minEvictableIdleTimeMillis} configuration
+     * Sets the value for the {@code minEvictableIdleTime} configuration
      * attribute for pools created with this configuration instance.
      *
      * @param minEvictableIdleTimeMillis The new setting of
-     *        {@code minEvictableIdleTimeMillis} for this configuration instance
+     *        {@code minEvictableIdleTime} for this configuration instance
      *
      * @see GenericObjectPool#getMinEvictableIdleTimeMillis()
      * @see GenericKeyedObjectPool#getMinEvictableIdleTimeMillis()
      */
     public void setMinEvictableIdleTimeMillis(final long minEvictableIdleTimeMillis) {
-        this.minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
+        this.minEvictableIdleTime = Duration.ofMillis(minEvictableIdleTimeMillis);
     }
 
     /**
-     * Get the value for the {@code softMinEvictableIdleTimeMillis}
+     * Gets the value for the {@code softMinEvictableIdleTime}
      * configuration attribute for pools created with this configuration
      * instance.
      *
-     * @return  The current setting of {@code softMinEvictableIdleTimeMillis}
+     * @return  The current setting of {@code softMinEvictableIdleTime}
      *          for this configuration instance
      *
      * @see GenericObjectPool#getSoftMinEvictableIdleTimeMillis()
      * @see GenericKeyedObjectPool#getSoftMinEvictableIdleTimeMillis()
      */
     public long getSoftMinEvictableIdleTimeMillis() {
-        return softMinEvictableIdleTimeMillis;
+        return softMinEvictableIdleTime.toMillis();
     }
 
     /**
-     * Set the value for the {@code softMinEvictableIdleTimeMillis}
+     * Sets the value for the {@code softMinEvictableIdleTime}
      * configuration attribute for pools created with this configuration
      * instance.
      *
      * @param softMinEvictableIdleTimeMillis The new setting of
-     *        {@code softMinEvictableIdleTimeMillis} for this configuration
+     *        {@code softMinEvictableIdleTime} for this configuration
      *        instance
      *
      * @see GenericObjectPool#getSoftMinEvictableIdleTimeMillis()
@@ -347,11 +391,11 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      */
     public void setSoftMinEvictableIdleTimeMillis(
             final long softMinEvictableIdleTimeMillis) {
-        this.softMinEvictableIdleTimeMillis = softMinEvictableIdleTimeMillis;
+        this.softMinEvictableIdleTime = Duration.ofMillis(softMinEvictableIdleTimeMillis);
     }
 
     /**
-     * Get the value for the {@code numTestsPerEvictionRun} configuration
+     * Gets the value for the {@code numTestsPerEvictionRun} configuration
      * attribute for pools created with this configuration instance.
      *
      * @return  The current setting of {@code numTestsPerEvictionRun} for this
@@ -365,7 +409,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     }
 
     /**
-     * Set the value for the {@code numTestsPerEvictionRun} configuration
+     * Sets the value for the {@code numTestsPerEvictionRun} configuration
      * attribute for pools created with this configuration instance.
      *
      * @param numTestsPerEvictionRun The new setting of
@@ -379,25 +423,25 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     }
 
     /**
-     * Get the value for the {@code evictorShutdownTimeoutMillis} configuration
+     * Gets the value for the {@code evictorShutdownTimeout} configuration
      * attribute for pools created with this configuration instance.
      *
-     * @return  The current setting of {@code evictorShutdownTimeoutMillis} for
+     * @return  The current setting of {@code evictorShutdownTimeout} for
      *          this configuration instance
      *
      * @see GenericObjectPool#getEvictorShutdownTimeoutMillis()
      * @see GenericKeyedObjectPool#getEvictorShutdownTimeoutMillis()
      */
     public long getEvictorShutdownTimeoutMillis() {
-        return evictorShutdownTimeoutMillis;
+        return evictorShutdownTimeout.toMillis();
     }
 
     /**
-     * Set the value for the {@code evictorShutdownTimeoutMillis} configuration
+     * Sets the value for the {@code evictorShutdownTimeout} configuration
      * attribute for pools created with this configuration instance.
      *
      * @param evictorShutdownTimeoutMillis The new setting of
-     *        {@code evictorShutdownTimeoutMillis} for this configuration
+     *        {@code evictorShutdownTimeout} for this configuration
      *        instance
      *
      * @see GenericObjectPool#getEvictorShutdownTimeoutMillis()
@@ -405,11 +449,11 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      */
     public void setEvictorShutdownTimeoutMillis(
             final long evictorShutdownTimeoutMillis) {
-        this.evictorShutdownTimeoutMillis = evictorShutdownTimeoutMillis;
+        this.evictorShutdownTimeout = Duration.ofMillis(evictorShutdownTimeoutMillis);
     }
 
     /**
-     * Get the value for the {@code testOnCreate} configuration attribute for
+     * Gets the value for the {@code testOnCreate} configuration attribute for
      * pools created with this configuration instance.
      *
      * @return  The current setting of {@code testOnCreate} for this
@@ -425,7 +469,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     }
 
     /**
-     * Set the value for the {@code testOnCreate} configuration attribute for
+     * Sets the value for the {@code testOnCreate} configuration attribute for
      * pools created with this configuration instance.
      *
      * @param testOnCreate The new setting of {@code testOnCreate}
@@ -441,7 +485,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     }
 
     /**
-     * Get the value for the {@code testOnBorrow} configuration attribute for
+     * Gets the value for the {@code testOnBorrow} configuration attribute for
      * pools created with this configuration instance.
      *
      * @return  The current setting of {@code testOnBorrow} for this
@@ -455,7 +499,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     }
 
     /**
-     * Set the value for the {@code testOnBorrow} configuration attribute for
+     * Sets the value for the {@code testOnBorrow} configuration attribute for
      * pools created with this configuration instance.
      *
      * @param testOnBorrow The new setting of {@code testOnBorrow}
@@ -469,7 +513,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     }
 
     /**
-     * Get the value for the {@code testOnReturn} configuration attribute for
+     * Gets the value for the {@code testOnReturn} configuration attribute for
      * pools created with this configuration instance.
      *
      * @return  The current setting of {@code testOnReturn} for this
@@ -483,7 +527,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     }
 
     /**
-     * Set the value for the {@code testOnReturn} configuration attribute for
+     * Sets the value for the {@code testOnReturn} configuration attribute for
      * pools created with this configuration instance.
      *
      * @param testOnReturn The new setting of {@code testOnReturn}
@@ -497,7 +541,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     }
 
     /**
-     * Get the value for the {@code testWhileIdle} configuration attribute for
+     * Gets the value for the {@code testWhileIdle} configuration attribute for
      * pools created with this configuration instance.
      *
      * @return  The current setting of {@code testWhileIdle} for this
@@ -511,7 +555,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     }
 
     /**
-     * Set the value for the {@code testWhileIdle} configuration attribute for
+     * Sets the value for the {@code testWhileIdle} configuration attribute for
      * pools created with this configuration instance.
      *
      * @param testWhileIdle The new setting of {@code testWhileIdle}
@@ -525,25 +569,25 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     }
 
     /**
-     * Get the value for the {@code timeBetweenEvictionRunsMillis} configuration
+     * Gets the value for the {@code timeBetweenEvictionRuns} configuration
      * attribute for pools created with this configuration instance.
      *
-     * @return  The current setting of {@code timeBetweenEvictionRunsMillis} for
+     * @return  The current setting of {@code timeBetweenEvictionRuns} for
      *          this configuration instance
      *
      * @see GenericObjectPool#getTimeBetweenEvictionRunsMillis()
      * @see GenericKeyedObjectPool#getTimeBetweenEvictionRunsMillis()
      */
     public long getTimeBetweenEvictionRunsMillis() {
-        return timeBetweenEvictionRunsMillis;
+        return timeBetweenEvictionRuns.toMillis();
     }
 
     /**
-     * Set the value for the {@code timeBetweenEvictionRunsMillis} configuration
+     * Sets the value for the {@code timeBetweenEvictionRuns} configuration
      * attribute for pools created with this configuration instance.
      *
      * @param timeBetweenEvictionRunsMillis The new setting of
-     *        {@code timeBetweenEvictionRunsMillis} for this configuration
+     *        {@code timeBetweenEvictionRuns} for this configuration
      *        instance
      *
      * @see GenericObjectPool#getTimeBetweenEvictionRunsMillis()
@@ -551,11 +595,11 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      */
     public void setTimeBetweenEvictionRunsMillis(
             final long timeBetweenEvictionRunsMillis) {
-        this.timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
+        this.timeBetweenEvictionRuns = Duration.ofMillis(timeBetweenEvictionRunsMillis);
     }
 
     /**
-     * Get the value for the {@code evictionPolicyClass} configuration
+     * Gets the value for the {@code evictionPolicyClass} configuration
      * attribute for pools created with this configuration instance.
      *
      * @return  The current setting of {@code evictionPolicyClass} for this
@@ -570,7 +614,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     }
 
     /**
-     * Get the value for the {@code evictionPolicyClassName} configuration
+     * Gets the value for the {@code evictionPolicyClassName} configuration
      * attribute for pools created with this configuration instance.
      *
      * @return  The current setting of {@code evictionPolicyClassName} for this
@@ -584,7 +628,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     }
 
     /**
-     * Set the value for the {@code evictionPolicyClass} configuration
+     * Sets the value for the {@code evictionPolicyClass} configuration
      * attribute for pools created with this configuration instance.
      *
      * @param evictionPolicy The new setting of
@@ -599,7 +643,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     }
 
     /**
-     * Set the value for the {@code evictionPolicyClassName} configuration
+     * Sets the value for the {@code evictionPolicyClassName} configuration
      * attribute for pools created with this configuration instance.
      *
      * @param evictionPolicyClassName The new setting of
@@ -613,7 +657,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     }
 
     /**
-     * Get the value for the {@code blockWhenExhausted} configuration attribute
+     * Gets the value for the {@code blockWhenExhausted} configuration attribute
      * for pools created with this configuration instance.
      *
      * @return  The current setting of {@code blockWhenExhausted} for this
@@ -627,7 +671,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     }
 
     /**
-     * Set the value for the {@code blockWhenExhausted} configuration attribute
+     * Sets the value for the {@code blockWhenExhausted} configuration attribute
      * for pools created with this configuration instance.
      *
      * @param blockWhenExhausted The new setting of {@code blockWhenExhausted}
@@ -720,10 +764,10 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
         builder.append(fairness);
         builder.append(", maxWaitMillis=");
         builder.append(maxWaitMillis);
-        builder.append(", minEvictableIdleTimeMillis=");
-        builder.append(minEvictableIdleTimeMillis);
-        builder.append(", softMinEvictableIdleTimeMillis=");
-        builder.append(softMinEvictableIdleTimeMillis);
+        builder.append(", minEvictableIdleTime=");
+        builder.append(minEvictableIdleTime);
+        builder.append(", softMinEvictableIdleTime=");
+        builder.append(softMinEvictableIdleTime);
         builder.append(", numTestsPerEvictionRun=");
         builder.append(numTestsPerEvictionRun);
         builder.append(", evictionPolicyClassName=");
@@ -736,8 +780,8 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
         builder.append(testOnReturn);
         builder.append(", testWhileIdle=");
         builder.append(testWhileIdle);
-        builder.append(", timeBetweenEvictionRunsMillis=");
-        builder.append(timeBetweenEvictionRunsMillis);
+        builder.append(", timeBetweenEvictionRuns=");
+        builder.append(timeBetweenEvictionRuns);
         builder.append(", blockWhenExhausted=");
         builder.append(blockWhenExhausted);
         builder.append(", jmxEnabled=");

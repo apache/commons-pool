@@ -22,6 +22,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.nio.charset.UnsupportedCharsetException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -2692,7 +2693,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             assertEquals(0,genericObjectPool.getNumIdle(),"Should have 0 idle");
 
             // stop the evictor
-            genericObjectPool.startEvictor(0L);
+            genericObjectPool.startEvictor(Duration.ZERO);
         }
     }
 

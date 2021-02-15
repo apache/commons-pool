@@ -22,6 +22,7 @@ import java.io.Writer;
 import java.lang.management.ManagementFactory;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.Iterator;
@@ -66,34 +67,21 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     private static final String EVICTION_POLICY_TYPE_NAME = EvictionPolicy.class.getName();
 
     // Configuration attributes
-    private volatile int maxTotal =
-            GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL;
-    private volatile boolean blockWhenExhausted =
-            BaseObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED;
-    private volatile long maxWaitMillis =
-            BaseObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS;
+    private volatile int maxTotal = GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL;
+    private volatile boolean blockWhenExhausted = BaseObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED;
+    private volatile Duration maxWait = BaseObjectPoolConfig.DEFAULT_MAX_WAIT;
     private volatile boolean lifo = BaseObjectPoolConfig.DEFAULT_LIFO;
     private final boolean fairness;
-    private volatile boolean testOnCreate =
-            BaseObjectPoolConfig.DEFAULT_TEST_ON_CREATE;
-    private volatile boolean testOnBorrow =
-            BaseObjectPoolConfig.DEFAULT_TEST_ON_BORROW;
-    private volatile boolean testOnReturn =
-            BaseObjectPoolConfig.DEFAULT_TEST_ON_RETURN;
-    private volatile boolean testWhileIdle =
-            BaseObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE;
-    private volatile long timeBetweenEvictionRunsMillis =
-            BaseObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
-    private volatile int numTestsPerEvictionRun =
-            BaseObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
-    private volatile long minEvictableIdleTimeMillis =
-            BaseObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
-    private volatile long softMinEvictableIdleTimeMillis =
-            BaseObjectPoolConfig.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+    private volatile boolean testOnCreate = BaseObjectPoolConfig.DEFAULT_TEST_ON_CREATE;
+    private volatile boolean testOnBorrow = BaseObjectPoolConfig.DEFAULT_TEST_ON_BORROW;
+    private volatile boolean testOnReturn = BaseObjectPoolConfig.DEFAULT_TEST_ON_RETURN;
+    private volatile boolean testWhileIdle = BaseObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE;
+    private volatile Duration timeBetweenEvictionRuns = BaseObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS;
+    private volatile int numTestsPerEvictionRun = BaseObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
+    private volatile Duration minEvictableIdleTime = BaseObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME;
+    private volatile Duration softMinEvictableIdleTime = BaseObjectPoolConfig.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME;
     private volatile EvictionPolicy<T> evictionPolicy;
-    private volatile long evictorShutdownTimeoutMillis =
-            BaseObjectPoolConfig.DEFAULT_EVICTOR_SHUTDOWN_TIMEOUT_MILLIS;
-
+    private volatile Duration evictorShutdownTimeout = BaseObjectPoolConfig.DEFAULT_EVICTOR_SHUTDOWN_TIMEOUT;
 
     // Internal (primarily state) attributes
     final Object closeLock = new Object();
@@ -259,7 +247,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * @see #setBlockWhenExhausted
      */
     public final long getMaxWaitMillis() {
-        return maxWaitMillis;
+        return maxWait.toMillis();
     }
 
     /**
@@ -277,7 +265,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * @see #setBlockWhenExhausted
      */
     public final void setMaxWaitMillis(final long maxWaitMillis) {
-        this.maxWaitMillis = maxWaitMillis;
+        this.maxWait = Duration.ofMillis(maxWaitMillis);
     }
 
     /**
@@ -475,7 +463,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * @see #setTimeBetweenEvictionRunsMillis
      */
     public final long getTimeBetweenEvictionRunsMillis() {
-        return timeBetweenEvictionRunsMillis;
+        return timeBetweenEvictionRuns.toMillis();
     }
 
     /**
@@ -492,8 +480,8 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      */
     public final void setTimeBetweenEvictionRunsMillis(
             final long timeBetweenEvictionRunsMillis) {
-        this.timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
-        startEvictor(timeBetweenEvictionRunsMillis);
+        this.timeBetweenEvictionRuns = Duration.ofMillis(timeBetweenEvictionRunsMillis);
+        startEvictor(timeBetweenEvictionRuns);
     }
 
     /**
@@ -548,7 +536,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * @see #setTimeBetweenEvictionRunsMillis
      */
     public final long getMinEvictableIdleTimeMillis() {
-        return minEvictableIdleTimeMillis;
+        return minEvictableIdleTime.toMillis();
     }
 
     /**
@@ -566,7 +554,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      */
     public final void setMinEvictableIdleTimeMillis(
             final long minEvictableIdleTimeMillis) {
-        this.minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
+        this.minEvictableIdleTime = Duration.ofMillis(minEvictableIdleTimeMillis);
     }
 
     /**
@@ -585,7 +573,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * @see #setSoftMinEvictableIdleTimeMillis
      */
     public final long getSoftMinEvictableIdleTimeMillis() {
-        return softMinEvictableIdleTimeMillis;
+        return softMinEvictableIdleTime.toMillis();
     }
 
     /**
@@ -607,7 +595,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      */
     public final void setSoftMinEvictableIdleTimeMillis(
             final long softMinEvictableIdleTimeMillis) {
-        this.softMinEvictableIdleTimeMillis = softMinEvictableIdleTimeMillis;
+        this.softMinEvictableIdleTime = Duration.ofMillis(softMinEvictableIdleTimeMillis);
     }
 
     /**
@@ -707,7 +695,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      *          the Evictor to shut down.
      */
     public final long getEvictorShutdownTimeoutMillis() {
-        return evictorShutdownTimeoutMillis;
+        return evictorShutdownTimeout.toMillis();
     }
 
     /**
@@ -721,7 +709,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      */
     public final void setEvictorShutdownTimeoutMillis(
             final long evictorShutdownTimeoutMillis) {
-        this.evictorShutdownTimeoutMillis = evictorShutdownTimeoutMillis;
+        this.evictorShutdownTimeout = Duration.ofMillis(evictorShutdownTimeoutMillis);
     }
 
     /**
@@ -781,24 +769,25 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      *
      * @param delay time in milliseconds before start and between eviction runs
      */
-    final void startEvictor(final long delay) {
+    final void startEvictor(final Duration delay) {
         synchronized (evictionLock) {
+            final boolean isPositiverDelay = !delay.isNegative() && !delay.isZero();
             if (evictor == null) { // Starting evictor for the first time or after a cancel
-                if (delay > 0) {   // Starting new evictor
+                if (isPositiverDelay) {   // Starting new evictor
                     evictor = new Evictor();
                     EvictionTimer.schedule(evictor, delay, delay);
                 }
             } else {  // Stop or restart of existing evictor
-                if (delay > 0) { // Restart
+                if (isPositiverDelay) { // Restart
                     synchronized (EvictionTimer.class) { // Ensure no cancel can happen between cancel / schedule calls
-                        EvictionTimer.cancel(evictor, evictorShutdownTimeoutMillis, TimeUnit.MILLISECONDS, true);
+                        EvictionTimer.cancel(evictor, evictorShutdownTimeout, true);
                         evictor = null;
                         evictionIterator = null;
                         evictor = new Evictor();
                         EvictionTimer.schedule(evictor, delay, delay);
                     }
                 } else { // Stopping evictor
-                    EvictionTimer.cancel(evictor, evictorShutdownTimeoutMillis, TimeUnit.MILLISECONDS, false);
+                    EvictionTimer.cancel(evictor, evictorShutdownTimeout, false);
                 }
             }
         }
@@ -808,7 +797,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * Stops the evictor.
      */
     void stopEvictor() {
-        startEvictor(-1L);
+        startEvictor(Duration.ofMillis(-1L));
     }
     /**
      * Tries to ensure that the configured minimum number of idle instances are
@@ -1375,7 +1364,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         builder.append(", blockWhenExhausted=");
         builder.append(blockWhenExhausted);
         builder.append(", maxWaitMillis=");
-        builder.append(maxWaitMillis);
+        builder.append(maxWait);
         builder.append(", lifo=");
         builder.append(lifo);
         builder.append(", fairness=");
@@ -1389,13 +1378,13 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         builder.append(", testWhileIdle=");
         builder.append(testWhileIdle);
         builder.append(", timeBetweenEvictionRunsMillis=");
-        builder.append(timeBetweenEvictionRunsMillis);
+        builder.append(timeBetweenEvictionRuns);
         builder.append(", numTestsPerEvictionRun=");
         builder.append(numTestsPerEvictionRun);
         builder.append(", minEvictableIdleTimeMillis=");
-        builder.append(minEvictableIdleTimeMillis);
+        builder.append(minEvictableIdleTime);
         builder.append(", softMinEvictableIdleTimeMillis=");
-        builder.append(softMinEvictableIdleTimeMillis);
+        builder.append(softMinEvictableIdleTime);
         builder.append(", evictionPolicy=");
         builder.append(evictionPolicy);
         builder.append(", closeLock=");

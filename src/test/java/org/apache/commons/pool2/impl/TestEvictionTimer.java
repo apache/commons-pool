@@ -54,7 +54,7 @@ public class TestEvictionTimer {
 
             // Start evictor #1
             final BaseGenericObjectPool<String>.Evictor evictor1 = pool.new Evictor();
-            EvictionTimer.schedule(evictor1, 60000, 60000);
+            EvictionTimer.schedule(evictor1, TestConstants.ONE_MINUTE, TestConstants.ONE_MINUTE);
 
             // Assert that eviction objects are correctly allocated
             // 1 - the evictor timer task is created
@@ -72,7 +72,7 @@ public class TestEvictionTimer {
 
             // Start evictor #2
             final BaseGenericObjectPool<String>.Evictor evictor2 = pool.new Evictor();
-            EvictionTimer.schedule(evictor2, 60000, 60000);
+            EvictionTimer.schedule(evictor2, TestConstants.ONE_MINUTE, TestConstants.ONE_MINUTE);
 
             // Assert that eviction objects are correctly allocated
             // 1 - the evictor timer task is created
@@ -83,8 +83,7 @@ public class TestEvictionTimer {
             assertEquals(2, EvictionTimer.getNumTasks());
 
             // Stop evictor #1
-            EvictionTimer.cancel(evictor1, BaseObjectPoolConfig.DEFAULT_EVICTOR_SHUTDOWN_TIMEOUT_MILLIS,
-                    TimeUnit.MILLISECONDS, false);
+            EvictionTimer.cancel(evictor1, BaseObjectPoolConfig.DEFAULT_EVICTOR_SHUTDOWN_TIMEOUT, false);
 
             // Assert that eviction objects are correctly cleaned
             // 1 - the evictor timer task is cancelled
@@ -96,8 +95,7 @@ public class TestEvictionTimer {
             assertEquals(1, EvictionTimer.getNumTasks());
 
             // Stop evictor #2
-            EvictionTimer.cancel(evictor2, BaseObjectPoolConfig.DEFAULT_EVICTOR_SHUTDOWN_TIMEOUT_MILLIS,
-                    TimeUnit.MILLISECONDS, false);
+            EvictionTimer.cancel(evictor2, BaseObjectPoolConfig.DEFAULT_EVICTOR_SHUTDOWN_TIMEOUT, false);
 
             // Assert that eviction objects are correctly cleaned
             // 1 - the evictor timer task is cancelled

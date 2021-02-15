@@ -19,6 +19,7 @@ package org.apache.commons.pool2.impl;
 import java.lang.ref.WeakReference;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
@@ -81,16 +82,16 @@ class EvictionTimer {
      * @param period    Time in milliseconds between executions.
      */
     static synchronized void schedule(
-            final BaseGenericObjectPool<?>.Evictor task, final long delay, final long period) {
+            final BaseGenericObjectPool<?>.Evictor task, final Duration delay, final Duration period) {
         if (null == executor) {
             executor = new ScheduledThreadPoolExecutor(1, new EvictorThreadFactory());
             executor.setRemoveOnCancelPolicy(true);
-            executor.scheduleAtFixedRate(new Reaper(), delay, period, TimeUnit.MILLISECONDS);
+            executor.scheduleAtFixedRate(new Reaper(), delay.toMillis(), period.toMillis(), TimeUnit.MILLISECONDS);
         }
         final WeakReference<Runnable> ref = new WeakReference<>(task);
         final WeakRunner runner = new WeakRunner(ref);
-        final ScheduledFuture<?> scheduledFuture =
-                executor.scheduleWithFixedDelay(runner, delay, period, TimeUnit.MILLISECONDS);
+        final ScheduledFuture<?> scheduledFuture = executor.scheduleWithFixedDelay(runner, delay.toMillis(),
+                period.toMillis(), TimeUnit.MILLISECONDS);
         task.setScheduledFuture(scheduledFuture);
         taskMap.put(ref, runner);
     }
@@ -102,11 +103,9 @@ class EvictionTimer {
      * @param timeout   If the associated executor is no longer required, how
      *                  long should this thread wait for the executor to
      *                  terminate?
-     * @param unit      The units for the specified timeout.
      * @param restarting The state of the evictor.
      */
-    static synchronized void cancel(
-            final BaseGenericObjectPool<?>.Evictor evictor, final long timeout, final TimeUnit unit,
+    static synchronized void cancel(final BaseGenericObjectPool<?>.Evictor evictor, final Duration timeout,
             final boolean restarting) {
         if (evictor != null) {
             evictor.cancel();
@@ -115,7 +114,7 @@ class EvictionTimer {
         if (!restarting && executor != null && taskMap.isEmpty()) {
             executor.shutdown();
             try {
-                executor.awaitTermination(timeout, unit);
+                executor.awaitTermination(timeout.toMillis(), TimeUnit.MILLISECONDS);
             } catch (final InterruptedException e) {
                 // Swallow
                 // Significant API changes would be required to propagate this
