@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.time.Duration;
 
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.ObjectPool;
@@ -39,7 +40,7 @@ import org.junit.jupiter.api.Test;
 public abstract class BaseTestProxiedObjectPool {
 
     private static final String DATA1 = "data1";
-    private static final int ABANDONED_TIMEOUT_SECS = 3;
+    private static final Duration ABANDONED_TIMEOUT_SECS = Duration.ofSeconds(3);
 
     private ObjectPool<TestObject> pool = null;
     private StringWriter log = null;
@@ -130,7 +131,7 @@ public abstract class BaseTestProxiedObjectPool {
         obj.setData(DATA1);
 
         // Sleep long enough for the object to be considered abandoned
-        Thread.sleep((ABANDONED_TIMEOUT_SECS + 2) * 1000);
+        Thread.sleep(ABANDONED_TIMEOUT_SECS.plusSeconds(2).toMillis());
 
         // Borrow another object to trigger the abandoned object processing
         pool.borrowObject();

@@ -20,6 +20,7 @@ package org.apache.commons.pool2.impl;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
+import java.time.Duration;
 
 import org.apache.commons.pool2.TrackedUse;
 import org.apache.commons.pool2.UsageTracking;
@@ -102,9 +103,9 @@ public class AbandonedConfig {
     }
 
     /**
-     * Timeout in seconds before an abandoned object can be removed.
+     * Timeout before an abandoned object can be removed.
      */
-    private int removeAbandonedTimeout = 300;
+    private Duration removeAbandonedTimeout = Duration.ofSeconds(300);
 
     /**
      * <p>Timeout in seconds before an abandoned object can be removed.</p>
@@ -116,9 +117,44 @@ public class AbandonedConfig {
      * <p>The default value is 300 seconds.</p>
      *
      * @return the abandoned object timeout in seconds
+     * @deprecated Use {@link #getRemoveAbandonedTimeoutDuration()}.
      */
+    @Deprecated
     public int getRemoveAbandonedTimeout() {
+        return (int) this.removeAbandonedTimeout.getSeconds();
+    }
+
+    /**
+     * <p>Timeout before an abandoned object can be removed.</p>
+     *
+     * <p>The time of most recent use of an object is the maximum (latest) of
+     * {@link TrackedUse#getLastUsed()} (if this class of the object implements
+     * TrackedUse) and the time when the object was borrowed from the pool.</p>
+     *
+     * <p>The default value is 300 seconds.</p>
+     *
+     * @return the abandoned object timeout.
+     * @since 2.10.0
+     */
+    public Duration getRemoveAbandonedTimeoutDuration() {
         return this.removeAbandonedTimeout;
+    }
+
+    /**
+     * <p>Sets the timeout before an abandoned object can be
+     * removed</p>
+     *
+     * <p>Setting this property has no effect if
+     * {@link #getRemoveAbandonedOnBorrow() removeAbandonedOnBorrow} and
+     * {@link #getRemoveAbandonedOnMaintenance() removeAbandonedOnMaintenance}
+     * are both false.</p>
+     *
+     * @param removeAbandonedTimeout new abandoned timeout
+     * @see #getRemoveAbandonedTimeout()
+     * @since 2.10.0
+     */
+    public void setRemoveAbandonedTimeout(final Duration removeAbandonedTimeout) {
+        this.removeAbandonedTimeout = removeAbandonedTimeout;
     }
 
     /**
@@ -132,9 +168,11 @@ public class AbandonedConfig {
      *
      * @param removeAbandonedTimeout new abandoned timeout in seconds
      * @see #getRemoveAbandonedTimeout()
+     * @deprecated Use {@link #setRemoveAbandonedTimeout(Duration)}.
      */
+    @Deprecated
     public void setRemoveAbandonedTimeout(final int removeAbandonedTimeout) {
-        this.removeAbandonedTimeout = removeAbandonedTimeout;
+        setRemoveAbandonedTimeout(Duration.ofSeconds(removeAbandonedTimeout));
     }
 
     /**

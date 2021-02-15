@@ -282,14 +282,16 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Obtains the timeout before which an object will be considered to be
+     * Gets the timeout before which an object will be considered to be
      * abandoned by this pool.
      *
      * @return The abandoned object timeout in seconds if abandoned object
      *         removal is configured for this pool; Integer.MAX_VALUE otherwise.
      *
      * @see AbandonedConfig#getRemoveAbandonedTimeout()
+     * @see AbandonedConfig#getRemoveAbandonedTimeoutDuration()
      */
+    @SuppressWarnings("deprecation")
     @Override
     public int getRemoveAbandonedTimeout() {
         final AbandonedConfig ac = this.abandonedConfig;
@@ -328,7 +330,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             this.abandonedConfig.setLogWriter(abandonedConfig.getLogWriter());
             this.abandonedConfig.setRemoveAbandonedOnBorrow(abandonedConfig.getRemoveAbandonedOnBorrow());
             this.abandonedConfig.setRemoveAbandonedOnMaintenance(abandonedConfig.getRemoveAbandonedOnMaintenance());
-            this.abandonedConfig.setRemoveAbandonedTimeout(abandonedConfig.getRemoveAbandonedTimeout());
+            this.abandonedConfig.setRemoveAbandonedTimeout(abandonedConfig.getRemoveAbandonedTimeoutDuration());
             this.abandonedConfig.setUseUsageTracking(abandonedConfig.getUseUsageTracking());
             this.abandonedConfig.setRequireFullStackTrace(abandonedConfig.getRequireFullStackTrace());
         }
@@ -1070,7 +1072,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         // Generate a list of abandoned objects to remove
         final long nowMillis = System.currentTimeMillis();
         final long timeoutMillis =
-                nowMillis - (abandonedConfig.getRemoveAbandonedTimeout() * 1000L);
+                nowMillis - abandonedConfig.getRemoveAbandonedTimeoutDuration().toMillis();
         final ArrayList<PooledObject<T>> remove = new ArrayList<>();
         final Iterator<PooledObject<T>> it = allObjects.values().iterator();
         while (it.hasNext()) {
@@ -1202,7 +1204,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * {@link #_maxActive} objects created at any one time.
      */
     private final AtomicLong createCount = new AtomicLong(0);
-    private long makeObjectCount = 0;
+    private long makeObjectCount;
     private final Object makeObjectCountLock = new Object();
     private final LinkedBlockingDeque<PooledObject<T>> idleObjects;
 
@@ -1211,7 +1213,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         "org.apache.commons.pool2:type=GenericObjectPool,name=";
 
     // Additional configuration properties for abandoned object tracking
-    private volatile AbandonedConfig abandonedConfig = null;
+    private volatile AbandonedConfig abandonedConfig;
 
     @Override
     protected void toStringAppendFields(final StringBuilder builder) {

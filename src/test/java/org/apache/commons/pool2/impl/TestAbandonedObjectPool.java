@@ -45,9 +45,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * TestCase for AbandonedObjectPool
  */
 public class TestAbandonedObjectPool {
+
     private GenericObjectPool<PooledTestObject> pool = null;
     private AbandonedConfig abandonedConfig = null;
 
+    @SuppressWarnings("deprecation")
     @BeforeEach
     public void setUp() throws Exception {
         abandonedConfig = new AbandonedConfig();
@@ -57,6 +59,10 @@ public class TestAbandonedObjectPool {
 
         abandonedConfig.setRemoveAbandonedOnBorrow(true);
         abandonedConfig.setRemoveAbandonedTimeout(1);
+        assertEquals(TestConstants.ONE_SECOND, abandonedConfig.getRemoveAbandonedTimeoutDuration());
+        abandonedConfig.setRemoveAbandonedTimeout(TestConstants.ONE_SECOND);
+        assertEquals(1, abandonedConfig.getRemoveAbandonedTimeout());
+
         pool = new GenericObjectPool<>(
                new SimpleFactory(),
                new GenericObjectPoolConfig<PooledTestObject>(),
@@ -148,7 +154,7 @@ public class TestAbandonedObjectPool {
     public void testAbandonedReturn() throws Exception {
         abandonedConfig = new AbandonedConfig();
         abandonedConfig.setRemoveAbandonedOnBorrow(true);
-        abandonedConfig.setRemoveAbandonedTimeout(1);
+        abandonedConfig.setRemoveAbandonedTimeout(TestConstants.ONE_SECOND);
         pool.close();  // Unregister pool created by setup
         pool = new GenericObjectPool<>(
                 new SimpleFactory(200, 0),
@@ -183,7 +189,7 @@ public class TestAbandonedObjectPool {
     public void testAbandonedInvalidate() throws Exception {
         abandonedConfig = new AbandonedConfig();
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
-        abandonedConfig.setRemoveAbandonedTimeout(1);
+        abandonedConfig.setRemoveAbandonedTimeout(TestConstants.ONE_SECOND);
         pool.close();  // Unregister pool created by setup
         pool = new GenericObjectPool<>(
                 // destroys take 200 ms
@@ -207,7 +213,7 @@ public class TestAbandonedObjectPool {
     public void testDestroyModeAbandoned() throws Exception {
         abandonedConfig = new AbandonedConfig();
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
-        abandonedConfig.setRemoveAbandonedTimeout(1);
+        abandonedConfig.setRemoveAbandonedTimeout(TestConstants.ONE_SECOND);
         pool.close();  // Unregister pool created by setup
         pool = new GenericObjectPool<>(
              // validate takes 1 second
@@ -241,7 +247,7 @@ public class TestAbandonedObjectPool {
     public void testRemoveAbandonedWhileReturning() throws Exception {
         abandonedConfig = new AbandonedConfig();
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
-        abandonedConfig.setRemoveAbandonedTimeout(1);
+        abandonedConfig.setRemoveAbandonedTimeout(TestConstants.ONE_SECOND);
         pool.close();  // Unregister pool created by setup
         pool = new GenericObjectPool<>(
              // validate takes 1 second
@@ -299,7 +305,7 @@ public class TestAbandonedObjectPool {
     public void testStackTrace() throws Exception {
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
         abandonedConfig.setLogAbandoned(true);
-        abandonedConfig.setRemoveAbandonedTimeout(1);
+        abandonedConfig.setRemoveAbandonedTimeout(TestConstants.ONE_SECOND);
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         final BufferedOutputStream bos = new BufferedOutputStream(baos);
         final PrintWriter pw = new PrintWriter(bos);

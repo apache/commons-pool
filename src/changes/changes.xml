@@ -43,8 +43,14 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Pool Release Notes</title>
   </properties>
   <body>
-  <release version="2.9.1" date="202Y-MM-DD" description="This is a MMMM release (Java 8).">
-    <!-- UPDATES -->
+  <release version="2.10.0" date="202Y-MM-DD" description="This is a MMMM release (Java 8).">
+    <!-- ADD -->
+    <action dev="ggregory" type="update" due-to="Dependabot">
+      Add and use java.time.Duration APIs for AbandonedConfig timeouts instead of using ints for seconds.
+      - Add AbandonedConfig.getRemoveAbandonedTimeoutDuration()
+      - Add AbandonedConfig.setRemoveAbandonedTimeout(Duration)
+    </action>
+    <!-- UPDATE -->
     <action dev="ggregory" type="update" due-to="Dependabot">
       Bump spotbugs-maven-plugin from 4.0.4 to 4.2.0 #48, #53, #59.
     </action>
