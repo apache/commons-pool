@@ -71,7 +71,8 @@ public class TestAbandonedObjectPool {
 
     @AfterEach
     public void tearDown() throws Exception {
-        final String poolName = pool.getJmxName().toString();
+        final ObjectName jmxName = pool.getJmxName();
+        final String poolName = Objects.toString(jmxName, null);
         pool.clear();
         pool.close();
         pool = null;

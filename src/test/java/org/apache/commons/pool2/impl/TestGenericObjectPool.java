@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.Timer;
@@ -906,7 +907,9 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
     @AfterEach
     public void tearDown() throws Exception {
-        final String poolName = genericObjectPool.getJmxName().toString();
+        final ObjectName jmxName = genericObjectPool.getJmxName();
+        final String poolName = Objects.toString(jmxName, null);
+
         genericObjectPool.clear();
         genericObjectPool.close();
         genericObjectPool = null;

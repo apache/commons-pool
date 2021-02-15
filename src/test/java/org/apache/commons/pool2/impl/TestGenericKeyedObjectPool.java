@@ -24,6 +24,7 @@ import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.Timer;
@@ -111,7 +112,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
-        final String poolName = gkoPool.getJmxName().toString();
+        final ObjectName jmxName = gkoPool.getJmxName();
+        final String poolName = Objects.toString(jmxName, null);
         gkoPool.clear();
         gkoPool.close();
         gkoPool = null;
@@ -526,37 +528,82 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
         final String[] active = new String[500];
         final String[] active2 = new String[500];
-        for(int i=0;i<500;i++) {
+        for (int i = 0; i < 500; i++) {
             active[i] = gkoPool.borrowObject("");
             active2[i] = gkoPool.borrowObject("2");
         }
-        for(int i=0;i<500;i++) {
-            gkoPool.returnObject("",active[i]);
-            gkoPool.returnObject("2",active2[i]);
+        for (int i = 0; i < 500; i++) {
+            gkoPool.returnObject("", active[i]);
+            gkoPool.returnObject("2", active2[i]);
         }
 
-        try { Thread.sleep(1100L); } catch(final InterruptedException e) { }
-        assertTrue(gkoPool.getNumIdle() < 1000,"Should be less than 1000 idle, found " + gkoPool.getNumIdle());
-        try { Thread.sleep(600L); } catch(final InterruptedException e) { }
-        assertTrue(gkoPool.getNumIdle() < 900,"Should be less than 900 idle, found " + gkoPool.getNumIdle());
-        try { Thread.sleep(600L); } catch(final InterruptedException e) { }
-        assertTrue(gkoPool.getNumIdle() < 800,"Should be less than 800 idle, found " + gkoPool.getNumIdle());
-        try { Thread.sleep(600L); } catch(final InterruptedException e) { }
-        assertTrue(gkoPool.getNumIdle() < 700,"Should be less than 700 idle, found " + gkoPool.getNumIdle());
-        try { Thread.sleep(600L); } catch(final InterruptedException e) { }
-        assertTrue(gkoPool.getNumIdle() < 600,"Should be less than 600 idle, found " + gkoPool.getNumIdle());
-        try { Thread.sleep(600L); } catch(final InterruptedException e) { }
-        assertTrue(gkoPool.getNumIdle() < 500,"Should be less than 500 idle, found " + gkoPool.getNumIdle());
-        try { Thread.sleep(600L); } catch(final InterruptedException e) { }
-        assertTrue(gkoPool.getNumIdle() < 400,"Should be less than 400 idle, found " + gkoPool.getNumIdle());
-        try { Thread.sleep(600L); } catch(final InterruptedException e) { }
-        assertTrue(gkoPool.getNumIdle() < 300,"Should be less than 300 idle, found " + gkoPool.getNumIdle());
-        try { Thread.sleep(600L); } catch(final InterruptedException e) { }
-        assertTrue(gkoPool.getNumIdle() < 200,"Should be less than 200 idle, found " + gkoPool.getNumIdle());
-        try { Thread.sleep(600L); } catch(final InterruptedException e) { }
-        assertTrue(gkoPool.getNumIdle() < 100,"Should be less than 100 idle, found " + gkoPool.getNumIdle());
-        try { Thread.sleep(600L); } catch(final InterruptedException e) { }
-        assertEquals(0,gkoPool.getNumIdle(),"Should be zero idle, found " + gkoPool.getNumIdle());
+        try {
+            Thread.sleep(1100L);
+        } catch (final InterruptedException e) {
+            // ignore
+        }
+        assertTrue(gkoPool.getNumIdle() < 1000, "Should be less than 1000 idle, found " + gkoPool.getNumIdle());
+        final long sleepMillisPart2 = 600L;
+        try {
+            Thread.sleep(sleepMillisPart2);
+        } catch (final InterruptedException e) {
+            // ignore
+        }
+        assertTrue(gkoPool.getNumIdle() < 900, "Should be less than 900 idle, found " + gkoPool.getNumIdle());
+        try {
+            Thread.sleep(sleepMillisPart2);
+        } catch (final InterruptedException e) {
+            // ignore
+        }
+        assertTrue(gkoPool.getNumIdle() < 800, "Should be less than 800 idle, found " + gkoPool.getNumIdle());
+        try {
+            Thread.sleep(sleepMillisPart2);
+        } catch (final InterruptedException e) {
+            // ignore
+        }
+        assertTrue(gkoPool.getNumIdle() < 700, "Should be less than 700 idle, found " + gkoPool.getNumIdle());
+        try {
+            Thread.sleep(sleepMillisPart2);
+        } catch (final InterruptedException e) {
+            // ignore
+        }
+        assertTrue(gkoPool.getNumIdle() < 600, "Should be less than 600 idle, found " + gkoPool.getNumIdle());
+        try {
+            Thread.sleep(sleepMillisPart2);
+        } catch (final InterruptedException e) {
+            // ignore
+        }
+        assertTrue(gkoPool.getNumIdle() < 500, "Should be less than 500 idle, found " + gkoPool.getNumIdle());
+        try {
+            Thread.sleep(sleepMillisPart2);
+        } catch (final InterruptedException e) {
+            // ignore
+        }
+        assertTrue(gkoPool.getNumIdle() < 400, "Should be less than 400 idle, found " + gkoPool.getNumIdle());
+        try {
+            Thread.sleep(sleepMillisPart2);
+        } catch (final InterruptedException e) {
+            // ignore
+        }
+        assertTrue(gkoPool.getNumIdle() < 300, "Should be less than 300 idle, found " + gkoPool.getNumIdle());
+        try {
+            Thread.sleep(sleepMillisPart2);
+        } catch (final InterruptedException e) {
+            // ignore
+        }
+        assertTrue(gkoPool.getNumIdle() < 200, "Should be less than 200 idle, found " + gkoPool.getNumIdle());
+        try {
+            Thread.sleep(sleepMillisPart2);
+        } catch (final InterruptedException e) {
+            // ignore
+        }
+        assertTrue(gkoPool.getNumIdle() < 100, "Should be less than 100 idle, found " + gkoPool.getNumIdle());
+        try {
+            Thread.sleep(sleepMillisPart2);
+        } catch (final InterruptedException e) {
+            // ignore
+        }
+        assertEquals(0, gkoPool.getNumIdle(), "Should be zero idle, found " + gkoPool.getNumIdle());
     }
 
     /**
