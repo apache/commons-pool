@@ -44,7 +44,7 @@ public class PooledSoftReference<T> extends DefaultPooledObject<T> {
     }
 
     /**
-     * Returns the object that the wrapped SoftReference refers to.
+     * Gets the object that the wrapped SoftReference refers to.
      * <p>
      * Note that if the reference has been cleared, this method will return
      * null.
@@ -74,7 +74,7 @@ public class PooledSoftReference<T> extends DefaultPooledObject<T> {
     }
 
     /**
-     * Returns the SoftReference wrapped by this object.
+     * Gets the SoftReference wrapped by this object.
      *
      * @return underlying SoftReference
      */

@@ -125,7 +125,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     long getLastReturnTime();
 
     /**
-     * Returns an estimate of the last time this object was used.  If the class
+     * Gets an estimate of the last time this object was used.  If the class
      * of the pooled object implements {@link TrackedUse}, what is returned is
      * the maximum of {@link TrackedUse#getLastUsed()} and
      * {@link #getLastBorrowTime()}; otherwise this method gives the same
@@ -144,7 +144,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     T getObject();
 
     /**
-     * Returns the state of this object.
+     * Gets the state of this object.
      * @return state
      */
     PooledObjectState getState();

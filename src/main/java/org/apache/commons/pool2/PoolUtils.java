@@ -74,7 +74,7 @@ public final class PoolUtils {
         }
 
         /**
-         * Returns the time of the next erosion event.
+         * Gets the time of the next erosion event.
          *
          * @return next shrink time
          */
@@ -210,7 +210,7 @@ public final class PoolUtils {
         }
 
         /**
-         * Returns the eroding factor for the given key
+         * Gets the eroding factor for the given key
          *
          * @param key
          *            key
@@ -221,7 +221,7 @@ public final class PoolUtils {
         }
 
         /**
-         * Returns the underlying pool
+         * Gets the underlying pool
          *
          * @return the keyed pool that this ErodingKeyedObjectPool wraps
          */
@@ -419,7 +419,7 @@ public final class PoolUtils {
         }
 
         /**
-         * Returns obj to the pool, unless erosion is triggered, in which case
+         * Returns * Gets obj to the pool, unless erosion is triggered, in which case
          * obj is invalidated. Erosion is triggered when there are idle
          * instances in the pool and more than the {@link #factor erosion
          * factor}-determined time has elapsed since the last returnObject

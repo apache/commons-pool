@@ -562,7 +562,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     }
 
     /**
-     * Returns the length of the queue of threads waiting to take instances from this deque. See disclaimer on accuracy
+     * Gets the length of the queue of threads waiting to take instances from this deque. See disclaimer on accuracy
      * in {@link java.util.concurrent.locks.ReentrantLock#getWaitQueueLength(Condition)}.
      *
      * @return number of threads waiting on this deque's notEmpty condition.

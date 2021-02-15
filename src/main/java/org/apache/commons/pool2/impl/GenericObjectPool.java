@@ -144,7 +144,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Returns the cap on the number of "idle" instances in the pool. If maxIdle
+     * Gets the cap on the number of "idle" instances in the pool. If maxIdle
      * is set too low on heavily loaded systems it is possible you will see
      * objects being destroyed and almost immediately new objects being created.
      * This is a result of the active threads momentarily returning objects
@@ -163,7 +163,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Returns the cap on the number of "idle" instances in the pool. If maxIdle
+     * Sets the cap on the number of "idle" instances in the pool. If maxIdle
      * is set too low on heavily loaded systems it is possible you will see
      * objects being destroyed and almost immediately new objects being created.
      * This is a result of the active threads momentarily returning objects
@@ -205,7 +205,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Returns the target for the minimum number of idle objects to maintain in
+     * Gets the target for the minimum number of idle objects to maintain in
      * the pool. This setting only has an effect if it is positive and
      * {@link #getTimeBetweenEvictionRunsMillis()} is greater than zero. If this
      * is the case, an attempt is made to ensure that the pool has the required
@@ -1137,7 +1137,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     private volatile String factoryType = null;
 
     /**
-     * Returns an estimate of the number of threads currently blocked waiting for
+     * Gets an estimate of the number of threads currently blocked waiting for
      * an object from the pool. This is intended for monitoring only, not for
      * synchronization control.
      *
@@ -1153,7 +1153,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Returns the type - including the specific type rather than the generic -
+     * Gets the type - including the specific type rather than the generic -
      * of the factory.
      *
      * @return A string representation of the factory type

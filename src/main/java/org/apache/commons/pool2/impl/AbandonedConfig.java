@@ -95,7 +95,7 @@ public class AbandonedConfig {
     }
 
     /**
-     * Returns the log writer being used by this configuration to log
+     * Gets the log writer being used by this configuration to log
      * information on abandoned objects. If not set, a PrintWriter based on
      * System.out with the system default encoding is used.
      *

@@ -213,7 +213,7 @@ public interface KeyedObjectPool<K, V> extends Closeable {
     void close();
 
     /**
-     * Returns the total number of instances currently borrowed from this pool but
+     * Gets the total number of instances currently borrowed from this pool but
      * not yet returned. Returns a negative value if this information is not
      * available.
      * @return the total number of instances currently borrowed from this pool but
@@ -222,7 +222,7 @@ public interface KeyedObjectPool<K, V> extends Closeable {
     int getNumActive();
 
     /**
-     * Returns the number of instances currently borrowed from but not yet
+     * Gets the number of instances currently borrowed from but not yet
      * returned to the pool corresponding to the given {@code key}.
      * Returns a negative value if this information is not available.
      *
@@ -233,14 +233,14 @@ public interface KeyedObjectPool<K, V> extends Closeable {
     int getNumActive(K key);
 
     /**
-     * Returns the total number of instances currently idle in this pool.
+     * Gets the total number of instances currently idle in this pool.
      * Returns a negative value if this information is not available.
      * @return the total number of instances currently idle in this pool.
      */
     int getNumIdle();
 
     /**
-     * Returns the number of instances corresponding to the given
+     * Gets the number of instances corresponding to the given
      * {@code key} currently idle in this pool. Returns a negative value if
      * this information is not available.
      *

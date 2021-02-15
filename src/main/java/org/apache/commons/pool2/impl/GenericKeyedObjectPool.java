@@ -121,7 +121,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Returns the limit on the number of object instances allocated by the pool
+     * Gets the limit on the number of object instances allocated by the pool
      * (checked out or idle), per key. When the limit is reached, the sub-pool
      * is said to be exhausted. A negative value indicates no limit.
      *
@@ -149,7 +149,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
 
 
     /**
-     * Returns the cap on the number of "idle" instances per key in the pool.
+     * Gets the cap on the number of "idle" instances per key in the pool.
      * If maxIdlePerKey is set too low on heavily loaded systems it is possible
      * you will see objects being destroyed and almost immediately new objects
      * being created. This is a result of the active threads momentarily
@@ -211,7 +211,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Returns the target for the minimum number of idle objects to maintain in
+     * Gets the target for the minimum number of idle objects to maintain in
      * each of the keyed sub-pools. This setting only has an effect if it is
      * positive and {@link #getTimeBetweenEvictionRunsMillis()} is greater than
      * zero. If this is the case, an attempt is made to ensure that each

@@ -304,7 +304,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
     }
 
     /**
-     * Returns an approximation not less than the of the number of idle
+     * Gets an approximation not less than the of the number of idle
      * instances in the pool.
      *
      * @return estimated number of idle instances in the pool
@@ -316,7 +316,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
     }
 
     /**
-     * Returns the number of instances currently borrowed from this pool.
+     * Gets the number of instances currently borrowed from this pool.
      *
      * @return the number of instances currently borrowed from this pool
      */
@@ -362,7 +362,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
     }
 
     /**
-     * Returns the {@link PooledObjectFactory} used by this pool to create and
+     * Gets the {@link PooledObjectFactory} used by this pool to create and
      * manage object instances.
      *
      * @return the factory

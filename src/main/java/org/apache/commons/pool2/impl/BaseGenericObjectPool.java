@@ -176,7 +176,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     }
 
     /**
-     * Returns whether to block when the {@code borrowObject()} method is
+     * Gets whether to block when the {@code borrowObject()} method is
      * invoked when the pool is exhausted (the maximum number of "active"
      * objects has been reached).
      *
@@ -268,7 +268,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     }
 
     /**
-     * Returns whether the pool has LIFO (last in, first out) behavior with
+     * Gets whether the pool has LIFO (last in, first out) behavior with
      * respect to idle objects - always returning the most recently used object
      * from the pool, or as a FIFO (first in, first out) queue, where the pool
      * always returns the oldest object in the idle object pool.
@@ -284,7 +284,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     }
 
     /**
-     * Returns whether or not the pool serves threads waiting to borrow objects fairly.
+     * Gets whether or not the pool serves threads waiting to borrow objects fairly.
      * True means that waiting threads are served as if waiting in a FIFO queue.
      *
      * @return {@code true} if waiting threads are to be served
@@ -311,7 +311,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     }
 
     /**
-     * Returns whether objects created for the pool will be validated before
+     * Gets whether objects created for the pool will be validated before
      * being returned from the {@code borrowObject()} method. Validation is
      * performed by the {@code validateObject()} method of the factory
      * associated with the pool. If the object fails to validate, then
@@ -348,7 +348,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     }
 
     /**
-     * Returns whether objects borrowed from the pool will be validated before
+     * Gets whether objects borrowed from the pool will be validated before
      * being returned from the {@code borrowObject()} method. Validation is
      * performed by the {@code validateObject()} method of the factory
      * associated with the pool. If the object fails to validate, it will be
@@ -383,7 +383,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     }
 
     /**
-     * Returns whether objects borrowed from the pool will be validated when
+     * Gets whether objects borrowed from the pool will be validated when
      * they are returned to the pool via the {@code returnObject()} method.
      * Validation is performed by the {@code validateObject()} method of
      * the factory associated with the pool. Returning objects that fail validation
@@ -416,7 +416,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     }
 
     /**
-     * Returns whether objects sitting idle in the pool will be validated by the
+     * Gets whether objects sitting idle in the pool will be validated by the
      * idle object evictor (if any - see
      * {@link #setTimeBetweenEvictionRuns(Duration)}). Validation is performed
      * by the {@code validateObject()} method of the factory associated
@@ -433,7 +433,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     }
 
     /**
-     * Returns whether objects sitting idle in the pool will be validated by the
+     * Sets whether objects sitting idle in the pool will be validated by the
      * idle object evictor (if any - see
      * {@link #setTimeBetweenEvictionRuns(Duration)}). Validation is performed
      * by the {@code validateObject()} method of the factory associated

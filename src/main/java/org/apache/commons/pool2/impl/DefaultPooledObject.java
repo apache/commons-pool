@@ -109,7 +109,7 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
     }
 
     /**
-     * Returns an estimate of the last time this object was used.  If the class
+     * Gets an estimate of the last time this object was used.  If the class
      * of the pooled object implements {@link TrackedUse}, what is returned is
      * the maximum of {@link TrackedUse#getLastUsed()} and
      * {@link #getLastBorrowTime()}; otherwise this method gives the same
@@ -248,7 +248,7 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
     }
 
     /**
-     * Returns the state of this object.
+     * Gets the state of this object.
      * @return state
      */
     @Override
