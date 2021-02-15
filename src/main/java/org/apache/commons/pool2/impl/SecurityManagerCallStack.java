@@ -36,9 +36,45 @@ import java.util.List;
  */
 public class SecurityManagerCallStack implements CallStack {
 
+    /**
+     * A custom security manager.
+     */
+    private static class PrivateSecurityManager extends SecurityManager {
+        /**
+         * Get the class stack.
+         *
+         * @return class stack
+         */
+        private List<WeakReference<Class<?>>> getCallStack() {
+            final Class<?>[] classes = getClassContext();
+            final List<WeakReference<Class<?>>> stack = new ArrayList<>(classes.length);
+            for (final Class<?> klass : classes) {
+                stack.add(new WeakReference<Class<?>>(klass));
+            }
+            return stack;
+        }
+    }
+    /**
+     * A snapshot of a class stack.
+     */
+    private static class Snapshot {
+        private final long timestampMillis = System.currentTimeMillis();
+        private final List<WeakReference<Class<?>>> stack;
+
+        /**
+         * Create a new snapshot with a class stack.
+         *
+         * @param stack class stack
+         */
+        private Snapshot(final List<WeakReference<Class<?>>> stack) {
+            this.stack = stack;
+        }
+    }
     private final String messageFormat;
+
     //@GuardedBy("dateFormat")
     private final DateFormat dateFormat;
+
     private final PrivateSecurityManager securityManager;
 
     private volatile Snapshot snapshot;
@@ -53,6 +89,16 @@ public class SecurityManagerCallStack implements CallStack {
         this.messageFormat = messageFormat;
         this.dateFormat = useTimestamp ? new SimpleDateFormat(messageFormat) : null;
         this.securityManager = AccessController.doPrivileged((PrivilegedAction<PrivateSecurityManager>) PrivateSecurityManager::new);
+    }
+
+    @Override
+    public void clear() {
+        snapshot = null;
+    }
+
+    @Override
+    public void fillInStackTrace() {
+        snapshot = new Snapshot(securityManager.getCallStack());
     }
 
     @Override
@@ -74,51 +120,5 @@ public class SecurityManagerCallStack implements CallStack {
             writer.println(reference.get());
         }
         return true;
-    }
-
-    @Override
-    public void fillInStackTrace() {
-        snapshot = new Snapshot(securityManager.getCallStack());
-    }
-
-    @Override
-    public void clear() {
-        snapshot = null;
-    }
-
-    /**
-     * A custom security manager.
-     */
-    private static class PrivateSecurityManager extends SecurityManager {
-        /**
-         * Get the class stack.
-         *
-         * @return class stack
-         */
-        private List<WeakReference<Class<?>>> getCallStack() {
-            final Class<?>[] classes = getClassContext();
-            final List<WeakReference<Class<?>>> stack = new ArrayList<>(classes.length);
-            for (final Class<?> klass : classes) {
-                stack.add(new WeakReference<Class<?>>(klass));
-            }
-            return stack;
-        }
-    }
-
-    /**
-     * A snapshot of a class stack.
-     */
-    private static class Snapshot {
-        private final long timestampMillis = System.currentTimeMillis();
-        private final List<WeakReference<Class<?>>> stack;
-
-        /**
-         * Create a new snapshot with a class stack.
-         *
-         * @param stack class stack
-         */
-        private Snapshot(final List<WeakReference<Class<?>>> stack) {
-            this.stack = stack;
-        }
     }
 }

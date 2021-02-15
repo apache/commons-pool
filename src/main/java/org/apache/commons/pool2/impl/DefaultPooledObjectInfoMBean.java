@@ -31,6 +31,13 @@ package org.apache.commons.pool2.impl;
  */
 public interface DefaultPooledObjectInfoMBean {
     /**
+     * Get the number of times this object has been borrowed.
+     * @return The number of times this object has been borrowed.
+     * @since 2.1
+     */
+    long getBorrowedCount();
+
+    /**
      * Obtain the time (using the same basis as
      * {@link System#currentTimeMillis()}) that pooled object was created.
      *
@@ -62,6 +69,7 @@ public interface DefaultPooledObjectInfoMBean {
      */
     String getLastBorrowTimeFormatted();
 
+
     /**
      * Obtain the stack trace recorded when the pooled object was last borrowed.
      *
@@ -69,7 +77,6 @@ public interface DefaultPooledObjectInfoMBean {
      *         object
      */
     String getLastBorrowTrace();
-
 
     /**
      * Obtain the time (using the same basis as
@@ -88,15 +95,6 @@ public interface DefaultPooledObjectInfoMBean {
     String getLastReturnTimeFormatted();
 
     /**
-     * Obtain the name of the class of the pooled object.
-     *
-     * @return The pooled object's class name
-     *
-     * @see Class#getName()
-     */
-    String getPooledObjectType();
-
-    /**
      * Provides a String form of the wrapper for debug purposes. The format is
      * not fixed and may change at any time.
      *
@@ -107,9 +105,11 @@ public interface DefaultPooledObjectInfoMBean {
     String getPooledObjectToString();
 
     /**
-     * Get the number of times this object has been borrowed.
-     * @return The number of times this object has been borrowed.
-     * @since 2.1
+     * Obtain the name of the class of the pooled object.
+     *
+     * @return The pooled object's class name
+     *
+     * @see Class#getName()
      */
-    long getBorrowedCount();
+    String getPooledObjectType();
 }

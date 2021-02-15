@@ -258,17 +258,77 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
 
 
     /**
-     * Gets the value for the {@code lifo} configuration attribute for pools
-     * created with this configuration instance.
+     * Gets the value for the {@code blockWhenExhausted} configuration attribute
+     * for pools created with this configuration instance.
      *
-     * @return  The current setting of {@code lifo} for this configuration
-     *          instance
+     * @return  The current setting of {@code blockWhenExhausted} for this
+     *          configuration instance
      *
-     * @see GenericObjectPool#getLifo()
-     * @see GenericKeyedObjectPool#getLifo()
+     * @see GenericObjectPool#getBlockWhenExhausted()
+     * @see GenericKeyedObjectPool#getBlockWhenExhausted()
      */
-    public boolean getLifo() {
-        return lifo;
+    public boolean getBlockWhenExhausted() {
+        return blockWhenExhausted;
+    }
+
+    /**
+     * Gets the value for the {@code evictionPolicyClass} configuration
+     * attribute for pools created with this configuration instance.
+     *
+     * @return  The current setting of {@code evictionPolicyClass} for this
+     *          configuration instance
+     *
+     * @see GenericObjectPool#getEvictionPolicy()
+     * @see GenericKeyedObjectPool#getEvictionPolicy()
+     * @since 2.6.0
+     */
+    public EvictionPolicy<T> getEvictionPolicy() {
+        return evictionPolicy;
+    }
+
+    /**
+     * Gets the value for the {@code evictionPolicyClassName} configuration
+     * attribute for pools created with this configuration instance.
+     *
+     * @return  The current setting of {@code evictionPolicyClassName} for this
+     *          configuration instance
+     *
+     * @see GenericObjectPool#getEvictionPolicyClassName()
+     * @see GenericKeyedObjectPool#getEvictionPolicyClassName()
+     */
+    public String getEvictionPolicyClassName() {
+        return evictionPolicyClassName;
+    }
+
+    /**
+     * Gets the value for the {@code evictorShutdownTimeout} configuration
+     * attribute for pools created with this configuration instance.
+     *
+     * @return  The current setting of {@code evictorShutdownTimeout} for
+     *          this configuration instance
+     *
+     * @see GenericObjectPool#getEvictorShutdownTimeout()
+     * @see GenericKeyedObjectPool#getEvictorShutdownTimeout()
+     * @since 2.10.0
+     */
+    public Duration getEvictorShutdownTimeout() {
+        return evictorShutdownTimeout;
+    }
+
+    /**
+     * Gets the value for the {@code evictorShutdownTimeout} configuration
+     * attribute for pools created with this configuration instance.
+     *
+     * @return  The current setting of {@code evictorShutdownTimeout} for
+     *          this configuration instance
+     *
+     * @see GenericObjectPool#getEvictorShutdownTimeoutMillis()
+     * @see GenericKeyedObjectPool#getEvictorShutdownTimeoutMillis()
+     * @deprecated Use {@link #getEvictorShutdownTimeout()}.
+     */
+    @Deprecated
+    public long getEvictorShutdownTimeoutMillis() {
+        return evictorShutdownTimeout.toMillis();
     }
 
     /**
@@ -286,31 +346,53 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     }
 
     /**
-     * Sets the value for the {@code lifo} configuration attribute for pools
+     * Gets the value of the flag that determines if JMX will be enabled for
+     * pools created with this configuration instance.
+     *
+     * @return  The current setting of {@code jmxEnabled} for this configuration
+     *          instance
+     */
+    public boolean getJmxEnabled() {
+        return jmxEnabled;
+    }
+
+    /**
+     * Gets the value of the JMX name base that will be used as part of the
+     * name assigned to JMX enabled pools created with this configuration
+     * instance. A value of {@code null} means that the pool will define
+     * the JMX name base.
+     *
+     * @return  The current setting of {@code jmxNameBase} for this
+     *          configuration instance
+     */
+    public String getJmxNameBase() {
+        return jmxNameBase;
+    }
+
+    /**
+     * Gets the value of the JMX name prefix that will be used as part of the
+     * name assigned to JMX enabled pools created with this configuration
+     * instance.
+     *
+     * @return  The current setting of {@code jmxNamePrefix} for this
+     *          configuration instance
+     */
+    public String getJmxNamePrefix() {
+        return jmxNamePrefix;
+    }
+
+    /**
+     * Gets the value for the {@code lifo} configuration attribute for pools
      * created with this configuration instance.
      *
-     * @param lifo The new setting of {@code lifo}
-     *        for this configuration instance
+     * @return  The current setting of {@code lifo} for this configuration
+     *          instance
      *
      * @see GenericObjectPool#getLifo()
      * @see GenericKeyedObjectPool#getLifo()
      */
-    public void setLifo(final boolean lifo) {
-        this.lifo = lifo;
-    }
-
-    /**
-     * Sets the value for the {@code fairness} configuration attribute for pools
-     * created with this configuration instance.
-     *
-     * @param fairness The new setting of {@code fairness}
-     *        for this configuration instance
-     *
-     * @see GenericObjectPool#getFairness()
-     * @see GenericKeyedObjectPool#getFairness()
-     */
-    public void setFairness(final boolean fairness) {
-        this.fairness = fairness;
+    public boolean getLifo() {
+        return lifo;
     }
 
     /**
@@ -325,20 +407,6 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      */
     public long getMaxWaitMillis() {
         return maxWaitMillis.toMillis();
-    }
-
-    /**
-     * Sets the value for the {@code maxWait} configuration attribute for pools
-     * created with this configuration instance.
-     *
-     * @param maxWaitMillis The new setting of {@code maxWaitMillis}
-     *        for this configuration instance
-     *
-     * @see GenericObjectPool#getMaxWaitMillis()
-     * @see GenericKeyedObjectPool#getMaxWaitMillis()
-     */
-    public void setMaxWaitMillis(final long maxWaitMillis) {
-        this.maxWaitMillis = Duration.ofMillis(maxWaitMillis);
     }
 
     /**
@@ -373,34 +441,17 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     }
 
     /**
-     * Sets the value for the {@code minEvictableIdleTime} configuration
+     * Gets the value for the {@code numTestsPerEvictionRun} configuration
      * attribute for pools created with this configuration instance.
      *
-     * @param minEvictableIdleTime The new setting of
-     *        {@code minEvictableIdleTime} for this configuration instance
+     * @return  The current setting of {@code numTestsPerEvictionRun} for this
+     *          configuration instance
      *
-     * @see GenericObjectPool#getMinEvictableIdleTime()
-     * @see GenericKeyedObjectPool#getMinEvictableIdleTime()
-     * @since 2.10.0
+     * @see GenericObjectPool#getNumTestsPerEvictionRun()
+     * @see GenericKeyedObjectPool#getNumTestsPerEvictionRun()
      */
-    public void setMinEvictableIdleTime(final Duration minEvictableIdleTime) {
-        this.minEvictableIdleTime = minEvictableIdleTime;
-    }
-
-    /**
-     * Sets the value for the {@code minEvictableIdleTime} configuration
-     * attribute for pools created with this configuration instance.
-     *
-     * @param minEvictableIdleTimeMillis The new setting of
-     *        {@code minEvictableIdleTime} for this configuration instance
-     *
-     * @see GenericObjectPool#getMinEvictableIdleTimeMillis()
-     * @see GenericKeyedObjectPool#getMinEvictableIdleTimeMillis()
-     * @deprecated Use {@link #setSoftMinEvictableIdleTime(Duration)}.
-     */
-    @Deprecated
-    public void setMinEvictableIdleTimeMillis(final long minEvictableIdleTimeMillis) {
-        this.minEvictableIdleTime = Duration.ofMillis(minEvictableIdleTimeMillis);
+    public int getNumTestsPerEvictionRun() {
+        return numTestsPerEvictionRun;
     }
 
     /**
@@ -436,98 +487,135 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     }
 
     /**
-     * Sets the value for the {@code softMinEvictableIdleTime}
-     * configuration attribute for pools created with this configuration
-     * instance.
+     * Gets the value for the {@code testOnBorrow} configuration attribute for
+     * pools created with this configuration instance.
      *
-     * @param softMinEvictableIdleTimeMillis The new setting of
-     *        {@code softMinEvictableIdleTime} for this configuration
-     *        instance
-     *
-     * @see GenericObjectPool#getSoftMinEvictableIdleTimeMillis()
-     * @see GenericKeyedObjectPool#getSoftMinEvictableIdleTimeMillis()
-     * @deprecated Use {@link #setSoftMinEvictableIdleTime(Duration)}.
-     */
-    @Deprecated
-    public void setSoftMinEvictableIdleTimeMillis(
-            final long softMinEvictableIdleTimeMillis) {
-        this.softMinEvictableIdleTime = Duration.ofMillis(softMinEvictableIdleTimeMillis);
-    }
-
-    /**
-     * Sets the value for the {@code softMinEvictableIdleTime}
-     * configuration attribute for pools created with this configuration
-     * instance.
-     *
-     * @param softMinEvictableIdleTime The new setting of
-     *        {@code softMinEvictableIdleTime} for this configuration
-     *        instance
-     *
-     * @see GenericObjectPool#getSoftMinEvictableIdleTime()
-     * @see GenericKeyedObjectPool#getSoftMinEvictableIdleTime()
-     * @since 2.10.0
-     */
-    public void setSoftMinEvictableIdleTime(final Duration softMinEvictableIdleTime) {
-        this.softMinEvictableIdleTime = softMinEvictableIdleTime;
-    }
-
-    /**
-     * Gets the value for the {@code numTestsPerEvictionRun} configuration
-     * attribute for pools created with this configuration instance.
-     *
-     * @return  The current setting of {@code numTestsPerEvictionRun} for this
+     * @return  The current setting of {@code testOnBorrow} for this
      *          configuration instance
      *
-     * @see GenericObjectPool#getNumTestsPerEvictionRun()
-     * @see GenericKeyedObjectPool#getNumTestsPerEvictionRun()
+     * @see GenericObjectPool#getTestOnBorrow()
+     * @see GenericKeyedObjectPool#getTestOnBorrow()
      */
-    public int getNumTestsPerEvictionRun() {
-        return numTestsPerEvictionRun;
+    public boolean getTestOnBorrow() {
+        return testOnBorrow;
     }
 
     /**
-     * Sets the value for the {@code numTestsPerEvictionRun} configuration
-     * attribute for pools created with this configuration instance.
+     * Gets the value for the {@code testOnCreate} configuration attribute for
+     * pools created with this configuration instance.
      *
-     * @param numTestsPerEvictionRun The new setting of
-     *        {@code numTestsPerEvictionRun} for this configuration instance
+     * @return  The current setting of {@code testOnCreate} for this
+     *          configuration instance
      *
-     * @see GenericObjectPool#getNumTestsPerEvictionRun()
-     * @see GenericKeyedObjectPool#getNumTestsPerEvictionRun()
+     * @see GenericObjectPool#getTestOnCreate()
+     * @see GenericKeyedObjectPool#getTestOnCreate()
+     *
+     * @since 2.2
      */
-    public void setNumTestsPerEvictionRun(final int numTestsPerEvictionRun) {
-        this.numTestsPerEvictionRun = numTestsPerEvictionRun;
+    public boolean getTestOnCreate() {
+        return testOnCreate;
     }
 
     /**
-     * Gets the value for the {@code evictorShutdownTimeout} configuration
+     * Gets the value for the {@code testOnReturn} configuration attribute for
+     * pools created with this configuration instance.
+     *
+     * @return  The current setting of {@code testOnReturn} for this
+     *          configuration instance
+     *
+     * @see GenericObjectPool#getTestOnReturn()
+     * @see GenericKeyedObjectPool#getTestOnReturn()
+     */
+    public boolean getTestOnReturn() {
+        return testOnReturn;
+    }
+
+    /**
+     * Gets the value for the {@code testWhileIdle} configuration attribute for
+     * pools created with this configuration instance.
+     *
+     * @return  The current setting of {@code testWhileIdle} for this
+     *          configuration instance
+     *
+     * @see GenericObjectPool#getTestWhileIdle()
+     * @see GenericKeyedObjectPool#getTestWhileIdle()
+     */
+    public boolean getTestWhileIdle() {
+        return testWhileIdle;
+    }
+
+    /**
+     * Gets the value for the {@code timeBetweenEvictionRuns} configuration
      * attribute for pools created with this configuration instance.
      *
-     * @return  The current setting of {@code evictorShutdownTimeout} for
+     * @return  The current setting of {@code timeBetweenEvictionRuns} for
      *          this configuration instance
      *
-     * @see GenericObjectPool#getEvictorShutdownTimeoutMillis()
-     * @see GenericKeyedObjectPool#getEvictorShutdownTimeoutMillis()
-     * @deprecated Use {@link #getEvictorShutdownTimeout()}.
-     */
-    @Deprecated
-    public long getEvictorShutdownTimeoutMillis() {
-        return evictorShutdownTimeout.toMillis();
-    }
-
-    /**
-     * Gets the value for the {@code evictorShutdownTimeout} configuration
-     * attribute for pools created with this configuration instance.
-     *
-     * @return  The current setting of {@code evictorShutdownTimeout} for
-     *          this configuration instance
-     *
-     * @see GenericObjectPool#getEvictorShutdownTimeout()
-     * @see GenericKeyedObjectPool#getEvictorShutdownTimeout()
+     * @see GenericObjectPool#getTimeBetweenEvictionRuns()
+     * @see GenericKeyedObjectPool#getTimeBetweenEvictionRuns()
      * @since 2.10.0
      */
-    public Duration getEvictorShutdownTimeout() {
-        return evictorShutdownTimeout;
+    public Duration getTimeBetweenEvictionRuns() {
+        return timeBetweenEvictionRuns;
+    }
+
+    /**
+     * Gets the value for the {@code timeBetweenEvictionRuns} configuration
+     * attribute for pools created with this configuration instance.
+     *
+     * @return  The current setting of {@code timeBetweenEvictionRuns} for
+     *          this configuration instance
+     *
+     * @see GenericObjectPool#getTimeBetweenEvictionRunsMillis()
+     * @see GenericKeyedObjectPool#getTimeBetweenEvictionRunsMillis()
+     * @deprecated Use {@link #getTimeBetweenEvictionRuns()}.
+     */
+    @Deprecated
+    public long getTimeBetweenEvictionRunsMillis() {
+        return timeBetweenEvictionRuns.toMillis();
+    }
+
+    /**
+     * Sets the value for the {@code blockWhenExhausted} configuration attribute
+     * for pools created with this configuration instance.
+     *
+     * @param blockWhenExhausted The new setting of {@code blockWhenExhausted}
+     *        for this configuration instance
+     *
+     * @see GenericObjectPool#getBlockWhenExhausted()
+     * @see GenericKeyedObjectPool#getBlockWhenExhausted()
+     */
+    public void setBlockWhenExhausted(final boolean blockWhenExhausted) {
+        this.blockWhenExhausted = blockWhenExhausted;
+    }
+
+    /**
+     * Sets the value for the {@code evictionPolicyClass} configuration
+     * attribute for pools created with this configuration instance.
+     *
+     * @param evictionPolicy The new setting of
+     *        {@code evictionPolicyClass} for this configuration instance
+     *
+     * @see GenericObjectPool#getEvictionPolicy()
+     * @see GenericKeyedObjectPool#getEvictionPolicy()
+     * @since 2.6.0
+     */
+    public void setEvictionPolicy(final EvictionPolicy<T> evictionPolicy) {
+        this.evictionPolicy = evictionPolicy;
+    }
+
+    /**
+     * Sets the value for the {@code evictionPolicyClassName} configuration
+     * attribute for pools created with this configuration instance.
+     *
+     * @param evictionPolicyClassName The new setting of
+     *        {@code evictionPolicyClassName} for this configuration instance
+     *
+     * @see GenericObjectPool#getEvictionPolicyClassName()
+     * @see GenericKeyedObjectPool#getEvictionPolicyClassName()
+     */
+    public void setEvictionPolicyClassName(final String evictionPolicyClassName) {
+        this.evictionPolicyClassName = evictionPolicyClassName;
     }
 
     /**
@@ -564,19 +652,176 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     }
 
     /**
-     * Gets the value for the {@code testOnCreate} configuration attribute for
+     * Sets the value for the {@code fairness} configuration attribute for pools
+     * created with this configuration instance.
+     *
+     * @param fairness The new setting of {@code fairness}
+     *        for this configuration instance
+     *
+     * @see GenericObjectPool#getFairness()
+     * @see GenericKeyedObjectPool#getFairness()
+     */
+    public void setFairness(final boolean fairness) {
+        this.fairness = fairness;
+    }
+
+    /**
+     * Sets the value of the flag that determines if JMX will be enabled for
      * pools created with this configuration instance.
      *
-     * @return  The current setting of {@code testOnCreate} for this
-     *          configuration instance
-     *
-     * @see GenericObjectPool#getTestOnCreate()
-     * @see GenericKeyedObjectPool#getTestOnCreate()
-     *
-     * @since 2.2
+     * @param jmxEnabled The new setting of {@code jmxEnabled}
+     *        for this configuration instance
      */
-    public boolean getTestOnCreate() {
-        return testOnCreate;
+    public void setJmxEnabled(final boolean jmxEnabled) {
+        this.jmxEnabled = jmxEnabled;
+    }
+
+    /**
+     * Sets the value of the JMX name base that will be used as part of the
+     * name assigned to JMX enabled pools created with this configuration
+     * instance. A value of {@code null} means that the pool will define
+     * the JMX name base.
+     *
+     * @param jmxNameBase The new setting of {@code jmxNameBase}
+     *        for this configuration instance
+     */
+    public void setJmxNameBase(final String jmxNameBase) {
+        this.jmxNameBase = jmxNameBase;
+    }
+
+    /**
+     * Sets the value of the JMX name prefix that will be used as part of the
+     * name assigned to JMX enabled pools created with this configuration
+     * instance.
+     *
+     * @param jmxNamePrefix The new setting of {@code jmxNamePrefix}
+     *        for this configuration instance
+     */
+    public void setJmxNamePrefix(final String jmxNamePrefix) {
+        this.jmxNamePrefix = jmxNamePrefix;
+    }
+
+    /**
+     * Sets the value for the {@code lifo} configuration attribute for pools
+     * created with this configuration instance.
+     *
+     * @param lifo The new setting of {@code lifo}
+     *        for this configuration instance
+     *
+     * @see GenericObjectPool#getLifo()
+     * @see GenericKeyedObjectPool#getLifo()
+     */
+    public void setLifo(final boolean lifo) {
+        this.lifo = lifo;
+    }
+
+    /**
+     * Sets the value for the {@code maxWait} configuration attribute for pools
+     * created with this configuration instance.
+     *
+     * @param maxWaitMillis The new setting of {@code maxWaitMillis}
+     *        for this configuration instance
+     *
+     * @see GenericObjectPool#getMaxWaitMillis()
+     * @see GenericKeyedObjectPool#getMaxWaitMillis()
+     */
+    public void setMaxWaitMillis(final long maxWaitMillis) {
+        this.maxWaitMillis = Duration.ofMillis(maxWaitMillis);
+    }
+
+    /**
+     * Sets the value for the {@code minEvictableIdleTime} configuration
+     * attribute for pools created with this configuration instance.
+     *
+     * @param minEvictableIdleTime The new setting of
+     *        {@code minEvictableIdleTime} for this configuration instance
+     *
+     * @see GenericObjectPool#getMinEvictableIdleTime()
+     * @see GenericKeyedObjectPool#getMinEvictableIdleTime()
+     * @since 2.10.0
+     */
+    public void setMinEvictableIdleTime(final Duration minEvictableIdleTime) {
+        this.minEvictableIdleTime = minEvictableIdleTime;
+    }
+
+    /**
+     * Sets the value for the {@code minEvictableIdleTime} configuration
+     * attribute for pools created with this configuration instance.
+     *
+     * @param minEvictableIdleTimeMillis The new setting of
+     *        {@code minEvictableIdleTime} for this configuration instance
+     *
+     * @see GenericObjectPool#getMinEvictableIdleTimeMillis()
+     * @see GenericKeyedObjectPool#getMinEvictableIdleTimeMillis()
+     * @deprecated Use {@link #setSoftMinEvictableIdleTime(Duration)}.
+     */
+    @Deprecated
+    public void setMinEvictableIdleTimeMillis(final long minEvictableIdleTimeMillis) {
+        this.minEvictableIdleTime = Duration.ofMillis(minEvictableIdleTimeMillis);
+    }
+
+    /**
+     * Sets the value for the {@code numTestsPerEvictionRun} configuration
+     * attribute for pools created with this configuration instance.
+     *
+     * @param numTestsPerEvictionRun The new setting of
+     *        {@code numTestsPerEvictionRun} for this configuration instance
+     *
+     * @see GenericObjectPool#getNumTestsPerEvictionRun()
+     * @see GenericKeyedObjectPool#getNumTestsPerEvictionRun()
+     */
+    public void setNumTestsPerEvictionRun(final int numTestsPerEvictionRun) {
+        this.numTestsPerEvictionRun = numTestsPerEvictionRun;
+    }
+
+    /**
+     * Sets the value for the {@code softMinEvictableIdleTime}
+     * configuration attribute for pools created with this configuration
+     * instance.
+     *
+     * @param softMinEvictableIdleTime The new setting of
+     *        {@code softMinEvictableIdleTime} for this configuration
+     *        instance
+     *
+     * @see GenericObjectPool#getSoftMinEvictableIdleTime()
+     * @see GenericKeyedObjectPool#getSoftMinEvictableIdleTime()
+     * @since 2.10.0
+     */
+    public void setSoftMinEvictableIdleTime(final Duration softMinEvictableIdleTime) {
+        this.softMinEvictableIdleTime = softMinEvictableIdleTime;
+    }
+
+    /**
+     * Sets the value for the {@code softMinEvictableIdleTime}
+     * configuration attribute for pools created with this configuration
+     * instance.
+     *
+     * @param softMinEvictableIdleTimeMillis The new setting of
+     *        {@code softMinEvictableIdleTime} for this configuration
+     *        instance
+     *
+     * @see GenericObjectPool#getSoftMinEvictableIdleTimeMillis()
+     * @see GenericKeyedObjectPool#getSoftMinEvictableIdleTimeMillis()
+     * @deprecated Use {@link #setSoftMinEvictableIdleTime(Duration)}.
+     */
+    @Deprecated
+    public void setSoftMinEvictableIdleTimeMillis(
+            final long softMinEvictableIdleTimeMillis) {
+        this.softMinEvictableIdleTime = Duration.ofMillis(softMinEvictableIdleTimeMillis);
+    }
+
+    /**
+     * Sets the value for the {@code testOnBorrow} configuration attribute for
+     * pools created with this configuration instance.
+     *
+     * @param testOnBorrow The new setting of {@code testOnBorrow}
+     *        for this configuration instance
+     *
+     * @see GenericObjectPool#getTestOnBorrow()
+     * @see GenericKeyedObjectPool#getTestOnBorrow()
+     */
+    public void setTestOnBorrow(final boolean testOnBorrow) {
+        this.testOnBorrow = testOnBorrow;
     }
 
     /**
@@ -596,48 +841,6 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     }
 
     /**
-     * Gets the value for the {@code testOnBorrow} configuration attribute for
-     * pools created with this configuration instance.
-     *
-     * @return  The current setting of {@code testOnBorrow} for this
-     *          configuration instance
-     *
-     * @see GenericObjectPool#getTestOnBorrow()
-     * @see GenericKeyedObjectPool#getTestOnBorrow()
-     */
-    public boolean getTestOnBorrow() {
-        return testOnBorrow;
-    }
-
-    /**
-     * Sets the value for the {@code testOnBorrow} configuration attribute for
-     * pools created with this configuration instance.
-     *
-     * @param testOnBorrow The new setting of {@code testOnBorrow}
-     *        for this configuration instance
-     *
-     * @see GenericObjectPool#getTestOnBorrow()
-     * @see GenericKeyedObjectPool#getTestOnBorrow()
-     */
-    public void setTestOnBorrow(final boolean testOnBorrow) {
-        this.testOnBorrow = testOnBorrow;
-    }
-
-    /**
-     * Gets the value for the {@code testOnReturn} configuration attribute for
-     * pools created with this configuration instance.
-     *
-     * @return  The current setting of {@code testOnReturn} for this
-     *          configuration instance
-     *
-     * @see GenericObjectPool#getTestOnReturn()
-     * @see GenericKeyedObjectPool#getTestOnReturn()
-     */
-    public boolean getTestOnReturn() {
-        return testOnReturn;
-    }
-
-    /**
      * Sets the value for the {@code testOnReturn} configuration attribute for
      * pools created with this configuration instance.
      *
@@ -652,20 +855,6 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     }
 
     /**
-     * Gets the value for the {@code testWhileIdle} configuration attribute for
-     * pools created with this configuration instance.
-     *
-     * @return  The current setting of {@code testWhileIdle} for this
-     *          configuration instance
-     *
-     * @see GenericObjectPool#getTestWhileIdle()
-     * @see GenericKeyedObjectPool#getTestWhileIdle()
-     */
-    public boolean getTestWhileIdle() {
-        return testWhileIdle;
-    }
-
-    /**
      * Sets the value for the {@code testWhileIdle} configuration attribute for
      * pools created with this configuration instance.
      *
@@ -677,37 +866,6 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      */
     public void setTestWhileIdle(final boolean testWhileIdle) {
         this.testWhileIdle = testWhileIdle;
-    }
-
-    /**
-     * Gets the value for the {@code timeBetweenEvictionRuns} configuration
-     * attribute for pools created with this configuration instance.
-     *
-     * @return  The current setting of {@code timeBetweenEvictionRuns} for
-     *          this configuration instance
-     *
-     * @see GenericObjectPool#getTimeBetweenEvictionRuns()
-     * @see GenericKeyedObjectPool#getTimeBetweenEvictionRuns()
-     * @since 2.10.0
-     */
-    public Duration getTimeBetweenEvictionRuns() {
-        return timeBetweenEvictionRuns;
-    }
-
-    /**
-     * Gets the value for the {@code timeBetweenEvictionRuns} configuration
-     * attribute for pools created with this configuration instance.
-     *
-     * @return  The current setting of {@code timeBetweenEvictionRuns} for
-     *          this configuration instance
-     *
-     * @see GenericObjectPool#getTimeBetweenEvictionRunsMillis()
-     * @see GenericKeyedObjectPool#getTimeBetweenEvictionRunsMillis()
-     * @deprecated Use {@link #getTimeBetweenEvictionRuns()}.
-     */
-    @Deprecated
-    public long getTimeBetweenEvictionRunsMillis() {
-        return timeBetweenEvictionRuns.toMillis();
     }
 
     /**
@@ -741,164 +899,6 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     @Deprecated
     public void setTimeBetweenEvictionRunsMillis(final long timeBetweenEvictionRunsMillis) {
         this.timeBetweenEvictionRuns = Duration.ofMillis(timeBetweenEvictionRunsMillis);
-    }
-
-    /**
-     * Gets the value for the {@code evictionPolicyClass} configuration
-     * attribute for pools created with this configuration instance.
-     *
-     * @return  The current setting of {@code evictionPolicyClass} for this
-     *          configuration instance
-     *
-     * @see GenericObjectPool#getEvictionPolicy()
-     * @see GenericKeyedObjectPool#getEvictionPolicy()
-     * @since 2.6.0
-     */
-    public EvictionPolicy<T> getEvictionPolicy() {
-        return evictionPolicy;
-    }
-
-    /**
-     * Gets the value for the {@code evictionPolicyClassName} configuration
-     * attribute for pools created with this configuration instance.
-     *
-     * @return  The current setting of {@code evictionPolicyClassName} for this
-     *          configuration instance
-     *
-     * @see GenericObjectPool#getEvictionPolicyClassName()
-     * @see GenericKeyedObjectPool#getEvictionPolicyClassName()
-     */
-    public String getEvictionPolicyClassName() {
-        return evictionPolicyClassName;
-    }
-
-    /**
-     * Sets the value for the {@code evictionPolicyClass} configuration
-     * attribute for pools created with this configuration instance.
-     *
-     * @param evictionPolicy The new setting of
-     *        {@code evictionPolicyClass} for this configuration instance
-     *
-     * @see GenericObjectPool#getEvictionPolicy()
-     * @see GenericKeyedObjectPool#getEvictionPolicy()
-     * @since 2.6.0
-     */
-    public void setEvictionPolicy(final EvictionPolicy<T> evictionPolicy) {
-        this.evictionPolicy = evictionPolicy;
-    }
-
-    /**
-     * Sets the value for the {@code evictionPolicyClassName} configuration
-     * attribute for pools created with this configuration instance.
-     *
-     * @param evictionPolicyClassName The new setting of
-     *        {@code evictionPolicyClassName} for this configuration instance
-     *
-     * @see GenericObjectPool#getEvictionPolicyClassName()
-     * @see GenericKeyedObjectPool#getEvictionPolicyClassName()
-     */
-    public void setEvictionPolicyClassName(final String evictionPolicyClassName) {
-        this.evictionPolicyClassName = evictionPolicyClassName;
-    }
-
-    /**
-     * Gets the value for the {@code blockWhenExhausted} configuration attribute
-     * for pools created with this configuration instance.
-     *
-     * @return  The current setting of {@code blockWhenExhausted} for this
-     *          configuration instance
-     *
-     * @see GenericObjectPool#getBlockWhenExhausted()
-     * @see GenericKeyedObjectPool#getBlockWhenExhausted()
-     */
-    public boolean getBlockWhenExhausted() {
-        return blockWhenExhausted;
-    }
-
-    /**
-     * Sets the value for the {@code blockWhenExhausted} configuration attribute
-     * for pools created with this configuration instance.
-     *
-     * @param blockWhenExhausted The new setting of {@code blockWhenExhausted}
-     *        for this configuration instance
-     *
-     * @see GenericObjectPool#getBlockWhenExhausted()
-     * @see GenericKeyedObjectPool#getBlockWhenExhausted()
-     */
-    public void setBlockWhenExhausted(final boolean blockWhenExhausted) {
-        this.blockWhenExhausted = blockWhenExhausted;
-    }
-
-    /**
-     * Gets the value of the flag that determines if JMX will be enabled for
-     * pools created with this configuration instance.
-     *
-     * @return  The current setting of {@code jmxEnabled} for this configuration
-     *          instance
-     */
-    public boolean getJmxEnabled() {
-        return jmxEnabled;
-    }
-
-    /**
-     * Sets the value of the flag that determines if JMX will be enabled for
-     * pools created with this configuration instance.
-     *
-     * @param jmxEnabled The new setting of {@code jmxEnabled}
-     *        for this configuration instance
-     */
-    public void setJmxEnabled(final boolean jmxEnabled) {
-        this.jmxEnabled = jmxEnabled;
-    }
-
-    /**
-     * Gets the value of the JMX name base that will be used as part of the
-     * name assigned to JMX enabled pools created with this configuration
-     * instance. A value of {@code null} means that the pool will define
-     * the JMX name base.
-     *
-     * @return  The current setting of {@code jmxNameBase} for this
-     *          configuration instance
-     */
-    public String getJmxNameBase() {
-        return jmxNameBase;
-    }
-
-    /**
-     * Sets the value of the JMX name base that will be used as part of the
-     * name assigned to JMX enabled pools created with this configuration
-     * instance. A value of {@code null} means that the pool will define
-     * the JMX name base.
-     *
-     * @param jmxNameBase The new setting of {@code jmxNameBase}
-     *        for this configuration instance
-     */
-    public void setJmxNameBase(final String jmxNameBase) {
-        this.jmxNameBase = jmxNameBase;
-    }
-
-    /**
-     * Gets the value of the JMX name prefix that will be used as part of the
-     * name assigned to JMX enabled pools created with this configuration
-     * instance.
-     *
-     * @return  The current setting of {@code jmxNamePrefix} for this
-     *          configuration instance
-     */
-    public String getJmxNamePrefix() {
-        return jmxNamePrefix;
-    }
-
-    /**
-     * Sets the value of the JMX name prefix that will be used as part of the
-     * name assigned to JMX enabled pools created with this configuration
-     * instance.
-     *
-     * @param jmxNamePrefix The new setting of {@code jmxNamePrefix}
-     *        for this configuration instance
-     */
-    public void setJmxNamePrefix(final String jmxNamePrefix) {
-        this.jmxNamePrefix = jmxNamePrefix;
     }
 
     @Override

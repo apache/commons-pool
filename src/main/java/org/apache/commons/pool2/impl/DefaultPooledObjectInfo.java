@@ -42,6 +42,11 @@ public class DefaultPooledObjectInfo implements DefaultPooledObjectInfoMBean {
     }
 
     @Override
+    public long getBorrowedCount() {
+        return pooledObject.getBorrowedCount();
+    }
+
+    @Override
     public long getCreateTime() {
         return pooledObject.getCreateTime();
     }
@@ -82,18 +87,13 @@ public class DefaultPooledObjectInfo implements DefaultPooledObjectInfoMBean {
     }
 
     @Override
-    public String getPooledObjectType() {
-        return pooledObject.getObject().getClass().getName();
-    }
-
-    @Override
     public String getPooledObjectToString() {
         return pooledObject.getObject().toString();
     }
 
     @Override
-    public long getBorrowedCount() {
-        return pooledObject.getBorrowedCount();
+    public String getPooledObjectType() {
+        return pooledObject.getObject().getClass().getName();
     }
 
     /**

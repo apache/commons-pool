@@ -32,13 +32,10 @@ import java.io.PrintWriter;
 public interface CallStack {
 
     /**
-     * Prints the current stack trace if available to a PrintWriter. The format is undefined and is primarily useful
-     * for debugging issues with {@link PooledObject} usage in user code.
-     *
-     * @param writer a PrintWriter to write the current stack trace to if available
-     * @return true if a stack trace was available to print or false if nothing was printed
+     * Clears the current stack trace snapshot. Subsequent calls to {@link #printStackTrace(PrintWriter)} will be
+     * no-ops until another call to {@link #fillInStackTrace()}.
      */
-    boolean printStackTrace(final PrintWriter writer);
+    void clear();
 
     /**
      * Takes a snapshot of the current call stack. Subsequent calls to {@link #printStackTrace(PrintWriter)} will print
@@ -47,8 +44,11 @@ public interface CallStack {
     void fillInStackTrace();
 
     /**
-     * Clears the current stack trace snapshot. Subsequent calls to {@link #printStackTrace(PrintWriter)} will be
-     * no-ops until another call to {@link #fillInStackTrace()}.
+     * Prints the current stack trace if available to a PrintWriter. The format is undefined and is primarily useful
+     * for debugging issues with {@link PooledObject} usage in user code.
+     *
+     * @param writer a PrintWriter to write the current stack trace to if available
+     * @return true if a stack trace was available to print or false if nothing was printed
      */
-    void clear();
+    boolean printStackTrace(final PrintWriter writer);
 }
