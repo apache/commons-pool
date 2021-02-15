@@ -40,6 +40,72 @@ public class AbandonedConfig {
     private boolean removeAbandonedOnBorrow;
 
     /**
+     * Whether or not pool maintenance (evictor) performs abandoned object
+     * removal.
+     */
+    private boolean removeAbandonedOnMaintenance;
+
+    /**
+     * Timeout before an abandoned object can be removed.
+     */
+    private Duration removeAbandonedTimeout = DEFAULT_REMOVE_ABANDONED_TIMEOUT;
+
+    /**
+     * Determines whether or not to log stack traces for application code
+     * which abandoned an object.
+     */
+    private boolean logAbandoned = false;
+
+    /**
+     * Determines whether or not to log full stack traces when logAbandoned is true.
+     * If disabled, then a faster method for logging stack traces with only class data
+     * may be used if possible.
+     *
+     * @since 2.5
+     */
+    private boolean requireFullStackTrace = true;
+
+    /**
+     * PrintWriter to use to log information on abandoned objects.
+     * Use of default system encoding is deliberate.
+     */
+    private PrintWriter logWriter = new PrintWriter(new OutputStreamWriter(System.out, Charset.defaultCharset()));
+
+    /**
+     * If the pool implements {@link UsageTracking}, should the pool record a
+     * stack trace every time a method is called on a pooled object and retain
+     * the most recent stack trace to aid debugging of abandoned objects?
+     */
+    private boolean useUsageTracking = false;
+
+    /**
+     * Flag to log stack traces for application code which abandoned
+     * an object.
+     *
+     * Defaults to false.
+     * Logging of abandoned objects adds overhead for every object created
+     * because a stack trace has to be generated.
+     *
+     * @return boolean true if stack trace logging is turned on for abandoned
+     * objects
+     *
+     */
+    public boolean getLogAbandoned() {
+        return this.logAbandoned;
+    }
+
+    /**
+     * Returns the log writer being used by this configuration to log
+     * information on abandoned objects. If not set, a PrintWriter based on
+     * System.out with the system default encoding is used.
+     *
+     * @return log writer in use
+     */
+    public PrintWriter getLogWriter() {
+        return logWriter;
+    }
+
+    /**
      * <p>Flag to remove abandoned objects if they exceed the
      * removeAbandonedTimeout when borrowObject is invoked.</p>
      *
@@ -54,24 +120,6 @@ public class AbandonedConfig {
     public boolean getRemoveAbandonedOnBorrow() {
         return this.removeAbandonedOnBorrow;
     }
-
-    /**
-     * <p>Flag to remove abandoned objects if they exceed the
-     * removeAbandonedTimeout when borrowObject is invoked.</p>
-     *
-     * @param removeAbandonedOnBorrow true means abandoned objects will be
-     *   removed by borrowObject
-     * @see #getRemoveAbandonedOnBorrow()
-     */
-    public void setRemoveAbandonedOnBorrow(final boolean removeAbandonedOnBorrow) {
-        this.removeAbandonedOnBorrow = removeAbandonedOnBorrow;
-    }
-
-    /**
-     * Whether or not pool maintenance (evictor) performs abandoned object
-     * removal.
-     */
-    private boolean removeAbandonedOnMaintenance;
 
     /**
      * <p>Flag to remove abandoned objects if they exceed the
@@ -91,23 +139,6 @@ public class AbandonedConfig {
     public boolean getRemoveAbandonedOnMaintenance() {
         return this.removeAbandonedOnMaintenance;
     }
-
-    /**
-     * <p>Flag to remove abandoned objects if they exceed the
-     * removeAbandonedTimeout when pool maintenance runs.</p>
-     *
-     * @param removeAbandonedOnMaintenance true means abandoned objects will be
-     *   removed by pool maintenance
-     * @see #getRemoveAbandonedOnMaintenance
-     */
-    public void setRemoveAbandonedOnMaintenance(final boolean removeAbandonedOnMaintenance) {
-        this.removeAbandonedOnMaintenance = removeAbandonedOnMaintenance;
-    }
-
-    /**
-     * Timeout before an abandoned object can be removed.
-     */
-    private Duration removeAbandonedTimeout = DEFAULT_REMOVE_ABANDONED_TIMEOUT;
 
     /**
      * <p>Timeout in seconds before an abandoned object can be removed.</p>
@@ -140,6 +171,78 @@ public class AbandonedConfig {
      */
     public Duration getRemoveAbandonedTimeoutDuration() {
         return this.removeAbandonedTimeout;
+    }
+
+    /**
+     * Indicates if full stack traces are required when {@link #getLogAbandoned() logAbandoned}
+     * is true. Defaults to true. Logging of abandoned objects requiring a full stack trace will
+     * generate an entire stack trace to generate for every object created. If this is disabled,
+     * a faster but less informative stack walking mechanism may be used if available.
+     *
+     * @return true if full stack traces are required for logging abandoned connections, or false
+     * if abbreviated stack traces are acceptable
+     * @see CallStack
+     * @since 2.5
+     */
+    public boolean getRequireFullStackTrace() {
+        return requireFullStackTrace;
+    }
+
+    /**
+     * If the pool implements {@link UsageTracking}, should the pool record a
+     * stack trace every time a method is called on a pooled object and retain
+     * the most recent stack trace to aid debugging of abandoned objects?
+     *
+     * @return {@code true} if usage tracking is enabled
+     */
+    public boolean getUseUsageTracking() {
+        return useUsageTracking;
+    }
+
+    /**
+     * Sets the flag to log stack traces for application code which abandoned
+     * an object.
+     *
+     * @param logAbandoned true turns on abandoned stack trace logging
+     * @see #getLogAbandoned()
+     *
+     */
+    public void setLogAbandoned(final boolean logAbandoned) {
+        this.logAbandoned = logAbandoned;
+    }
+
+    /**
+     * Sets the log writer to be used by this configuration to log
+     * information on abandoned objects.
+     *
+     * @param logWriter The new log writer
+     */
+    public void setLogWriter(final PrintWriter logWriter) {
+        this.logWriter = logWriter;
+    }
+
+    /**
+     * <p>Flag to remove abandoned objects if they exceed the
+     * removeAbandonedTimeout when borrowObject is invoked.</p>
+     *
+     * @param removeAbandonedOnBorrow true means abandoned objects will be
+     *   removed by borrowObject
+     * @see #getRemoveAbandonedOnBorrow()
+     */
+    public void setRemoveAbandonedOnBorrow(final boolean removeAbandonedOnBorrow) {
+        this.removeAbandonedOnBorrow = removeAbandonedOnBorrow;
+    }
+
+    /**
+     * <p>Flag to remove abandoned objects if they exceed the
+     * removeAbandonedTimeout when pool maintenance runs.</p>
+     *
+     * @param removeAbandonedOnMaintenance true means abandoned objects will be
+     *   removed by pool maintenance
+     * @see #getRemoveAbandonedOnMaintenance
+     */
+    public void setRemoveAbandonedOnMaintenance(final boolean removeAbandonedOnMaintenance) {
+        this.removeAbandonedOnMaintenance = removeAbandonedOnMaintenance;
     }
 
     /**
@@ -178,64 +281,6 @@ public class AbandonedConfig {
     }
 
     /**
-     * Determines whether or not to log stack traces for application code
-     * which abandoned an object.
-     */
-    private boolean logAbandoned = false;
-
-    /**
-     * Flag to log stack traces for application code which abandoned
-     * an object.
-     *
-     * Defaults to false.
-     * Logging of abandoned objects adds overhead for every object created
-     * because a stack trace has to be generated.
-     *
-     * @return boolean true if stack trace logging is turned on for abandoned
-     * objects
-     *
-     */
-    public boolean getLogAbandoned() {
-        return this.logAbandoned;
-    }
-
-    /**
-     * Sets the flag to log stack traces for application code which abandoned
-     * an object.
-     *
-     * @param logAbandoned true turns on abandoned stack trace logging
-     * @see #getLogAbandoned()
-     *
-     */
-    public void setLogAbandoned(final boolean logAbandoned) {
-        this.logAbandoned = logAbandoned;
-    }
-
-    /**
-     * Determines whether or not to log full stack traces when logAbandoned is true.
-     * If disabled, then a faster method for logging stack traces with only class data
-     * may be used if possible.
-     *
-     * @since 2.5
-     */
-    private boolean requireFullStackTrace = true;
-
-    /**
-     * Indicates if full stack traces are required when {@link #getLogAbandoned() logAbandoned}
-     * is true. Defaults to true. Logging of abandoned objects requiring a full stack trace will
-     * generate an entire stack trace to generate for every object created. If this is disabled,
-     * a faster but less informative stack walking mechanism may be used if available.
-     *
-     * @return true if full stack traces are required for logging abandoned connections, or false
-     * if abbreviated stack traces are acceptable
-     * @see CallStack
-     * @since 2.5
-     */
-    public boolean getRequireFullStackTrace() {
-        return requireFullStackTrace;
-    }
-
-    /**
      * Sets the flag to require full stack traces for logging abandoned connections when enabled.
      *
      * @param requireFullStackTrace indicates whether or not full stack traces are required in
@@ -246,51 +291,6 @@ public class AbandonedConfig {
      */
     public void setRequireFullStackTrace(final boolean requireFullStackTrace) {
         this.requireFullStackTrace = requireFullStackTrace;
-    }
-
-    /**
-     * PrintWriter to use to log information on abandoned objects.
-     * Use of default system encoding is deliberate.
-     */
-    private PrintWriter logWriter = new PrintWriter(new OutputStreamWriter(System.out, Charset.defaultCharset()));
-
-    /**
-     * Returns the log writer being used by this configuration to log
-     * information on abandoned objects. If not set, a PrintWriter based on
-     * System.out with the system default encoding is used.
-     *
-     * @return log writer in use
-     */
-    public PrintWriter getLogWriter() {
-        return logWriter;
-    }
-
-    /**
-     * Sets the log writer to be used by this configuration to log
-     * information on abandoned objects.
-     *
-     * @param logWriter The new log writer
-     */
-    public void setLogWriter(final PrintWriter logWriter) {
-        this.logWriter = logWriter;
-    }
-
-    /**
-     * If the pool implements {@link UsageTracking}, should the pool record a
-     * stack trace every time a method is called on a pooled object and retain
-     * the most recent stack trace to aid debugging of abandoned objects?
-     */
-    private boolean useUsageTracking = false;
-
-    /**
-     * If the pool implements {@link UsageTracking}, should the pool record a
-     * stack trace every time a method is called on a pooled object and retain
-     * the most recent stack trace to aid debugging of abandoned objects?
-     *
-     * @return {@code true} if usage tracking is enabled
-     */
-    public boolean getUseUsageTracking() {
-        return useUsageTracking;
     }
 
     /**
