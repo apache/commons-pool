@@ -1417,7 +1417,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      */
     final void startEvictor(final Duration delay) {
         synchronized (evictionLock) {
-            final boolean isPositiverDelay = !delay.isNegative() && !delay.isZero();
+            final boolean isPositiverDelay = PoolImplUtils.isPositive(delay);
             if (evictor == null) { // Starting evictor for the first time or after a cancel
                 if (isPositiverDelay) {   // Starting new evictor
                     evictor = new Evictor();
@@ -1438,6 +1438,8 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
             }
         }
     }
+
+    
 
     // Inner classes
 

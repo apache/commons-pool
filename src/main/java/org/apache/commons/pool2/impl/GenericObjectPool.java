@@ -625,8 +625,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
 
             synchronized (evictionLock) {
                 final EvictionConfig evictionConfig = new EvictionConfig(
-                        getMinEvictableIdleTimeMillis(),
-                        getSoftMinEvictableIdleTimeMillis(),
+                        getMinEvictableIdleTime(),
+                        getSoftMinEvictableIdleTime(),
                         getMinIdle());
 
                 final boolean testWhileIdle = getTestWhileIdle();

@@ -917,8 +917,8 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
 
         synchronized (evictionLock) {
             final EvictionConfig evictionConfig = new EvictionConfig(
-                    getMinEvictableIdleTimeMillis(),
-                    getSoftMinEvictableIdleTimeMillis(),
+                    getMinEvictableIdleTime(),
+                    getSoftMinEvictableIdleTime(),
                     getMinIdlePerKey());
 
             final boolean testWhileIdle = getTestWhileIdle();
