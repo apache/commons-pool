@@ -51,6 +51,12 @@ public class ProxiedKeyedObjectPool<K, V> implements KeyedObjectPool<K, V> {
     }
 
 
+    @Override
+    public void addObject(final K key) throws Exception, IllegalStateException,
+            UnsupportedOperationException {
+        pool.addObject(key);
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public V borrowObject(final K key) throws Exception, NoSuchElementException,
@@ -62,44 +68,6 @@ public class ProxiedKeyedObjectPool<K, V> implements KeyedObjectPool<K, V> {
         final V pooledObject = pool.borrowObject(key);
         final V proxy = proxySource.createProxy(pooledObject, usageTracking);
         return proxy;
-    }
-
-    @Override
-    public void returnObject(final K key, final V proxy) throws Exception {
-        final V pooledObject = proxySource.resolveProxy(proxy);
-        pool.returnObject(key, pooledObject);
-    }
-
-    @Override
-    public void invalidateObject(final K key, final V proxy) throws Exception {
-        final V pooledObject = proxySource.resolveProxy(proxy);
-        pool.invalidateObject(key, pooledObject);
-    }
-
-    @Override
-    public void addObject(final K key) throws Exception, IllegalStateException,
-            UnsupportedOperationException {
-        pool.addObject(key);
-    }
-
-    @Override
-    public int getNumIdle(final K key) {
-        return pool.getNumIdle(key);
-    }
-
-    @Override
-    public int getNumActive(final K key) {
-        return pool.getNumActive(key);
-    }
-
-    @Override
-    public int getNumIdle() {
-        return pool.getNumIdle();
-    }
-
-    @Override
-    public int getNumActive() {
-        return pool.getNumActive();
     }
 
     @Override
@@ -115,6 +83,38 @@ public class ProxiedKeyedObjectPool<K, V> implements KeyedObjectPool<K, V> {
     @Override
     public void close() {
         pool.close();
+    }
+
+    @Override
+    public int getNumActive() {
+        return pool.getNumActive();
+    }
+
+    @Override
+    public int getNumActive(final K key) {
+        return pool.getNumActive(key);
+    }
+
+    @Override
+    public int getNumIdle() {
+        return pool.getNumIdle();
+    }
+
+    @Override
+    public int getNumIdle(final K key) {
+        return pool.getNumIdle(key);
+    }
+
+    @Override
+    public void invalidateObject(final K key, final V proxy) throws Exception {
+        final V pooledObject = proxySource.resolveProxy(proxy);
+        pool.invalidateObject(key, pooledObject);
+    }
+
+    @Override
+    public void returnObject(final K key, final V proxy) throws Exception {
+        final V pooledObject = proxySource.resolveProxy(proxy);
+        pool.returnObject(key, pooledObject);
     }
 
 

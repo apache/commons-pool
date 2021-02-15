@@ -51,6 +51,13 @@ public class ProxiedObjectPool<T> implements ObjectPool<T> {
 
     // --------------------------------------------------- ObjectPool<T> methods
 
+    @Override
+    public void addObject() throws Exception, IllegalStateException,
+            UnsupportedOperationException {
+        pool.addObject();
+    }
+
+
     @SuppressWarnings("unchecked")
     @Override
     public T borrowObject() throws Exception, NoSuchElementException,
@@ -66,9 +73,26 @@ public class ProxiedObjectPool<T> implements ObjectPool<T> {
 
 
     @Override
-    public void returnObject(final T proxy) throws Exception {
-        final T pooledObject = proxySource.resolveProxy(proxy);
-        pool.returnObject(pooledObject);
+    public void clear() throws Exception, UnsupportedOperationException {
+        pool.clear();
+    }
+
+
+    @Override
+    public void close() {
+        pool.close();
+    }
+
+
+    @Override
+    public int getNumActive() {
+        return pool.getNumActive();
+    }
+
+
+    @Override
+    public int getNumIdle() {
+        return pool.getNumIdle();
     }
 
 
@@ -80,33 +104,9 @@ public class ProxiedObjectPool<T> implements ObjectPool<T> {
 
 
     @Override
-    public void addObject() throws Exception, IllegalStateException,
-            UnsupportedOperationException {
-        pool.addObject();
-    }
-
-
-    @Override
-    public int getNumIdle() {
-        return pool.getNumIdle();
-    }
-
-
-    @Override
-    public int getNumActive() {
-        return pool.getNumActive();
-    }
-
-
-    @Override
-    public void clear() throws Exception, UnsupportedOperationException {
-        pool.clear();
-    }
-
-
-    @Override
-    public void close() {
-        pool.close();
+    public void returnObject(final T proxy) throws Exception {
+        final T pooledObject = proxySource.resolveProxy(proxy);
+        pool.returnObject(pooledObject);
     }
 
 
