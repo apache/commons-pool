@@ -146,7 +146,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
 
 
     /**
-     * Returns the maximum number of objects that can be allocated by the pool
+     * Gets the maximum number of objects that can be allocated by the pool
      * (checked out to clients, or idle awaiting checkout) at a given time. When
      * negative, there is no limit to the number of objects that can be
      * managed by the pool at one time.
@@ -218,9 +218,9 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         setTestOnReturn(config.getTestOnReturn());
         setTestWhileIdle(config.getTestWhileIdle());
         setNumTestsPerEvictionRun(config.getNumTestsPerEvictionRun());
-        setMinEvictableIdleTimeMillis(config.getMinEvictableIdleTimeMillis());
-        setTimeBetweenEvictionRunsMillis(config.getTimeBetweenEvictionRunsMillis());
-        setSoftMinEvictableIdleTimeMillis(config.getSoftMinEvictableIdleTimeMillis());
+        setMinEvictableIdleTime(config.getMinEvictableIdleTime());
+        setTimeBetweenEvictionRuns(config.getTimeBetweenEvictionRuns());
+        setSoftMinEvictableIdleTime(config.getSoftMinEvictableIdleTime());
         final EvictionPolicy<T> policy = config.getEvictionPolicy();
         if (policy == null) {
             // Use the class name (pre-2.6.0 compatible)
@@ -229,11 +229,11 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
             // Otherwise, use the class (2.6.0 feature)
             setEvictionPolicy(policy);
         }
-        setEvictorShutdownTimeoutMillis(config.getEvictorShutdownTimeoutMillis());
+        setEvictorShutdownTimeout(config.getEvictorShutdownTimeout());
     }
 
     /**
-     * Returns the maximum amount of time (in milliseconds) the
+     * Gets the maximum amount of time (in milliseconds) the
      * {@code borrowObject()} method should block before throwing an
      * exception when the pool is exhausted and
      * {@link #getBlockWhenExhausted} is true. When less than 0, the
@@ -418,7 +418,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     /**
      * Returns whether objects sitting idle in the pool will be validated by the
      * idle object evictor (if any - see
-     * {@link #setTimeBetweenEvictionRunsMillis(long)}). Validation is performed
+     * {@link #setTimeBetweenEvictionRuns(Duration)}). Validation is performed
      * by the {@code validateObject()} method of the factory associated
      * with the pool. If the object fails to validate, it will be removed from
      * the pool and destroyed.
@@ -435,7 +435,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     /**
      * Returns whether objects sitting idle in the pool will be validated by the
      * idle object evictor (if any - see
-     * {@link #setTimeBetweenEvictionRunsMillis(long)}). Validation is performed
+     * {@link #setTimeBetweenEvictionRuns(Duration)}). Validation is performed
      * by the {@code validateObject()} method of the factory associated
      * with the pool. If the object fails to validate, it will be removed from
      * the pool and destroyed.  Note that setting this property has no effect
@@ -446,23 +446,57 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      *            {@code true} so objects will be validated by the evictor
      *
      * @see #getTestWhileIdle
-     * @see #setTimeBetweenEvictionRunsMillis
+     * @see #setTimeBetweenEvictionRuns
      */
     public final void setTestWhileIdle(final boolean testWhileIdle) {
         this.testWhileIdle = testWhileIdle;
     }
 
     /**
-     * Returns the number of milliseconds to sleep between runs of the idle
+     * Gets the duration to sleep between runs of the idle
+     * object evictor thread. When non-positive, no idle object evictor thread
+     * will be run.
+     *
+     * @return number of milliseconds to sleep between evictor runs
+     *
+     * @see #setTimeBetweenEvictionRuns
+     * @since 2.10.0
+     */
+    public final Duration getTimeBetweenEvictionRuns() {
+        return timeBetweenEvictionRuns;
+    }
+
+    /**
+     * Gets the number of milliseconds to sleep between runs of the idle
      * object evictor thread. When non-positive, no idle object evictor thread
      * will be run.
      *
      * @return number of milliseconds to sleep between evictor runs
      *
      * @see #setTimeBetweenEvictionRunsMillis
+     * @deprecated Use {@link #getTimeBetweenEvictionRuns()}.
      */
+    @Deprecated
     public final long getTimeBetweenEvictionRunsMillis() {
         return timeBetweenEvictionRuns.toMillis();
+    }
+
+    /**
+     * Sets the number of milliseconds to sleep between runs of the idle object evictor thread.
+     * <ul>
+     * <li>When positive, the idle object evictor thread starts.</li>
+     * <li>When non-positive, no idle object evictor thread runs.</li>
+     * </ul>
+     *
+     * @param timeBetweenEvictionRuns
+     *            duration to sleep between evictor runs
+     *
+     * @see #getTimeBetweenEvictionRunsMillis
+     * @since 2.10.0
+     */
+    public final void setTimeBetweenEvictionRuns(final Duration timeBetweenEvictionRuns) {
+        this.timeBetweenEvictionRuns = timeBetweenEvictionRuns;
+        startEvictor(this.timeBetweenEvictionRuns);
     }
 
     /**
@@ -476,15 +510,16 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      *            number of milliseconds to sleep between evictor runs
      *
      * @see #getTimeBetweenEvictionRunsMillis
+     * @deprecated Use {@link #setTimeBetweenEvictionRuns(Duration)}.
      */
-    public final void setTimeBetweenEvictionRunsMillis(
-            final long timeBetweenEvictionRunsMillis) {
+    @Deprecated
+    public final void setTimeBetweenEvictionRunsMillis(final long timeBetweenEvictionRunsMillis) {
         this.timeBetweenEvictionRuns = Duration.ofMillis(timeBetweenEvictionRunsMillis);
         startEvictor(timeBetweenEvictionRuns);
     }
 
     /**
-     * Returns the maximum number of objects to examine during each run (if any)
+     * Gets the maximum number of objects to examine during each run (if any)
      * of the idle object evictor thread. When positive, the number of tests
      * performed for a run will be the minimum of the configured value and the
      * number of idle instances in the pool. When negative, the number of tests
@@ -523,7 +558,24 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     }
 
     /**
-     * Returns the minimum amount of time an object may sit idle in the pool
+     * Gets the minimum amount of time an object may sit idle in the pool
+     * before it is eligible for eviction by the idle object evictor (if any -
+     * see {@link #setTimeBetweenEvictionRuns(Duration)}). When non-positive,
+     * no objects will be evicted from the pool due to idle time alone.
+     *
+     * @return minimum amount of time an object may sit idle in the pool before
+     *         it is eligible for eviction
+     *
+     * @see #setMinEvictableIdleTimeMillis
+     * @see #setTimeBetweenEvictionRunsMillis
+     * @since 2.10.0
+     */
+    public final Duration getMinEvictableIdleTime() {
+        return minEvictableIdleTime;
+    }
+
+    /**
+     * Gets the minimum amount of time an object may sit idle in the pool
      * before it is eligible for eviction by the idle object evictor (if any -
      * see {@link #setTimeBetweenEvictionRunsMillis(long)}). When non-positive,
      * no objects will be evicted from the pool due to idle time alone.
@@ -533,9 +585,29 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      *
      * @see #setMinEvictableIdleTimeMillis
      * @see #setTimeBetweenEvictionRunsMillis
+     * @deprecated Use {@link #getMinEvictableIdleTime()}.
      */
+    @Deprecated
     public final long getMinEvictableIdleTimeMillis() {
         return minEvictableIdleTime.toMillis();
+    }
+
+    /**
+     * Sets the minimum amount of time an object may sit idle in the pool
+     * before it is eligible for eviction by the idle object evictor (if any -
+     * see {@link #setTimeBetweenEvictionRuns(Duration)}). When non-positive,
+     * no objects will be evicted from the pool due to idle time alone.
+     *
+     * @param minEvictableIdleTimeMillis
+     *            minimum amount of time an object may sit idle in the pool
+     *            before it is eligible for eviction
+     *
+     * @see #getMinEvictableIdleTime
+     * @see #setTimeBetweenEvictionRuns
+     * @since 2.10.0
+     */
+    public final void setMinEvictableIdleTime(final Duration minEvictableIdleTimeMillis) {
+        this.minEvictableIdleTime = minEvictableIdleTimeMillis;
     }
 
     /**
@@ -550,14 +622,35 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      *
      * @see #getMinEvictableIdleTimeMillis
      * @see #setTimeBetweenEvictionRunsMillis
+     * @deprecated Use {@link #setMinEvictableIdleTime(Duration)}.
      */
-    public final void setMinEvictableIdleTimeMillis(
-            final long minEvictableIdleTimeMillis) {
+    @Deprecated
+    public final void setMinEvictableIdleTimeMillis(final long minEvictableIdleTimeMillis) {
         this.minEvictableIdleTime = Duration.ofMillis(minEvictableIdleTimeMillis);
     }
 
     /**
-     * Returns the minimum amount of time an object may sit idle in the pool
+     * Gets the minimum amount of time an object may sit idle in the pool
+     * before it is eligible for eviction by the idle object evictor (if any -
+     * see {@link #setTimeBetweenEvictionRuns(Duration)}),
+     * with the extra condition that at least {@code minIdle} object
+     * instances remain in the pool. This setting is overridden by
+     * {@link #getMinEvictableIdleTime} (that is, if
+     * {@link #getMinEvictableIdleTime} is positive, then
+     * {@link #getSoftMinEvictableIdleTime} is ignored).
+     *
+     * @return minimum amount of time an object may sit idle in the pool before
+     *         it is eligible for eviction if minIdle instances are available
+     *
+     * @see #setSoftMinEvictableIdleTime(Duration)
+     * @since 2.10.0
+     */
+    public final Duration getSoftMinEvictableIdleTime() {
+        return softMinEvictableIdleTime;
+    }
+
+    /**
+     * Gets the minimum amount of time an object may sit idle in the pool
      * before it is eligible for eviction by the idle object evictor (if any -
      * see {@link #setTimeBetweenEvictionRunsMillis(long)}),
      * with the extra condition that at least {@code minIdle} object
@@ -570,9 +663,33 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      *         it is eligible for eviction if minIdle instances are available
      *
      * @see #setSoftMinEvictableIdleTimeMillis
+     * @deprecated Use {@link #getSoftMinEvictableIdleTime()}.
      */
+    @Deprecated
     public final long getSoftMinEvictableIdleTimeMillis() {
         return softMinEvictableIdleTime.toMillis();
+    }
+
+    /**
+     * Sets the minimum amount of time an object may sit idle in the pool
+     * before it is eligible for eviction by the idle object evictor (if any -
+     * see {@link #setTimeBetweenEvictionRuns(Duration)}),
+     * with the extra condition that at least {@code minIdle} object
+     * instances remain in the pool. This setting is overridden by
+     * {@link #getMinEvictableIdleTime} (that is, if
+     * {@link #getMinEvictableIdleTime} is positive, then
+     * {@link #getSoftMinEvictableIdleTime} is ignored).
+     *
+     * @param softMinEvictableIdleTime
+     *            minimum amount of time an object may sit idle in the pool
+     *            before it is eligible for eviction if minIdle instances are
+     *            available
+     *
+     * @see #getSoftMinEvictableIdleTimeMillis
+     * @since 2.10.0
+     */
+    public final void setSoftMinEvictableIdleTime(final Duration softMinEvictableIdleTime) {
+        this.softMinEvictableIdleTime = softMinEvictableIdleTime;
     }
 
     /**
@@ -591,14 +708,15 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      *            available
      *
      * @see #getSoftMinEvictableIdleTimeMillis
+     * @deprecated Use {@link #setSoftMinEvictableIdleTime(Duration)}.
      */
-    public final void setSoftMinEvictableIdleTimeMillis(
-            final long softMinEvictableIdleTimeMillis) {
+    @Deprecated
+    public final void setSoftMinEvictableIdleTimeMillis(final long softMinEvictableIdleTimeMillis) {
         this.softMinEvictableIdleTime = Duration.ofMillis(softMinEvictableIdleTimeMillis);
     }
 
     /**
-     * Returns the name of the {@link EvictionPolicy} implementation that is
+     * Gets the name of the {@link EvictionPolicy} implementation that is
      * used by this pool.
      *
      * @return  The fully qualified class name of the {@link EvictionPolicy}
@@ -692,22 +810,48 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      *
      * @return  The timeout in milliseconds that will be used while waiting for
      *          the Evictor to shut down.
+     * @deprecated Use {@link #getEvictorShutdownTimeout()}.
      */
+    @Deprecated
     public final long getEvictorShutdownTimeoutMillis() {
         return evictorShutdownTimeout.toMillis();
     }
 
     /**
-     * Sets the timeout that will be used when waiting for the Evictor to
+     * Gets the timeout that will be used when waiting for the Evictor to
      * shutdown if this pool is closed and it is the only pool still using the
      * the value for the Evictor.
      *
-     * @param evictorShutdownTimeoutMillis  the timeout in milliseconds that
-     *                                      will be used while waiting for the
-     *                                      Evictor to shut down.
+     * @return  The timeout that will be used while waiting for
+     *          the Evictor to shut down.
+     * @since 2.10.0
      */
-    public final void setEvictorShutdownTimeoutMillis(
-            final long evictorShutdownTimeoutMillis) {
+    public final Duration getEvictorShutdownTimeout() {
+        return evictorShutdownTimeout;
+    }
+
+    /**
+     * Sets the timeout that will be used when waiting for the Evictor to shutdown if this pool is closed and it is the
+     * only pool still using the the value for the Evictor.
+     *
+     * @param evictorShutdownTimeoutMillis the timeout in milliseconds that will be used while waiting for the Evictor
+     *                                     to shut down.
+     * @since 2.10.0
+     */
+    public final void setEvictorShutdownTimeout(final Duration evictorShutdownTimeoutMillis) {
+        this.evictorShutdownTimeout = evictorShutdownTimeoutMillis;
+    }
+
+    /**
+     * Sets the timeout that will be used when waiting for the Evictor to shutdown if this pool is closed and it is the
+     * only pool still using the the value for the Evictor.
+     *
+     * @param evictorShutdownTimeoutMillis the timeout in milliseconds that will be used while waiting for the Evictor
+     *                                     to shut down.
+     * @deprecated Use {@link #setEvictorShutdownTimeout(Duration)}.
+     */
+    @Deprecated
+    public final void setEvictorShutdownTimeoutMillis(final long evictorShutdownTimeoutMillis) {
         this.evictorShutdownTimeout = Duration.ofMillis(evictorShutdownTimeoutMillis);
     }
 
@@ -738,7 +882,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     public abstract void evict() throws Exception;
 
     /**
-     * Returns the {@link EvictionPolicy} defined for this pool.
+     * Gets the {@link EvictionPolicy} defined for this pool.
      *
      * @return the eviction policy
      * @since 2.4
@@ -1223,7 +1367,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         }
 
         /**
-         * Returns the mean of the cached values.
+         * Gets the mean of the cached values.
          *
          * @return the mean of the cache, truncated to long
          */
@@ -1278,7 +1422,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         }
 
         /**
-         * Returns the idle object deque referenced by this iterator.
+         * Gets the idle object deque referenced by this iterator.
          * @return the idle object deque
          */
         public Deque<PooledObject<T>> getIdleObjects() {

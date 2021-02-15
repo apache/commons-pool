@@ -23,5 +23,6 @@ public class TestConstants {
 
     public static final Duration ONE_SECOND = Duration.ofSeconds(1);
     public static final Duration ONE_MINUTE = Duration.ofMinutes(1);
+    public static final Duration ONE_MILLISECOND = Duration.ofMillis(1);
 
 }

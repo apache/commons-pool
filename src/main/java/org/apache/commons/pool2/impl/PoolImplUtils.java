@@ -19,6 +19,10 @@ package org.apache.commons.pool2.impl;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.pool2.PooledObjectFactory;
 
@@ -61,7 +65,7 @@ class PoolImplUtils {
         }
         return (Class<?>) genericType;
     }
-
+    
     /**
      * Obtains the concrete type used by an implementation of an interface that uses a generic type.
      *
@@ -104,7 +108,7 @@ class PoolImplUtils {
             return null;
         }
     }
-
+    
     /**
      * Gets the matching parameterized type or null.
      * @param type
@@ -152,5 +156,44 @@ class PoolImplUtils {
             }
         }
         return null;
+    }
+
+    /**
+     * Converts a {@link TimeUnit} to a {@link ChronoUnit}.
+     * 
+     * @param timeUnit A TimeUnit.
+     * @return The corresponding ChronoUnit.
+     */
+    static ChronoUnit toChronoUnit(TimeUnit timeUnit) {
+        // TODO when using Java >= 9: Use TimeUnit.toChronoUnit().
+        switch (Objects.requireNonNull(timeUnit)) {
+        case NANOSECONDS:
+            return ChronoUnit.NANOS;
+        case MICROSECONDS:
+            return ChronoUnit.MICROS;
+        case MILLISECONDS:
+            return ChronoUnit.MILLIS;
+        case SECONDS:
+            return ChronoUnit.SECONDS;
+        case MINUTES:
+            return ChronoUnit.MINUTES;
+        case HOURS:
+            return ChronoUnit.HOURS;
+        case DAYS:
+            return ChronoUnit.DAYS;
+        default:
+            throw new IllegalArgumentException(timeUnit.toString());
+        }
+    }
+
+    /**
+     * Converts am amount and TimeUnit into a Duration.
+     *
+     * @param amount   the amount of the duration, measured in terms of the unit, positive or negative
+     * @param timeUnit the unit that the duration is measured in, must have an exact duration, not null
+     * @return a Duration.
+     */
+    static Duration toDuration(long amount, TimeUnit timeUnit) {
+        return Duration.of(amount, PoolImplUtils.toChronoUnit(timeUnit));
     }
 }

@@ -45,11 +45,9 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
   <release version="2.10.0" date="202Y-MM-DD" description="This is a MMMM release (Java 8).">
     <!-- ADD -->
-    <action dev="ggregory" type="update" due-to="Dependabot">
-      Add and use java.time.Duration APIs for AbandonedConfig timeouts instead of using ints for seconds.
-      - Add AbandonedConfig.getRemoveAbandonedTimeoutDuration().
-      - Add AbandonedConfig.setRemoveAbandonedTimeout(Duration).
-      - Add GenericObjectPool.getRemoveAbandonedTimeoutDuration().
+    <action dev="ggregory" type="add" due-to="Dependabot">
+      Add and use java.time.Duration APIs timeouts instead of using ints for seconds.
+      See the site and its API comparison report for a list of the new Duration-based APIs.
     </action>
     <!-- UPDATE -->
     <action dev="ggregory" type="update" due-to="Dependabot">

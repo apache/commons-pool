@@ -17,6 +17,7 @@
 
 package org.apache.commons.pool2;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -54,14 +55,14 @@ public final class ObjectPoolIssue326 {
         poolConfig.setLifo(true);
         poolConfig.setFairness(true);
         poolConfig.setMaxWaitMillis(30 * 1000);
-        poolConfig.setMinEvictableIdleTimeMillis(-1);
-        poolConfig.setSoftMinEvictableIdleTimeMillis(-1);
+        poolConfig.setMinEvictableIdleTime(Duration.ofMillis(-1));
+        poolConfig.setSoftMinEvictableIdleTime(Duration.ofMillis(-1));
         poolConfig.setNumTestsPerEvictionRun(1);
         poolConfig.setTestOnCreate(false);
         poolConfig.setTestOnBorrow(false);
         poolConfig.setTestOnReturn(false);
         poolConfig.setTestWhileIdle(false);
-        poolConfig.setTimeBetweenEvictionRunsMillis(5 * 1000);
+        poolConfig.setTimeBetweenEvictionRuns(Duration.ofSeconds(5));
         poolConfig.setEvictionPolicyClassName(BaseObjectPoolConfig.DEFAULT_EVICTION_POLICY_CLASS_NAME);
         poolConfig.setBlockWhenExhausted(false);
         poolConfig.setJmxEnabled(false);

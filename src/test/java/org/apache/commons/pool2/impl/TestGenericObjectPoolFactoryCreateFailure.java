@@ -17,6 +17,7 @@
 
 package org.apache.commons.pool2.impl;
 
+import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -111,9 +112,9 @@ public class TestGenericObjectPoolFactoryCreateFailure {
         config.setTestOnBorrow(true);
         config.setTestOnReturn(true);
         config.setTestWhileIdle(false);
-        config.setTimeBetweenEvictionRunsMillis(-1);
-        config.setMinEvictableIdleTimeMillis(-1);
-        config.setSoftMinEvictableIdleTimeMillis(-1);
+        config.setTimeBetweenEvictionRuns(Duration.ofMillis(-1));
+        config.setMinEvictableIdleTime(Duration.ofMillis(-1));
+        config.setSoftMinEvictableIdleTime(Duration.ofMillis(-1));
 
         config.setMaxWaitMillis(-1);
         try (GenericObjectPool<Object> pool = new GenericObjectPool<>(factory, config)) {

@@ -18,6 +18,7 @@ package org.apache.commons.pool2.impl;
 
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.time.Duration;
 
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
@@ -45,7 +46,7 @@ public class TestGenericObjectPoolClassLoaders {
                     new CustomClassLoaderObjectFactory(1);
             final GenericObjectPool<URL> pool1 = new GenericObjectPool<>(factory1);
             pool1.setMinIdle(1);
-            pool1.setTimeBetweenEvictionRunsMillis(100);
+            pool1.setTimeBetweenEvictionRuns(Duration.ofMillis(100));
             int counter = 0;
             while (counter < 50 && pool1.getNumIdle() != 1) {
                 Thread.sleep(100);
@@ -66,7 +67,7 @@ public class TestGenericObjectPoolClassLoaders {
             assertEquals( 1, pool2.getNumIdle(),"Wrong number of idle objects in pool2");
             pool2.clear();
 
-            pool2.setTimeBetweenEvictionRunsMillis(100);
+            pool2.setTimeBetweenEvictionRuns(Duration.ofMillis(100));
 
             counter = 0;
             while (counter < 50 && pool2.getNumIdle() != 1) {

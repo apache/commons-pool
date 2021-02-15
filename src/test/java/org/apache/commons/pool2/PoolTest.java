@@ -24,7 +24,10 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+
+import java.time.Duration;
 
 @Disabled
 public class PoolTest {
@@ -72,6 +75,9 @@ public class PoolTest {
         final PooledFooFactory pooledFooFactory = new PooledFooFactory();
         try (GenericObjectPool<Foo> pool = new GenericObjectPool<>(pooledFooFactory, poolConfig)) {
             pool.setTimeBetweenEvictionRunsMillis(EVICTION_PERIOD_IN_MILLIS);
+            assertEquals(EVICTION_PERIOD_IN_MILLIS, pool.getTimeBetweenEvictionRuns().toMillis());
+            pool.setTimeBetweenEvictionRuns(Duration.ofMillis(EVICTION_PERIOD_IN_MILLIS));
+            assertEquals(EVICTION_PERIOD_IN_MILLIS, pool.getTimeBetweenEvictionRuns().toMillis());
             pool.addObject();
             try {
                 Thread.sleep(EVICTION_PERIOD_IN_MILLIS);

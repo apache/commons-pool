@@ -17,14 +17,15 @@
 
 package org.apache.commons.pool2.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.pool2.impl.TestGenericObjectPool.SimpleFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  */
@@ -83,10 +84,10 @@ public class TestBaseGenericObjectPool {
         final AtomicIntegerFactory factory = new AtomicIntegerFactory();
         factory.setValidateLatency(50);
         try (final GenericObjectPool<AtomicInteger> evictingPool = new GenericObjectPool<>(factory)) {
-            evictingPool.setTimeBetweenEvictionRunsMillis(100);
+            evictingPool.setTimeBetweenEvictionRuns(Duration.ofMillis(100));
             evictingPool.setNumTestsPerEvictionRun(5);
             evictingPool.setTestWhileIdle(true);
-            evictingPool.setMinEvictableIdleTimeMillis(50);
+            evictingPool.setMinEvictableIdleTime(Duration.ofMillis(50));
             for (int i = 0; i < 10; i++) {
                 try {
                     evictingPool.addObject();

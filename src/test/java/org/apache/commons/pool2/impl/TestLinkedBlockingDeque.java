@@ -21,6 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,6 +41,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 public class TestLinkedBlockingDeque {
 
+    private static final Duration TIMEOUT_50_MILLIS = Duration.ofMillis(50);
     private static final Integer ONE = Integer.valueOf(1);
     private static final Integer TWO = Integer.valueOf(2);
     private static final Integer THREE = Integer.valueOf(3);
@@ -148,9 +150,9 @@ public class TestLinkedBlockingDeque {
             deque.offerFirst(null);
             fail("Not supposed to get here");
         } catch (final NullPointerException e) {}
-        assertTrue(deque.offerFirst(ONE, 50, TimeUnit.MILLISECONDS));
-        assertTrue(deque.offerFirst(TWO, 50, TimeUnit.MILLISECONDS));
-        assertFalse(deque.offerFirst(THREE, 50, TimeUnit.MILLISECONDS));
+        assertTrue(deque.offerFirst(ONE, TIMEOUT_50_MILLIS));
+        assertTrue(deque.offerFirst(TWO, TIMEOUT_50_MILLIS));
+        assertFalse(deque.offerFirst(THREE, TIMEOUT_50_MILLIS));
     }
 
     @Test
@@ -159,9 +161,9 @@ public class TestLinkedBlockingDeque {
             deque.offerLast(null);
             fail("Not supposed to get here");
         } catch (final NullPointerException e) {}
-        assertTrue(deque.offerLast(ONE, 50, TimeUnit.MILLISECONDS));
-        assertTrue(deque.offerLast(TWO, 50, TimeUnit.MILLISECONDS));
-        assertFalse(deque.offerLast(THREE, 50, TimeUnit.MILLISECONDS));
+        assertTrue(deque.offerLast(ONE, TIMEOUT_50_MILLIS));
+        assertTrue(deque.offerLast(TWO, TIMEOUT_50_MILLIS));
+        assertFalse(deque.offerLast(THREE, TIMEOUT_50_MILLIS));
     }
 
     @Test
@@ -229,13 +231,13 @@ public class TestLinkedBlockingDeque {
     @Test
     public void testPollFirstWithTimeout() throws InterruptedException {
         assertNull(deque.pollFirst());
-        assertNull(deque.pollFirst(50, TimeUnit.MILLISECONDS));
+        assertNull(deque.pollFirst(TIMEOUT_50_MILLIS));
     }
 
     @Test
     public void testPollLastWithTimeout() throws InterruptedException {
         assertNull(deque.pollLast());
-        assertNull(deque.pollLast(50, TimeUnit.MILLISECONDS));
+        assertNull(deque.pollLast(TIMEOUT_50_MILLIS));
     }
 
     @Test
@@ -323,11 +325,11 @@ public class TestLinkedBlockingDeque {
 
     @Test
     public void testOfferWithTimeout() throws InterruptedException {
-        assertTrue(deque.offer(ONE, 50, TimeUnit.MILLISECONDS));
-        assertTrue(deque.offer(TWO, 50, TimeUnit.MILLISECONDS));
-        assertFalse(deque.offer(THREE, 50, TimeUnit.MILLISECONDS));
+        assertTrue(deque.offer(ONE, TIMEOUT_50_MILLIS));
+        assertTrue(deque.offer(TWO, TIMEOUT_50_MILLIS));
+        assertFalse(deque.offer(THREE, TIMEOUT_50_MILLIS));
         try {
-            deque.offer(null, 50, TimeUnit.MILLISECONDS);
+            deque.offer(null, TIMEOUT_50_MILLIS);
             fail("Not supposed to get here");
         } catch (final NullPointerException e) {}
     }
@@ -352,8 +354,8 @@ public class TestLinkedBlockingDeque {
 
     @Test
     public void testPollWithTimeout() throws InterruptedException {
-        assertNull(deque.poll(50, TimeUnit.MILLISECONDS));
-        assertNull(deque.poll(50, TimeUnit.MILLISECONDS));
+        assertNull(deque.poll(TIMEOUT_50_MILLIS));
+        assertNull(deque.poll(TIMEOUT_50_MILLIS));
     }
 
     @Test
