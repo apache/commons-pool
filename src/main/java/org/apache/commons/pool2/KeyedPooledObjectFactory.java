@@ -77,18 +77,17 @@ package org.apache.commons.pool2;
 public interface KeyedPooledObjectFactory<K, V> {
 
     /**
-     * Create an instance that can be served by the pool and
-     * wrap it in a {@link PooledObject} to be managed by the pool.
+     * Reinitialize an instance to be returned by the pool.
      *
-     * @param key the key used when constructing the object
+     * @param key the key used when selecting the object
+     * @param p a {@code PooledObject} wrapping the instance to be activated
      *
-     * @return a {@code PooledObject} wrapping an instance that can
-     * be served by the pool.
+     * @throws Exception if there is a problem activating {@code obj},
+     *    this exception may be swallowed by the pool.
      *
-     * @throws Exception if there is a problem creating a new instance,
-     *    this will be propagated to the code requesting an object.
+     * @see #destroyObject
      */
-    PooledObject<V> makeObject(K key) throws Exception;
+    void activateObject(K key, PooledObject<V> p) throws Exception;
 
     /**
      * Destroy an instance no longer needed by the pool.
@@ -134,28 +133,18 @@ public interface KeyedPooledObjectFactory<K, V> {
     }
 
     /**
-     * Ensures that the instance is safe to be returned by the pool.
+     * Create an instance that can be served by the pool and
+     * wrap it in a {@link PooledObject} to be managed by the pool.
      *
-     * @param key the key used when selecting the object
-     * @param p a {@code PooledObject} wrapping the instance to be validated
+     * @param key the key used when constructing the object
      *
-     * @return {@code false} if {@code obj} is not valid and should
-     *         be dropped from the pool, {@code true} otherwise.
+     * @return a {@code PooledObject} wrapping an instance that can
+     * be served by the pool.
+     *
+     * @throws Exception if there is a problem creating a new instance,
+     *    this will be propagated to the code requesting an object.
      */
-    boolean validateObject(K key, PooledObject<V> p);
-
-    /**
-     * Reinitialize an instance to be returned by the pool.
-     *
-     * @param key the key used when selecting the object
-     * @param p a {@code PooledObject} wrapping the instance to be activated
-     *
-     * @throws Exception if there is a problem activating {@code obj},
-     *    this exception may be swallowed by the pool.
-     *
-     * @see #destroyObject
-     */
-    void activateObject(K key, PooledObject<V> p) throws Exception;
+    PooledObject<V> makeObject(K key) throws Exception;
 
     /**
      * Uninitialize an instance to be returned to the idle object pool.
@@ -169,5 +158,16 @@ public interface KeyedPooledObjectFactory<K, V> {
      * @see #destroyObject
      */
     void passivateObject(K key, PooledObject<V> p) throws Exception;
+
+    /**
+     * Ensures that the instance is safe to be returned by the pool.
+     *
+     * @param key the key used when selecting the object
+     * @param p a {@code PooledObject} wrapping the instance to be validated
+     *
+     * @return {@code false} if {@code obj} is not valid and should
+     *         be dropped from the pool, {@code true} otherwise.
+     */
+    boolean validateObject(K key, PooledObject<V> p);
 }
 

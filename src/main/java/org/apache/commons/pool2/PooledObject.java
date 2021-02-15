@@ -33,20 +33,46 @@ import java.util.Deque;
 public interface PooledObject<T> extends Comparable<PooledObject<T>> {
 
     /**
-     * Obtains the underlying object that is wrapped by this instance of
-     * {@link PooledObject}.
+     * Allocates the object.
      *
-     * @return The wrapped object
+     * @return {@code true} if the original state was {@link PooledObjectState#IDLE IDLE}
      */
-    T getObject();
+    boolean allocate();
 
     /**
-     * Obtains the time (using the same basis as
-     * {@link System#currentTimeMillis()}) that this object was created.
-     *
-     * @return The creation time for the wrapped object
+     * Orders instances based on idle time - i.e. the length of time since the
+     * instance was returned to the pool. Used by the GKOP idle object evictor.
+     *<p>
+     * Note: This class has a natural ordering that is inconsistent with
+     *       equals if distinct objects have the same identity hash code.
+     * </p>
+     * <p>
+     * {@inheritDoc}
+     * </p>
      */
-    long getCreateTime();
+    @Override
+    int compareTo(PooledObject<T> other);
+
+    /**
+     * Deallocates the object and sets it {@link PooledObjectState#IDLE IDLE}
+     * if it is currently {@link PooledObjectState#ALLOCATED ALLOCATED}.
+     *
+     * @return {@code true} if the state was {@link PooledObjectState#ALLOCATED ALLOCATED}
+     */
+    boolean deallocate();
+
+    /**
+     * Called to inform the object that the eviction test has ended.
+     *
+     * @param idleQueue The queue of idle objects to which the object should be
+     *                  returned
+     *
+     * @return  Currently not used
+     */
+    boolean endEvictionTest(Deque<PooledObject<T>> idleQueue);
+
+    @Override
+    boolean equals(Object obj);
 
     /**
      * Obtains the time in milliseconds that this object last spent in the
@@ -66,6 +92,14 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     default long getBorrowedCount() {
         return -1;
     }
+
+    /**
+     * Obtains the time (using the same basis as
+     * {@link System#currentTimeMillis()}) that this object was created.
+     *
+     * @return The creation time for the wrapped object
+     */
+    long getCreateTime();
 
     /**
      * Obtains the time in milliseconds that this object last spend in the
@@ -102,73 +136,45 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     long getLastUsedTime();
 
     /**
-     * Orders instances based on idle time - i.e. the length of time since the
-     * instance was returned to the pool. Used by the GKOP idle object evictor.
-     *<p>
-     * Note: This class has a natural ordering that is inconsistent with
-     *       equals if distinct objects have the same identity hash code.
-     * </p>
-     * <p>
-     * {@inheritDoc}
-     * </p>
+     * Obtains the underlying object that is wrapped by this instance of
+     * {@link PooledObject}.
+     *
+     * @return The wrapped object
      */
-    @Override
-    int compareTo(PooledObject<T> other);
+    T getObject();
 
-    @Override
-    boolean equals(Object obj);
+    /**
+     * Returns the state of this object.
+     * @return state
+     */
+    PooledObjectState getState();
 
     @Override
     int hashCode();
 
     /**
-     * Provides a String form of the wrapper for debug purposes. The format is
-     * not fixed and may change at any time.
-     * <p>
-     * {@inheritDoc}
-     */
-    @Override
-    String toString();
-
-    /**
-     * Attempts to place the pooled object in the
-     * {@link PooledObjectState#EVICTION} state.
-     *
-     * @return {@code true} if the object was placed in the
-     *         {@link PooledObjectState#EVICTION} state otherwise
-     *         {@code false}
-     */
-    boolean startEvictionTest();
-
-    /**
-     * Called to inform the object that the eviction test has ended.
-     *
-     * @param idleQueue The queue of idle objects to which the object should be
-     *                  returned
-     *
-     * @return  Currently not used
-     */
-    boolean endEvictionTest(Deque<PooledObject<T>> idleQueue);
-
-    /**
-     * Allocates the object.
-     *
-     * @return {@code true} if the original state was {@link PooledObjectState#IDLE IDLE}
-     */
-    boolean allocate();
-
-    /**
-     * Deallocates the object and sets it {@link PooledObjectState#IDLE IDLE}
-     * if it is currently {@link PooledObjectState#ALLOCATED ALLOCATED}.
-     *
-     * @return {@code true} if the state was {@link PooledObjectState#ALLOCATED ALLOCATED}
-     */
-    boolean deallocate();
-
-    /**
      * Sets the state to {@link PooledObjectState#INVALID INVALID}
      */
     void invalidate();
+
+    /**
+     * Marks the pooled object as abandoned.
+     */
+    void markAbandoned();
+
+    /**
+     * Marks the object as returning to the pool.
+     */
+    void markReturning();
+
+    /**
+     * Prints the stack trace of the code that borrowed this pooled object and
+     * the stack trace of the last code to use this object (if available) to
+     * the supplied writer.
+     *
+     * @param   writer  The destination for the debug output
+     */
+    void printStackTrace(PrintWriter writer);
 
     /**
      * Is abandoned object tracking being used? If this is true the
@@ -193,33 +199,27 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     }
 
     /**
+     * Attempts to place the pooled object in the
+     * {@link PooledObjectState#EVICTION} state.
+     *
+     * @return {@code true} if the object was placed in the
+     *         {@link PooledObjectState#EVICTION} state otherwise
+     *         {@code false}
+     */
+    boolean startEvictionTest();
+
+    /**
+     * Provides a String form of the wrapper for debug purposes. The format is
+     * not fixed and may change at any time.
+     * <p>
+     * {@inheritDoc}
+     */
+    @Override
+    String toString();
+
+    /**
      * Record the current stack trace as the last time the object was used.
      */
     void use();
-
-    /**
-     * Prints the stack trace of the code that borrowed this pooled object and
-     * the stack trace of the last code to use this object (if available) to
-     * the supplied writer.
-     *
-     * @param   writer  The destination for the debug output
-     */
-    void printStackTrace(PrintWriter writer);
-
-    /**
-     * Returns the state of this object.
-     * @return state
-     */
-    PooledObjectState getState();
-
-    /**
-     * Marks the pooled object as abandoned.
-     */
-    void markAbandoned();
-
-    /**
-     * Marks the object as returning to the pool.
-     */
-    void markReturning();
 
 }

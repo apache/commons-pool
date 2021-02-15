@@ -32,6 +32,16 @@ package org.apache.commons.pool2;
  */
 public abstract class BasePooledObjectFactory<T> extends BaseObject implements PooledObjectFactory<T> {
     /**
+     *  No-op.
+     *
+     *  @param p ignored
+     */
+    @Override
+    public void activateObject(final PooledObject<T> p) throws Exception {
+        // The default implementation is a no-op.
+    }
+
+    /**
      * Creates an object instance, to be wrapped in a {@link PooledObject}.
      * <p>This method <strong>must</strong> support concurrent, multi-threaded
      * activation.</p>
@@ -44,14 +54,15 @@ public abstract class BasePooledObjectFactory<T> extends BaseObject implements P
     public abstract T create() throws Exception;
 
     /**
-     * Wrap the provided instance with an implementation of
-     * {@link PooledObject}.
+     *  No-op.
      *
-     * @param obj the instance to wrap
-     *
-     * @return The provided instance, wrapped by a {@link PooledObject}
+     *  @param p ignored
      */
-    public abstract PooledObject<T> wrap(T obj);
+    @Override
+    public void destroyObject(final PooledObject<T> p)
+        throws Exception  {
+        // The default implementation is a no-op.
+    }
 
     @Override
     public PooledObject<T> makeObject() throws Exception {
@@ -61,11 +72,11 @@ public abstract class BasePooledObjectFactory<T> extends BaseObject implements P
     /**
      *  No-op.
      *
-     *  @param p ignored
+     * @param p ignored
      */
     @Override
-    public void destroyObject(final PooledObject<T> p)
-        throws Exception  {
+    public void passivateObject(final PooledObject<T> p)
+        throws Exception {
         // The default implementation is a no-op.
     }
 
@@ -82,23 +93,12 @@ public abstract class BasePooledObjectFactory<T> extends BaseObject implements P
     }
 
     /**
-     *  No-op.
+     * Wrap the provided instance with an implementation of
+     * {@link PooledObject}.
      *
-     *  @param p ignored
-     */
-    @Override
-    public void activateObject(final PooledObject<T> p) throws Exception {
-        // The default implementation is a no-op.
-    }
-
-    /**
-     *  No-op.
+     * @param obj the instance to wrap
      *
-     * @param p ignored
+     * @return The provided instance, wrapped by a {@link PooledObject}
      */
-    @Override
-    public void passivateObject(final PooledObject<T> p)
-        throws Exception {
-        // The default implementation is a no-op.
-    }
+    public abstract PooledObject<T> wrap(T obj);
 }
