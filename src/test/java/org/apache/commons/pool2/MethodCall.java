@@ -33,14 +33,6 @@ public class MethodCall {
         this(name, null);
     }
 
-    public MethodCall(final String name, final Object param) {
-        this(name, Collections.singletonList(param));
-    }
-
-    public MethodCall(final String name, final Object param1, final Object param2) {
-        this(name, Arrays.asList(param1, param2));
-    }
-
     public MethodCall(final String name, final List<Object> params) {
         if (name == null) {
             throw new IllegalArgumentException("name must not be null.");
@@ -53,25 +45,12 @@ public class MethodCall {
         }
     }
 
-    public String getName() {
-        return name;
+    public MethodCall(final String name, final Object param) {
+        this(name, Collections.singletonList(param));
     }
 
-    public List<Object> getParams() {
-        return params;
-    }
-
-    public Object getReturned() {
-        return returned;
-    }
-
-    public void setReturned(final Object returned) {
-        this.returned = returned;
-    }
-
-    public MethodCall returned(final Object obj) {
-        setReturned(obj);
-        return this;
+    public MethodCall(final String name, final Object param1, final Object param2) {
+        this(name, Arrays.asList(param1, param2));
     }
 
     @Override
@@ -94,6 +73,18 @@ public class MethodCall {
         return returned != null ? returned.equals(that.returned) : that.returned == null;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public List<Object> getParams() {
+        return params;
+    }
+
+    public Object getReturned() {
+        return returned;
+    }
+
     @Override
     public int hashCode() {
         int result;
@@ -101,6 +92,15 @@ public class MethodCall {
         result = 29 * result + (params != null ? params.hashCode() : 0);
         result = 29 * result + (returned != null ? returned.hashCode() : 0);
         return result;
+    }
+
+    public MethodCall returned(final Object obj) {
+        setReturned(obj);
+        return this;
+    }
+
+    public void setReturned(final Object returned) {
+        this.returned = returned;
     }
 
     @Override

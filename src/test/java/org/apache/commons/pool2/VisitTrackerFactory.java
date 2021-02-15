@@ -31,6 +31,26 @@ public class VisitTrackerFactory<K>
     }
 
     @Override
+    public void activateObject(final K key, final PooledObject<VisitTracker<K>> ref) throws Exception {
+        ref.getObject().activate();
+    }
+
+    @Override
+    public void activateObject(final PooledObject<VisitTracker<K>> ref) throws Exception {
+        ref.getObject().activate();
+    }
+
+    @Override
+    public void destroyObject(final K key, final PooledObject<VisitTracker<K>> ref) {
+        ref.getObject().destroy();
+    }
+
+    @Override
+    public void destroyObject(final PooledObject<VisitTracker<K>> ref) {
+        ref.getObject().destroy();
+    }
+
+    @Override
     public PooledObject<VisitTracker<K>> makeObject() {
         return new DefaultPooledObject<>(new VisitTracker<K>(nextId++));
     }
@@ -41,18 +61,17 @@ public class VisitTrackerFactory<K>
     }
 
     @Override
-    public void destroyObject(final PooledObject<VisitTracker<K>> ref) {
-        ref.getObject().destroy();
+    public void passivateObject(final K key, final PooledObject<VisitTracker<K>> ref) throws Exception {
+        ref.getObject().passivate();
     }
 
     @Override
-    public void destroyObject(final K key, final PooledObject<VisitTracker<K>> ref) {
-        ref.getObject().destroy();
+    public void passivateObject(final PooledObject<VisitTracker<K>> ref) throws Exception {
+        ref.getObject().passivate();
     }
 
-    @Override
-    public boolean validateObject(final PooledObject<VisitTracker<K>> ref) {
-        return ref.getObject().validate();
+    public void resetId() {
+        nextId = 0;
     }
 
     @Override
@@ -61,26 +80,7 @@ public class VisitTrackerFactory<K>
     }
 
     @Override
-    public void activateObject(final PooledObject<VisitTracker<K>> ref) throws Exception {
-        ref.getObject().activate();
-    }
-
-    @Override
-    public void activateObject(final K key, final PooledObject<VisitTracker<K>> ref) throws Exception {
-        ref.getObject().activate();
-    }
-
-    @Override
-    public void passivateObject(final PooledObject<VisitTracker<K>> ref) throws Exception {
-        ref.getObject().passivate();
-    }
-
-    @Override
-    public void passivateObject(final K key, final PooledObject<VisitTracker<K>> ref) throws Exception {
-        ref.getObject().passivate();
-    }
-
-    public void resetId() {
-        nextId = 0;
+    public boolean validateObject(final PooledObject<VisitTracker<K>> ref) {
+        return ref.getObject().validate();
     }
 }

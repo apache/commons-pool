@@ -35,6 +35,32 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 public abstract class TestObjectPool {
 
+    private static void clear(final MethodCallPoolableObjectFactory factory, final List<MethodCall> expectedMethods) {
+        factory.getMethodCalls().clear();
+        expectedMethods.clear();
+    }
+
+    static void removeDestroyObjectCall(final List<MethodCall> calls) {
+        final Iterator<MethodCall> iter = calls.iterator();
+        while (iter.hasNext()) {
+            final MethodCall call = iter.next();
+            if ("destroyObject".equals(call.getName())) {
+                iter.remove();
+            }
+        }
+    }
+
+    private static void reset(final ObjectPool<Object> pool, final MethodCallPoolableObjectFactory factory, final List<MethodCall> expectedMethods) throws Exception {
+        pool.clear();
+        clear(factory, expectedMethods);
+        factory.reset();
+    }
+    // Deliberate choice to create a new object in case future unit tests check
+    // for a specific object.
+    private final Integer ZERO = new Integer(0);
+
+    private final Integer ONE = new Integer(1);
+
     /**
      * Create an {@code ObjectPool} with the specified factory.
      * The pool should be in a default configuration and conform to the expected
@@ -101,11 +127,6 @@ public abstract class TestObjectPool {
         pool.clear();
         pool.close();
     }
-
-    // Deliberate choice to create a new object in case future unit tests check
-    // for a specific object.
-    private final Integer ZERO = new Integer(0);
-    private final Integer ONE = new Integer(1);
 
     @Test
     public void testPOFAddObjectUsage() throws Exception {
@@ -254,6 +275,96 @@ public abstract class TestObjectPool {
     }
 
     @Test
+    public void testPOFClearUsages() throws Exception {
+        final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
+        final ObjectPool<Object> pool;
+        try {
+            pool = makeEmptyPool(factory);
+        } catch (final UnsupportedOperationException uoe) {
+            return; // test not supported
+        }
+        final List<MethodCall> expectedMethods = new ArrayList<>();
+
+        /// Test correct behavior code paths
+        pool.addObjects(5);
+        pool.clear();
+
+        //// Test exception handling clear should swallow destroy object failures
+        reset(pool, factory, expectedMethods);
+        factory.setDestroyObjectFail(true);
+        pool.addObjects(5);
+        pool.clear();
+        pool.close();
+    }
+
+    @Test
+    public void testPOFCloseUsages() throws Exception {
+        final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
+        ObjectPool<Object> pool;
+        try {
+            pool = makeEmptyPool(factory);
+        } catch (final UnsupportedOperationException uoe) {
+            return; // test not supported
+        }
+        final List<MethodCall> expectedMethods = new ArrayList<>();
+
+        /// Test correct behavior code paths
+        pool.addObjects(5);
+        pool.close();
+
+
+        //// Test exception handling close should swallow failures
+        try {
+            pool = makeEmptyPool(factory);
+        } catch (final UnsupportedOperationException uoe) {
+            return; // test not supported
+        }
+        reset(pool, factory, expectedMethods);
+        factory.setDestroyObjectFail(true);
+        pool.addObjects(5);
+        pool.close();
+    }
+
+    @Test
+    public void testPOFInvalidateObjectUsages() throws Exception {
+        final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
+        final ObjectPool<Object> pool;
+        try {
+            pool = makeEmptyPool(factory);
+        } catch (final UnsupportedOperationException uoe) {
+            return; // test not supported
+        }
+        final List<MethodCall> expectedMethods = new ArrayList<>();
+        Object obj;
+
+        /// Test correct behavior code paths
+
+        obj = pool.borrowObject();
+        clear(factory, expectedMethods);
+
+        // invalidated object should be destroyed
+        pool.invalidateObject(obj);
+        expectedMethods.add(new MethodCall("destroyObject", obj));
+        assertEquals(expectedMethods, factory.getMethodCalls());
+
+        //// Test exception handling of invalidateObject
+        reset(pool, factory, expectedMethods);
+        obj = pool.borrowObject();
+        clear(factory, expectedMethods);
+        factory.setDestroyObjectFail(true);
+        try {
+            pool.invalidateObject(obj);
+            fail("Expecting destroy exception to propagate");
+        } catch (final PrivateException ex) {
+            // Expected
+        }
+        Thread.sleep(250); // could be deferred
+        removeDestroyObjectCall(factory.getMethodCalls());
+        assertEquals(expectedMethods, factory.getMethodCalls());
+        pool.close();
+    }
+
+    @Test
     public void testPOFReturnObjectUsages() throws Exception {
         final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
         final ObjectPool<Object> pool;
@@ -315,96 +426,6 @@ public abstract class TestObjectPool {
     }
 
     @Test
-    public void testPOFInvalidateObjectUsages() throws Exception {
-        final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
-        final ObjectPool<Object> pool;
-        try {
-            pool = makeEmptyPool(factory);
-        } catch (final UnsupportedOperationException uoe) {
-            return; // test not supported
-        }
-        final List<MethodCall> expectedMethods = new ArrayList<>();
-        Object obj;
-
-        /// Test correct behavior code paths
-
-        obj = pool.borrowObject();
-        clear(factory, expectedMethods);
-
-        // invalidated object should be destroyed
-        pool.invalidateObject(obj);
-        expectedMethods.add(new MethodCall("destroyObject", obj));
-        assertEquals(expectedMethods, factory.getMethodCalls());
-
-        //// Test exception handling of invalidateObject
-        reset(pool, factory, expectedMethods);
-        obj = pool.borrowObject();
-        clear(factory, expectedMethods);
-        factory.setDestroyObjectFail(true);
-        try {
-            pool.invalidateObject(obj);
-            fail("Expecting destroy exception to propagate");
-        } catch (final PrivateException ex) {
-            // Expected
-        }
-        Thread.sleep(250); // could be deferred
-        removeDestroyObjectCall(factory.getMethodCalls());
-        assertEquals(expectedMethods, factory.getMethodCalls());
-        pool.close();
-    }
-
-    @Test
-    public void testPOFClearUsages() throws Exception {
-        final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
-        final ObjectPool<Object> pool;
-        try {
-            pool = makeEmptyPool(factory);
-        } catch (final UnsupportedOperationException uoe) {
-            return; // test not supported
-        }
-        final List<MethodCall> expectedMethods = new ArrayList<>();
-
-        /// Test correct behavior code paths
-        pool.addObjects(5);
-        pool.clear();
-
-        //// Test exception handling clear should swallow destroy object failures
-        reset(pool, factory, expectedMethods);
-        factory.setDestroyObjectFail(true);
-        pool.addObjects(5);
-        pool.clear();
-        pool.close();
-    }
-
-    @Test
-    public void testPOFCloseUsages() throws Exception {
-        final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
-        ObjectPool<Object> pool;
-        try {
-            pool = makeEmptyPool(factory);
-        } catch (final UnsupportedOperationException uoe) {
-            return; // test not supported
-        }
-        final List<MethodCall> expectedMethods = new ArrayList<>();
-
-        /// Test correct behavior code paths
-        pool.addObjects(5);
-        pool.close();
-
-
-        //// Test exception handling close should swallow failures
-        try {
-            pool = makeEmptyPool(factory);
-        } catch (final UnsupportedOperationException uoe) {
-            return; // test not supported
-        }
-        reset(pool, factory, expectedMethods);
-        factory.setDestroyObjectFail(true);
-        pool.addObjects(5);
-        pool.close();
-    }
-
-    @Test
     public void testToString() throws Exception {
         final ObjectPool<Object> pool;
         try {
@@ -414,26 +435,5 @@ public abstract class TestObjectPool {
         }
         pool.toString();
         pool.close();
-    }
-
-    static void removeDestroyObjectCall(final List<MethodCall> calls) {
-        final Iterator<MethodCall> iter = calls.iterator();
-        while (iter.hasNext()) {
-            final MethodCall call = iter.next();
-            if ("destroyObject".equals(call.getName())) {
-                iter.remove();
-            }
-        }
-    }
-
-    private static void reset(final ObjectPool<Object> pool, final MethodCallPoolableObjectFactory factory, final List<MethodCall> expectedMethods) throws Exception {
-        pool.clear();
-        clear(factory, expectedMethods);
-        factory.reset();
-    }
-
-    private static void clear(final MethodCallPoolableObjectFactory factory, final List<MethodCall> expectedMethods) {
-        factory.getMethodCalls().clear();
-        expectedMethods.clear();
     }
 }

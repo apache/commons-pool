@@ -44,18 +44,35 @@ public class VisitTracker<K> {
         reset();
     }
 
-    public boolean validate() {
-        if (destroyed) {
-            fail("attempted to validate a destroyed object");
-        }
-        validateCount++;
-        return true;
-    }
     public void activate() {
         if (destroyed) {
             fail("attempted to activate a destroyed object");
         }
         activateCount++;
+    }
+    public void destroy() {
+        destroyed = true;
+    }
+    private void fail(final String message) {
+        throw new IllegalStateException(message);
+    }
+    public int getActivateCount() {
+        return activateCount;
+    }
+    public int getId() {
+        return id;
+    }
+    public K getKey() {
+        return key;
+    }
+    public int getPassivateCount() {
+        return passivateCount;
+    }
+    public int getValidateCount() {
+        return validateCount;
+    }
+    public boolean isDestroyed() {
+        return destroyed;
     }
     public void passivate() {
         if (destroyed) {
@@ -69,33 +86,16 @@ public class VisitTracker<K> {
         passivateCount = 0;
         destroyed = false;
     }
-    public void destroy() {
-        destroyed = true;
-    }
-    public int getValidateCount() {
-        return validateCount;
-    }
-    public int getActivateCount() {
-        return activateCount;
-    }
-    public int getPassivateCount() {
-        return passivateCount;
-    }
-    public boolean isDestroyed() {
-        return destroyed;
-    }
-    public int getId() {
-        return id;
-    }
-    public K getKey() {
-        return key;
-    }
     @Override
     public String toString() {
         return "Key: " + key + " id: " + id;
     }
 
-    private void fail(final String message) {
-        throw new IllegalStateException(message);
+    public boolean validate() {
+        if (destroyed) {
+            fail("attempted to validate a destroyed object");
+        }
+        validateCount++;
+        return true;
     }
 }

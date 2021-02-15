@@ -26,32 +26,6 @@ import org.apache.commons.pool2.TestBaseObjectPool;
  */
 public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
 
-    @Override
-    protected ObjectPool<String> makeEmptyPool(final int cap) {
-        return new SoftReferenceObjectPool<>(new SimpleFactory());
-    }
-
-    @Override
-    protected ObjectPool<Object> makeEmptyPool(final PooledObjectFactory<Object> factory) {
-        return new SoftReferenceObjectPool<>(factory);
-    }
-
-    @Override
-    protected Object getNthObject(final int n) {
-        return String.valueOf(n);
-    }
-
-    @Override
-    protected boolean isLifo() {
-        return false;
-    }
-
-    @Override
-    protected boolean isFifo() {
-        return false;
-    }
-
-
     private static class SimpleFactory extends BasePooledObjectFactory<String>  {
         int counter = 0;
         @Override
@@ -62,5 +36,31 @@ public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
         public PooledObject<String> wrap(final String value) {
             return new DefaultPooledObject<>(value);
         }
+    }
+
+    @Override
+    protected Object getNthObject(final int n) {
+        return String.valueOf(n);
+    }
+
+    @Override
+    protected boolean isFifo() {
+        return false;
+    }
+
+    @Override
+    protected boolean isLifo() {
+        return false;
+    }
+
+    @Override
+    protected ObjectPool<String> makeEmptyPool(final int cap) {
+        return new SoftReferenceObjectPool<>(new SimpleFactory());
+    }
+
+
+    @Override
+    protected ObjectPool<Object> makeEmptyPool(final PooledObjectFactory<Object> factory) {
+        return new SoftReferenceObjectPool<>(factory);
     }
 }

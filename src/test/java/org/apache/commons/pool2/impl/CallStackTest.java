@@ -30,14 +30,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CallStackTest {
 
-    private final StringWriter writer = new StringWriter();
-
     public static Stream<Arguments> data() {
         return Stream.of(
                 Arguments.arguments( new ThrowableCallStack("Test", false)),
                 Arguments.arguments( new SecurityManagerCallStack("Test", false))
         );
     }
+
+    private final StringWriter writer = new StringWriter();
 
     @ParameterizedTest
     @MethodSource("data")

@@ -39,11 +39,49 @@ import org.junit.jupiter.api.Test;
 
 public abstract class BaseTestProxiedObjectPool {
 
+    protected interface TestObject {
+        String getData();
+        void setData(String data);
+    }
+    private static class TestObjectFactory extends
+            BasePooledObjectFactory<TestObject> {
+
+        @Override
+        public TestObject create() throws Exception {
+            return new TestObjectImpl();
+        }
+        @Override
+        public PooledObject<TestObject> wrap(final TestObject value) {
+            return new DefaultPooledObject<>(value);
+        }
+    }
+
+    private static class TestObjectImpl implements TestObject {
+
+        private String data;
+
+        @Override
+        public String getData() {
+            return data;
+        }
+
+        @Override
+        public void setData(final String data) {
+            this.data = data;
+        }
+    }
     private static final String DATA1 = "data1";
+
     private static final Duration ABANDONED_TIMEOUT_SECS = Duration.ofSeconds(3);
 
+
     private ObjectPool<TestObject> pool = null;
+
     private StringWriter log = null;
+
+
+    protected abstract ProxySource<TestObject> getproxySource();
+
 
     @BeforeEach
     public void setUp() {
@@ -70,10 +108,8 @@ public abstract class BaseTestProxiedObjectPool {
     }
 
 
-    protected abstract ProxySource<TestObject> getproxySource();
-
     @Test
-    public void testBorrowObject() throws Exception {
+    public void testAccessAfterInvalidate() throws Exception {
         final TestObject obj = pool.borrowObject();
         assertNotNull(obj);
 
@@ -81,7 +117,13 @@ public abstract class BaseTestProxiedObjectPool {
         obj.setData(DATA1);
         assertEquals(DATA1, obj.getData());
 
-        pool.returnObject(obj);
+        pool.invalidateObject(obj);
+
+        assertNotNull(obj);
+
+        assertThrows(IllegalStateException.class,
+                () -> obj.getData());
+
     }
 
 
@@ -104,7 +146,7 @@ public abstract class BaseTestProxiedObjectPool {
 
 
     @Test
-    public void testAccessAfterInvalidate() throws Exception {
+    public void testBorrowObject() throws Exception {
         final TestObject obj = pool.borrowObject();
         assertNotNull(obj);
 
@@ -112,36 +154,8 @@ public abstract class BaseTestProxiedObjectPool {
         obj.setData(DATA1);
         assertEquals(DATA1, obj.getData());
 
-        pool.invalidateObject(obj);
-
-        assertNotNull(obj);
-
-        assertThrows(IllegalStateException.class,
-                () -> obj.getData());
-
+        pool.returnObject(obj);
     }
-
-
-    @Test
-    public void testUsageTracking() throws Exception {
-        final TestObject obj = pool.borrowObject();
-        assertNotNull(obj);
-
-        // Use the object to trigger collection of last used stack trace
-        obj.setData(DATA1);
-
-        // Sleep long enough for the object to be considered abandoned
-        Thread.sleep(ABANDONED_TIMEOUT_SECS.plusSeconds(2).toMillis());
-
-        // Borrow another object to trigger the abandoned object processing
-        pool.borrowObject();
-
-        final String logOutput = log.getBuffer().toString();
-
-        assertTrue(logOutput.contains("Pooled object created"));
-        assertTrue(logOutput.contains("The last code to use this object was"));
-    }
-
 
     @Test
     public void testPassThroughMethods01() throws Exception {
@@ -168,39 +182,25 @@ public abstract class BaseTestProxiedObjectPool {
                 () -> pool.addObject());
     }
 
-    private static class TestObjectFactory extends
-            BasePooledObjectFactory<TestObject> {
 
-        @Override
-        public TestObject create() throws Exception {
-            return new TestObjectImpl();
-        }
-        @Override
-        public PooledObject<TestObject> wrap(final TestObject value) {
-            return new DefaultPooledObject<>(value);
-        }
-    }
+    @Test
+    public void testUsageTracking() throws Exception {
+        final TestObject obj = pool.borrowObject();
+        assertNotNull(obj);
 
+        // Use the object to trigger collection of last used stack trace
+        obj.setData(DATA1);
 
-    protected interface TestObject {
-        String getData();
-        void setData(String data);
-    }
+        // Sleep long enough for the object to be considered abandoned
+        Thread.sleep(ABANDONED_TIMEOUT_SECS.plusSeconds(2).toMillis());
 
+        // Borrow another object to trigger the abandoned object processing
+        pool.borrowObject();
 
-    private static class TestObjectImpl implements TestObject {
+        final String logOutput = log.getBuffer().toString();
 
-        private String data;
-
-        @Override
-        public String getData() {
-            return data;
-        }
-
-        @Override
-        public void setData(final String data) {
-            this.data = data;
-        }
+        assertTrue(logOutput.contains("Pooled object created"));
+        assertTrue(logOutput.contains("The last code to use this object was"));
     }
 
 }

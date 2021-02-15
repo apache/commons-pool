@@ -31,14 +31,18 @@ import java.time.Duration;
 
 @Disabled
 public class PoolTest {
-    private static final CharSequence COMMONS_POOL_EVICTIONS_TIMER_THREAD_NAME = "commons-pool-EvictionTimer";
-    private static final long EVICTION_PERIOD_IN_MILLIS = 100;
-
     private static class Foo {
     }
-
     private static class PooledFooFactory implements PooledObjectFactory<Foo> {
         private static final long VALIDATION_WAIT_IN_MILLIS = 1000;
+
+        @Override
+        public void activateObject(final PooledObject<Foo> pooledObject) throws Exception {
+        }
+
+        @Override
+        public void destroyObject(final PooledObject<Foo> pooledObject) throws Exception {
+        }
 
         @Override
         public PooledObject<Foo> makeObject() throws Exception {
@@ -46,7 +50,7 @@ public class PoolTest {
         }
 
         @Override
-        public void destroyObject(final PooledObject<Foo> pooledObject) throws Exception {
+        public void passivateObject(final PooledObject<Foo> pooledObject) throws Exception {
         }
 
         @Override
@@ -58,15 +62,11 @@ public class PoolTest {
             }
             return false;
         }
-
-        @Override
-        public void activateObject(final PooledObject<Foo> pooledObject) throws Exception {
-        }
-
-        @Override
-        public void passivateObject(final PooledObject<Foo> pooledObject) throws Exception {
-        }
     }
+
+    private static final CharSequence COMMONS_POOL_EVICTIONS_TIMER_THREAD_NAME = "commons-pool-EvictionTimer";
+
+    private static final long EVICTION_PERIOD_IN_MILLIS = 100;
 
     @Test
     public void testPool() throws Exception {

@@ -28,6 +28,23 @@ import org.junit.jupiter.api.Test;
  */
 public class TestBasePoolableObjectFactory {
 
+    private static class TestFactory extends BasePooledObjectFactory<AtomicInteger> {
+        @Override
+        public AtomicInteger create() throws Exception {
+            return new AtomicInteger(0);
+        }
+        @Override
+        public void destroyObject(final PooledObject<AtomicInteger> p, final DestroyMode mode){
+            if (mode.equals(DestroyMode.ABANDONED)) {
+                p.getObject().incrementAndGet();
+            }
+        }
+        @Override
+        public PooledObject<AtomicInteger> wrap(final AtomicInteger value) {
+            return new DefaultPooledObject<>(value);
+        }
+    }
+
     @Test
     public void testDefaultMethods() throws Exception {
         final PooledObjectFactory<AtomicInteger> factory = new TestFactory();
@@ -54,22 +71,5 @@ public class TestBasePoolableObjectFactory {
         assertEquals(0, obj.get());
         factory.destroyObject(pooledObj, DestroyMode.ABANDONED);
         assertEquals(1, obj.get());
-    }
-
-    private static class TestFactory extends BasePooledObjectFactory<AtomicInteger> {
-        @Override
-        public AtomicInteger create() throws Exception {
-            return new AtomicInteger(0);
-        }
-        @Override
-        public void destroyObject(final PooledObject<AtomicInteger> p, final DestroyMode mode){
-            if (mode.equals(DestroyMode.ABANDONED)) {
-                p.getObject().incrementAndGet();
-            }
-        }
-        @Override
-        public PooledObject<AtomicInteger> wrap(final AtomicInteger value) {
-            return new DefaultPooledObject<>(value);
-        }
     }
 }

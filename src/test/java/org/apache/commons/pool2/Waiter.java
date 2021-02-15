@@ -55,6 +55,62 @@ public class Waiter {
         }
     }
 
+    @Override
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof Waiter)) {
+            return false;
+        }
+        return obj.hashCode() == id;
+    }
+
+    /**
+     * <p>Returns the last idle time for this instance in ms.</p>
+     *
+     * <p>When an instance is created, and each subsequent time it is passivated,
+     * the {@link #getLastPassivatedMillis() lastPassivated} property is updated with the
+     * current time.  When the next activation occurs, {@code lastIdleTime} is
+     * updated with the elapsed time since passivation.<p>
+     *
+     * @return last idle time
+     */
+    public long getLastIdleTimeMillis() {
+        return lastIdleTimeMillis;
+    }
+
+    /**
+     * <p>Returns the system time of this instance's last passivation.</p>
+     *
+     * <p>When an instance is created, this field is initialized to the system time.</p>
+     *
+     * @return time of last passivation
+     */
+    public long getLastPassivatedMillis() {
+        return lastPassivatedMillis;
+    }
+
+    public long getLatency() {
+        return latency;
+    }
+
+    /**
+     * @return how many times this instance has been passivated
+     */
+    public long getPassivationCount() {
+        return passivationCount;
+    }
+
+    /**
+     * @return how many times this instance has been validated
+     */
+    public long getValidationCount() {
+        return validationCount;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
+
     /**
      * Whether or not the instance is active.
      *
@@ -62,6 +118,11 @@ public class Waiter {
      */
     public boolean isActive() {
         return active;
+    }
+
+    public boolean isValid() {
+        validationCount++;
+        return valid;
     }
 
     /**
@@ -95,73 +156,12 @@ public class Waiter {
         }
     }
 
-    public long getLatency() {
-        return latency;
-    }
-
     public void setLatency(final long latency) {
         this.latency = latency;
     }
 
-    public boolean isValid() {
-        validationCount++;
-        return valid;
-    }
-
     public void setValid(final boolean valid) {
         this.valid = valid;
-    }
-
-    /**
-     * <p>Returns the system time of this instance's last passivation.</p>
-     *
-     * <p>When an instance is created, this field is initialized to the system time.</p>
-     *
-     * @return time of last passivation
-     */
-    public long getLastPassivatedMillis() {
-        return lastPassivatedMillis;
-    }
-
-    /**
-     * <p>Returns the last idle time for this instance in ms.</p>
-     *
-     * <p>When an instance is created, and each subsequent time it is passivated,
-     * the {@link #getLastPassivatedMillis() lastPassivated} property is updated with the
-     * current time.  When the next activation occurs, {@code lastIdleTime} is
-     * updated with the elapsed time since passivation.<p>
-     *
-     * @return last idle time
-     */
-    public long getLastIdleTimeMillis() {
-        return lastIdleTimeMillis;
-    }
-
-    /**
-     * @return how many times this instance has been validated
-     */
-    public long getValidationCount() {
-        return validationCount;
-    }
-
-    /**
-     * @return how many times this instance has been passivated
-     */
-    public long getPassivationCount() {
-        return passivationCount;
-    }
-
-    @Override
-    public int hashCode() {
-        return id;
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (!(obj instanceof Waiter)) {
-            return false;
-        }
-        return obj.hashCode() == id;
     }
 
     @Override

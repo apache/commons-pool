@@ -30,9 +30,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class TestPooledSoftReference {
 
-    PooledSoftReference<String> ref;
     private static final String REFERENT = "test";
     private static final String REFERENT2 = "test2";
+    PooledSoftReference<String> ref;
 
     @BeforeEach
     public void setUp() {

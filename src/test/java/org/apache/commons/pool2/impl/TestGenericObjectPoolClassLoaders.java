@@ -29,6 +29,48 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestGenericObjectPoolClassLoaders {
 
+    private static class CustomClassLoader extends URLClassLoader {
+        private final int n;
+
+        CustomClassLoader(final int n) {
+            super(new URL[] { BASE_URL });
+            this.n = n;
+        }
+
+        @Override
+        public URL findResource(final String name) {
+            if (!name.endsWith(String.valueOf(n))) {
+                return null;
+            }
+
+            return super.findResource(name);
+        }
+    }
+
+    private static class CustomClassLoaderObjectFactory extends
+            BasePooledObjectFactory<URL> {
+        private final int n;
+
+        CustomClassLoaderObjectFactory(final int n) {
+            this.n = n;
+        }
+
+        @Override
+        public URL create() throws Exception {
+            final URL url = Thread.currentThread().getContextClassLoader()
+                    .getResource("test" + n);
+            if (url == null) {
+                throw new IllegalStateException("Object should not be null");
+            }
+            return url;
+        }
+
+        @Override
+        public PooledObject<URL> wrap(final URL value) {
+            return new DefaultPooledObject<>(value);
+        }
+    }
+
     private static final URL BASE_URL =
             TestGenericObjectPoolClassLoaders.class.getResource(
                     "/org/apache/commons/pool2/impl/");
@@ -80,48 +122,6 @@ public class TestGenericObjectPoolClassLoaders {
             pool2.close();
         } finally {
             Thread.currentThread().setContextClassLoader(savedClassloader);
-        }
-    }
-
-    private static class CustomClassLoaderObjectFactory extends
-            BasePooledObjectFactory<URL> {
-        private final int n;
-
-        CustomClassLoaderObjectFactory(final int n) {
-            this.n = n;
-        }
-
-        @Override
-        public URL create() throws Exception {
-            final URL url = Thread.currentThread().getContextClassLoader()
-                    .getResource("test" + n);
-            if (url == null) {
-                throw new IllegalStateException("Object should not be null");
-            }
-            return url;
-        }
-
-        @Override
-        public PooledObject<URL> wrap(final URL value) {
-            return new DefaultPooledObject<>(value);
-        }
-    }
-
-    private static class CustomClassLoader extends URLClassLoader {
-        private final int n;
-
-        CustomClassLoader(final int n) {
-            super(new URL[] { BASE_URL });
-            this.n = n;
-        }
-
-        @Override
-        public URL findResource(final String name) {
-            if (!name.endsWith(String.valueOf(n))) {
-                return null;
-            }
-
-            return super.findResource(name);
         }
     }
 }

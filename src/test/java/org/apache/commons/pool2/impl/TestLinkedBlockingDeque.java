@@ -54,22 +54,17 @@ public class TestLinkedBlockingDeque {
     }
 
     @Test
-    public void testConstructors() {
-        LinkedBlockingDeque<Integer> deque = new LinkedBlockingDeque<>();
-        assertEquals(Integer.MAX_VALUE, deque.remainingCapacity());
-
-        deque = new LinkedBlockingDeque<>(2);
-        assertEquals(2, deque.remainingCapacity());
-
-        deque = new LinkedBlockingDeque<>(Arrays.asList(ONE, TWO));
-        assertEquals(2, deque.size());
-
+    public void testAdd() {
+        assertTrue(deque.add(ONE));
+        assertTrue(deque.add(TWO));
         try {
-            deque = new LinkedBlockingDeque<>(Arrays.asList(ONE, null));
+            assertTrue(deque.add(THREE));
             fail("Not supposed to get here");
-        } catch (final NullPointerException npe) {
-            // OK
-        }
+        } catch (final IllegalStateException e) {}
+        try {
+            assertTrue(deque.add(null));
+            fail("Not supposed to get here");
+        } catch (final NullPointerException e) {}
     }
 
     @Test
@@ -97,6 +92,134 @@ public class TestLinkedBlockingDeque {
     }
 
     @Test
+    public void testClear() {
+        deque.add(ONE);
+        deque.add(TWO);
+        deque.clear();
+        deque.add(ONE);
+        assertEquals(1, deque.size());
+    }
+
+    @Test
+    public void testConstructors() {
+        LinkedBlockingDeque<Integer> deque = new LinkedBlockingDeque<>();
+        assertEquals(Integer.MAX_VALUE, deque.remainingCapacity());
+
+        deque = new LinkedBlockingDeque<>(2);
+        assertEquals(2, deque.remainingCapacity());
+
+        deque = new LinkedBlockingDeque<>(Arrays.asList(ONE, TWO));
+        assertEquals(2, deque.size());
+
+        try {
+            deque = new LinkedBlockingDeque<>(Arrays.asList(ONE, null));
+            fail("Not supposed to get here");
+        } catch (final NullPointerException npe) {
+            // OK
+        }
+    }
+
+    @Test
+    public void testContains() {
+        deque.add(ONE);
+        assertTrue(deque.contains(ONE));
+        assertFalse(deque.contains(TWO));
+        assertFalse(deque.contains(null));
+        deque.add(TWO);
+        assertTrue(deque.contains(TWO));
+        assertFalse(deque.contains(THREE));
+    }
+
+    @Test
+    public void testDescendingIterator() {
+        try {
+            deque.descendingIterator().next();
+            fail("Not supposed to get here");
+        } catch (final NoSuchElementException e) {}
+        deque.add(ONE);
+        deque.add(TWO);
+        final Iterator<Integer> iter = deque.descendingIterator();
+        assertEquals(Integer.valueOf(2), iter.next());
+        iter.remove();
+        assertEquals(Integer.valueOf(1), iter.next());
+    }
+
+    @Test
+    public void testDrainTo() {
+        Collection<Integer> c = new ArrayList<>();
+        deque.add(ONE);
+        deque.add(TWO);
+        assertEquals(2, deque.drainTo(c));
+        assertEquals(2, c.size());
+
+        c = new ArrayList<>();
+        deque.add(ONE);
+        deque.add(TWO);
+        assertEquals(1, deque.drainTo(c, 1));
+        assertEquals(1, deque.size());
+        assertEquals(1, c.size());
+        assertEquals(Integer.valueOf(1), c.iterator().next());
+    }
+
+    @Test
+    public void testElement() {
+        try {
+            deque.element();
+            fail("Not supposed to get here");
+        } catch (final NoSuchElementException e){}
+        deque.add(ONE);
+        deque.add(TWO);
+        assertEquals(Integer.valueOf(1), deque.element());
+    }
+
+    @Test
+    public void testGetFirst() {
+        try {
+            deque.getFirst();
+            fail("Not supposed to get here");
+        } catch (final NoSuchElementException e){}
+        deque.add(ONE);
+        deque.add(TWO);
+        assertEquals(Integer.valueOf(1), deque.getFirst());
+    }
+
+    @Test
+    public void testGetLast() {
+        try {
+            deque.getLast();
+            fail("Not supposed to get here");
+        } catch (final NoSuchElementException e){}
+        deque.add(ONE);
+        deque.add(TWO);
+        assertEquals(Integer.valueOf(2), deque.getLast());
+    }
+
+    @Test
+    public void testIterator() {
+        try {
+            deque.iterator().next();
+            fail("Not supposed to get here");
+        } catch (final NoSuchElementException e) {}
+        deque.add(ONE);
+        deque.add(TWO);
+        final Iterator<Integer> iter = deque.iterator();
+        assertEquals(Integer.valueOf(1), iter.next());
+        iter.remove();
+        assertEquals(Integer.valueOf(2), iter.next());
+    }
+
+    @Test
+    public void testOffer() {
+        assertTrue(deque.offer(ONE));
+        assertTrue(deque.offer(TWO));
+        assertFalse(deque.offer(THREE));
+        try {
+            deque.offer(null);
+            fail("Not supposed to get here");
+        } catch (final NullPointerException e) {}
+    }
+
+    @Test
     public void testOfferFirst() {
         deque.offerFirst(ONE);
         deque.offerFirst(TWO);
@@ -109,6 +232,17 @@ public class TestLinkedBlockingDeque {
     }
 
     @Test
+    public void testOfferFirstWithTimeout() throws InterruptedException {
+        try {
+            deque.offerFirst(null);
+            fail("Not supposed to get here");
+        } catch (final NullPointerException e) {}
+        assertTrue(deque.offerFirst(ONE, TIMEOUT_50_MILLIS));
+        assertTrue(deque.offerFirst(TWO, TIMEOUT_50_MILLIS));
+        assertFalse(deque.offerFirst(THREE, TIMEOUT_50_MILLIS));
+    }
+
+    @Test
     public void testOfferLast() {
         deque.offerLast(ONE);
         deque.offerLast(TWO);
@@ -118,6 +252,151 @@ public class TestLinkedBlockingDeque {
             fail("Not supposed to get here");
         } catch (final NullPointerException e) {}
         assertEquals(Integer.valueOf(1), deque.pop());
+    }
+
+    @Test
+    public void testOfferLastWithTimeout() throws InterruptedException {
+        try {
+            deque.offerLast(null);
+            fail("Not supposed to get here");
+        } catch (final NullPointerException e) {}
+        assertTrue(deque.offerLast(ONE, TIMEOUT_50_MILLIS));
+        assertTrue(deque.offerLast(TWO, TIMEOUT_50_MILLIS));
+        assertFalse(deque.offerLast(THREE, TIMEOUT_50_MILLIS));
+    }
+
+    @Test
+    public void testOfferWithTimeout() throws InterruptedException {
+        assertTrue(deque.offer(ONE, TIMEOUT_50_MILLIS));
+        assertTrue(deque.offer(TWO, TIMEOUT_50_MILLIS));
+        assertFalse(deque.offer(THREE, TIMEOUT_50_MILLIS));
+        try {
+            deque.offer(null, TIMEOUT_50_MILLIS);
+            fail("Not supposed to get here");
+        } catch (final NullPointerException e) {}
+    }
+
+    @Test
+    public void testPeek() {
+        assertNull(deque.peek());
+        deque.add(ONE);
+        deque.add(TWO);
+        assertEquals(Integer.valueOf(1), deque.peek());
+    }
+
+    @Test
+    public void testPeekFirst() {
+        assertNull(deque.peekFirst());
+        deque.add(ONE);
+        deque.add(TWO);
+        assertEquals(Integer.valueOf(1), deque.peekFirst());
+    }
+
+    @Test
+    public void testPeekLast() {
+        assertNull(deque.peekLast());
+        deque.add(ONE);
+        deque.add(TWO);
+        assertEquals(Integer.valueOf(2), deque.peekLast());
+    }
+
+    @Test
+    public void testPollFirst() {
+        assertNull(deque.pollFirst());
+        assertTrue(deque.offerFirst(ONE));
+        assertTrue(deque.offerFirst(TWO));
+        assertEquals(Integer.valueOf(2), deque.pollFirst());
+    }
+
+    @Test
+    public void testPollFirstWithTimeout() throws InterruptedException {
+        assertNull(deque.pollFirst());
+        assertNull(deque.pollFirst(TIMEOUT_50_MILLIS));
+    }
+
+    @Test
+    public void testPollLast() {
+        assertNull(deque.pollLast());
+        assertTrue(deque.offerFirst(ONE));
+        assertTrue(deque.offerFirst(TWO));
+        assertEquals(Integer.valueOf(1), deque.pollLast());
+    }
+
+    @Test
+    public void testPollLastWithTimeout() throws InterruptedException {
+        assertNull(deque.pollLast());
+        assertNull(deque.pollLast(TIMEOUT_50_MILLIS));
+    }
+
+    @Test
+    public void testPollWithTimeout() throws InterruptedException {
+        assertNull(deque.poll(TIMEOUT_50_MILLIS));
+        assertNull(deque.poll(TIMEOUT_50_MILLIS));
+    }
+
+    @Test
+    public void testPop() {
+        try {
+            deque.pop();
+            fail("Not supposed to get here");
+        } catch (final NoSuchElementException e) {}
+        deque.add(ONE);
+        deque.add(TWO);
+        assertEquals(Integer.valueOf(1), deque.pop());
+        try {
+            deque.pop();
+            deque.pop();
+            fail("Not supposed to get here");
+        } catch (final NoSuchElementException e) {}
+    }
+
+    /*
+     * https://issues.apache.org/jira/browse/POOL-281
+     *
+     * Should complete almost instantly when the issue is fixed.
+     */
+    @Test
+    @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS)
+    public void testPossibleBug() {
+
+        deque = new LinkedBlockingDeque<>();
+        for (int i = 0; i < 3; i++) {
+            deque.add(Integer.valueOf(i));
+        }
+
+        // This particular sequence of method calls() (there may be others)
+        // creates an internal state that triggers an infinite loop in the
+        // iterator.
+        final Iterator<Integer> iter = deque.iterator();
+        iter.next();
+
+        deque.remove(Integer.valueOf(1));
+        deque.remove(Integer.valueOf(0));
+        deque.remove(Integer.valueOf(2));
+
+        iter.next();
+    }
+
+    @Test
+    public void testPush() {
+        deque.push(ONE);
+        deque.push(TWO);
+        assertEquals(2, deque.size());
+        try {
+            deque.push(THREE);
+            fail("Not supposed to get here");
+        } catch (final IllegalStateException e) {}
+        assertEquals(Integer.valueOf(2), deque.pop());
+    }
+
+    @Test
+    public void testPut() throws InterruptedException {
+        try {
+            deque.put(null);
+            fail("Not supposed to get here");
+        } catch (final NullPointerException e) {}
+        deque.put(ONE);
+        deque.put(TWO);
     }
 
     @Test
@@ -145,25 +424,14 @@ public class TestLinkedBlockingDeque {
     }
 
     @Test
-    public void testOfferFirstWithTimeout() throws InterruptedException {
+    public void testRemove() {
         try {
-            deque.offerFirst(null);
+            deque.remove();
             fail("Not supposed to get here");
-        } catch (final NullPointerException e) {}
-        assertTrue(deque.offerFirst(ONE, TIMEOUT_50_MILLIS));
-        assertTrue(deque.offerFirst(TWO, TIMEOUT_50_MILLIS));
-        assertFalse(deque.offerFirst(THREE, TIMEOUT_50_MILLIS));
-    }
-
-    @Test
-    public void testOfferLastWithTimeout() throws InterruptedException {
-        try {
-            deque.offerLast(null);
-            fail("Not supposed to get here");
-        } catch (final NullPointerException e) {}
-        assertTrue(deque.offerLast(ONE, TIMEOUT_50_MILLIS));
-        assertTrue(deque.offerLast(TWO, TIMEOUT_50_MILLIS));
-        assertFalse(deque.offerLast(THREE, TIMEOUT_50_MILLIS));
+        } catch (final NoSuchElementException e) {}
+        deque.add(ONE);
+        deque.add(TWO);
+        assertEquals(Integer.valueOf(1), deque.remove());
     }
 
     @Test
@@ -199,19 +467,20 @@ public class TestLinkedBlockingDeque {
     }
 
     @Test
-    public void testPollFirst() {
-        assertNull(deque.pollFirst());
-        assertTrue(deque.offerFirst(ONE));
-        assertTrue(deque.offerFirst(TWO));
-        assertEquals(Integer.valueOf(2), deque.pollFirst());
+    public void testRemoveLastOccurrence() {
+        assertFalse(deque.removeLastOccurrence(null));
+        assertFalse(deque.removeLastOccurrence(ONE));
+        deque.add(ONE);
+        deque.add(ONE);
+        assertTrue(deque.removeLastOccurrence(ONE));
+        assertTrue(deque.size() == 1);
     }
 
     @Test
-    public void testPollLast() {
-        assertNull(deque.pollLast());
+    public void testTake() throws InterruptedException {
         assertTrue(deque.offerFirst(ONE));
         assertTrue(deque.offerFirst(TWO));
-        assertEquals(Integer.valueOf(1), deque.pollLast());
+        assertEquals(Integer.valueOf(2), deque.take());
     }
 
     @Test
@@ -229,211 +498,6 @@ public class TestLinkedBlockingDeque {
     }
 
     @Test
-    public void testPollFirstWithTimeout() throws InterruptedException {
-        assertNull(deque.pollFirst());
-        assertNull(deque.pollFirst(TIMEOUT_50_MILLIS));
-    }
-
-    @Test
-    public void testPollLastWithTimeout() throws InterruptedException {
-        assertNull(deque.pollLast());
-        assertNull(deque.pollLast(TIMEOUT_50_MILLIS));
-    }
-
-    @Test
-    public void testGetFirst() {
-        try {
-            deque.getFirst();
-            fail("Not supposed to get here");
-        } catch (final NoSuchElementException e){}
-        deque.add(ONE);
-        deque.add(TWO);
-        assertEquals(Integer.valueOf(1), deque.getFirst());
-    }
-
-    @Test
-    public void testGetLast() {
-        try {
-            deque.getLast();
-            fail("Not supposed to get here");
-        } catch (final NoSuchElementException e){}
-        deque.add(ONE);
-        deque.add(TWO);
-        assertEquals(Integer.valueOf(2), deque.getLast());
-    }
-
-    @Test
-    public void testPeekFirst() {
-        assertNull(deque.peekFirst());
-        deque.add(ONE);
-        deque.add(TWO);
-        assertEquals(Integer.valueOf(1), deque.peekFirst());
-    }
-
-    @Test
-    public void testPeekLast() {
-        assertNull(deque.peekLast());
-        deque.add(ONE);
-        deque.add(TWO);
-        assertEquals(Integer.valueOf(2), deque.peekLast());
-    }
-
-    @Test
-    public void testRemoveLastOccurrence() {
-        assertFalse(deque.removeLastOccurrence(null));
-        assertFalse(deque.removeLastOccurrence(ONE));
-        deque.add(ONE);
-        deque.add(ONE);
-        assertTrue(deque.removeLastOccurrence(ONE));
-        assertTrue(deque.size() == 1);
-    }
-
-    @Test
-    public void testAdd() {
-        assertTrue(deque.add(ONE));
-        assertTrue(deque.add(TWO));
-        try {
-            assertTrue(deque.add(THREE));
-            fail("Not supposed to get here");
-        } catch (final IllegalStateException e) {}
-        try {
-            assertTrue(deque.add(null));
-            fail("Not supposed to get here");
-        } catch (final NullPointerException e) {}
-    }
-
-    @Test
-    public void testOffer() {
-        assertTrue(deque.offer(ONE));
-        assertTrue(deque.offer(TWO));
-        assertFalse(deque.offer(THREE));
-        try {
-            deque.offer(null);
-            fail("Not supposed to get here");
-        } catch (final NullPointerException e) {}
-    }
-
-    @Test
-    public void testPut() throws InterruptedException {
-        try {
-            deque.put(null);
-            fail("Not supposed to get here");
-        } catch (final NullPointerException e) {}
-        deque.put(ONE);
-        deque.put(TWO);
-    }
-
-    @Test
-    public void testOfferWithTimeout() throws InterruptedException {
-        assertTrue(deque.offer(ONE, TIMEOUT_50_MILLIS));
-        assertTrue(deque.offer(TWO, TIMEOUT_50_MILLIS));
-        assertFalse(deque.offer(THREE, TIMEOUT_50_MILLIS));
-        try {
-            deque.offer(null, TIMEOUT_50_MILLIS);
-            fail("Not supposed to get here");
-        } catch (final NullPointerException e) {}
-    }
-
-    @Test
-    public void testRemove() {
-        try {
-            deque.remove();
-            fail("Not supposed to get here");
-        } catch (final NoSuchElementException e) {}
-        deque.add(ONE);
-        deque.add(TWO);
-        assertEquals(Integer.valueOf(1), deque.remove());
-    }
-
-    @Test
-    public void testTake() throws InterruptedException {
-        assertTrue(deque.offerFirst(ONE));
-        assertTrue(deque.offerFirst(TWO));
-        assertEquals(Integer.valueOf(2), deque.take());
-    }
-
-    @Test
-    public void testPollWithTimeout() throws InterruptedException {
-        assertNull(deque.poll(TIMEOUT_50_MILLIS));
-        assertNull(deque.poll(TIMEOUT_50_MILLIS));
-    }
-
-    @Test
-    public void testElement() {
-        try {
-            deque.element();
-            fail("Not supposed to get here");
-        } catch (final NoSuchElementException e){}
-        deque.add(ONE);
-        deque.add(TWO);
-        assertEquals(Integer.valueOf(1), deque.element());
-    }
-
-    @Test
-    public void testPeek() {
-        assertNull(deque.peek());
-        deque.add(ONE);
-        deque.add(TWO);
-        assertEquals(Integer.valueOf(1), deque.peek());
-    }
-
-    @Test
-    public void testDrainTo() {
-        Collection<Integer> c = new ArrayList<>();
-        deque.add(ONE);
-        deque.add(TWO);
-        assertEquals(2, deque.drainTo(c));
-        assertEquals(2, c.size());
-
-        c = new ArrayList<>();
-        deque.add(ONE);
-        deque.add(TWO);
-        assertEquals(1, deque.drainTo(c, 1));
-        assertEquals(1, deque.size());
-        assertEquals(1, c.size());
-        assertEquals(Integer.valueOf(1), c.iterator().next());
-    }
-
-    @Test
-    public void testPush() {
-        deque.push(ONE);
-        deque.push(TWO);
-        assertEquals(2, deque.size());
-        try {
-            deque.push(THREE);
-            fail("Not supposed to get here");
-        } catch (final IllegalStateException e) {}
-        assertEquals(Integer.valueOf(2), deque.pop());
-    }
-
-    @Test
-    public void testPop() {
-        try {
-            deque.pop();
-            fail("Not supposed to get here");
-        } catch (final NoSuchElementException e) {}
-        deque.add(ONE);
-        deque.add(TWO);
-        assertEquals(Integer.valueOf(1), deque.pop());
-        try {
-            deque.pop();
-            deque.pop();
-            fail("Not supposed to get here");
-        } catch (final NoSuchElementException e) {}
-    }
-
-    @Test
-    public void testContains() {
-        deque.add(ONE);
-        assertTrue(deque.contains(ONE));
-        assertFalse(deque.contains(TWO));
-        assertFalse(deque.contains(null));
-        deque.add(TWO);
-        assertTrue(deque.contains(TWO));
-        assertFalse(deque.contains(THREE));
-    }
-
-    @Test
     public void testToArray() {
         deque.add(ONE);
         deque.add(TWO);
@@ -448,69 +512,5 @@ public class TestLinkedBlockingDeque {
         arr = deque.toArray(new Integer[deque.size()]);
         assertEquals(Integer.valueOf(1), arr[0]);
         assertEquals(Integer.valueOf(2), arr[1]);
-    }
-
-    @Test
-    public void testClear() {
-        deque.add(ONE);
-        deque.add(TWO);
-        deque.clear();
-        deque.add(ONE);
-        assertEquals(1, deque.size());
-    }
-
-    @Test
-    public void testIterator() {
-        try {
-            deque.iterator().next();
-            fail("Not supposed to get here");
-        } catch (final NoSuchElementException e) {}
-        deque.add(ONE);
-        deque.add(TWO);
-        final Iterator<Integer> iter = deque.iterator();
-        assertEquals(Integer.valueOf(1), iter.next());
-        iter.remove();
-        assertEquals(Integer.valueOf(2), iter.next());
-    }
-
-    @Test
-    public void testDescendingIterator() {
-        try {
-            deque.descendingIterator().next();
-            fail("Not supposed to get here");
-        } catch (final NoSuchElementException e) {}
-        deque.add(ONE);
-        deque.add(TWO);
-        final Iterator<Integer> iter = deque.descendingIterator();
-        assertEquals(Integer.valueOf(2), iter.next());
-        iter.remove();
-        assertEquals(Integer.valueOf(1), iter.next());
-    }
-
-    /*
-     * https://issues.apache.org/jira/browse/POOL-281
-     *
-     * Should complete almost instantly when the issue is fixed.
-     */
-    @Test
-    @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS)
-    public void testPossibleBug() {
-
-        deque = new LinkedBlockingDeque<>();
-        for (int i = 0; i < 3; i++) {
-            deque.add(Integer.valueOf(i));
-        }
-
-        // This particular sequence of method calls() (there may be others)
-        // creates an internal state that triggers an infinite loop in the
-        // iterator.
-        final Iterator<Integer> iter = deque.iterator();
-        iter.next();
-
-        deque.remove(Integer.valueOf(1));
-        deque.remove(Integer.valueOf(0));
-        deque.remove(Integer.valueOf(2));
-
-        iter.next();
     }
 }

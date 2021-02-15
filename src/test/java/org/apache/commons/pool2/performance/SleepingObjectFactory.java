@@ -30,6 +30,29 @@ public class SleepingObjectFactory implements PooledObjectFactory<Integer> {
     private boolean debug = false;
 
     @Override
+    public void activateObject(final PooledObject<Integer> obj) throws Exception {
+        debug("activateObject", obj);
+        sleep(10);
+    }
+
+    private void debug(final String method, final Object obj) {
+        if (debug) {
+            final String thread = "thread" + Thread.currentThread().getName();
+            System.out.println(thread + ": " + method + " " + obj);
+        }
+    }
+
+    @Override
+    public void destroyObject(final PooledObject<Integer> obj) throws Exception {
+        debug("destroyObject", obj);
+        sleep(250);
+    }
+
+    public boolean isDebug() {
+        return debug;
+    }
+
+    @Override
     public PooledObject<Integer> makeObject() throws Exception {
         // Deliberate choice to create a new object in case future unit tests
         // check for a specific object.
@@ -40,35 +63,13 @@ public class SleepingObjectFactory implements PooledObjectFactory<Integer> {
     }
 
     @Override
-    public void destroyObject(final PooledObject<Integer> obj) throws Exception {
-        debug("destroyObject", obj);
-        sleep(250);
-    }
-
-    @Override
-    public boolean validateObject(final PooledObject<Integer> obj) {
-        debug("validateObject", obj);
-        sleep(30);
-        return true;
-    }
-
-    @Override
-    public void activateObject(final PooledObject<Integer> obj) throws Exception {
-        debug("activateObject", obj);
-        sleep(10);
-    }
-
-    @Override
     public void passivateObject(final PooledObject<Integer> obj) throws Exception {
         debug("passivateObject", obj);
         sleep(10);
     }
 
-    private void debug(final String method, final Object obj) {
-        if (debug) {
-            final String thread = "thread" + Thread.currentThread().getName();
-            System.out.println(thread + ": " + method + " " + obj);
-        }
+    public void setDebug(final boolean b) {
+        debug = b;
     }
 
     private void sleep(final long millis) {
@@ -80,11 +81,10 @@ public class SleepingObjectFactory implements PooledObjectFactory<Integer> {
         }
     }
 
-    public boolean isDebug() {
-        return debug;
-    }
-
-    public void setDebug(final boolean b) {
-        debug = b;
+    @Override
+    public boolean validateObject(final PooledObject<Integer> obj) {
+        debug("validateObject", obj);
+        sleep(30);
+        return true;
     }
 }

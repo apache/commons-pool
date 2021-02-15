@@ -34,10 +34,48 @@ import org.junit.jupiter.api.Test;
 
 public abstract class BaseTestProxiedKeyedObjectPool {
 
+    private static class TestKeyedObjectFactory extends
+            BaseKeyedPooledObjectFactory<String,TestObject> {
+
+        @Override
+        public TestObject create(final String key) throws Exception {
+            return new TestObjectImpl();
+        }
+        @Override
+        public PooledObject<TestObject> wrap(final TestObject value) {
+            return new DefaultPooledObject<>(value);
+        }
+    }
+    protected interface TestObject {
+        String getData();
+        void setData(String data);
+    }
+
+    private static class TestObjectImpl implements TestObject {
+
+        private String data;
+
+        @Override
+        public String getData() {
+            return data;
+        }
+
+        @Override
+        public void setData(final String data) {
+            this.data = data;
+        }
+    }
+
     private static final String KEY1 = "key1";
+
+
     private static final String DATA1 = "data1";
 
     private KeyedObjectPool<String,TestObject> pool = null;
+
+
+    protected abstract ProxySource<TestObject> getproxySource();
+
 
     @BeforeEach
     public void setUp() {
@@ -53,38 +91,6 @@ public abstract class BaseTestProxiedKeyedObjectPool {
                         factory, config);
 
         pool = new ProxiedKeyedObjectPool<>(innerPool, getproxySource());
-    }
-
-
-    protected abstract ProxySource<TestObject> getproxySource();
-
-    @Test
-    public void testBorrowObject() throws Exception {
-        final TestObject obj = pool.borrowObject(KEY1);
-        assertNotNull(obj);
-
-        // Make sure proxied methods are working
-        obj.setData(DATA1);
-        assertEquals(DATA1, obj.getData());
-
-        pool.returnObject(KEY1, obj);
-    }
-
-
-    @Test
-    public void testAccessAfterReturn() throws Exception {
-        final TestObject obj = pool.borrowObject(KEY1);
-        assertNotNull(obj);
-
-        // Make sure proxied methods are working
-        obj.setData(DATA1);
-        assertEquals(DATA1, obj.getData());
-
-        pool.returnObject(KEY1, obj);
-
-        assertNotNull(obj);
-        assertThrows(IllegalStateException.class,
-                () -> obj.getData());
     }
 
 
@@ -104,6 +110,35 @@ public abstract class BaseTestProxiedKeyedObjectPool {
         assertThrows(IllegalStateException.class,
                 () -> obj.getData() );
 
+    }
+
+
+    @Test
+    public void testAccessAfterReturn() throws Exception {
+        final TestObject obj = pool.borrowObject(KEY1);
+        assertNotNull(obj);
+
+        // Make sure proxied methods are working
+        obj.setData(DATA1);
+        assertEquals(DATA1, obj.getData());
+
+        pool.returnObject(KEY1, obj);
+
+        assertNotNull(obj);
+        assertThrows(IllegalStateException.class,
+                () -> obj.getData());
+    }
+
+    @Test
+    public void testBorrowObject() throws Exception {
+        final TestObject obj = pool.borrowObject(KEY1);
+        assertNotNull(obj);
+
+        // Make sure proxied methods are working
+        obj.setData(DATA1);
+        assertEquals(DATA1, obj.getData());
+
+        pool.returnObject(KEY1, obj);
     }
 
 
@@ -129,41 +164,6 @@ public abstract class BaseTestProxiedKeyedObjectPool {
         pool.close();
         assertThrows(IllegalStateException.class,
                 () -> pool.addObject(KEY1));
-    }
-
-    private static class TestKeyedObjectFactory extends
-            BaseKeyedPooledObjectFactory<String,TestObject> {
-
-        @Override
-        public TestObject create(final String key) throws Exception {
-            return new TestObjectImpl();
-        }
-        @Override
-        public PooledObject<TestObject> wrap(final TestObject value) {
-            return new DefaultPooledObject<>(value);
-        }
-    }
-
-
-    protected interface TestObject {
-        String getData();
-        void setData(String data);
-    }
-
-
-    private static class TestObjectImpl implements TestObject {
-
-        private String data;
-
-        @Override
-        public String getData() {
-            return data;
-        }
-
-        @Override
-        public void setData(final String data) {
-            this.data = data;
-        }
     }
 
 }

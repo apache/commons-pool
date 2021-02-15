@@ -25,29 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestPoolImplUtils {
 
-    @Test
-    public void testFactoryTypeSimple() {
-        final Class<?> result = PoolImplUtils.getFactoryType(SimpleFactory.class);
-        assertEquals(String.class, result);
-    }
-
-    @Test
-    public void testFactoryTypeNotSimple() {
-        final Class<?> result = PoolImplUtils.getFactoryType(NotSimpleFactory.class);
-        assertEquals(Long.class, result);
-    }
-
-    private static class SimpleFactory extends BasePooledObjectFactory<String> {
-        @Override
-        public String create() throws Exception {
-            return null;
-        }
-        @Override
-        public PooledObject<String> wrap(final String obj) {
-            return null;
-        }
-    }
-
     @SuppressWarnings("unused")
     private abstract static class FactoryAB<A,B>
             extends BasePooledObjectFactory<B> {
@@ -80,5 +57,28 @@ public class TestPoolImplUtils {
         public PooledObject<Long> wrap(final Long obj) {
             return null;
         }
+    }
+
+    private static class SimpleFactory extends BasePooledObjectFactory<String> {
+        @Override
+        public String create() throws Exception {
+            return null;
+        }
+        @Override
+        public PooledObject<String> wrap(final String obj) {
+            return null;
+        }
+    }
+
+    @Test
+    public void testFactoryTypeNotSimple() {
+        final Class<?> result = PoolImplUtils.getFactoryType(NotSimpleFactory.class);
+        assertEquals(Long.class, result);
+    }
+
+    @Test
+    public void testFactoryTypeSimple() {
+        final Class<?> result = PoolImplUtils.getFactoryType(SimpleFactory.class);
+        assertEquals(String.class, result);
     }
 }

@@ -952,6 +952,29 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertNull(evictorExecutorField.get(null));
     }
 
+    /**
+     * Check that a pool that starts an evictor, but is never closed does not
+     * leave EvictionTimer executor running. Confirmation check is in teardown.
+     */
+    @SuppressWarnings("deprecation")
+    @Test
+    public void testAbandonedPool() throws Exception {
+        final GenericObjectPoolConfig config = new GenericObjectPoolConfig();
+        config.setJmxEnabled(false);
+        GenericObjectPool<String> abandoned = new GenericObjectPool<>(simpleFactory, config);
+        abandoned.setTimeBetweenEvictionRuns(Duration.ofMillis(100)); // Starts evictor
+        assertEquals(abandoned.getRemoveAbandonedTimeout(), abandoned.getRemoveAbandonedTimeoutDuration().getSeconds());
+
+        // This is ugly, but forces gc to hit the pool
+        final WeakReference<GenericObjectPool> ref = new WeakReference<>(abandoned);
+        abandoned = null;
+        while (ref.get() != null) {
+            System.gc();
+            Thread.sleep(100);
+        }
+    }
+
+
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
     public void testAddObject() throws Exception {
@@ -966,7 +989,6 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertEquals( 1, genericObjectPool.getNumIdle(),"should be one idle");
         assertEquals( 0, genericObjectPool.getNumActive(),"should be zero active");
     }
-
 
     /*
      * Note: This test relies on timing for correct execution. There *should* be
@@ -1207,13 +1229,13 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertEquals(nIterations, genericObjectPool.getDestroyedCount());
     }
 
+
     @Test
     public void testConstructorNullFactory() {
         // add dummy assert (won't be invoked because of IAE) to avoid "unused" warning
         assertThrows(IllegalArgumentException.class,
                 () -> new GenericObjectPool<>(null));
     }
-
 
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
@@ -2085,28 +2107,6 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
     }
 
-    /**
-     * POOL-376
-     */
-    @Test
-    @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
-    public void testNoInvalidateNPE() throws Exception {
-        genericObjectPool.setMaxTotal(1);
-        genericObjectPool.setTestOnCreate(true);
-        genericObjectPool.setMaxWaitMillis(-1);
-        final String obj = genericObjectPool.borrowObject();
-        // Make validation fail - this will cause create() to return null
-        simpleFactory.setValid(false);
-        // Create a take waiter
-        final WaitingTestThread wtt = new WaitingTestThread(genericObjectPool, 200);
-        wtt.start();
-        // Give wtt time to start
-        Thread.sleep(200);
-        genericObjectPool.invalidateObject(obj);
-        // Now allow create to succeed so waiter can be served
-        simpleFactory.setValid(true);
-    }
-
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
     public void testMaxTotal() throws Exception {
@@ -2480,6 +2480,28 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
     }
 
+    /**
+     * POOL-376
+     */
+    @Test
+    @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
+    public void testNoInvalidateNPE() throws Exception {
+        genericObjectPool.setMaxTotal(1);
+        genericObjectPool.setTestOnCreate(true);
+        genericObjectPool.setMaxWaitMillis(-1);
+        final String obj = genericObjectPool.borrowObject();
+        // Make validation fail - this will cause create() to return null
+        simpleFactory.setValid(false);
+        // Create a take waiter
+        final WaitingTestThread wtt = new WaitingTestThread(genericObjectPool, 200);
+        wtt.start();
+        // Give wtt time to start
+        Thread.sleep(200);
+        genericObjectPool.invalidateObject(obj);
+        // Now allow create to succeed so waiter can be served
+        simpleFactory.setValid(true);
+    }
+
     public void testPreparePool() throws Exception {
         genericObjectPool.setMinIdle(1);
         genericObjectPool.setMaxTotal(1);
@@ -2780,6 +2802,39 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     /**
+     * Tests POOL-361
+     */
+    @Test
+    public void testValidateOnCreate() throws Exception {
+        genericObjectPool.setTestOnCreate(true);
+        genericObjectPool.addObject();
+        assertEquals(1, simpleFactory.validateCounter);
+    }
+
+    /**
+     * Tests POOL-361
+     */
+    @Test
+    public void testValidateOnCreateFailure() throws Exception {
+        genericObjectPool.setTestOnCreate(true);
+        genericObjectPool.setTestOnBorrow(false);
+        genericObjectPool.setMaxTotal(2);
+        simpleFactory.setValid(false);
+        // Make sure failed validations do not leak capacity
+        genericObjectPool.addObject();
+        genericObjectPool.addObject();
+        assertEquals(0, genericObjectPool.getNumIdle());
+        assertEquals(0, genericObjectPool.getNumActive());
+        simpleFactory.setValid(true);
+        final String obj = genericObjectPool.borrowObject();
+        assertNotNull(obj);
+        genericObjectPool.addObject();
+        // Should have one idle, one out now
+        assertEquals(1, genericObjectPool.getNumIdle());
+        assertEquals(1, genericObjectPool.getNumActive());
+	}
+
+    /**
      * Verify that threads waiting on a depleted pool get served when a returning object fails
      * validation.
      *
@@ -2835,39 +2890,6 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
         assertEquals(1, simpleFactory.validateCounter);
     }
-
-    /**
-     * Tests POOL-361
-     */
-    @Test
-    public void testValidateOnCreate() throws Exception {
-        genericObjectPool.setTestOnCreate(true);
-        genericObjectPool.addObject();
-        assertEquals(1, simpleFactory.validateCounter);
-    }
-
-    /**
-     * Tests POOL-361
-     */
-    @Test
-    public void testValidateOnCreateFailure() throws Exception {
-        genericObjectPool.setTestOnCreate(true);
-        genericObjectPool.setTestOnBorrow(false);
-        genericObjectPool.setMaxTotal(2);
-        simpleFactory.setValid(false);
-        // Make sure failed validations do not leak capacity
-        genericObjectPool.addObject();
-        genericObjectPool.addObject();
-        assertEquals(0, genericObjectPool.getNumIdle());
-        assertEquals(0, genericObjectPool.getNumActive());
-        simpleFactory.setValid(true);
-        final String obj = genericObjectPool.borrowObject();
-        assertNotNull(obj);
-        genericObjectPool.addObject();
-        // Should have one idle, one out now
-        assertEquals(1, genericObjectPool.getNumIdle());
-        assertEquals(1, genericObjectPool.getNumActive());
-	}
 
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
@@ -2977,28 +2999,6 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         genericObjectPool.returnObject(obj1);
         assertEquals(1, genericObjectPool.getNumIdle());
         genericObjectPool.close();
-    }
-
-    /**
-     * Check that a pool that starts an evictor, but is never closed does not
-     * leave EvictionTimer executor running. Confirmation check is in teardown.
-     */
-    @SuppressWarnings("deprecation")
-    @Test
-    public void testAbandonedPool() throws Exception {
-        final GenericObjectPoolConfig config = new GenericObjectPoolConfig();
-        config.setJmxEnabled(false);
-        GenericObjectPool<String> abandoned = new GenericObjectPool<>(simpleFactory, config);
-        abandoned.setTimeBetweenEvictionRuns(Duration.ofMillis(100)); // Starts evictor
-        assertEquals(abandoned.getRemoveAbandonedTimeout(), abandoned.getRemoveAbandonedTimeoutDuration().getSeconds());
-
-        // This is ugly, but forces gc to hit the pool
-        final WeakReference<GenericObjectPool> ref = new WeakReference<>(abandoned);
-        abandoned = null;
-        while (ref.get() != null) {
-            System.gc();
-            Thread.sleep(100);
-        }
     }
 
 }
