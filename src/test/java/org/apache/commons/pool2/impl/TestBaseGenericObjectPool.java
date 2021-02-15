@@ -50,7 +50,7 @@ public class TestBaseGenericObjectPool {
     @Test
     public void testActiveTimeStatistics() {
         for (int i = 0; i < 99; i++) { // must be < MEAN_TIMING_STATS_CACHE_SIZE
-            pool.updateStatsReturn(i);
+            pool.updateStatsReturn(Duration.ofMillis(i));
         }
         assertEquals(49, pool.getMeanActiveTimeMillis(), Double.MIN_VALUE);
     }
@@ -58,10 +58,10 @@ public class TestBaseGenericObjectPool {
     @Test
     public void testBorrowWaitStatistics() {
         final DefaultPooledObject<String> p = (DefaultPooledObject<String>) factory.makeObject();
-        pool.updateStatsBorrow(p, 10);
-        pool.updateStatsBorrow(p, 20);
-        pool.updateStatsBorrow(p, 20);
-        pool.updateStatsBorrow(p, 30);
+        pool.updateStatsBorrow(p, Duration.ofMillis(10));
+        pool.updateStatsBorrow(p, Duration.ofMillis(20));
+        pool.updateStatsBorrow(p, Duration.ofMillis(20));
+        pool.updateStatsBorrow(p, Duration.ofMillis(30));
         assertEquals(20, pool.getMeanBorrowWaitTimeMillis(), Double.MIN_VALUE);
         assertEquals(30, pool.getMaxBorrowWaitTimeMillis(), 0);
     }
@@ -69,13 +69,13 @@ public class TestBaseGenericObjectPool {
     public void testBorrowWaitStatisticsMax() {
         final DefaultPooledObject<String> p = (DefaultPooledObject<String>) factory.makeObject();
         assertEquals(0, pool.getMaxBorrowWaitTimeMillis(), Double.MIN_VALUE);
-        pool.updateStatsBorrow(p, 0);
+        pool.updateStatsBorrow(p, Duration.ZERO);
         assertEquals(0, pool.getMaxBorrowWaitTimeMillis(), Double.MIN_VALUE);
-        pool.updateStatsBorrow(p, 20);
+        pool.updateStatsBorrow(p, Duration.ofMillis(20));
         assertEquals(20, pool.getMaxBorrowWaitTimeMillis(), Double.MIN_VALUE);
-        pool.updateStatsBorrow(p, 20);
+        pool.updateStatsBorrow(p, Duration.ofMillis(20));
         assertEquals(20, pool.getMaxBorrowWaitTimeMillis(), Double.MIN_VALUE);
-        pool.updateStatsBorrow(p, 10);
+        pool.updateStatsBorrow(p, Duration.ofMillis(10));
         assertEquals(20, pool.getMaxBorrowWaitTimeMillis(), Double.MIN_VALUE);
     }
 

@@ -35,21 +35,20 @@ public class TestDefaultPooledObject {
      * @throws Exception May occur in some failure modes
      */
     @Test
-    public void testgetIdleTimeMillis() throws Exception {
+    public void testGetIdleTimeMillis() throws Exception {
         final DefaultPooledObject<Object> dpo = new DefaultPooledObject<>(new Object());
         final AtomicBoolean negativeIdleTimeReturned = new AtomicBoolean(false);
-        final ExecutorService executor = Executors.newFixedThreadPool(
-                                      Runtime.getRuntime().availableProcessors()*3);
+        final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 3);
         final Runnable allocateAndDeallocateTask = () -> {
-            for (int i1=0;i1<10000;i1++) {
-                if (dpo.getIdleTimeMillis() < 0) {
+            for (int i1 = 0; i1 < 10000; i1++) {
+                if (dpo.getIdleTime().isNegative()) {
                     negativeIdleTimeReturned.set(true);
                     break;
                 }
             }
             dpo.allocate();
-            for (int i2=0;i2<10000;i2++) {
-                if (dpo.getIdleTimeMillis() < 0) {
+            for (int i2 = 0; i2 < 10000; i2++) {
+                if (dpo.getIdleTime().isNegative()) {
                     negativeIdleTimeReturned.set(true);
                     break;
                 }
@@ -57,8 +56,8 @@ public class TestDefaultPooledObject {
             dpo.deallocate();
         };
         final Runnable getIdleTimeTask = () -> {
-            for (int i=0;i<10000;i++) {
-                if (dpo.getIdleTimeMillis() < 0) {
+            for (int i = 0; i < 10000; i++) {
+                if (dpo.getIdleTime().isNegative()) {
                     negativeIdleTimeReturned.set(true);
                     break;
                 }
@@ -67,15 +66,15 @@ public class TestDefaultPooledObject {
         final double probabilityOfAllocationTask = 0.7;
         final List<Future<?>> futures = new ArrayList<>();
         for (int i = 1; i <= 10000; i++) {
-            final Runnable randomTask = Math.random() < probabilityOfAllocationTask ?
-                                  allocateAndDeallocateTask : getIdleTimeTask;
+            final Runnable randomTask = Math.random() < probabilityOfAllocationTask ? allocateAndDeallocateTask
+                    : getIdleTimeTask;
             futures.add(executor.submit(randomTask));
         }
-        for (final Future<?> future: futures) {
+        for (final Future<?> future : futures) {
             future.get();
         }
         assertFalse(negativeIdleTimeReturned.get(),
-           "DefaultPooledObject.getIdleTimeMillis() returned a negative value");
+                "DefaultPooledObject.getIdleTimeMillis() returned a negative value");
     }
 
 }

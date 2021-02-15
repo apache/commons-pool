@@ -248,12 +248,16 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
          *
          * @param size number of values to maintain in the cache.
          */
-        public StatsStore(final int size) {
+        StatsStore(final int size) {
             this.size = size;
             values = new AtomicLong[size];
             for (int i = 0; i < size; i++) {
                 values[i] = new AtomicLong(-1);
             }
+        }
+
+        void add(Duration value) {
+            add(value.toMillis());
         }
 
         /**
@@ -262,7 +266,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
          *
          * @param value new value to add to the cache.
          */
-        public synchronized void add(final long value) {
+        synchronized void add(final long value) {
             values[index].set(value);
             index++;
             if (index == size) {
@@ -1544,30 +1548,33 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
 
     /**
      * Updates statistics after an object is borrowed from the pool.
+     *
      * @param p object borrowed from the pool
      * @param waitTime time (in milliseconds) that the borrowing thread had to wait
      */
-    final void updateStatsBorrow(final PooledObject<T> p, final long waitTime) {
+    final void updateStatsBorrow(final PooledObject<T> p, final Duration waitTime) {
         borrowedCount.incrementAndGet();
-        idleTimes.add(p.getIdleTimeMillis());
+        idleTimes.add(p.getIdleTime());
         waitTimes.add(waitTime);
+        final long waitTimeMillis = waitTime.toMillis();
 
         // lock-free optimistic-locking maximum
-        long currentMax;
+        long currentMaxMillis;
         do {
-            currentMax = maxBorrowWaitTimeMillis.get();
-            if (currentMax >= waitTime) {
+            currentMaxMillis = maxBorrowWaitTimeMillis.get();
+            if (currentMaxMillis >= waitTimeMillis) {
                 break;
             }
-        } while (!maxBorrowWaitTimeMillis.compareAndSet(currentMax, waitTime));
+        } while (!maxBorrowWaitTimeMillis.compareAndSet(currentMaxMillis, waitTimeMillis));
     }
 
     /**
      * Updates statistics after an object is returned to the pool.
+     *
      * @param activeTime the amount of time (in milliseconds) that the returning
      * object was checked out
      */
-    final void updateStatsReturn(final long activeTime) {
+    final void updateStatsReturn(final Duration activeTime) {
         returnedCount.incrementAndGet();
         activeTimes.add(activeTime);
     }

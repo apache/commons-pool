@@ -17,6 +17,7 @@
 package org.apache.commons.pool2;
 
 import java.io.PrintWriter;
+import java.time.Duration;
 import java.util.Deque;
 
 /**
@@ -75,7 +76,19 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     boolean equals(Object obj);
 
     /**
-     * Gets the time in milliseconds that this object last spent in the
+     * Gets the amount of time this object last spent in the
+     * active state (it may still be active in which case subsequent calls will
+     * return an increased value).
+     *
+     * @return The duration last spent in the active state
+     * @since 2.12.0
+     */
+    default Duration getActiveTime() {
+        return Duration.ofMillis(getActiveTimeMillis());
+    }
+
+    /**
+     * Gets the amount of time in milliseconds this object last spent in the
      * active state (it may still be active in which case subsequent calls will
      * return an increased value).
      *
@@ -102,7 +115,19 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     long getCreateTime();
 
     /**
-     * Gets the time in milliseconds that this object last spend in the
+     * Gets the amount of time that this object last spend in the
+     * idle state (it may still be idle in which case subsequent calls will
+     * return an increased value).
+     *
+     * @return The amount of time in last spent in the idle state.
+     * @since 2.10.0
+     */
+    default Duration getIdleTime() {
+        return Duration.ofMillis(getIdleTimeMillis());
+    }
+
+    /**
+     * Gets the amount of time in milliseconds that this object last spend in the
      * idle state (it may still be idle in which case subsequent calls will
      * return an increased value).
      *

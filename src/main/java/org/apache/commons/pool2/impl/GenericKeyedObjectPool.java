@@ -16,6 +16,7 @@
  */
 package org.apache.commons.pool2.impl;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
@@ -474,7 +475,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
             deregister(key);
         }
 
-        updateStatsBorrow(p, System.currentTimeMillis() - waitTimeMillis);
+        updateStatsBorrow(p, Duration.ofMillis(System.currentTimeMillis() - waitTimeMillis));
 
         return p.getObject();
     }
@@ -1427,7 +1428,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
 
         markReturningState(p);
 
-        final long activeTime = p.getActiveTimeMillis();
+        final Duration activeTime = p.getActiveTime();
 
         try {
             if (getTestOnReturn() && !factory.validateObject(key, p)) {

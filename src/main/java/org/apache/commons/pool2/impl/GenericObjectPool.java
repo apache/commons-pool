@@ -16,6 +16,16 @@
  */
 package org.apache.commons.pool2.impl;
 
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.apache.commons.pool2.DestroyMode;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PoolUtils;
@@ -25,17 +35,6 @@ import org.apache.commons.pool2.PooledObjectState;
 import org.apache.commons.pool2.SwallowedExceptionListener;
 import org.apache.commons.pool2.TrackedUse;
 import org.apache.commons.pool2.UsageTracking;
-
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * A configurable {@link ObjectPool} implementation.
@@ -272,7 +271,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * available instances in request arrival order.
      * </p>
      *
-     * @param borrowMaxWaitMillis The time to wait in milliseconds for an object
+     * @param borrowMaxWait The time to wait for an object
      *                            to become available
      *
      * @return object instance from the pool
@@ -281,14 +280,14 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      *
      * @throws Exception if an object instance cannot be returned due to an
      *                   error
+     * @since 2.10.0
      */
-    public T borrowObject(final long borrowMaxWaitMillis) throws Exception {
+    public T borrowObject(final Duration borrowMaxWait) throws Exception {
         assertOpen();
 
         final AbandonedConfig ac = this.abandonedConfig;
-        if (ac != null && ac.getRemoveAbandonedOnBorrow() &&
-                (getNumIdle() < 2) &&
-                (getNumActive() > getMaxTotal() - 3) ) {
+        if (ac != null && ac.getRemoveAbandonedOnBorrow() && (getNumIdle() < 2) &&
+                (getNumActive() > getMaxTotal() - 3)) {
             removeAbandoned(ac);
         }
 
@@ -312,16 +311,14 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             }
             if (blockWhenExhausted) {
                 if (p == null) {
-                    if (borrowMaxWaitMillis < 0) {
+                    if (borrowMaxWait.isNegative()) {
                         p = idleObjects.takeFirst();
                     } else {
-                        p = idleObjects.pollFirst(borrowMaxWaitMillis,
-                                TimeUnit.MILLISECONDS);
+                        p = idleObjects.pollFirst(borrowMaxWait);
                     }
                 }
                 if (p == null) {
-                    throw new NoSuchElementException(
-                            "Timeout waiting for idle object");
+                    throw new NoSuchElementException("Timeout waiting for idle object");
                 }
             } else {
                 if (p == null) {
@@ -343,8 +340,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                     }
                     p = null;
                     if (create) {
-                        final NoSuchElementException nsee = new NoSuchElementException(
-                                "Unable to activate object");
+                        final NoSuchElementException nsee = new NoSuchElementException("Unable to activate object");
                         nsee.initCause(e);
                         throw nsee;
                     }
@@ -367,8 +363,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                         }
                         p = null;
                         if (create) {
-                            final NoSuchElementException nsee = new NoSuchElementException(
-                                    "Unable to validate object");
+                            final NoSuchElementException nsee = new NoSuchElementException("Unable to validate object");
                             nsee.initCause(validationThrowable);
                             throw nsee;
                         }
@@ -377,9 +372,62 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             }
         }
 
-        updateStatsBorrow(p, System.currentTimeMillis() - waitTimeMillis);
+        updateStatsBorrow(p, Duration.ofMillis(System.currentTimeMillis() - waitTimeMillis));
 
         return p.getObject();
+    }
+
+    /**
+     * Borrows an object from the pool using the specific waiting time which only
+     * applies if {@link #getBlockWhenExhausted()} is true.
+     * <p>
+     * If there is one or more idle instance available in the pool, then an
+     * idle instance will be selected based on the value of {@link #getLifo()},
+     * activated and returned. If activation fails, or {@link #getTestOnBorrow()
+     * testOnBorrow} is set to {@code true} and validation fails, the
+     * instance is destroyed and the next available instance is examined. This
+     * continues until either a valid instance is returned or there are no more
+     * idle instances available.
+     * </p>
+     * <p>
+     * If there are no idle instances available in the pool, behavior depends on
+     * the {@link #getMaxTotal() maxTotal}, (if applicable)
+     * {@link #getBlockWhenExhausted()} and the value passed in to the
+     * {@code borrowMaxWaitMillis} parameter. If the number of instances
+     * checked out from the pool is less than {@code maxTotal,} a new
+     * instance is created, activated and (if applicable) validated and returned
+     * to the caller. If validation fails, a {@code NoSuchElementException}
+     * is thrown.
+     * </p>
+     * <p>
+     * If the pool is exhausted (no available idle instances and no capacity to
+     * create new ones), this method will either block (if
+     * {@link #getBlockWhenExhausted()} is true) or throw a
+     * {@code NoSuchElementException} (if
+     * {@link #getBlockWhenExhausted()} is false). The length of time that this
+     * method will block when {@link #getBlockWhenExhausted()} is true is
+     * determined by the value passed in to the {@code borrowMaxWaitMillis}
+     * parameter.
+     * </p>
+     * <p>
+     * When the pool is exhausted, multiple calling threads may be
+     * simultaneously blocked waiting for instances to become available. A
+     * "fairness" algorithm has been implemented to ensure that threads receive
+     * available instances in request arrival order.
+     * </p>
+     *
+     * @param borrowMaxWaitMillis The time to wait in milliseconds for an object
+     *                            to become available
+     *
+     * @return object instance from the pool
+     *
+     * @throws NoSuchElementException if an instance cannot be returned
+     *
+     * @throws Exception if an object instance cannot be returned due to an
+     *                   error
+     */
+    public T borrowObject(final long borrowMaxWaitMillis) throws Exception {
+        return borrowObject(Duration.ofMillis(borrowMaxWaitMillis));
     }
 
     /**
@@ -1080,7 +1128,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
 
         markReturningState(p);
 
-        final long activeTime = p.getActiveTimeMillis();
+        final Duration activeTime = p.getActiveTime();
 
         if (getTestOnReturn() && !factory.validateObject(p)) {
             try {
