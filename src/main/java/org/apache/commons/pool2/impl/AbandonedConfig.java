@@ -32,10 +32,12 @@ import org.apache.commons.pool2.UsageTracking;
  */
 public class AbandonedConfig {
 
+    private static final Duration DEFAULT_REMOVE_ABANDONED_TIMEOUT = Duration.ofSeconds(300);
+
     /**
      * Whether or not borrowObject performs abandoned object removal.
      */
-    private boolean removeAbandonedOnBorrow = false;
+    private boolean removeAbandonedOnBorrow;
 
     /**
      * <p>Flag to remove abandoned objects if they exceed the
@@ -69,7 +71,7 @@ public class AbandonedConfig {
      * Whether or not pool maintenance (evictor) performs abandoned object
      * removal.
      */
-    private boolean removeAbandonedOnMaintenance = false;
+    private boolean removeAbandonedOnMaintenance;
 
     /**
      * <p>Flag to remove abandoned objects if they exceed the
@@ -105,7 +107,7 @@ public class AbandonedConfig {
     /**
      * Timeout before an abandoned object can be removed.
      */
-    private Duration removeAbandonedTimeout = Duration.ofSeconds(300);
+    private Duration removeAbandonedTimeout = DEFAULT_REMOVE_ABANDONED_TIMEOUT;
 
     /**
      * <p>Timeout in seconds before an abandoned object can be removed.</p>
