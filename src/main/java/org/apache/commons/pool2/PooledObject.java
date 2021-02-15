@@ -75,7 +75,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     boolean equals(Object obj);
 
     /**
-    * Gets  the time in milliseconds that this object last spent in the
+     * Gets the time in milliseconds that this object last spent in the
      * active state (it may still be active in which case subsequent calls will
      * return an increased value).
      *
@@ -94,7 +94,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     }
 
     /**
-    * Gets  the time (using the same basis as
+     * Gets the time (using the same basis as
      * {@link System#currentTimeMillis()}) that this object was created.
      *
      * @return The creation time for the wrapped object
@@ -102,7 +102,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     long getCreateTime();
 
     /**
-    * Gets  the time in milliseconds that this object last spend in the
+     * Gets the time in milliseconds that this object last spend in the
      * idle state (it may still be idle in which case subsequent calls will
      * return an increased value).
      *
@@ -111,14 +111,14 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     long getIdleTimeMillis();
 
     /**
-    * Gets  the time the wrapped object was last borrowed.
+     * Gets the time the wrapped object was last borrowed.
      *
      * @return The time the object was last borrowed
      */
     long getLastBorrowTime();
 
     /**
-    * Gets  the time the wrapped object was last returned.
+     * Gets the time the wrapped object was last returned.
      *
      * @return The time the object was last returned
      */
@@ -136,7 +136,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     long getLastUsedTime();
 
     /**
-    * Gets  the underlying object that is wrapped by this instance of
+     * Gets the underlying object that is wrapped by this instance of
      * {@link PooledObject}.
      *
      * @return The wrapped object
