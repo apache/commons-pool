@@ -51,7 +51,7 @@ The <action> type attribute can be add,update,fix,remove.
     </action>
     <!-- UPDATE -->
     <action dev="ggregory" type="update" due-to="Dependabot">
-      Bump spotbugs-maven-plugin from 4.0.4 to 4.2.0 #48, #53, #59.
+      Bump spotbugs-maven-plugin from 4.0.4 to 4.2.1 #48, #53, #59, #62.
     </action>
     <action dev="ggregory" type="update" due-to="Dependabot">
       Bump actions/setup-java from v1.4.2 to v1.4.3 #47.
@@ -61,9 +61,6 @@ The <action> type attribute can be add,update,fix,remove.
     </action>
     <action dev="ggregory" type="update" due-to="Dependabot">
       Bump biz.aQute.bndlib from 5.1.2 to 5.2.0 #51.
-    </action>
-    <action dev="ggregory" type="update" due-to="Dependabot">
-      Bump spotbugs from 4.1.3 to 4.2.0 #52, #56.
     </action>
     <action dev="ggregory" type="update" due-to="Arturo Bernal" issue="POOL-389">
       Migrate to JUnit 5 #57.
@@ -79,6 +76,15 @@ The <action> type attribute can be add,update,fix,remove.
     </action>
     <action dev="ggregory" type="update" due-to="Gary Gregory">
       Update commons.japicmp.version 0.14.3 -> 0.15.2.
+    </action>
+    <action dev="ggregory" type="update" due-to="Dependabot">
+      Bump actions/cache from v2 to v2.1.4 #65.
+    </action>
+    <action dev="ggregory" type="update" due-to="Dependabot">
+      Bump maven-checkstyle-plugin from 3.1.1 to 3.1.2 #61.
+    </action>
+    <action dev="ggregory" type="update" due-to="Dependabot">
+      Bump asm-util from 9.0 to 9.1 #64.
     </action>
   </release>
   <release version="2.9.0" date="2020-09-25" description="This is a minor release (Java 8).">
