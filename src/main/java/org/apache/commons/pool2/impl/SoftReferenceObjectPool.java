@@ -52,14 +52,14 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
     private final ReferenceQueue<T> refQueue = new ReferenceQueue<>();
 
     /** Count of instances that have been checkout out to pool clients */
-    private int numActive = 0; // @GuardedBy("this")
+    private int numActive; // @GuardedBy("this")
 
     /** Total number of instances that have been destroyed */
-    private long destroyCount = 0; // @GuardedBy("this")
+    private long destroyCount; // @GuardedBy("this")
 
 
     /** Total number of instances that have been created */
-    private long createCount = 0; // @GuardedBy("this")
+    private long createCount; // @GuardedBy("this")
 
     /** Idle references - waiting to be borrowed */
     private final LinkedBlockingDeque<PooledSoftReference<T>> idleReferences =

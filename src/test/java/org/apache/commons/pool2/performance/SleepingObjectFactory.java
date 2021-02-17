@@ -26,8 +26,8 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
  */
 public class SleepingObjectFactory implements PooledObjectFactory<Integer> {
 
-    private int counter = 0;
-    private boolean debug = false;
+    private int counter;
+    private boolean debug;
 
     @Override
     public void activateObject(final PooledObject<Integer> obj) throws Exception {

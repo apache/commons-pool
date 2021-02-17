@@ -28,13 +28,13 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class Waiter {
     private static final AtomicInteger instanceCount = new AtomicInteger();
-    private boolean active = false;
-    private boolean valid = true;
-    private long latency = 0;
-    private long lastPassivatedMillis = 0;
-    private long lastIdleTimeMillis = 0;
-    private long passivationCount = 0;
-    private long validationCount = 0;
+    private boolean active;
+    private boolean valid;
+    private long latency;
+    private long lastPassivatedMillis;
+    private long lastIdleTimeMillis;
+    private long passivationCount;
+    private long validationCount;
     private final int id = instanceCount.getAndIncrement();
 
     public Waiter(final boolean active, final boolean valid, final long latency) {

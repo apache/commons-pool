@@ -31,8 +31,8 @@ import org.junit.jupiter.api.Test;
  */
 public class TestBaseGenericObjectPool {
 
-    BaseGenericObjectPool<String> pool = null;
-    SimpleFactory factory = null;
+    BaseGenericObjectPool<String> pool;
+    SimpleFactory factory;
 
     @BeforeEach
     public void setUp() throws Exception {

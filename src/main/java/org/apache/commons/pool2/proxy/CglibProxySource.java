@@ -64,8 +64,7 @@ public class CglibProxySource<T> implements ProxySource<T> {
         final
         CglibProxyHandler<T> cglibProxyHandler =
                 (CglibProxyHandler<T>) ((Factory) proxy).getCallback(0);
-        final T pooledObject = cglibProxyHandler.disableProxy();
-        return pooledObject;
+        return cglibProxyHandler.disableProxy();
     }
 
     /**

@@ -22,12 +22,12 @@ package org.apache.commons.pool2;
  *
  */
 public class VisitTracker<K> {
-    private int validateCount = 0;
-    private int activateCount = 0;
-    private int passivateCount = 0;
-    private boolean destroyed = false;
-    private int id = 0;
-    private K key = null;
+    private int validateCount;
+    private int activateCount;
+    private int passivateCount;
+    private boolean destroyed;
+    private int id;
+    private K key;
 
     public VisitTracker() {
         reset();
