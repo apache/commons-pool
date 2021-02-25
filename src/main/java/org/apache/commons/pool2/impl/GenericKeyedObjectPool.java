@@ -183,6 +183,8 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
 
     }
 
+    private static final Duration DEFAULT_REMOVE_ABANDONED_TIMEOUT = Duration.ofSeconds(Integer.MAX_VALUE);
+
     // JMX specific attributes
     private static final String ONAME_BASE =
             "org.apache.commons.pool2:type=GenericKeyedObjectPool,name=";
@@ -233,6 +235,9 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
 
     private K evictionKey = null; // @GuardedBy("evictionLock")
 
+    // Additional configuration properties for abandoned object tracking
+    private volatile AbandonedConfig abandonedConfig;
+
     /**
      * Create a new {@code GenericKeyedObjectPool} using defaults from
      * {@link GenericKeyedObjectPoolConfig}.
@@ -265,6 +270,25 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         this.fairness = config.getFairness();
 
         setConfig(config);
+    }
+
+    /**
+     * Creates a new {@code GenericKeyedObjectPool} that tracks and destroys
+     * objects that are checked out, but never returned to the pool.
+     *
+     * @param factory   The object factory to be used to create object instances
+     *                  used by this pool
+     * @param config    The base pool configuration to use for this pool instance.
+     *                  The configuration is used by value. Subsequent changes to
+     *                  the configuration object will not be reflected in the
+     *                  pool.
+     * @param abandonedConfig  Configuration for abandoned object identification
+     *                         and removal.  The configuration is used by value.
+     */
+    public GenericKeyedObjectPool(final KeyedPooledObjectFactory<K, T> factory,
+            final GenericKeyedObjectPoolConfig<T> config, final AbandonedConfig abandonedConfig) {
+        this(factory, config);
+        setAbandonedConfig(abandonedConfig);
     }
 
     /**
@@ -384,6 +408,12 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      */
     public T borrowObject(final K key, final long borrowMaxWaitMillis) throws Exception {
         assertOpen();
+
+        final AbandonedConfig ac = this.abandonedConfig;
+        if (ac != null && ac.getRemoveAbandonedOnBorrow() && (getNumIdle() < 2) &&
+                (getNumActive() > getMaxTotal() - 3)) {
+            removeAbandoned(ac);
+        }
 
         PooledObject<T> p = null;
 
@@ -767,6 +797,12 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
             }
         }
 
+        final AbandonedConfig ac = this.abandonedConfig;
+        if (ac != null && ac.getLogAbandoned()) {
+            p.setLogAbandoned(true);
+            p.setRequireFullStackTrace(ac.getRequireFullStackTrace());
+        }
+
         createdCount.incrementAndGet();
         objectDeque.getAllObjects().put(new IdentityWrapper<>(p.getObject()), p);
         return p;
@@ -909,122 +945,125 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     public void evict() throws Exception {
         assertOpen();
 
-        if (getNumIdle() == 0) {
-            return;
-        }
+        if (getNumIdle() > 0) {
 
-        PooledObject<T> underTest = null;
-        final EvictionPolicy<T> evictionPolicy = getEvictionPolicy();
+            PooledObject<T> underTest = null;
+            final EvictionPolicy<T> evictionPolicy = getEvictionPolicy();
 
-        synchronized (evictionLock) {
-            final EvictionConfig evictionConfig = new EvictionConfig(
-                    getMinEvictableIdleTime(),
-                    getSoftMinEvictableIdleTime(),
-                    getMinIdlePerKey());
+            synchronized (evictionLock) {
+                final EvictionConfig evictionConfig = new EvictionConfig(
+                        getMinEvictableIdleTime(),
+                        getSoftMinEvictableIdleTime(),
+                        getMinIdlePerKey());
 
-            final boolean testWhileIdle = getTestWhileIdle();
+                final boolean testWhileIdle = getTestWhileIdle();
 
-            for (int i = 0, m = getNumTests(); i < m; i++) {
-                if(evictionIterator == null || !evictionIterator.hasNext()) {
-                    if (evictionKeyIterator == null ||
-                            !evictionKeyIterator.hasNext()) {
-                        final List<K> keyCopy = new ArrayList<>();
-                        final Lock readLock = keyLock.readLock();
-                        readLock.lock();
-                        try {
-                            keyCopy.addAll(poolKeyList);
-                        } finally {
-                            readLock.unlock();
+                for (int i = 0, m = getNumTests(); i < m; i++) {
+                    if(evictionIterator == null || !evictionIterator.hasNext()) {
+                        if (evictionKeyIterator == null ||
+                                !evictionKeyIterator.hasNext()) {
+                            final List<K> keyCopy = new ArrayList<>();
+                            final Lock readLock = keyLock.readLock();
+                            readLock.lock();
+                            try {
+                                keyCopy.addAll(poolKeyList);
+                            } finally {
+                                readLock.unlock();
+                            }
+                            evictionKeyIterator = keyCopy.iterator();
                         }
-                        evictionKeyIterator = keyCopy.iterator();
+                        while (evictionKeyIterator.hasNext()) {
+                            evictionKey = evictionKeyIterator.next();
+                            final ObjectDeque<T> objectDeque = poolMap.get(evictionKey);
+                            if (objectDeque == null) {
+                                continue;
+                            }
+
+                            final Deque<PooledObject<T>> idleObjects = objectDeque.getIdleObjects();
+                            evictionIterator = new EvictionIterator(idleObjects);
+                            if (evictionIterator.hasNext()) {
+                                break;
+                            }
+                            evictionIterator = null;
+                        }
                     }
-                    while (evictionKeyIterator.hasNext()) {
-                        evictionKey = evictionKeyIterator.next();
-                        final ObjectDeque<T> objectDeque = poolMap.get(evictionKey);
-                        if (objectDeque == null) {
-                            continue;
-                        }
-
-                        final Deque<PooledObject<T>> idleObjects = objectDeque.getIdleObjects();
-                        evictionIterator = new EvictionIterator(idleObjects);
-                        if (evictionIterator.hasNext()) {
-                            break;
-                        }
+                    if (evictionIterator == null) {
+                        // Pools exhausted
+                        return;
+                    }
+                    final Deque<PooledObject<T>> idleObjects;
+                    try {
+                        underTest = evictionIterator.next();
+                        idleObjects = evictionIterator.getIdleObjects();
+                    } catch (final NoSuchElementException nsee) {
+                        // Object was borrowed in another thread
+                        // Don't count this as an eviction test so reduce i;
+                        i--;
                         evictionIterator = null;
+                        continue;
                     }
-                }
-                if (evictionIterator == null) {
-                    // Pools exhausted
-                    return;
-                }
-                final Deque<PooledObject<T>> idleObjects;
-                try {
-                    underTest = evictionIterator.next();
-                    idleObjects = evictionIterator.getIdleObjects();
-                } catch (final NoSuchElementException nsee) {
-                    // Object was borrowed in another thread
-                    // Don't count this as an eviction test so reduce i;
-                    i--;
-                    evictionIterator = null;
-                    continue;
-                }
 
-                if (!underTest.startEvictionTest()) {
-                    // Object was borrowed in another thread
-                    // Don't count this as an eviction test so reduce i;
-                    i--;
-                    continue;
-                }
+                    if (!underTest.startEvictionTest()) {
+                        // Object was borrowed in another thread
+                        // Don't count this as an eviction test so reduce i;
+                        i--;
+                        continue;
+                    }
 
-                // User provided eviction policy could throw all sorts of
-                // crazy exceptions. Protect against such an exception
-                // killing the eviction thread.
-                boolean evict;
-                try {
-                    evict = evictionPolicy.evict(evictionConfig, underTest,
-                            poolMap.get(evictionKey).getIdleObjects().size());
-                } catch (final Throwable t) {
-                    // Slightly convoluted as SwallowedExceptionListener
-                    // uses Exception rather than Throwable
-                    PoolUtils.checkRethrow(t);
-                    swallowException(new Exception(t));
-                    // Don't evict on error conditions
-                    evict = false;
-                }
+                    // User provided eviction policy could throw all sorts of
+                    // crazy exceptions. Protect against such an exception
+                    // killing the eviction thread.
+                    boolean evict;
+                    try {
+                        evict = evictionPolicy.evict(evictionConfig, underTest,
+                                poolMap.get(evictionKey).getIdleObjects().size());
+                    } catch (final Throwable t) {
+                        // Slightly convoluted as SwallowedExceptionListener
+                        // uses Exception rather than Throwable
+                        PoolUtils.checkRethrow(t);
+                        swallowException(new Exception(t));
+                        // Don't evict on error conditions
+                        evict = false;
+                    }
 
-                if (evict) {
-                    destroy(evictionKey, underTest, true, DestroyMode.NORMAL);
-                    destroyedByEvictorCount.incrementAndGet();
-                } else {
-                    if (testWhileIdle) {
-                        boolean active = false;
-                        try {
-                            factory.activateObject(evictionKey, underTest);
-                            active = true;
-                        } catch (final Exception e) {
-                            destroy(evictionKey, underTest, true, DestroyMode.NORMAL);
-                            destroyedByEvictorCount.incrementAndGet();
-                        }
-                        if (active) {
-                            if (!factory.validateObject(evictionKey, underTest)) {
+                    if (evict) {
+                        destroy(evictionKey, underTest, true, DestroyMode.NORMAL);
+                        destroyedByEvictorCount.incrementAndGet();
+                    } else {
+                        if (testWhileIdle) {
+                            boolean active = false;
+                            try {
+                                factory.activateObject(evictionKey, underTest);
+                                active = true;
+                            } catch (final Exception e) {
                                 destroy(evictionKey, underTest, true, DestroyMode.NORMAL);
                                 destroyedByEvictorCount.incrementAndGet();
-                            } else {
-                                try {
-                                    factory.passivateObject(evictionKey, underTest);
-                                } catch (final Exception e) {
+                            }
+                            if (active) {
+                                if (!factory.validateObject(evictionKey, underTest)) {
                                     destroy(evictionKey, underTest, true, DestroyMode.NORMAL);
                                     destroyedByEvictorCount.incrementAndGet();
+                                } else {
+                                    try {
+                                        factory.passivateObject(evictionKey, underTest);
+                                    } catch (final Exception e) {
+                                        destroy(evictionKey, underTest, true, DestroyMode.NORMAL);
+                                        destroyedByEvictorCount.incrementAndGet();
+                                    }
                                 }
                             }
                         }
-                    }
-                    if (!underTest.endEvictionTest(idleObjects)) {
-                        // TODO - May need to add code here once additional
-                        // states are used
+                        if (!underTest.endEvictionTest(idleObjects)) {
+                            // TODO - May need to add code here once additional
+                            // states are used
+                        }
                     }
                 }
             }
+        }
+        final AbandonedConfig ac = this.abandonedConfig;
+        if (ac != null && ac.getRemoveAbandonedOnMaintenance()) {
+            removeAbandoned(ac);
         }
     }
 
@@ -1036,6 +1075,20 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      */
     public KeyedPooledObjectFactory<K, T> getFactory() {
         return factory;
+    }
+
+    /**
+     * Gets whether this pool identifies and logs any abandoned objects.
+     *
+     * @return {@code true} if abandoned object removal is configured for this
+     *         pool and removal events are to be logged otherwise {@code false}
+     *
+     * @see AbandonedConfig#getLogAbandoned()
+     */
+    @Override
+    public boolean getLogAbandoned() {
+        final AbandonedConfig ac = this.abandonedConfig;
+        return ac != null && ac.getLogAbandoned();
     }
 
     /**
@@ -1218,6 +1271,68 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         }
         return result;
     }
+    
+    /**
+     * Gets whether a check is made for abandoned objects when an object is borrowed
+     * from this pool.
+     *
+     * @return {@code true} if abandoned object removal is configured to be
+     *         activated by borrowObject otherwise {@code false}
+     *
+     * @see AbandonedConfig#getRemoveAbandonedOnBorrow()
+     */
+    @Override
+    public boolean getRemoveAbandonedOnBorrow() {
+        final AbandonedConfig ac = this.abandonedConfig;
+        return ac != null && ac.getRemoveAbandonedOnBorrow();
+    }
+
+    /**
+     * Gets whether a check is made for abandoned objects when the evictor runs.
+     *
+     * @return {@code true} if abandoned object removal is configured to be
+     *         activated when the evictor runs otherwise {@code false}
+     *
+     * @see AbandonedConfig#getRemoveAbandonedOnMaintenance()
+     */
+    @Override
+    public boolean getRemoveAbandonedOnMaintenance() {
+        final AbandonedConfig ac = this.abandonedConfig;
+        return ac != null && ac.getRemoveAbandonedOnMaintenance();
+    }
+
+    /**
+     * Gets the timeout before which an object will be considered to be
+     * abandoned by this pool.
+     *
+     * @return The abandoned object timeout in seconds if abandoned object
+     *         removal is configured for this pool; Integer.MAX_VALUE otherwise.
+     *
+     * @see AbandonedConfig#getRemoveAbandonedTimeout()
+     * @see AbandonedConfig#getRemoveAbandonedTimeoutDuration()
+     * @deprecated Use {@link #getRemoveAbandonedTimeoutDuration()}.
+     */
+    @Override
+    @Deprecated
+    public int getRemoveAbandonedTimeout() {
+        final AbandonedConfig ac = this.abandonedConfig;
+        return ac != null ? ac.getRemoveAbandonedTimeout() : Integer.MAX_VALUE;
+    }
+
+    /**
+     * Gets the timeout before which an object will be considered to be
+     * abandoned by this pool.
+     *
+     * @return The abandoned object timeout in seconds if abandoned object
+     *         removal is configured for this pool; Integer.MAX_VALUE otherwise.
+     *
+     * @see AbandonedConfig#getRemoveAbandonedTimeout()
+     * @see AbandonedConfig#getRemoveAbandonedTimeoutDuration()
+     */
+    public Duration getRemoveAbandonedTimeoutDuration() {
+        final AbandonedConfig ac = this.abandonedConfig;
+        return ac != null ? ac.getRemoveAbandonedTimeoutDuration() : DEFAULT_REMOVE_ABANDONED_TIMEOUT;
+    }
 
 
     //--- inner classes ----------------------------------------------
@@ -1295,6 +1410,16 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         if (objectDeque.idleObjects.hasTakeWaiters()) {
             addObject(key);
         }
+    }
+    /**
+     * Gets whether or not abandoned object removal is configured for this pool.
+     *
+     * @return true if this pool is configured to detect and remove
+     * abandoned objects
+     */
+    @Override
+    public boolean isAbandonedConfig() {
+        return abandonedConfig != null;
     }
     /**
      * Provides information on all the objects in the pool, both idle (waiting
@@ -1387,6 +1512,50 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
 
     //--- internal attributes --------------------------------------------------
 
+    /**
+     * Recovers abandoned objects which have been checked out but
+     * not used since longer than the removeAbandonedTimeout.
+     *
+     * @param abandonedConfig The configuration to use to identify abandoned objects
+     */
+    @SuppressWarnings("resource") // PrintWriter is managed elsewhere
+    private void removeAbandoned(final AbandonedConfig abandonedConfig) {
+        for (final Entry<K, GenericKeyedObjectPool<K, T>.ObjectDeque<T>> pool : poolMap.entrySet()) {
+            Map<IdentityWrapper<T>, PooledObject<T>> allObjects = pool.getValue().getAllObjects();
+
+            // Generate a list of abandoned objects to remove
+            final long nowMillis = System.currentTimeMillis();
+            final long timeoutMillis =
+                    nowMillis - abandonedConfig.getRemoveAbandonedTimeoutDuration().toMillis();
+            final ArrayList<PooledObject<T>> remove = new ArrayList<>();
+            final Iterator<PooledObject<T>> it = allObjects.values().iterator();
+            while (it.hasNext()) {
+                final PooledObject<T> pooledObject = it.next();
+                synchronized (pooledObject) {
+                    if (pooledObject.getState() == PooledObjectState.ALLOCATED &&
+                            pooledObject.getLastUsedTime() <= timeoutMillis) {
+                        pooledObject.markAbandoned();
+                        remove.add(pooledObject);
+                    }
+                }
+            }
+
+            // Now remove the abandoned objects
+            final Iterator<PooledObject<T>> itr = remove.iterator();
+            while (itr.hasNext()) {
+                final PooledObject<T> pooledObject = itr.next();
+                if (abandonedConfig.getLogAbandoned()) {
+                    pooledObject.printStackTrace(abandonedConfig.getLogWriter());
+                }
+                try {
+                    invalidateObject(pool.getKey(), pooledObject.getObject(), DestroyMode.ABANDONED);
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    
     /**
      * Returns an object to a keyed sub-pool.
      * <p>
@@ -1539,6 +1708,28 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         }
     }
     /**
+     * Sets the abandoned object removal configuration.
+     *
+     * @param abandonedConfig the new configuration to use. This is used by value.
+     *
+     * @see AbandonedConfig
+     */
+    @SuppressWarnings("resource") // PrintWriter is managed elsewhere
+    public void setAbandonedConfig(final AbandonedConfig abandonedConfig) {
+        if (abandonedConfig == null) {
+            this.abandonedConfig = null;
+        } else {
+            this.abandonedConfig = new AbandonedConfig();
+            this.abandonedConfig.setLogAbandoned(abandonedConfig.getLogAbandoned());
+            this.abandonedConfig.setLogWriter(abandonedConfig.getLogWriter());
+            this.abandonedConfig.setRemoveAbandonedOnBorrow(abandonedConfig.getRemoveAbandonedOnBorrow());
+            this.abandonedConfig.setRemoveAbandonedOnMaintenance(abandonedConfig.getRemoveAbandonedOnMaintenance());
+            this.abandonedConfig.setRemoveAbandonedTimeout(abandonedConfig.getRemoveAbandonedTimeoutDuration());
+            this.abandonedConfig.setUseUsageTracking(abandonedConfig.getUseUsageTracking());
+            this.abandonedConfig.setRequireFullStackTrace(abandonedConfig.getRequireFullStackTrace());
+        }
+    }
+    /**
      * Sets the configuration.
      *
      * @param conf the new configuration to use. This is used by value.
@@ -1630,6 +1821,8 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         builder.append(evictionKeyIterator);
         builder.append(", evictionKey=");
         builder.append(evictionKey);
+        builder.append(", abandonedConfig=");
+        builder.append(abandonedConfig);
     }
 
     /**

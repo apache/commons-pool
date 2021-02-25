@@ -92,6 +92,12 @@ public interface GenericKeyedObjectPoolMXBean<K> {
     boolean getLifo();
 
     /**
+     * See {@link GenericKeyedObjectPool#getLogAbandoned()}
+     * @return See {@link GenericKeyedObjectPool#getLogAbandoned()}
+     */
+    boolean getLogAbandoned();
+
+    /**
      * See {@link GenericKeyedObjectPool#getMaxBorrowWaitTimeMillis()}
      * @return See {@link GenericKeyedObjectPool#getMaxBorrowWaitTimeMillis()}
      */
@@ -190,6 +196,24 @@ public interface GenericKeyedObjectPoolMXBean<K> {
     Map<String,Integer> getNumWaitersByKey();
 
     /**
+     * See {@link GenericKeyedObjectPool#getRemoveAbandonedOnBorrow()}
+     * @return See {@link GenericKeyedObjectPool#getRemoveAbandonedOnBorrow()}
+     */
+    boolean getRemoveAbandonedOnBorrow();
+
+    /**
+     * See {@link GenericKeyedObjectPool#getRemoveAbandonedOnMaintenance()}
+     * @return See {@link GenericKeyedObjectPool#getRemoveAbandonedOnMaintenance()}
+     */
+    boolean getRemoveAbandonedOnMaintenance();
+
+    /**
+     * See {@link GenericKeyedObjectPool#getRemoveAbandonedTimeout()}
+     * @return See {@link GenericKeyedObjectPool#getRemoveAbandonedTimeout()}
+     */
+    int getRemoveAbandonedTimeout();
+
+    /**
      * See {@link GenericKeyedObjectPool#getReturnedCount()}
      * @return See {@link GenericKeyedObjectPool#getReturnedCount()}
      */
@@ -225,6 +249,12 @@ public interface GenericKeyedObjectPoolMXBean<K> {
      * @return See {@link GenericKeyedObjectPool#getTimeBetweenEvictionRunsMillis()}
      */
     long getTimeBetweenEvictionRunsMillis();
+
+    /**
+     * See {@link GenericKeyedObjectPool#isAbandonedConfig()}
+     * @return See {@link GenericKeyedObjectPool#isAbandonedConfig()}
+     */
+    boolean isAbandonedConfig();
 
     /**
      * See {@link GenericKeyedObjectPool#isClosed()}
