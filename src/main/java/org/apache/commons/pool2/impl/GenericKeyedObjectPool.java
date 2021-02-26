@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -41,6 +42,7 @@ import org.apache.commons.pool2.PoolUtils;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectState;
 import org.apache.commons.pool2.SwallowedExceptionListener;
+import org.apache.commons.pool2.UsageTracking;
 
 /**
  * A configurable {@code KeyedObjectPool} implementation.
@@ -85,7 +87,7 @@ import org.apache.commons.pool2.SwallowedExceptionListener;
  * @since 2.0
  */
 public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
-        implements KeyedObjectPool<K, T>, GenericKeyedObjectPoolMXBean<K> {
+        implements KeyedObjectPool<K, T>, GenericKeyedObjectPoolMXBean<K>, UsageTracking<T> {
 
     /**
      * Maintains information on the per key queue for a given key.
@@ -1839,4 +1841,17 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
             }
         }
     }
+    
+    @Override
+    public void use(final T pooledObject) {
+        final AbandonedConfig abandonedCfg = this.abandonedConfig;
+        if (abandonedCfg != null && abandonedCfg.getUseUsageTracking()) {
+            poolMap.values().stream()
+                .map(pool -> pool.getAllObjects().get(new IdentityWrapper<>(pooledObject)))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .ifPresent(PooledObject::use);
+        }
+    }
+    
 }
