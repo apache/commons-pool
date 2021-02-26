@@ -286,6 +286,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      *                  pool.
      * @param abandonedConfig  Configuration for abandoned object identification
      *                         and removal.  The configuration is used by value.
+     * @since 2.10.0
      */
     public GenericKeyedObjectPool(final KeyedPooledObjectFactory<K, T> factory,
             final GenericKeyedObjectPoolConfig<T> config, final AbandonedConfig abandonedConfig) {
@@ -1086,6 +1087,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      *         pool and removal events are to be logged otherwise {@code false}
      *
      * @see AbandonedConfig#getLogAbandoned()
+     * @since 2.10.0
      */
     @Override
     public boolean getLogAbandoned() {
@@ -1282,6 +1284,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      *         activated by borrowObject otherwise {@code false}
      *
      * @see AbandonedConfig#getRemoveAbandonedOnBorrow()
+     * @since 2.10.0
      */
     @Override
     public boolean getRemoveAbandonedOnBorrow() {
@@ -1296,6 +1299,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      *         activated when the evictor runs otherwise {@code false}
      *
      * @see AbandonedConfig#getRemoveAbandonedOnMaintenance()
+     * @since 2.10.0
      */
     @Override
     public boolean getRemoveAbandonedOnMaintenance() {
@@ -1313,6 +1317,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * @see AbandonedConfig#getRemoveAbandonedTimeout()
      * @see AbandonedConfig#getRemoveAbandonedTimeoutDuration()
      * @deprecated Use {@link #getRemoveAbandonedTimeoutDuration()}.
+     * @since 2.10.0
      */
     @Override
     @Deprecated
@@ -1330,6 +1335,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      *
      * @see AbandonedConfig#getRemoveAbandonedTimeout()
      * @see AbandonedConfig#getRemoveAbandonedTimeoutDuration()
+     * @since 2.10.0
      */
     public Duration getRemoveAbandonedTimeoutDuration() {
         final AbandonedConfig ac = this.abandonedConfig;
@@ -1418,6 +1424,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      *
      * @return true if this pool is configured to detect and remove
      * abandoned objects
+     * @since 2.10.0
      */
     @Override
     public boolean isAbandonedConfig() {
@@ -1715,6 +1722,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * @param abandonedConfig the new configuration to use. This is used by value.
      *
      * @see AbandonedConfig
+     * @since 2.10.0
      */
     @SuppressWarnings("resource") // PrintWriter is managed elsewhere
     public void setAbandonedConfig(final AbandonedConfig abandonedConfig) {
@@ -1842,6 +1850,9 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         }
     }
     
+    /**
+     * @since 2.10.0
+     */
     @Override
     public void use(final T pooledObject) {
         final AbandonedConfig abandonedCfg = this.abandonedConfig;
