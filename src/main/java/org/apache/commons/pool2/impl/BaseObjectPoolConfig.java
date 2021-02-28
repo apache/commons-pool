@@ -100,7 +100,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      * @see GenericKeyedObjectPool#getSoftMinEvictableIdleTime()
      * @since 2.10.0
      */
-    public static final Duration DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME = 
+    public static final Duration DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME =
             Duration.ofMillis(DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS);
 
     /**
@@ -177,7 +177,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      * @see GenericObjectPool#getTimeBetweenEvictionRunsMillis()
      * @see GenericKeyedObjectPool#getTimeBetweenEvictionRunsMillis()
      */
-    public static final Duration DEFAULT_TIME_BETWEEN_EVICTION_RUNS = 
+    public static final Duration DEFAULT_TIME_BETWEEN_EVICTION_RUNS =
             Duration.ofMillis(DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS);
 
     /**

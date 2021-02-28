@@ -65,7 +65,7 @@ class PoolImplUtils {
         }
         return (Class<?>) genericType;
     }
-    
+
     /**
      * Gets the concrete type used by an implementation of an interface that uses a generic type.
      *
@@ -108,7 +108,7 @@ class PoolImplUtils {
             return null;
         }
     }
-    
+
     /**
      * Gets the matching parameterized type or null.
      * @param type
@@ -164,7 +164,7 @@ class PoolImplUtils {
 
     /**
      * Converts a {@link TimeUnit} to a {@link ChronoUnit}.
-     * 
+     *
      * @param timeUnit A TimeUnit.
      * @return The corresponding ChronoUnit.
      */
