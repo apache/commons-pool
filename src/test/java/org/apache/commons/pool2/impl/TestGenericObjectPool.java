@@ -584,7 +584,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     private static final boolean DISPLAY_THREAD_DETAILS=
-        Boolean.valueOf(System.getProperty("TestGenericObjectPool.display.thread.details", "false")).booleanValue();
+        Boolean.parseBoolean(System.getProperty("TestGenericObjectPool.display.thread.details", "false"));
     // To pass this to a Maven test, use:
     // mvn test -DargLine="-DTestGenericObjectPool.display.thread.details=true"
     // @see https://issues.apache.org/jira/browse/SUREFIRE-121

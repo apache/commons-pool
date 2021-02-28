@@ -483,7 +483,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     private static final Integer KEY_TWO = Integer.valueOf(2);
 
     private static final boolean DISPLAY_THREAD_DETAILS=
-        Boolean.valueOf(System.getProperty("TestGenericKeyedObjectPool.display.thread.details", "false")).booleanValue();
+        Boolean.parseBoolean(System.getProperty("TestGenericKeyedObjectPool.display.thread.details", "false"));
     // To pass this to a Maven test, use:
     // mvn test -DargLine="-DTestGenericKeyedObjectPool.display.thread.details=true"
     // @see https://issues.apache.org/jira/browse/SUREFIRE-121
