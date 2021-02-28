@@ -285,10 +285,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 oddTest = oddValid;
                 counter = activationCounter++;
             }
-            if (hurl) {
-                if (!(counter%2 == 0 ? evenTest : oddTest)) {
-                    throw new Exception();
-                }
+            if (hurl && !(counter%2 == 0 ? evenTest : oddTest)) {
+                throw new Exception();
             }
         }
         @Override

@@ -180,10 +180,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
         @Override
         public void activateObject(final K key, final PooledObject<String> obj) throws Exception {
-            if (exceptionOnActivate) {
-                if (!(validateCounter++%2 == 0 ? evenValid : oddValid)) {
-                    throw new Exception();
-                }
+            if (exceptionOnActivate && !(validateCounter++%2 == 0 ? evenValid : oddValid)) {
+                throw new Exception();
             }
         }
         @Override
