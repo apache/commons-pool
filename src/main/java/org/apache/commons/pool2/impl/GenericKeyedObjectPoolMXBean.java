@@ -96,7 +96,9 @@ public interface GenericKeyedObjectPoolMXBean<K> {
      * @return See {@link GenericKeyedObjectPool#getLogAbandoned()}
      * @since 2.10.0
      */
-    boolean getLogAbandoned();
+    default boolean getLogAbandoned() {
+        return false;
+    }
 
     /**
      * See {@link GenericKeyedObjectPool#getMaxBorrowWaitTimeMillis()}
@@ -201,26 +203,31 @@ public interface GenericKeyedObjectPoolMXBean<K> {
      * @return See {@link GenericKeyedObjectPool#getRemoveAbandonedOnBorrow()}
      * @since 2.10.0
      */
-    boolean getRemoveAbandonedOnBorrow();
+    default boolean getRemoveAbandonedOnBorrow() {
+        return false;
+    }
 
     /**
      * See {@link GenericKeyedObjectPool#getRemoveAbandonedOnMaintenance()}
      * @return See {@link GenericKeyedObjectPool#getRemoveAbandonedOnMaintenance()}
      * @since 2.10.0
      */
-    boolean getRemoveAbandonedOnMaintenance();
+    default boolean getRemoveAbandonedOnMaintenance()  {
+        return false;
+    }
 
     /**
      * See {@link GenericKeyedObjectPool#getRemoveAbandonedTimeout()}
      * @return See {@link GenericKeyedObjectPool#getRemoveAbandonedTimeout()}
      * @since 2.10.0
      */
-    int getRemoveAbandonedTimeout();
+    default int getRemoveAbandonedTimeout() {
+        return 0;
+    }
 
     /**
      * See {@link GenericKeyedObjectPool#getReturnedCount()}
      * @return See {@link GenericKeyedObjectPool#getReturnedCount()}
-     * @since 2.10.0
      */
     long getReturnedCount();
 
@@ -260,7 +267,9 @@ public interface GenericKeyedObjectPoolMXBean<K> {
      * @return See {@link GenericKeyedObjectPool#isAbandonedConfig()}
      * @since 2.10.0
      */
-    boolean isAbandonedConfig();
+    default boolean isAbandonedConfig() {
+        return false;
+    }
 
     /**
      * See {@link GenericKeyedObjectPool#isClosed()}
