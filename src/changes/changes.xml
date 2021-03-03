@@ -86,6 +86,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="update" due-to="Dependabot">
       Bump asm-util from 9.0 to 9.1 #64.
     </action>
+    <action dev="ggregory" type="update" due-to="Dependabot">
+      Bump spotbugs from 4.2.1 to 4.2.2 #68.
+    </action>
   </release>
   <release version="2.9.0" date="2020-09-25" description="This is a minor release (Java 8).">
     <action issue="POOL-387" dev="ggregory" type="update" due-to=" Phil Steitz">
