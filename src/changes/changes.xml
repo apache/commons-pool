@@ -60,7 +60,7 @@ The <action> type attribute can be add,update,fix,remove.
       Bump junit from 4.13 to 4.13.1 #50.
     </action>
     <action dev="ggregory" type="update" due-to="Dependabot">
-      Bump biz.aQute.bndlib from 5.1.2 to 5.2.0 #51.
+      Bump biz.aQute.bndlib from 5.1.2 to 5.3.0, #51, #66.
     </action>
     <action dev="ggregory" type="update" due-to="Arturo Bernal" issue="POOL-389">
       Migrate to JUnit 5 #57.
