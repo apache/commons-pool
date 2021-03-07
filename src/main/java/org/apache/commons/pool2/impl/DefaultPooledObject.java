@@ -73,7 +73,8 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
                 borrowedBy.fillInStackTrace();
             }
             return true;
-        } else if (state == PooledObjectState.EVICTION) {
+        }
+        if (state == PooledObjectState.EVICTION) {
             // TODO Allocate anyway and ignore eviction test
             state = PooledObjectState.EVICTION_RETURN_TO_HEAD;
         }
@@ -123,7 +124,8 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
         if (state == PooledObjectState.EVICTION) {
             state = PooledObjectState.IDLE;
             return true;
-        } else if (state == PooledObjectState.EVICTION_RETURN_TO_HEAD) {
+        }
+        if (state == PooledObjectState.EVICTION_RETURN_TO_HEAD) {
             state = PooledObjectState.IDLE;
             if (!idleQueue.offerFirst(this)) {
                 // TODO - Should never happen

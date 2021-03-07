@@ -64,17 +64,20 @@ public class TestPoolUtils {
             calledMethods.add(method.getName());
             if (boolean.class.equals(method.getReturnType())) {
                 return Boolean.FALSE;
-            } else if (int.class.equals(method.getReturnType())) {
-                return Integer.valueOf(0);
-            } else if (long.class.equals(method.getReturnType())) {
-                return Long.valueOf(0);
-            } else if (Object.class.equals(method.getReturnType())) {
-                return new Object();
-            } else if (PooledObject.class.equals(method.getReturnType())) {
-                return new DefaultPooledObject<>(new Object());
-            } else {
-                return null;
             }
+            if (int.class.equals(method.getReturnType())) {
+                return Integer.valueOf(0);
+            }
+            if (long.class.equals(method.getReturnType())) {
+                return Long.valueOf(0);
+            }
+            if (Object.class.equals(method.getReturnType())) {
+                return new Object();
+            }
+            if (PooledObject.class.equals(method.getReturnType())) {
+                return new DefaultPooledObject<>(new Object());
+            }
+            return null;
         }
     }
 
