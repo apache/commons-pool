@@ -186,7 +186,7 @@ public abstract class BaseTestProxiedKeyedObjectPool {
         assertThrows(IllegalStateException.class,
                 () -> pool.addObject(KEY1));
     }
-    
+
     @Test
     public void testUsageTracking() throws Exception {
         final TestObject obj = pool.borrowObject(KEY1);

@@ -1275,7 +1275,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         }
         return result;
     }
-    
+
     /**
      * Gets whether a check is made for abandoned objects when an object is borrowed
      * from this pool.
@@ -1564,7 +1564,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
             }
         }
     }
-    
+
     /**
      * Returns an object to a keyed sub-pool.
      * <p>
@@ -1849,7 +1849,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
             }
         }
     }
-    
+
     /**
      * @since 2.10.0
      */
@@ -1864,5 +1864,5 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
                 .ifPresent(PooledObject::use);
         }
     }
-    
+
 }
