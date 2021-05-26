@@ -19,14 +19,21 @@ package org.apache.commons.pool2.proxy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.time.Duration;
 
 import org.apache.commons.pool2.BaseKeyedPooledObjectFactory;
 import org.apache.commons.pool2.KeyedObjectPool;
 import org.apache.commons.pool2.KeyedPooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.impl.AbandonedConfig;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPool;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
+import org.apache.commons.pool2.proxy.BaseTestProxiedObjectPool.TestObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -71,7 +78,11 @@ public abstract class BaseTestProxiedKeyedObjectPool {
 
     private static final String DATA1 = "data1";
 
+    private static final Duration ABANDONED_TIMEOUT_SECS = Duration.ofSeconds(3);
+
     private KeyedObjectPool<String,TestObject> pool;
+
+    private StringWriter log = null;
 
 
     protected abstract ProxySource<TestObject> getproxySource();
@@ -79,6 +90,16 @@ public abstract class BaseTestProxiedKeyedObjectPool {
 
     @BeforeEach
     public void setUp() {
+        log = new StringWriter();
+
+        final PrintWriter pw = new PrintWriter(log);
+        final AbandonedConfig abandonedConfig = new AbandonedConfig();
+        abandonedConfig.setLogAbandoned(true);
+        abandonedConfig.setRemoveAbandonedOnBorrow(true);
+        abandonedConfig.setUseUsageTracking(true);
+        abandonedConfig.setRemoveAbandonedTimeout(ABANDONED_TIMEOUT_SECS);
+        abandonedConfig.setLogWriter(pw);
+
         final GenericKeyedObjectPoolConfig<TestObject> config = new GenericKeyedObjectPoolConfig<>();
         config.setMaxTotal(3);
 
@@ -88,7 +109,7 @@ public abstract class BaseTestProxiedKeyedObjectPool {
         @SuppressWarnings("resource")
         final KeyedObjectPool<String, TestObject> innerPool =
                 new GenericKeyedObjectPool<>(
-                        factory, config);
+                        factory, config, abandonedConfig);
 
         pool = new ProxiedKeyedObjectPool<>(innerPool, getproxySource());
     }
@@ -164,6 +185,26 @@ public abstract class BaseTestProxiedKeyedObjectPool {
         pool.close();
         assertThrows(IllegalStateException.class,
                 () -> pool.addObject(KEY1));
+    }
+    
+    @Test
+    public void testUsageTracking() throws Exception {
+        final TestObject obj = pool.borrowObject(KEY1);
+        assertNotNull(obj);
+
+        // Use the object to trigger collection of last used stack trace
+        obj.setData(DATA1);
+
+        // Sleep long enough for the object to be considered abandoned
+        Thread.sleep(ABANDONED_TIMEOUT_SECS.plusSeconds(2).toMillis());
+
+        // Borrow another object to trigger the abandoned object processing
+        pool.borrowObject(KEY1);
+
+        final String logOutput = log.getBuffer().toString();
+
+        assertTrue(logOutput.contains("Pooled object created"));
+        assertTrue(logOutput.contains("The last code to use this object was"));
     }
 
 }
