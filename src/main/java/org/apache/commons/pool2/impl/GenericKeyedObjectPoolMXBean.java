@@ -92,6 +92,15 @@ public interface GenericKeyedObjectPoolMXBean<K> {
     boolean getLifo();
 
     /**
+     * See {@link GenericKeyedObjectPool#getLogAbandoned()}
+     * @return See {@link GenericKeyedObjectPool#getLogAbandoned()}
+     * @since 2.10.0
+     */
+    default boolean getLogAbandoned() {
+        return false;
+    }
+
+    /**
      * See {@link GenericKeyedObjectPool#getMaxBorrowWaitTimeMillis()}
      * @return See {@link GenericKeyedObjectPool#getMaxBorrowWaitTimeMillis()}
      */
@@ -190,6 +199,33 @@ public interface GenericKeyedObjectPoolMXBean<K> {
     Map<String,Integer> getNumWaitersByKey();
 
     /**
+     * See {@link GenericKeyedObjectPool#getRemoveAbandonedOnBorrow()}
+     * @return See {@link GenericKeyedObjectPool#getRemoveAbandonedOnBorrow()}
+     * @since 2.10.0
+     */
+    default boolean getRemoveAbandonedOnBorrow() {
+        return false;
+    }
+
+    /**
+     * See {@link GenericKeyedObjectPool#getRemoveAbandonedOnMaintenance()}
+     * @return See {@link GenericKeyedObjectPool#getRemoveAbandonedOnMaintenance()}
+     * @since 2.10.0
+     */
+    default boolean getRemoveAbandonedOnMaintenance()  {
+        return false;
+    }
+
+    /**
+     * See {@link GenericKeyedObjectPool#getRemoveAbandonedTimeout()}
+     * @return See {@link GenericKeyedObjectPool#getRemoveAbandonedTimeout()}
+     * @since 2.10.0
+     */
+    default int getRemoveAbandonedTimeout() {
+        return 0;
+    }
+
+    /**
      * See {@link GenericKeyedObjectPool#getReturnedCount()}
      * @return See {@link GenericKeyedObjectPool#getReturnedCount()}
      */
@@ -225,6 +261,15 @@ public interface GenericKeyedObjectPoolMXBean<K> {
      * @return See {@link GenericKeyedObjectPool#getTimeBetweenEvictionRunsMillis()}
      */
     long getTimeBetweenEvictionRunsMillis();
+
+    /**
+     * See {@link GenericKeyedObjectPool#isAbandonedConfig()}
+     * @return See {@link GenericKeyedObjectPool#isAbandonedConfig()}
+     * @since 2.10.0
+     */
+    default boolean isAbandonedConfig() {
+        return false;
+    }
 
     /**
      * See {@link GenericKeyedObjectPool#isClosed()}
