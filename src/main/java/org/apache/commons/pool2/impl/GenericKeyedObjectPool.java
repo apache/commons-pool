@@ -451,10 +451,8 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
                         throw new NoSuchElementException(
                                 "Timeout waiting for idle object");
                     }
-                } else {
-                    if (p == null) {
-                        throw new NoSuchElementException("Pool exhausted");
-                    }
+                } else if (p == null) {
+                    throw new NoSuchElementException("Pool exhausted");
                 }
                 if (!p.allocate()) {
                     p = null;
