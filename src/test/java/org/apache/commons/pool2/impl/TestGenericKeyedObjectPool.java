@@ -1063,7 +1063,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         // Give makeObject a little latency
         factory.setMakeLatency(200);
         try (final GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<>(factory,
-                new GenericKeyedObjectPoolConfig<String>())) {
+                new GenericKeyedObjectPoolConfig<>())) {
             final String s = pool.borrowObject("one");
             // First borrow waits on create, so wait time should be at least 200 ms
             // Allow 100ms error in clock times
@@ -1264,7 +1264,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     public void testEqualsIndiscernible() throws Exception {
         final HashSetFactory factory = new HashSetFactory();
         try (final GenericKeyedObjectPool<String, HashSet<String>> pool = new GenericKeyedObjectPool<>(factory,
-                new GenericKeyedObjectPoolConfig<HashSet<String>>())) {
+                new GenericKeyedObjectPoolConfig<>())) {
             final HashSet<String> s1 = pool.borrowObject("a");
             final HashSet<String> s2 = pool.borrowObject("a");
             pool.returnObject("a", s1);
@@ -1435,7 +1435,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
         // Introduce latency between when evictor starts looking at an instance and when
         // it decides to destroy it
-        gkoPool.setEvictionPolicy(new SlowEvictionPolicy<String>(1000));
+        gkoPool.setEvictionPolicy(new SlowEvictionPolicy<>(1000));
 
         // Borrow an instance
         final String val = gkoPool.borrowObject("foo");
@@ -2223,7 +2223,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     public void testMutable() throws Exception {
         final HashSetFactory factory = new HashSetFactory();
         try (final GenericKeyedObjectPool<String, HashSet<String>> pool = new GenericKeyedObjectPool<>(factory,
-                new GenericKeyedObjectPoolConfig<HashSet<String>>())) {
+                new GenericKeyedObjectPoolConfig<>())) {
             final HashSet<String> s1 = pool.borrowObject("a");
             final HashSet<String> s2 = pool.borrowObject("a");
             s1.add("One");
@@ -2296,7 +2296,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
     @Test
     public void testReturnObjectThrowsIllegalStateException() {
-        try (final GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<>(new SimpleFactory<String>())) {
+        try (final GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<>(new SimpleFactory<>())) {
             assertThrows(IllegalStateException.class,
                     () ->  pool.returnObject("Foo", "Bar"));
         }

@@ -1103,7 +1103,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         final SimpleFactory factory = new SimpleFactory();
         // Give makeObject a little latency
         factory.setMakeLatency(200);
-        try (final GenericObjectPool<String> pool = new GenericObjectPool<>(factory, new GenericObjectPoolConfig<String>())) {
+        try (final GenericObjectPool<String> pool = new GenericObjectPool<>(factory, new GenericObjectPoolConfig<>())) {
             final String s = pool.borrowObject();
             // First borrow waits on create, so wait time should be at least 200 ms
             // Allow 100ms error in clock times
@@ -1326,7 +1326,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     public void testEqualsIndiscernible() throws Exception {
         final HashSetFactory factory = new HashSetFactory();
         try (final GenericObjectPool<HashSet<String>> pool = new GenericObjectPool<>(factory,
-                new GenericObjectPoolConfig<HashSet<String>>())) {
+                new GenericObjectPoolConfig<>())) {
             final HashSet<String> s1 = pool.borrowObject();
             final HashSet<String> s2 = pool.borrowObject();
             pool.returnObject(s1);
@@ -1564,7 +1564,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             // expected
         }
 
-        genericObjectPool.setEvictionPolicy(new TestEvictionPolicy<String>());
+        genericObjectPool.setEvictionPolicy(new TestEvictionPolicy<>());
         assertEquals(TestEvictionPolicy.class.getName(), genericObjectPool.getEvictionPolicyClassName());
 
         genericObjectPool.setEvictionPolicyClassName(TestEvictionPolicy.class.getName());
@@ -2404,7 +2404,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     // POOL-248
     @Test
     public void testMultipleReturnOfSameObject() throws Exception {
-        try (final GenericObjectPool<String> pool = new GenericObjectPool<>(simpleFactory, new GenericObjectPoolConfig<String>())) {
+        try (final GenericObjectPool<String> pool = new GenericObjectPool<>(simpleFactory, new GenericObjectPoolConfig<>())) {
 
             assertEquals(0, pool.getNumActive());
             assertEquals(0, pool.getNumIdle());
@@ -2437,7 +2437,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     public void testMutable() throws Exception {
         final HashSetFactory factory = new HashSetFactory();
         try (final GenericObjectPool<HashSet<String>> pool = new GenericObjectPool<>(factory,
-                new GenericObjectPoolConfig<HashSet<String>>())) {
+                new GenericObjectPoolConfig<>())) {
             final HashSet<String> s1 = pool.borrowObject();
             final HashSet<String> s2 = pool.borrowObject();
             s1.add("One");

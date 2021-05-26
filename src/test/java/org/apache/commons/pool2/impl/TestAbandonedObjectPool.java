@@ -221,7 +221,7 @@ public class TestAbandonedObjectPool {
 
         pool = new GenericObjectPool<>(
                new SimpleFactory(),
-               new GenericObjectPoolConfig<PooledTestObject>(),
+                new GenericObjectPoolConfig<>(),
                abandonedConfig);
     }
 
@@ -267,7 +267,7 @@ public class TestAbandonedObjectPool {
         pool = new GenericObjectPool<>(
                 // destroys take 200 ms
                 new SimpleFactory(200, 0),
-                new GenericObjectPoolConfig<PooledTestObject>(), abandonedConfig);
+                new GenericObjectPoolConfig<>(), abandonedConfig);
         final int n = 10;
         pool.setMaxTotal(n);
         pool.setBlockWhenExhausted(false);
@@ -298,7 +298,7 @@ public class TestAbandonedObjectPool {
         pool.close();  // Unregister pool created by setup
         pool = new GenericObjectPool<>(
                 new SimpleFactory(200, 0),
-                new GenericObjectPoolConfig<PooledTestObject>(), abandonedConfig);
+                new GenericObjectPoolConfig<>(), abandonedConfig);
         final int n = 10;
         pool.setMaxTotal(n);
         pool.setBlockWhenExhausted(false);
@@ -375,7 +375,7 @@ public class TestAbandonedObjectPool {
         pool = new GenericObjectPool<>(
              // validate takes 1 second
              new SimpleFactory(0, 0),
-             new GenericObjectPoolConfig<PooledTestObject>(), abandonedConfig);
+                new GenericObjectPoolConfig<>(), abandonedConfig);
         pool.setTimeBetweenEvictionRuns(Duration.ofMillis(50));
         // Borrow an object, wait long enough for it to be abandoned
         final PooledTestObject obj = pool.borrowObject();
@@ -409,7 +409,7 @@ public class TestAbandonedObjectPool {
         pool = new GenericObjectPool<>(
              // validate takes 1 second
              new SimpleFactory(0, 1000),
-             new GenericObjectPoolConfig<PooledTestObject>(), abandonedConfig);
+                new GenericObjectPoolConfig<>(), abandonedConfig);
         final int n = 10;
         pool.setMaxTotal(n);
         pool.setBlockWhenExhausted(false);

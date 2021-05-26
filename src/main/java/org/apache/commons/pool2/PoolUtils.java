@@ -479,7 +479,7 @@ public final class PoolUtils {
         private final float factor;
 
         /** Map of ErodingFactor instances keyed on pool keys */
-        private final Map<K, ErodingFactor> factors = Collections.synchronizedMap(new HashMap<K, ErodingFactor>());
+        private final Map<K, ErodingFactor> factors = Collections.synchronizedMap(new HashMap<>());
 
         /**
          * Creates a new ErordingPerKeyKeyedObjectPool decorating the given keyed
