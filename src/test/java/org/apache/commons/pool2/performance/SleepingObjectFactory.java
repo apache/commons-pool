@@ -56,7 +56,7 @@ public class SleepingObjectFactory implements PooledObjectFactory<Integer> {
     public PooledObject<Integer> makeObject() throws Exception {
         // Deliberate choice to create a new object in case future unit tests
         // check for a specific object.
-        final Integer obj = new Integer(counter++);
+        final Integer obj = Integer.valueOf(counter++);
         debug("makeObject", obj);
         sleep(500);
         return new DefaultPooledObject<>(obj);

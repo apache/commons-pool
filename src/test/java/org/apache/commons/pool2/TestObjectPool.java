@@ -57,9 +57,9 @@ public abstract class TestObjectPool {
     }
     // Deliberate choice to create a new object in case future unit tests check
     // for a specific object.
-    private final Integer ZERO = new Integer(0);
+    private final Integer ZERO = Integer.valueOf(0);
 
-    private final Integer ONE = new Integer(1);
+    private final Integer ONE = Integer.valueOf(1);
 
     /**
      * Create an {@code ObjectPool} with the specified factory.

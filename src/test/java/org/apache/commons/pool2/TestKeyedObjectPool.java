@@ -99,7 +99,7 @@ public abstract class TestKeyedObjectPool {
             }
             // Deliberate choice to create new object in case future unit test
             // checks for a specific object
-            final Integer obj = new Integer(originalCount);
+            final Integer obj = Integer.valueOf(originalCount);
             call.setReturned(obj);
             return new DefaultPooledObject<>(obj);
         }
@@ -177,9 +177,9 @@ public abstract class TestKeyedObjectPool {
 
     // Deliberate choice to create a new object in case future unit tests check
     // for a specific object.
-    private final Integer ZERO = new Integer(0);
+    private final Integer ZERO = Integer.valueOf(0);
 
-    private final Integer ONE = new Integer(1);
+    private final Integer ONE = Integer.valueOf(1);
 
     private void clear(final FailingKeyedPooledObjectFactory factory, final List<MethodCall> expectedMethods) {
         factory.getMethodCalls().clear();

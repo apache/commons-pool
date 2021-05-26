@@ -94,7 +94,7 @@ public class MethodCallPoolableObjectFactory implements PooledObjectFactory<Obje
             throw new PrivateException("makeObject");
         }
         // Generate new object, don't use cache via Integer.valueOf(...)
-        final Integer obj = new Integer(originalCount);
+        final Integer obj = Integer.valueOf(originalCount);
         call.setReturned(obj);
         return new DefaultPooledObject<>(obj);
     }
