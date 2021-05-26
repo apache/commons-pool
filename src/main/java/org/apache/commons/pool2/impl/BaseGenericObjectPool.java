@@ -256,7 +256,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
             }
         }
 
-        void add(Duration value) {
+        void add(final Duration value) {
             add(value.toMillis());
         }
 

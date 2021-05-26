@@ -29,7 +29,7 @@ public class TestEvictionConfig {
 
     @Test
     public void testConstructor1s() {
-        EvictionConfig config = new EvictionConfig(Duration.ofMillis(1), Duration.ofMillis(1), 1);
+        final EvictionConfig config = new EvictionConfig(Duration.ofMillis(1), Duration.ofMillis(1), 1);
 
         assertEquals(1, config.getIdleEvictTime());
         assertEquals(1, config.getIdleEvictTimeDuration().toMillis());
@@ -40,7 +40,7 @@ public class TestEvictionConfig {
 
     @Test
     public void testConstructorZerosDurations() {
-        EvictionConfig config = new EvictionConfig(Duration.ZERO, Duration.ZERO, 0);
+        final EvictionConfig config = new EvictionConfig(Duration.ZERO, Duration.ZERO, 0);
 
         assertEquals(Long.MAX_VALUE, config.getIdleEvictTime());
         assertEquals(Long.MAX_VALUE, config.getIdleEvictTimeDuration().toMillis());
@@ -52,7 +52,7 @@ public class TestEvictionConfig {
     @Test
     public void testConstructorZerosMillis() {
         @SuppressWarnings("deprecation")
-        EvictionConfig config = new EvictionConfig(0, 0, 0);
+        final EvictionConfig config = new EvictionConfig(0, 0, 0);
 
         assertEquals(Long.MAX_VALUE, config.getIdleEvictTime());
         assertEquals(Long.MAX_VALUE, config.getIdleEvictTimeDuration().toMillis());

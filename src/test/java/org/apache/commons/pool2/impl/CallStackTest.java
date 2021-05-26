@@ -41,7 +41,7 @@ public class CallStackTest {
 
     @ParameterizedTest
     @MethodSource("data")
-    public void testPrintClearedStackTraceIsNoOp(CallStack stack) throws Exception {
+    public void testPrintClearedStackTraceIsNoOp(final CallStack stack) throws Exception {
         stack.fillInStackTrace();
         stack.clear();
         stack.printStackTrace(new PrintWriter(writer));
@@ -51,7 +51,7 @@ public class CallStackTest {
 
     @ParameterizedTest
     @MethodSource("data")
-    public void testPrintFilledStackTrace(CallStack stack) throws Exception {
+    public void testPrintFilledStackTrace(final CallStack stack) throws Exception {
         stack.fillInStackTrace();
         stack.printStackTrace(new PrintWriter(writer));
         final String stackTrace = writer.toString();

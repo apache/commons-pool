@@ -1530,7 +1530,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     @SuppressWarnings("resource") // PrintWriter is managed elsewhere
     private void removeAbandoned(final AbandonedConfig abandonedConfig) {
         for (final Entry<K, GenericKeyedObjectPool<K, T>.ObjectDeque<T>> pool : poolMap.entrySet()) {
-            Map<IdentityWrapper<T>, PooledObject<T>> allObjects = pool.getValue().getAllObjects();
+            final Map<IdentityWrapper<T>, PooledObject<T>> allObjects = pool.getValue().getAllObjects();
 
             // Generate a list of abandoned objects to remove
             final long nowMillis = System.currentTimeMillis();

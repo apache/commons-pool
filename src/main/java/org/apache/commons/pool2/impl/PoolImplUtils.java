@@ -168,7 +168,7 @@ class PoolImplUtils {
      * @param timeUnit A TimeUnit.
      * @return The corresponding ChronoUnit.
      */
-    static ChronoUnit toChronoUnit(TimeUnit timeUnit) {
+    static ChronoUnit toChronoUnit(final TimeUnit timeUnit) {
         // TODO when using Java >= 9: Use TimeUnit.toChronoUnit().
         switch (Objects.requireNonNull(timeUnit)) {
         case NANOSECONDS:
@@ -197,7 +197,7 @@ class PoolImplUtils {
      * @param timeUnit the unit that the duration is measured in, must have an exact duration, not null
      * @return a Duration.
      */
-    static Duration toDuration(long amount, TimeUnit timeUnit) {
+    static Duration toDuration(final long amount, final TimeUnit timeUnit) {
         return Duration.of(amount, PoolImplUtils.toChronoUnit(timeUnit));
     }
 }
