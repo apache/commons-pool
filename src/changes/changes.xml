@@ -49,6 +49,9 @@ The <action> type attribute can be add,update,fix,remove.
       Add and use java.time.Duration APIs timeouts instead of using ints for seconds.
       See the site and its API comparison report for a list of the new Duration-based APIs.
     </action>
+    <action dev="ggregory" type="add" due-to="Dependabot">
+      Implement AbandonedConfig for GenericKeyedObjectPool #67.
+    </action>
     <!-- UPDATE -->
     <action dev="ggregory" type="update" due-to="Dependabot">
       Bump spotbugs-maven-plugin from 4.0.4 to 4.2.1 #48, #53, #59, #62.
