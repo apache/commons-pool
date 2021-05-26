@@ -473,7 +473,7 @@ public class TestLinkedBlockingDeque {
         deque.add(ONE);
         deque.add(ONE);
         assertTrue(deque.removeLastOccurrence(ONE));
-        assertTrue(deque.size() == 1);
+        assertEquals(1, deque.size());
     }
 
     @Test

@@ -364,7 +364,7 @@ public class TestAbandonedObjectPool {
         }
 
         // Now, the number of active instances should be 0
-        assertTrue( pool.getNumActive() == 0,"numActive should have been 0, was " + pool.getNumActive());
+        assertEquals(0, pool.getNumActive(), "numActive should have been 0, was " + pool.getNumActive());
     }
 
     public void testDestroyModeAbandoned() throws Exception {
@@ -423,7 +423,7 @@ public class TestAbandonedObjectPool {
         pool.returnObject(obj); // evictor will run during validation
         final PooledTestObject obj2 = pool.borrowObject();
         assertEquals(obj, obj2);          // should get original back
-        assertTrue(!obj2.isDestroyed());  // and not destroyed
+        assertFalse(obj2.isDestroyed());  // and not destroyed
     }
 
     /**

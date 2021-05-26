@@ -667,8 +667,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         // Order, oldest to youngest, is "0", "1", ...,"4"
         genericObjectPool.evict(); // Should evict "0" and "1"
         final Object obj = genericObjectPool.borrowObject();
-        assertTrue(!obj.equals("0"),"oldest not evicted");
-        assertTrue(!obj.equals("1"),"second oldest not evicted");
+        assertFalse(obj.equals("0"), "oldest not evicted");
+        assertFalse(obj.equals("1"), "second oldest not evicted");
         // 2 should be next out for FIFO, 4 for LIFO
         assertEquals(lifo ? "4" : "2" , obj,"Wrong instance returned");
     }
@@ -1405,7 +1405,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         genericObjectPool.setTimeBetweenEvictionRuns(Duration.ofMillis(100));
         borrowerThread.start();  // Off to the races
         borrowerThread.join();
-        assertTrue(!borrower.failed());
+        assertFalse(borrower.failed());
     }
 
     @Test
@@ -2304,27 +2304,27 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         genericObjectPool.setTestWhileIdle(true);
 
         try { Thread.sleep(150L); } catch(final InterruptedException e) { }
-        assertTrue(genericObjectPool.getNumIdle() == 5,"Should be 5 idle, found " + genericObjectPool.getNumIdle());
+        assertEquals(5, genericObjectPool.getNumIdle(), "Should be 5 idle, found " + genericObjectPool.getNumIdle());
 
         final String[] active = new String[5];
         active[0] = genericObjectPool.borrowObject();
 
         try { Thread.sleep(150L); } catch(final InterruptedException e) { }
-        assertTrue(genericObjectPool.getNumIdle() == 5,"Should be 5 idle, found " + genericObjectPool.getNumIdle());
+        assertEquals(5, genericObjectPool.getNumIdle(), "Should be 5 idle, found " + genericObjectPool.getNumIdle());
 
         for(int i=1 ; i<5 ; i++) {
             active[i] = genericObjectPool.borrowObject();
         }
 
         try { Thread.sleep(150L); } catch(final InterruptedException e) { }
-        assertTrue(genericObjectPool.getNumIdle() == 5,"Should be 5 idle, found " + genericObjectPool.getNumIdle());
+        assertEquals(5, genericObjectPool.getNumIdle(), "Should be 5 idle, found " + genericObjectPool.getNumIdle());
 
         for(int i=0 ; i<5 ; i++) {
             genericObjectPool.returnObject(active[i]);
         }
 
         try { Thread.sleep(150L); } catch(final InterruptedException e) { }
-        assertTrue(genericObjectPool.getNumIdle() == 10,"Should be 10 idle, found " + genericObjectPool.getNumIdle());
+        assertEquals(10, genericObjectPool.getNumIdle(), "Should be 10 idle, found " + genericObjectPool.getNumIdle());
     }
 
     @Test
@@ -2339,40 +2339,40 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         genericObjectPool.setTestWhileIdle(true);
 
         try { Thread.sleep(150L); } catch(final InterruptedException e) { }
-        assertTrue(genericObjectPool.getNumIdle() == 5,"Should be 5 idle, found " + genericObjectPool.getNumIdle());
+        assertEquals(5, genericObjectPool.getNumIdle(), "Should be 5 idle, found " + genericObjectPool.getNumIdle());
 
         final String[] active = new String[10];
 
         try { Thread.sleep(150L); } catch(final InterruptedException e) { }
-        assertTrue(genericObjectPool.getNumIdle() == 5,"Should be 5 idle, found " + genericObjectPool.getNumIdle());
+        assertEquals(5, genericObjectPool.getNumIdle(), "Should be 5 idle, found " + genericObjectPool.getNumIdle());
 
         for (int i = 0; i < 5; i++) {
             active[i] = genericObjectPool.borrowObject();
         }
 
         try { Thread.sleep(150L); } catch(final InterruptedException e) { }
-        assertTrue(genericObjectPool.getNumIdle() == 5,"Should be 5 idle, found " + genericObjectPool.getNumIdle());
+        assertEquals(5, genericObjectPool.getNumIdle(), "Should be 5 idle, found " + genericObjectPool.getNumIdle());
 
         for(int i = 0 ; i < 5 ; i++) {
             genericObjectPool.returnObject(active[i]);
         }
 
         try { Thread.sleep(150L); } catch(final InterruptedException e) { }
-        assertTrue(genericObjectPool.getNumIdle() == 10,"Should be 10 idle, found " + genericObjectPool.getNumIdle());
+        assertEquals(10, genericObjectPool.getNumIdle(), "Should be 10 idle, found " + genericObjectPool.getNumIdle());
 
         for (int i = 0; i < 10; i++) {
             active[i] = genericObjectPool.borrowObject();
         }
 
         try { Thread.sleep(150L); } catch(final InterruptedException e) { }
-        assertTrue(genericObjectPool.getNumIdle() == 0,"Should be 0 idle, found " + genericObjectPool.getNumIdle());
+        assertEquals(0, genericObjectPool.getNumIdle(), "Should be 0 idle, found " + genericObjectPool.getNumIdle());
 
         for (int i = 0; i < 10; i++) {
             genericObjectPool.returnObject(active[i]);
         }
 
         try { Thread.sleep(150L); } catch(final InterruptedException e) { }
-        assertTrue(genericObjectPool.getNumIdle() == 10,"Should be 10 idle, found " + genericObjectPool.getNumIdle());
+        assertEquals(10, genericObjectPool.getNumIdle(), "Should be 10 idle, found " + genericObjectPool.getNumIdle());
     }
 
     /**
@@ -2608,7 +2608,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         {
             // The object receives an Exception during its creation to prevent
             // memory leaks. See BaseGenericObjectPool constructor for more details.
-            assertTrue(false == "".equals(genericObjectPool.getCreationStackTrace()));
+            assertEquals(false, "".equals(genericObjectPool.getCreationStackTrace()));
         }
         {
             assertEquals(0, genericObjectPool.getBorrowedCount());
@@ -2668,19 +2668,19 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             genericObjectPool.setTestOnBorrow(true);
             assertTrue(genericObjectPool.getTestOnBorrow());
             genericObjectPool.setTestOnBorrow(false);
-            assertTrue(!genericObjectPool.getTestOnBorrow());
+            assertFalse(genericObjectPool.getTestOnBorrow());
         }
         {
             genericObjectPool.setTestOnReturn(true);
             assertTrue(genericObjectPool.getTestOnReturn());
             genericObjectPool.setTestOnReturn(false);
-            assertTrue(!genericObjectPool.getTestOnReturn());
+            assertFalse(genericObjectPool.getTestOnReturn());
         }
         {
             genericObjectPool.setTestWhileIdle(true);
             assertTrue(genericObjectPool.getTestWhileIdle());
             genericObjectPool.setTestWhileIdle(false);
-            assertTrue(!genericObjectPool.getTestWhileIdle());
+            assertFalse(genericObjectPool.getTestWhileIdle());
         }
         {
             genericObjectPool.setTimeBetweenEvictionRunsMillis(11235L);
