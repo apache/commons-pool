@@ -239,7 +239,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      */
     private class StatsStore {
 
-        private final AtomicLong values[];
+        private final AtomicLong[] values;
         private final int size;
         private int index;
 

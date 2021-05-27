@@ -2255,7 +2255,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         genericObjectPool.setMaxWaitMillis(maxWait);
         genericObjectPool.setMaxTotal(threads);
         // Create enough threads so half the threads will have to wait
-        final WaitingTestThread wtt[] = new WaitingTestThread[threads * 2];
+        final WaitingTestThread[] wtt = new WaitingTestThread[threads * 2];
         for (int i = 0; i < wtt.length; i++) {
             wtt[i] = new WaitingTestThread(genericObjectPool,holdTime);
         }
