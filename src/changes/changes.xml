@@ -111,6 +111,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="update" due-to="Dependabot">
       Bump maven-bundle-plugin from 5.1.1 to 5.1.2 #70.
     </action>
+    <action dev="ggregory" type="update" due-to="Dependabot">
+      Bump animal-sniffer-maven-plugin from 1.19 to 1.20.
+    </action>
   </release>
   <release version="2.9.0" date="2020-09-25" description="This is a minor release (Java 8).">
     <action issue="POOL-387" dev="ggregory" type="update" due-to=" Phil Steitz">

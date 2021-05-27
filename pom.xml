@@ -178,7 +178,7 @@
     <commons.jira.pid>12310488</commons.jira.pid>
     <commons.scmPubCheckoutDirectory>site-content</commons.scmPubCheckoutDirectory>
     <commons.osgi.import>net.sf.cglib.proxy;resolution:=optional,*</commons.osgi.import>
-    <commons.animal-sniffer.version>1.19</commons.animal-sniffer.version>
+    <commons.animal-sniffer.version>1.20</commons.animal-sniffer.version>
     <commons.checkstyle-plugin.version>3.1.2</commons.checkstyle-plugin.version>
     <commons.felix.version>5.1.2</commons.felix.version>
     <spotbugs.plugin.version>4.2.3</spotbugs.plugin.version>
