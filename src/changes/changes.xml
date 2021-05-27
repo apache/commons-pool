@@ -65,6 +65,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="fix" due-to="Arturo Bernal">
       Use diamond operator. #82. 
     </action>
+    <action dev="ggregory" type="fix" due-to="Arturo Bernal">
+      Code clean ups. #83.
+    </action>
     <!-- UPDATE -->
     <action dev="ggregory" type="update" due-to="Dependabot">
       Bump spotbugs-maven-plugin from 4.0.4 to 4.2.1 #48, #53, #59, #62.
