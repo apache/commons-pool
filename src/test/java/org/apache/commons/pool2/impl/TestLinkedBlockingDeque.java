@@ -509,7 +509,7 @@ public class TestLinkedBlockingDeque {
         assertEquals(Integer.valueOf(1), arr[0]);
         assertEquals(Integer.valueOf(2), arr[1]);
 
-        arr = deque.toArray(new Integer[deque.size()]);
+        arr = deque.toArray(new Integer[0]);
         assertEquals(Integer.valueOf(1), arr[0]);
         assertEquals(Integer.valueOf(2), arr[1]);
     }
