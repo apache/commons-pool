@@ -16,10 +16,10 @@
  */
 package org.apache.commons.pool2.proxy;
 
+import org.apache.commons.pool2.UsageTracking;
+
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.Factory;
-
-import org.apache.commons.pool2.UsageTracking;
 
 /**
  * Provides proxy objects using CGLib.

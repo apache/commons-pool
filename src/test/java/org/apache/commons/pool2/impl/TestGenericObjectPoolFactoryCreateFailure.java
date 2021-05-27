@@ -17,16 +17,17 @@
 
 package org.apache.commons.pool2.impl;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * @author Pavel Kolesov as contributed in POOL-340

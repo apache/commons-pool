@@ -16,6 +16,8 @@
  */
 package org.apache.commons.pool2.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.time.Duration;
@@ -23,8 +25,6 @@ import java.time.Duration;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 public class TestGenericObjectPoolClassLoaders {

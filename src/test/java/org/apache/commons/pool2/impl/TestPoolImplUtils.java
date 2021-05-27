@@ -17,11 +17,11 @@
 package org.apache.commons.pool2.impl;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestPoolImplUtils {
 

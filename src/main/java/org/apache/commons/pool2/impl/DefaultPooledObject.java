@@ -16,12 +16,12 @@
  */
 package org.apache.commons.pool2.impl;
 
+import java.io.PrintWriter;
+import java.util.Deque;
+
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectState;
 import org.apache.commons.pool2.TrackedUse;
-
-import java.io.PrintWriter;
-import java.util.Deque;
 
 /**
  * This wrapper is used to track the additional information, such as state, for

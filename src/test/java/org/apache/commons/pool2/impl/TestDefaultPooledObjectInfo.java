@@ -16,14 +16,14 @@
  */
 package org.apache.commons.pool2.impl;
 
-import org.apache.commons.pool2.impl.TestGenericObjectPool.SimpleFactory;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.SimpleDateFormat;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.apache.commons.pool2.impl.TestGenericObjectPool.SimpleFactory;
+import org.junit.jupiter.api.Test;
 
 public class TestDefaultPooledObjectInfo {
 

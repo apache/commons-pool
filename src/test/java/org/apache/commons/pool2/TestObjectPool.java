@@ -17,18 +17,17 @@
 package org.apache.commons.pool2;
 
 
-import org.apache.commons.pool2.impl.GenericObjectPool;
-import org.apache.commons.pool2.impl.SoftReferenceObjectPool;
-import org.junit.jupiter.api.Test;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+
+import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.apache.commons.pool2.impl.SoftReferenceObjectPool;
+import org.junit.jupiter.api.Test;
 
 /**
  * Abstract test case for {@link ObjectPool} implementations.

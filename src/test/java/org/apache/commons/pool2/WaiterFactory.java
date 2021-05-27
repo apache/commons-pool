@@ -18,8 +18,8 @@
 package org.apache.commons.pool2;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 

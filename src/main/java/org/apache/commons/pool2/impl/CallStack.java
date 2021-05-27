@@ -16,10 +16,10 @@
  */
 package org.apache.commons.pool2.impl;
 
+import java.io.PrintWriter;
+
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.UsageTracking;
-
-import java.io.PrintWriter;
 
 /**
  * Strategy for obtaining and printing the current call stack. This is primarily useful for
