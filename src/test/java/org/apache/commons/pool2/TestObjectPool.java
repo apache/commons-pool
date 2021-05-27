@@ -41,13 +41,7 @@ public abstract class TestObjectPool {
     }
 
     static void removeDestroyObjectCall(final List<MethodCall> calls) {
-        final Iterator<MethodCall> iter = calls.iterator();
-        while (iter.hasNext()) {
-            final MethodCall call = iter.next();
-            if ("destroyObject".equals(call.getName())) {
-                iter.remove();
-            }
-        }
+        calls.removeIf(call -> "destroyObject".equals(call.getName()));
     }
 
     private static void reset(final ObjectPool<Object> pool, final MethodCallPoolableObjectFactory factory, final List<MethodCall> expectedMethods) throws Exception {

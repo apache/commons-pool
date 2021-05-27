@@ -129,7 +129,7 @@ public abstract class BaseTestProxiedKeyedObjectPool {
         assertNotNull(obj);
 
         assertThrows(IllegalStateException.class,
-                () -> obj.getData() );
+                obj::getData);
 
     }
 
@@ -147,7 +147,7 @@ public abstract class BaseTestProxiedKeyedObjectPool {
 
         assertNotNull(obj);
         assertThrows(IllegalStateException.class,
-                () -> obj.getData());
+                obj::getData);
     }
 
     @Test

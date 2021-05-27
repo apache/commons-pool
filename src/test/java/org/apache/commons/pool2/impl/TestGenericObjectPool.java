@@ -2562,14 +2562,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertEquals(1, genericObjectPool.getNumActive());
         assertEquals(0, genericObjectPool.getNumIdle());
 
-        final Thread t = new Thread() {
-
-            @Override
-            public void run() {
-                genericObjectPool.close();
-            }
-
-        };
+        final Thread t = new Thread(() -> genericObjectPool.close());
         t.start();
 
         genericObjectPool.returnObject(active);
