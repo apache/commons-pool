@@ -524,7 +524,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             assertTrue(lifo ? objZeroA.equals("04") : objZeroA.equals("02"));
             assertEquals(2, intPool.getNumIdle(KEY_ZERO));
             final String objZeroB = intPool.borrowObject(KEY_ZERO);
-            assertTrue(objZeroB.equals("03"));
+            assertEquals("03", objZeroB);
             assertEquals(1, intPool.getNumIdle(KEY_ZERO));
 
             intPool.evict(); // Kill remaining 0 survivor and (1,5)
@@ -2085,27 +2085,27 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         gkoPool.preparePool(key);
 
         try { Thread.sleep(150L); } catch(final InterruptedException e) { }
-        assertTrue(gkoPool.getNumIdle() == 5,"Should be 5 idle, found " + gkoPool.getNumIdle());
+        assertEquals(5, gkoPool.getNumIdle(), "Should be 5 idle, found " + gkoPool.getNumIdle());
 
         final String[] active = new String[5];
         active[0] = gkoPool.borrowObject(key);
 
         try { Thread.sleep(150L); } catch(final InterruptedException e) { }
-        assertTrue(gkoPool.getNumIdle() == 5,"Should be 5 idle, found " + gkoPool.getNumIdle());
+        assertEquals(5, gkoPool.getNumIdle(), "Should be 5 idle, found " + gkoPool.getNumIdle());
 
         for(int i=1 ; i<5 ; i++) {
             active[i] = gkoPool.borrowObject(key);
         }
 
         try { Thread.sleep(150L); } catch(final InterruptedException e) { }
-        assertTrue(gkoPool.getNumIdle() == 5,"Should be 5 idle, found " + gkoPool.getNumIdle());
+        assertEquals(5, gkoPool.getNumIdle(), "Should be 5 idle, found " + gkoPool.getNumIdle());
 
         for(int i=0 ; i<5 ; i++) {
             gkoPool.returnObject(key, active[i]);
         }
 
         try { Thread.sleep(150L); } catch(final InterruptedException e) { }
-        assertTrue(gkoPool.getNumIdle() == 10,"Should be 10 idle, found " + gkoPool.getNumIdle());
+        assertEquals(10, gkoPool.getNumIdle(), "Should be 10 idle, found " + gkoPool.getNumIdle());
     }
 
     @Test
@@ -2122,44 +2122,44 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         final String key = "A";
 
         gkoPool.preparePool(key);
-        assertTrue(gkoPool.getNumIdle() == 5,"Should be 5 idle, found " +
+        assertEquals(5, gkoPool.getNumIdle(), "Should be 5 idle, found " +
                 gkoPool.getNumIdle());
 
         try { Thread.sleep(150L); } catch(final InterruptedException e) { }
-        assertTrue(gkoPool.getNumIdle() == 5,"Should be 5 idle, found " + gkoPool.getNumIdle());
+        assertEquals(5, gkoPool.getNumIdle(), "Should be 5 idle, found " + gkoPool.getNumIdle());
 
         final String[] active = new String[10];
 
         try { Thread.sleep(150L); } catch(final InterruptedException e) { }
-        assertTrue(gkoPool.getNumIdle() == 5,"Should be 5 idle, found " + gkoPool.getNumIdle());
+        assertEquals(5, gkoPool.getNumIdle(), "Should be 5 idle, found " + gkoPool.getNumIdle());
 
         for(int i=0 ; i<5 ; i++) {
             active[i] = gkoPool.borrowObject(key);
         }
 
         try { Thread.sleep(150L); } catch(final InterruptedException e) { }
-        assertTrue(gkoPool.getNumIdle() == 5,"Should be 5 idle, found " + gkoPool.getNumIdle());
+        assertEquals(5, gkoPool.getNumIdle(), "Should be 5 idle, found " + gkoPool.getNumIdle());
 
         for(int i=0 ; i<5 ; i++) {
             gkoPool.returnObject(key, active[i]);
         }
 
         try { Thread.sleep(150L); } catch(final InterruptedException e) { }
-        assertTrue(gkoPool.getNumIdle() == 10,"Should be 10 idle, found " + gkoPool.getNumIdle());
+        assertEquals(10, gkoPool.getNumIdle(), "Should be 10 idle, found " + gkoPool.getNumIdle());
 
         for(int i=0 ; i<10 ; i++) {
             active[i] = gkoPool.borrowObject(key);
         }
 
         try { Thread.sleep(150L); } catch(final InterruptedException e) { }
-        assertTrue(gkoPool.getNumIdle() == 0,"Should be 0 idle, found " + gkoPool.getNumIdle());
+        assertEquals(0, gkoPool.getNumIdle(), "Should be 0 idle, found " + gkoPool.getNumIdle());
 
         for(int i=0 ; i<10 ; i++) {
             gkoPool.returnObject(key, active[i]);
         }
 
         try { Thread.sleep(150L); } catch(final InterruptedException e) { }
-        assertTrue(gkoPool.getNumIdle() == 10,"Should be 10 idle, found " + gkoPool.getNumIdle());
+        assertEquals(10, gkoPool.getNumIdle(), "Should be 10 idle, found " + gkoPool.getNumIdle());
     }
 
     @Test
@@ -2178,13 +2178,13 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         final String key = "A";
 
         try { Thread.sleep(150L); } catch(final InterruptedException e) { }
-        assertTrue(gkoPool.getNumIdle() == 0,"Should be 0 idle, found " + gkoPool.getNumIdle());
+        assertEquals(0, gkoPool.getNumIdle(), "Should be 0 idle, found " + gkoPool.getNumIdle());
 
         final Object active = gkoPool.borrowObject(key);
         assertNotNull(active);
 
         try { Thread.sleep(150L); } catch(final InterruptedException e) { }
-        assertTrue(gkoPool.getNumIdle() == 5,"Should be 5 idle, found " + gkoPool.getNumIdle());
+        assertEquals(5, gkoPool.getNumIdle(), "Should be 5 idle, found " + gkoPool.getNumIdle());
     }
 
     /**
@@ -2371,19 +2371,19 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             gkoPool.setTestOnBorrow(true);
             assertTrue(gkoPool.getTestOnBorrow());
             gkoPool.setTestOnBorrow(false);
-            assertTrue(!gkoPool.getTestOnBorrow());
+            assertFalse(gkoPool.getTestOnBorrow());
         }
         {
             gkoPool.setTestOnReturn(true);
             assertTrue(gkoPool.getTestOnReturn());
             gkoPool.setTestOnReturn(false);
-            assertTrue(!gkoPool.getTestOnReturn());
+            assertFalse(gkoPool.getTestOnReturn());
         }
         {
             gkoPool.setTestWhileIdle(true);
             assertTrue(gkoPool.getTestWhileIdle());
             gkoPool.setTestWhileIdle(false);
-            assertTrue(!gkoPool.getTestWhileIdle());
+            assertFalse(gkoPool.getTestWhileIdle());
         }
         {
             gkoPool.setTimeBetweenEvictionRunsMillis(11235L);
