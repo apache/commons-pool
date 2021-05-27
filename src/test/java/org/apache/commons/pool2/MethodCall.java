@@ -20,6 +20,7 @@ package org.apache.commons.pool2;
 import java.util.List;
 import java.util.Collections;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Holds method names, parameters, and return values for tracing method calls.
@@ -64,13 +65,13 @@ public class MethodCall {
 
         final MethodCall that = (MethodCall)o;
 
-        if (name != null ? !name.equals(that.name) : that.name != null) {
+        if (!Objects.equals(name, that.name)) {
             return false;
         }
-        if (params != null ? !params.equals(that.params) : that.params != null) {
+        if (!Objects.equals(params, that.params)) {
             return false;
         }
-        return returned != null ? returned.equals(that.returned) : that.returned == null;
+        return Objects.equals(returned, that.returned);
     }
 
     public String getName() {
