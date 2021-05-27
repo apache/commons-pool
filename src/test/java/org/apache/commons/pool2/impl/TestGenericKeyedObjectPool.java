@@ -749,7 +749,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                                     oneLength, twoLength));
                         }
                     }
-                    final int visits[] = new int[twoLength];
+                    final int[] visits = new int[twoLength];
                     for (int k = 0; k < twoLength; k++) {
                         tracker = intPool.borrowObject(KEY_TWO);
                         visitCount = tracker.getValidateCount();
@@ -2027,7 +2027,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         gkoPool.setMaxWaitMillis(maxWait);
         gkoPool.setMaxTotalPerKey(threadsPerKey);
         // Create enough threads so half the threads will have to wait
-        final WaitingTestThread wtt[] = new WaitingTestThread[keyCount * threadsPerKey * 2];
+        final WaitingTestThread[] wtt = new WaitingTestThread[keyCount * threadsPerKey * 2];
         for(int i=0; i < wtt.length; i++){
             wtt[i] = new WaitingTestThread(gkoPool,Integer.toString(i % keyCount),holdTime);
         }
