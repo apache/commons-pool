@@ -133,7 +133,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      *                used by this pool
      */
     public GenericObjectPool(final PooledObjectFactory<T> factory) {
-        this(factory, new GenericObjectPoolConfig<T>());
+        this(factory, new GenericObjectPoolConfig<>());
     }
 
     /**
