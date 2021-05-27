@@ -1,3 +1,73 @@
+              Apache Commons Pool 2.10.0-SNAPSHOT RELEASE NOTES
+
+The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.10.0-SNAPSHOT.
+
+Apache Commons Pool provides an object-pooling API and a number of object pool implementations.
+Version 2 contains a completely re-written pooling implementation compared to the 1.x series.
+In addition to performance and scalability improvements, version 2 includes robust instance
+tracking and pool monitoring. 
+
+Version 2.10.x requires Java 8 or above.
+Version 2.9.x requires Java 8 or above.
+Version 2.8.x requires Java 8 or above.
+Version 2.7.x requires Java 8 or above.
+Version 2.6.x requires Java 7 or above.
+Version 2.5.x requires Java 7 or above.
+Version 2.0 requires 6 or above. 
+
+No client code changes are required to migrate from versions 2.0-2.3 to version 2.4.3.
+Users of version 1.x should consult the migration guide on the Commons Pool web site.
+
+NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPoolMXBean
+      and GenericKeyedObjectPoolMXBean) exist only to define the attributes and methods
+      that will be made available via JMX. They must not be implemented by clients as
+      they are subject to change between major, minor and patch version releases of
+      Commons Pool. Clients that implement any of these interfaces may not, therefore,
+      be able to upgrade to a new minor or patch release without requiring code
+      changes.
+
+This is a MMMM release (Java 8).
+
+Changes in version 2.10.0-SNAPSHOT include:
+
+New features:
+o            Add and use java.time.Duration APIs timeouts instead of using ints for seconds.
+             See the site and its API comparison report for a list of the new Duration-based APIs. Thanks to Gary Gregory.
+o            Implement AbandonedConfig for GenericKeyedObjectPool #67. Thanks to JSurf, Gary Gregory, Phil Steitz.
+
+Fixed Bugs:
+o            Simplify Assertions in tests #77. Thanks to Arturo Bernal.
+o            Replace C-style array declaration with Java style #80. Thanks to Arturo Bernal.
+o            Use Objects.equals(); Use Anonymous type; Use method reference instead Lambda; Replace Loop with Collection.removeIf(). #81. Thanks to Arturo Bernal.
+o            Use diamond operator. #82. Thanks to Arturo Bernal.
+
+Changes:
+o            Bump spotbugs-maven-plugin from 4.0.4 to 4.2.1 #48, #53, #59, #62. Thanks to Dependabot.
+o            Bump actions/setup-java from v1.4.2 to v2, #47. Thanks to Dependabot, Gary Gregory.
+o            Bump junit from 4.13 to 4.13.1 #50. Thanks to Dependabot.
+o            Bump biz.aQute.bndlib from 5.1.2 to 5.3.0, #51, #66. Thanks to Dependabot.
+o POOL-389:  Migrate to JUnit 5 #57. Thanks to Arturo Bernal.
+o POOL-389:  Minor Improvements #58, #60. Thanks to Arturo Bernal.
+o            Bump actions/checkout from v2.3.3 to v2.3.4 #54. Thanks to Dependabot.
+o            Bump maven-pmd-plugin from 3.13.0 to 3.14.0 #55. Thanks to Dependabot.
+o            Update commons.japicmp.version 0.14.3 -> 0.15.2. Thanks to Gary Gregory.
+o            Bump actions/cache from v2 to v2.1.5 #65, #75. Thanks to Dependabot, Gary Gregory.
+o            Bump maven-checkstyle-plugin from 3.1.1 to 3.1.2 #61. Thanks to Dependabot.
+o            Bump asm-util from 9.0 to 9.1 #64. Thanks to Dependabot.
+o            Bump spotbugs from 4.2.1 to 4.2.3 #68, #73, #74. Thanks to Dependabot.
+o            Bump junit-bom from 5.7.1 to 5.8.0-M1 #76. Thanks to Dependabot, Gary Gregory.
+o            Bump maven-bundle-plugin from 5.1.1 to 5.1.2 #70. Thanks to Dependabot.
+
+
+For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Apache Commons Pool website:
+
+https://commons.apache.org/proper/commons-pool/
+
+Download page: https://commons.apache.org/proper/commons-pool/download_pool.cgi
+
+-----------------------------------------------------------------------------------------------
+
               Apache Commons Pool 2.9.0 RELEASE NOTES
 
 The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.9.0.
