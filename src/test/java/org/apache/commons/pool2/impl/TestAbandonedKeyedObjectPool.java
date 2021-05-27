@@ -155,7 +155,7 @@ public class TestAbandonedKeyedObjectPool {
 
         pool = new GenericKeyedObjectPool<>(
                new SimpleFactory(),
-               new GenericKeyedObjectPoolConfig<PooledTestObject>(),
+               new GenericKeyedObjectPoolConfig<>(),
                abandonedConfig);
     }
 
@@ -201,7 +201,7 @@ public class TestAbandonedKeyedObjectPool {
         pool = new GenericKeyedObjectPool<>(
                 // destroys take 200 ms
                 new SimpleFactory(200, 0),
-                new GenericKeyedObjectPoolConfig<PooledTestObject>(), abandonedConfig);
+                new GenericKeyedObjectPoolConfig<>(), abandonedConfig);
         final int n = 10;
         pool.setMaxTotal(n);
         pool.setBlockWhenExhausted(false);
@@ -232,7 +232,7 @@ public class TestAbandonedKeyedObjectPool {
         pool.close();  // Unregister pool created by setup
         pool = new GenericKeyedObjectPool<>(
                 new SimpleFactory(200, 0),
-                new GenericKeyedObjectPoolConfig<PooledTestObject>(), abandonedConfig);
+                new GenericKeyedObjectPoolConfig<>(), abandonedConfig);
         final int n = 10;
         pool.setMaxTotal(n);
         pool.setBlockWhenExhausted(false);
@@ -309,7 +309,7 @@ public class TestAbandonedKeyedObjectPool {
         pool = new GenericKeyedObjectPool<>(
              // validate takes 1 second
              new SimpleFactory(0, 0),
-             new GenericKeyedObjectPoolConfig<PooledTestObject>(), abandonedConfig);
+             new GenericKeyedObjectPoolConfig<>(), abandonedConfig);
         pool.setTimeBetweenEvictionRuns(Duration.ofMillis(50));
         // Borrow an object, wait long enough for it to be abandoned
         final PooledTestObject obj = pool.borrowObject(0);
@@ -343,7 +343,7 @@ public class TestAbandonedKeyedObjectPool {
         pool = new GenericKeyedObjectPool<>(
              // validate takes 1 second
              new SimpleFactory(0, 1000),
-             new GenericKeyedObjectPoolConfig<PooledTestObject>(), abandonedConfig);
+             new GenericKeyedObjectPoolConfig<>(), abandonedConfig);
         final int n = 10;
         pool.setMaxTotal(n);
         pool.setBlockWhenExhausted(false);

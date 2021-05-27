@@ -49,7 +49,7 @@ public class SecurityManagerCallStack implements CallStack {
             final Class<?>[] classes = getClassContext();
             final List<WeakReference<Class<?>>> stack = new ArrayList<>(classes.length);
             for (final Class<?> klass : classes) {
-                stack.add(new WeakReference<Class<?>>(klass));
+                stack.add(new WeakReference<>(klass));
             }
             return stack;
         }

@@ -246,7 +246,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * @param factory the factory to be used to create entries
      */
     public GenericKeyedObjectPool(final KeyedPooledObjectFactory<K, T> factory) {
-        this(factory, new GenericKeyedObjectPoolConfig<T>());
+        this(factory, new GenericKeyedObjectPoolConfig<>());
     }
 
     /**
