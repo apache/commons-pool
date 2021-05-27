@@ -59,6 +59,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="fix" due-to="Arturo Bernal">
       Replace C-style array declaration with Java style #80.
     </action>
+    <action dev="ggregory" type="fix" due-to="Arturo Bernal">
+      Use Objects.equals(); Use Anonymous type; Use method reference instead Lambda; Replace Loop with Collection.removeIf(). #81. 
+    </action>
     <!-- UPDATE -->
     <action dev="ggregory" type="update" due-to="Dependabot">
       Bump spotbugs-maven-plugin from 4.0.4 to 4.2.1 #48, #53, #59, #62.
