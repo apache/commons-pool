@@ -42,14 +42,18 @@ public class AtomicIntegerFactory
         p.getObject().incrementAndGet();
         try {
             Thread.sleep(activateLatency);
-        } catch (final InterruptedException ex) {}
+        } catch (final InterruptedException ex) {
+            // ignore
+        }
     }
 
     @Override
     public AtomicInteger create() {
         try {
             Thread.sleep(createLatency);
-        } catch (final InterruptedException ex) {}
+        } catch (final InterruptedException ex) {
+            // ignore
+        }
         return new AtomicInteger(0);
     }
 
@@ -57,7 +61,9 @@ public class AtomicIntegerFactory
     public void destroyObject(final PooledObject<AtomicInteger> p) {
         try {
             Thread.sleep(destroyLatency);
-        } catch (final InterruptedException ex) {}
+        } catch (final InterruptedException ex) {
+            // ignore
+        }
     }
 
     @Override
@@ -65,7 +71,9 @@ public class AtomicIntegerFactory
         p.getObject().decrementAndGet();
         try {
             Thread.sleep(passivateLatency);
-        } catch (final InterruptedException ex) {}
+        } catch (final InterruptedException ex) {
+            // ignore
+        }
     }
 
     /**
@@ -111,7 +119,9 @@ public class AtomicIntegerFactory
     public boolean validateObject(final PooledObject<AtomicInteger> instance) {
         try {
             Thread.sleep(validateLatency);
-        } catch (final InterruptedException ex) {}
+        } catch (final InterruptedException ex) {
+            // ignore
+        }
         return instance.getObject().intValue() == 1;
     }
 
