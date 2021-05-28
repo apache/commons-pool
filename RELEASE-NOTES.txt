@@ -40,6 +40,7 @@ o            Simplify Assertions in tests #77. Thanks to Arturo Bernal.
 o            Replace C-style array declaration with Java style #80. Thanks to Arturo Bernal.
 o            Use Objects.equals(); Use Anonymous type; Use method reference instead Lambda; Replace Loop with Collection.removeIf(). #81. Thanks to Arturo Bernal.
 o            Use diamond operator. #82. Thanks to Arturo Bernal.
+o            Code clean ups. #83. Thanks to Arturo Bernal.
 
 Changes:
 o            Bump spotbugs-maven-plugin from 4.0.4 to 4.2.1 #48, #53, #59, #62. Thanks to Dependabot.
@@ -50,13 +51,14 @@ o POOL-389:  Migrate to JUnit 5 #57. Thanks to Arturo Bernal.
 o POOL-389:  Minor Improvements #58, #60. Thanks to Arturo Bernal.
 o            Bump actions/checkout from v2.3.3 to v2.3.4 #54. Thanks to Dependabot.
 o            Bump maven-pmd-plugin from 3.13.0 to 3.14.0 #55. Thanks to Dependabot.
-o            Update commons.japicmp.version 0.14.3 -> 0.15.2. Thanks to Gary Gregory.
-o            Bump actions/cache from v2 to v2.1.5 #65, #75. Thanks to Dependabot, Gary Gregory.
+o            Update commons.japicmp.version 0.14.3 -> 0.15.3. Thanks to Gary Gregory.
+o            Bump actions/cache from v2 to v2.1.6 #65, #75, #84. Thanks to Dependabot, Gary Gregory.
 o            Bump maven-checkstyle-plugin from 3.1.1 to 3.1.2 #61. Thanks to Dependabot.
 o            Bump asm-util from 9.0 to 9.1 #64. Thanks to Dependabot.
 o            Bump spotbugs from 4.2.1 to 4.2.3 #68, #73, #74. Thanks to Dependabot.
 o            Bump junit-bom from 5.7.1 to 5.8.0-M1 #76. Thanks to Dependabot, Gary Gregory.
 o            Bump maven-bundle-plugin from 5.1.1 to 5.1.2 #70. Thanks to Dependabot.
+o            Bump animal-sniffer-maven-plugin from 1.19 to 1.20. Thanks to Dependabot.
 
 
 For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
