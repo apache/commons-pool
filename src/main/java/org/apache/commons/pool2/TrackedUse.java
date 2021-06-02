@@ -28,9 +28,9 @@ package org.apache.commons.pool2;
 public interface TrackedUse {
 
     /**
-     * Get the last time this object was used in ms.
+     * Gets the last time this object was used in milliseconds.
      *
-     * @return long time in ms
+     * @return long time in milliseconds.
      */
     long getLastUsed();
 }
