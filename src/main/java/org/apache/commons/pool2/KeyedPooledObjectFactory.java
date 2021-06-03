@@ -77,7 +77,7 @@ package org.apache.commons.pool2;
 public interface KeyedPooledObjectFactory<K, V> {
 
     /**
-     * Reinitialize an instance to be returned by the pool.
+     * Reinitializes an instance to be returned by the pool.
      *
      * @param key the key used when selecting the object
      * @param p a {@code PooledObject} wrapping the instance to be activated
@@ -90,7 +90,7 @@ public interface KeyedPooledObjectFactory<K, V> {
     void activateObject(K key, PooledObject<V> p) throws Exception;
 
     /**
-     * Destroy an instance no longer needed by the pool.
+     * Destroys an instance no longer needed by the pool.
      * <p>
      * It is important for implementations of this method to be aware that there
      * is no guarantee about what state {@code obj} will be in and the
@@ -113,7 +113,7 @@ public interface KeyedPooledObjectFactory<K, V> {
     void destroyObject(K key, PooledObject<V> p) throws Exception;
 
     /**
-     * Destroy an instance no longer needed by the pool, using the provided {@link DestroyMode}.
+     * Destroys an instance no longer needed by the pool, using the provided {@link DestroyMode}.
      *
      * @param key the key used when selecting the instance
      * @param p a {@code PooledObject} wrapping the instance to be destroyed
@@ -133,7 +133,7 @@ public interface KeyedPooledObjectFactory<K, V> {
     }
 
     /**
-     * Create an instance that can be served by the pool and
+     * Creates an instance that can be served by the pool and
      * wrap it in a {@link PooledObject} to be managed by the pool.
      *
      * @param key the key used when constructing the object
@@ -147,7 +147,7 @@ public interface KeyedPooledObjectFactory<K, V> {
     PooledObject<V> makeObject(K key) throws Exception;
 
     /**
-     * Uninitialize an instance to be returned to the idle object pool.
+     * Uninitializes an instance to be returned to the idle object pool.
      *
      * @param key the key used when selecting the object
      * @param p a {@code PooledObject} wrapping the instance to be passivated

@@ -33,6 +33,7 @@
           instance tracking and pool monitoring.
          </p>
          <ul>
+          <li>Version 2.11.x requires Java 8 or above.</li>
           <li>Version 2.10.x requires Java 8 or above.</li>
           <li>Version 2.9.x requires Java 8 or above.</li>
           <li>Version 2.8.x requires Java 8 or above.</li>
@@ -64,11 +65,12 @@
           </p>
 <source>
 public interface PooledObjectFactory&lt;T&gt; {
-    PooledObject&lt;T&gt; makeObject();
-    void activateObject(PooledObject&lt;T&gt; obj);
-    void passivateObject(PooledObject&lt;T&gt; obj);
-    boolean validateObject(PooledObject&lt;T&gt; obj);
-    void destroyObject(PooledObject&lt;T&gt; obj);
+    activateObject(PooledObject&lt;T&gt;)
+    destroyObject(PooledObject&lt;T&gt;)
+    destroyObject(PooledObject&lt;T&gt;, DestroyMode)
+    makeObject()
+    passivateObject(PooledObject&lt;T&gt;)
+    validateObject(PooledObject&lt;T&gt;)
 }
 </source>
           <p>

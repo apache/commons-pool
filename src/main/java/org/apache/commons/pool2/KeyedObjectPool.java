@@ -70,7 +70,7 @@ import java.util.NoSuchElementException;
 public interface KeyedObjectPool<K, V> extends Closeable {
 
     /**
-     * Create an object using the {@link KeyedPooledObjectFactory factory} or
+     * Creates an object using the {@link KeyedPooledObjectFactory factory} or
      * other implementation dependent mechanism, passivate it, and then place it
      * in the idle object pool. {@code addObject} is useful for
      * "pre-loading" a pool with idle objects (Optional operation).
@@ -199,7 +199,7 @@ public interface KeyedObjectPool<K, V> extends Closeable {
     void clear(K key) throws Exception, UnsupportedOperationException;
 
     /**
-     * Close this pool, and free any resources associated with it.
+     * Closes this pool, and free any resources associated with it.
      * <p>
      * Calling {@link #addObject addObject} or
      * {@link #borrowObject borrowObject} after invoking this method on a pool

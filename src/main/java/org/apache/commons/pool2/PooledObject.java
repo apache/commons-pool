@@ -64,7 +64,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     boolean deallocate();
 
     /**
-     * Called to inform the object that the eviction test has ended.
+     * Notifies the object that the eviction test has ended.
      *
      * @param idleQueue The queue of idle objects to which the object should be
      *                  returned.
@@ -262,7 +262,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     void printStackTrace(PrintWriter writer);
 
     /**
-     * Is abandoned object tracking being used? If this is true the
+     * Sets whether to use abandoned object tracking. If this is true the
      * implementation will need to record the stack trace of the last caller to
      * borrow this object.
      *
@@ -272,7 +272,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     void setLogAbandoned(boolean logAbandoned);
 
     /**
-     * Configures the stack trace generation strategy based on whether or not fully detailed stack traces are required.
+     * Sets the stack trace generation strategy based on whether or not fully detailed stack traces are required.
      * When set to false, abandoned logs may only include caller class information rather than method names, line
      * numbers, and other normal metadata available in a full stack trace.
      *
@@ -294,7 +294,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     boolean startEvictionTest();
 
     /**
-     * Provides a String form of the wrapper for debug purposes. The format is
+     * Gets a String form of the wrapper for debug purposes. The format is
      * not fixed and may change at any time.
      * <p>
      * {@inheritDoc}

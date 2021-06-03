@@ -27,7 +27,7 @@ package org.apache.commons.pool2;
 public interface SwallowedExceptionListener {
 
     /**
-     * This method is called every time the implementation unavoidably swallows
+     * Notifies this instance every time the implementation unavoidably swallows
      * an exception.
      *
      * @param e The exception that was swallowed
