@@ -18,6 +18,7 @@ package org.apache.commons.pool2;
 
 import java.io.PrintWriter;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Deque;
 
 /**
@@ -58,7 +59,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      * Deallocates the object and sets it {@link PooledObjectState#IDLE IDLE}
      * if it is currently {@link PooledObjectState#ALLOCATED ALLOCATED}.
      *
-     * @return {@code true} if the state was {@link PooledObjectState#ALLOCATED ALLOCATED}
+     * @return {@code true} if the state was {@link PooledObjectState#ALLOCATED ALLOCATED}.
      */
     boolean deallocate();
 
@@ -66,9 +67,9 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      * Called to inform the object that the eviction test has ended.
      *
      * @param idleQueue The queue of idle objects to which the object should be
-     *                  returned
+     *                  returned.
      *
-     * @return  Currently not used
+     * @return  Currently not used.
      */
     boolean endEvictionTest(Deque<PooledObject<T>> idleQueue);
 
@@ -76,15 +77,20 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     boolean equals(Object obj);
 
     /**
-     * Gets the amount of time this object last spent in the
-     * active state (it may still be active in which case subsequent calls will
-     * return an increased value).
+     * Gets the amount of time this object last spent in the active state (it may still be active in which case
+     * subsequent calls will return an increased value).
      *
-     * @return The duration last spent in the active state
-     * @since 2.12.0
+     * @return The duration last spent in the active state.
+     * @since 2.10.0
      */
     default Duration getActiveTime() {
-        return Duration.ofMillis(getActiveTimeMillis());
+        final Instant lastReturnInstant = getLastReturnInstant();
+        final Instant lastBorrowInstant = getLastBorrowInstant();
+        // @formatter:off
+        return lastReturnInstant.isAfter(lastBorrowInstant) ?
+                Duration.between(lastBorrowInstant, lastReturnInstant) :
+                Duration.between(Instant.now(), lastBorrowInstant);
+        // @formatter:on
     }
 
     /**
@@ -92,14 +98,16 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      * active state (it may still be active in which case subsequent calls will
      * return an increased value).
      *
-     * @return The time in milliseconds last spent in the active state
+     * @return The time in milliseconds last spent in the active state.
+     * @deprecated Use {@link #getActiveTime()} which offers the best precision.
      */
+    @Deprecated
     long getActiveTimeMillis();
 
     /**
      * Gets the number of times this object has been borrowed.
      *
-     * @return -1 by default for old implementations prior to release 2.7.0.
+     * @return -1 by default for implementations prior to release 2.7.0.
      * @since 2.7.0
      */
     default long getBorrowedCount() {
@@ -107,11 +115,23 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     }
 
     /**
+     * Gets the time (using the same basis as {@link Instant#now()}) that this object was created.
+     *
+     * @return The creation time for the wrapped object.
+     * @since 2.11.0
+     */
+    default Instant getCreateInstant() {
+        return Instant.ofEpochMilli(getCreateTime());
+    }
+
+    /**
      * Gets the time (using the same basis as
      * {@link System#currentTimeMillis()}) that this object was created.
      *
-     * @return The creation time for the wrapped object
+     * @return The creation time for the wrapped object.
+     * @deprecated Use {@link #getCreateInstant()} which offers the best precision.
      */
+    @Deprecated
     long getCreateTime();
 
     /**
@@ -131,40 +151,80 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      * idle state (it may still be idle in which case subsequent calls will
      * return an increased value).
      *
-     * @return The time in milliseconds last spent in the idle state
+     * @return The time in milliseconds last spent in the idle state.
+     * @deprecated Use {@link #getIdleTime()} which offers the best precision.
      */
+    @Deprecated
     long getIdleTimeMillis();
 
     /**
      * Gets the time the wrapped object was last borrowed.
      *
-     * @return The time the object was last borrowed
+     * @return The time the object was last borrowed.
+     * @since 2.11.0
      */
+    default Instant getLastBorrowInstant() {
+        return Instant.ofEpochMilli(getLastBorrowTime());
+    }
+
+    /**
+     * Gets the time the wrapped object was last borrowed.
+     *
+     * @return The time the object was last borrowed.
+     * @deprecated Use {@link #getLastBorrowInstant()} which offers the best precision.
+     */
+    @Deprecated
     long getLastBorrowTime();
+
+    /**
+     * Gets the time the wrapped object was last borrowed.
+     *
+     * @return The time the object was last borrowed.
+     * @since 2.11.0
+     */
+    default Instant getLastReturnInstant() {
+        return Instant.ofEpochMilli(getLastReturnTime());
+    }
 
     /**
      * Gets the time the wrapped object was last returned.
      *
-     * @return The time the object was last returned
+     * @return The time the object was last returned.
+     * @deprecated Use {@link #getLastReturnInstant()} which offers the best precision.
      */
+    @Deprecated
     long getLastReturnTime();
+
+    /**
+     * Gets an estimate of the last time this object was used. If the class of the pooled object implements
+     * {@link TrackedUse}, what is returned is the maximum of {@link TrackedUse#getLastUsedInstant()} and
+     * {@link #getLastBorrowTime()}; otherwise this method gives the same value as {@link #getLastBorrowTime()}.
+     *
+     * @return the last time this object was used
+     * @since 2.11.0
+     */
+    default Instant getLastUsedInstant() {
+        return Instant.ofEpochMilli(getLastUsedTime());
+    }
 
     /**
      * Gets an estimate of the last time this object was used.  If the class
      * of the pooled object implements {@link TrackedUse}, what is returned is
-     * the maximum of {@link TrackedUse#getLastUsed()} and
+     * the maximum of {@link TrackedUse#getLastUsedInstant()} and
      * {@link #getLastBorrowTime()}; otherwise this method gives the same
      * value as {@link #getLastBorrowTime()}.
      *
-     * @return the last time this object was used
+     * @return the last time this object was used.
+     * @deprecated Use {@link #getLastUsedInstant()} which offers the best precision.
      */
+    @Deprecated
     long getLastUsedTime();
 
     /**
      * Gets the underlying object that is wrapped by this instance of
      * {@link PooledObject}.
      *
-     * @return The wrapped object
+     * @return The wrapped object.
      */
     T getObject();
 
@@ -178,7 +238,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     int hashCode();
 
     /**
-     * Sets the state to {@link PooledObjectState#INVALID INVALID}
+     * Sets the state to {@link PooledObjectState#INVALID INVALID}.
      */
     void invalidate();
 
@@ -197,7 +257,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      * the stack trace of the last code to use this object (if available) to
      * the supplied writer.
      *
-     * @param   writer  The destination for the debug output
+     * @param   writer  The destination for the debug output.
      */
     void printStackTrace(PrintWriter writer);
 
@@ -207,7 +267,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      * borrow this object.
      *
      * @param   logAbandoned    The new configuration setting for abandoned
-     *                          object tracking
+     *                          object tracking.
      */
     void setLogAbandoned(boolean logAbandoned);
 
@@ -216,7 +276,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      * When set to false, abandoned logs may only include caller class information rather than method names, line
      * numbers, and other normal metadata available in a full stack trace.
      *
-     * @param requireFullStackTrace the new configuration setting for abandoned object logging
+     * @param requireFullStackTrace the new configuration setting for abandoned object logging.
      * @since 2.7.0
      */
     default void setRequireFullStackTrace(final boolean requireFullStackTrace) {
@@ -229,7 +289,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      *
      * @return {@code true} if the object was placed in the
      *         {@link PooledObjectState#EVICTION} state otherwise
-     *         {@code false}
+     *         {@code false}.
      */
     boolean startEvictionTest();
 
@@ -243,7 +303,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     String toString();
 
     /**
-     * Record the current stack trace as the last time the object was used.
+     * Records the current stack trace as the last time the object was used.
      */
     void use();
 

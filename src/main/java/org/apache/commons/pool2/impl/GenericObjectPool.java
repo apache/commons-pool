@@ -17,6 +17,7 @@
 package org.apache.commons.pool2.impl;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -56,7 +57,7 @@ import org.apache.commons.pool2.UsageTracking;
  * The pool can also be configured to detect and remove "abandoned" objects,
  * i.e. objects that have been checked out of the pool but neither used nor
  * returned before the configured
- * {@link AbandonedConfig#getRemoveAbandonedTimeout() removeAbandonedTimeout}.
+ * {@link AbandonedConfig#getRemoveAbandonedTimeoutDuration() removeAbandonedTimeout}.
  * Abandoned object removal can be configured to happen when
  * {@code borrowObject} is invoked and the pool is close to starvation, or
  * it can be executed by the idle object evictor, or both. If pooled objects
@@ -1053,9 +1054,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         ensureMinIdle();
     }
 
-
-    // --- internal attributes -------------------------------------------------
-
     /**
      * Recovers abandoned objects which have been checked out but
      * not used since longer than the removeAbandonedTimeout.
@@ -1065,16 +1063,14 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     @SuppressWarnings("resource") // PrintWriter is managed elsewhere
     private void removeAbandoned(final AbandonedConfig abandonedConfig) {
         // Generate a list of abandoned objects to remove
-        final long nowMillis = System.currentTimeMillis();
-        final long timeoutMillis =
-                nowMillis - abandonedConfig.getRemoveAbandonedTimeoutDuration().toMillis();
+        final Instant timeout = Instant.now().minus(abandonedConfig.getRemoveAbandonedTimeoutDuration());
         final ArrayList<PooledObject<T>> remove = new ArrayList<>();
         final Iterator<PooledObject<T>> it = allObjects.values().iterator();
         while (it.hasNext()) {
             final PooledObject<T> pooledObject = it.next();
             synchronized (pooledObject) {
                 if (pooledObject.getState() == PooledObjectState.ALLOCATED &&
-                        pooledObject.getLastUsedTime() <= timeoutMillis) {
+                        pooledObject.getLastUsedInstant().compareTo(timeout) <= 0) {
                     pooledObject.markAbandoned();
                     remove.add(pooledObject);
                 }
@@ -1095,6 +1091,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             }
         }
     }
+
     /**
      * {@inheritDoc}
      * <p>

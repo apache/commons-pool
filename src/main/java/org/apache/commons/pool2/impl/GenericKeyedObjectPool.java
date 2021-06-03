@@ -17,6 +17,7 @@
 package org.apache.commons.pool2.impl;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
@@ -1516,9 +1517,6 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         return objectDeque;
     }
 
-
-    //--- internal attributes --------------------------------------------------
-
     /**
      * Recovers abandoned objects which have been checked out but
      * not used since longer than the removeAbandonedTimeout.
@@ -1531,16 +1529,14 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
             final Map<IdentityWrapper<T>, PooledObject<T>> allObjects = pool.getValue().getAllObjects();
 
             // Generate a list of abandoned objects to remove
-            final long nowMillis = System.currentTimeMillis();
-            final long timeoutMillis =
-                    nowMillis - abandonedConfig.getRemoveAbandonedTimeoutDuration().toMillis();
+            final Instant timeout = Instant.now().minus(abandonedConfig.getRemoveAbandonedTimeoutDuration());
             final ArrayList<PooledObject<T>> remove = new ArrayList<>();
             final Iterator<PooledObject<T>> it = allObjects.values().iterator();
             while (it.hasNext()) {
                 final PooledObject<T> pooledObject = it.next();
                 synchronized (pooledObject) {
                     if (pooledObject.getState() == PooledObjectState.ALLOCATED &&
-                            pooledObject.getLastUsedTime() <= timeoutMillis) {
+                            pooledObject.getLastUsedInstant().compareTo(timeout) <= 0) {
                         pooledObject.markAbandoned();
                         remove.add(pooledObject);
                     }

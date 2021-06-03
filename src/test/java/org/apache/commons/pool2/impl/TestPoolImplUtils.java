@@ -16,8 +16,9 @@
  */
 package org.apache.commons.pool2.impl;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.time.Instant;
 
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
@@ -26,12 +27,11 @@ import org.junit.jupiter.api.Test;
 public class TestPoolImplUtils {
 
     @SuppressWarnings("unused")
-    private abstract static class FactoryAB<A,B>
-            extends BasePooledObjectFactory<B> {
+    private abstract static class FactoryAB<A, B> extends BasePooledObjectFactory<B> {
         // empty by design
     }
 
-    private abstract static class FactoryBA<A,B> extends FactoryAB<B,A> {
+    private abstract static class FactoryBA<A, B> extends FactoryAB<B, A> {
         // empty by design
     }
 
@@ -40,11 +40,11 @@ public class TestPoolImplUtils {
     }
 
     @SuppressWarnings("unused")
-    private abstract static class FactoryDE<D,E> extends FactoryC<D>{
+    private abstract static class FactoryDE<D, E> extends FactoryC<D> {
         // empty by design
     }
 
-    private abstract static class FactoryF<F> extends FactoryDE<Long,F>{
+    private abstract static class FactoryF<F> extends FactoryDE<Long, F> {
         // empty by design
     }
 
@@ -53,6 +53,7 @@ public class TestPoolImplUtils {
         public Long create() throws Exception {
             return null;
         }
+
         @Override
         public PooledObject<Long> wrap(final Long obj) {
             return null;
@@ -64,6 +65,7 @@ public class TestPoolImplUtils {
         public String create() throws Exception {
             return null;
         }
+
         @Override
         public PooledObject<String> wrap(final String obj) {
             return null;
@@ -80,5 +82,25 @@ public class TestPoolImplUtils {
     public void testFactoryTypeSimple() {
         final Class<?> result = PoolImplUtils.getFactoryType(SimpleFactory.class);
         assertEquals(String.class, result);
+    }
+
+    @Test
+    public void testMaxInstants() {
+        final Instant instant0 = Instant.ofEpochMilli(0);
+        final Instant instant1 = Instant.ofEpochMilli(1);
+        assertEquals(instant1, PoolImplUtils.max(instant0, instant1));
+        assertEquals(instant1, PoolImplUtils.max(instant1, instant0));
+        assertEquals(instant1, PoolImplUtils.max(instant1, instant1));
+        assertEquals(instant0, PoolImplUtils.max(instant0, instant0));
+    }
+
+    @Test
+    public void testMinInstants() {
+        final Instant instant0 = Instant.ofEpochMilli(0);
+        final Instant instant1 = Instant.ofEpochMilli(1);
+        assertEquals(instant0, PoolImplUtils.min(instant0, instant1));
+        assertEquals(instant0, PoolImplUtils.min(instant1, instant0));
+        assertEquals(instant1, PoolImplUtils.min(instant1, instant1));
+        assertEquals(instant0, PoolImplUtils.min(instant0, instant0));
     }
 }

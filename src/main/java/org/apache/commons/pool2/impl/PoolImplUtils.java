@@ -20,6 +20,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -163,6 +164,30 @@ class PoolImplUtils {
     }
 
     /**
+     * Returns the greater of two {@code Instant} values. That is, the result is the argument closer to the value of
+     * {@link Instant#MAX}. If the arguments have the same value, the result is that same value.
+     *
+     * @param a an argument.
+     * @param b another argument.
+     * @return the larger of {@code a} and {@code b}.
+     */
+    static Instant max(final Instant a, final Instant b) {
+        return a.compareTo(b) > 0 ? a : b;
+    }
+
+    /**
+     * Returns the smaller of two {@code Instant} values. That is, the result is the argument closer to the value of
+     * {@link Instant#MIN}. If the arguments have the same value, the result is that same value.
+     *
+     * @param a an argument.
+     * @param b another argument.
+     * @return the smaller of {@code a} and {@code b}.
+     */
+    static Instant min(final Instant a, final Instant b) {
+        return a.compareTo(b) < 0 ? a : b;
+    }
+
+    /**
      * Converts a {@link TimeUnit} to a {@link ChronoUnit}.
      *
      * @param timeUnit A TimeUnit.
@@ -200,4 +225,5 @@ class PoolImplUtils {
     static Duration toDuration(final long amount, final TimeUnit timeUnit) {
         return Duration.of(amount, PoolImplUtils.toChronoUnit(timeUnit));
     }
+
 }

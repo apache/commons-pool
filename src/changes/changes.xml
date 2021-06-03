@@ -43,7 +43,19 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Pool Release Notes</title>
   </properties>
   <body>
-  <release version="2.10.1" date="2021-MM-DD" description="This is a RRR release (Java 8).">
+  <release version="2.11.0" date="2021-MM-DD" description="This is a feature release (Java 8).">
+    <action dev="ggregory" type="add" due-to="Gary Gregory">
+      Track timestamps with Instants instead of longs. 
+      There is currently no increased precision on Java 8, but starting with Java 9, the JRE SystemClock precision is increased usually down to microseconds, or tenth of microseconds, depending on the OS, Hardware, and JVM implementation.
+      Add and use: 
+      - DefaultPooledObject.getCreateInstant()
+      - DefaultPooledObject.getLastUsedInstant()
+      - PooledObject.getCreateInstant()
+      - PooledObject.getLastBorrowInstant()
+      - PooledObject.getLastReturnInstant()
+      - PooledObject.getLastUsedInstant()
+      - TrackedUse#getLastUsedInstant()
+    </action>
   </release>
   <release version="2.10.0" date="2021-05-28" description="This is a feature release (Java 8).">
     <!-- ADD -->

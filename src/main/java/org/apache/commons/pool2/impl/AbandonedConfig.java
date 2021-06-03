@@ -144,7 +144,7 @@ public class AbandonedConfig {
      * <p>Timeout in seconds before an abandoned object can be removed.</p>
      *
      * <p>The time of most recent use of an object is the maximum (latest) of
-     * {@link TrackedUse#getLastUsed()} (if this class of the object implements
+     * {@link TrackedUse#getLastUsedInstant()} (if this class of the object implements
      * TrackedUse) and the time when the object was borrowed from the pool.</p>
      *
      * <p>The default value is 300 seconds.</p>
@@ -161,7 +161,7 @@ public class AbandonedConfig {
      * <p>Timeout before an abandoned object can be removed.</p>
      *
      * <p>The time of most recent use of an object is the maximum (latest) of
-     * {@link TrackedUse#getLastUsed()} (if this class of the object implements
+     * {@link TrackedUse#getLastUsedInstant()} (if this class of the object implements
      * TrackedUse) and the time when the object was borrowed from the pool.</p>
      *
      * <p>The default value is 300 seconds.</p>

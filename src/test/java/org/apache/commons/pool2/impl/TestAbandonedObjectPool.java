@@ -26,6 +26,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.lang.management.ManagementFactory;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Set;
@@ -44,6 +45,8 @@ import org.junit.jupiter.api.Test;
 
 class PooledTestObject implements TrackedUse {
     private static final AtomicInteger hash = new AtomicInteger();
+    private static final Instant INSTANT_0 = Instant.ofEpochMilli(0);
+    private static final Instant INSTANT_1 = Instant.ofEpochMilli(1);
     private boolean active = false;
     private boolean destroyed = false;
     private int _hash = 0;
@@ -78,6 +81,17 @@ class PooledTestObject implements TrackedUse {
         }
         // Abandoned object sweep won't clean up this object
         return 0;
+    }
+
+    @Override
+    public Instant getLastUsedInstant() {
+        if (_abandoned) {
+            // Abandoned object sweep will occur no matter what the value of removeAbandonedTimeout,
+            // because this indicates that this object was last used decades ago
+            return INSTANT_1;
+        }
+        // Abandoned object sweep won't clean up this object
+        return INSTANT_0;
     }
 
     @Override
