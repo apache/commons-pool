@@ -599,7 +599,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
     public void interuptTakeWaiters() {
         lock.lock();
         try {
-           lock.interruptWaiters(notEmpty);
+            lock.interruptWaiters(notEmpty);
         } finally {
             lock.unlock();
         }
@@ -695,8 +695,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * @throws InterruptedException if the thread is interrupted whilst waiting
      *         for space
      */
-    boolean offer(final E e, final Duration timeout)
-        throws InterruptedException {
+    boolean offer(final E e, final Duration timeout) throws InterruptedException {
         return offerLast(e, timeout);
     }
 
@@ -716,8 +715,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * @throws InterruptedException if the thread is interrupted whilst waiting
      *         for space
      */
-    public boolean offer(final E e, final long timeout, final TimeUnit unit)
-        throws InterruptedException {
+    public boolean offer(final E e, final long timeout, final TimeUnit unit) throws InterruptedException {
         return offerLast(e, timeout, unit);
     }
 
@@ -748,8 +746,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * @throws InterruptedException if the thread is interrupted whilst waiting
      *         for space
      */
-    public boolean offerFirst(final E e, final Duration timeout)
-        throws InterruptedException {
+    public boolean offerFirst(final E e, final Duration timeout) throws InterruptedException {
         Objects.requireNonNull(e, "e");
         long nanos = timeout.toNanos();
         lock.lockInterruptibly();
@@ -780,8 +777,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * @throws InterruptedException if the thread is interrupted whilst waiting
      *         for space
      */
-    public boolean offerFirst(final E e, final long timeout, final TimeUnit unit)
-        throws InterruptedException {
+    public boolean offerFirst(final E e, final long timeout, final TimeUnit unit) throws InterruptedException {
         return offerFirst(e, PoolImplUtils.toDuration(timeout, unit));
     }
 
@@ -812,8 +808,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * @throws InterruptedException if the thread is interrupted whist waiting
      *         for space
      */
-    boolean offerLast(final E e, final Duration timeout)
-        throws InterruptedException {
+    boolean offerLast(final E e, final Duration timeout) throws InterruptedException {
         Objects.requireNonNull(e, "e");
         long nanos = timeout.toNanos();
         lock.lockInterruptibly();
@@ -1491,8 +1486,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * {@code Object}) in the proper order, followed by a null
      * @param s the stream
      */
-    private void writeObject(final java.io.ObjectOutputStream s)
-        throws java.io.IOException {
+    private void writeObject(final java.io.ObjectOutputStream s) throws java.io.IOException {
         lock.lock();
         try {
             // Write out capacity and any hidden stuff
