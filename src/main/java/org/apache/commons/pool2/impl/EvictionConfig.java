@@ -40,9 +40,9 @@ public class EvictionConfig {
      * Instances are immutable.
      *
      * @param poolIdleEvictTime Expected to be provided by
-     *        {@link BaseGenericObjectPool#getMinEvictableIdleTimeMillis()}
+     *        {@link BaseGenericObjectPool#getMinEvictableIdleTime()}
      * @param poolIdleSoftEvictTime Expected to be provided by
-     *        {@link BaseGenericObjectPool#getSoftMinEvictableIdleTimeMillis()}
+     *        {@link BaseGenericObjectPool#getSoftMinEvictableIdleTime()}
      * @param minIdle Expected to be provided by
      *        {@link GenericObjectPool#getMinIdle()} or
      *        {@link GenericKeyedObjectPool#getMinIdlePerKey()}

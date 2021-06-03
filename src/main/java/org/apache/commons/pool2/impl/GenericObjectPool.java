@@ -829,7 +829,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     /**
      * Gets the target for the minimum number of idle objects to maintain in
      * the pool. This setting only has an effect if it is positive and
-     * {@link #getTimeBetweenEvictionRunsMillis()} is greater than zero. If this
+     * {@link #getTimeBetweenEvictionRuns()} is greater than zero. If this
      * is the case, an attempt is made to ensure that the pool has the required
      * minimum number of instances during idle object eviction runs.
      * <p>
@@ -841,7 +841,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      *
      * @see #setMinIdle(int)
      * @see #setMaxIdle(int)
-     * @see #setTimeBetweenEvictionRunsMillis(long)
+     * @see #setTimeBetweenEvictionRuns(Duration)
      */
     @Override
     public int getMinIdle() {
@@ -953,7 +953,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * @return The abandoned object timeout in seconds if abandoned object
      *         removal is configured for this pool; Integer.MAX_VALUE otherwise.
      *
-     * @see AbandonedConfig#getRemoveAbandonedTimeout()
      * @see AbandonedConfig#getRemoveAbandonedTimeoutDuration()
      */
     public Duration getRemoveAbandonedTimeoutDuration() {
@@ -1248,7 +1247,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     /**
      * Sets the target for the minimum number of idle objects to maintain in
      * the pool. This setting only has an effect if it is positive and
-     * {@link #getTimeBetweenEvictionRunsMillis()} is greater than zero. If this
+     * {@link #getTimeBetweenEvictionRuns()} is greater than zero. If this
      * is the case, an attempt is made to ensure that the pool has the required
      * minimum number of instances during idle object eviction runs.
      * <p>
@@ -1261,7 +1260,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      *
      * @see #getMinIdle()
      * @see #getMaxIdle()
-     * @see #getTimeBetweenEvictionRunsMillis()
+     * @see #getTimeBetweenEvictionRuns()
      */
     public void setMinIdle(final int minIdle) {
         this.minIdle = minIdle;

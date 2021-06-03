@@ -1131,7 +1131,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     /**
      * Gets the target for the minimum number of idle objects to maintain in
      * each of the keyed sub-pools. This setting only has an effect if it is
-     * positive and {@link #getTimeBetweenEvictionRunsMillis()} is greater than
+     * positive and {@link #getTimeBetweenEvictionRuns()} is greater than
      * zero. If this is the case, an attempt is made to ensure that each
      * sub-pool has the required minimum number of instances during idle object
      * eviction runs.
@@ -1332,7 +1332,6 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * @return The abandoned object timeout in seconds if abandoned object
      *         removal is configured for this pool; Integer.MAX_VALUE otherwise.
      *
-     * @see AbandonedConfig#getRemoveAbandonedTimeout()
      * @see AbandonedConfig#getRemoveAbandonedTimeoutDuration()
      * @since 2.10.0
      */
@@ -1781,7 +1780,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     /**
      * Sets the target for the minimum number of idle objects to maintain in
      * each of the keyed sub-pools. This setting only has an effect if it is
-     * positive and {@link #getTimeBetweenEvictionRunsMillis()} is greater than
+     * positive and {@link #getTimeBetweenEvictionRuns()} is greater than
      * zero. If this is the case, an attempt is made to ensure that each
      * sub-pool has the required minimum number of instances during idle object
      * eviction runs.

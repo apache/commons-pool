@@ -76,8 +76,8 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     /**
      * The default value for the {@code minEvictableIdleTime}
      * configuration attribute.
-     * @see GenericObjectPool#getMinEvictableIdleTimeMillis()
-     * @see GenericKeyedObjectPool#getMinEvictableIdleTimeMillis()
+     * @see GenericObjectPool#getMinEvictableIdleTime()
+     * @see GenericKeyedObjectPool#getMinEvictableIdleTime()
      * @since 2.10.0
      */
     public static final Duration DEFAULT_MIN_EVICTABLE_IDLE_TIME =
@@ -174,8 +174,8 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     /**
      * The default value for the {@code timeBetweenEvictionRuns}
      * configuration attribute.
-     * @see GenericObjectPool#getTimeBetweenEvictionRunsMillis()
-     * @see GenericKeyedObjectPool#getTimeBetweenEvictionRunsMillis()
+     * @see GenericObjectPool#getTimeBetweenEvictionRuns()
+     * @see GenericKeyedObjectPool#getTimeBetweenEvictionRuns()
      */
     public static final Duration DEFAULT_TIME_BETWEEN_EVICTION_RUNS =
             Duration.ofMillis(DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS);
