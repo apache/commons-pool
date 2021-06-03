@@ -35,13 +35,13 @@ public class TestBaseGenericObjectPool {
     SimpleFactory factory;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         factory = new SimpleFactory();
         pool = new GenericObjectPool<>(factory);
     }
 
     @AfterEach
-    public void tearDown() throws Exception {
+    public void tearDown() {
         pool.close();
         pool = null;
         factory = null;

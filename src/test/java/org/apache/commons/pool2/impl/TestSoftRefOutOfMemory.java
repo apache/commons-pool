@@ -127,7 +127,7 @@ public class TestSoftRefOutOfMemory {
     private SoftReferenceObjectPool<String> pool;
 
     @AfterEach
-    public void tearDown() throws Exception {
+    public void tearDown() {
         if (pool != null) {
             pool.close();
             pool = null;

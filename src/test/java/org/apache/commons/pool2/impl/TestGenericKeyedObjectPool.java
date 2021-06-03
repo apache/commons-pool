@@ -868,9 +868,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         gkoPool = new GenericKeyedObjectPool<>(simpleFactory);
     }
 
-    @Override
     @AfterEach
-    public void tearDown() throws Exception {
+    public void tearDownJmx() throws Exception {
         super.tearDown();
         final ObjectName jmxName = gkoPool.getJmxName();
         final String poolName = Objects.toString(jmxName, null);
@@ -1144,7 +1143,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     @SuppressWarnings("deprecation")
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
-    public void testConstructors() throws Exception {
+    public void testConstructors() {
 
         // Make constructor arguments all different from defaults
         final int maxTotalPerKey = 1;
@@ -1750,12 +1749,10 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
     /**
      * Test case for POOL-180.
-     *
-     * @throws Exception May occur in some failure modes
      */
     @Test
     @Timeout(value = 200000, unit = TimeUnit.MILLISECONDS)
-    public void testMaxActivePerKeyExceeded() throws Exception {
+    public void testMaxActivePerKeyExceeded() {
         final WaiterFactory<String> waiterFactory = new WaiterFactory<>(0, 20, 0, 0, 0, 0, 8, 5, 0);
         // TODO Fix this. Can't use local pool since runTestThreads uses the
         // protected pool field
@@ -1852,12 +1849,10 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
      * Verifies that maxTotal is not exceeded when factory destroyObject
      * has high latency, testOnReturn is set and there is high incidence of
      * validation failures.
-     *
-     * @throws Exception May occur in some failure modes
      */
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
-    public void testMaxTotalInvariant() throws Exception {
+    public void testMaxTotalInvariant() {
         final int maxTotal = 15;
         simpleFactory.setEvenValid(false);     // Every other validation fails
         simpleFactory.setDestroyLatency(100);  // Destroy takes 100 ms
@@ -2342,7 +2337,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
-    public void testSettersAndGetters() throws Exception {
+    public void testSettersAndGetters() {
         {
             gkoPool.setMaxTotalPerKey(123);
             assertEquals(123, gkoPool.getMaxTotalPerKey());
@@ -2403,7 +2398,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
-    public void testThreaded1() throws Exception {
+    public void testThreaded1() {
         gkoPool.setMaxTotalPerKey(15);
         gkoPool.setMaxIdlePerKey(15);
         gkoPool.setMaxWaitMillis(1000L);

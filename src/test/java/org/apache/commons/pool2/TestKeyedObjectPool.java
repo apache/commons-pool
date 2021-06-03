@@ -233,7 +233,7 @@ public abstract class TestKeyedObjectPool {
     }
 
     @AfterEach
-    public void tearDown() throws Exception {
+    public void tearDown() {
         _pool = null;
     }
 
@@ -790,7 +790,7 @@ public abstract class TestKeyedObjectPool {
     }
 
     @Test
-    public void testToString() throws Exception {
+    public void testToString() {
         final FailingKeyedPooledObjectFactory factory =
                 new FailingKeyedPooledObjectFactory();
         try (final KeyedObjectPool<Object,Object> pool = makeEmptyPool(factory)) {

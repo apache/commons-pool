@@ -175,7 +175,7 @@ public abstract class BaseTestProxiedObjectPool {
 
 
     @Test
-    public void testPassThroughMethods02() throws Exception {
+    public void testPassThroughMethods02() {
         pool.close();
 
         assertThrows(IllegalStateException.class,

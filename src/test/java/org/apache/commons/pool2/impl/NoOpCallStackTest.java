@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 
 public class NoOpCallStackTest {
     @Test
-    public void printStackTraceIsNoOp() throws Exception {
+    public void printStackTraceIsNoOp() {
         final CallStack stack = NoOpCallStack.INSTANCE;
         stack.fillInStackTrace();
         final StringWriter writer = new StringWriter();

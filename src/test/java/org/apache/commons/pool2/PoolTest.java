@@ -70,7 +70,7 @@ public class PoolTest {
 
     @Test
     public void testPool() throws Exception {
-        final GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
+        final GenericObjectPoolConfig<Foo> poolConfig = new GenericObjectPoolConfig<>();
         poolConfig.setTestWhileIdle(true /* testWhileIdle */);
         final PooledFooFactory pooledFooFactory = new PooledFooFactory();
         try (GenericObjectPool<Foo> pool = new GenericObjectPool<>(pooledFooFactory, poolConfig)) {

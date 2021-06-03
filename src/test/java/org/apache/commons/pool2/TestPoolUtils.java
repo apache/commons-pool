@@ -278,7 +278,7 @@ public class TestPoolUtils {
     }
 
     @Test
-    public void testCheckMinIdleKeyedObjectPoolKeysNulls() throws Exception {
+    public void testCheckMinIdleKeyedObjectPoolKeysNulls() {
         try (@SuppressWarnings("unchecked")
             final KeyedObjectPool<Object,Object> pool = createProxy(KeyedObjectPool.class, (List<String>)null)) {
             PoolUtils.checkMinIdle(pool, (Collection<?>) null, 1, 1);

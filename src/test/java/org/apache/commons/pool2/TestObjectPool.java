@@ -419,7 +419,7 @@ public abstract class TestObjectPool {
     }
 
     @Test
-    public void testToString() throws Exception {
+    public void testToString() {
         final ObjectPool<Object> pool;
         try {
             pool = makeEmptyPool(new MethodCallPoolableObjectFactory());

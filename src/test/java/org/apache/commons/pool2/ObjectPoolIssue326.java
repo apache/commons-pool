@@ -108,7 +108,7 @@ public final class ObjectPoolIssue326 {
     }
 
     private void run() throws Exception {
-        final GenericKeyedObjectPoolConfig poolConfig = new GenericKeyedObjectPoolConfig();
+        final GenericKeyedObjectPoolConfig<Object> poolConfig = new GenericKeyedObjectPoolConfig<>();
         poolConfig.setMaxTotal(10);
         poolConfig.setMaxTotalPerKey(5);
         poolConfig.setMinIdlePerKey(-1);

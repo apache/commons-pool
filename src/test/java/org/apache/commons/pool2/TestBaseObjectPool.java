@@ -258,7 +258,7 @@ public class TestBaseObjectPool extends TestObjectPool {
     }
 
     @Test
-    public void testClose() throws Exception {
+    public void testClose() {
         @SuppressWarnings("resource")
         final ObjectPool<Object> pool = new TestObjectPool();
 

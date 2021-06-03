@@ -594,8 +594,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     private SimpleFactory simpleFactory;
 
     @SuppressWarnings("deprecation")
-    private void assertConfiguration(final GenericObjectPoolConfig<?> expected, final GenericObjectPool<?> actual)
-            throws Exception {
+    private void assertConfiguration(final GenericObjectPoolConfig<?> expected, final GenericObjectPool<?> actual) {
         assertEquals(Boolean.valueOf(expected.getTestOnCreate()), Boolean.valueOf(actual.getTestOnCreate()),
                 "testOnCreate");
         assertEquals(Boolean.valueOf(expected.getTestOnBorrow()), Boolean.valueOf(actual.getTestOnBorrow()),
@@ -911,7 +910,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         simpleFactory = new SimpleFactory();
         genericObjectPool = new GenericObjectPool<>(simpleFactory);
     }
@@ -957,14 +956,14 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @SuppressWarnings("deprecation")
     @Test
     public void testAbandonedPool() throws Exception {
-        final GenericObjectPoolConfig config = new GenericObjectPoolConfig();
+        final GenericObjectPoolConfig<String> config = new GenericObjectPoolConfig<>();
         config.setJmxEnabled(false);
         GenericObjectPool<String> abandoned = new GenericObjectPool<>(simpleFactory, config);
         abandoned.setTimeBetweenEvictionRuns(Duration.ofMillis(100)); // Starts evictor
         assertEquals(abandoned.getRemoveAbandonedTimeout(), abandoned.getRemoveAbandonedTimeoutDuration().getSeconds());
 
-        // This is ugly, but forces gc to hit the pool
-        final WeakReference<GenericObjectPool> ref = new WeakReference<>(abandoned);
+        // This is ugly, but forces GC to hit the pool
+        final WeakReference<GenericObjectPool<String>> ref = new WeakReference<>(abandoned);
         abandoned = null;
         while (ref.get() != null) {
             System.gc();
@@ -1120,7 +1119,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
-    public void testCloseMultiplePools1() throws Exception {
+    public void testCloseMultiplePools1() {
         try (final GenericObjectPool<String> genericObjectPool2 = new GenericObjectPool<>(simpleFactory)) {
             genericObjectPool.setTimeBetweenEvictionRuns(TestConstants.ONE_MILLISECOND);
             genericObjectPool2.setTimeBetweenEvictionRuns(TestConstants.ONE_MILLISECOND);
@@ -1237,7 +1236,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
-    public void testConstructors() throws Exception {
+    public void testConstructors() {
 
         // Make constructor arguments all different from defaults
         final int minIdle = 2;
@@ -1312,7 +1311,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
-    public void testDefaultConfiguration() throws Exception {
+    public void testDefaultConfiguration() {
         assertConfiguration(new GenericObjectPoolConfig<>(),genericObjectPool);
     }
 
@@ -2126,12 +2125,10 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
      * Verifies that maxTotal is not exceeded when factory destroyObject
      * has high latency, testOnReturn is set and there is high incidence of
      * validation failures.
-     *
-     * @throws Exception May occur in some failure modes
      */
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
-    public void testMaxTotalInvariant() throws Exception {
+    public void testMaxTotalInvariant() {
         final int maxTotal = 15;
         simpleFactory.setEvenValid(false);     // Every other validation fails
         simpleFactory.setDestroyLatency(100);  // Destroy takes 100 ms
