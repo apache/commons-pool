@@ -980,8 +980,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      */
     protected void markReturningState(final PooledObject<T> pooledObject) {
         synchronized(pooledObject) {
-            final PooledObjectState state = pooledObject.getState();
-            if (state != PooledObjectState.ALLOCATED) {
+            if (pooledObject.getState() != PooledObjectState.ALLOCATED) {
                 throw new IllegalStateException(
                         "Object has already been returned to this pool or is invalid");
             }
