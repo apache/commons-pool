@@ -1340,9 +1340,6 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         return ac != null ? ac.getRemoveAbandonedTimeoutDuration() : DEFAULT_REMOVE_ABANDONED_TIMEOUT;
     }
 
-
-    //--- inner classes ----------------------------------------------
-
     /**
      * Checks to see if there are any threads currently waiting to borrow
      * objects but are blocked waiting for more objects to become available.
@@ -1382,6 +1379,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     public void invalidateObject(final K key, final T obj) throws Exception {
         invalidateObject(key, obj, DestroyMode.NORMAL);
     }
+
     /**
      * {@inheritDoc}
      * <p>
@@ -1400,13 +1398,10 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      */
     @Override
     public void invalidateObject(final K key, final T obj, final DestroyMode mode) throws Exception {
-
         final ObjectDeque<T> objectDeque = poolMap.get(key);
-
         final PooledObject<T> p = objectDeque.getAllObjects().get(new IdentityWrapper<>(obj));
         if (p == null) {
-            throw new IllegalStateException(
-                    "Object not currently part of this pool");
+            throw new IllegalStateException("Object not currently part of this pool");
         }
         synchronized (p) {
             if (p.getState() != PooledObjectState.INVALID) {
@@ -1417,6 +1412,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
             addObject(key);
         }
     }
+
     /**
      * Gets whether or not abandoned object removal is configured for this pool.
      *
@@ -1428,6 +1424,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     public boolean isAbandonedConfig() {
         return abandonedConfig != null;
     }
+
     /**
      * Provides information on all the objects in the pool, both idle (waiting
      * to be borrowed) and active (currently borrowed).
@@ -1458,6 +1455,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         }
         return result;
     }
+
     /**
      * Registers a key for pool control and ensures that
      * {@link #getMinIdlePerKey()} idle instances are created.
@@ -1473,6 +1471,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         }
         ensureMinIdle(key);
     }
+
     /**
      * Register the use of a key by an object.
      * <p>
@@ -1660,6 +1659,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
             updateStatsReturn(activeTime);
         }
     }
+
     /**
      * Attempt to create one new instance to serve from the most heavily
      * loaded pool that can add a new instance.
@@ -1709,6 +1709,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
             }
         }
     }
+
     /**
      * Sets the abandoned object removal configuration.
      *
@@ -1732,6 +1733,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
             this.abandonedConfig.setRequireFullStackTrace(abandonedConfig.getRequireFullStackTrace());
         }
     }
+
     /**
      * Sets the configuration.
      *
@@ -1746,6 +1748,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         setMaxTotal(conf.getMaxTotal());
         setMinIdlePerKey(conf.getMinIdlePerKey());
     }
+
     /**
      * Sets the cap on the number of "idle" instances per key in the pool.
      * If maxIdlePerKey is set too low on heavily loaded systems it is possible
@@ -1765,6 +1768,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     public void setMaxIdlePerKey(final int maxIdlePerKey) {
         this.maxIdlePerKey = maxIdlePerKey;
     }
+
     /**
      * Sets the limit on the number of object instances allocated by the pool
      * (checked out or idle), per key. When the limit is reached, the sub-pool
@@ -1777,6 +1781,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     public void setMaxTotalPerKey(final int maxTotalPerKey) {
         this.maxTotalPerKey = maxTotalPerKey;
     }
+
     /**
      * Sets the target for the minimum number of idle objects to maintain in
      * each of the keyed sub-pools. This setting only has an effect if it is
