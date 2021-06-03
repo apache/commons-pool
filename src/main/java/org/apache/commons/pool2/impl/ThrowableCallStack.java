@@ -37,6 +37,7 @@ public class ThrowableCallStack implements CallStack {
         private static final long serialVersionUID = 1L;
         private final long timestampMillis = System.currentTimeMillis();
     }
+
     private final String messageFormat;
 
     //@GuardedBy("dateFormat")
@@ -45,7 +46,7 @@ public class ThrowableCallStack implements CallStack {
     private volatile Snapshot snapshot;
 
     /**
-     * Create a new instance.
+     * Creates a new instance.
      *
      * @param messageFormat message format
      * @param useTimestamp whether to format the dates in the output message or not

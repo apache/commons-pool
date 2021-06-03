@@ -40,8 +40,9 @@ public class SecurityManagerCallStack implements CallStack {
      * A custom security manager.
      */
     private static class PrivateSecurityManager extends SecurityManager {
+
         /**
-         * Get the class stack.
+         * Gets the class stack.
          *
          * @return class stack
          */
@@ -54,6 +55,7 @@ public class SecurityManagerCallStack implements CallStack {
             return stack;
         }
     }
+
     /**
      * A snapshot of a class stack.
      */
@@ -70,6 +72,7 @@ public class SecurityManagerCallStack implements CallStack {
             this.stack = stack;
         }
     }
+
     private final String messageFormat;
 
     //@GuardedBy("dateFormat")
@@ -80,7 +83,7 @@ public class SecurityManagerCallStack implements CallStack {
     private volatile Snapshot snapshot;
 
     /**
-     * Create a new instance.
+     * Creates a new instance.
      *
      * @param messageFormat message format
      * @param useTimestamp whether to format the dates in the output message or not
