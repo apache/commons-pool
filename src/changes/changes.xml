@@ -57,7 +57,13 @@ The <action> type attribute can be add,update,fix,remove.
       - TrackedUse#getLastUsedInstant()
     </action>
     <action dev="ggregory" type="add" due-to="Gary Gregory">
-      Add BaseObjectPoolConfig.setEvictorShutdownTimeout(Duration), setEvictorShutdownTimeoutMillis(Duration).
+      Add BaseObjectPoolConfig.{get|set}EvictorShutdownTimeout(Duration), {get|set}EvictorShutdownTimeoutMillis(Duration).
+    </action>
+    <action dev="ggregory" type="add" due-to="Gary Gregory">
+      Add BaseGenericObjectPool.{get|set}MaxWaitDuration(Duration) and deprecate {get|set}MaxWaitMillis(long).
+    </action>
+    <action dev="ggregory" type="add" due-to="Gary Gregory">
+      Add BaseObjectPoolConfig.{get|set}MaxWaitDuration(Duration) and deprecate {get|set}MaxWaitMillis(long).
     </action>
     <!-- FIXES -->
     <action dev="ggregory" type="fix" due-to="Gary Gregory">

@@ -316,7 +316,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     // Configuration attributes
     private volatile int maxTotal = GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL;
     private volatile boolean blockWhenExhausted = BaseObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED;
-    private volatile Duration maxWait = BaseObjectPoolConfig.DEFAULT_MAX_WAIT;
+    private volatile Duration maxWaitDuration = BaseObjectPoolConfig.DEFAULT_MAX_WAIT;
     private volatile boolean lifo = BaseObjectPoolConfig.DEFAULT_LIFO;
     private final boolean fairness;
     private volatile boolean testOnCreate = BaseObjectPoolConfig.DEFAULT_TEST_ON_CREATE;
@@ -592,7 +592,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     }
 
     /**
-     * The maximum time a thread has waited to borrow objects from the pool.
+     * Gets the maximum time a thread has waited to borrow objects from the pool.
      * @return maximum wait time in milliseconds since the pool was created
      */
     public final long getMaxBorrowWaitTimeMillis() {
@@ -615,6 +615,24 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     }
 
     /**
+     * Gets the maximum duration the
+     * {@code borrowObject()} method should block before throwing an
+     * exception when the pool is exhausted and
+     * {@link #getBlockWhenExhausted} is true. When less than 0, the
+     * {@code borrowObject()} method may block indefinitely.
+     *
+     * @return the maximum number of milliseconds {@code borrowObject()}
+     *         will block.
+     *
+     * @see #setMaxWaitDuration
+     * @see #setBlockWhenExhausted
+     * @since 2.11.0
+     */
+    public final Duration getMaxWaitDuration() {
+        return maxWaitDuration;
+    }
+
+    /**
      * Gets the maximum amount of time (in milliseconds) the
      * {@code borrowObject()} method should block before throwing an
      * exception when the pool is exhausted and
@@ -624,11 +642,12 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * @return the maximum number of milliseconds {@code borrowObject()}
      *         will block.
      *
-     * @see #setMaxWaitMillis
+     * @see #setMaxWaitDuration
      * @see #setBlockWhenExhausted
+     * @deprecated Use {@link #getMaxWaitDuration()}.
      */
     public final long getMaxWaitMillis() {
-        return maxWait.toMillis();
+        return maxWaitDuration.toMillis();
     }
 
     /**
@@ -1009,7 +1028,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      */
     protected void setConfig(final BaseObjectPoolConfig<T> config) {
         setLifo(config.getLifo());
-        setMaxWaitMillis(config.getMaxWaitMillis());
+        setMaxWaitDuration(config.getMaxWaitDuration());
         setBlockWhenExhausted(config.getBlockWhenExhausted());
         setTestOnCreate(config.getTestOnCreate());
         setTestOnBorrow(config.getTestOnBorrow());
@@ -1166,6 +1185,25 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     }
 
     /**
+     * Sets the maximum duration the
+     * {@code borrowObject()} method should block before throwing an
+     * exception when the pool is exhausted and
+     * {@link #getBlockWhenExhausted} is true. When less than 0, the
+     * {@code borrowObject()} method may block indefinitely.
+     *
+     * @param maxWaitDuration the maximum duration
+     *                      {@code borrowObject()} will block or negative
+     *                      for indefinitely.
+     *
+     * @see #getMaxWaitDuration
+     * @see #setBlockWhenExhausted
+     * @since 2.11.0
+     */
+    public final void setMaxWaitDuration(final Duration maxWaitDuration) {
+        this.maxWaitDuration = PoolImplUtils.nonNull(maxWaitDuration, BaseObjectPoolConfig.DEFAULT_MAX_WAIT);
+    }
+
+    /**
      * Sets the maximum amount of time (in milliseconds) the
      * {@code borrowObject()} method should block before throwing an
      * exception when the pool is exhausted and
@@ -1176,11 +1214,13 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      *                      {@code borrowObject()} will block or negative
      *                      for indefinitely.
      *
-     * @see #getMaxWaitMillis
+     * @see #getMaxWaitDuration
      * @see #setBlockWhenExhausted
+     * @deprecated Use {@link #setMaxWaitDuration}.
      */
+    @Deprecated
     public final void setMaxWaitMillis(final long maxWaitMillis) {
-        this.maxWait = Duration.ofMillis(maxWaitMillis);
+        setMaxWaitDuration(Duration.ofMillis(maxWaitMillis));
     }
 
     /**
@@ -1481,7 +1521,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         builder.append(", blockWhenExhausted=");
         builder.append(blockWhenExhausted);
         builder.append(", maxWaitMillis=");
-        builder.append(maxWait);
+        builder.append(maxWaitDuration);
         builder.append(", lifo=");
         builder.append(lifo);
         builder.append(", fairness=");
@@ -1548,13 +1588,13 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * Updates statistics after an object is borrowed from the pool.
      *
      * @param p object borrowed from the pool
-     * @param waitTime time (in milliseconds) that the borrowing thread had to wait
+     * @param waitDuration time (in milliseconds) that the borrowing thread had to wait
      */
-    final void updateStatsBorrow(final PooledObject<T> p, final Duration waitTime) {
+    final void updateStatsBorrow(final PooledObject<T> p, final Duration waitDuration) {
         borrowedCount.incrementAndGet();
         idleTimes.add(p.getIdleTime());
-        waitTimes.add(waitTime);
-        final long waitTimeMillis = waitTime.toMillis();
+        waitTimes.add(waitDuration);
+        final long waitTimeMillis = waitDuration.toMillis();
 
         // lock-free optimistic-locking maximum
         long currentMaxMillis;

@@ -344,13 +344,13 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
 
     /**
      * Equivalent to <code>{@link #borrowObject(Object, long) borrowObject}(key,
-     * {@link #getMaxWaitMillis()})</code>.
+     * {@link #getMaxWaitDuration()})</code>.
      * <p>
      * {@inheritDoc}
      */
     @Override
     public T borrowObject(final K key) throws Exception {
-        return borrowObject(key, getMaxWaitMillis());
+        return borrowObject(key, getMaxWaitDuration().toMillis());
     }
 
 

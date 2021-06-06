@@ -607,7 +607,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 "whenExhaustedAction");
         assertEquals(expected.getMaxTotal(), actual.getMaxTotal(), "maxTotal");
         assertEquals(expected.getMaxIdle(), actual.getMaxIdle(), "maxIdle");
-        assertEquals(expected.getMaxWaitMillis(), actual.getMaxWaitMillis(), "maxWait");
+        assertEquals(expected.getMaxWaitMillis(), actual.getMaxWaitMillis(), "maxWaitDuration");
+        assertEquals(expected.getMaxWaitDuration(), actual.getMaxWaitDuration(), "maxWaitDuration");
         assertEquals(expected.getMinEvictableIdleTimeMillis(), actual.getMinEvictableIdleTimeMillis(),
                 "minEvictableIdleTimeMillis");
         assertEquals(expected.getMinEvictableIdleTime(), actual.getMinEvictableIdleTime(),

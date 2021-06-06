@@ -49,15 +49,15 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
 
     /**
      * The default value for the {@code maxWait} configuration attribute.
-     * @see GenericObjectPool#getMaxWaitMillis()
-     * @see GenericKeyedObjectPool#getMaxWaitMillis()
+     * @see GenericObjectPool#getMaxWaitDuration()
+     * @see GenericKeyedObjectPool#getMaxWaitDuration()
      */
     public static final long DEFAULT_MAX_WAIT_MILLIS = -1L;
 
     /**
      * The default value for the {@code maxWait} configuration attribute.
-     * @see GenericObjectPool#getMaxWaitMillis()
-     * @see GenericKeyedObjectPool#getMaxWaitMillis()
+     * @see GenericObjectPool#getMaxWaitDuration()
+     * @see GenericKeyedObjectPool#getMaxWaitDuration()
      * @since 2.10.0
      */
     public static final Duration DEFAULT_MAX_WAIT = Duration.ofMillis(DEFAULT_MAX_WAIT_MILLIS);
@@ -222,7 +222,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
 
     private boolean fairness = DEFAULT_FAIRNESS;
 
-    private Duration maxWaitMillis = DEFAULT_MAX_WAIT;
+    private Duration maxWaitDuration = DEFAULT_MAX_WAIT;
 
     private Duration minEvictableIdleTime = DEFAULT_MIN_EVICTABLE_IDLE_TIME;
 
@@ -401,11 +401,27 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      * @return  The current setting of {@code maxWait} for this
      *          configuration instance
      *
+     * @see GenericObjectPool#getMaxWaitDuration()
+     * @see GenericKeyedObjectPool#getMaxWaitDuration()
+     * @since 2.11.0
+     */
+    public Duration getMaxWaitDuration() {
+        return maxWaitDuration;
+    }
+
+    /**
+     * Gets the value for the {@code maxWait} configuration attribute for pools
+     * created with this configuration instance.
+     *
+     * @return  The current setting of {@code maxWait} for this
+     *          configuration instance
+     *
      * @see GenericObjectPool#getMaxWaitMillis()
      * @see GenericKeyedObjectPool#getMaxWaitMillis()
+     * @deprecated Use {@link #getMaxWaitDuration()}.
      */
     public long getMaxWaitMillis() {
-        return maxWaitMillis.toMillis();
+        return maxWaitDuration.toMillis();
     }
 
     /**
@@ -740,11 +756,25 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      * @param maxWaitMillis The new setting of {@code maxWaitMillis}
      *        for this configuration instance
      *
-     * @see GenericObjectPool#getMaxWaitMillis()
-     * @see GenericKeyedObjectPool#getMaxWaitMillis()
+     * @see GenericObjectPool#getMaxWaitDuration()
+     * @see GenericKeyedObjectPool#getMaxWaitDuration()
      */
     public void setMaxWaitMillis(final long maxWaitMillis) {
-        this.maxWaitMillis = Duration.ofMillis(maxWaitMillis);
+        setMaxWaitDuration(Duration.ofMillis(maxWaitMillis));
+    }
+
+    /**
+     * Sets the value for the {@code maxWait} configuration attribute for pools
+     * created with this configuration instance.
+     *
+     * @param maxWaitDuration The new setting of {@code maxWaitDuration}
+     *        for this configuration instance
+     *
+     * @see GenericObjectPool#getMaxWaitDuration()
+     * @see GenericKeyedObjectPool#getMaxWaitDuration()
+     */
+    public void setMaxWaitDuration(final Duration maxWaitDuration) {
+        this.maxWaitDuration = PoolImplUtils.nonNull(maxWaitDuration, DEFAULT_MAX_WAIT);;
     }
 
     /**
@@ -926,7 +956,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
         builder.append(", fairness=");
         builder.append(fairness);
         builder.append(", maxWaitMillis=");
-        builder.append(maxWaitMillis);
+        builder.append(maxWaitDuration);
         builder.append(", minEvictableIdleTime=");
         builder.append(minEvictableIdleTime);
         builder.append(", softMinEvictableIdleTime=");
