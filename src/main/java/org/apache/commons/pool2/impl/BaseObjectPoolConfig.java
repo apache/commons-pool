@@ -480,6 +480,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      *
      * @see GenericObjectPool#getSoftMinEvictableIdleTime()
      * @see GenericKeyedObjectPool#getSoftMinEvictableIdleTime()
+     * @deprecated Use {@link #getSoftMinEvictableIdleTime()}.
      */
     @Deprecated
     public long getSoftMinEvictableIdleTimeMillis() {
@@ -753,7 +754,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      *
      * @see GenericObjectPool#getMinEvictableIdleTimeMillis()
      * @see GenericKeyedObjectPool#getMinEvictableIdleTimeMillis()
-     * @deprecated Use {@link #setSoftMinEvictableIdleTime(Duration)}.
+     * @deprecated Use {@link #setMinEvictableIdleTime(Duration)}.
      */
     @Deprecated
     public void setMinEvictableIdleTimeMillis(final long minEvictableIdleTimeMillis) {
