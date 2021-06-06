@@ -37,8 +37,7 @@ class PoolImplUtils {
     /**
      * Identifies the concrete type of object that an object factory creates.
      *
-     * @param factoryClass
-     *            The factory to examine
+     * @param factoryClass The factory to examine
      *
      * @return the type of object the factory creates
      */
@@ -53,7 +52,8 @@ class PoolImplUtils {
             // A bit hackish, but we must handle cases when getGenericType() does not return a concrete types.
             final ParameterizedType pi = getParameterizedType(type, factoryClass);
             if (pi != null) {
-                final Type[] bounds = ((TypeVariable) pi.getActualTypeArguments()[((Integer) genericType).intValue()]).getBounds();
+                final Type[] bounds = ((TypeVariable) pi.getActualTypeArguments()[((Integer) genericType).intValue()])
+                        .getBounds();
                 if (bounds != null && bounds.length > 0) {
                     final Type bound0 = bounds[0];
                     if (bound0 instanceof Class) {
@@ -70,12 +70,9 @@ class PoolImplUtils {
     /**
      * Gets the concrete type used by an implementation of an interface that uses a generic type.
      *
-     * @param type
-     *            The interface that defines a generic type
-     * @param clazz
-     *            The class that implements the interface with a concrete type
-     * @param <T>
-     *            The interface type
+     * @param type The interface that defines a generic type
+     * @param clazz The class that implements the interface with a concrete type
+     * @param <T> The interface type
      *
      * @return concrete type used by the implementation
      */
@@ -112,12 +109,10 @@ class PoolImplUtils {
 
     /**
      * Gets the matching parameterized type or null.
-     * @param type
-     *            The interface that defines a generic type.
-     * @param clazz
-     *            The class that implements the interface with a concrete type.
-     * @param <T>
-     *            The interface type.
+     * 
+     * @param type The interface that defines a generic type.
+     * @param clazz The class that implements the interface with a concrete type.
+     * @param <T> The interface type.
      * @return the matching parameterized type or null.
      */
     private static <T> ParameterizedType getParameterizedType(final Class<T> type, final Class<? extends T> clazz) {
@@ -138,10 +133,8 @@ class PoolImplUtils {
      * For a generic parameter, return either the Class used or if the type is unknown, the index for the type in
      * definition of the class
      *
-     * @param clazz
-     *            defining class
-     * @param argType
-     *            the type argument of interest
+     * @param clazz defining class
+     * @param argType the type argument of interest
      *
      * @return An instance of {@link Class} representing the type used by the type parameter or an instance of
      *         {@link Integer} representing the index for the type in the definition of the defining class
@@ -160,7 +153,7 @@ class PoolImplUtils {
     }
 
     static boolean isPositive(final Duration delay) {
-        return !delay.isNegative() && !delay.isZero();
+        return delay != null && !delay.isNegative() && !delay.isZero();
     }
 
     /**
@@ -216,9 +209,20 @@ class PoolImplUtils {
     }
 
     /**
+     * Returns a non-null duration, value if non-null, otherwise defaultValue.
+     * 
+     * @param value May be null.
+     * @param defaultValue May not be null/
+     * @return value if non-null, otherwise defaultValue.
+     */
+    static Duration nonNull(Duration value, Duration defaultValue) {
+        return value != null ? value : Objects.requireNonNull(defaultValue, "defaultValue");
+    }
+
+    /**
      * Converts am amount and TimeUnit into a Duration.
      *
-     * @param amount   the amount of the duration, measured in terms of the unit, positive or negative
+     * @param amount the amount of the duration, measured in terms of the unit, positive or negative
      * @param timeUnit the unit that the duration is measured in, must have an exact duration, not null
      * @return a Duration.
      */

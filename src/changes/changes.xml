@@ -56,9 +56,15 @@ The <action> type attribute can be add,update,fix,remove.
       - PooledObject.getLastUsedInstant()
       - TrackedUse#getLastUsedInstant()
     </action>
+    <action dev="ggregory" type="add" due-to="Gary Gregory">
+      Add BaseObjectPoolConfig.setEvictorShutdownTimeout(Duration), setEvictorShutdownTimeoutMillis(Duration).
+    </action>
     <!-- FIXES -->
     <action dev="ggregory" type="fix" due-to="Gary Gregory">
       Fix [WARNING] Old version of checkstyle detected. Consider updating to >= v8.30. Update Checktyle to 8.43.
+    </action>
+    <action dev="ggregory" type="fix" due-to="Gary Gregory">
+      Make Duration setters use their respective default values when null.
     </action>
   </release>
   <release version="2.10.0" date="2021-05-28" description="This is a feature release (Java 8).">

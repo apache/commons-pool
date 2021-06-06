@@ -1334,8 +1334,8 @@ public final class PoolUtils {
      * @param minIdle
      *            if the {@link KeyedObjectPool#getNumIdle(Object)} is less than
      *            this then add an idle object.
-     * @param period
-     *            the frequency to check the number of idle objects in a
+     * @param periodMillis
+     *            the frequency in milliseconds to check the number of idle objects in a
      *            keyedPool, see {@link Timer#schedule(TimerTask, long, long)}.
      * @param <K> the type of the pool key
      * @param <V> the type of pool entries
@@ -1350,7 +1350,7 @@ public final class PoolUtils {
      */
     public static <K, V> Map<K, TimerTask> checkMinIdle(
             final KeyedObjectPool<K, V> keyedPool, final Collection<K> keys,
-            final int minIdle, final long period)
+            final int minIdle, final long periodMillis)
             throws IllegalArgumentException {
         if (keys == null) {
             throw new IllegalArgumentException(MSG_NULL_KEYS);
@@ -1359,7 +1359,7 @@ public final class PoolUtils {
         final Iterator<K> iter = keys.iterator();
         while (iter.hasNext()) {
             final K key = iter.next();
-            final TimerTask task = checkMinIdle(keyedPool, key, minIdle, period);
+            final TimerTask task = checkMinIdle(keyedPool, key, minIdle, periodMillis);
             tasks.put(key, task);
         }
         return tasks;
@@ -1378,8 +1378,8 @@ public final class PoolUtils {
      * @param minIdle
      *            if the {@link KeyedObjectPool#getNumIdle(Object)} is less than
      *            this then add an idle object.
-     * @param period
-     *            the frequency to check the number of idle objects in a
+     * @param periodMillis
+     *            the frequency in milliseconds to check the number of idle objects in a
      *            keyedPool, see {@link Timer#schedule(TimerTask, long, long)}.
      * @param <K> the type of the pool key
      * @param <V> the type of pool entries
@@ -1392,7 +1392,7 @@ public final class PoolUtils {
      */
     public static <K, V> TimerTask checkMinIdle(
             final KeyedObjectPool<K, V> keyedPool, final K key,
-            final int minIdle, final long period)
+            final int minIdle, final long periodMillis)
             throws IllegalArgumentException {
         if (keyedPool == null) {
             throw new IllegalArgumentException(MSG_NULL_KEYED_POOL);
@@ -1405,7 +1405,7 @@ public final class PoolUtils {
         }
         final TimerTask task = new KeyedObjectPoolMinIdleTimerTask<>(
                 keyedPool, key, minIdle);
-        getMinIdleTimer().schedule(task, 0L, period);
+        getMinIdleTimer().schedule(task, 0L, periodMillis);
         return task;
     }
 
@@ -1419,8 +1419,8 @@ public final class PoolUtils {
      * @param minIdle
      *            if the {@link ObjectPool#getNumIdle()} is less than this then
      *            add an idle object.
-     * @param period
-     *            the frequency to check the number of idle objects in a pool,
+     * @param periodMillis
+     *            the frequency in milliseconds to check the number of idle objects in a pool,
      *            see {@link Timer#schedule(TimerTask, long, long)}.
      * @param <T> the type of objects in the pool
      * @return the {@link TimerTask} that will periodically check the pools idle
@@ -1431,7 +1431,7 @@ public final class PoolUtils {
      *             {@link Timer#schedule(TimerTask, long, long)}
      */
     public static <T> TimerTask checkMinIdle(final ObjectPool<T> pool,
-            final int minIdle, final long period)
+            final int minIdle, final long periodMillis)
             throws IllegalArgumentException {
         if (pool == null) {
             throw new IllegalArgumentException(MSG_NULL_KEYED_POOL);
@@ -1440,7 +1440,7 @@ public final class PoolUtils {
             throw new IllegalArgumentException(MSG_MIN_IDLE);
         }
         final TimerTask task = new ObjectPoolMinIdleTimerTask<>(pool, minIdle);
-        getMinIdleTimer().schedule(task, 0L, period);
+        getMinIdleTimer().schedule(task, 0L, periodMillis);
         return task;
     }
 

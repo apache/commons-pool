@@ -259,7 +259,7 @@ public class AbandonedConfig {
      * @since 2.10.0
      */
     public void setRemoveAbandonedTimeout(final Duration removeAbandonedTimeout) {
-        this.removeAbandonedTimeout = removeAbandonedTimeout;
+        this.removeAbandonedTimeout = PoolImplUtils.nonNull(removeAbandonedTimeout, DEFAULT_REMOVE_ABANDONED_TIMEOUT);
     }
 
     /**

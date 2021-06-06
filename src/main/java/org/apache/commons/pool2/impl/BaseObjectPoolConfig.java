@@ -70,8 +70,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      * @deprecated Use {@link #DEFAULT_MIN_EVICTABLE_IDLE_TIME}.
      */
     @Deprecated
-    public static final long DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS =
-            1000L * 60L * 30L;
+    public static final long DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS = 1000L * 60L * 30L;
 
     /**
      * The default value for the {@code minEvictableIdleTime}
@@ -177,8 +176,8 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      * @see GenericObjectPool#getTimeBetweenEvictionRuns()
      * @see GenericKeyedObjectPool#getTimeBetweenEvictionRuns()
      */
-    public static final Duration DEFAULT_TIME_BETWEEN_EVICTION_RUNS =
-            Duration.ofMillis(DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS);
+    public static final Duration DEFAULT_TIME_BETWEEN_EVICTION_RUNS = Duration
+            .ofMillis(DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS);
 
     /**
      * The default value for the {@code blockWhenExhausted} configuration
@@ -623,16 +622,34 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      * Sets the value for the {@code evictorShutdownTimeout} configuration
      * attribute for pools created with this configuration instance.
      *
-     * @param evictorShutdownTimeoutMillis The new setting of
+     * @param evictorShutdownTimeout The new setting of
      *        {@code evictorShutdownTimeout} for this configuration
      *        instance
      *
      * @see GenericObjectPool#getEvictorShutdownTimeout()
      * @see GenericKeyedObjectPool#getEvictorShutdownTimeout()
      * @since 2.10.0
+     * @deprecated Use {@link #setEvictorShutdownTimeout(Duration)}.
      */
-    public void setEvictorShutdownTimeoutMillis(final Duration evictorShutdownTimeoutMillis) {
-        this.evictorShutdownTimeout = evictorShutdownTimeoutMillis;
+    @Deprecated
+    public void setEvictorShutdownTimeoutMillis(final Duration evictorShutdownTimeout) {
+        setEvictorShutdownTimeout(evictorShutdownTimeout);
+    }
+
+    /**
+     * Sets the value for the {@code evictorShutdownTimeout} configuration
+     * attribute for pools created with this configuration instance.
+     *
+     * @param evictorShutdownTimeout The new setting of
+     *        {@code evictorShutdownTimeout} for this configuration
+     *        instance
+     *
+     * @see GenericObjectPool#getEvictorShutdownTimeout()
+     * @see GenericKeyedObjectPool#getEvictorShutdownTimeout()
+     * @since 2.11.0
+     */
+    public void setEvictorShutdownTimeout(final Duration evictorShutdownTimeout) {
+        this.evictorShutdownTimeout = PoolImplUtils.nonNull(evictorShutdownTimeout, DEFAULT_EVICTOR_SHUTDOWN_TIMEOUT);
     }
 
     /**
@@ -649,7 +666,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      */
     @Deprecated
     public void setEvictorShutdownTimeoutMillis(final long evictorShutdownTimeoutMillis) {
-        this.evictorShutdownTimeout = Duration.ofMillis(evictorShutdownTimeoutMillis);
+        setEvictorShutdownTimeout(Duration.ofMillis(evictorShutdownTimeoutMillis));
     }
 
     /**
@@ -742,7 +759,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      * @since 2.10.0
      */
     public void setMinEvictableIdleTime(final Duration minEvictableIdleTime) {
-        this.minEvictableIdleTime = minEvictableIdleTime;
+        this.minEvictableIdleTime = PoolImplUtils.nonNull(minEvictableIdleTime, DEFAULT_MIN_EVICTABLE_IDLE_TIME);
     }
 
     /**
@@ -789,7 +806,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      * @since 2.10.0
      */
     public void setSoftMinEvictableIdleTime(final Duration softMinEvictableIdleTime) {
-        this.softMinEvictableIdleTime = softMinEvictableIdleTime;
+        this.softMinEvictableIdleTime = PoolImplUtils.nonNull(softMinEvictableIdleTime, DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME);
     }
 
     /**
@@ -808,7 +825,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     @Deprecated
     public void setSoftMinEvictableIdleTimeMillis(
             final long softMinEvictableIdleTimeMillis) {
-        this.softMinEvictableIdleTime = Duration.ofMillis(softMinEvictableIdleTimeMillis);
+        setSoftMinEvictableIdleTime(Duration.ofMillis(softMinEvictableIdleTimeMillis));
     }
 
     /**
@@ -873,7 +890,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      * Sets the value for the {@code timeBetweenEvictionRuns} configuration
      * attribute for pools created with this configuration instance.
      *
-     * @param timeBetweenEvictionRunsMillis The new setting of
+     * @param timeBetweenEvictionRuns The new setting of
      *        {@code timeBetweenEvictionRuns} for this configuration
      *        instance
      *
@@ -881,8 +898,8 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      * @see GenericKeyedObjectPool#getTimeBetweenEvictionRuns()
      * @since 2.10.0
      */
-    public void setTimeBetweenEvictionRuns(final Duration timeBetweenEvictionRunsMillis) {
-        this.timeBetweenEvictionRuns = timeBetweenEvictionRunsMillis;
+    public void setTimeBetweenEvictionRuns(final Duration timeBetweenEvictionRuns) {
+        this.timeBetweenEvictionRuns = PoolImplUtils.nonNull(timeBetweenEvictionRuns, DEFAULT_TIME_BETWEEN_EVICTION_RUNS);
     }
 
     /**
@@ -899,7 +916,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      */
     @Deprecated
     public void setTimeBetweenEvictionRunsMillis(final long timeBetweenEvictionRunsMillis) {
-        this.timeBetweenEvictionRuns = Duration.ofMillis(timeBetweenEvictionRunsMillis);
+        setTimeBetweenEvictionRuns(Duration.ofMillis(timeBetweenEvictionRunsMillis));
     }
 
     @Override
