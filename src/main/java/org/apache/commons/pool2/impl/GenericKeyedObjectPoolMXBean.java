@@ -149,8 +149,8 @@ public interface GenericKeyedObjectPoolMXBean<K> {
     long getMeanIdleTimeMillis();
 
     /**
-     * See {@link GenericKeyedObjectPool#getMinEvictableIdleTimeMillis()}
-     * @return See {@link GenericKeyedObjectPool#getMinEvictableIdleTimeMillis()}
+     * See {@link GenericKeyedObjectPool#getMinEvictableIdleTime()}
+     * @return See {@link GenericKeyedObjectPool#getMinEvictableIdleTime()}
      */
     long getMinEvictableIdleTimeMillis();
 
@@ -217,8 +217,8 @@ public interface GenericKeyedObjectPoolMXBean<K> {
     }
 
     /**
-     * See {@link GenericKeyedObjectPool#getRemoveAbandonedTimeout()}
-     * @return See {@link GenericKeyedObjectPool#getRemoveAbandonedTimeout()}
+     * See {@link GenericKeyedObjectPool#getRemoveAbandonedTimeoutDuration()}
+     * @return See {@link GenericKeyedObjectPool#getRemoveAbandonedTimeoutDuration()}
      * @since 2.10.0
      */
     default int getRemoveAbandonedTimeout() {
@@ -257,8 +257,8 @@ public interface GenericKeyedObjectPoolMXBean<K> {
     boolean getTestWhileIdle();
 
     /**
-     * See {@link GenericKeyedObjectPool#getTimeBetweenEvictionRunsMillis()}
-     * @return See {@link GenericKeyedObjectPool#getTimeBetweenEvictionRunsMillis()}
+     * See {@link GenericKeyedObjectPool#getTimeBetweenEvictionRuns()}
+     * @return See {@link GenericKeyedObjectPool#getTimeBetweenEvictionRuns()}
      */
     long getTimeBetweenEvictionRunsMillis();
 
