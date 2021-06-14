@@ -252,6 +252,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
         boolean exceptionOnDestroy;
 
+        boolean exceptionOnValidate;
+
         boolean enableValidation = true;
 
         long destroyLatency;
@@ -381,6 +383,10 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             exceptionOnPassivate = bool;
         }
 
+        public synchronized void setThrowExceptionOnValidate(final boolean bool) {
+            exceptionOnValidate = bool;
+        }
+
         public synchronized void setValid(final boolean valid) {
             setEvenValid(valid);
             setOddValid(valid);
@@ -397,12 +403,14 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         @Override
         public boolean validateObject(final PooledObject<String> obj) {
             final boolean validate;
+            final boolean throwException;
             final boolean evenTest;
             final boolean oddTest;
             final long waitLatency;
             final int counter;
             synchronized(this) {
                 validate = enableValidation;
+                throwException = exceptionOnValidate;
                 evenTest = evenValid;
                 oddTest = oddValid;
                 counter = validateCounter++;
@@ -410,6 +418,9 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             }
             if (waitLatency > 0) {
                 doWait(waitLatency);
+            }
+            if (throwException) {
+                throw new RuntimeException("validation failed");
             }
             if (validate) {
                 return counter%2 == 0 ? evenTest : oddTest;
@@ -1698,6 +1709,26 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         genericObjectPool.evict();
         genericObjectPool.evict();
         genericObjectPool.close();
+    }
+
+    @Test
+    @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
+    public void testExceptionInValidationDuringEviction() throws Exception {
+        genericObjectPool.setMaxIdle(1);
+        genericObjectPool.setMaxTotal(2);
+        genericObjectPool.setNumTestsPerEvictionRun(1);
+        genericObjectPool.setMinEvictableIdleTime(Duration.ofMillis(0));
+        genericObjectPool.setTestWhileIdle(true);
+
+        String active = genericObjectPool.borrowObject();
+        genericObjectPool.returnObject(active);
+
+        simpleFactory.setThrowExceptionOnValidate(true);
+
+        genericObjectPool.evict();
+        genericObjectPool.evict(); // In previous versions, this second call would result in an infinite loop.
+        assertEquals(0, genericObjectPool.getNumActive());
+        assertEquals(0, genericObjectPool.getNumIdle());
     }
 
     @Test

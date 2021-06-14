@@ -734,7 +734,14 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                                 destroyedByEvictorCount.incrementAndGet();
                             }
                             if (active) {
-                                if (!factory.validateObject(underTest)) {
+                                boolean isObjectStillValid;
+                                try {
+                                    isObjectStillValid = factory.validateObject(underTest);
+                                } catch (final Exception e) {
+                                    PoolUtils.checkRethrow(e);
+                                    isObjectStillValid = false;
+                                }
+                                if (!isObjectStillValid) {
                                     destroy(underTest, DestroyMode.NORMAL);
                                     destroyedByEvictorCount.incrementAndGet();
                                 } else {
