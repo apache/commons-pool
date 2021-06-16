@@ -750,6 +750,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                                                 = new NoSuchElementException("Unable to validate object");
                                         nsee.initCause(validationThrowable);
                                         throw nsee;
+                                    }
                                 } else {
                                     try {
                                         factory.passivateObject(underTest);
