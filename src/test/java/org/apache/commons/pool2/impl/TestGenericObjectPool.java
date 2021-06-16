@@ -1725,8 +1725,12 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
         simpleFactory.setThrowExceptionOnValidate(true);
 
-        genericObjectPool.evict();
-        genericObjectPool.evict(); // In previous versions, this second call would result in an infinite loop.
+        try {
+            genericObjectPool.evict();
+            fail("Expecting NoSuchElementException");
+        } catch (NoSuchElementException e) {
+            // expected
+        }
         assertEquals(0, genericObjectPool.getNumActive());
         assertEquals(0, genericObjectPool.getNumIdle());
     }
