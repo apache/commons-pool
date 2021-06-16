@@ -265,7 +265,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         public boolean validateObject(final K key, final PooledObject<String> obj) {
             doWait(validateLatency);
             if (exceptionOnValidate) {
-                throw new RuntimeException();
+                throw new RuntimeException("validation failed");
             }
             if (enableValidation) {
                 return validateCounter++%2 == 0 ? evenValid : oddValid;
