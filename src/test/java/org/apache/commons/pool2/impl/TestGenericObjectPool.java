@@ -1715,9 +1715,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
     public void testExceptionInValidationDuringEviction() throws Exception {
         genericObjectPool.setMaxIdle(1);
-        genericObjectPool.setMaxTotal(2);
-        genericObjectPool.setNumTestsPerEvictionRun(1);
-        genericObjectPool.setMinEvictableIdleTime(Duration.ofMillis(0));
+        genericObjectPool.setMinEvictableIdleTime(Duration.ZERO);
         genericObjectPool.setTestWhileIdle(true);
 
         String active = genericObjectPool.borrowObject();
