@@ -1572,8 +1572,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         simpleFactory.setThrowExceptionOnValidate(true);
         try {
             gkoPool.evict();
-            fail("Expecting NoSuchElementException");
-        } catch (NoSuchElementException e) {
+            fail("Expecting RuntimeException");
+        } catch (RuntimeException e) {
             // expected
         }
         assertEquals(0, gkoPool.getNumActive());

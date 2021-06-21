@@ -1725,8 +1725,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
         try {
             genericObjectPool.evict();
-            fail("Expecting NoSuchElementException");
-        } catch (NoSuchElementException e) {
+            fail("Expecting RuntimeException");
+        } catch (RuntimeException e) {
             // expected
         }
         assertEquals(0, genericObjectPool.getNumActive());
