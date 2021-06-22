@@ -1042,9 +1042,23 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
                                 destroyedByEvictorCount.incrementAndGet();
                             }
                             if (active) {
-                                if (!factory.validateObject(evictionKey, underTest)) {
+                                boolean validate = false;
+                                Throwable validationThrowable = null;
+                                try {
+                                    validate = factory.validateObject(evictionKey, underTest);
+                                } catch (final Throwable t) {
+                                    PoolUtils.checkRethrow(t);
+                                    validationThrowable = t;
+                                }
+                                if (!validate) {
                                     destroy(evictionKey, underTest, true, DestroyMode.NORMAL);
                                     destroyedByEvictorCount.incrementAndGet();
+                                    if (validationThrowable != null) {
+                                        if (validationThrowable instanceof RuntimeException) {
+                                            throw (RuntimeException) validationThrowable;
+                                        }
+                                        throw (Error) validationThrowable;
+                                    }
                                 } else {
                                     try {
                                         factory.passivateObject(evictionKey, underTest);

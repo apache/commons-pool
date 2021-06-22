@@ -167,6 +167,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         boolean exceptionOnPassivate = false;
         boolean exceptionOnActivate = false;
         boolean exceptionOnDestroy = false;
+        boolean exceptionOnValidate = false;
 
         boolean exceptionOnCreate = false;
 
@@ -246,6 +247,9 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         public void setThrowExceptionOnPassivate(final boolean b) {
             exceptionOnPassivate = b;
         }
+        public void setThrowExceptionOnValidate(final boolean b) {
+            exceptionOnValidate = b;
+        }
         void setValid(final boolean valid) {
             evenValid = valid;
             oddValid = valid;
@@ -260,6 +264,9 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         @Override
         public boolean validateObject(final K key, final PooledObject<String> obj) {
             doWait(validateLatency);
+            if (exceptionOnValidate) {
+                throw new RuntimeException("validation failed");
+            }
             if (enableValidation) {
                 return validateCounter++%2 == 0 ? evenValid : oddValid;
             }
@@ -1550,6 +1557,27 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         gkoPool.returnObject("one", obj);
         assertEquals(0,gkoPool.getNumIdle());
         gkoPool.close();
+    }
+
+    @Test
+    @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
+    public void testExceptionInValidationDuringEviction() throws Exception {
+        gkoPool.setMaxIdlePerKey(1);
+        gkoPool.setMinEvictableIdleTime(Duration.ZERO);
+        gkoPool.setTestWhileIdle(true);
+
+        final String obj = gkoPool.borrowObject("one");
+        gkoPool.returnObject("one", obj);
+
+        simpleFactory.setThrowExceptionOnValidate(true);
+        try {
+            gkoPool.evict();
+            fail("Expecting RuntimeException");
+        } catch (RuntimeException e) {
+            // expected
+        }
+        assertEquals(0, gkoPool.getNumActive());
+        assertEquals(0, gkoPool.getNumIdle());
     }
 
     @Test
