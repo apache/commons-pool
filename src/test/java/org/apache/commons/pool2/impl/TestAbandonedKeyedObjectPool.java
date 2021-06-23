@@ -141,7 +141,7 @@ public class TestAbandonedKeyedObjectPool {
 
     @SuppressWarnings("deprecation")
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         abandonedConfig = new AbandonedConfig();
 
         // Uncomment the following line to enable logging:
