@@ -223,14 +223,14 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
 
     /**
      * Equivalent to <code>{@link #borrowObject(long)
-     * borrowObject}({@link #getMaxWaitMillis()})</code>.
+     * borrowObject}({@link #getMaxWaitDuration()})</code>.
      * <p>
      * {@inheritDoc}
      * </p>
      */
     @Override
     public T borrowObject() throws Exception {
-        return borrowObject(getMaxWaitMillis());
+        return borrowObject(getMaxWaitDuration());
     }
 
     /**

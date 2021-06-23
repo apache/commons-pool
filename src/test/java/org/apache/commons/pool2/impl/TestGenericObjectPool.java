@@ -1252,10 +1252,12 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
         // Make constructor arguments all different from defaults
         final int minIdle = 2;
-        final long maxWait = 3;
+        final Duration maxWaitDuration = Duration.ofMillis(3);
+        final long maxWaitMillis = maxWaitDuration.toMillis();
         final int maxIdle = 4;
         final int maxTotal = 5;
-        final long minEvictableIdleTimeMillis = 6;
+        final Duration minEvictableIdleDuration = Duration.ofMillis(6);
+        final long minEvictableIdleMillis = minEvictableIdleDuration.toMillis();
         final int numTestsPerEvictionRun = 7;
         final boolean testOnBorrow = true;
         final boolean testOnReturn = true;
@@ -1295,9 +1297,9 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         config.setMaxIdle(maxIdle);
         config.setMinIdle(minIdle);
         config.setMaxTotal(maxTotal);
-        config.setMaxWaitMillis(maxWait);
-        config.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis);
-        assertEquals(minEvictableIdleTimeMillis, config.getMinEvictableIdleTime().toMillis());
+        config.setMaxWaitDuration(maxWaitDuration);
+        config.setMinEvictableIdleTimeMillis(minEvictableIdleMillis);
+        assertEquals(minEvictableIdleMillis, config.getMinEvictableIdleTime().toMillis());
         config.setNumTestsPerEvictionRun(numTestsPerEvictionRun);
         config.setTestOnBorrow(testOnBorrow);
         config.setTestOnReturn(testOnReturn);
@@ -1307,10 +1309,11 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         config.setBlockWhenExhausted(blockWhenExhausted);
         try (GenericObjectPool<Object> dummyPool = new GenericObjectPool<>(dummyFactory, config)) {
             assertEquals(maxIdle, dummyPool.getMaxIdle());
-            assertEquals(maxWait, dummyPool.getMaxWaitMillis());
+            assertEquals(maxWaitDuration, dummyPool.getMaxWaitDuration());
+            assertEquals(maxWaitMillis, dummyPool.getMaxWaitMillis());
             assertEquals(minIdle, dummyPool.getMinIdle());
             assertEquals(maxTotal, dummyPool.getMaxTotal());
-            assertEquals(minEvictableIdleTimeMillis, dummyPool.getMinEvictableIdleTimeMillis());
+            assertEquals(minEvictableIdleMillis, dummyPool.getMinEvictableIdleTimeMillis());
             assertEquals(numTestsPerEvictionRun, dummyPool.getNumTestsPerEvictionRun());
             assertEquals(Boolean.valueOf(testOnBorrow), Boolean.valueOf(dummyPool.getTestOnBorrow()));
             assertEquals(Boolean.valueOf(testOnReturn), Boolean.valueOf(dummyPool.getTestOnReturn()));
@@ -1718,7 +1721,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         genericObjectPool.setMinEvictableIdleTime(Duration.ZERO);
         genericObjectPool.setTestWhileIdle(true);
 
-        String active = genericObjectPool.borrowObject();
+        final String active = genericObjectPool.borrowObject();
         genericObjectPool.returnObject(active);
 
         simpleFactory.setThrowExceptionOnValidate(true);
@@ -1726,7 +1729,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         try {
             genericObjectPool.evict();
             fail("Expecting RuntimeException");
-        } catch (RuntimeException e) {
+        } catch (final RuntimeException e) {
             // expected
         }
         assertEquals(0, genericObjectPool.getNumActive());
@@ -2613,7 +2616,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertConfiguration(expected,genericObjectPool);
         expected.setMaxTotal(2);
         expected.setMaxIdle(3);
-        expected.setMaxWaitMillis(5L);
+        expected.setMaxWaitDuration(Duration.ofMillis(5));
         expected.setMinEvictableIdleTime(Duration.ofMillis(7L));
         expected.setNumTestsPerEvictionRun(9);
         expected.setTestOnCreate(true);

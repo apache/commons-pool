@@ -51,7 +51,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      * The default value for the {@code maxWait} configuration attribute.
      * @see GenericObjectPool#getMaxWaitDuration()
      * @see GenericKeyedObjectPool#getMaxWaitDuration()
-     * @deprecate Use {@link #DEFAULT_MAX_WAIT}.
+     * @deprecated Use {@link #DEFAULT_MAX_WAIT}.
      */
     @Deprecated
     public static final long DEFAULT_MAX_WAIT_MILLIS = -1L;
@@ -762,7 +762,9 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      *
      * @see GenericObjectPool#getMaxWaitDuration()
      * @see GenericKeyedObjectPool#getMaxWaitDuration()
+     * @deprecated Use {@link #setMaxWaitDuration(Duration)}.
      */
+    @Deprecated
     public void setMaxWaitMillis(final long maxWaitMillis) {
         setMaxWaitDuration(Duration.ofMillis(maxWaitMillis));
     }

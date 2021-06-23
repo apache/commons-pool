@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * CallStack strategy using a {@link SecurityManager}. Obtaining the current call stack is much faster via a
+ * A {@link CallStack} strategy using a {@link SecurityManager}. Obtaining the current call stack is much faster via a
  * SecurityManger, but access to the underlying method may be restricted by the current SecurityManager. In environments
  * where a SecurityManager cannot be created, {@link ThrowableCallStack} should be used instead.
  *

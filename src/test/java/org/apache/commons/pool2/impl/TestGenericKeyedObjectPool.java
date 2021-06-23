@@ -1155,7 +1155,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         // Make constructor arguments all different from defaults
         final int maxTotalPerKey = 1;
         final int minIdle = 2;
-        final long maxWait = 3;
+        final Duration maxWaitDuration = Duration.ofMillis(3);
+        final long maxWaitMillis = maxWaitDuration.toMillis();
         final int maxIdle = 4;
         final int maxTotal = 5;
         final long minEvictableIdleTimeMillis = 6;
@@ -1204,7 +1205,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         config.setMaxIdlePerKey(maxIdle);
         config.setMinIdlePerKey(minIdle);
         config.setMaxTotal(maxTotal);
-        config.setMaxWaitMillis(maxWait);
+        config.setMaxWaitDuration(maxWaitDuration);
         config.setMinEvictableIdleTime(Duration.ofMillis(minEvictableIdleTimeMillis));
         config.setNumTestsPerEvictionRun(numTestsPerEvictionRun);
         config.setTestOnBorrow(testOnBorrow);
@@ -1215,7 +1216,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         try (GenericKeyedObjectPool<Object, Object> objPool = new GenericKeyedObjectPool<>(dummyFactory, config)) {
             assertEquals(maxTotalPerKey, objPool.getMaxTotalPerKey());
             assertEquals(maxIdle, objPool.getMaxIdlePerKey());
-            assertEquals(maxWait, objPool.getMaxWaitMillis());
+            assertEquals(maxWaitDuration, objPool.getMaxWaitDuration());
+            assertEquals(maxWaitMillis, objPool.getMaxWaitMillis());
             assertEquals(minIdle, objPool.getMinIdlePerKey());
             assertEquals(maxTotal, objPool.getMaxTotal());
             assertEquals(minEvictableIdleTimeMillis, objPool.getMinEvictableIdleTimeMillis());
@@ -1573,7 +1575,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         try {
             gkoPool.evict();
             fail("Expecting RuntimeException");
-        } catch (RuntimeException e) {
+        } catch (final RuntimeException e) {
             // expected
         }
         assertEquals(0, gkoPool.getNumActive());
@@ -1646,7 +1648,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         config.setMaxTotal(2);
         config.setBlockWhenExhausted(true);
         config.setMinIdlePerKey(0);
-        config.setMaxWaitMillis(-1);
+        config.setMaxWaitDuration(Duration.ofMillis(-1));
         config.setNumTestsPerEvictionRun(Integer.MAX_VALUE); // always test all idle objects
         config.setTestOnBorrow(true);
         config.setTestOnReturn(false);

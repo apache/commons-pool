@@ -34,6 +34,8 @@ import org.junit.jupiter.api.Timeout;
  */
 public class TestGenericObjectPoolFactoryCreateFailure {
 
+    private static final Duration NEG_ONE_DURATION = Duration.ofMillis(-1);
+
     private static class SingleObjectFactory extends BasePooledObjectFactory<Object> {
         private final AtomicBoolean created = new AtomicBoolean();
 
@@ -113,11 +115,11 @@ public class TestGenericObjectPoolFactoryCreateFailure {
         config.setTestOnBorrow(true);
         config.setTestOnReturn(true);
         config.setTestWhileIdle(false);
-        config.setTimeBetweenEvictionRuns(Duration.ofMillis(-1));
-        config.setMinEvictableIdleTime(Duration.ofMillis(-1));
-        config.setSoftMinEvictableIdleTime(Duration.ofMillis(-1));
+        config.setTimeBetweenEvictionRuns(NEG_ONE_DURATION);
+        config.setMinEvictableIdleTime(NEG_ONE_DURATION);
+        config.setSoftMinEvictableIdleTime(NEG_ONE_DURATION);
 
-        config.setMaxWaitMillis(-1);
+        config.setMaxWaitDuration(NEG_ONE_DURATION);
         try (GenericObjectPool<Object> pool = new GenericObjectPool<>(factory, config)) {
 
             final AtomicBoolean failed = new AtomicBoolean();
