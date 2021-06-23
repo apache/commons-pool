@@ -226,7 +226,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
 
     private Duration minEvictableIdleTime = DEFAULT_MIN_EVICTABLE_IDLE_TIME;
 
-    private Duration evictorShutdownTimeout = DEFAULT_EVICTOR_SHUTDOWN_TIMEOUT;
+    private Duration evictorShutdownTimeoutDuration = DEFAULT_EVICTOR_SHUTDOWN_TIMEOUT;
 
     private Duration softMinEvictableIdleTime = DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME;
 
@@ -311,7 +311,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      * @since 2.10.0
      */
     public Duration getEvictorShutdownTimeout() {
-        return evictorShutdownTimeout;
+        return evictorShutdownTimeoutDuration;
     }
 
     /**
@@ -327,7 +327,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      */
     @Deprecated
     public long getEvictorShutdownTimeoutMillis() {
-        return evictorShutdownTimeout.toMillis();
+        return evictorShutdownTimeoutDuration.toMillis();
     }
 
     /**
@@ -420,6 +420,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      * @see GenericKeyedObjectPool#getMaxWaitMillis()
      * @deprecated Use {@link #getMaxWaitDuration()}.
      */
+    @Deprecated
     public long getMaxWaitMillis() {
         return maxWaitDuration.toMillis();
     }
@@ -645,18 +646,18 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      * @see GenericObjectPool#getEvictorShutdownTimeout()
      * @see GenericKeyedObjectPool#getEvictorShutdownTimeout()
      * @since 2.10.0
-     * @deprecated Use {@link #setEvictorShutdownTimeout(Duration)}.
+     * @deprecated Use {@link #setEvictorShutdownTimeoutDuration(Duration)}.
      */
     @Deprecated
     public void setEvictorShutdownTimeoutMillis(final Duration evictorShutdownTimeout) {
-        setEvictorShutdownTimeout(evictorShutdownTimeout);
+        setEvictorShutdownTimeoutDuration(evictorShutdownTimeout);
     }
 
     /**
      * Sets the value for the {@code evictorShutdownTimeout} configuration
      * attribute for pools created with this configuration instance.
      *
-     * @param evictorShutdownTimeout The new setting of
+     * @param evictorShutdownTimeoutDuration The new setting of
      *        {@code evictorShutdownTimeout} for this configuration
      *        instance
      *
@@ -664,8 +665,9 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      * @see GenericKeyedObjectPool#getEvictorShutdownTimeout()
      * @since 2.11.0
      */
-    public void setEvictorShutdownTimeout(final Duration evictorShutdownTimeout) {
-        this.evictorShutdownTimeout = PoolImplUtils.nonNull(evictorShutdownTimeout, DEFAULT_EVICTOR_SHUTDOWN_TIMEOUT);
+    public void setEvictorShutdownTimeoutDuration(final Duration evictorShutdownTimeoutDuration) {
+        this.evictorShutdownTimeoutDuration = PoolImplUtils.nonNull(evictorShutdownTimeoutDuration,
+                DEFAULT_EVICTOR_SHUTDOWN_TIMEOUT);
     }
 
     /**
@@ -682,7 +684,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      */
     @Deprecated
     public void setEvictorShutdownTimeoutMillis(final long evictorShutdownTimeoutMillis) {
-        setEvictorShutdownTimeout(Duration.ofMillis(evictorShutdownTimeoutMillis));
+        setEvictorShutdownTimeoutDuration(Duration.ofMillis(evictorShutdownTimeoutMillis));
     }
 
     /**
@@ -774,7 +776,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      * @see GenericKeyedObjectPool#getMaxWaitDuration()
      */
     public void setMaxWaitDuration(final Duration maxWaitDuration) {
-        this.maxWaitDuration = PoolImplUtils.nonNull(maxWaitDuration, DEFAULT_MAX_WAIT);;
+        this.maxWaitDuration = PoolImplUtils.nonNull(maxWaitDuration, DEFAULT_MAX_WAIT);
     }
 
     /**

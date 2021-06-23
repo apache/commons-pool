@@ -646,6 +646,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * @see #setBlockWhenExhausted
      * @deprecated Use {@link #getMaxWaitDuration()}.
      */
+    @Deprecated
     public final long getMaxWaitMillis() {
         return maxWaitDuration.toMillis();
     }
@@ -1461,27 +1462,23 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         synchronized (evictionLock) {
             final boolean isPositiverDelay = PoolImplUtils.isPositive(delay);
             if (evictor == null) { // Starting evictor for the first time or after a cancel
-                if (isPositiverDelay) {   // Starting new evictor
+                if (isPositiverDelay) { // Starting new evictor
                     evictor = new Evictor();
                     EvictionTimer.schedule(evictor, delay, delay);
                 }
-            } else {  // Stop or restart of existing evictor
-                if (isPositiverDelay) { // Restart
-                    synchronized (EvictionTimer.class) { // Ensure no cancel can happen between cancel / schedule calls
-                        EvictionTimer.cancel(evictor, evictorShutdownTimeout, true);
-                        evictor = null;
-                        evictionIterator = null;
-                        evictor = new Evictor();
-                        EvictionTimer.schedule(evictor, delay, delay);
-                    }
-                } else { // Stopping evictor
-                    EvictionTimer.cancel(evictor, evictorShutdownTimeout, false);
+            } else if (isPositiverDelay) { // Stop or restart of existing evictor: Restart
+                synchronized (EvictionTimer.class) { // Ensure no cancel can happen between cancel / schedule calls
+                    EvictionTimer.cancel(evictor, evictorShutdownTimeout, true);
+                    evictor = null;
+                    evictionIterator = null;
+                    evictor = new Evictor();
+                    EvictionTimer.schedule(evictor, delay, delay);
                 }
+            } else { // Stopping evictor
+                EvictionTimer.cancel(evictor, evictorShutdownTimeout, false);
             }
         }
     }
-
-
 
     // Inner classes
 

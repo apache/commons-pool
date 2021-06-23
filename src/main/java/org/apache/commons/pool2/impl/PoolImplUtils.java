@@ -109,7 +109,7 @@ class PoolImplUtils {
 
     /**
      * Gets the matching parameterized type or null.
-     * 
+     *
      * @param type The interface that defines a generic type.
      * @param clazz The class that implements the interface with a concrete type.
      * @param <T> The interface type.
@@ -210,12 +210,12 @@ class PoolImplUtils {
 
     /**
      * Returns a non-null duration, value if non-null, otherwise defaultValue.
-     * 
+     *
      * @param value May be null.
      * @param defaultValue May not be null/
      * @return value if non-null, otherwise defaultValue.
      */
-    static Duration nonNull(Duration value, Duration defaultValue) {
+    static Duration nonNull(final Duration value, final Duration defaultValue) {
         return value != null ? value : Objects.requireNonNull(defaultValue, "defaultValue");
     }
 
