@@ -222,8 +222,8 @@ public class AbandonedConfig {
     }
 
     /**
-     * <p>Flag to remove abandoned objects if they exceed the
-     * removeAbandonedTimeout when borrowObject is invoked.</p>
+     * Flag to remove abandoned objects if they exceed the
+     * removeAbandonedTimeout when borrowObject is invoked.
      *
      * @param removeAbandonedOnBorrow true means abandoned objects will be
      *   removed by borrowObject
@@ -234,8 +234,8 @@ public class AbandonedConfig {
     }
 
     /**
-     * <p>Flag to remove abandoned objects if they exceed the
-     * removeAbandonedTimeout when pool maintenance runs.</p>
+     * Flag to remove abandoned objects if they exceed the
+     * removeAbandonedTimeout when pool maintenance runs.
      *
      * @param removeAbandonedOnMaintenance true means abandoned objects will be
      *   removed by pool maintenance
@@ -246,8 +246,8 @@ public class AbandonedConfig {
     }
 
     /**
-     * <p>Sets the timeout before an abandoned object can be
-     * removed</p>
+     * Sets the timeout before an abandoned object can be
+     * removed.
      *
      * <p>Setting this property has no effect if
      * {@link #getRemoveAbandonedOnBorrow() removeAbandonedOnBorrow} and
@@ -263,8 +263,8 @@ public class AbandonedConfig {
     }
 
     /**
-     * <p>Sets the timeout in seconds before an abandoned object can be
-     * removed</p>
+     * Sets the timeout in seconds before an abandoned object can be
+     * removed.
      *
      * <p>Setting this property has no effect if
      * {@link #getRemoveAbandonedOnBorrow() removeAbandonedOnBorrow} and

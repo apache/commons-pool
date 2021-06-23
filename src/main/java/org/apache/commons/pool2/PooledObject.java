@@ -296,7 +296,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     /**
      * Gets a String form of the wrapper for debug purposes. The format is
      * not fixed and may change at any time.
-     * <p>
+     *
      * {@inheritDoc}
      */
     @Override

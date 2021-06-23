@@ -1028,7 +1028,9 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * Links the provided element as the last in the queue, waiting until there
      * is space to do so if the queue is full.
      *
-     * <p>This method is equivalent to {@link #putLast(Object)}.
+     * <p>
+     * This method is equivalent to {@link #putLast(Object)}.
+     * </p>
      *
      * @param e element to link
      *
@@ -1115,10 +1117,12 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * blocking. This is always equal to the initial capacity of this deque
      * less the current {@code size} of this deque.
      *
-     * <p>Note that you <em>cannot</em> always tell if an attempt to insert
+     * <p>
+     * Note that you <em>cannot</em> always tell if an attempt to insert
      * an element will succeed by inspecting {@code remainingCapacity}
      * because it may be the case that another thread is about to
      * insert or remove an element.
+     * </p>
      *
      * @return The number of additional elements the queue is able to accept
      */
@@ -1138,7 +1142,9 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * This method differs from {@link #poll poll} only in that it throws an
      * exception if this deque is empty.
      *
-     * <p>This method is equivalent to {@link #removeFirst() removeFirst}.
+     * <p>
+     * This method is equivalent to {@link #removeFirst() removeFirst}.
+     * </p>
      *
      * @return the head of the queue represented by this deque
      * @throws NoSuchElementException if this deque is empty
@@ -1156,8 +1162,10 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * Returns {@code true} if this deque contained the specified element
      * (or equivalently, if this deque changed as a result of the call).
      *
-     * <p>This method is equivalent to
+     * <p>
+     * This method is equivalent to
      * {@link #removeFirstOccurrence(Object) removeFirstOccurrence}.
+     * </p>
      *
      * @param o element to be removed from this deque, if present
      * @return {@code true} if this deque changed as a result of the call
@@ -1289,7 +1297,9 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * Unlinks the first element in the queue, waiting until there is an element
      * to unlink if the queue is empty.
      *
-     * <p>This method is equivalent to {@link #takeFirst()}.
+     * <p>
+     * This method is equivalent to {@link #takeFirst()}.
+     * </p>
      *
      * @return the unlinked element
      * @throws InterruptedException if the current thread is interrupted
@@ -1342,12 +1352,15 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * Returns an array containing all of the elements in this deque, in
      * proper sequence (from first to last element).
      *
-     * <p>The returned array will be "safe" in that no references to it are
+     * <p>
+     * The returned array will be "safe" in that no references to it are
      * maintained by this deque.  (In other words, this method must allocate
      * a new array).  The caller is thus free to modify the returned array.
-     *
-     * <p>This method acts as bridge between array-based and collection-based
+     * </p>
+     * <p>
+     * This method acts as bridge between array-based and collection-based
      * APIs.
+     * </p>
      *
      * @return an array containing all of the elements in this deque
      */

@@ -356,9 +356,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     final AtomicLong destroyedByBorrowValidationCount = new AtomicLong(0);
     private final StatsStore activeTimes = new StatsStore(MEAN_TIMING_STATS_CACHE_SIZE);
 
-
     private final StatsStore idleTimes = new StatsStore(MEAN_TIMING_STATS_CACHE_SIZE);
-
 
     private final StatsStore waitTimes = new StatsStore(MEAN_TIMING_STATS_CACHE_SIZE);
 
@@ -421,12 +419,12 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     abstract void ensureMinIdle() throws Exception;
 
     /**
-     * <p>Perform {@code numTests} idle object eviction tests, evicting
+     * Perform {@code numTests} idle object eviction tests, evicting
      * examined objects that meet the criteria for eviction. If
      * {@code testWhileIdle} is true, examined objects are validated
      * when visited (and removed if invalid); otherwise only objects that
      * have been idle for more than {@code minEvicableIdleTimeMillis}
-     * are removed.</p>
+     * are removed.
      *
      * @throws Exception when there is a problem evicting idle objects.
      */
@@ -1022,6 +1020,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     public final void setBlockWhenExhausted(final boolean blockWhenExhausted) {
         this.blockWhenExhausted = blockWhenExhausted;
     }
+
     /**
      * Initializes the receiver with the given configuration.
      *
@@ -1049,7 +1048,6 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         }
         setEvictorShutdownTimeout(config.getEvictorShutdownTimeout());
     }
-
 
     // Monitoring (primarily JMX) related methods
 

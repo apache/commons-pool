@@ -31,6 +31,7 @@ package org.apache.commons.pool2;
  * @since 2.0
  */
 public abstract class BasePooledObjectFactory<T> extends BaseObject implements PooledObjectFactory<T> {
+
     /**
      *  No-op.
      *
@@ -81,7 +82,7 @@ public abstract class BasePooledObjectFactory<T> extends BaseObject implements P
     }
 
     /**
-     * This implementation always returns {@code true}.
+     * Always returns {@code true}.
      *
      * @param p ignored
      *
@@ -93,7 +94,7 @@ public abstract class BasePooledObjectFactory<T> extends BaseObject implements P
     }
 
     /**
-     * Wrap the provided instance with an implementation of
+     * Wraps the provided instance with an implementation of
      * {@link PooledObject}.
      *
      * @param obj the instance to wrap

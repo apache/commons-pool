@@ -45,7 +45,7 @@ class InterruptibleReentrantLock extends ReentrantLock {
     }
 
     /**
-     * Interrupt the threads that are waiting on a specific condition
+     * Interrupts the threads that are waiting on a specific condition
      *
      * @param condition the condition on which the threads are waiting.
      */

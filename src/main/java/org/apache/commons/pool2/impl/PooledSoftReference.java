@@ -48,6 +48,7 @@ public class PooledSoftReference<T> extends DefaultPooledObject<T> {
      * <p>
      * Note that if the reference has been cleared, this method will return
      * null.
+     * </p>
      *
      * @return Object referred to by the SoftReference
      */

@@ -224,9 +224,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     /**
      * Equivalent to <code>{@link #borrowObject(long)
      * borrowObject}({@link #getMaxWaitDuration()})</code>.
-     * <p>
+     *
      * {@inheritDoc}
-     * </p>
      */
     @Override
     public T borrowObject() throws Exception {
@@ -1201,6 +1200,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         }
         updateStatsReturn(activeTime);
     }
+
     /**
      * Sets the abandoned object removal configuration.
      *
@@ -1223,6 +1223,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             this.abandonedConfig.setRequireFullStackTrace(abandonedConfig.getRequireFullStackTrace());
         }
     }
+
     /**
      * Sets the base pool configuration.
      *
@@ -1236,6 +1237,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         setMinIdle(conf.getMinIdle());
         setMaxTotal(conf.getMaxTotal());
     }
+
     /**
      * Sets the cap on the number of "idle" instances in the pool. If maxIdle
      * is set too low on heavily loaded systems it is possible you will see

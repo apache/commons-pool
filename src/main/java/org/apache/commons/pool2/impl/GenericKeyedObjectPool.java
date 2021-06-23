@@ -345,7 +345,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     /**
      * Equivalent to <code>{@link #borrowObject(Object, long) borrowObject}(key,
      * {@link #getMaxWaitDuration()})</code>.
-     * <p>
+     *
      * {@inheritDoc}
      */
     @Override
@@ -366,6 +366,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * {@code true} and validation fails, the instance is destroyed and the
      * next available instance is examined.  This continues until either a valid
      * instance is returned or there are no more idle instances available.
+     * </p>
      * <p>
      * If there are no idle instances available in the sub-pool associated with
      * the given key, behavior depends on the {@link #getMaxTotalPerKey()
@@ -378,6 +379,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * instance is created, activated and (if applicable) validated and returned
      * to the caller. If validation fails, a {@code NoSuchElementException}
      * will be thrown.
+     * </p>
      * <p>
      * If the associated sub-pool is exhausted (no available idle instances and
      * no capacity to create new ones), this method will either block
@@ -387,16 +389,19 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * The length of time that this method will block when
      * {@link #getBlockWhenExhausted()} is true is determined by the value
      * passed in to the {@code borrowMaxWait} parameter.
+     * </p>
      * <p>
      * When {@code maxTotal} is set to a positive value and this method is
      * invoked when at the limit with no idle instances available under the requested
      * key, an attempt is made to create room by clearing the oldest 15% of the
      * elements from the keyed sub-pools.
+     * </p>
      * <p>
      * When the pool is exhausted, multiple calling threads may be
      * simultaneously blocked waiting for instances to become available. A
      * "fairness" algorithm has been implemented to ensure that threads receive
      * available instances in request arrival order.
+     * </p>
      *
      * @param key pool key
      * @param borrowMaxWaitMillis The time to wait in milliseconds for an object
@@ -559,6 +564,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * method on each idle instance.
      * <p>
      * Implementation notes:
+     * </p>
      * <ul>
      * <li>This method does not destroy or effect in any way instances that are
      * checked out when it is invoked.</li>
@@ -673,6 +679,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * returned objects destroyed on return.
      * <p>
      * Destroys idle instances in the pool by invoking {@link #clear()}.
+     * </p>
      */
     @Override
     public void close() {
@@ -814,6 +821,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * De-register the use of a key by an object.
      * <p>
      * register() and deregister() must always be used as a pair.
+     * </p>
      *
      * @param k The key to de-register
      */
@@ -942,6 +950,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * Successive activations of this method examine objects in keyed sub-pools
      * in sequence, cycling through the keys and examining objects in
      * oldest-to-youngest order within the keyed sub-pools.
+     * </p>
      */
     @Override
     public void evict() throws Exception {
@@ -1153,6 +1162,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * If the configured value of minIdlePerKey is greater than the configured
      * value for maxIdlePerKey then the value of maxIdlePerKey will be used
      * instead.
+     * </p>
      *
      * @return minimum size of the each keyed pool
      *
@@ -1380,6 +1390,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * <p>
      * Activation of this method decrements the active count associated with
      * the given keyed pool and attempts to destroy {@code obj.}
+     * </p>
      *
      * @param key pool key
      * @param obj instance to invalidate
@@ -1399,6 +1410,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * <p>
      * Activation of this method decrements the active count associated with
      * the given keyed pool and attempts to destroy {@code obj.}
+     * </p>
      *
      * @param key pool key
      * @param obj instance to invalidate
@@ -1447,6 +1459,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * JMX. That means it won't be invoked unless the explicitly requested
      * whereas all attributes will be automatically requested when viewing the
      * attributes for an object in a tool like JConsole.
+     * </p>
      *
      * @return Information grouped by key on all the objects in the pool
      */
@@ -1490,6 +1503,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * Register the use of a key by an object.
      * <p>
      * register() and deregister() must always be used as a pair.
+     * </p>
      *
      * @param k The key to register
      *
@@ -1577,14 +1591,17 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * If {@link #getMaxIdlePerKey() maxIdle} is set to a positive value and the
      * number of idle instances under the given key has reached this value, the
      * returning instance is destroyed.
+     * </p>
      * <p>
      * If {@link #getTestOnReturn() testOnReturn} == true, the returning
      * instance is validated before being returned to the idle instance sub-pool
      * under the given key. In this case, if validation fails, the instance is
      * destroyed.
+     * </p>
      * <p>
      * Exceptions encountered destroying objects for any reason are swallowed
      * but notified via a {@link SwallowedExceptionListener}.
+     * </p>
      *
      * @param key pool key
      * @param obj instance to return to the keyed pool
@@ -1807,6 +1824,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * If the configured value of minIdlePerKey is greater than the configured
      * value for maxIdlePerKey then the value of maxIdlePerKey will be used
      * instead.
+     * </p>
      *
      * @param minIdlePerKey The minimum size of the each keyed pool
      *
