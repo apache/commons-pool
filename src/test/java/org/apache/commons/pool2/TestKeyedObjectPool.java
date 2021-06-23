@@ -202,7 +202,7 @@ public abstract class TestKeyedObjectPool {
     protected abstract boolean isLifo();
 
     /**
-     * Create an {@link KeyedObjectPool} instance
+     * Creates an {@link KeyedObjectPool} instance
      * that can contain at least <i>minCapacity</i>
      * idle and active objects, or
      * throw {@link IllegalArgumentException}
@@ -212,8 +212,9 @@ public abstract class TestKeyedObjectPool {
      * @return the newly created keyed object pool
      */
     protected abstract KeyedObjectPool<Object,Object> makeEmptyPool(int minCapacity);
+
     /**
-     * Create an {@code KeyedObjectPool} with the specified factory.
+     * Creates an {@code KeyedObjectPool} with the specified factory.
      * The pool should be in a default configuration and conform to the expected
      * behaviors described in {@link KeyedObjectPool}.
      * Generally speaking there should be no limits on the various object counts.
@@ -221,8 +222,7 @@ public abstract class TestKeyedObjectPool {
      * @param factory Factory to use to associate with the pool
      * @return The newly created empty pool
      */
-    protected abstract KeyedObjectPool<Object,Object> makeEmptyPool(
-            KeyedPooledObjectFactory<Object,Object> factory);
+    protected abstract KeyedObjectPool<Object, Object> makeEmptyPool(KeyedPooledObjectFactory<Object, Object> factory);
 
     protected abstract Object makeKey(int n);
 

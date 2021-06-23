@@ -38,7 +38,7 @@ public class ProxiedObjectPool<T> implements ObjectPool<T> {
 
 
     /**
-     * Create a new proxied object pool.
+     * Constructs a new proxied object pool.
      *
      * @param pool  The object pool to wrap
      * @param proxySource The source of the proxy objects
@@ -47,9 +47,6 @@ public class ProxiedObjectPool<T> implements ObjectPool<T> {
         this.pool = pool;
         this.proxySource = proxySource;
     }
-
-
-    // --------------------------------------------------- ObjectPool<T> methods
 
     @Override
     public void addObject() throws Exception, IllegalStateException,
@@ -107,7 +104,6 @@ public class ProxiedObjectPool<T> implements ObjectPool<T> {
         final T pooledObject = proxySource.resolveProxy(proxy);
         pool.returnObject(pooledObject);
     }
-
 
     /**
      * @since 2.4.3

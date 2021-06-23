@@ -39,7 +39,7 @@ public class ProxiedKeyedObjectPool<K, V> implements KeyedObjectPool<K, V> {
 
 
     /**
-     * Create a new proxied object pool.
+     * Constructs a new proxied object pool.
      *
      * @param pool  The object pool to wrap
      * @param proxySource The source of the proxy objects

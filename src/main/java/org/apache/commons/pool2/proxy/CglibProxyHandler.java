@@ -35,7 +35,7 @@ class CglibProxyHandler<T> extends BaseProxyHandler<T>
 
 
     /**
-     * Create a CGLib proxy instance.
+     * Constructs a CGLib proxy instance.
      *
      * @param pooledObject  The object to wrap
      * @param usageTracking The instance, if any (usually the object pool) to

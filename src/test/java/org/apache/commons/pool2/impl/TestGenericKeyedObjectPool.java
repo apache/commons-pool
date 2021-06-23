@@ -324,7 +324,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         private final long delay;
 
         /**
-         * Create SlowEvictionPolicy with the given delay in ms
+         * Constructs SlowEvictionPolicy with the given delay in ms
          *
          * @param delay number of ms of latency to inject in evict
          */

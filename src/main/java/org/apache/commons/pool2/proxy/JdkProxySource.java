@@ -35,7 +35,7 @@ public class JdkProxySource<T> implements ProxySource<T> {
 
 
     /**
-     * Create a new proxy source for the given interfaces.
+     * Constructs a new proxy source for the given interfaces.
      *
      * @param classLoader The class loader with which to create the proxy
      * @param interfaces  The interfaces to proxy

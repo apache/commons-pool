@@ -64,7 +64,7 @@ public class SecurityManagerCallStack implements CallStack {
         private final List<WeakReference<Class<?>>> stack;
 
         /**
-         * Create a new snapshot with a class stack.
+         * Constructs a new snapshot with a class stack.
          *
          * @param stack class stack
          */

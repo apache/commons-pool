@@ -116,7 +116,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
         private Node<E> lastRet;
 
         /**
-         * Create a new iterator. Sets the initial position.
+         * Constructs a new iterator. Sets the initial position.
          */
         AbstractItr() {
             // set to initial position
@@ -263,7 +263,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
         Node<E> next;
 
         /**
-         * Create a new list node.
+         * Constructs a new list node.
          *
          * @param x The list item
          * @param p Previous item

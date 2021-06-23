@@ -96,7 +96,6 @@ public class TestGenericObjectPoolClassLoaders {
             }
             assertEquals( 1, pool1.getNumIdle(),"Wrong number of idle objects in pool1");
 
-            // ---------------
             final CustomClassLoader cl2 = new CustomClassLoader(2);
             Thread.currentThread().setContextClassLoader(cl2);
             final CustomClassLoaderObjectFactory factory2 =

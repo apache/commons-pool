@@ -124,7 +124,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         private final AtomicLong numInterested = new AtomicLong(0);
 
         /**
-         * Create a new ObjecDeque with the given fairness policy.
+         * Constructs a new ObjecDeque with the given fairness policy.
          * @param fairness true means client threads waiting to borrow / return instances
          * will be served as if waiting in a FIFO queue.
          */
@@ -133,7 +133,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         }
 
         /**
-         * Obtain all the objects for the current key.
+         * Gets all the objects for the current key.
          *
          * @return All the objects
          */
@@ -142,7 +142,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         }
 
         /**
-         * Obtain the count of the number of objects created for the current
+         * Gets the count of the number of objects created for the current
          * key.
          *
          * @return The number of objects created for this key
@@ -152,7 +152,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         }
 
         /**
-         * Obtain the idle objects for the current key.
+         * Gets the idle objects for the current key.
          *
          * @return The idle objects
          */
@@ -161,7 +161,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         }
 
         /**
-         * Obtain the number of threads with an interest registered in this key.
+         * Gets the number of threads with an interest registered in this key.
          *
          * @return The number of threads with a registered interest in this key
          */
@@ -242,7 +242,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     private volatile AbandonedConfig abandonedConfig;
 
     /**
-     * Create a new {@code GenericKeyedObjectPool} using defaults from
+     * Constructs a new {@code GenericKeyedObjectPool} using defaults from
      * {@link GenericKeyedObjectPoolConfig}.
      * @param factory the factory to be used to create entries
      */
@@ -251,7 +251,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Create a new {@code GenericKeyedObjectPool} using a specific
+     * Constructs a new {@code GenericKeyedObjectPool} using a specific
      * configuration.
      *
      * @param factory the factory to be used to create entries
@@ -707,7 +707,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Create a new pooled object.
+     * Creates a new pooled object.
      *
      * @param key Key associated with new pooled object
      *
@@ -1084,7 +1084,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Obtain a reference to the factory used to create, destroy and validate
+     * Gets a reference to the factory used to create, destroy and validate
      * the objects used by this pool.
      *
      * @return the factory

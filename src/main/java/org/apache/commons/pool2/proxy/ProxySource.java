@@ -29,7 +29,7 @@ import org.apache.commons.pool2.UsageTracking;
 interface ProxySource<T> {
 
     /**
-     * Create a new proxy object, wrapping the given pooled object.
+     * Creates a new proxy object, wrapping the given pooled object.
      *
      * @param pooledObject  The object to wrap
      * @param usageTracking The instance, if any (usually the object pool) to
@@ -41,7 +41,7 @@ interface ProxySource<T> {
     T createProxy(T pooledObject, UsageTracking<T> usageTracking);
 
     /**
-     * Obtain the wrapped object from the given proxy.
+     * Resolves the wrapped object from the given proxy.
      *
      * @param proxy The proxy object
      *

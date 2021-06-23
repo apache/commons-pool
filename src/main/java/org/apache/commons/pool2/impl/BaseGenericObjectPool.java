@@ -65,8 +65,8 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         private final Iterator<PooledObject<T>> idleObjectIterator;
 
         /**
-         * Create an EvictionIterator for the provided idle instance deque.
-         * @param idleObjects underlying deque
+         * Constructs an EvictionIterator for the provided idle instance deque.
+         * @param idleObjects underlying deque.
          */
         EvictionIterator(final Deque<PooledObject<T>> idleObjects) {
             this.idleObjects = idleObjects;
@@ -197,7 +197,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         private final T instance;
 
         /**
-         * Create a wrapper for an instance.
+         * Constructs a wrapper for an instance.
          *
          * @param instance object to wrap
          */
@@ -244,7 +244,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         private int index;
 
         /**
-         * Create a StatsStore with the given cache size.
+         * Constructs a StatsStore with the given cache size.
          *
          * @param size number of values to maintain in the cache.
          */

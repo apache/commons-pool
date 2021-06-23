@@ -36,14 +36,14 @@ import java.util.NoSuchElementException;
  * <code style="color:#00C">try</code> {
  *     obj = pool.borrowObject(key);
  *     <code style="color:#0C0">//...use the object...</code>
- * } <code style="color:#00C">catch</code>(Exception e) {
+ * } <code style="color:#00C">catch</code> (Exception e) {
  *     <code style="color:#0C0">// invalidate the object</code>
  *     pool.invalidateObject(key, obj);
  *     <code style="color:#0C0">// do not return the object to the pool twice</code>
  *     obj = <code style="color:#00C">null</code>;
  * } <code style="color:#00C">finally</code> {
  *     <code style="color:#0C0">// make sure the object is returned to the pool</code>
- *     <code style="color:#00C">if</code>(<code style="color:#00C">null</code> != obj) {
+ *     <code style="color:#00C">if</code> (<code style="color:#00C">null</code> != obj) {
  *         pool.returnObject(key, obj);
  *     }
  * }</pre>

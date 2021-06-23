@@ -35,7 +35,7 @@ class InterruptibleReentrantLock extends ReentrantLock {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Create a new InterruptibleReentrantLock with the given fairness policy.
+     * Constructs a new InterruptibleReentrantLock with the given fairness policy.
      *
      * @param fairness true means threads should acquire contended locks as if
      * waiting in a FIFO queue

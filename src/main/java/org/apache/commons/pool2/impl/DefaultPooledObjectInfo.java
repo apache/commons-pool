@@ -33,7 +33,7 @@ public class DefaultPooledObjectInfo implements DefaultPooledObjectInfoMBean {
     private final PooledObject<?> pooledObject;
 
     /**
-     * Create a new instance for the given pooled object.
+     * Constructs a new instance for the given pooled object.
      *
      * @param pooledObject The pooled object that this instance will represent
      */

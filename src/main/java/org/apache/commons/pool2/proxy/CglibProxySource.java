@@ -33,7 +33,7 @@ public class CglibProxySource<T> implements ProxySource<T> {
     private final Class<? extends T> superclass;
 
     /**
-     * Create a new proxy source for the given class.
+     * Constructs a new proxy source for the given class.
      *
      * @param superclass The class to proxy
      */

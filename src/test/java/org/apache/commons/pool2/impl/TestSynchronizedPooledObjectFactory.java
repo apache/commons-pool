@@ -43,7 +43,7 @@ final class TestSynchronizedPooledObjectFactory<T> implements PooledObjectFactor
 	private final PooledObjectFactory<T> factory;
 
 	/**
-	 * Create a SynchronizedPoolableObjectFactory wrapping the given factory.
+	 * Constructs a SynchronizedPoolableObjectFactory wrapping the given factory.
 	 *
 	 * @param factory
 	 *            underlying factory to wrap

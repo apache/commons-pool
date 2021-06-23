@@ -224,7 +224,7 @@ public class TestAbandonedObjectPool {
     public void setUp() throws Exception {
         abandonedConfig = new AbandonedConfig();
 
-        // -- Uncomment the following line to enable logging --
+        // Uncomment the following line to enable logging:
         // abandonedConfig.setLogAbandoned(true);
 
         abandonedConfig.setRemoveAbandonedOnBorrow(true);

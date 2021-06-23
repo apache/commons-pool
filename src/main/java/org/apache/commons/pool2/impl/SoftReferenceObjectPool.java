@@ -70,7 +70,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
         new ArrayList<>();
 
     /**
-     * Create a {@code SoftReferenceObjectPool} with the specified factory.
+     * Constructs a {@code SoftReferenceObjectPool} with the specified factory.
      *
      * @param factory object factory to use.
      */

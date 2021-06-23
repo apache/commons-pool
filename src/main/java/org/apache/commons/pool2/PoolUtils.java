@@ -617,7 +617,7 @@ public final class PoolUtils {
         private final ObjectPool<T> pool;
 
         /**
-         * Create a new ObjectPoolMinIdleTimerTask for the given pool with the
+         * Constructs a new ObjectPoolMinIdleTimerTask for the given pool with the
          * given minIdle setting.
          *
          * @param pool

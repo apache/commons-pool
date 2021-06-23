@@ -35,7 +35,7 @@ class BaseProxyHandler<T> {
 
 
     /**
-     * Create a new wrapper for the given pooled object.
+     * Constructs a new wrapper for the given pooled object.
      *
      * @param pooledObject  The object to wrap
      * @param usageTracking The instance, if any (usually the object pool) to
@@ -81,7 +81,7 @@ class BaseProxyHandler<T> {
 
 
     /**
-     * Obtain the wrapped, pooled object.
+     * Gets the wrapped, pooled object.
      *
      * @return the underlying pooled object
      */

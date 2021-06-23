@@ -1020,8 +1020,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         ensureIdle(1, false);
     }
 
-    // --- configuration attributes --------------------------------------------
-
     /**
      * Gets whether or not abandoned object removal is configured for this pool.
      *

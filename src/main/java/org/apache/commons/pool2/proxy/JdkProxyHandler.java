@@ -32,7 +32,7 @@ class JdkProxyHandler<T> extends BaseProxyHandler<T>
         implements InvocationHandler {
 
     /**
-     * Create a Java reflection proxy instance.
+     * Constructs a Java reflection proxy instance.
      *
      * @param pooledObject  The object to wrap
      * @param usageTracking The instance, if any (usually the object pool) to
