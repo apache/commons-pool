@@ -682,7 +682,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      *
      * @see GenericObjectPool#getEvictorShutdownTimeoutMillis()
      * @see GenericKeyedObjectPool#getEvictorShutdownTimeoutMillis()
-     * @deprecated Use {@link #setEvictorShutdownTimeoutMillis(Duration)}.
+     * @deprecated Use {@link #setEvictorShutdownTimeoutDuration(Duration)}.
      */
     @Deprecated
     public void setEvictorShutdownTimeoutMillis(final long evictorShutdownTimeoutMillis) {
