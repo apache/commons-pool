@@ -963,7 +963,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
     /**
      * Check that a pool that starts an evictor, but is never closed does not
-     * leave EvictionTimer executor running. Confirmation check is in teardown.
+     * leave EvictionTimer executor running. Confirmation check is in {@link #tearDown()}.
      */
     @SuppressWarnings("deprecation")
     @Test
