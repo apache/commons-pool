@@ -216,8 +216,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         if (factory == null) {
             throw new IllegalStateException("Cannot add objects without a factory.");
         }
-        final PooledObject<T> p = create();
-        addIdleObject(p);
+        addIdleObject(create());
     }
 
     /**
