@@ -64,12 +64,7 @@ public final class PoolUtils {
          */
         public ErodingFactor(final float factor) {
             this.factor = factor;
-            nextShrinkMillis = System.currentTimeMillis() + (long) (900000 * factor); // now
-                                                                                // +
-                                                                                // 15
-                                                                                // min
-                                                                                // *
-                                                                                // factor
+            nextShrinkMillis = System.currentTimeMillis() + (long) (900000 * factor); // now + 15 min * factor
             idleHighWaterMark = 1;
         }
 
