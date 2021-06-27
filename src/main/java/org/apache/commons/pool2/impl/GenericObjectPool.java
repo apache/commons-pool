@@ -1107,7 +1107,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             try {
                 invalidateObject(pooledObject.getObject(), DestroyMode.ABANDONED);
             } catch (final Exception e) {
-                e.printStackTrace();
+                swallowException(e);
             }
         }
     }

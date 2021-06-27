@@ -79,6 +79,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="fix" due-to="Gary Gregory">
       Make Duration setters use their respective default values when null.
     </action>
+    <action dev="ggregory" type="fix" due-to="Gary Gregory">
+      Call swallowException(Exception) instead of printing exceptions to the console in GenericKeyedObjectPool.removeAbandoned(AbandonedConfig) and GenericObjectPool.removeAbandoned(AbandonedConfig).
+    </action>
     <!--  UPDATES -->
     <action dev="ggregory" type="fix" due-to="Gary Gregory">
       Bump org.ow2.asm:asm-util from 9.1 to 9.2.

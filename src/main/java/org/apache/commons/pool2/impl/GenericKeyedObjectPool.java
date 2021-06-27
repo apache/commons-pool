@@ -1584,8 +1584,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
                 try {
                     invalidateObject(pool.getKey(), pooledObject.getObject(), DestroyMode.ABANDONED);
                 } catch (final Exception e) {
-                    // TODO handle/log?
-                    e.printStackTrace();
+                    swallowException(e);
                 }
             }
         }
