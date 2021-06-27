@@ -411,7 +411,11 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
 
     /**
      * Appends statistics if enabled.
-     * 
+     * <p>
+     * Statistics may not accurately reflect snapshot state at the time of the exception because we do not want to lock the pool when gathering this
+     * information.
+     * </p>
+     *
      * @param string The root string.
      * @return The root string plus statistics.
      */
@@ -705,6 +709,10 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
 
     /**
      * Gets whether to include statistics in exception messages.
+     * <p>
+     * Statistics may not accurately reflect snapshot state at the time of the exception because we do not want to lock the pool when gathering this
+     * information.
+     * </p>
      * 
      * @return whether to include statistics in exception messages.
      * @since 2.11.0
@@ -1276,7 +1284,11 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
 
     /**
      * Sets whether to include statistics in exception messages.
-     * 
+     * <p>
+     * Statistics may not accurately reflect snapshot state at the time of the exception because we do not want to lock the pool when gathering this
+     * information.
+     * </p>
+     *
      * @param messagesDetails whether to include statistics in exception messages.
      * @since 2.11.0
      */
