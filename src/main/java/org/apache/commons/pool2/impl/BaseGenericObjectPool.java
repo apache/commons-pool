@@ -847,7 +847,11 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     String getStatsString() {
         // Simply listed in AB order.
         return String.format(
-                "activeTimes=%s, blockWhenExhausted=%s, borrowedCount=%,d, closed=%s, createdCount=%,d, destroyedByBorrowValidationCount=%,d, destroyedByEvictorCount=%,d, evictorShutdownTimeout=%s, fairness=%s, idleTimes=%s, lifo=%s, maxBorrowWaitTimeMillis=%,d, maxTotal=%s, maxWaitDuration=%s, minEvictableIdleTime=%s, numTestsPerEvictionRun=%s, returnedCount=%s, softMinEvictableIdleTime=%s, testOnBorrow=%s, testOnCreate=%s, testOnReturn=%s, testWhileIdle=%s, timeBetweenEvictionRuns=%s, waitTimes=%s",
+                "activeTimes=%s, blockWhenExhausted=%s, borrowedCount=%,d, closed=%s, createdCount=%,d, destroyedByBorrowValidationCount=%,d, " +
+                        "destroyedByEvictorCount=%,d, evictorShutdownTimeout=%s, fairness=%s, idleTimes=%s, lifo=%s, maxBorrowWaitTimeMillis=%,d, " +
+                        "maxTotal=%s, maxWaitDuration=%s, minEvictableIdleTime=%s, numTestsPerEvictionRun=%s, returnedCount=%s, " +
+                        "softMinEvictableIdleTime=%s, testOnBorrow=%s, testOnCreate=%s, testOnReturn=%s, testWhileIdle=%s, timeBetweenEvictionRuns=%s, " +
+                        "waitTimes=%s",
                 activeTimes.getCurrentValues(), blockWhenExhausted, borrowedCount.get(), closed, createdCount.get(),
                 destroyedByBorrowValidationCount.get(), destroyedByEvictorCount.get(), evictorShutdownTimeout, fairness,
                 idleTimes.getCurrentValues(), lifo, maxBorrowWaitTimeMillis.get(), maxTotal, maxWaitDuration,
