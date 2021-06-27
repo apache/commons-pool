@@ -582,11 +582,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      */
     @Override
     public void clear() {
-        final Iterator<K> iter = poolMap.keySet().iterator();
-
-        while (iter.hasNext()) {
-            clear(iter.next());
-        }
+        poolMap.keySet().forEach(this::clear);    
     }
 
 
@@ -708,10 +704,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
             jmxUnregister();
 
             // Release any threads that were waiting for an object
-            final Iterator<ObjectDeque<T>> iter = poolMap.values().iterator();
-            while (iter.hasNext()) {
-                iter.next().getIdleObjects().interuptTakeWaiters();
-            }
+            poolMap.values().forEach(e -> e.getIdleObjects().interuptTakeWaiters());
             // This clear cleans up the keys now any waiting threads have been
             // interrupted
             clear();
@@ -1219,14 +1212,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
 
     @Override
     public int getNumIdle() {
-        final Iterator<ObjectDeque<T>> iter = poolMap.values().iterator();
-        int result = 0;
-
-        while (iter.hasNext()) {
-            result += iter.next().getIdleObjects().size();
-        }
-
-        return result;
+        return poolMap.values().stream().mapToInt(e -> e.getIdleObjects().size()).sum();
     }
 
 
@@ -1250,7 +1236,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         if (numTests >= 0) {
             return Math.min(numTests, totalIdle);
         }
-        return(int)(Math.ceil(totalIdle/Math.abs((double)numTests)));
+        return (int) (Math.ceil(totalIdle / Math.abs((double) numTests)));
     }
 
     /**
@@ -1263,18 +1249,11 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      */
     @Override
     public int getNumWaiters() {
-        int result = 0;
-
         if (getBlockWhenExhausted()) {
-            final Iterator<ObjectDeque<T>> iter = poolMap.values().iterator();
-
-            while (iter.hasNext()) {
-                // Assume no overflow
-                result += iter.next().getIdleObjects().getTakeQueueLength();
-            }
+            // Assume no overflow
+            return poolMap.values().stream().mapToInt(e -> e.getIdleObjects().getTakeQueueLength()).sum();
         }
-
-        return result;
+        return 0;
     }
 
     /**
@@ -1377,12 +1356,11 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      *         {@code false}
      */
     private boolean hasBorrowWaiters() {
-        for (final Map.Entry<K, ObjectDeque<T>> entry : poolMap.entrySet()) {
-            final ObjectDeque<T> deque = entry.getValue();
+        for (final ObjectDeque<T> deque : poolMap.values()) {
             if (deque != null) {
                 final LinkedBlockingDeque<PooledObject<T>> pool =
                         deque.getIdleObjects();
-                if(pool.hasTakeWaiters()) {
+                if (pool.hasTakeWaiters()) {
                     return true;
                 }
             }
