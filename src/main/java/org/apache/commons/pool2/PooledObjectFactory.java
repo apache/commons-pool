@@ -112,7 +112,7 @@ public interface PooledObjectFactory<T> {
    * DestroyMode.
    *
    * @param p a {@code PooledObject} wrapping the instance to be destroyed
-   * @param mode DestroyMode providing context to the factory
+   * @param destroyMode DestroyMode providing context to the factory
    *
    * @throws Exception should be avoided as it may be swallowed by
    *    the pool implementation.
@@ -123,7 +123,7 @@ public interface PooledObjectFactory<T> {
    * @see DestroyMode
    * @since 2.9.0
    */
-  default void destroyObject(final PooledObject<T> p, final DestroyMode mode) throws Exception {
+  default void destroyObject(final PooledObject<T> p, final DestroyMode destroyMode) throws Exception {
       destroyObject(p);
   }
 

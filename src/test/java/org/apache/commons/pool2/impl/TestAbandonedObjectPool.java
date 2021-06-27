@@ -183,7 +183,7 @@ public class TestAbandonedObjectPool {
         }
 
         @Override
-        public void destroyObject(final PooledObject<PooledTestObject> obj, final DestroyMode mode) throws Exception {
+        public void destroyObject(final PooledObject<PooledTestObject> obj, final DestroyMode destroyMode) throws Exception {
             obj.getObject().setActive(false);
             // while destroying instances, yield control to other threads
             // helps simulate threading errors
@@ -191,7 +191,7 @@ public class TestAbandonedObjectPool {
             if (destroyLatency != 0) {
                 Thread.sleep(destroyLatency);
             }
-            obj.getObject().destroy(mode);
+            obj.getObject().destroy(destroyMode);
         }
 
         @Override

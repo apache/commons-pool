@@ -74,4 +74,8 @@
     <property name="allowLegacy" value="true"/>
   </module>
 
+  <module name="LineLength">
+    <property name="max" value="160"/>
+  </module>
+
 </module>

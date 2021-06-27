@@ -198,12 +198,12 @@ public interface ObjectPool<T> extends Closeable {
      * </p>
      *
      * @param obj a {@link #borrowObject borrowed} instance to be disposed.
-     * @param mode destroy activation context provided to the factory
+     * @param destroyMode destroy activation context provided to the factory
      *
      * @throws Exception if the instance cannot be invalidated
      * @since 2.9.0
      */
-    default void invalidateObject(final T obj, final DestroyMode mode) throws Exception {
+    default void invalidateObject(final T obj, final DestroyMode destroyMode) throws Exception {
         invalidateObject(obj);
     }
 

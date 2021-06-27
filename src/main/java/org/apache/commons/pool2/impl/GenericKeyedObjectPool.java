@@ -121,7 +121,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
          * Invariant: empty keyed pool will not be dropped unless numInterested
          *            is 0.
          */
-        private final AtomicLong numInterested = new AtomicLong(0);
+        private final AtomicLong numInterested = new AtomicLong();
 
         /**
          * Constructs a new ObjecDeque with the given fairness policy.
@@ -267,7 +267,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
 
         if (factory == null) {
             jmxUnregister(); // tidy up
-            throw new IllegalArgumentException("factory may not be null");
+            throw new IllegalArgumentException("Factory may not be null");
         }
         this.factory = factory;
         this.fairness = config.getFairness();
@@ -449,16 +449,15 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
                         if (borrowMaxWaitMillis < 0) {
                             p = objectDeque.getIdleObjects().takeFirst();
                         } else {
-                            p = objectDeque.getIdleObjects().pollFirst(
-                                    borrowMaxWaitMillis, TimeUnit.MILLISECONDS);
+                            p = objectDeque.getIdleObjects().pollFirst(borrowMaxWaitMillis, TimeUnit.MILLISECONDS);
                         }
                     }
                     if (p == null) {
-                        throw new NoSuchElementException(
-                                "Timeout waiting for idle object");
+                        throw new NoSuchElementException(appendStats(
+                                "Timeout waiting for idle object, borrowMaxWaitMillis=" + borrowMaxWaitMillis));
                     }
                 } else if (p == null) {
-                    throw new NoSuchElementException("Pool exhausted");
+                    throw new NoSuchElementException(appendStats("Pool exhausted"));
                 }
                 if (!p.allocate()) {
                     p = null;
@@ -475,8 +474,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
                         }
                         p = null;
                         if (create) {
-                            final NoSuchElementException nsee = new NoSuchElementException(
-                                    "Unable to activate object");
+                            final NoSuchElementException nsee = new NoSuchElementException(appendStats("Unable to activate object"));
                             nsee.initCause(e);
                             throw nsee;
                         }
@@ -500,7 +498,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
                             p = null;
                             if (create) {
                                 final NoSuchElementException nsee = new NoSuchElementException(
-                                        "Unable to validate object");
+                                        appendStats("Unable to validate object"));
                                 nsee.initCause(validationThrowable);
                                 throw nsee;
                             }
@@ -517,6 +515,13 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         return p.getObject();
     }
 
+    @Override
+    String getStatsString() {
+        // Simply listed in AB order.
+        return super.getStatsString() + 
+                String.format(", fairness=%s, maxIdlePerKey%,d, maxTotalPerKey=%,d, minIdlePerKey=%,d, numTotal=%,d",
+                        fairness, maxIdlePerKey, maxTotalPerKey, minIdlePerKey, numTotal.get());
+    }
 
     /**
      * Calculate the number of objects that need to be created to attempt to
@@ -820,7 +825,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     /**
      * De-register the use of a key by an object.
      * <p>
-     * register() and deregister() must always be used as a pair.
+     * {@link #register()} and {@link #deregister()} must always be used as a pair.
      * </p>
      *
      * @param k The key to de-register
@@ -858,12 +863,12 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * @param toDestroy The wrapped object to be destroyed
      * @param always Should the object be destroyed even if it is not currently
      *               in the set of idle objects for the given key
-     * @param mode DestroyMode context provided to the factory
+     * @param destroyMode DestroyMode context provided to the factory
      *
      * @return {@code true} if the object was destroyed, otherwise {@code false}
      * @throws Exception If the object destruction failed
      */
-    private boolean destroy(final K key, final PooledObject<T> toDestroy, final boolean always, final DestroyMode mode)
+    private boolean destroy(final K key, final PooledObject<T> toDestroy, final boolean always, final DestroyMode destroyMode)
             throws Exception {
 
         final ObjectDeque<T> objectDeque = register(key);
@@ -884,7 +889,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
                 toDestroy.invalidate();
 
                 try {
-                    factory.destroyObject(key, toDestroy, mode);
+                    factory.destroyObject(key, toDestroy, destroyMode);
                 } finally {
                     objectDeque.getCreateCount().decrementAndGet();
                     destroyedCount.incrementAndGet();
@@ -1414,7 +1419,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      *
      * @param key pool key
      * @param obj instance to invalidate
-     * @param mode DestroyMode context provided to factory
+     * @param destroyMode DestroyMode context provided to factory
      *
      * @throws Exception             if an exception occurs destroying the
      *                               object
@@ -1423,15 +1428,15 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * @since 2.9.0
      */
     @Override
-    public void invalidateObject(final K key, final T obj, final DestroyMode mode) throws Exception {
+    public void invalidateObject(final K key, final T obj, final DestroyMode destroyMode) throws Exception {
         final ObjectDeque<T> objectDeque = poolMap.get(key);
         final PooledObject<T> p = objectDeque.getAllObjects().get(new IdentityWrapper<>(obj));
         if (p == null) {
-            throw new IllegalStateException("Object not currently part of this pool");
+            throw new IllegalStateException(appendStats("Object not currently part of this pool"));
         }
         synchronized (p) {
             if (p.getState() != PooledObjectState.INVALID) {
-                destroy(key, p, true, mode);
+                destroy(key, p, true, destroyMode);
             }
         }
         if (objectDeque.idleObjects.hasTakeWaiters()) {
@@ -1502,7 +1507,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     /**
      * Register the use of a key by an object.
      * <p>
-     * register() and deregister() must always be used as a pair.
+     * {@link #register()} and {@link #deregister()} must always be used as a pair.
      * </p>
      *
      * @param k The key to register
@@ -1579,6 +1584,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
                 try {
                     invalidateObject(pool.getKey(), pooledObject.getObject(), DestroyMode.ABANDONED);
                 } catch (final Exception e) {
+                    // TODO handle/log?
                     e.printStackTrace();
                 }
             }
@@ -1828,9 +1834,9 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      *
      * @param minIdlePerKey The minimum size of the each keyed pool
      *
-     * @see #getMinIdlePerKey
+     * @see #getMinIdlePerKey()
      * @see #getMaxIdlePerKey()
-     * @see #setTimeBetweenEvictionRunsMillis
+     * @see #setTimeBetweenEvictionRuns(Duration)
      */
     public void setMinIdlePerKey(final int minIdlePerKey) {
         this.minIdlePerKey = minIdlePerKey;

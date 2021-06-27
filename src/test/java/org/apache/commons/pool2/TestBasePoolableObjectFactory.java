@@ -34,8 +34,8 @@ public class TestBasePoolableObjectFactory {
             return new AtomicInteger(0);
         }
         @Override
-        public void destroyObject(final PooledObject<AtomicInteger> p, final DestroyMode mode){
-            if (mode.equals(DestroyMode.ABANDONED)) {
+        public void destroyObject(final PooledObject<AtomicInteger> p, final DestroyMode destroyMode){
+            if (destroyMode.equals(DestroyMode.ABANDONED)) {
                 p.getObject().incrementAndGet();
             }
         }

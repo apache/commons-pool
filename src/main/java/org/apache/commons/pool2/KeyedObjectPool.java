@@ -289,12 +289,12 @@ public interface KeyedObjectPool<K, V> extends Closeable {
      *
      * @param key the key used to obtain the object
      * @param obj a {@link #borrowObject borrowed} instance to be returned.
-     * @param mode destroy activation context provided to the factory
+     * @param destroyMode destroy activation context provided to the factory
      *
      * @throws Exception if the instance cannot be invalidated
      * @since 2.9.0
      */
-    default void invalidateObject(final K key, final V obj, final DestroyMode mode) throws Exception {
+    default void invalidateObject(final K key, final V obj, final DestroyMode destroyMode) throws Exception {
         invalidateObject(key, obj);
     }
 

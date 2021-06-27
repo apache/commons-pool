@@ -20,6 +20,7 @@ package org.apache.commons.pool2.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -58,6 +59,7 @@ import org.apache.commons.pool2.VisitTracker;
 import org.apache.commons.pool2.VisitTrackerFactory;
 import org.apache.commons.pool2.Waiter;
 import org.apache.commons.pool2.WaiterFactory;
+import org.apache.commons.pool2.impl.TestGenericKeyedObjectPool.SimpleFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -83,7 +85,9 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 } else {
                     genericObjectPool.evict();
                 }
-            } catch (final Exception e) { /* Ignore */}
+            } catch (final Exception e) {
+                // Ignore.
+            }
         }
     }
 
@@ -999,6 +1003,18 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertEquals( 0, genericObjectPool.getNumActive(),"should be zero active");
     }
 
+    @Test
+    public void testAppendStats() {
+        assertFalse(genericObjectPool.getMessageStatistics());
+        assertEquals("foo", (genericObjectPool.appendStats("foo")));
+        try (final GenericObjectPool<?> pool = new GenericObjectPool<>(new SimpleFactory())) {
+            pool.setMessagesStatistics(true);
+            assertNotEquals("foo", (pool.appendStats("foo")));
+            pool.setMessagesStatistics(false);
+            assertEquals("foo", (pool.appendStats("foo")));
+        }
+    }
+
     /*
      * Note: This test relies on timing for correct execution. There *should* be
      * enough margin for this to work correctly on most (all?) systems but be
@@ -1185,6 +1201,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
     }
 
+
     /**
      * POOL-231 - verify that concurrent invalidates of the same object do not
      * corrupt pool destroyCount.
@@ -1237,7 +1254,6 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
         assertEquals(nIterations, genericObjectPool.getDestroyedCount());
     }
-
 
     @Test
     public void testConstructorNullFactory() {
@@ -1913,6 +1929,14 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         try (final GenericObjectPool<String> pool = new GenericObjectPool<>(
                 new TestSynchronizedPooledObjectFactory<>(createNullPooledObjectFactory()))) {
             assertNotNull((pool.getFactoryType()));
+        }
+    }
+
+    @Test
+    public void testGetStatsString() {
+        try (final GenericObjectPool<String> pool = new GenericObjectPool<>(
+                new TestSynchronizedPooledObjectFactory<>(createNullPooledObjectFactory()))) {
+            assertNotNull(pool.getStatsString());
         }
     }
 

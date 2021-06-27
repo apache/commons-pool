@@ -26,9 +26,11 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.Iterator;
+import java.util.List;
 import java.util.TimerTask;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
@@ -233,12 +235,14 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
             return builder.toString();
         }
     }
+
     /**
      * Maintains a cache of values for a single metric and reports
      * statistics on the cached values.
      */
     private class StatsStore {
 
+        private static final int NULL = -1;
         private final AtomicLong[] values;
         private final int size;
         private int index;
@@ -252,7 +256,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
             this.size = size;
             values = new AtomicLong[size];
             for (int i = 0; i < size; i++) {
-                values[i] = new AtomicLong(-1);
+                values[i] = new AtomicLong(NULL);
             }
         }
 
@@ -275,6 +279,15 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         }
 
         /**
+         * Gets the current values as a List.
+         *
+         * @return the current values as a List.
+         */
+        synchronized List<AtomicLong> getCurrentValues() {
+            return Arrays.stream(values, 0, index).collect(Collectors.toList());
+        }
+
+        /**
          * Gets the mean of the cached values.
          *
          * @return the mean of the cache, truncated to long
@@ -284,10 +297,9 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
             int counter = 0;
             for (int i = 0; i < size; i++) {
                 final long value = values[i].get();
-                if (value != -1) {
+                if (value != NULL) {
                     counter++;
-                    result = result * ((counter - 1) / (double) counter) +
-                            value/(double) counter;
+                    result = result * ((counter - 1) / (double) counter) + value / (double) counter;
                 }
             }
             return (long) result;
@@ -296,16 +308,19 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         @Override
         public String toString() {
             final StringBuilder builder = new StringBuilder();
-            builder.append("StatsStore [values=");
-            builder.append(Arrays.toString(values));
-            builder.append(", size=");
+            builder.append("StatsStore [");
+            // Only append what's been filled in.
+            builder.append(getCurrentValues());
+            builder.append("], size=");
             builder.append(size);
             builder.append(", index=");
             builder.append(index);
             builder.append("]");
             return builder.toString();
         }
+
     }
+
     // Constants
     /**
      * The size of the caches used to store historical data for some attributes
@@ -334,7 +349,6 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     final Object closeLock = new Object();
     volatile boolean closed;
 
-
     final Object evictionLock = new Object();
     private Evictor evictor = null; // @GuardedBy("evictionLock")
     EvictionIterator evictionIterator = null; // @GuardedBy("evictionLock")
@@ -348,21 +362,21 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     // Monitoring (primarily JMX) attributes
     private final ObjectName objectName;
     private final String creationStackTrace;
-    private final AtomicLong borrowedCount = new AtomicLong(0);
-    private final AtomicLong returnedCount = new AtomicLong(0);
-    final AtomicLong createdCount = new AtomicLong(0);
-    final AtomicLong destroyedCount = new AtomicLong(0);
-    final AtomicLong destroyedByEvictorCount = new AtomicLong(0);
-    final AtomicLong destroyedByBorrowValidationCount = new AtomicLong(0);
+    private final AtomicLong borrowedCount = new AtomicLong();
+    private final AtomicLong returnedCount = new AtomicLong();
+    final AtomicLong createdCount = new AtomicLong();
+    final AtomicLong destroyedCount = new AtomicLong();
+    final AtomicLong destroyedByEvictorCount = new AtomicLong();
+    final AtomicLong destroyedByBorrowValidationCount = new AtomicLong();
+    
     private final StatsStore activeTimes = new StatsStore(MEAN_TIMING_STATS_CACHE_SIZE);
-
     private final StatsStore idleTimes = new StatsStore(MEAN_TIMING_STATS_CACHE_SIZE);
-
     private final StatsStore waitTimes = new StatsStore(MEAN_TIMING_STATS_CACHE_SIZE);
 
-    private final AtomicLong maxBorrowWaitTimeMillis = new AtomicLong(0L);
+    private final AtomicLong maxBorrowWaitTimeMillis = new AtomicLong();
 
-    private volatile SwallowedExceptionListener swallowedExceptionListener = null;
+    private volatile SwallowedExceptionListener swallowedExceptionListener;
+    private volatile boolean messageStatistics;
 
     /**
      * Handles JMX registration (if required) and the initialization required for
@@ -393,6 +407,16 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         }
 
         fairness = config.getFairness();
+    }
+
+    /**
+     * Appends statistics if enabled.
+     * 
+     * @param string The root string.
+     * @return The root string plus statistics.
+     */
+    String appendStats(final String string) {
+        return messageStatistics ? string + ", " + getStatsString() : string;
     }
 
     /**
@@ -680,6 +704,16 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     }
 
     /**
+     * Gets whether to include statistics in exception messages.
+     * 
+     * @return whether to include statistics in exception messages.
+     * @since 2.11.0
+     */
+    public boolean getMessageStatistics() {
+        return messageStatistics;
+    }
+
+    /**
      * Gets the minimum amount of time an object may sit idle in the pool
      * before it is eligible for eviction by the idle object evictor (if any -
      * see {@link #setTimeBetweenEvictionRuns(Duration)}). When non-positive,
@@ -803,6 +837,22 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         final PrintWriter pw = new PrintWriter(w);
         e.printStackTrace(pw);
         return w.toString();
+    }
+
+    /**
+     * Gets a statistics string.
+     *
+     * @return  a statistics string.
+     */
+    String getStatsString() {
+        // Simply listed in AB order.
+        return String.format(
+                "activeTimes=%s, blockWhenExhausted=%s, borrowedCount=%,d, closed=%s, createdCount=%,d, destroyedByBorrowValidationCount=%,d, destroyedByEvictorCount=%,d, evictorShutdownTimeout=%s, fairness=%s, idleTimes=%s, lifo=%s, maxBorrowWaitTimeMillis=%,d, maxTotal=%s, maxWaitDuration=%s, minEvictableIdleTime=%s, numTestsPerEvictionRun=%s, returnedCount=%s, softMinEvictableIdleTime=%s, testOnBorrow=%s, testOnCreate=%s, testOnReturn=%s, testWhileIdle=%s, timeBetweenEvictionRuns=%s, waitTimes=%s",
+                activeTimes.getCurrentValues(), blockWhenExhausted, borrowedCount.get(), closed, createdCount.get(),
+                destroyedByBorrowValidationCount.get(), destroyedByEvictorCount.get(), evictorShutdownTimeout, fairness,
+                idleTimes.getCurrentValues(), lifo, maxBorrowWaitTimeMillis.get(), maxTotal, maxWaitDuration,
+                minEvictableIdleTime, numTestsPerEvictionRun, returnedCount, softMinEvictableIdleTime, testOnBorrow,
+                testOnCreate, testOnReturn, testWhileIdle, timeBetweenEvictionRuns, waitTimes.getCurrentValues());
     }
 
     /**
@@ -984,8 +1034,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     final void jmxUnregister() {
         if (objectName != null) {
             try {
-                ManagementFactory.getPlatformMBeanServer().unregisterMBean(
-                        objectName);
+                ManagementFactory.getPlatformMBeanServer().unregisterMBean(objectName);
             } catch (final MBeanRegistrationException | InstanceNotFoundException e) {
                 swallowException(e);
             }
@@ -997,10 +1046,9 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * @param pooledObject instance to return to the keyed pool
      */
     protected void markReturningState(final PooledObject<T> pooledObject) {
-        synchronized(pooledObject) {
+        synchronized (pooledObject) {
             if (pooledObject.getState() != PooledObjectState.ALLOCATED) {
-                throw new IllegalStateException(
-                        "Object has already been returned to this pool or is invalid");
+                throw new IllegalStateException("Object has already been returned to this pool or is invalid");
             }
             pooledObject.markReturning(); // Keep from being marked abandoned
         }
@@ -1121,9 +1169,9 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
                     classLoader + ", " + epClassLoader + "] do not implement " + EVICTION_POLICY_TYPE_NAME);
         } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException |
                 InvocationTargetException | NoSuchMethodException e) {
-            final String exMessage = "Unable to create " + EVICTION_POLICY_TYPE_NAME + " instance of type " +
-                    evictionPolicyClassName;
-            throw new IllegalArgumentException(exMessage, e);
+            throw new IllegalArgumentException(
+                    "Unable to create " + EVICTION_POLICY_TYPE_NAME + " instance of type " + evictionPolicyClassName,
+                    e);
         }
     }
 
@@ -1220,6 +1268,16 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     @Deprecated
     public final void setMaxWaitMillis(final long maxWaitMillis) {
         setMaxWaitDuration(Duration.ofMillis(maxWaitMillis));
+    }
+
+    /**
+     * Sets whether to include statistics in exception messages.
+     * 
+     * @param messagesDetails whether to include statistics in exception messages.
+     * @since 2.11.0
+     */
+    public void setMessagesStatistics(boolean messagesDetails) {
+        this.messageStatistics = messagesDetails;
     }
 
     /**
@@ -1446,6 +1504,8 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         setTimeBetweenEvictionRuns(Duration.ofMillis(timeBetweenEvictionRunsMillis));
     }
 
+    // Inner classes
+
     /**
      * <p>Starts the evictor with the given delay. If there is an evictor
      * running when this method is called, it is stopped and replaced with a
@@ -1477,8 +1537,6 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
             }
         }
     }
-
-    // Inner classes
 
     /**
      * Stops the evictor.
