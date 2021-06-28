@@ -328,6 +328,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      */
     public static final int MEAN_TIMING_STATS_CACHE_SIZE = 100;
     private static final String EVICTION_POLICY_TYPE_NAME = EvictionPolicy.class.getName();
+    private static final Duration DEFAULT_REMOVE_ABANDONED_TIMEOUT = Duration.ofSeconds(Integer.MAX_VALUE);
     // Configuration attributes
     private volatile int maxTotal = GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL;
     private volatile boolean blockWhenExhausted = BaseObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED;
@@ -352,6 +353,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     final Object evictionLock = new Object();
     private Evictor evictor = null; // @GuardedBy("evictionLock")
     EvictionIterator evictionIterator = null; // @GuardedBy("evictionLock")
+
     /*
      * Class loader for evictor thread to use since, in a JavaEE or similar
      * environment, the context class loader for the evictor thread may not have
@@ -368,7 +370,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     final AtomicLong destroyedCount = new AtomicLong();
     final AtomicLong destroyedByEvictorCount = new AtomicLong();
     final AtomicLong destroyedByBorrowValidationCount = new AtomicLong();
-    
+
     private final StatsStore activeTimes = new StatsStore(MEAN_TIMING_STATS_CACHE_SIZE);
     private final StatsStore idleTimes = new StatsStore(MEAN_TIMING_STATS_CACHE_SIZE);
     private final StatsStore waitTimes = new StatsStore(MEAN_TIMING_STATS_CACHE_SIZE);
@@ -377,6 +379,9 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
 
     private volatile SwallowedExceptionListener swallowedExceptionListener;
     private volatile boolean messageStatistics;
+
+    /** Additional configuration properties for abandoned object tracking. */
+    protected volatile AbandonedConfig abandonedConfig;
 
     /**
      * Handles JMX registration (if required) and the initialization required for
@@ -618,6 +623,20 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     }
 
     /**
+     * Gets whether this pool identifies and logs any abandoned objects.
+     *
+     * @return {@code true} if abandoned object removal is configured for this
+     *         pool and removal events are to be logged otherwise {@code false}
+     *
+     * @see AbandonedConfig#getLogAbandoned()
+     * @since 2.11.0
+     */
+    public boolean getLogAbandoned() {
+        final AbandonedConfig ac = this.abandonedConfig;
+        return ac != null && ac.getLogAbandoned();
+    }
+
+    /**
      * Gets the maximum time a thread has waited to borrow objects from the pool.
      * @return maximum wait time in milliseconds since the pool was created
      */
@@ -713,7 +732,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * Statistics may not accurately reflect snapshot state at the time of the exception because we do not want to lock the pool when gathering this
      * information.
      * </p>
-     * 
+     *
      * @return whether to include statistics in exception messages.
      * @since 2.11.0
      */
@@ -779,6 +798,68 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      */
     public final int getNumTestsPerEvictionRun() {
         return numTestsPerEvictionRun;
+    }
+
+    /**
+     * Gets whether a check is made for abandoned objects when an object is borrowed
+     * from this pool.
+     *
+     * @return {@code true} if abandoned object removal is configured to be
+     *         activated by borrowObject otherwise {@code false}
+     *
+     * @see AbandonedConfig#getRemoveAbandonedOnBorrow()
+     * @since 2.11.0
+     */
+    public boolean getRemoveAbandonedOnBorrow() {
+        final AbandonedConfig ac = this.abandonedConfig;
+        return ac != null && ac.getRemoveAbandonedOnBorrow();
+    }
+
+    /**
+     * Gets whether a check is made for abandoned objects when the evictor runs.
+     *
+     * @return {@code true} if abandoned object removal is configured to be
+     *         activated when the evictor runs otherwise {@code false}
+     *
+     * @see AbandonedConfig#getRemoveAbandonedOnMaintenance()
+     * @since 2.11.0
+     */
+    public boolean getRemoveAbandonedOnMaintenance() {
+        final AbandonedConfig ac = this.abandonedConfig;
+        return ac != null && ac.getRemoveAbandonedOnMaintenance();
+    }
+
+    /**
+     * Gets the timeout before which an object will be considered to be
+     * abandoned by this pool.
+     *
+     * @return The abandoned object timeout in seconds if abandoned object
+     *         removal is configured for this pool; Integer.MAX_VALUE otherwise.
+     *
+     * @see AbandonedConfig#getRemoveAbandonedTimeout()
+     * @see AbandonedConfig#getRemoveAbandonedTimeoutDuration()
+     * @deprecated Use {@link #getRemoveAbandonedTimeoutDuration()}.
+     * @since 2.11.0
+     */
+    @Deprecated
+    public int getRemoveAbandonedTimeout() {
+        final AbandonedConfig ac = this.abandonedConfig;
+        return ac != null ? ac.getRemoveAbandonedTimeout() : Integer.MAX_VALUE;
+    }
+
+    /**
+     * Gets the timeout before which an object will be considered to be
+     * abandoned by this pool.
+     *
+     * @return The abandoned object timeout in seconds if abandoned object
+     *         removal is configured for this pool; Integer.MAX_VALUE otherwise.
+     *
+     * @see AbandonedConfig#getRemoveAbandonedTimeoutDuration()
+     * @since 2.11.0
+     */
+    public Duration getRemoveAbandonedTimeoutDuration() {
+        final AbandonedConfig ac = this.abandonedConfig;
+        return ac != null ? ac.getRemoveAbandonedTimeoutDuration() : DEFAULT_REMOVE_ABANDONED_TIMEOUT;
     }
 
     /**
@@ -975,6 +1056,19 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     }
 
     /**
+     * Gets whether or not abandoned object removal is configured for this pool.
+     *
+     * @return true if this pool is configured to detect and remove
+     * abandoned objects
+     * @since 2.11.0
+     */
+    public boolean isAbandonedConfig() {
+        return abandonedConfig != null;
+    }
+
+    // Monitoring (primarily JMX) related methods
+
+    /**
      * Has this pool instance been closed.
      * @return {@code true} when this pool has been closed.
      */
@@ -1067,6 +1161,18 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     }
 
     /**
+     * Sets the abandoned object removal configuration.
+     *
+     * @param abandonedConfig the new configuration to use. This is used by value.
+     *
+     * @see AbandonedConfig
+     * @since 2.11.0
+     */
+    public void setAbandonedConfig(final AbandonedConfig abandonedConfig) {
+        this.abandonedConfig = AbandonedConfig.copy(abandonedConfig);
+    }
+
+    /**
      * Sets whether to block when the {@code borrowObject()} method is
      * invoked when the pool is exhausted (the maximum number of "active"
      * objects has been reached).
@@ -1108,8 +1214,6 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         }
         setEvictorShutdownTimeout(config.getEvictorShutdownTimeout());
     }
-
-    // Monitoring (primarily JMX) related methods
 
     /**
      * Sets the eviction policy for this pool.
@@ -1292,7 +1396,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * @param messagesDetails whether to include statistics in exception messages.
      * @since 2.11.0
      */
-    public void setMessagesStatistics(boolean messagesDetails) {
+    public void setMessagesStatistics(final boolean messagesDetails) {
         this.messageStatistics = messagesDetails;
     }
 
@@ -1397,6 +1501,8 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     public final void setSoftMinEvictableIdleTimeMillis(final long softMinEvictableIdleTimeMillis) {
         setSoftMinEvictableIdleTime(Duration.ofMillis(softMinEvictableIdleTimeMillis));
     }
+
+    // Inner classes
 
     /**
      * The listener used (if any) to receive notifications of exceptions
@@ -1519,8 +1625,6 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     public final void setTimeBetweenEvictionRunsMillis(final long timeBetweenEvictionRunsMillis) {
         setTimeBetweenEvictionRuns(Duration.ofMillis(timeBetweenEvictionRunsMillis));
     }
-
-    // Inner classes
 
     /**
      * <p>Starts the evictor with the given delay. If there is an evictor

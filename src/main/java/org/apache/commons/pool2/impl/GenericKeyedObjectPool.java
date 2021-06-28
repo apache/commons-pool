@@ -186,8 +186,6 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
 
     }
 
-    private static final Duration DEFAULT_REMOVE_ABANDONED_TIMEOUT = Duration.ofSeconds(Integer.MAX_VALUE);
-
     // JMX specific attributes
     private static final String ONAME_BASE =
             "org.apache.commons.pool2:type=GenericKeyedObjectPool,name=";
@@ -237,9 +235,6 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
 
 
     private K evictionKey = null; // @GuardedBy("evictionLock")
-
-    // Additional configuration properties for abandoned object tracking
-    private volatile AbandonedConfig abandonedConfig;
 
     /**
      * Constructs a new {@code GenericKeyedObjectPool} using defaults from
@@ -1101,21 +1096,6 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Gets whether this pool identifies and logs any abandoned objects.
-     *
-     * @return {@code true} if abandoned object removal is configured for this
-     *         pool and removal events are to be logged otherwise {@code false}
-     *
-     * @see AbandonedConfig#getLogAbandoned()
-     * @since 2.10.0
-     */
-    @Override
-    public boolean getLogAbandoned() {
-        final AbandonedConfig ac = this.abandonedConfig;
-        return ac != null && ac.getLogAbandoned();
-    }
-
-    /**
      * Gets the cap on the number of "idle" instances per key in the pool.
      * If maxIdlePerKey is set too low on heavily loaded systems it is possible
      * you will see objects being destroyed and almost immediately new objects
@@ -1282,71 +1262,6 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Gets whether a check is made for abandoned objects when an object is borrowed
-     * from this pool.
-     *
-     * @return {@code true} if abandoned object removal is configured to be
-     *         activated by borrowObject otherwise {@code false}
-     *
-     * @see AbandonedConfig#getRemoveAbandonedOnBorrow()
-     * @since 2.10.0
-     */
-    @Override
-    public boolean getRemoveAbandonedOnBorrow() {
-        final AbandonedConfig ac = this.abandonedConfig;
-        return ac != null && ac.getRemoveAbandonedOnBorrow();
-    }
-
-    /**
-     * Gets whether a check is made for abandoned objects when the evictor runs.
-     *
-     * @return {@code true} if abandoned object removal is configured to be
-     *         activated when the evictor runs otherwise {@code false}
-     *
-     * @see AbandonedConfig#getRemoveAbandonedOnMaintenance()
-     * @since 2.10.0
-     */
-    @Override
-    public boolean getRemoveAbandonedOnMaintenance() {
-        final AbandonedConfig ac = this.abandonedConfig;
-        return ac != null && ac.getRemoveAbandonedOnMaintenance();
-    }
-
-    /**
-     * Gets the timeout before which an object will be considered to be
-     * abandoned by this pool.
-     *
-     * @return The abandoned object timeout in seconds if abandoned object
-     *         removal is configured for this pool; Integer.MAX_VALUE otherwise.
-     *
-     * @see AbandonedConfig#getRemoveAbandonedTimeout()
-     * @see AbandonedConfig#getRemoveAbandonedTimeoutDuration()
-     * @deprecated Use {@link #getRemoveAbandonedTimeoutDuration()}.
-     * @since 2.10.0
-     */
-    @Override
-    @Deprecated
-    public int getRemoveAbandonedTimeout() {
-        final AbandonedConfig ac = this.abandonedConfig;
-        return ac != null ? ac.getRemoveAbandonedTimeout() : Integer.MAX_VALUE;
-    }
-
-    /**
-     * Gets the timeout before which an object will be considered to be
-     * abandoned by this pool.
-     *
-     * @return The abandoned object timeout in seconds if abandoned object
-     *         removal is configured for this pool; Integer.MAX_VALUE otherwise.
-     *
-     * @see AbandonedConfig#getRemoveAbandonedTimeoutDuration()
-     * @since 2.10.0
-     */
-    public Duration getRemoveAbandonedTimeoutDuration() {
-        final AbandonedConfig ac = this.abandonedConfig;
-        return ac != null ? ac.getRemoveAbandonedTimeoutDuration() : DEFAULT_REMOVE_ABANDONED_TIMEOUT;
-    }
-
-    /**
      * Checks to see if there are any threads currently waiting to borrow
      * objects but are blocked waiting for more objects to become available.
      *
@@ -1418,18 +1333,6 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         if (objectDeque.idleObjects.hasTakeWaiters()) {
             addObject(key);
         }
-    }
-
-    /**
-     * Gets whether or not abandoned object removal is configured for this pool.
-     *
-     * @return true if this pool is configured to detect and remove
-     * abandoned objects
-     * @since 2.10.0
-     */
-    @Override
-    public boolean isAbandonedConfig() {
-        return abandonedConfig != null;
     }
 
     /**
@@ -1720,18 +1623,6 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
                 deregister(loadedKey);
             }
         }
-    }
-
-    /**
-     * Sets the abandoned object removal configuration.
-     *
-     * @param abandonedConfig the new configuration to use. This is used by value.
-     *
-     * @see AbandonedConfig
-     * @since 2.10.0
-     */
-    public void setAbandonedConfig(final AbandonedConfig abandonedConfig) {
-        this.abandonedConfig = AbandonedConfig.copy(abandonedConfig);
     }
 
     /**
