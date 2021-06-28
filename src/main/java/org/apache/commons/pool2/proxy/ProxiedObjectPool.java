@@ -63,8 +63,7 @@ public class ProxiedObjectPool<T> implements ObjectPool<T> {
         if (pool instanceof UsageTracking) {
             usageTracking = (UsageTracking<T>) pool;
         }
-        final T pooledObject = pool.borrowObject();
-        return proxySource.createProxy(pooledObject, usageTracking);
+        return proxySource.createProxy(pool.borrowObject(), usageTracking);
     }
 
 
@@ -94,15 +93,13 @@ public class ProxiedObjectPool<T> implements ObjectPool<T> {
 
     @Override
     public void invalidateObject(final T proxy) throws Exception {
-        final T pooledObject = proxySource.resolveProxy(proxy);
-        pool.invalidateObject(pooledObject);
+        pool.invalidateObject(proxySource.resolveProxy(proxy));
     }
 
 
     @Override
     public void returnObject(final T proxy) throws Exception {
-        final T pooledObject = proxySource.resolveProxy(proxy);
-        pool.returnObject(pooledObject);
+        pool.returnObject(proxySource.resolveProxy(proxy));
     }
 
     /**

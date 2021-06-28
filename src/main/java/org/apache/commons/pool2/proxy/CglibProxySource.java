@@ -41,6 +41,7 @@ public class CglibProxySource<T> implements ProxySource<T> {
         this.superclass = superclass;
     }
 
+    @SuppressWarnings("unchecked") // Case to T on return
     @Override
     public T createProxy(final T pooledObject, final UsageTracking<T> usageTracking) {
         final Enhancer enhancer = new Enhancer();
@@ -50,11 +51,7 @@ public class CglibProxySource<T> implements ProxySource<T> {
                 new CglibProxyHandler<>(pooledObject, usageTracking);
         enhancer.setCallback(proxyInterceptor);
 
-        @SuppressWarnings("unchecked")
-        final
-        T proxy = (T) enhancer.create();
-
-        return proxy;
+        return (T) enhancer.create();
     }
 
 
