@@ -172,7 +172,7 @@ public interface GenericKeyedObjectPoolMXBean<K> {
      * See {@link GenericKeyedObjectPool#getNumActivePerKey()}
      * @return See {@link GenericKeyedObjectPool#getNumActivePerKey()}
      */
-    Map<String,Integer> getNumActivePerKey();
+    Map<String, Integer> getNumActivePerKey();
 
     /**
      * See {@link GenericKeyedObjectPool#getNumIdle()}
@@ -196,7 +196,7 @@ public interface GenericKeyedObjectPoolMXBean<K> {
      * See {@link GenericKeyedObjectPool#getNumWaitersByKey()}
      * @return See {@link GenericKeyedObjectPool#getNumWaitersByKey()}
      */
-    Map<String,Integer> getNumWaitersByKey();
+    Map<String, Integer> getNumWaitersByKey();
 
     /**
      * See {@link GenericKeyedObjectPool#getRemoveAbandonedOnBorrow()}
@@ -281,5 +281,5 @@ public interface GenericKeyedObjectPoolMXBean<K> {
      * See {@link GenericKeyedObjectPool#listAllObjects()}
      * @return See {@link GenericKeyedObjectPool#listAllObjects()}
      */
-    Map<String,List<DefaultPooledObjectInfo>> listAllObjects();
+    Map<String, List<DefaultPooledObjectInfo>> listAllObjects();
 }
