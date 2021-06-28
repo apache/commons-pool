@@ -1191,12 +1191,10 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     }
 
     @Override
-    public Map<String,Integer> getNumActivePerKey() {
-        final HashMap<String,Integer> result = new HashMap<>();
+    public Map<String, Integer> getNumActivePerKey() {
+        final HashMap<String, Integer> result = new HashMap<>();
 
-        final Iterator<Entry<K,ObjectDeque<T>>> iter = poolMap.entrySet().iterator();
-        while (iter.hasNext()) {
-            final Entry<K,ObjectDeque<T>> entry = iter.next();
+        poolMap.entrySet().forEach(entry -> {
             if (entry != null) {
                 final K key = entry.getKey();
                 final ObjectDeque<T> objectDequeue = entry.getValue();
@@ -1206,7 +1204,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
                             objectDequeue.getIdleObjects().size()));
                 }
             }
-        }
+        });
         return result;
     }
 
@@ -1732,20 +1730,8 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * @see AbandonedConfig
      * @since 2.10.0
      */
-    @SuppressWarnings("resource") // PrintWriter is managed elsewhere
     public void setAbandonedConfig(final AbandonedConfig abandonedConfig) {
-        if (abandonedConfig == null) {
-            this.abandonedConfig = null;
-        } else {
-            this.abandonedConfig = new AbandonedConfig();
-            this.abandonedConfig.setLogAbandoned(abandonedConfig.getLogAbandoned());
-            this.abandonedConfig.setLogWriter(abandonedConfig.getLogWriter());
-            this.abandonedConfig.setRemoveAbandonedOnBorrow(abandonedConfig.getRemoveAbandonedOnBorrow());
-            this.abandonedConfig.setRemoveAbandonedOnMaintenance(abandonedConfig.getRemoveAbandonedOnMaintenance());
-            this.abandonedConfig.setRemoveAbandonedTimeout(abandonedConfig.getRemoveAbandonedTimeoutDuration());
-            this.abandonedConfig.setUseUsageTracking(abandonedConfig.getUseUsageTracking());
-            this.abandonedConfig.setRequireFullStackTrace(abandonedConfig.getRequireFullStackTrace());
-        }
+        this.abandonedConfig = AbandonedConfig.copy(abandonedConfig);
     }
 
     /**

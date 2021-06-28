@@ -35,6 +35,17 @@ public class AbandonedConfig {
     private static final Duration DEFAULT_REMOVE_ABANDONED_TIMEOUT = Duration.ofSeconds(300);
 
     /**
+     * Creates a new instance with values from the given instance.
+     *
+     * @param abandonedConfig the source, may be null.
+     * @return A new instance or null if the input is null.
+     * @since 2.11.0
+     */
+    public static AbandonedConfig copy(final AbandonedConfig abandonedConfig) {
+        return abandonedConfig == null ? null : new AbandonedConfig(abandonedConfig);
+    }
+    
+    /**
      * Whether or not borrowObject performs abandoned object removal.
      */
     private boolean removeAbandonedOnBorrow;
@@ -77,6 +88,29 @@ public class AbandonedConfig {
      * the most recent stack trace to aid debugging of abandoned objects?
      */
     private boolean useUsageTracking = false;
+
+    /**
+     * Creates a new instance.
+     */
+    public AbandonedConfig() {
+        // empty
+    }
+
+    /**
+     * Creates a new instance with values from the given instance.
+     *
+     * @param abandonedConfig the source.
+     */
+    @SuppressWarnings("resource")
+    private AbandonedConfig(AbandonedConfig abandonedConfig) {
+        this.setLogAbandoned(abandonedConfig.getLogAbandoned());
+        this.setLogWriter(abandonedConfig.getLogWriter());
+        this.setRemoveAbandonedOnBorrow(abandonedConfig.getRemoveAbandonedOnBorrow());
+        this.setRemoveAbandonedOnMaintenance(abandonedConfig.getRemoveAbandonedOnMaintenance());
+        this.setRemoveAbandonedTimeout(abandonedConfig.getRemoveAbandonedTimeoutDuration());
+        this.setUseUsageTracking(abandonedConfig.getUseUsageTracking());
+        this.setRequireFullStackTrace(abandonedConfig.getRequireFullStackTrace());
+    }
 
     /**
      * Flag to log stack traces for application code which abandoned

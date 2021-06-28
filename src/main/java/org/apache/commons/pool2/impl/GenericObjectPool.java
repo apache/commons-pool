@@ -1217,20 +1217,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      *
      * @see AbandonedConfig
      */
-    @SuppressWarnings("resource") // PrintWriter is managed elsewhere
     public void setAbandonedConfig(final AbandonedConfig abandonedConfig) {
-        if (abandonedConfig == null) {
-            this.abandonedConfig = null;
-        } else {
-            this.abandonedConfig = new AbandonedConfig();
-            this.abandonedConfig.setLogAbandoned(abandonedConfig.getLogAbandoned());
-            this.abandonedConfig.setLogWriter(abandonedConfig.getLogWriter());
-            this.abandonedConfig.setRemoveAbandonedOnBorrow(abandonedConfig.getRemoveAbandonedOnBorrow());
-            this.abandonedConfig.setRemoveAbandonedOnMaintenance(abandonedConfig.getRemoveAbandonedOnMaintenance());
-            this.abandonedConfig.setRemoveAbandonedTimeout(abandonedConfig.getRemoveAbandonedTimeoutDuration());
-            this.abandonedConfig.setUseUsageTracking(abandonedConfig.getUseUsageTracking());
-            this.abandonedConfig.setRequireFullStackTrace(abandonedConfig.getRequireFullStackTrace());
-        }
+        this.abandonedConfig = AbandonedConfig.copy(abandonedConfig);
     }
 
     /**
