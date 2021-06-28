@@ -20,12 +20,12 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 import org.apache.commons.pool2.DestroyMode;
 import org.apache.commons.pool2.ObjectPool;
@@ -896,13 +896,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         return 0;
     }
 
-    //--- Usage tracking support -----------------------------------------------
-
-    
-
-
-    //--- JMX support ----------------------------------------------------------
-
     /**
      * {@inheritDoc}
      * <p>
@@ -963,12 +956,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      */
     @Override
     public Set<DefaultPooledObjectInfo> listAllObjects() {
-        final Set<DefaultPooledObjectInfo> result =
-                new HashSet<>(allObjects.size());
-        for (final PooledObject<T> p : allObjects.values()) {
-            result.add(new DefaultPooledObjectInfo(p));
-        }
-        return result;
+        return allObjects.values().stream().map(DefaultPooledObjectInfo::new).collect(Collectors.toSet());
     }
     /**
      * Tries to ensure that {@link #getMinIdle()} idle instances are available
@@ -993,24 +981,9 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     @SuppressWarnings("resource") // PrintWriter is managed elsewhere
     private void removeAbandoned(final AbandonedConfig abandonedConfig) {
         // Generate a list of abandoned objects to remove
-        final Instant timeout = Instant.now().minus(abandonedConfig.getRemoveAbandonedTimeoutDuration());
-        final ArrayList<PooledObject<T>> remove = new ArrayList<>();
-        final Iterator<PooledObject<T>> it = allObjects.values().iterator();
-        while (it.hasNext()) {
-            final PooledObject<T> pooledObject = it.next();
-            synchronized (pooledObject) {
-                if (pooledObject.getState() == PooledObjectState.ALLOCATED &&
-                        pooledObject.getLastUsedInstant().compareTo(timeout) <= 0) {
-                    pooledObject.markAbandoned();
-                    remove.add(pooledObject);
-                }
-            }
-        }
-
+        final ArrayList<PooledObject<T>> remove = createRemoveList(abandonedConfig, allObjects);
         // Now remove the abandoned objects
-        final Iterator<PooledObject<T>> itr = remove.iterator();
-        while (itr.hasNext()) {
-            final PooledObject<T> pooledObject = itr.next();
+        remove.forEach(pooledObject -> {
             if (abandonedConfig.getLogAbandoned()) {
                 pooledObject.printStackTrace(abandonedConfig.getLogWriter());
             }
@@ -1019,7 +992,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             } catch (final Exception e) {
                 swallowException(e);
             }
-        }
+        });
     }
 
     /**

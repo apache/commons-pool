@@ -22,6 +22,7 @@ import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.apache.commons.pool2.BaseObjectPool;
 import org.apache.commons.pool2.ObjectPool;
@@ -232,17 +233,15 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
     @Override
     public synchronized void clear() {
         if (null != factory) {
-            final Iterator<PooledSoftReference<T>> iter = idleReferences.iterator();
-            while (iter.hasNext()) {
+            idleReferences.forEach(ref -> {
                 try {
-                    final PooledSoftReference<T> ref = iter.next();
                     if (null != ref.getObject()) {
                         factory.destroyObject(ref);
                     }
                 } catch (final Exception e) {
                     // ignore error, keep destroying the rest
                 }
-            }
+            });
         }
         idleReferences.clear();
         pruneClearedReferences();
@@ -290,14 +289,9 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
      * @return PooledSoftReference wrapping a soft reference to obj
      */
     private PooledSoftReference<T> findReference(final T obj) {
-        final Iterator<PooledSoftReference<T>> iterator = allReferences.iterator();
-        while (iterator.hasNext()) {
-            final PooledSoftReference<T> reference = iterator.next();
-            if (reference.getObject() != null && reference.getObject().equals(obj)) {
-                return reference;
-            }
-        }
-        return null;
+        final Optional<PooledSoftReference<T>> first = allReferences.stream()
+                .filter(reference -> reference.getObject() != null && reference.getObject().equals(obj)).findFirst();
+        return first.isPresent() ? first.get() : null;
     }
 
     /**

@@ -23,10 +23,13 @@ import java.lang.management.ManagementFactory;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.TimerTask;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicLong;
@@ -1788,6 +1791,21 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     final void updateStatsReturn(final Duration activeTime) {
         returnedCount.incrementAndGet();
         activeTimes.add(activeTime);
+    }
+
+    protected ArrayList<PooledObject<T>> createRemoveList(final AbandonedConfig abandonedConfig, final Map<IdentityWrapper<T>, PooledObject<T>> allObjects) {
+        final Instant timeout = Instant.now().minus(abandonedConfig.getRemoveAbandonedTimeoutDuration());
+        final ArrayList<PooledObject<T>> remove = new ArrayList<>();
+        allObjects.values().forEach(pooledObject -> {
+            synchronized (pooledObject) {
+                if (pooledObject.getState() == PooledObjectState.ALLOCATED &&
+                        pooledObject.getLastUsedInstant().compareTo(timeout) <= 0) {
+                    pooledObject.markAbandoned();
+                    remove.add(pooledObject);
+                }
+            }
+        });
+        return remove;
     }
 
 
