@@ -213,8 +213,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         @Override
         @SuppressWarnings("rawtypes")
         public boolean equals(final Object other) {
-            return other instanceof IdentityWrapper &&
-                    ((IdentityWrapper) other).instance == instance;
+            return other instanceof IdentityWrapper && ((IdentityWrapper) other).instance == instance;
         }
 
         /**
