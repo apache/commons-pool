@@ -44,7 +44,7 @@ public class AbandonedConfig {
     public static AbandonedConfig copy(final AbandonedConfig abandonedConfig) {
         return abandonedConfig == null ? null : new AbandonedConfig(abandonedConfig);
     }
-    
+
     /**
      * Whether or not borrowObject performs abandoned object removal.
      */
@@ -102,7 +102,7 @@ public class AbandonedConfig {
      * @param abandonedConfig the source.
      */
     @SuppressWarnings("resource")
-    private AbandonedConfig(AbandonedConfig abandonedConfig) {
+    private AbandonedConfig(final AbandonedConfig abandonedConfig) {
         this.setLogAbandoned(abandonedConfig.getLogAbandoned());
         this.setLogWriter(abandonedConfig.getLogWriter());
         this.setRemoveAbandonedOnBorrow(abandonedConfig.getRemoveAbandonedOnBorrow());

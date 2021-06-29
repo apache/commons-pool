@@ -1801,7 +1801,7 @@ public final class PoolUtils {
         if (pool == null) {
             throw new IllegalArgumentException(MSG_NULL_POOL);
         }
-        
+
         /*
          * assert !(pool instanceof GenericObjectPool) :
          * "GenericObjectPool is already thread-safe"; assert !(pool instanceof

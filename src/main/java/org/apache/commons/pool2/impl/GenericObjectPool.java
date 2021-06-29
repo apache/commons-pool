@@ -17,9 +17,7 @@
 package org.apache.commons.pool2.impl;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -279,7 +277,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         assertOpen();
 
         final AbandonedConfig ac = this.abandonedConfig;
-        if (ac != null && ac.getRemoveAbandonedOnBorrow() && (getNumIdle() < 2) && 
+        if (ac != null && ac.getRemoveAbandonedOnBorrow() && (getNumIdle() < 2) &&
                 (getNumActive() > getMaxTotal() - 3)) {
             removeAbandoned(ac);
         }
@@ -374,7 +372,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     @Override
     String getStatsString() {
         // Simply listed in AB order.
-        return super.getStatsString() + 
+        return super.getStatsString() +
                 String.format(", createdCount=%,d, makeObjectCount=%,d, maxIdle=%,d, minIdle=%,d",
                         createdCount.get(), makeObjectCount, maxIdle, minIdle);
     }
