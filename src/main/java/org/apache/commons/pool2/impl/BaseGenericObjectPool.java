@@ -447,6 +447,27 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     public abstract void close();
 
     /**
+     * Creates a list of pooled objects to remove based on their state.
+     * @param abandonedConfig The abandoned configuration.
+     * @param allObjects PooledObject instances to consider.
+     * @return a list of pooled objects to remove based on their state.
+     */
+    ArrayList<PooledObject<T>> createRemoveList(final AbandonedConfig abandonedConfig, final Map<IdentityWrapper<T>, PooledObject<T>> allObjects) {
+        final Instant timeout = Instant.now().minus(abandonedConfig.getRemoveAbandonedTimeoutDuration());
+        final ArrayList<PooledObject<T>> remove = new ArrayList<>();
+        allObjects.values().forEach(pooledObject -> {
+            synchronized (pooledObject) {
+                if (pooledObject.getState() == PooledObjectState.ALLOCATED &&
+                        pooledObject.getLastUsedInstant().compareTo(timeout) <= 0) {
+                    pooledObject.markAbandoned();
+                    remove.add(pooledObject);
+                }
+            }
+        });
+        return remove;
+    }
+
+    /**
      * Tries to ensure that the configured minimum number of idle instances are
      * available in the pool.
      * @throws Exception if an error occurs creating idle instances
@@ -1057,6 +1078,8 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         return timeBetweenEvictionRuns.toMillis();
     }
 
+    // Monitoring (primarily JMX) related methods
+
     /**
      * Gets whether or not abandoned object removal is configured for this pool.
      *
@@ -1067,8 +1090,6 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     public boolean isAbandonedConfig() {
         return abandonedConfig != null;
     }
-
-    // Monitoring (primarily JMX) related methods
 
     /**
      * Has this pool instance been closed.
@@ -1481,6 +1502,8 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         this.softMinEvictableIdleTime = PoolImplUtils.nonNull(softMinEvictableIdleTime, BaseObjectPoolConfig.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME);
     }
 
+    // Inner classes
+
     /**
      * Sets the minimum amount of time an object may sit idle in the pool
      * before it is eligible for eviction by the idle object evictor (if any -
@@ -1503,8 +1526,6 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     public final void setSoftMinEvictableIdleTimeMillis(final long softMinEvictableIdleTimeMillis) {
         setSoftMinEvictableIdleTime(Duration.ofMillis(softMinEvictableIdleTimeMillis));
     }
-
-    // Inner classes
 
     /**
      * The listener used (if any) to receive notifications of exceptions
@@ -1790,21 +1811,6 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     final void updateStatsReturn(final Duration activeTime) {
         returnedCount.incrementAndGet();
         activeTimes.add(activeTime);
-    }
-
-    protected ArrayList<PooledObject<T>> createRemoveList(final AbandonedConfig abandonedConfig, final Map<IdentityWrapper<T>, PooledObject<T>> allObjects) {
-        final Instant timeout = Instant.now().minus(abandonedConfig.getRemoveAbandonedTimeoutDuration());
-        final ArrayList<PooledObject<T>> remove = new ArrayList<>();
-        allObjects.values().forEach(pooledObject -> {
-            synchronized (pooledObject) {
-                if (pooledObject.getState() == PooledObjectState.ALLOCATED &&
-                        pooledObject.getLastUsedInstant().compareTo(timeout) <= 0) {
-                    pooledObject.markAbandoned();
-                    remove.add(pooledObject);
-                }
-            }
-        });
-        return remove;
     }
 
 
