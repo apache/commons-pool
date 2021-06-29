@@ -16,7 +16,6 @@
  */
 package org.apache.commons.pool2.impl;
 
-import java.util.Collection;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -50,9 +49,6 @@ class InterruptibleReentrantLock extends ReentrantLock {
      * @param condition the condition on which the threads are waiting.
      */
     public void interruptWaiters(final Condition condition) {
-        final Collection<Thread> threads = getWaitingThreads(condition);
-        for (final Thread thread : threads) {
-            thread.interrupt();
-        }
+        getWaitingThreads(condition).forEach(Thread::interrupt);
     }
 }

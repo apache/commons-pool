@@ -22,8 +22,10 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * A {@link CallStack} strategy using a {@link SecurityManager}. Obtaining the current call stack is much faster via a
@@ -47,12 +49,8 @@ public class SecurityManagerCallStack implements CallStack {
          * @return class stack
          */
         private List<WeakReference<Class<?>>> getCallStack() {
-            final Class<?>[] classes = getClassContext();
-            final List<WeakReference<Class<?>>> stack = new ArrayList<>(classes.length);
-            for (final Class<?> klass : classes) {
-                stack.add(new WeakReference<>(klass));
-            }
-            return stack;
+            final Stream<WeakReference<Class<?>>> map = Arrays.stream(getClassContext()).map(WeakReference::new);
+            return map.collect(Collectors.toList());
         }
     }
 
@@ -119,9 +117,7 @@ public class SecurityManagerCallStack implements CallStack {
             }
         }
         writer.println(message);
-        for (final WeakReference<Class<?>> reference : snapshotRef.stack) {
-            writer.println(reference.get());
-        }
+        snapshotRef.stack.forEach(reference -> writer.println(reference.get()));
         return true;
     }
 }
