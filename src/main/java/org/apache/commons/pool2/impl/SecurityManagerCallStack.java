@@ -49,7 +49,7 @@ public class SecurityManagerCallStack implements CallStack {
          * @return class stack
          */
         private List<WeakReference<Class<?>>> getCallStack() {
-            final Stream<WeakReference<Class<?>>> map = Arrays.stream(getClassContext()).map(WeakReference::new);
+            final Stream<WeakReference<Class<?>>> map = Stream.of(getClassContext()).map(WeakReference::new);
             return map.collect(Collectors.toList());
         }
     }
