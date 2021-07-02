@@ -30,7 +30,7 @@ public interface TrackedUse {
     /**
      * Gets the last time this object was used in milliseconds.
      *
-     * @return long time in milliseconds.
+     * @return the last time this object was used in milliseconds.
      * @deprecated Use {@link #getLastUsedInstant()} which offers the best precision.
      */
     @Deprecated
@@ -43,7 +43,7 @@ public interface TrackedUse {
      * of microseconds, depending on the OS, Hardware, and JVM implementation.
      * </p>
      *
-     * @return time as an Instant.
+     * @return the last Instant this object was used.
      * @since 2.11.0
      */
     default Instant getLastUsedInstant() {
