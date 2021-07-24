@@ -59,7 +59,6 @@ import org.apache.commons.pool2.VisitTracker;
 import org.apache.commons.pool2.VisitTrackerFactory;
 import org.apache.commons.pool2.Waiter;
 import org.apache.commons.pool2.WaiterFactory;
-import org.apache.commons.pool2.impl.TestGenericKeyedObjectPool.SimpleFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

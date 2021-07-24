@@ -90,12 +90,9 @@ public class TestPoolUtils {
     /** Sleep time to let the minIdle tests run CHECK_COUNT times. */
     private static final int CHECK_SLEEP_PERIOD = CHECK_PERIOD * (CHECK_COUNT - 1) + CHECK_PERIOD / 2;
 
+    @SuppressWarnings("unchecked")
     private static <T> T createProxy(final Class<T> clazz, final InvocationHandler handler) {
-        @SuppressWarnings("unchecked")
-        final
-        T ret = (T) Proxy.newProxyInstance(
-                clazz.getClassLoader(), new Class[] { clazz }, handler);
-        return ret;
+        return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class[] { clazz }, handler);
     }
 
     private static <T> T createProxy(final Class<T> clazz, final List<String> logger) {
@@ -116,9 +113,8 @@ public class TestPoolUtils {
         kop.returnObject(null, new Object());
         kop.toString();
 
-        final List<String> expectedMethods = Arrays.asList("addObject", "borrowObject", "clear", "clear", "close", "getNumActive", "getNumActive",
+        return Arrays.asList("addObject", "borrowObject", "clear", "clear", "close", "getNumActive", "getNumActive",
                 "getNumIdle", "getNumIdle", "invalidateObject", "returnObject", "toString");
-        return expectedMethods;
     }
 
     private static <K, V> List<String> invokeEveryMethod(final KeyedPooledObjectFactory<K, V> kpof) throws Exception {
@@ -129,8 +125,7 @@ public class TestPoolUtils {
         kpof.validateObject(null, null);
         kpof.toString();
 
-        final List<String> expectedMethods = Arrays.asList("activateObject", "destroyObject", "makeObject", "passivateObject", "validateObject", "toString");
-        return expectedMethods;
+        return Arrays.asList("activateObject", "destroyObject", "makeObject", "passivateObject", "validateObject", "toString");
     }
 
     private static List<String> invokeEveryMethod(final ObjectPool<Object> op) throws Exception {
@@ -144,9 +139,8 @@ public class TestPoolUtils {
         op.returnObject(new Object());
         op.toString();
 
-        final List<String> expectedMethods = Arrays.asList("addObject", "borrowObject", "clear", "close", "getNumActive", "getNumIdle", "invalidateObject",
+        return Arrays.asList("addObject", "borrowObject", "clear", "close", "getNumActive", "getNumIdle", "invalidateObject",
                 "returnObject", "toString");
-        return expectedMethods;
     }
 
     private static <T> List<String> invokeEveryMethod(final PooledObjectFactory<T> pof) throws Exception {
@@ -157,8 +151,7 @@ public class TestPoolUtils {
         pof.validateObject(null);
         pof.toString();
 
-        final List<String> expectedMethods = Arrays.asList("activateObject", "destroyObject", "makeObject", "passivateObject", "validateObject", "toString");
-        return expectedMethods;
+        return Arrays.asList("activateObject", "destroyObject", "makeObject", "passivateObject", "validateObject", "toString");
     }
 
     @Test
