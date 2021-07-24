@@ -1193,6 +1193,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                     objPool.getMinEvictableIdleTimeMillis());
             assertEquals(BaseObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME,
                     objPool.getMinEvictableIdleTime());
+            assertEquals(BaseObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME,
+                    objPool.getMinEvictableIdleDuration());
             //
             assertEquals(BaseObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN, objPool.getNumTestsPerEvictionRun());
             assertEquals(Boolean.valueOf(BaseObjectPoolConfig.DEFAULT_TEST_ON_BORROW),
@@ -1202,6 +1204,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             assertEquals(Boolean.valueOf(BaseObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE),
                     Boolean.valueOf(objPool.getTestWhileIdle()));
             //
+            assertEquals(BaseObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS,
+                    objPool.getDurationBetweenEvictionRuns());
             assertEquals(BaseObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
                     objPool.getTimeBetweenEvictionRunsMillis());
             assertEquals(BaseObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS,
@@ -1233,12 +1237,14 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             assertEquals(maxWaitMillis, objPool.getMaxWaitMillis());
             assertEquals(minIdle, objPool.getMinIdlePerKey());
             assertEquals(maxTotal, objPool.getMaxTotal());
+            assertEquals(minEvictableIdleTimeMillis, objPool.getMinEvictableIdleDuration().toMillis());
             assertEquals(minEvictableIdleTimeMillis, objPool.getMinEvictableIdleTimeMillis());
             assertEquals(minEvictableIdleTimeMillis, objPool.getMinEvictableIdleTime().toMillis());
             assertEquals(numTestsPerEvictionRun, objPool.getNumTestsPerEvictionRun());
             assertEquals(Boolean.valueOf(testOnBorrow), Boolean.valueOf(objPool.getTestOnBorrow()));
             assertEquals(Boolean.valueOf(testOnReturn), Boolean.valueOf(objPool.getTestOnReturn()));
             assertEquals(Boolean.valueOf(testWhileIdle), Boolean.valueOf(objPool.getTestWhileIdle()));
+            assertEquals(timeBetweenEvictionRunsMillis, objPool.getDurationBetweenEvictionRuns().toMillis());
             assertEquals(timeBetweenEvictionRunsMillis, objPool.getTimeBetweenEvictionRunsMillis());
             assertEquals(timeBetweenEvictionRunsMillis, objPool.getTimeBetweenEvictionRuns().toMillis());
             assertEquals(Boolean.valueOf(blockWhenExhausted), Boolean.valueOf(objPool.getBlockWhenExhausted()));
@@ -2407,6 +2413,10 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             assertEquals(12345L, gkoPool.getMinEvictableIdleTime().toMillis());
         }
         {
+            gkoPool.setMinEvictableIdleTime(Duration.ofMillis(12345L));
+            assertEquals(12345L, gkoPool.getMinEvictableIdleDuration().toMillis());
+        }
+        {
             gkoPool.setNumTestsPerEvictionRun(11);
             assertEquals(11, gkoPool.getNumTestsPerEvictionRun());
         }
@@ -2430,11 +2440,15 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         }
         {
             gkoPool.setTimeBetweenEvictionRunsMillis(11235L);
+            assertEquals(11235L, gkoPool.getDurationBetweenEvictionRuns().toMillis());
+            assertEquals(11235L, gkoPool.getTimeBetweenEvictionRuns().toMillis());
             assertEquals(11235L, gkoPool.getTimeBetweenEvictionRunsMillis());
         }
         {
             gkoPool.setTimeBetweenEvictionRuns(Duration.ofMillis(11235L));
+            assertEquals(11235L, gkoPool.getDurationBetweenEvictionRuns().toMillis());
             assertEquals(11235L, gkoPool.getTimeBetweenEvictionRuns().toMillis());
+            assertEquals(11235L, gkoPool.getTimeBetweenEvictionRunsMillis());
         }
         {
             gkoPool.setBlockWhenExhausted(true);

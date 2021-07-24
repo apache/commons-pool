@@ -32,7 +32,7 @@ public class TestDefaultPooledObjectInfo {
         final AbandonedConfig abandonedConfig = new AbandonedConfig();
 
         abandonedConfig.setRemoveAbandonedOnBorrow(true);
-        abandonedConfig.setRemoveAbandonedTimeout(TestConstants.ONE_SECOND);
+        abandonedConfig.setRemoveAbandonedTimeout(TestConstants.ONE_SECOND_DURATION);
         abandonedConfig.setLogAbandoned(true);
         try (final GenericObjectPool<String> pool = new GenericObjectPool<>(new SimpleFactory(),
                 new GenericObjectPoolConfig<>(), abandonedConfig)) {

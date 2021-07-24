@@ -952,14 +952,14 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
 
             synchronized (evictionLock) {
                 final EvictionConfig evictionConfig = new EvictionConfig(
-                        getMinEvictableIdleTime(),
-                        getSoftMinEvictableIdleTime(),
+                        getMinEvictableIdleDuration(),
+                        getSoftMinEvictableIdleDuration(),
                         getMinIdlePerKey());
 
                 final boolean testWhileIdle = getTestWhileIdle();
 
                 for (int i = 0, m = getNumTests(); i < m; i++) {
-                    if(evictionIterator == null || !evictionIterator.hasNext()) {
+                    if (evictionIterator == null || !evictionIterator.hasNext()) {
                         if (evictionKeyIterator == null ||
                                 !evictionKeyIterator.hasNext()) {
                             final List<K> keyCopy = new ArrayList<>();
@@ -1128,7 +1128,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     /**
      * Gets the target for the minimum number of idle objects to maintain in
      * each of the keyed sub-pools. This setting only has an effect if it is
-     * positive and {@link #getTimeBetweenEvictionRuns()} is greater than
+     * positive and {@link #getDurationBetweenEvictionRuns()} is greater than
      * zero. If this is the case, an attempt is made to ensure that each
      * sub-pool has the required minimum number of instances during idle object
      * eviction runs.
@@ -1145,10 +1145,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     @Override
     public int getMinIdlePerKey() {
         final int maxIdlePerKeySave = getMaxIdlePerKey();
-        if (this.minIdlePerKey > maxIdlePerKeySave) {
-            return maxIdlePerKeySave;
-        }
-        return minIdlePerKey;
+        return this.minIdlePerKey > maxIdlePerKeySave ? maxIdlePerKeySave : minIdlePerKey;
     }
 
     @Override
@@ -1459,15 +1456,13 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         final ObjectDeque<T> objectDeque = poolMap.get(key);
 
         if (objectDeque == null) {
-            throw new IllegalStateException(
-                    "No keyed pool found under the given key.");
+            throw new IllegalStateException("No keyed pool found under the given key.");
         }
 
         final PooledObject<T> p = objectDeque.getAllObjects().get(new IdentityWrapper<>(obj));
 
         if (p == null) {
-            throw new IllegalStateException(
-                    "Returned object not currently part of this pool");
+            throw new IllegalStateException("Returned object not currently part of this pool");
         }
 
         markReturningState(p);
@@ -1499,8 +1494,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
             }
 
             if (!p.deallocate()) {
-                throw new IllegalStateException(
-                        "Object has already been returned to this pool");
+                throw new IllegalStateException("Object has already been returned to this pool");
             }
 
             final int maxIdle = getMaxIdlePerKey();
@@ -1635,7 +1629,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     /**
      * Sets the target for the minimum number of idle objects to maintain in
      * each of the keyed sub-pools. This setting only has an effect if it is
-     * positive and {@link #getTimeBetweenEvictionRuns()} is greater than
+     * positive and {@link #getDurationBetweenEvictionRuns()} is greater than
      * zero. If this is the case, an attempt is made to ensure that each
      * sub-pool has the required minimum number of instances during idle object
      * eviction runs.

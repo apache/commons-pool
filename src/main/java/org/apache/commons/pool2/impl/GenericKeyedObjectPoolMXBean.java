@@ -125,8 +125,8 @@ public interface GenericKeyedObjectPoolMXBean<K> {
     int getMaxTotalPerKey();
 
     /**
-     * See {@link GenericKeyedObjectPool#getMaxWaitMillis()}
-     * @return See {@link GenericKeyedObjectPool#getMaxWaitMillis()}
+     * See {@link GenericKeyedObjectPool#getMaxWaitDuration()}
+     * @return See {@link GenericKeyedObjectPool#getMaxWaitDuration()}
      */
     long getMaxWaitMillis();
 
@@ -149,8 +149,8 @@ public interface GenericKeyedObjectPoolMXBean<K> {
     long getMeanIdleTimeMillis();
 
     /**
-     * See {@link GenericKeyedObjectPool#getMinEvictableIdleTime()}
-     * @return See {@link GenericKeyedObjectPool#getMinEvictableIdleTime()}
+     * See {@link GenericKeyedObjectPool#getMinEvictableIdleDuration()}
+     * @return See {@link GenericKeyedObjectPool#getMinEvictableIdleDuration()}
      */
     long getMinEvictableIdleTimeMillis();
 
@@ -257,8 +257,8 @@ public interface GenericKeyedObjectPoolMXBean<K> {
     boolean getTestWhileIdle();
 
     /**
-     * See {@link GenericKeyedObjectPool#getTimeBetweenEvictionRuns()}
-     * @return See {@link GenericKeyedObjectPool#getTimeBetweenEvictionRuns()}
+     * See {@link GenericKeyedObjectPool#getDurationBetweenEvictionRuns}
+     * @return See {@link GenericKeyedObjectPool#getDurationBetweenEvictionRuns()}
      */
     long getTimeBetweenEvictionRunsMillis();
 

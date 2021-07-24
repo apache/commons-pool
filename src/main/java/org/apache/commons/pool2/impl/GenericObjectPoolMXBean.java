@@ -119,8 +119,8 @@ public interface GenericObjectPoolMXBean {
     int getMaxTotal();
 
     /**
-     * See {@link GenericObjectPool#getMaxWaitMillis()}
-     * @return See {@link GenericObjectPool#getMaxWaitMillis()}
+     * See {@link GenericObjectPool#getMaxWaitDuration()}
+     * @return See {@link GenericObjectPool#getMaxWaitDuration()}
      */
     long getMaxWaitMillis();
 
@@ -145,8 +145,8 @@ public interface GenericObjectPoolMXBean {
     long getMeanIdleTimeMillis();
 
     /**
-     * See {@link GenericObjectPool#getMinEvictableIdleTimeMillis()}
-     * @return See {@link GenericObjectPool#getMinEvictableIdleTimeMillis()}
+     * See {@link GenericObjectPool#getMinEvictableIdleDuration()}
+     * @return See {@link GenericObjectPool#getMinEvictableIdleDuration()}
      */
     long getMinEvictableIdleTimeMillis();
 
@@ -193,8 +193,8 @@ public interface GenericObjectPoolMXBean {
     boolean getRemoveAbandonedOnMaintenance();
 
     /**
-     * See {@link GenericObjectPool#getRemoveAbandonedTimeout()}
-     * @return See {@link GenericObjectPool#getRemoveAbandonedTimeout()}
+     * See {@link GenericObjectPool#getRemoveAbandonedTimeoutDuration()}
+     * @return See {@link GenericObjectPool#getRemoveAbandonedTimeoutDuration()}
      */
     int getRemoveAbandonedTimeout();
 
@@ -232,8 +232,8 @@ public interface GenericObjectPoolMXBean {
     boolean getTestWhileIdle();
 
     /**
-     * See {@link GenericObjectPool#getTimeBetweenEvictionRunsMillis()}
-     * @return See {@link GenericObjectPool#getTimeBetweenEvictionRunsMillis()}
+     * See {@link GenericObjectPool#getDurationBetweenEvictionRuns()}
+     * @return See {@link GenericObjectPool#getDurationBetweenEvictionRuns()}
      */
     long getTimeBetweenEvictionRunsMillis();
 

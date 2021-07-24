@@ -516,7 +516,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         }
 
         final long localStartTimeMillis = System.currentTimeMillis();
-        final long localMaxWaitTimeMillis = Math.max(getMaxWaitMillis(), 0);
+        final long localMaxWaitTimeMillis = Math.max(getMaxWaitDuration().toMillis(), 0);
 
         // Flag that indicates if create should:
         // - TRUE:  call the factory to create an object
@@ -673,8 +673,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
 
             synchronized (evictionLock) {
                 final EvictionConfig evictionConfig = new EvictionConfig(
-                        getMinEvictableIdleTime(),
-                        getSoftMinEvictableIdleTime(),
+                        getMinEvictableIdleDuration(),
+                        getSoftMinEvictableIdleDuration(),
                         getMinIdle());
 
                 final boolean testWhileIdle = getTestWhileIdle();
@@ -830,7 +830,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     /**
      * Gets the target for the minimum number of idle objects to maintain in
      * the pool. This setting only has an effect if it is positive and
-     * {@link #getTimeBetweenEvictionRuns()} is greater than zero. If this
+     * {@link #getDurationBetweenEvictionRuns()} is greater than zero. If this
      * is the case, an attempt is made to ensure that the pool has the required
      * minimum number of instances during idle object eviction runs.
      * <p>
@@ -1129,7 +1129,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     /**
      * Sets the target for the minimum number of idle objects to maintain in
      * the pool. This setting only has an effect if it is positive and
-     * {@link #getTimeBetweenEvictionRuns()} is greater than zero. If this
+     * {@link #getDurationBetweenEvictionRuns()} is greater than zero. If this
      * is the case, an attempt is made to ensure that the pool has the required
      * minimum number of instances during idle object eviction runs.
      * <p>
@@ -1142,7 +1142,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      *
      * @see #getMinIdle()
      * @see #getMaxIdle()
-     * @see #getTimeBetweenEvictionRuns()
+     * @see #getDurationBetweenEvictionRuns()
      */
     public void setMinIdle(final int minIdle) {
         this.minIdle = minIdle;
@@ -1173,8 +1173,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     public void use(final T pooledObject) {
         final AbandonedConfig abandonedCfg = this.abandonedConfig;
         if (abandonedCfg != null && abandonedCfg.getUseUsageTracking()) {
-            final PooledObject<T> wrapper = allObjects.get(new IdentityWrapper<>(pooledObject));
-            wrapper.use();
+            allObjects.get(new IdentityWrapper<>(pooledObject)).use();
         }
     }
 

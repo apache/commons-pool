@@ -30,35 +30,27 @@ import java.time.Duration;
  */
 public class EvictionConfig {
 
-    private static final Duration MAX_MILLIS_DURATION = Duration.ofMillis(Long.MAX_VALUE);
-    private final Duration idleEvictTime;
-    private final Duration idleSoftEvictTime;
+    private static final Duration MAX_DURATION = Duration.ofMillis(Long.MAX_VALUE);
+    private final Duration idleEvictDuration;
+    private final Duration idleSoftEvictDuration;
     private final int minIdle;
 
     /**
      * Creates a new eviction configuration with the specified parameters.
      * Instances are immutable.
      *
-     * @param poolIdleEvictTime Expected to be provided by
-     *        {@link BaseGenericObjectPool#getMinEvictableIdleTime()}
-     * @param poolIdleSoftEvictTime Expected to be provided by
-     *        {@link BaseGenericObjectPool#getSoftMinEvictableIdleTime()}
+     * @param idleEvictDuration Expected to be provided by
+     *        {@link BaseGenericObjectPool#getMinEvictableIdleDuration()}
+     * @param idleSoftEvictDuration Expected to be provided by
+     *        {@link BaseGenericObjectPool#getSoftMinEvictableIdleDuration()}
      * @param minIdle Expected to be provided by
      *        {@link GenericObjectPool#getMinIdle()} or
      *        {@link GenericKeyedObjectPool#getMinIdlePerKey()}
      * @since 2.10.0
      */
-    public EvictionConfig(final Duration poolIdleEvictTime, final Duration poolIdleSoftEvictTime, final int minIdle) {
-        if (PoolImplUtils.isPositive(poolIdleEvictTime)) {
-            idleEvictTime = poolIdleEvictTime;
-        } else {
-            idleEvictTime = MAX_MILLIS_DURATION;
-        }
-        if (PoolImplUtils.isPositive(poolIdleSoftEvictTime)) {
-            idleSoftEvictTime = poolIdleSoftEvictTime;
-        } else {
-            idleSoftEvictTime = MAX_MILLIS_DURATION;
-        }
+    public EvictionConfig(final Duration idleEvictDuration, final Duration idleSoftEvictDuration, final int minIdle) {
+        this.idleEvictDuration = PoolImplUtils.isPositive(idleEvictDuration) ? idleEvictDuration : MAX_DURATION;
+        this.idleSoftEvictDuration = PoolImplUtils.isPositive(idleSoftEvictDuration) ? idleSoftEvictDuration : MAX_DURATION;
         this.minIdle = minIdle;
     }
 
@@ -66,18 +58,33 @@ public class EvictionConfig {
      * Creates a new eviction configuration with the specified parameters.
      * Instances are immutable.
      *
-     * @param poolIdleEvictTime Expected to be provided by
-     *        {@link BaseGenericObjectPool#getMinEvictableIdleTimeMillis()}
-     * @param poolIdleSoftEvictTime Expected to be provided by
-     *        {@link BaseGenericObjectPool#getSoftMinEvictableIdleTimeMillis()}
+     * @param poolIdleEvictMillis Expected to be provided by
+     *        {@link BaseGenericObjectPool#getMinEvictableIdleDuration()}
+     * @param poolIdleSoftEvictMillis Expected to be provided by
+     *        {@link BaseGenericObjectPool#getSoftMinEvictableIdleDuration()}
      * @param minIdle Expected to be provided by
      *        {@link GenericObjectPool#getMinIdle()} or
      *        {@link GenericKeyedObjectPool#getMinIdlePerKey()}
      * @deprecated Use {@link #EvictionConfig(Duration, Duration, int)}.
      */
     @Deprecated
-    public EvictionConfig(final long poolIdleEvictTime, final long poolIdleSoftEvictTime, final int minIdle) {
-        this(Duration.ofMillis(poolIdleEvictTime), Duration.ofMillis(poolIdleSoftEvictTime), minIdle);
+    public EvictionConfig(final long poolIdleEvictMillis, final long poolIdleSoftEvictMillis, final int minIdle) {
+        this(Duration.ofMillis(poolIdleEvictMillis), Duration.ofMillis(poolIdleSoftEvictMillis), minIdle);
+    }
+
+    /**
+     * Gets the {@code idleEvictTime} for this eviction configuration
+     * instance.
+     * <p>
+     * How the evictor behaves based on this value will be determined by the
+     * configured {@link EvictionPolicy}.
+     * </p>
+     *
+     * @return The {@code idleEvictTime}.
+     * @since 2.11.0
+     */
+    public Duration getIdleEvictDuration() {
+        return idleEvictDuration;
     }
 
     /**
@@ -89,9 +96,11 @@ public class EvictionConfig {
      * </p>
      *
      * @return The {@code idleEvictTime} in milliseconds
+     * @deprecated Use {@link #getIdleEvictDuration()}.
      */
+    @Deprecated
     public long getIdleEvictTime() {
-        return idleEvictTime.toMillis();
+        return idleEvictDuration.toMillis();
     }
 
     /**
@@ -104,9 +113,11 @@ public class EvictionConfig {
      *
      * @return The {@code idleEvictTime}.
      * @since 2.10.0
+     * @deprecated Use {@link #getIdleEvictDuration()}.
      */
+    @Deprecated
     public Duration getIdleEvictTimeDuration() {
-        return idleEvictTime;
+        return idleEvictDuration;
     }
 
     /**
@@ -118,9 +129,26 @@ public class EvictionConfig {
      * </p>
      *
      * @return The (@code idleSoftEvictTime} in milliseconds
+     * @since 2.11.0
      */
+    public Duration getIdleSoftEvictDuration() {
+        return idleSoftEvictDuration;
+    }
+
+    /**
+     * Gets the {@code idleSoftEvictTime} for this eviction configuration
+     * instance.
+     * <p>
+     * How the evictor behaves based on this value will be determined by the
+     * configured {@link EvictionPolicy}.
+     * </p>
+     *
+     * @return The (@code idleSoftEvictTime} in milliseconds
+     * @deprecated Use {@link #getIdleSoftEvictDuration()}.
+     */
+    @Deprecated
     public long getIdleSoftEvictTime() {
-        return idleSoftEvictTime.toMillis();
+        return idleSoftEvictDuration.toMillis();
     }
 
     /**
@@ -132,9 +160,11 @@ public class EvictionConfig {
      * </p>
      *
      * @return The (@code idleSoftEvictTime} in milliseconds
+     * @deprecated Use {@link #getIdleSoftEvictDuration()}.
      */
+    @Deprecated
     public Duration getIdleSoftEvictTimeDuration() {
-        return idleSoftEvictTime;
+        return idleSoftEvictDuration;
     }
 
     /**
@@ -156,10 +186,10 @@ public class EvictionConfig {
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
-        builder.append("EvictionConfig [idleEvictTime=");
-        builder.append(idleEvictTime);
-        builder.append(", idleSoftEvictTime=");
-        builder.append(idleSoftEvictTime);
+        builder.append("EvictionConfig [idleEvictDuration=");
+        builder.append(idleEvictDuration);
+        builder.append(", idleSoftEvictDuration=");
+        builder.append(idleSoftEvictDuration);
         builder.append(", minIdle=");
         builder.append(minIdle);
         builder.append("]");

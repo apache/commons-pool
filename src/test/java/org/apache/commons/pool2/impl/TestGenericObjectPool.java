@@ -628,20 +628,27 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 "minEvictableIdleTimeMillis");
         assertEquals(expected.getMinEvictableIdleTime(), actual.getMinEvictableIdleTime(),
                 "minEvictableIdleTime");
+        assertEquals(expected.getMinEvictableIdleDuration(), actual.getMinEvictableIdleDuration(),
+                "minEvictableIdleDuration");
         assertEquals(expected.getNumTestsPerEvictionRun(), actual.getNumTestsPerEvictionRun(),
                 "numTestsPerEvictionRun");
+        assertEquals(expected.getEvictorShutdownTimeoutDuration(), actual.getEvictorShutdownTimeoutDuration(),
+                "evictorShutdownTimeoutDuration");
         assertEquals(expected.getEvictorShutdownTimeoutMillis(), actual.getEvictorShutdownTimeoutMillis(),
                 "evictorShutdownTimeoutMillis");
         assertEquals(expected.getEvictorShutdownTimeout(), actual.getEvictorShutdownTimeout(),
                 "evictorShutdownTimeout");
         assertEquals(expected.getTimeBetweenEvictionRunsMillis(), actual.getTimeBetweenEvictionRunsMillis(),
                 "timeBetweenEvictionRunsMillis");
+        assertEquals(expected.getDurationBetweenEvictionRuns(), actual.getTimeBetweenEvictionRuns(),
+                "timeBetweenEvictionRuns");
         assertEquals(expected.getTimeBetweenEvictionRuns(), actual.getTimeBetweenEvictionRuns(),
                 "timeBetweenEvictionRuns");
     }
 
     private void checkEvict(final boolean lifo) throws Exception {
         // yea this is hairy but it tests all the code paths in GOP.evict()
+        genericObjectPool.setSoftMinEvictableIdle(Duration.ofMillis(10));
         genericObjectPool.setSoftMinEvictableIdleTime(Duration.ofMillis(10));
         genericObjectPool.setMinIdle(2);
         genericObjectPool.setTestWhileIdle(true);
@@ -1149,8 +1156,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
     public void testCloseMultiplePools1() {
         try (final GenericObjectPool<String> genericObjectPool2 = new GenericObjectPool<>(simpleFactory)) {
-            genericObjectPool.setTimeBetweenEvictionRuns(TestConstants.ONE_MILLISECOND);
-            genericObjectPool2.setTimeBetweenEvictionRuns(TestConstants.ONE_MILLISECOND);
+            genericObjectPool.setTimeBetweenEvictionRuns(TestConstants.ONE_MILLISECOND_DURATION);
+            genericObjectPool2.setTimeBetweenEvictionRuns(TestConstants.ONE_MILLISECOND_DURATION);
         }
         genericObjectPool.close();
     }
@@ -1162,10 +1169,10 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             // Ensure eviction takes a long time, during which time EvictionTimer.executor's queue is empty
             simpleFactory.setDestroyLatency(1000L);
             // Ensure there is an object to evict, so that above latency takes effect
-            genericObjectPool.setTimeBetweenEvictionRuns(TestConstants.ONE_MILLISECOND);
-            genericObjectPool2.setTimeBetweenEvictionRuns(TestConstants.ONE_MILLISECOND);
-            genericObjectPool.setMinEvictableIdleTime(TestConstants.ONE_MILLISECOND);
-            genericObjectPool2.setMinEvictableIdleTime(TestConstants.ONE_MILLISECOND);
+            genericObjectPool.setTimeBetweenEvictionRuns(TestConstants.ONE_MILLISECOND_DURATION);
+            genericObjectPool2.setTimeBetweenEvictionRuns(TestConstants.ONE_MILLISECOND_DURATION);
+            genericObjectPool.setMinEvictableIdleTime(TestConstants.ONE_MILLISECOND_DURATION);
+            genericObjectPool2.setMinEvictableIdleTime(TestConstants.ONE_MILLISECOND_DURATION);
             genericObjectPool.addObject();
             genericObjectPool2.addObject();
             // Close both pools
@@ -1291,6 +1298,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                     dummyPool.getMinEvictableIdleTimeMillis());
             assertEquals(BaseObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME,
                     dummyPool.getMinEvictableIdleTime());
+            assertEquals(BaseObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME,
+                    dummyPool.getMinEvictableIdleDuration());
             assertEquals(BaseObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN,
                     dummyPool.getNumTestsPerEvictionRun());
             assertEquals(Boolean.valueOf(BaseObjectPoolConfig.DEFAULT_TEST_ON_BORROW),
@@ -1299,6 +1308,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                     Boolean.valueOf(dummyPool.getTestOnReturn()));
             assertEquals(Boolean.valueOf(BaseObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE),
                     Boolean.valueOf(dummyPool.getTestWhileIdle()));
+            assertEquals(BaseObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS,
+                    dummyPool.getDurationBetweenEvictionRuns());
             assertEquals(BaseObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
                     dummyPool.getTimeBetweenEvictionRunsMillis());
             assertEquals(BaseObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS,
@@ -1649,8 +1660,9 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             timePool.setMaxIdle(5);
             timePool.setMaxTotal(5);
             timePool.setNumTestsPerEvictionRun(5);
+            timePool.setMinEvictableIdle(Duration.ofSeconds(3));
             timePool.setMinEvictableIdleTime(Duration.ofSeconds(3));
-            timePool.setSoftMinEvictableIdleTime(TestConstants.ONE_SECOND);
+            timePool.setSoftMinEvictableIdleTime(TestConstants.ONE_SECOND_DURATION);
             timePool.setMinIdle(2);
 
             final TimeTest[] active = new TimeTest[5];
@@ -2708,6 +2720,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
         {
             genericObjectPool.setMinEvictableIdleTimeMillis(12345L);
+            assertEquals(12345L,genericObjectPool.getMinEvictableIdleDuration().toMillis());
             assertEquals(12345L,genericObjectPool.getMinEvictableIdleTimeMillis());
             assertEquals(12345L,genericObjectPool.getMinEvictableIdleTime().toMillis());
         }
@@ -2735,11 +2748,13 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
         {
             genericObjectPool.setTimeBetweenEvictionRunsMillis(11235L);
+            assertEquals(11235L,genericObjectPool.getDurationBetweenEvictionRuns().toMillis());
             assertEquals(11235L,genericObjectPool.getTimeBetweenEvictionRunsMillis());
             assertEquals(11235L,genericObjectPool.getTimeBetweenEvictionRuns().toMillis());
         }
         {
             genericObjectPool.setSoftMinEvictableIdleTimeMillis(12135L);
+            assertEquals(12135L,genericObjectPool.getSoftMinEvictableIdleDuration().toMillis());
             assertEquals(12135L,genericObjectPool.getSoftMinEvictableIdleTimeMillis());
             assertEquals(12135L,genericObjectPool.getSoftMinEvictableIdleTime().toMillis());
         }

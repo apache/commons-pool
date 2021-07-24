@@ -19,10 +19,24 @@ package org.apache.commons.pool2.impl;
 
 import java.time.Duration;
 
+/**
+ * Constants used in tests.
+ */
 public class TestConstants {
 
-    public static final Duration ONE_SECOND = Duration.ofSeconds(1);
-    public static final Duration ONE_MINUTE = Duration.ofMinutes(1);
-    public static final Duration ONE_MILLISECOND = Duration.ofMillis(1);
+    /**
+     * A duration of one second.
+     */
+    public static final Duration ONE_SECOND_DURATION = Duration.ofSeconds(1);
+
+    /**
+     * A duration of one minute.
+     */
+    public static final Duration ONE_MINUTE_DURATION = Duration.ofMinutes(1);
+
+    /**
+     * A duration of one millisecond.
+     */
+    public static final Duration ONE_MILLISECOND_DURATION = Duration.ofMillis(1);
 
 }

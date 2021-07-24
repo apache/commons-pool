@@ -53,7 +53,7 @@ public class TestEvictionTimer {
 
             // Start evictor #1
             final BaseGenericObjectPool<String>.Evictor evictor1 = pool.new Evictor();
-            EvictionTimer.schedule(evictor1, TestConstants.ONE_MINUTE, TestConstants.ONE_MINUTE);
+            EvictionTimer.schedule(evictor1, TestConstants.ONE_MINUTE_DURATION, TestConstants.ONE_MINUTE_DURATION);
 
             // Assert that eviction objects are correctly allocated
             // 1 - the evictor timer task is created
@@ -71,7 +71,7 @@ public class TestEvictionTimer {
 
             // Start evictor #2
             final BaseGenericObjectPool<String>.Evictor evictor2 = pool.new Evictor();
-            EvictionTimer.schedule(evictor2, TestConstants.ONE_MINUTE, TestConstants.ONE_MINUTE);
+            EvictionTimer.schedule(evictor2, TestConstants.ONE_MINUTE_DURATION, TestConstants.ONE_MINUTE_DURATION);
 
             // Assert that eviction objects are correctly allocated
             // 1 - the evictor timer task is created

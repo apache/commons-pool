@@ -140,8 +140,22 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      * return an increased value).
      *
      * @return The amount of time in last spent in the idle state.
-     * @since 2.10.0
+     * @since 2.11.0
      */
+    default Duration getIdleDuration() {
+        return Duration.ofMillis(getIdleTimeMillis());
+    }
+
+    /**
+     * Gets the amount of time that this object last spend in the
+     * idle state (it may still be idle in which case subsequent calls will
+     * return an increased value).
+     *
+     * @return The amount of time in last spent in the idle state.
+     * @since 2.10.0
+     * @deprecated Use {@link #getIdleDuration()}.
+     */
+    @Deprecated
     default Duration getIdleTime() {
         return Duration.ofMillis(getIdleTimeMillis());
     }

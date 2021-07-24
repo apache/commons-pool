@@ -147,10 +147,13 @@ public class TestAbandonedKeyedObjectPool {
         // Uncomment the following line to enable logging:
         // abandonedConfig.setLogAbandoned(true);
 
-        abandonedConfig.setRemoveAbandonedOnBorrow(true);
+        // One second Duration.
+        abandonedConfig.setRemoveAbandonedTimeout(TestConstants.ONE_SECOND_DURATION);
+        assertEquals(TestConstants.ONE_SECOND_DURATION, abandonedConfig.getRemoveAbandonedTimeoutDuration());
+        assertEquals(1, abandonedConfig.getRemoveAbandonedTimeout());
+        // One second int (not millis).
         abandonedConfig.setRemoveAbandonedTimeout(1);
-        assertEquals(TestConstants.ONE_SECOND, abandonedConfig.getRemoveAbandonedTimeoutDuration());
-        abandonedConfig.setRemoveAbandonedTimeout(TestConstants.ONE_SECOND);
+        assertEquals(TestConstants.ONE_SECOND_DURATION, abandonedConfig.getRemoveAbandonedTimeoutDuration());
         assertEquals(1, abandonedConfig.getRemoveAbandonedTimeout());
 
         pool = new GenericKeyedObjectPool<>(
@@ -196,7 +199,7 @@ public class TestAbandonedKeyedObjectPool {
     public void testAbandonedInvalidate() throws Exception {
         abandonedConfig = new AbandonedConfig();
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
-        abandonedConfig.setRemoveAbandonedTimeout(TestConstants.ONE_SECOND);
+        abandonedConfig.setRemoveAbandonedTimeout(TestConstants.ONE_SECOND_DURATION);
         pool.close();  // Unregister pool created by setup
         pool = new GenericKeyedObjectPool<>(
                 // destroys take 200 ms
@@ -228,7 +231,7 @@ public class TestAbandonedKeyedObjectPool {
     public void testAbandonedReturn() throws Exception {
         abandonedConfig = new AbandonedConfig();
         abandonedConfig.setRemoveAbandonedOnBorrow(true);
-        abandonedConfig.setRemoveAbandonedTimeout(TestConstants.ONE_SECOND);
+        abandonedConfig.setRemoveAbandonedTimeout(TestConstants.ONE_SECOND_DURATION);
         pool.close();  // Unregister pool created by setup
         pool = new GenericKeyedObjectPool<>(
                 new SimpleFactory(200, 0),
@@ -304,7 +307,7 @@ public class TestAbandonedKeyedObjectPool {
     public void testDestroyModeAbandoned() throws Exception {
         abandonedConfig = new AbandonedConfig();
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
-        abandonedConfig.setRemoveAbandonedTimeout(TestConstants.ONE_SECOND);
+        abandonedConfig.setRemoveAbandonedTimeout(TestConstants.ONE_SECOND_DURATION);
         pool.close();  // Unregister pool created by setup
         pool = new GenericKeyedObjectPool<>(
              // validate takes 1 second
@@ -338,7 +341,7 @@ public class TestAbandonedKeyedObjectPool {
     public void testRemoveAbandonedWhileReturning() throws Exception {
         abandonedConfig = new AbandonedConfig();
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
-        abandonedConfig.setRemoveAbandonedTimeout(TestConstants.ONE_SECOND);
+        abandonedConfig.setRemoveAbandonedTimeout(TestConstants.ONE_SECOND_DURATION);
         pool.close();  // Unregister pool created by setup
         pool = new GenericKeyedObjectPool<>(
              // validate takes 1 second
@@ -367,7 +370,7 @@ public class TestAbandonedKeyedObjectPool {
     public void testStackTrace() throws Exception {
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
         abandonedConfig.setLogAbandoned(true);
-        abandonedConfig.setRemoveAbandonedTimeout(TestConstants.ONE_SECOND);
+        abandonedConfig.setRemoveAbandonedTimeout(TestConstants.ONE_SECOND_DURATION);
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         final BufferedOutputStream bos = new BufferedOutputStream(baos);
         final PrintWriter pw = new PrintWriter(bos);

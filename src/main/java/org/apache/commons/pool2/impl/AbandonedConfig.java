@@ -32,7 +32,10 @@ import org.apache.commons.pool2.UsageTracking;
  */
 public class AbandonedConfig {
 
-    private static final Duration DEFAULT_REMOVE_ABANDONED_TIMEOUT = Duration.ofSeconds(300);
+    /**
+     * The 5 minutes Duration.
+     */
+    private static final Duration DEFAULT_REMOVE_ABANDONED_TIMEOUT_DURATION = Duration.ofMinutes(5);
 
     /**
      * Creates a new instance with values from the given instance.
@@ -59,13 +62,13 @@ public class AbandonedConfig {
     /**
      * Timeout before an abandoned object can be removed.
      */
-    private Duration removeAbandonedTimeout = DEFAULT_REMOVE_ABANDONED_TIMEOUT;
+    private Duration removeAbandonedTimeoutDuration = DEFAULT_REMOVE_ABANDONED_TIMEOUT_DURATION;
 
     /**
      * Determines whether or not to log stack traces for application code
      * which abandoned an object.
      */
-    private boolean logAbandoned = false;
+    private boolean logAbandoned;
 
     /**
      * Determines whether or not to log full stack traces when logAbandoned is true.
@@ -87,7 +90,7 @@ public class AbandonedConfig {
      * stack trace every time a method is called on a pooled object and retain
      * the most recent stack trace to aid debugging of abandoned objects?
      */
-    private boolean useUsageTracking = false;
+    private boolean useUsageTracking;
 
     /**
      * Creates a new instance.
@@ -165,7 +168,7 @@ public class AbandonedConfig {
      * <p>If set to true, abandoned objects are removed by the pool
      * maintenance thread when it runs.  This setting has no effect
      * unless maintenance is enabled by setting
-     *{@link GenericObjectPool#getTimeBetweenEvictionRuns() timeBetweenEvictionRuns}
+     *{@link GenericObjectPool#getDurationBetweenEvictionRuns() durationBetweenEvictionRuns}
      * to a positive number.</p>
      *
      * @return true if abandoned objects are to be removed by the evictor
@@ -183,12 +186,12 @@ public class AbandonedConfig {
      *
      * <p>The default value is 300 seconds.</p>
      *
-     * @return the abandoned object timeout in seconds
+     * @return the abandoned object timeout in seconds.
      * @deprecated Use {@link #getRemoveAbandonedTimeoutDuration()}.
      */
     @Deprecated
     public int getRemoveAbandonedTimeout() {
-        return (int) this.removeAbandonedTimeout.getSeconds();
+        return (int) this.removeAbandonedTimeoutDuration.getSeconds();
     }
 
     /**
@@ -204,7 +207,7 @@ public class AbandonedConfig {
      * @since 2.10.0
      */
     public Duration getRemoveAbandonedTimeoutDuration() {
-        return this.removeAbandonedTimeout;
+        return this.removeAbandonedTimeoutDuration;
     }
 
     /**
@@ -289,11 +292,11 @@ public class AbandonedConfig {
      * are both false.</p>
      *
      * @param removeAbandonedTimeout new abandoned timeout
-     * @see #getRemoveAbandonedTimeout()
+     * @see #getRemoveAbandonedTimeoutDuration()
      * @since 2.10.0
      */
     public void setRemoveAbandonedTimeout(final Duration removeAbandonedTimeout) {
-        this.removeAbandonedTimeout = PoolImplUtils.nonNull(removeAbandonedTimeout, DEFAULT_REMOVE_ABANDONED_TIMEOUT);
+        this.removeAbandonedTimeoutDuration = PoolImplUtils.nonNull(removeAbandonedTimeout, DEFAULT_REMOVE_ABANDONED_TIMEOUT_DURATION);
     }
 
     /**
@@ -305,13 +308,13 @@ public class AbandonedConfig {
      * {@link #getRemoveAbandonedOnMaintenance() removeAbandonedOnMaintenance}
      * are both false.</p>
      *
-     * @param removeAbandonedTimeout new abandoned timeout in seconds
-     * @see #getRemoveAbandonedTimeout()
+     * @param removeAbandonedTimeoutSeconds new abandoned timeout in seconds
+     * @see #getRemoveAbandonedTimeoutDuration()
      * @deprecated Use {@link #setRemoveAbandonedTimeout(Duration)}.
      */
     @Deprecated
-    public void setRemoveAbandonedTimeout(final int removeAbandonedTimeout) {
-        setRemoveAbandonedTimeout(Duration.ofSeconds(removeAbandonedTimeout));
+    public void setRemoveAbandonedTimeout(final int removeAbandonedTimeoutSeconds) {
+        setRemoveAbandonedTimeout(Duration.ofSeconds(removeAbandonedTimeoutSeconds));
     }
 
     /**
@@ -351,8 +354,8 @@ public class AbandonedConfig {
         builder.append(removeAbandonedOnBorrow);
         builder.append(", removeAbandonedOnMaintenance=");
         builder.append(removeAbandonedOnMaintenance);
-        builder.append(", removeAbandonedTimeout=");
-        builder.append(removeAbandonedTimeout);
+        builder.append(", removeAbandonedTimeoutDuration=");
+        builder.append(removeAbandonedTimeoutDuration);
         builder.append(", logAbandoned=");
         builder.append(logAbandoned);
         builder.append(", logWriter=");
