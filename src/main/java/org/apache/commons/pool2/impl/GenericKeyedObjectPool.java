@@ -107,7 +107,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
          */
         private final AtomicInteger createCount = new AtomicInteger(0);
 
-        private long makeObjectCount = 0;
+        private long makeObjectCount;
         private final Object makeObjectCountLock = new Object();
 
         /*
@@ -233,10 +233,10 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      */
     private final AtomicInteger numTotal = new AtomicInteger(0);
 
-    private Iterator<K> evictionKeyIterator = null; // @GuardedBy("evictionLock")
+    private Iterator<K> evictionKeyIterator; // @GuardedBy("evictionLock")
 
 
-    private K evictionKey = null; // @GuardedBy("evictionLock")
+    private K evictionKey; // @GuardedBy("evictionLock")
 
     /**
      * Constructs a new {@code GenericKeyedObjectPool} using defaults from

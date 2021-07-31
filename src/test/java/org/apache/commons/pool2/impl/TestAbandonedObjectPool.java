@@ -47,11 +47,11 @@ class PooledTestObject implements TrackedUse {
     private static final AtomicInteger hash = new AtomicInteger();
     private static final Instant INSTANT_0 = Instant.ofEpochMilli(0);
     private static final Instant INSTANT_1 = Instant.ofEpochMilli(1);
-    private boolean active = false;
-    private boolean destroyed = false;
-    private int _hash = 0;
-    private boolean _abandoned = false;
-    private boolean detached = false;  // destroy-abandoned "detaches"
+    private boolean active;
+    private boolean destroyed;
+    private int _hash;
+    private boolean _abandoned;
+    private boolean detached;  // destroy-abandoned "detaches"
 
     public PooledTestObject() {
         _hash = hash.incrementAndGet();
@@ -215,9 +215,9 @@ public class TestAbandonedObjectPool {
         }
     }
 
-    private GenericObjectPool<PooledTestObject> pool = null;
+    private GenericObjectPool<PooledTestObject> pool;
 
-    private AbandonedConfig abandonedConfig = null;
+    private AbandonedConfig abandonedConfig;
 
     @SuppressWarnings("deprecation")
     @BeforeEach

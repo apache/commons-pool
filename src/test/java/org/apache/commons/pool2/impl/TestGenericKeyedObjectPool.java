@@ -115,7 +115,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         private final String obj;
         private final KeyedObjectPool<String, String> pool;
         private final String key;
-        private boolean done = false;
+        private boolean done;
         public InvalidateThread(final KeyedObjectPool<String, String> pool, final String key, final String obj) {
             this.obj = obj;
             this.pool = pool;
@@ -153,24 +153,24 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         }
     }
     public static class SimpleFactory<K> implements KeyedPooledObjectFactory<K,String> {
-        volatile int counter = 0;
+        volatile int counter;
         final boolean valid;
-        int activeCount = 0;
-        int validateCounter = 0;
+        int activeCount;
+        int validateCounter;
         boolean evenValid = true;
         boolean oddValid = true;
-        boolean enableValidation = false;
+        boolean enableValidation;
 
-        long destroyLatency = 0;
-        long makeLatency = 0;
-        long validateLatency = 0;
+        long destroyLatency;
+        long makeLatency;
+        long validateLatency;
         volatile int maxTotalPerKey = Integer.MAX_VALUE;
-        boolean exceptionOnPassivate = false;
-        boolean exceptionOnActivate = false;
-        boolean exceptionOnDestroy = false;
-        boolean exceptionOnValidate = false;
+        boolean exceptionOnPassivate;
+        boolean exceptionOnActivate;
+        boolean exceptionOnDestroy;
+        boolean exceptionOnValidate;
 
-        boolean exceptionOnCreate = false;
+        boolean exceptionOnCreate;
 
         public SimpleFactory() {
             this(true);
@@ -363,8 +363,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         /** key used in borrow / return sequence - null means random */
         private final String _key;
 
-        private volatile boolean _complete = false;
-        private volatile boolean _failed = false;
+        private volatile boolean _complete;
+        private volatile boolean _failed;
         private volatile Exception _exception;
 
         public TestThread(final KeyedObjectPool<String,T> pool) {
@@ -497,10 +497,10 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     // @see https://issues.apache.org/jira/browse/SUREFIRE-121
 
     /** setUp(): {@code new GenericKeyedObjectPool<String,String>(factory)} */
-    private GenericKeyedObjectPool<String,String> gkoPool = null;
+    private GenericKeyedObjectPool<String,String> gkoPool;
 
     /** setUp(): {@code new SimpleFactory<String>()} */
-    private SimpleFactory<String> simpleFactory = null;
+    private SimpleFactory<String> simpleFactory;
 
     private void checkEvictionOrder(final boolean lifo) throws Exception {
         final SimpleFactory<Integer> intFactory = new SimpleFactory<>();
