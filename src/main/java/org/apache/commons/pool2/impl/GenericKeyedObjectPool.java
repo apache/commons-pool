@@ -625,14 +625,13 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         // build sorted map of idle objects
         final Map<PooledObject<T>, K> map = new TreeMap<>();
 
-        poolMap.entrySet().forEach(entry -> {
-            final ObjectDeque<T> deque = entry.getValue();
+        poolMap.forEach((key, value) -> {
             // Protect against possible NPE if key has been removed in another
             // thread. Not worth locking the keys while this loop completes.
-            if (deque != null) {
+            if (value != null) {
                 // Each item into the map using the PooledObject object as the
                 // key. It then gets sorted based on the idle time
-                deque.getIdleObjects().forEach(p -> map.put(p, entry.getKey()));
+                value.getIdleObjects().forEach(p -> map.put(p, key));
             }
         });
 
@@ -1257,7 +1256,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      *         {@code false}
      */
     private boolean hasBorrowWaiters() {
-        return poolMap.values().stream().filter(deque -> deque != null && deque.getIdleObjects().hasTakeWaiters()).findFirst().isPresent();
+        return poolMap.values().stream().anyMatch(deque -> deque != null && deque.getIdleObjects().hasTakeWaiters());
     }
 
     /**
@@ -1330,11 +1329,9 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     public Map<String, List<DefaultPooledObjectInfo>> listAllObjects() {
         final Map<String, List<DefaultPooledObjectInfo>> result = new HashMap<>();
 
-        poolMap.entrySet().forEach(entry -> {
-            final K k = entry.getKey();
-            final ObjectDeque<T> deque = entry.getValue();
-            if (deque != null) {
-                result.put(k.toString(), deque.getAllObjects().values().stream().map(DefaultPooledObjectInfo::new).collect(Collectors.toList()));
+        poolMap.forEach((k, value) -> {
+            if (value != null) {
+                result.put(k.toString(), value.getAllObjects().values().stream().map(DefaultPooledObjectInfo::new).collect(Collectors.toList()));
             }
         });
         return result;
@@ -1408,16 +1405,16 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      */
     @SuppressWarnings("resource") // The PrintWriter is managed elsewhere
     private void removeAbandoned(final AbandonedConfig abandonedConfig) {
-        poolMap.entrySet().forEach(pool -> {
+        poolMap.forEach((key, value) -> {
             // Generate a list of abandoned objects to remove
-            final ArrayList<PooledObject<T>> remove = createRemoveList(abandonedConfig, pool.getValue().getAllObjects());
+            final ArrayList<PooledObject<T>> remove = createRemoveList(abandonedConfig, value.getAllObjects());
             // Now remove the abandoned objects
             remove.forEach(pooledObject -> {
                 if (abandonedConfig.getLogAbandoned()) {
                     pooledObject.printStackTrace(abandonedConfig.getLogWriter());
                 }
                 try {
-                    invalidateObject(pool.getKey(), pooledObject.getObject(), DestroyMode.ABANDONED);
+                    invalidateObject(key, pooledObject.getObject(), DestroyMode.ABANDONED);
                 } catch (final Exception e) {
                     swallowException(e);
                 }
