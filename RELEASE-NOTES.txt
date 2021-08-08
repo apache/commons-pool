@@ -1,3 +1,90 @@
+              Apache Commons Pool 2.11.0 RELEASE NOTES
+
+The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.11.0.
+
+Apache Commons Pool provides an object-pooling API and a number of object pool implementations.
+Version 2 contains a completely re-written pooling implementation compared to the 1.x series.
+In addition to performance and scalability improvements, version 2 includes robust instance
+tracking and pool monitoring. 
+
+Version 2.10.x requires Java 8 or above.
+Version 2.9.x requires Java 8 or above.
+Version 2.8.x requires Java 8 or above.
+Version 2.7.x requires Java 8 or above.
+Version 2.6.x requires Java 7 or above.
+Version 2.5.x requires Java 7 or above.
+Version 2.0 requires 6 or above. 
+
+No client code changes are required to migrate from versions 2.0-2.3 to version 2.4.3.
+Users of version 1.x should consult the migration guide on the Commons Pool web site.
+
+NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPoolMXBean
+      and GenericKeyedObjectPoolMXBean) exist only to define the attributes and methods
+      that will be made available via JMX. They must not be implemented by clients as
+      they are subject to change between major, minor and patch version releases of
+      Commons Pool. Clients that implement any of these interfaces may not, therefore,
+      be able to upgrade to a new minor or patch release without requiring code
+      changes.
+
+This is a feature release (Java 8).
+
+Changes in version 2.11.0 include:
+
+New features:
+o            Track timestamps with Instants instead of longs. 
+             There is currently no increased precision on Java 8, but starting with Java 9, the JRE SystemClock precision is increased usually down to microseconds, or tenth of microseconds, depending on the OS, Hardware, and JVM implementation.
+             Add and use: 
+             - DefaultPooledObject.getCreateInstant()
+             - DefaultPooledObject.getLastUsedInstant()
+             - PooledObject.getCreateInstant()
+             - PooledObject.getLastBorrowInstant()
+             - PooledObject.getLastReturnInstant()
+             - PooledObject.getLastUsedInstant()
+             - TrackedUse#getLastUsedInstant() Thanks to Gary Gregory.
+o            Add BaseObjectPoolConfig.setEvictorShutdownTimeoutDuration(Duration), deprecate setEvictorShutdownTimeoutMillis(Duration). Thanks to Gary Gregory.
+o            Add BaseGenericObjectPool.{get|set}MaxWaitDuration(Duration) and deprecate {get|set}MaxWaitMillis(long). Thanks to Gary Gregory.
+o            Add BaseObjectPoolConfig.{get|set}MaxWaitDuration(Duration) and deprecate {get|set}MaxWaitMillis(long). Thanks to Gary Gregory.
+o            Add and use Duration APIs instead of ints or longs.
+             - Add and use Duration APIs in BaseGenericObjectPool: getDurationBetweenEvictionRuns(), getEvictorShutdownTimeoutDuration(), getMinEvictableIdleDuration(), getSoftMinEvictableIdleDuration(), setMaxWait(Duration), setMinEvictableIdle(Duration), setSoftMinEvictableIdle(Duration).
+             - Add and use Duration APIs in BaseObjectPoolConfig: getDurationBetweenEvictionRuns(), getEvictorShutdownTimeoutDuration(),getMinEvictableIdleDuration(), getSoftMinEvictableIdleDuration().
+             - Add and use Duration APIs in EvictionConfig: getIdleEvictDuration(), getIdleSoftEvictDuration().
+             - Add and use Duration APIs in PooledObject: getIdleDuration(), getActiveDuration().
+             - No need to initialize instance variables to their default values.
+             - Update Javadocs.
+             - Update toString() implementations with duration labels. Thanks to Gary Gregory.
+o POOL-396:  Handle validation exceptions during eviction. #85. Thanks to Jeremy Kong, Phil Steitz.
+o POOL-395:  Improve exception thrown in GenericObjectPool.borrowObject when pool is exhausted. Added BaseGenericObjectPool.setMessagesStatistics(boolean). Thanks to Gary Gregory, Arash Nikoo.
+o            Add and use AbandonedConfig.copy(AbandonedConfig) to fix CPD code duplication issues in GenericKeyedObjectPool and GenericObjectPool. Thanks to Gary Gregory.
+o            Pull up AbandonedConfig and related methods from GenericKeyedObjectPool and GenericObjectPool to BaseGenericObjectPool (fix for CPD issues).
+             - BaseGenericObjectPool.getLogAbandoned()
+             - BaseGenericObjectPool.getRemoveAbandonedOnBorrow()
+             - BaseGenericObjectPool.getRemoveAbandonedOnMaintenance()
+             - BaseGenericObjectPool.getRemoveAbandonedTimeout()
+             - BaseGenericObjectPool.getRemoveAbandonedTimeoutDuration()
+             - BaseGenericObjectPool.isAbandonedConfig()
+             - BaseGenericObjectPool.setAbandonedConfig(AbandonedConfig) Thanks to Gary Gregory.
+
+Fixed Bugs:
+o            Fix "[WARNING] Old version of checkstyle detected. Consider updating to >= v8.30." Update Checktyle to 8.44. Thanks to Gary Gregory.
+o            Make Duration setters use their respective default values when null. Thanks to Gary Gregory.
+o            Call swallowException(Exception) instead of printing exceptions to the console in GenericKeyedObjectPool.removeAbandoned(AbandonedConfig) and GenericObjectPool.removeAbandoned(AbandonedConfig). Thanks to Gary Gregory.
+o            Fix Javadoc link reference #91. Thanks to Arturo Bernal.
+o            No need to initialize to default values. #90. Thanks to Arturo Bernal.
+o            Bump org.ow2.asm:asm-util from 9.1 to 9.2. Thanks to Gary Gregory.
+o            Bump com.github.spotbugs:spotbugs from 4.2.3 to 4.3.0. Thanks to Gary Gregory.
+o            Bump checkstyle from 8.44 to 8.45 #92. Thanks to Dependabot.
+
+
+
+For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Apache Commons Pool website:
+
+https://commons.apache.org/proper/commons-pool/
+
+Download page: https://commons.apache.org/proper/commons-pool/download_pool.cgi
+
+-----------------------------------------------------------------------------------------------
+
               Apache Commons Pool 2.10.0 RELEASE NOTES
 
 The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.10.0.
