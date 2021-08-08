@@ -86,7 +86,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     private static final String ONAME_BASE =
         "org.apache.commons.pool2:type=GenericObjectPool,name=";
 
-    private volatile String factoryType = null;
+    private volatile String factoryType;
 
     private volatile int maxIdle = GenericObjectPoolConfig.DEFAULT_MAX_IDLE;
 

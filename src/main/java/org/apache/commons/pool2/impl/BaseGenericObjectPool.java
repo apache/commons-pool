@@ -353,8 +353,8 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     volatile boolean closed;
 
     final Object evictionLock = new Object();
-    private Evictor evictor = null; // @GuardedBy("evictionLock")
-    EvictionIterator evictionIterator = null; // @GuardedBy("evictionLock")
+    private Evictor evictor; // @GuardedBy("evictionLock")
+    EvictionIterator evictionIterator; // @GuardedBy("evictionLock")
 
     /*
      * Class loader for evictor thread to use since, in a JavaEE or similar

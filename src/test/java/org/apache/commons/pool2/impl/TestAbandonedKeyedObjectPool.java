@@ -135,9 +135,9 @@ public class TestAbandonedKeyedObjectPool {
         }
     }
 
-    private GenericKeyedObjectPool<Integer,PooledTestObject> pool = null;
+    private GenericKeyedObjectPool<Integer,PooledTestObject> pool;
 
-    private AbandonedConfig abandonedConfig = null;
+    private AbandonedConfig abandonedConfig;
 
     @SuppressWarnings("deprecation")
     @BeforeEach
