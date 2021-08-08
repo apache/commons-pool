@@ -41,11 +41,11 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
     private final T object;
     private PooledObjectState state = PooledObjectState.IDLE; // @GuardedBy("this") to ensure transitions are valid
     private final Clock systemClock = Clock.systemUTC();
-    private final Instant createTimeInstant = now();
+    private final Instant createInstant = now();
 
-    private volatile Instant lastBorrowInstant = createTimeInstant;
-    private volatile Instant lastUseInstant = createTimeInstant;
-    private volatile Instant lastReturnInstant = createTimeInstant;
+    private volatile Instant lastBorrowInstant = createInstant;
+    private volatile Instant lastUseInstant = createInstant;
+    private volatile Instant lastReturnInstant = createInstant;
     private volatile boolean logAbandoned;
     private volatile CallStack borrowedBy = NoOpCallStack.INSTANCE;
     private volatile CallStack usedBy = NoOpCallStack.INSTANCE;
@@ -154,12 +154,12 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
 
     @Override
     public Instant getCreateInstant() {
-        return createTimeInstant;
+        return createInstant;
     }
 
     @Override
     public long getCreateTime() {
-        return createTimeInstant.toEpochMilli();
+        return createInstant.toEpochMilli();
     }
 
     @Override
