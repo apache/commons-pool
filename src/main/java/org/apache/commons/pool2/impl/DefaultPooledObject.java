@@ -188,11 +188,14 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
      * {@link #getLastBorrowTime()}; otherwise this method gives the same
      * value as {@link #getLastBorrowTime()}.
      *
-     * @return the last time this object was used
+     * @return the last Instant this object was used.
      */
     @Override
-    public long getLastUsedTime() {
-        return getLastUsedInstant().toEpochMilli();
+    public Instant getLastUsedInstant() {
+        if (object instanceof TrackedUse) {
+            return PoolImplUtils.max(((TrackedUse) object).getLastUsedInstant(), lastUseInstant);
+        }
+        return lastUseInstant;
     }
 
     /**
@@ -202,14 +205,11 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
      * {@link #getLastBorrowTime()}; otherwise this method gives the same
      * value as {@link #getLastBorrowTime()}.
      *
-     * @return the last Instant this object was used.
+     * @return the last time this object was used
      */
     @Override
-    public Instant getLastUsedInstant() {
-        if (object instanceof TrackedUse) {
-            return PoolImplUtils.max(((TrackedUse) object).getLastUsedInstant(), lastUseInstant);
-        }
-        return lastUseInstant;
+    public long getLastUsedTime() {
+        return getLastUsedInstant().toEpochMilli();
     }
 
     @Override
