@@ -43,7 +43,7 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Pool Release Notes</title>
   </properties>
   <body>
-  <release version="2.11.0" date="2021-MM-DD" description="This is a feature release (Java 8).">
+  <release version="2.11.0" date="2021-08-08" description="This is a feature release (Java 8).">
     <!-- FIXES -->
     <action dev="ggregory" type="fix" due-to="Gary Gregory">
       Fix "[WARNING] Old version of checkstyle detected. Consider updating to >= v8.30." Update Checktyle to 8.44.
