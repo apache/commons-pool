@@ -1222,7 +1222,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         config.setMaxIdlePerKey(maxIdle);
         config.setMinIdlePerKey(minIdle);
         config.setMaxTotal(maxTotal);
-        config.setMaxWaitDuration(maxWaitDuration);
+        config.setMaxWait(maxWaitDuration);
         config.setMinEvictableIdleTime(Duration.ofMillis(minEvictableIdleTimeMillis));
         config.setNumTestsPerEvictionRun(numTestsPerEvictionRun);
         config.setTestOnBorrow(testOnBorrow);
@@ -1672,7 +1672,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         config.setMaxTotal(2);
         config.setBlockWhenExhausted(true);
         config.setMinIdlePerKey(0);
-        config.setMaxWaitDuration(Duration.ofMillis(-1));
+        config.setMaxWait(Duration.ofMillis(-1));
         config.setNumTestsPerEvictionRun(Integer.MAX_VALUE); // always test all idle objects
         config.setTestOnBorrow(true);
         config.setTestOnReturn(false);

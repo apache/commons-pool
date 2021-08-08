@@ -1323,7 +1323,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         config.setMaxIdle(maxIdle);
         config.setMinIdle(minIdle);
         config.setMaxTotal(maxTotal);
-        config.setMaxWaitDuration(maxWaitDuration);
+        config.setMaxWait(maxWaitDuration);
         config.setMinEvictableIdleTimeMillis(minEvictableIdleMillis);
         assertEquals(minEvictableIdleMillis, config.getMinEvictableIdleTime().toMillis());
         config.setNumTestsPerEvictionRun(numTestsPerEvictionRun);
@@ -2651,7 +2651,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertConfiguration(expected,genericObjectPool);
         expected.setMaxTotal(2);
         expected.setMaxIdle(3);
-        expected.setMaxWaitDuration(Duration.ofMillis(5));
+        expected.setMaxWait(Duration.ofMillis(5));
         expected.setMinEvictableIdleTime(Duration.ofMillis(7L));
         expected.setNumTestsPerEvictionRun(9);
         expected.setTestOnCreate(true);

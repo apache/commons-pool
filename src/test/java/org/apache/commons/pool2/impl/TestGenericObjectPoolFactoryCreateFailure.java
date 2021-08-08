@@ -119,7 +119,7 @@ public class TestGenericObjectPoolFactoryCreateFailure {
         config.setMinEvictableIdleTime(NEG_ONE_DURATION);
         config.setSoftMinEvictableIdleTime(NEG_ONE_DURATION);
 
-        config.setMaxWaitDuration(NEG_ONE_DURATION);
+        config.setMaxWait(NEG_ONE_DURATION);
         try (GenericObjectPool<Object> pool = new GenericObjectPool<>(factory, config)) {
 
             final AtomicBoolean failed = new AtomicBoolean();

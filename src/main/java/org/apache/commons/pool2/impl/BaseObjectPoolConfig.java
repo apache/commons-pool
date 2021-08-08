@@ -854,11 +854,11 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      *
      * @see GenericObjectPool#getMaxWaitDuration()
      * @see GenericKeyedObjectPool#getMaxWaitDuration()
-     * @deprecated Use {@link #setMaxWaitDuration(Duration)}.
+     * @deprecated Use {@link #setMaxWait(Duration)}.
      */
     @Deprecated
     public void setMaxWaitMillis(final long maxWaitMillis) {
-        setMaxWaitDuration(Duration.ofMillis(maxWaitMillis));
+        setMaxWait(Duration.ofMillis(maxWaitMillis));
     }
 
     /**
@@ -870,8 +870,9 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      *
      * @see GenericObjectPool#getMaxWaitDuration()
      * @see GenericKeyedObjectPool#getMaxWaitDuration()
+     * @since 2.11.0
      */
-    public void setMaxWaitDuration(final Duration maxWaitDuration) {
+    public void setMaxWait(final Duration maxWaitDuration) {
         this.maxWaitDuration = PoolImplUtils.nonNull(maxWaitDuration, DEFAULT_MAX_WAIT);
     }
 
