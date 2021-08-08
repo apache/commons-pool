@@ -112,6 +112,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="fix" due-to="Gary Gregory">
       Bump com.github.spotbugs:spotbugs from 4.2.3 to 4.3.0.
     </action>
+    <action dev="ggregory" type="fix" due-to="Dependabot">
+      Bump checkstyle from 8.44 to 8.45 #92.
+    </action>
   </release>
   <release version="2.10.0" date="2021-05-28" description="This is a feature release (Java 8).">
     <!-- ADD -->
