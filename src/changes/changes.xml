@@ -87,7 +87,7 @@ The <action> type attribute can be add,update,fix,remove.
       - Add and use Duration APIs in BaseGenericObjectPool: getDurationBetweenEvictionRuns(), getEvictorShutdownTimeoutDuration(), getMinEvictableIdleDuration(), getSoftMinEvictableIdleDuration(), setMaxWait(Duration), setMinEvictableIdle(Duration), setSoftMinEvictableIdle(Duration).
       - Add and use Duration APIs in BaseObjectPoolConfig: getDurationBetweenEvictionRuns(), getEvictorShutdownTimeoutDuration(),getMinEvictableIdleDuration(), getSoftMinEvictableIdleDuration().
       - Add and use Duration APIs in EvictionConfig: getIdleEvictDuration(), getIdleSoftEvictDuration().
-      - Add and use Duration APIs in PooledObject: getIdleDuration().
+      - Add and use Duration APIs in PooledObject: getIdleDuration(), getActiveDuration().
       - No need to initialize instance variables to their default values.
       - Update Javadocs.
       - Update toString() implementations with duration labels.

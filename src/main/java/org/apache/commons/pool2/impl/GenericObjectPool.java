@@ -1024,7 +1024,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
 
         markReturningState(p);
 
-        final Duration activeTime = p.getActiveTime();
+        final Duration activeTime = p.getActiveDuration();
 
         if (getTestOnReturn() && !factory.validateObject(p)) {
             try {

@@ -81,9 +81,9 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      * subsequent calls will return an increased value).
      *
      * @return The duration last spent in the active state.
-     * @since 2.10.0
+     * @since 2.11.0
      */
-    default Duration getActiveTime() {
+    default Duration getActiveDuration() {
         final Instant lastReturnInstant = getLastReturnInstant();
         final Instant lastBorrowInstant = getLastBorrowInstant();
         // @formatter:off
@@ -91,6 +91,19 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
                 Duration.between(lastBorrowInstant, lastReturnInstant) :
                 Duration.between(Instant.now(), lastBorrowInstant);
         // @formatter:on
+    }
+
+    /**
+     * Gets the amount of time this object last spent in the active state (it may still be active in which case
+     * subsequent calls will return an increased value).
+     *
+     * @return The duration last spent in the active state.
+     * @since 2.10.0
+     * @deprecated Use {@link #getActiveDuration()}.
+     */
+    @Deprecated
+    default Duration getActiveTime() {
+        return getActiveDuration();
     }
 
     /**

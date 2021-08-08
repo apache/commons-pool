@@ -139,7 +139,7 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
 
     @Override
     public long getActiveTimeMillis() {
-        return getActiveTime().toMillis();
+        return getActiveDuration().toMillis();
     }
 
     /**
