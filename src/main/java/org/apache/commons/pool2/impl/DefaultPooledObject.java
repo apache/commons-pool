@@ -172,8 +172,18 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
     }
 
     @Override
+    public Instant getLastBorrowInstant() {
+        return lastBorrowInstant;
+    }
+
+    @Override
     public long getLastBorrowTime() {
         return lastBorrowInstant.toEpochMilli();
+    }
+
+    @Override
+    public Instant getLastReturnInstant() {
+        return lastReturnInstant;
     }
 
     @Override
