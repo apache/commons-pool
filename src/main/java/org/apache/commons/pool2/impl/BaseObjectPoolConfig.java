@@ -741,11 +741,11 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      * @see GenericObjectPool#getEvictorShutdownTimeoutDuration()
      * @see GenericKeyedObjectPool#getEvictorShutdownTimeoutDuration()
      * @since 2.10.0
-     * @deprecated Use {@link #setEvictorShutdownTimeoutDuration(Duration)}.
+     * @deprecated Use {@link #setEvictorShutdownTimeout(Duration)}.
      */
     @Deprecated
     public void setEvictorShutdownTimeoutMillis(final Duration evictorShutdownTimeout) {
-        setEvictorShutdownTimeoutDuration(evictorShutdownTimeout);
+        setEvictorShutdownTimeout(evictorShutdownTimeout);
     }
 
     /**
@@ -760,7 +760,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      * @see GenericKeyedObjectPool#getEvictorShutdownTimeoutDuration()
      * @since 2.11.0
      */
-    public void setEvictorShutdownTimeoutDuration(final Duration evictorShutdownTimeoutDuration) {
+    public void setEvictorShutdownTimeout(final Duration evictorShutdownTimeoutDuration) {
         this.evictorShutdownTimeoutDuration = PoolImplUtils.nonNull(evictorShutdownTimeoutDuration, DEFAULT_EVICTOR_SHUTDOWN_TIMEOUT);
     }
 
@@ -774,11 +774,11 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      *
      * @see GenericObjectPool#getEvictorShutdownTimeoutDuration()
      * @see GenericKeyedObjectPool#getEvictorShutdownTimeoutDuration()
-     * @deprecated Use {@link #setEvictorShutdownTimeoutDuration(Duration)}.
+     * @deprecated Use {@link #setEvictorShutdownTimeout(Duration)}.
      */
     @Deprecated
     public void setEvictorShutdownTimeoutMillis(final long evictorShutdownTimeoutMillis) {
-        setEvictorShutdownTimeoutDuration(Duration.ofMillis(evictorShutdownTimeoutMillis));
+        setEvictorShutdownTimeout(Duration.ofMillis(evictorShutdownTimeoutMillis));
     }
 
     /**
