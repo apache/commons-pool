@@ -809,7 +809,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     /**
      * De-register the use of a key by an object.
      * <p>
-     * {@link #register()} and {@link #deregister()} must always be used as a pair.
+     * {@link #register(Object)} and {@link #deregister(Object)} must always be used as a pair.
      * </p>
      *
      * @param k The key to de-register
@@ -1359,7 +1359,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     /**
      * Register the use of a key by an object.
      * <p>
-     * {@link #register()} and {@link #deregister()} must always be used as a pair.
+     * {@link #register(Object)} and {@link #deregister(Object)} must always be used as a pair.
      * </p>
      *
      * @param k The key to register
