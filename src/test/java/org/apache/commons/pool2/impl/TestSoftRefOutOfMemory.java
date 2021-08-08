@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
 public class TestSoftRefOutOfMemory {
     public static class LargePoolableObjectFactory extends BasePooledObjectFactory<String> {
         private final String buffer;
-        private int counter = 0;
+        private int counter;
 
         public LargePoolableObjectFactory(final int size) {
             final char[] data = new char[size];
@@ -106,7 +106,7 @@ public class TestSoftRefOutOfMemory {
     }
 
     public static class SmallPoolableObjectFactory extends BasePooledObjectFactory<String> {
-        private int counter = 0;
+        private int counter;
 
         @Override
         public String create() {

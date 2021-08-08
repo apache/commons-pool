@@ -40,7 +40,7 @@ public class TestBaseObjectPool extends TestObjectPool {
         }
     }
 
-    private ObjectPool<String> _pool = null;
+    private ObjectPool<String> _pool;
 
     /**
      * @param n Ignored by this implemented. Used by sub-classes.

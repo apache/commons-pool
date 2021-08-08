@@ -91,11 +91,11 @@ public class PerformanceTest {
     }
     }
     private static class TaskStats {
-        public int waiting = 0;
-        public int complete = 0;
-        public long totalBorrowTime = 0;
-        public long totalReturnTime = 0;
-        public int nrSamples = 0;
+        public int waiting;
+        public int complete;
+        public long totalBorrowTime;
+        public long totalReturnTime;
+        public int nrSamples;
     }
 
     public static void main(final String[] args) {
@@ -122,7 +122,7 @@ public class PerformanceTest {
 //      test.run(1, 400, 40,  5);
     }
 
-    private int logLevel = 0;
+    private int logLevel;
 
     private int nrIterations = 5;
 

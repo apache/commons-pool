@@ -30,7 +30,7 @@ package org.apache.commons.pool2;
  */
 public abstract class BaseObjectPool<T> extends BaseObject implements ObjectPool<T> {
 
-    private volatile boolean closed = false;
+    private volatile boolean closed;
 
     /**
      * Not supported in this base implementation. Subclasses should override

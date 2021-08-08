@@ -75,9 +75,9 @@ public abstract class BaseTestProxiedObjectPool {
     private static final Duration ABANDONED_TIMEOUT_SECS = Duration.ofSeconds(3);
 
 
-    private ObjectPool<TestObject> pool = null;
+    private ObjectPool<TestObject> pool;
 
-    private StringWriter log = null;
+    private StringWriter log;
 
 
     protected abstract ProxySource<TestObject> getproxySource();

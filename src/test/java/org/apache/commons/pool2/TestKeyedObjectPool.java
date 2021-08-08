@@ -35,7 +35,7 @@ public abstract class TestKeyedObjectPool {
 
     protected static class FailingKeyedPooledObjectFactory implements KeyedPooledObjectFactory<Object,Object> {
         private final List<MethodCall> methodCalls = new ArrayList<>();
-        private int count = 0;
+        private int count;
         private boolean makeObjectFail;
         private boolean activateObjectFail;
         private boolean validateObjectFail;
@@ -173,7 +173,7 @@ public abstract class TestKeyedObjectPool {
 
     protected static final String KEY = "key";
 
-    private KeyedObjectPool<Object,Object> _pool = null;
+    private KeyedObjectPool<Object,Object> _pool;
 
     // Deliberate choice to create a new object in case future unit tests check
     // for a specific object.

@@ -81,7 +81,7 @@ public abstract class BaseTestProxiedKeyedObjectPool {
 
     private KeyedObjectPool<String,TestObject> pool;
 
-    private StringWriter log = null;
+    private StringWriter log;
 
 
     protected abstract ProxySource<TestObject> getproxySource();
