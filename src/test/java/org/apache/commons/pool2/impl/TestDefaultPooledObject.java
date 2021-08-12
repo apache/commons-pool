@@ -16,8 +16,9 @@
  */
 package org.apache.commons.pool2.impl;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,8 +41,8 @@ public class TestDefaultPooledObject {
         Thread.sleep(200);
         assertFalse(dpo.getActiveDuration().isNegative());
         assertFalse(dpo.getActiveDuration().isZero());
-        assertEquals(dpo.getActiveDuration().toMillis(), dpo.getActiveTimeMillis());
-        assertEquals(dpo.getActiveDuration(), dpo.getActiveTime());
+        assertThat(dpo.getActiveDuration().toMillis(), lessThanOrEqualTo(dpo.getActiveTimeMillis()));
+        assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getActiveTime()));
     }
 
     /**
