@@ -1026,7 +1026,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     }
 
     /**
-     * The listener used (if any) to receive notifications of exceptions
+     * Gets the listener used (if any) to receive notifications of exceptions
      * unavoidably swallowed by the pool.
      *
      * @return The listener or {@code null} for no listener
@@ -1842,7 +1842,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         builder.append(testOnReturn);
         builder.append(", testWhileIdle=");
         builder.append(testWhileIdle);
-        builder.append(", timeBetweenEvictionRunsMillis=");
+        builder.append(", durationBetweenEvictionRuns=");
         builder.append(durationBetweenEvictionRuns);
         builder.append(", numTestsPerEvictionRun=");
         builder.append(numTestsPerEvictionRun);

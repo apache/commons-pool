@@ -1054,7 +1054,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
         builder.append(lifo);
         builder.append(", fairness=");
         builder.append(fairness);
-        builder.append(", maxWaitMillis=");
+        builder.append(", maxWaitDuration=");
         builder.append(maxWaitDuration);
         builder.append(", minEvictableIdleTime=");
         builder.append(minEvictableIdleDuration);

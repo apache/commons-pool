@@ -310,7 +310,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                 }
                 if (p == null) {
                     throw new NoSuchElementException(appendStats(
-                            "Timeout waiting for idle object, borrowMaxWaitMillis=" + borrowMaxWaitDuration));
+                            "Timeout waiting for idle object, borrowMaxWaitDuration=" + borrowMaxWaitDuration));
                 }
             } else if (p == null) {
                 throw new NoSuchElementException(appendStats("Pool exhausted"));
