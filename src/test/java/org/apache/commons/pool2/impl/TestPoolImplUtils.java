@@ -26,6 +26,9 @@ import org.junit.jupiter.api.Test;
 
 public class TestPoolImplUtils {
 
+    private static final Instant INSTANT_1 = Instant.ofEpochMilli(1);
+    private static final Instant INSTANT_0 = Instant.ofEpochMilli(0);
+
     @SuppressWarnings("unused")
     private abstract static class FactoryAB<A, B> extends BasePooledObjectFactory<B> {
         // empty by design
@@ -86,21 +89,17 @@ public class TestPoolImplUtils {
 
     @Test
     public void testMaxInstants() {
-        final Instant instant0 = Instant.ofEpochMilli(0);
-        final Instant instant1 = Instant.ofEpochMilli(1);
-        assertEquals(instant1, PoolImplUtils.max(instant0, instant1));
-        assertEquals(instant1, PoolImplUtils.max(instant1, instant0));
-        assertEquals(instant1, PoolImplUtils.max(instant1, instant1));
-        assertEquals(instant0, PoolImplUtils.max(instant0, instant0));
+        assertEquals(INSTANT_1, PoolImplUtils.max(INSTANT_0, INSTANT_1));
+        assertEquals(INSTANT_1, PoolImplUtils.max(INSTANT_1, INSTANT_0));
+        assertEquals(INSTANT_1, PoolImplUtils.max(INSTANT_1, INSTANT_1));
+        assertEquals(INSTANT_0, PoolImplUtils.max(INSTANT_0, INSTANT_0));
     }
 
     @Test
     public void testMinInstants() {
-        final Instant instant0 = Instant.ofEpochMilli(0);
-        final Instant instant1 = Instant.ofEpochMilli(1);
-        assertEquals(instant0, PoolImplUtils.min(instant0, instant1));
-        assertEquals(instant0, PoolImplUtils.min(instant1, instant0));
-        assertEquals(instant1, PoolImplUtils.min(instant1, instant1));
-        assertEquals(instant0, PoolImplUtils.min(instant0, instant0));
+        assertEquals(INSTANT_0, PoolImplUtils.min(INSTANT_0, INSTANT_1));
+        assertEquals(INSTANT_0, PoolImplUtils.min(INSTANT_1, INSTANT_0));
+        assertEquals(INSTANT_1, PoolImplUtils.min(INSTANT_1, INSTANT_1));
+        assertEquals(INSTANT_0, PoolImplUtils.min(INSTANT_0, INSTANT_0));
     }
 }
