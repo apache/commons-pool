@@ -26,14 +26,10 @@ import org.junit.jupiter.api.Test;
 
 public class TestPoolImplUtils {
 
-    private static final Instant INSTANT_1 = Instant.ofEpochMilli(1);
-    private static final Instant INSTANT_0 = Instant.ofEpochMilli(0);
-
     @SuppressWarnings("unused")
     private abstract static class FactoryAB<A, B> extends BasePooledObjectFactory<B> {
         // empty by design
     }
-
     private abstract static class FactoryBA<A, B> extends FactoryAB<B, A> {
         // empty by design
     }
@@ -74,6 +70,10 @@ public class TestPoolImplUtils {
             return null;
         }
     }
+
+    private static final Instant INSTANT_1 = Instant.ofEpochMilli(1);
+
+    private static final Instant INSTANT_0 = Instant.ofEpochMilli(0);
 
     @Test
     public void testFactoryTypeNotSimple() {
