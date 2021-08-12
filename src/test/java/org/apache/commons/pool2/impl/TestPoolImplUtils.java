@@ -18,7 +18,10 @@ package org.apache.commons.pool2.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
@@ -30,6 +33,7 @@ public class TestPoolImplUtils {
     private abstract static class FactoryAB<A, B> extends BasePooledObjectFactory<B> {
         // empty by design
     }
+
     private abstract static class FactoryBA<A, B> extends FactoryAB<B, A> {
         // empty by design
     }
@@ -101,5 +105,26 @@ public class TestPoolImplUtils {
         assertEquals(INSTANT_0, PoolImplUtils.min(INSTANT_1, INSTANT_0));
         assertEquals(INSTANT_1, PoolImplUtils.min(INSTANT_1, INSTANT_1));
         assertEquals(INSTANT_0, PoolImplUtils.min(INSTANT_0, INSTANT_0));
+    }
+
+    @Test
+    public void testToChronoUnit() {
+        assertEquals(ChronoUnit.NANOS, PoolImplUtils.toChronoUnit(TimeUnit.NANOSECONDS));
+        assertEquals(ChronoUnit.MICROS, PoolImplUtils.toChronoUnit(TimeUnit.MICROSECONDS));
+        assertEquals(ChronoUnit.MILLIS, PoolImplUtils.toChronoUnit(TimeUnit.MILLISECONDS));
+        assertEquals(ChronoUnit.SECONDS, PoolImplUtils.toChronoUnit(TimeUnit.SECONDS));
+        assertEquals(ChronoUnit.MINUTES, PoolImplUtils.toChronoUnit(TimeUnit.MINUTES));
+        assertEquals(ChronoUnit.HOURS, PoolImplUtils.toChronoUnit(TimeUnit.HOURS));
+        assertEquals(ChronoUnit.DAYS, PoolImplUtils.toChronoUnit(TimeUnit.DAYS));
+    }
+
+    @Test
+    public void testToDuration() {
+        assertEquals(Duration.ZERO, PoolImplUtils.toDuration(0, TimeUnit.MILLISECONDS));
+        assertEquals(Duration.ofMillis(1), PoolImplUtils.toDuration(1, TimeUnit.MILLISECONDS));
+        for (TimeUnit tu : TimeUnit.values()) {
+            // All TimeUnit should be handled.
+            assertEquals(Duration.ZERO, PoolImplUtils.toDuration(0, tu));
+        }
     }
 }
