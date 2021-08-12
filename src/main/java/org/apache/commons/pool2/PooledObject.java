@@ -89,7 +89,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
         // @formatter:off
         return lastReturnInstant.isAfter(lastBorrowInstant) ?
                 Duration.between(lastBorrowInstant, lastReturnInstant) :
-                Duration.between(Instant.now(), lastBorrowInstant);
+                Duration.between(lastBorrowInstant, Instant.now());
         // @formatter:on
     }
 

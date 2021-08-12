@@ -43,8 +43,14 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Pool Release Notes</title>
   </properties>
   <body>
-  <release version="2.11.1" date="2021-08-08" description="This is a maintenance release (Java 8).">
+  <release version="2.11.1" date="2021-08-DD" description="This is a maintenance release (Java 8).">
     <!-- FIXES -->
+    <action dev="ggregory" type="fix" due-to="Gary Gregory">
+      Getting a PooledObject's active duration returns a negative duration when the object is borrowed but not returned. Affects:
+      - PooledObject.getActiveDuration()
+      - PooledObject.getActiveTime()
+      - PooledObject.getActiveTimeMillis()
+    </action>
     <action dev="ggregory" type="fix" due-to="Gary Gregory">
       Fix field label in BaseGenericObjectPool toString() builder: From timeBetweenEvictionRunsMillis to durationBetweenEvictionRuns.
     </action>

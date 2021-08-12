@@ -17,6 +17,7 @@
 package org.apache.commons.pool2.impl;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +28,21 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.Test;
 
-
+/**
+ * Tests {@link DefaultPooledObject}.
+ */
 public class TestDefaultPooledObject {
+
+    @Test
+    public void testGetActiveDuration() throws InterruptedException {
+        final DefaultPooledObject<Object> dpo = new DefaultPooledObject<>(new Object());
+        // Sleep MUST be "long enough" to test that we are not returning a negative time.
+        Thread.sleep(200);
+        assertFalse(dpo.getActiveDuration().isNegative());
+        assertFalse(dpo.getActiveDuration().isZero());
+        assertEquals(dpo.getActiveDuration().toMillis(), dpo.getActiveTimeMillis());
+        assertEquals(dpo.getActiveDuration(), dpo.getActiveTime());
+    }
 
     /**
      * JIRA: POOL-279
@@ -76,5 +90,4 @@ public class TestDefaultPooledObject {
         assertFalse(negativeIdleTimeReturned.get(),
                 "DefaultPooledObject.getIdleTimeMillis() returned a negative value");
     }
-
 }

@@ -1898,6 +1898,28 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     @Test
+    public void testGetActiveDuration() throws Exception {
+        // Borrow
+        final String object = genericObjectPool.borrowObject();
+        final PooledObject<String> dpo = genericObjectPool.getPooledObject(object);
+
+        // Sleep MUST be "long enough" to detect that more than 0 milliseconds have elapsed.
+        Thread.sleep(200);
+        assertFalse(dpo.getActiveDuration().isNegative());
+        assertFalse(dpo.getActiveDuration().isZero());
+        assertEquals(dpo.getActiveDuration().toMillis(), dpo.getActiveTimeMillis());
+        assertEquals(dpo.getActiveDuration(), dpo.getActiveTime());
+
+        // Return
+        genericObjectPool.returnObject(object);
+
+        assertFalse(dpo.getActiveDuration().isNegative());
+        assertFalse(dpo.getActiveDuration().isZero());
+        assertEquals(dpo.getActiveDuration().toMillis(), dpo.getActiveTimeMillis());
+        assertEquals(dpo.getActiveDuration(), dpo.getActiveTime());
+    }
+
+    @Test
     public void testGetFactoryType_DefaultPooledObjectFactory() {
         try (final GenericObjectPool<String> pool = new GenericObjectPool<>(createDefaultPooledObjectFactory())) {
             assertNotNull((pool.getFactoryType()));

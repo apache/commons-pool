@@ -369,6 +369,10 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         return p.getObject();
     }
 
+    PooledObject<T> getPooledObject(final T obj) {
+        return allObjects.get(new IdentityWrapper<>(obj));
+    }
+
     @Override
     String getStatsString() {
         // Simply listed in AB order.
@@ -924,7 +928,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      */
     @Override
     public void invalidateObject(final T obj, final DestroyMode destroyMode) throws Exception {
-        final PooledObject<T> p = allObjects.get(new IdentityWrapper<>(obj));
+        final PooledObject<T> p = getPooledObject(obj);
         if (p == null) {
             if (isAbandonedConfig()) {
                 return;
@@ -1012,7 +1016,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      */
     @Override
     public void returnObject(final T obj) {
-        final PooledObject<T> p = allObjects.get(new IdentityWrapper<>(obj));
+        final PooledObject<T> p = getPooledObject(obj);
 
         if (p == null) {
             if (!isAbandonedConfig()) {
@@ -1173,7 +1177,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     public void use(final T pooledObject) {
         final AbandonedConfig abandonedCfg = this.abandonedConfig;
         if (abandonedCfg != null && abandonedCfg.getUseUsageTracking()) {
-            allObjects.get(new IdentityWrapper<>(pooledObject)).use();
+            getPooledObject(pooledObject).use();
         }
     }
 
