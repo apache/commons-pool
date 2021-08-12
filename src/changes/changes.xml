@@ -46,10 +46,10 @@ The <action> type attribute can be add,update,fix,remove.
   <release version="2.11.1" date="2021-08-08" description="This is a maintenance release (Java 8).">
     <!-- FIXES -->
     <action dev="ggregory" type="fix" due-to="Gary Gregory">
-      Fix field label in BaseGenericObjectPool: From timeBetweenEvictionRunsMillis to durationBetweenEvictionRuns.
+      Fix field label in BaseGenericObjectPool toString() builder: From timeBetweenEvictionRunsMillis to durationBetweenEvictionRuns.
     </action>
     <action dev="ggregory" type="fix" due-to="Gary Gregory">
-      Fix field label in BaseObjectPoolConfig: From maxWaitMillis to maxWaitDuration.
+      Fix field label in BaseObjectPoolConfig toString() builder: From maxWaitMillis to maxWaitDuration.
     </action>
     <action dev="ggregory" type="fix" due-to="Gary Gregory">
       Fix field label in NoSuchElementException message for GenericObjectPool.borrowObject(Duration): From borrowMaxWaitMillis to borrowMaxWaitDuration.
