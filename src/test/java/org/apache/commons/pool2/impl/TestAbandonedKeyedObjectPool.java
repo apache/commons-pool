@@ -70,7 +70,7 @@ public class TestAbandonedKeyedObjectPool {
         public void run() {
             try {
                 sleep(20);
-                pool.returnObject(0,returned);
+                pool.returnObject(0, returned);
             } catch (final Exception e) {
                 // ignore
             }
