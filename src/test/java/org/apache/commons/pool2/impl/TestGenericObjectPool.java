@@ -34,6 +34,7 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.nio.charset.UnsupportedCharsetException;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -1023,6 +1024,46 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
     }
 
+    @Test
+    public void testBorrowTimings() throws Exception {
+        // Borrow
+        final String object = genericObjectPool.borrowObject();
+        final PooledObject<String> dpo = genericObjectPool.getPooledObject(object);
+
+        final Instant lastBorrowInstant1 = dpo.getLastBorrowInstant();
+        final Instant lastReturnInstant1 = dpo.getLastReturnInstant();
+        final Instant lastUsedInstant1 = dpo.getLastUsedInstant();
+
+        assertThat(dpo.getCreateInstant(), lessThanOrEqualTo(lastBorrowInstant1));
+        assertThat(dpo.getCreateInstant(), lessThanOrEqualTo(lastReturnInstant1));
+        assertThat(dpo.getCreateInstant(), lessThanOrEqualTo(lastUsedInstant1));
+
+        // Sleep MUST be "long enough" to detect that more than 0 milliseconds have elapsed.
+        // Need an API in Java 8 to get the clock granularity.
+        Thread.sleep(200);
+        assertFalse(dpo.getActiveDuration().isNegative());
+        assertFalse(dpo.getActiveDuration().isZero());
+        assertThat(dpo.getActiveDuration().toMillis(), lessThanOrEqualTo(dpo.getActiveTimeMillis()));
+        assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getActiveTime()));
+        assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getIdleDuration()));
+        //
+        assertThat(dpo.getCreateInstant(), lessThanOrEqualTo(dpo.getLastBorrowInstant()));
+        assertThat(dpo.getCreateInstant(), lessThanOrEqualTo(dpo.getLastReturnInstant()));
+        assertThat(dpo.getCreateInstant(), lessThanOrEqualTo(dpo.getLastUsedInstant()));
+
+        assertThat(lastBorrowInstant1, lessThanOrEqualTo(dpo.getLastBorrowInstant()));
+        assertThat(lastReturnInstant1, lessThanOrEqualTo(dpo.getLastReturnInstant()));
+        assertThat(lastUsedInstant1, lessThanOrEqualTo(dpo.getLastUsedInstant()));
+
+        // Return
+        genericObjectPool.returnObject(object);
+
+        assertFalse(dpo.getActiveDuration().isNegative());
+        assertFalse(dpo.getActiveDuration().isZero());
+        assertThat(dpo.getActiveDuration().toMillis(), lessThanOrEqualTo(dpo.getActiveTimeMillis()));
+        assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getActiveTime()));
+    }
+
     /*
      * Note: This test relies on timing for correct execution. There *should* be
      * enough margin for this to work correctly on most (all?) systems but be
@@ -1181,6 +1222,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         genericObjectPool.close();
     }
 
+
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
     public void testConcurrentBorrowAndEvict() throws Exception {
@@ -1208,7 +1250,6 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             */
         }
     }
-
 
     /**
      * POOL-231 - verify that concurrent invalidates of the same object do not
@@ -1897,28 +1938,6 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         genericObjectPool.returnObject(o);
         assertEquals( o, genericObjectPool.borrowObject(),"returned-3");
         assertEquals( "4", genericObjectPool.borrowObject(),"new-4");
-    }
-
-    @Test
-    public void testGetActiveDuration() throws Exception {
-        // Borrow
-        final String object = genericObjectPool.borrowObject();
-        final PooledObject<String> dpo = genericObjectPool.getPooledObject(object);
-
-        // Sleep MUST be "long enough" to detect that more than 0 milliseconds have elapsed.
-        Thread.sleep(200);
-        assertFalse(dpo.getActiveDuration().isNegative());
-        assertFalse(dpo.getActiveDuration().isZero());
-        assertThat(dpo.getActiveDuration().toMillis(), lessThanOrEqualTo(dpo.getActiveTimeMillis()));
-        assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getActiveTime()));
-
-        // Return
-        genericObjectPool.returnObject(object);
-
-        assertFalse(dpo.getActiveDuration().isNegative());
-        assertFalse(dpo.getActiveDuration().isZero());
-        assertThat(dpo.getActiveDuration().toMillis(), lessThanOrEqualTo(dpo.getActiveTimeMillis()));
-        assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getActiveTime()));
     }
 
     @Test
