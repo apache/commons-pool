@@ -17,11 +17,12 @@
 package org.apache.commons.pool2.impl;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -49,12 +50,14 @@ public class TestDefaultPooledObject {
         assertFalse(dpo.getActiveDuration().isNegative());
         assertFalse(dpo.getActiveDuration().isZero());
         // We use greaterThanOrEqualTo instead of equal because "now" many be different when each argument is evaluated.
-        assertThat(dpo.getActiveDuration(), greaterThanOrEqualTo(dpo.getIdleDuration()));
+        assertThat(1L, lessThanOrEqualTo(2L)); // sanity check
+        assertThat(Duration.ZERO, lessThanOrEqualTo(Duration.ZERO.plusNanos(1))); // sanity check
+        assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getIdleDuration()));
         // Depreacted
-        assertThat(dpo.getActiveDuration().toMillis(), greaterThanOrEqualTo(dpo.getActiveTimeMillis()));
-        assertThat(dpo.getActiveDuration(), greaterThanOrEqualTo(dpo.getActiveTime()));
-        assertThat(dpo.getActiveDuration(), greaterThanOrEqualTo(dpo.getIdleTime()));
-        assertThat(dpo.getActiveDuration().toMillis(), greaterThanOrEqualTo(dpo.getIdleTimeMillis()));
+        assertThat(dpo.getActiveDuration().toMillis(), lessThanOrEqualTo(dpo.getActiveTimeMillis()));
+        assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getActiveTime()));
+        assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getIdleTime()));
+        assertThat(dpo.getActiveDuration().toMillis(), lessThanOrEqualTo(dpo.getIdleTimeMillis()));
     }
 
     @Test
@@ -70,10 +73,10 @@ public class TestDefaultPooledObject {
         // We use greaterThanOrEqualTo instead of equal because "now" many be different when each argument is evaluated.
         assertThat(dpo.getIdleDuration(), greaterThanOrEqualTo(dpo.getActiveDuration()));
         // Depreacted
-        assertThat(dpo.getIdleDuration().toMillis(), greaterThanOrEqualTo(dpo.getIdleTimeMillis()));
-        assertThat(dpo.getIdleDuration(), greaterThanOrEqualTo(dpo.getIdleTime()));
-        assertThat(dpo.getIdleDuration(), greaterThanOrEqualTo(dpo.getActiveTime()));
-        assertThat(dpo.getIdleDuration().toMillis(), greaterThanOrEqualTo(dpo.getActiveTimeMillis()));
+        assertThat(dpo.getIdleDuration().toMillis(), lessThanOrEqualTo(dpo.getIdleTimeMillis()));
+        assertThat(dpo.getIdleDuration(), lessThanOrEqualTo(dpo.getIdleTime()));
+        assertThat(dpo.getIdleDuration(), lessThanOrEqualTo(dpo.getActiveTime()));
+        assertThat(dpo.getIdleDuration().toMillis(), lessThanOrEqualTo(dpo.getActiveTimeMillis()));
     }
 
     @Test
