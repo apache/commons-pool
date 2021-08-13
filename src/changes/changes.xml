@@ -56,6 +56,9 @@ The <action> type attribute can be add,update,fix,remove.
       This interface is not implemented within Apache Commons Pool but affects Apache Commons DBCP.
     </action>
     <action dev="ggregory" type="fix" due-to="Gary Gregory">
+      DefaultPooledObject.getIdleTime() drops nanoseconds on Java 9 and greater.
+    </action>
+    <action dev="ggregory" type="fix" due-to="Gary Gregory">
       Fix field label in BaseGenericObjectPool toString() builder: From timeBetweenEvictionRunsMillis to durationBetweenEvictionRuns.
     </action>
     <action dev="ggregory" type="fix" due-to="Gary Gregory">

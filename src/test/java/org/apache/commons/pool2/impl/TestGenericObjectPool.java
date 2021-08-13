@@ -1060,8 +1060,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertThat(po.getActiveDuration(), lessThanOrEqualTo(po.getActiveTime()));
         //
         // TODO How to compare ID with AD since other tests may have touched the PO?
-        // assertThat(po.getActiveDuration(), lessThanOrEqualTo(po.getIdleTime()));
-        // assertThat(po.getActiveDuration().toMillis(), lessThanOrEqualTo(po.getIdleTimeMillis()));
+        assertThat(po.getActiveDuration(), lessThanOrEqualTo(po.getIdleTime()));
+        assertThat(po.getActiveDuration().toMillis(), lessThanOrEqualTo(po.getIdleTimeMillis()));
         //
         assertThat(po.getCreateInstant(), lessThanOrEqualTo(po.getLastBorrowInstant()));
         assertThat(po.getCreateInstant(), lessThanOrEqualTo(po.getLastReturnInstant()));

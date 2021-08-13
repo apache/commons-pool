@@ -173,6 +173,11 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
     }
 
     @Override
+    public Duration getIdleTime() {
+        return getIdleDuration();
+    }
+
+    @Override
     public long getIdleTimeMillis() {
         return getIdleDuration().toMillis();
     }
