@@ -18,6 +18,7 @@ package org.apache.commons.pool2.impl;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
@@ -42,14 +43,18 @@ public class TestDefaultPooledObject {
         // Sleep MUST be "long enough" to test that we are not returning a negative time.
         // Need an API in Java 8 to get the clock granularity.
         Thread.sleep(200);
+        // In the initial state, all instants are the creation instant: last borrow, last use, last return.
+        // In the initial state, the active duration is the time between "now" and the creation time.
+        // In the initial state, the idle duration is the time between "now" and the last return, which is the creation time.
         assertFalse(dpo.getActiveDuration().isNegative());
         assertFalse(dpo.getActiveDuration().isZero());
-        assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getIdleDuration()));
+        // We use greaterThanOrEqualTo instead of equal because "now" many be different when each argument is evaluated.
+        assertThat(dpo.getActiveDuration(), greaterThanOrEqualTo(dpo.getIdleDuration()));
         // Depreacted
-        assertThat(dpo.getActiveDuration().toMillis(), lessThanOrEqualTo(dpo.getActiveTimeMillis()));
-        assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getActiveTime()));
-        assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getIdleTime()));
-        assertThat(dpo.getActiveDuration().toMillis(), lessThanOrEqualTo(dpo.getIdleTimeMillis()));
+        assertThat(dpo.getActiveDuration().toMillis(), greaterThanOrEqualTo(dpo.getActiveTimeMillis()));
+        assertThat(dpo.getActiveDuration(), greaterThanOrEqualTo(dpo.getActiveTime()));
+        assertThat(dpo.getActiveDuration(), greaterThanOrEqualTo(dpo.getIdleTime()));
+        assertThat(dpo.getActiveDuration().toMillis(), greaterThanOrEqualTo(dpo.getIdleTimeMillis()));
     }
 
     @Test
@@ -57,19 +62,25 @@ public class TestDefaultPooledObject {
         final PooledObject<Object> dpo = new DefaultPooledObject<>(new Object());
         // Sleep MUST be "long enough" to test that we are not returning a negative time.
         Thread.sleep(200);
+        // In the initial state, all instants are the creation instant: last borrow, last use, last return.
+        // In the initial state, the active duration is the time between "now" and the creation time.
+        // In the initial state, the idle duration is the time between "now" and the last return, which is the creation time.
         assertFalse(dpo.getIdleDuration().isNegative());
         assertFalse(dpo.getIdleDuration().isZero());
-        assertThat(dpo.getIdleDuration(), lessThanOrEqualTo(dpo.getActiveDuration()));
+        // We use greaterThanOrEqualTo instead of equal because "now" many be different when each argument is evaluated.
+        assertThat(dpo.getIdleDuration(), greaterThanOrEqualTo(dpo.getActiveDuration()));
         // Depreacted
-        assertThat(dpo.getIdleDuration().toMillis(), lessThanOrEqualTo(dpo.getActiveTimeMillis()));
-        assertThat(dpo.getIdleDuration(), lessThanOrEqualTo(dpo.getActiveTime()));
-        assertThat(dpo.getIdleDuration(), lessThanOrEqualTo(dpo.getIdleTime()));
-        assertThat(dpo.getIdleDuration().toMillis(), lessThanOrEqualTo(dpo.getActiveTimeMillis()));
+        assertThat(dpo.getIdleDuration().toMillis(), greaterThanOrEqualTo(dpo.getIdleTimeMillis()));
+        assertThat(dpo.getIdleDuration(), greaterThanOrEqualTo(dpo.getIdleTime()));
+        assertThat(dpo.getIdleDuration(), greaterThanOrEqualTo(dpo.getActiveTime()));
+        assertThat(dpo.getIdleDuration().toMillis(), greaterThanOrEqualTo(dpo.getActiveTimeMillis()));
     }
 
     @Test
     public void testInitialStateCreateInstant() throws InterruptedException {
         final PooledObject<Object> dpo = new DefaultPooledObject<>(new Object());
+
+        // In the initial state, all instants are the creation instant: last borrow, last use, last return.
 
         // Instant vs. Instant
         assertEquals(dpo.getCreateInstant(), dpo.getLastBorrowInstant());
