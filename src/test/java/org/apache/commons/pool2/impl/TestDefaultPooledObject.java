@@ -71,7 +71,7 @@ public class TestDefaultPooledObject {
         assertFalse(dpo.getIdleDuration().isNegative());
         assertFalse(dpo.getIdleDuration().isZero());
         // We use greaterThanOrEqualTo instead of equal because "now" many be different when each argument is evaluated.
-        assertThat(dpo.getIdleDuration(), greaterThanOrEqualTo(dpo.getActiveDuration()));
+        assertThat(dpo.getIdleDuration(), lessThanOrEqualTo(dpo.getActiveDuration()));
         // Depreacted
         assertThat(dpo.getIdleDuration().toMillis(), lessThanOrEqualTo(dpo.getIdleTimeMillis()));
         assertThat(dpo.getIdleDuration(), lessThanOrEqualTo(dpo.getIdleTime()));
