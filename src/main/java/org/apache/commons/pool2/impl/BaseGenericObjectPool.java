@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.TimerTask;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -356,7 +357,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     private Evictor evictor; // @GuardedBy("evictionLock")
     EvictionIterator evictionIterator; // @GuardedBy("evictionLock")
 
-    /*
+    /**
      * Class loader for evictor thread to use since, in a JavaEE or similar
      * environment, the context class loader for the evictor thread may not have
      * visibility of the correct factory. See POOL-161. Uses a weak reference to
@@ -377,7 +378,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     private final StatsStore idleTimes = new StatsStore(MEAN_TIMING_STATS_CACHE_SIZE);
     private final StatsStore waitTimes = new StatsStore(MEAN_TIMING_STATS_CACHE_SIZE);
 
-    private final AtomicLong maxBorrowWaitTimeMillis = new AtomicLong();
+    private final AtomicReference<Duration> maxBorrowWaitDuration = new AtomicReference<>(Duration.ZERO);
 
     private volatile SwallowedExceptionListener swallowedExceptionListener;
     private volatile boolean messageStatistics;
@@ -679,7 +680,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * @return maximum wait time in milliseconds since the pool was created
      */
     public final long getMaxBorrowWaitTimeMillis() {
-        return maxBorrowWaitTimeMillis.get();
+        return maxBorrowWaitDuration.get().toMillis();
     }
 
     /**
@@ -1015,12 +1016,12 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         // Simply listed in AB order.
         return String.format(
                 "activeTimes=%s, blockWhenExhausted=%s, borrowedCount=%,d, closed=%s, createdCount=%,d, destroyedByBorrowValidationCount=%,d, " +
-                        "destroyedByEvictorCount=%,d, evictorShutdownTimeoutDuration=%s, fairness=%s, idleTimes=%s, lifo=%s, maxBorrowWaitTimeMillis=%,d, " +
+                        "destroyedByEvictorCount=%,d, evictorShutdownTimeoutDuration=%s, fairness=%s, idleTimes=%s, lifo=%s, maxBorrowWaitDuration=%s, " +
                         "maxTotal=%s, maxWaitDuration=%s, minEvictableIdleDuration=%s, numTestsPerEvictionRun=%s, returnedCount=%s, " +
                         "softMinEvictableIdleDuration=%s, testOnBorrow=%s, testOnCreate=%s, testOnReturn=%s, testWhileIdle=%s, " +
                         "durationBetweenEvictionRuns=%s, waitTimes=%s",
                 activeTimes.getCurrentValues(), blockWhenExhausted, borrowedCount.get(), closed, createdCount.get(), destroyedByBorrowValidationCount.get(),
-                destroyedByEvictorCount.get(), evictorShutdownTimeoutDuration, fairness, idleTimes.getCurrentValues(), lifo, maxBorrowWaitTimeMillis.get(),
+                destroyedByEvictorCount.get(), evictorShutdownTimeoutDuration, fairness, idleTimes.getCurrentValues(), lifo, maxBorrowWaitDuration.get(),
                 maxTotal, maxWaitDuration, minEvictableIdleDuration, numTestsPerEvictionRun, returnedCount, softMinEvictableIdleDuration, testOnBorrow,
                 testOnCreate, testOnReturn, testWhileIdle, durationBetweenEvictionRuns, waitTimes.getCurrentValues());
     }
@@ -1886,8 +1887,8 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         builder.append(idleTimes);
         builder.append(", waitTimes=");
         builder.append(waitTimes);
-        builder.append(", maxBorrowWaitTimeMillis=");
-        builder.append(maxBorrowWaitTimeMillis);
+        builder.append(", maxBorrowWaitDuration=");
+        builder.append(maxBorrowWaitDuration);
         builder.append(", swallowedExceptionListener=");
         builder.append(swallowedExceptionListener);
     }
@@ -1902,16 +1903,18 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         borrowedCount.incrementAndGet();
         idleTimes.add(p.getIdleDuration());
         waitTimes.add(waitDuration);
-        final long waitTimeMillis = waitDuration.toMillis();
 
         // lock-free optimistic-locking maximum
-        long currentMaxMillis;
+        Duration currentMaxDuration;
         do {
-            currentMaxMillis = maxBorrowWaitTimeMillis.get();
-            if (currentMaxMillis >= waitTimeMillis) {
+            currentMaxDuration = maxBorrowWaitDuration.get();
+//            if (currentMaxDuration >= waitDuration) {
+//                break;
+//            }
+            if (currentMaxDuration.compareTo(waitDuration) >= 0) {
                 break;
             }
-        } while (!maxBorrowWaitTimeMillis.compareAndSet(currentMaxMillis, waitTimeMillis));
+        } while (!maxBorrowWaitDuration.compareAndSet(currentMaxDuration, waitDuration));
     }
 
     /**

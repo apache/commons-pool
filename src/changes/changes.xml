@@ -67,6 +67,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="fix" due-to="Gary Gregory">
       Fix field label in NoSuchElementException message for GenericObjectPool.borrowObject(Duration): From borrowMaxWaitMillis to borrowMaxWaitDuration.
     </action>
+    <action dev="ggregory" type="fix" due-to="Gary Gregory">
+      Reimplement BaseGenericObjectPool.maxBorrowWait as a Duration instead of a long.
+    </action>
     <!-- UPDATES -->
     <action dev="ggregory" type="update" due-to="Dependabot">
       Bump checkstyle from 8.45 to 8.45.1 #93.
