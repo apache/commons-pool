@@ -71,6 +71,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="update" due-to="Dependabot">
       Bump checkstyle from 8.45 to 8.45.1 #93.
     </action>
+    <action dev="ggregory" type="update" due-to="Dependabot">
+      Bump spotbugs from 4.2.3 to 4.3.0 and ignore new medium warnings EI_EXPOSE_REP and EI_EXPOSE_REP2.
+    </action>
   </release>
   <release version="2.11.0" date="2021-08-08" description="This is a feature release (Java 8).">
     <!-- FIXES -->

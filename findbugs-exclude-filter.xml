@@ -196,4 +196,10 @@
     <Method name="reuseCapacity" />
     <Bug pattern="WMI_WRONG_MAP_ITERATOR" />
   </Match>
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
 </FindBugsFilter>
