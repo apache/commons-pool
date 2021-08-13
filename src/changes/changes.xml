@@ -52,7 +52,8 @@ The <action> type attribute can be add,update,fix,remove.
       - PooledObject.getActiveTimeMillis()
     </action>
     <action dev="ggregory" type="fix" due-to="Gary Gregory">
-      The default implementation of TrackedUse.getLastUsedInstant() uses seconds instead of milliseconds. This interface is not implemented within Commons Pool.
+      The default implementation of TrackedUse.getLastUsedInstant() uses seconds instead of milliseconds. 
+      This interface is not implemented within Apache Commons Pool but affects Apache Commons DBCP.
     </action>
     <action dev="ggregory" type="fix" due-to="Gary Gregory">
       Fix field label in BaseGenericObjectPool toString() builder: From timeBetweenEvictionRunsMillis to durationBetweenEvictionRuns.
