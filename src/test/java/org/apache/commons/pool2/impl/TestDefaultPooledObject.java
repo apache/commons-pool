@@ -28,6 +28,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.pool2.PooledObject;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -37,43 +38,46 @@ public class TestDefaultPooledObject {
 
     @Test
     public void testInitialStateActiveDuration() throws InterruptedException {
-        final DefaultPooledObject<Object> dpo = new DefaultPooledObject<>(new Object());
+        final PooledObject<Object> dpo = new DefaultPooledObject<>(new Object());
         // Sleep MUST be "long enough" to test that we are not returning a negative time.
+        // Need an API in Java 8 to get the clock granularity.
         Thread.sleep(200);
         assertFalse(dpo.getActiveDuration().isNegative());
         assertFalse(dpo.getActiveDuration().isZero());
+        assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getIdleDuration()));
+        // Depreacted
         assertThat(dpo.getActiveDuration().toMillis(), lessThanOrEqualTo(dpo.getActiveTimeMillis()));
         assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getActiveTime()));
-        //
-        assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getIdleDuration()));
+        assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getIdleTime()));
     }
 
     @Test
     public void testInitialStateIdleDuration() throws InterruptedException {
-        final DefaultPooledObject<Object> dpo = new DefaultPooledObject<>(new Object());
+        final PooledObject<Object> dpo = new DefaultPooledObject<>(new Object());
         // Sleep MUST be "long enough" to test that we are not returning a negative time.
         Thread.sleep(200);
         assertFalse(dpo.getIdleDuration().isNegative());
         assertFalse(dpo.getIdleDuration().isZero());
+        assertThat(dpo.getIdleDuration(), lessThanOrEqualTo(dpo.getActiveDuration()));
+        // Depreacted
         assertThat(dpo.getIdleDuration().toMillis(), lessThanOrEqualTo(dpo.getActiveTimeMillis()));
         assertThat(dpo.getIdleDuration(), lessThanOrEqualTo(dpo.getActiveTime()));
-        //
-        assertThat(dpo.getIdleDuration(), lessThanOrEqualTo(dpo.getActiveDuration()));
+        assertThat(dpo.getIdleDuration(), lessThanOrEqualTo(dpo.getIdleTime()));
     }
 
     @Test
     public void testInitialStateCreateInstant() throws InterruptedException {
-        final DefaultPooledObject<Object> dpo = new DefaultPooledObject<>(new Object());
-
-        // Instant vs. long
-        assertEquals(dpo.getCreateInstant().toEpochMilli(), dpo.getCreateTime());
+        final PooledObject<Object> dpo = new DefaultPooledObject<>(new Object());
 
         // Instant vs. Instant
         assertEquals(dpo.getCreateInstant(), dpo.getLastBorrowInstant());
         assertEquals(dpo.getCreateInstant(), dpo.getLastReturnInstant());
         assertEquals(dpo.getCreateInstant(), dpo.getLastUsedInstant());
 
-        // long vs. long
+        // Instant vs. long (deprecated)
+        assertEquals(dpo.getCreateInstant().toEpochMilli(), dpo.getCreateTime());
+
+        // long vs. long (deprecated)
         assertEquals(dpo.getCreateTime(), dpo.getLastBorrowTime());
         assertEquals(dpo.getCreateTime(), dpo.getLastReturnTime());
         assertEquals(dpo.getCreateTime(), dpo.getLastUsedTime());
