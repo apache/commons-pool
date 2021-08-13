@@ -2048,12 +2048,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         gkoPool.setMaxTotal(0);
         gkoPool.setBlockWhenExhausted(false);
 
-        try {
-            gkoPool.borrowObject("a");
-            fail("Expected NoSuchElementException");
-        } catch(final NoSuchElementException e) {
-            // expected
-        }
+        assertThrows(NoSuchElementException.class, () -> gkoPool.borrowObject("a"));
     }
 
 
