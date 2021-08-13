@@ -164,11 +164,11 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
 
     @Override
     public long getIdleTimeMillis() {
-        final long elapsed = System.currentTimeMillis() - lastReturnInstant.toEpochMilli();
+        final long elapsedMillis = System.currentTimeMillis() - lastReturnInstant.toEpochMilli();
         // elapsed may be negative if:
         // - another thread updates lastReturnTime during the calculation window
         // - System.currentTimeMillis() is not monotonic (e.g. system time is set back)
-        return elapsed >= 0 ? elapsed : 0;
+        return elapsedMillis >= 0 ? elapsedMillis : 0;
     }
 
     @Override
