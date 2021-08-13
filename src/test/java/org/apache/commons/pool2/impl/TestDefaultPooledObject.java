@@ -18,6 +18,7 @@ package org.apache.commons.pool2.impl;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ import org.junit.jupiter.api.Test;
 public class TestDefaultPooledObject {
 
     @Test
-    public void testGetActiveDuration() throws InterruptedException {
+    public void testInitialStateActiveDuration() throws InterruptedException {
         final DefaultPooledObject<Object> dpo = new DefaultPooledObject<>(new Object());
         // Sleep MUST be "long enough" to test that we are not returning a negative time.
         Thread.sleep(200);
@@ -43,10 +44,44 @@ public class TestDefaultPooledObject {
         assertFalse(dpo.getActiveDuration().isZero());
         assertThat(dpo.getActiveDuration().toMillis(), lessThanOrEqualTo(dpo.getActiveTimeMillis()));
         assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getActiveTime()));
+        //
+        assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getIdleDuration()));
+    }
+
+    @Test
+    public void testInitialStateIdleDuration() throws InterruptedException {
+        final DefaultPooledObject<Object> dpo = new DefaultPooledObject<>(new Object());
+        // Sleep MUST be "long enough" to test that we are not returning a negative time.
+        Thread.sleep(200);
+        assertFalse(dpo.getIdleDuration().isNegative());
+        assertFalse(dpo.getIdleDuration().isZero());
+        assertThat(dpo.getIdleDuration().toMillis(), lessThanOrEqualTo(dpo.getActiveTimeMillis()));
+        assertThat(dpo.getIdleDuration(), lessThanOrEqualTo(dpo.getActiveTime()));
+        //
+        assertThat(dpo.getIdleDuration(), lessThanOrEqualTo(dpo.getActiveDuration()));
+    }
+
+    @Test
+    public void testInitialStateCreateInstant() throws InterruptedException {
+        final DefaultPooledObject<Object> dpo = new DefaultPooledObject<>(new Object());
+
+        // Instant vs. long
+        assertEquals(dpo.getCreateInstant().toEpochMilli(), dpo.getCreateTime());
+
+        // Instant vs. Instant
+        assertEquals(dpo.getCreateInstant(), dpo.getLastBorrowInstant());
+        assertEquals(dpo.getCreateInstant(), dpo.getLastReturnInstant());
+        assertEquals(dpo.getCreateInstant(), dpo.getLastUsedInstant());
+
+        // long vs. long
+        assertEquals(dpo.getCreateTime(), dpo.getLastBorrowTime());
+        assertEquals(dpo.getCreateTime(), dpo.getLastReturnTime());
+        assertEquals(dpo.getCreateTime(), dpo.getLastUsedTime());
     }
 
     /**
      * JIRA: POOL-279
+     *
      * @throws Exception May occur in some failure modes
      */
     @Test
@@ -81,14 +116,12 @@ public class TestDefaultPooledObject {
         final double probabilityOfAllocationTask = 0.7;
         final List<Future<?>> futures = new ArrayList<>();
         for (int i = 1; i <= 10000; i++) {
-            final Runnable randomTask = Math.random() < probabilityOfAllocationTask ? allocateAndDeallocateTask
-                    : getIdleTimeTask;
+            final Runnable randomTask = Math.random() < probabilityOfAllocationTask ? allocateAndDeallocateTask : getIdleTimeTask;
             futures.add(executor.submit(randomTask));
         }
         for (final Future<?> future : futures) {
             future.get();
         }
-        assertFalse(negativeIdleTimeReturned.get(),
-                "DefaultPooledObject.getIdleTimeMillis() returned a negative value");
+        assertFalse(negativeIdleTimeReturned.get(), "DefaultPooledObject.getIdleTimeMillis() returned a negative value");
     }
 }
