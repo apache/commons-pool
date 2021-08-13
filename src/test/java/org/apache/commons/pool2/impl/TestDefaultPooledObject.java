@@ -52,7 +52,7 @@ public class TestDefaultPooledObject {
         assertThat(1L, lessThanOrEqualTo(2L)); // sanity check
         assertThat(Duration.ZERO, lessThanOrEqualTo(Duration.ZERO.plusNanos(1))); // sanity check
         assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getIdleDuration()));
-        // Depreacted
+        // Deprecated
         assertThat(dpo.getActiveDuration().toMillis(), lessThanOrEqualTo(dpo.getActiveTimeMillis()));
         assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getActiveTime()));
         assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getIdleTime()));
@@ -71,7 +71,7 @@ public class TestDefaultPooledObject {
         assertFalse(dpo.getIdleDuration().isZero());
         // We use greaterThanOrEqualTo instead of equal because "now" many be different when each argument is evaluated.
         assertThat(dpo.getIdleDuration(), lessThanOrEqualTo(dpo.getActiveDuration()));
-        // Depreacted
+        // Deprecated
         assertThat(dpo.getIdleDuration().toMillis(), lessThanOrEqualTo(dpo.getIdleTimeMillis()));
         assertThat(dpo.getIdleDuration(), lessThanOrEqualTo(dpo.getIdleTime()));
         assertThat(dpo.getIdleDuration(), lessThanOrEqualTo(dpo.getActiveTime()));

@@ -1048,7 +1048,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertFalse(dpo.getActiveDuration().isNegative());
         assertFalse(dpo.getActiveDuration().isZero());
         assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getIdleDuration()));
-        // Depreacted
+        // Deprecated
         assertThat(dpo.getActiveDuration().toMillis(), lessThanOrEqualTo(dpo.getActiveTimeMillis()));
         assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getActiveTime()));
         assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getIdleTime()));
