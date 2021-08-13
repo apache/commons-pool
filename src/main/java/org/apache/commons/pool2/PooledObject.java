@@ -84,6 +84,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      * @since 2.11.0
      */
     default Duration getActiveDuration() {
+        // Take copies to avoid threading issues
         final Instant lastReturnInstant = getLastReturnInstant();
         final Instant lastBorrowInstant = getLastBorrowInstant();
         // @formatter:off
