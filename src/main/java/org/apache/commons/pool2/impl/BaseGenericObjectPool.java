@@ -1896,7 +1896,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * Updates statistics after an object is borrowed from the pool.
      *
      * @param p object borrowed from the pool
-     * @param waitDuration time (in milliseconds) that the borrowing thread had to wait
+     * @param waitDuration that the borrowing thread had to wait
      */
     final void updateStatsBorrow(final PooledObject<T> p, final Duration waitDuration) {
         borrowedCount.incrementAndGet();
