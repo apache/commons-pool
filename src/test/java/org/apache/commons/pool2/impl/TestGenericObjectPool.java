@@ -1041,11 +1041,15 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         // Sleep MUST be "long enough" to detect that more than 0 milliseconds have elapsed.
         // Need an API in Java 8 to get the clock granularity.
         Thread.sleep(200);
+
         assertFalse(dpo.getActiveDuration().isNegative());
         assertFalse(dpo.getActiveDuration().isZero());
+        assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getIdleDuration()));
+        // Depreacted
         assertThat(dpo.getActiveDuration().toMillis(), lessThanOrEqualTo(dpo.getActiveTimeMillis()));
         assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getActiveTime()));
-        assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getIdleDuration()));
+        assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getIdleTime()));
+        assertThat(dpo.getActiveDuration().toMillis(), lessThanOrEqualTo(dpo.getIdleTimeMillis()));
         //
         assertThat(dpo.getCreateInstant(), lessThanOrEqualTo(dpo.getLastBorrowInstant()));
         assertThat(dpo.getCreateInstant(), lessThanOrEqualTo(dpo.getLastReturnInstant()));
@@ -1055,13 +1059,16 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertThat(lastReturnInstant1, lessThanOrEqualTo(dpo.getLastReturnInstant()));
         assertThat(lastUsedInstant1, lessThanOrEqualTo(dpo.getLastUsedInstant()));
 
-        // Return
         genericObjectPool.returnObject(object);
 
         assertFalse(dpo.getActiveDuration().isNegative());
         assertFalse(dpo.getActiveDuration().isZero());
         assertThat(dpo.getActiveDuration().toMillis(), lessThanOrEqualTo(dpo.getActiveTimeMillis()));
         assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getActiveTime()));
+
+        assertThat(lastBorrowInstant1, lessThanOrEqualTo(dpo.getLastBorrowInstant()));
+        assertThat(lastReturnInstant1, lessThanOrEqualTo(dpo.getLastReturnInstant()));
+        assertThat(lastUsedInstant1, lessThanOrEqualTo(dpo.getLastUsedInstant()));
     }
 
     /*
