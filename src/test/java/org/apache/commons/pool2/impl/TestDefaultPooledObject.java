@@ -91,14 +91,18 @@ public class TestDefaultPooledObject {
         final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 3);
         final Runnable allocateAndDeallocateTask = () -> {
             for (int i1 = 0; i1 < 10000; i1++) {
-                if (dpo.getIdleTime().isNegative()) {
+                if (dpo.getIdleDuration().isNegative() || dpo.getIdleTime().isNegative()) {
+                    negativeIdleTimeReturned.set(true);
+                    break;
+                }
+                if (dpo.getIdleDuration().isNegative() || dpo.getIdleTime().isNegative()) {
                     negativeIdleTimeReturned.set(true);
                     break;
                 }
             }
             dpo.allocate();
             for (int i2 = 0; i2 < 10000; i2++) {
-                if (dpo.getIdleTime().isNegative()) {
+                if (dpo.getIdleDuration().isNegative() || dpo.getIdleTime().isNegative()) {
                     negativeIdleTimeReturned.set(true);
                     break;
                 }
@@ -107,7 +111,7 @@ public class TestDefaultPooledObject {
         };
         final Runnable getIdleTimeTask = () -> {
             for (int i = 0; i < 10000; i++) {
-                if (dpo.getIdleTime().isNegative()) {
+                if (dpo.getIdleDuration().isNegative() || dpo.getIdleTime().isNegative()) {
                     negativeIdleTimeReturned.set(true);
                     break;
                 }
