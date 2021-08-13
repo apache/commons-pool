@@ -297,19 +297,19 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
      * the provided pool with the specified key and returns it
      */
     static class SimpleTestThread<T> implements Runnable {
-        private final KeyedObjectPool<String,T> _pool;
-        private final String _key;
+        private final KeyedObjectPool<String,T> pool;
+        private final String key;
 
         public SimpleTestThread(final KeyedObjectPool<String,T> pool, final String key) {
-            _pool = pool;
-            _key = key;
+            this.pool = pool;
+            this.key = key;
         }
 
         @Override
         public void run() {
             try {
-                final T obj = _pool.borrowObject(_key);
-                _pool.returnObject(_key, obj);
+                final T obj = pool.borrowObject(key);
+                pool.returnObject(key, obj);
             } catch (final Exception e) {
                 // Ignore
             }
@@ -339,26 +339,26 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     }
 
     static class TestThread<T> implements Runnable {
-        private final java.util.Random _random = new java.util.Random();
+        private final java.util.Random random = new java.util.Random();
 
         /** GKOP to hit */
-        private final KeyedObjectPool<String,T> _pool;
+        private final KeyedObjectPool<String,T> pool;
         /** number of borrow/return iterations */
-        private final int _iter;
+        private final int iter;
         /** delay before borrow */
-        private final int _startDelay;
+        private final int startDelay;
         /** delay before return */
-        private final int _holdTime;
+        private final int holdTime;
         /** whether or not delays are random (with max = configured values) */
-        private final boolean _randomDelay;
+        private final boolean randomDelay;
         /** expected object */
-        private final T _expectedObject;
+        private final T expectedObject;
         /** key used in borrow / return sequence - null means random */
-        private final String _key;
+        private final String key;
 
-        private volatile boolean _complete;
-        private volatile boolean _failed;
-        private volatile Exception _exception;
+        private volatile boolean complete;
+        private volatile boolean failed;
+        private volatile Exception exception;
 
         public TestThread(final KeyedObjectPool<String,T> pool) {
             this(pool, 100, 50, 50, true, null, null);
@@ -374,57 +374,57 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
         public TestThread(final KeyedObjectPool<String,T> pool, final int iter, final int startDelay,
             final int holdTime, final boolean randomDelay, final T expectedObject, final String key) {
-            _pool = pool;
-            _iter = iter;
-            _startDelay = startDelay;
-            _holdTime = holdTime;
-            _randomDelay = randomDelay;
-            _expectedObject = expectedObject;
-            _key = key;
+            this.pool = pool;
+            this.iter = iter;
+            this.startDelay = startDelay;
+            this.holdTime = holdTime;
+            this.randomDelay = randomDelay;
+            this.expectedObject = expectedObject;
+            this.key = key;
 
         }
 
         public boolean complete() {
-            return _complete;
+            return complete;
         }
 
         public boolean failed() {
-            return _failed;
+            return failed;
         }
 
         @Override
         public void run() {
-            for(int i=0;i<_iter;i++) {
-                final String key = _key == null ? String.valueOf(_random.nextInt(3)) : _key;
-                Waiter.sleepQuietly(_randomDelay ? _random.nextInt(_startDelay) : _startDelay);
+            for(int i=0;i<iter;i++) {
+                final String actualKey = key == null ? String.valueOf(random.nextInt(3)) : key;
+                Waiter.sleepQuietly(randomDelay ? random.nextInt(startDelay) : startDelay);
                 T obj = null;
                 try {
-                    obj = _pool.borrowObject(key);
+                    obj = pool.borrowObject(actualKey);
                 } catch(final Exception e) {
-                    _exception = e;
-                    _failed = true;
-                    _complete = true;
+                    exception = e;
+                    failed = true;
+                    complete = true;
                     break;
                 }
 
-                if (_expectedObject != null && !_expectedObject.equals(obj)) {
-                    _exception = new Exception("Expected: "+_expectedObject+ " found: "+obj);
-                    _failed = true;
-                    _complete = true;
+                if (expectedObject != null && !expectedObject.equals(obj)) {
+                    exception = new Exception("Expected: "+expectedObject+ " found: "+obj);
+                    failed = true;
+                    complete = true;
                     break;
                 }
 
-                Waiter.sleepQuietly(_randomDelay ? _random.nextInt(_holdTime) : _holdTime);
+                Waiter.sleepQuietly(randomDelay ? random.nextInt(holdTime) : holdTime);
                 try {
-                    _pool.returnObject(key,obj);
+                    pool.returnObject(actualKey,obj);
                 } catch(final Exception e) {
-                    _exception = e;
-                    _failed = true;
-                    _complete = true;
+                    exception = e;
+                    failed = true;
+                    complete = true;
                     break;
                 }
             }
-            _complete = true;
+            complete = true;
         }
     }
 
@@ -433,10 +433,10 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
      * the provided pool with the specified key and returns it after a wait
      */
     static class WaitingTestThread extends Thread {
-        private final KeyedObjectPool<String,String> _pool;
-        private final String _key;
-        private final long _pause;
-        private Throwable _thrown;
+        private final KeyedObjectPool<String,String> pool;
+        private final String key;
+        private final long pause;
+        private Throwable thrown;
 
         private long preBorrowMillis; // just before borrow
         private long postBorrowMillis; //  borrow returned
@@ -445,24 +445,24 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         private String objectId;
 
         public WaitingTestThread(final KeyedObjectPool<String,String> pool, final String key, final long pause) {
-            _pool = pool;
-            _key = key;
-            _pause = pause;
-            _thrown = null;
+            this.pool = pool;
+            this.key = key;
+            this.pause = pause;
+            this.thrown = null;
         }
 
         @Override
         public void run() {
             try {
                 preBorrowMillis = System.currentTimeMillis();
-                final String obj = _pool.borrowObject(_key);
+                final String obj = pool.borrowObject(key);
                 objectId = obj;
                 postBorrowMillis = System.currentTimeMillis();
-                Thread.sleep(_pause);
-                _pool.returnObject(_key, obj);
+                Thread.sleep(pause);
+                pool.returnObject(key, obj);
                 postReturnMillis = System.currentTimeMillis();
             } catch (final Exception e) {
-                _thrown = e;
+                thrown = e;
             } finally{
                 endedMillis = System.currentTimeMillis();
             }
@@ -846,7 +846,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             }
             if(testThread.failed()) {
                 fail("Thread failed: " + threads.indexOf(testThread) + "\n" +
-                        getExceptionTrace(testThread._exception));
+                        getExceptionTrace(testThread.exception));
             }
         }
     }
@@ -980,7 +980,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                 Waiter.sleepQuietly(500L);
             }
             if (threads[i].failed()) {
-                fail("Thread " + i + " failed: " + threads[i]._exception.toString());
+                fail("Thread " + i + " failed: " + threads[i].exception.toString());
             }
         }
     }
@@ -1575,8 +1575,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             Thread.sleep(20);
             pool.invalidateObject("one", obj);
             Thread.sleep(600); // Wait for thread2 to timeout
-            if (thread2._thrown != null) {
-                fail(thread2._thrown.toString());
+            if (thread2.thrown != null) {
+                fail(thread2.thrown.toString());
             }
         }
     }
@@ -1963,8 +1963,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         assertFalse(threadA.isAlive());
         assertFalse(threadB.isAlive());
 
-        assertFalse(testA._failed);
-        assertFalse(testB._failed);
+        assertFalse(testA.failed);
+        assertFalse(testB.failed);
     }
 
     @Test
@@ -2007,7 +2007,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         int failed = 0;
         for (final WaitingTestThread element : wtt) {
             element.join();
-            if (element._thrown != null){
+            if (element.thrown != null){
                 failed++;
             }
         }
@@ -2027,7 +2027,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                         " BorrowTime: " + (wt.postBorrowMillis != 0 ? wt.postBorrowMillis - wt.preBorrowMillis : -1) +
                         " PostReturn: " + (wt.postReturnMillis != 0 ? wt.postReturnMillis - originMillis : -1) +
                         " Ended: " + (wt.endedMillis - originMillis) +
-                        " Key: " + (wt._key) +
+                        " Key: " + (wt.key) +
                         " ObjId: " + wt.objectId
                         );
             }
@@ -2506,7 +2506,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         Thread.sleep(200);
 
         // Check thread was interrupted
-        assertTrue(wtt._thrown instanceof InterruptedException);
+        assertTrue(wtt.thrown instanceof InterruptedException);
     }
 
 }

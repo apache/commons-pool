@@ -45,17 +45,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class PooledTestObject implements TrackedUse {
-    private static final AtomicInteger hash = new AtomicInteger();
+    private static final AtomicInteger ATOMIC_HASH = new AtomicInteger();
     private static final Instant INSTANT_0 = Instant.ofEpochMilli(0);
     private static final Instant INSTANT_1 = Instant.ofEpochMilli(1);
     private boolean active;
     private boolean destroyed;
-    private int _hash;
-    private boolean _abandoned;
+    private int hash;
+    private boolean abandoned;
     private boolean detached;  // destroy-abandoned "detaches"
 
     public PooledTestObject() {
-        _hash = hash.incrementAndGet();
+        this.hash = ATOMIC_HASH.incrementAndGet();
     }
 
     public void destroy(final DestroyMode mode) {
@@ -75,7 +75,7 @@ class PooledTestObject implements TrackedUse {
 
     @Override
     public long getLastUsed() {
-        if (_abandoned) {
+        if (abandoned) {
             // Abandoned object sweep will occur no matter what the value of removeAbandonedTimeout,
             // because this indicates that this object was last used decades ago
             return 1;
@@ -86,7 +86,7 @@ class PooledTestObject implements TrackedUse {
 
     @Override
     public Instant getLastUsedInstant() {
-        if (_abandoned) {
+        if (abandoned) {
             // Abandoned object sweep will occur no matter what the value of removeAbandonedTimeout,
             // because this indicates that this object was last used decades ago
             return INSTANT_1;
@@ -97,7 +97,7 @@ class PooledTestObject implements TrackedUse {
 
     @Override
     public int hashCode() {
-        return _hash;
+        return hash;
     }
 
     public synchronized boolean isActive() {
@@ -113,7 +113,7 @@ class PooledTestObject implements TrackedUse {
     }
 
     public void setAbandoned(final boolean b) {
-        _abandoned = b;
+        abandoned = b;
     }
 
     public synchronized void setActive(final boolean b) {
@@ -127,16 +127,16 @@ class PooledTestObject implements TrackedUse {
 public class TestAbandonedObjectPool {
 
     class ConcurrentBorrower extends Thread {
-        private final ArrayList<PooledTestObject> _borrowed;
+        private final ArrayList<PooledTestObject> borrowed;
 
         public ConcurrentBorrower(final ArrayList<PooledTestObject> borrowed) {
-            _borrowed = borrowed;
+            this.borrowed = borrowed;
         }
 
         @Override
         public void run() {
             try {
-                _borrowed.add(pool.borrowObject());
+                borrowed.add(pool.borrowObject());
             } catch (final Exception e) {
                 // expected in most cases
             }

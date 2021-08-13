@@ -441,29 +441,29 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     static class TestThread<T> implements Runnable {
 
         /** source of random delay times */
-        private final java.util.Random _random;
+        private final java.util.Random random;
 
         /** pool to borrow from */
-        private final ObjectPool<T> _pool;
+        private final ObjectPool<T> pool;
 
         /** number of borrow attempts */
-        private final int _iter;
+        private final int iter;
 
         /** delay before each borrow attempt */
-        private final int _startDelay;
+        private final int startDelay;
 
         /** time to hold each borrowed object before returning it */
-        private final int _holdTime;
+        private final int holdTime;
 
         /** whether or not start and hold time are randomly generated */
-        private final boolean _randomDelay;
+        private final boolean randomDelay;
 
         /** object expected to be borrowed (fail otherwise) */
-        private final Object _expectedObject;
+        private final Object expectedObject;
 
-        private volatile boolean _complete;
-        private volatile boolean _failed;
-        private volatile Throwable _error;
+        private volatile boolean complete;
+        private volatile boolean failed;
+        private volatile Throwable error;
 
         public TestThread(final ObjectPool<T> pool) {
             this(pool, 100, 50, true, null);
@@ -489,59 +489,57 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
         public TestThread(final ObjectPool<T> pool, final int iter, final int startDelay,
             final int holdTime, final boolean randomDelay, final Object obj) {
-        _pool = pool;
-        _iter = iter;
-        _startDelay = startDelay;
-        _holdTime = holdTime;
-        _randomDelay = randomDelay;
-        _random = _randomDelay ? new Random() : null;
-        _expectedObject = obj;
+       this.pool = pool;
+       this.iter = iter;
+       this.startDelay = startDelay;
+       this.holdTime = holdTime;
+       this.randomDelay = randomDelay;
+       this.random = this.randomDelay ? new Random() : null;
+       this.expectedObject = obj;
     }
 
         public boolean complete() {
-            return _complete;
+            return complete;
         }
 
         public boolean failed() {
-            return _failed;
+            return failed;
         }
 
         @Override
         public void run() {
-            for(int i=0;i<_iter;i++) {
-                final long startDelay =
-                    _randomDelay ? (long)_random.nextInt(_startDelay) : _startDelay;
-                final long holdTime =
-                    _randomDelay ? (long)_random.nextInt(_holdTime) : _holdTime;
-                Waiter.sleepQuietly(startDelay);
+            for (int i = 0; i < iter; i++) {
+                final long actualStartDelay = randomDelay ? (long) random.nextInt(startDelay) : startDelay;
+                final long actualHoldTime = randomDelay ? (long) random.nextInt(holdTime) : holdTime;
+                Waiter.sleepQuietly(actualStartDelay);
                 T obj = null;
                 try {
-                    obj = _pool.borrowObject();
-                } catch(final Exception e) {
-                    _error = e;
-                    _failed = true;
-                    _complete = true;
+                    obj = pool.borrowObject();
+                } catch (final Exception e) {
+                    error = e;
+                    failed = true;
+                    complete = true;
                     break;
                 }
 
-                if (_expectedObject != null && !_expectedObject.equals(obj)) {
-                    _error = new Throwable("Expected: "+_expectedObject+ " found: "+obj);
-                    _failed = true;
-                    _complete = true;
+                if (expectedObject != null && !expectedObject.equals(obj)) {
+                    error = new Throwable("Expected: " + expectedObject + " found: " + obj);
+                    failed = true;
+                    complete = true;
                     break;
                 }
 
-                Waiter.sleepQuietly(holdTime);
+                Waiter.sleepQuietly(actualHoldTime);
                 try {
-                    _pool.returnObject(obj);
-                } catch(final Exception e) {
-                    _error = e;
-                    _failed = true;
-                    _complete = true;
+                    pool.returnObject(obj);
+                } catch (final Exception e) {
+                    error = e;
+                    failed = true;
+                    complete = true;
                     break;
                 }
             }
-            _complete = true;
+            complete = true;
         }
     }
 
@@ -550,9 +548,9 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
      * the provided pool returns it after a wait
      */
     static class WaitingTestThread extends Thread {
-        private final GenericObjectPool<String> _pool;
-        private final long _pause;
-        private Throwable _thrown;
+        private final GenericObjectPool<String> pool;
+        private final long pause;
+        private Throwable thrown;
 
         private long preBorrowMillis; // just before borrow
         private long postBorrowMillis; //  borrow returned
@@ -561,23 +559,23 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         private String objectId;
 
         public WaitingTestThread(final GenericObjectPool<String> pool, final long pause) {
-            _pool = pool;
-            _pause = pause;
-            _thrown = null;
+            this.pool = pool;
+            this.pause = pause;
+            this.thrown = null;
         }
 
         @Override
         public void run() {
             try {
                 preBorrowMillis = System.currentTimeMillis();
-                final String obj = _pool.borrowObject();
+                final String obj = pool.borrowObject();
                 objectId = obj;
                 postBorrowMillis = System.currentTimeMillis();
-                Thread.sleep(_pause);
-                _pool.returnObject(obj);
+                Thread.sleep(pause);
+                pool.returnObject(obj);
                 postReturnMillis = System.currentTimeMillis();
             } catch (final Throwable e) {
-                _thrown = e;
+                thrown = e;
             } finally{
                 endedMillis = System.currentTimeMillis();
             }
@@ -909,7 +907,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 Waiter.sleepQuietly(500L);
             }
             if (threads[i].failed()) {
-                fail("Thread " + i + " failed: " + threads[i]._error.toString());
+                fail("Thread " + i + " failed: " + threads[i].error.toString());
             }
         }
     }
@@ -1121,7 +1119,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 }
             }
             if(threads[i].failed()) {
-                fail("Thread "+i+" failed: "+threads[i]._error.toString());
+                fail("Thread "+i+" failed: "+threads[i].error.toString());
             }
         }
     }
@@ -1460,8 +1458,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             assertFalse(thread1.isAlive());
             assertFalse(thread2.isAlive());
 
-            assertTrue(thread1._thrown instanceof UnknownError);
-            assertTrue(thread2._thrown instanceof UnknownError);
+            assertTrue(thread1.thrown instanceof UnknownError);
+            assertTrue(thread2.thrown instanceof UnknownError);
         }
     }
 
@@ -1917,8 +1915,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             assertFalse(thread1.isAlive());
             assertFalse(thread2.isAlive());
 
-            assertTrue(thread1._thrown instanceof UnsupportedCharsetException);
-            assertTrue(thread2._thrown instanceof UnsupportedCharsetException);
+            assertTrue(thread1.thrown instanceof UnsupportedCharsetException);
+            assertTrue(thread2.thrown instanceof UnsupportedCharsetException);
         }
     }
 
@@ -2019,8 +2017,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             Thread.sleep(20);
             pool.invalidateObject(obj);
             Thread.sleep(600); // Wait for thread2 to timeout
-            if (thread2._thrown != null) {
-                fail(thread2._thrown.toString());
+            if (thread2.thrown != null) {
+                fail(thread2.thrown.toString());
             }
         }
     }
@@ -2171,7 +2169,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             try {
                 Waiter.sleepQuietly(delay);
                 obj = genericObjectPool.borrowObject();
-                // Under load, observed _numActive > _maxTotal
+                // Under load, observed numActive > maxTotal
                 if (genericObjectPool.getNumActive() > genericObjectPool.getMaxTotal()) {
                     throw new IllegalStateException("Too many active objects");
                 }
@@ -2196,8 +2194,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 Waiter.sleepQuietly(500L);
             }
             if (threads[i].failed()) {
-                threads[i]._error.printStackTrace();
-                fail("Thread " + i + " failed: " + threads[i]._error.toString());
+                threads[i].error.printStackTrace();
+                fail("Thread " + i + " failed: " + threads[i].error.toString());
             }
         }
     }
@@ -2272,7 +2270,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             try {
                 Waiter.sleepQuietly(delay);
                 obj = genericObjectPool.borrowObject();
-                // Under load, observed _numActive > _maxTotal
+                // Under load, observed numActive > maxTotal
                 if (genericObjectPool.getNumActive() > genericObjectPool.getMaxTotal()) {
                     throw new IllegalStateException("Too many active objects");
                 }
@@ -2297,7 +2295,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 Waiter.sleepQuietly(500L);
             }
             if(threads[i].failed()) {
-                fail("Thread " + i + " failed: " + threads[i]._error.toString());
+                fail("Thread " + i + " failed: " + threads[i].error.toString());
             }
         }
     }
@@ -2345,7 +2343,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         int failed = 0;
         for (final WaitingTestThread element : wtt) {
             element.join();
-            if (element._thrown != null){
+            if (element.thrown != null){
                 failed++;
             }
         }
@@ -3011,7 +3009,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         Thread.sleep(200);
 
         // Check thread was interrupted
-        assertTrue(wtt._thrown instanceof InterruptedException);
+        assertTrue(wtt.thrown instanceof InterruptedException);
     }
 
     @Test
@@ -3036,7 +3034,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         Thread.sleep(200);
 
         // Check thread was interrupted
-        assertTrue(wtt._thrown instanceof InterruptedException);
+        assertTrue(wtt.thrown instanceof InterruptedException);
 
         // Return object to the pool
         genericObjectPool.returnObject(obj1);

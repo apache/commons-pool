@@ -173,7 +173,7 @@ public abstract class TestKeyedObjectPool {
 
     protected static final String KEY = "key";
 
-    private KeyedObjectPool<Object,Object> _pool;
+    private KeyedObjectPool<Object,Object> pool;
 
     // Deliberate choice to create a new object in case future unit tests check
     // for a specific object.
@@ -234,237 +234,237 @@ public abstract class TestKeyedObjectPool {
 
     @AfterEach
     public void tearDown() {
-        _pool = null;
+        pool = null;
     }
 
     @Test
     public void testBaseAddObject() throws Exception {
         try {
-            _pool = makeEmptyPool(3);
+            pool = makeEmptyPool(3);
         } catch(final UnsupportedOperationException uoe) {
             return; // skip this test if unsupported
         }
         final Object key = makeKey(0);
         try {
-            assertEquals(0,_pool.getNumIdle());
-            assertEquals(0,_pool.getNumActive());
-            assertEquals(0,_pool.getNumIdle(key));
-            assertEquals(0,_pool.getNumActive(key));
-            _pool.addObject(key);
-            assertEquals(1,_pool.getNumIdle());
-            assertEquals(0,_pool.getNumActive());
-            assertEquals(1,_pool.getNumIdle(key));
-            assertEquals(0,_pool.getNumActive(key));
-            final Object obj = _pool.borrowObject(key);
+            assertEquals(0,pool.getNumIdle());
+            assertEquals(0,pool.getNumActive());
+            assertEquals(0,pool.getNumIdle(key));
+            assertEquals(0,pool.getNumActive(key));
+            pool.addObject(key);
+            assertEquals(1,pool.getNumIdle());
+            assertEquals(0,pool.getNumActive());
+            assertEquals(1,pool.getNumIdle(key));
+            assertEquals(0,pool.getNumActive(key));
+            final Object obj = pool.borrowObject(key);
             assertEquals(getNthObject(key,0),obj);
-            assertEquals(0,_pool.getNumIdle());
-            assertEquals(1,_pool.getNumActive());
-            assertEquals(0,_pool.getNumIdle(key));
-            assertEquals(1,_pool.getNumActive(key));
-            _pool.returnObject(key,obj);
-            assertEquals(1,_pool.getNumIdle());
-            assertEquals(0,_pool.getNumActive());
-            assertEquals(1,_pool.getNumIdle(key));
-            assertEquals(0,_pool.getNumActive(key));
+            assertEquals(0,pool.getNumIdle());
+            assertEquals(1,pool.getNumActive());
+            assertEquals(0,pool.getNumIdle(key));
+            assertEquals(1,pool.getNumActive(key));
+            pool.returnObject(key,obj);
+            assertEquals(1,pool.getNumIdle());
+            assertEquals(0,pool.getNumActive());
+            assertEquals(1,pool.getNumIdle(key));
+            assertEquals(0,pool.getNumActive(key));
         } catch(final UnsupportedOperationException e) {
             return; // skip this test if one of those calls is unsupported
         } finally {
-            _pool.close();
+            pool.close();
         }
     }
 
     @Test
     public void testBaseBorrow() throws Exception {
         try {
-            _pool = makeEmptyPool(3);
+            pool = makeEmptyPool(3);
         } catch(final UnsupportedOperationException uoe) {
             return; // skip this test if unsupported
         }
         final Object keya = makeKey(0);
         final Object keyb = makeKey(1);
-        assertEquals(getNthObject(keya,0),_pool.borrowObject(keya),"1");
-        assertEquals(getNthObject(keyb,0),_pool.borrowObject(keyb),"2");
-        assertEquals(getNthObject(keyb,1),_pool.borrowObject(keyb),"3");
-        assertEquals(getNthObject(keya,1),_pool.borrowObject(keya),"4");
-        assertEquals(getNthObject(keyb,2),_pool.borrowObject(keyb),"5");
-        assertEquals(getNthObject(keya,2),_pool.borrowObject(keya),"6");
-        _pool.close();
+        assertEquals(getNthObject(keya,0),pool.borrowObject(keya),"1");
+        assertEquals(getNthObject(keyb,0),pool.borrowObject(keyb),"2");
+        assertEquals(getNthObject(keyb,1),pool.borrowObject(keyb),"3");
+        assertEquals(getNthObject(keya,1),pool.borrowObject(keya),"4");
+        assertEquals(getNthObject(keyb,2),pool.borrowObject(keyb),"5");
+        assertEquals(getNthObject(keya,2),pool.borrowObject(keya),"6");
+        pool.close();
     }
 
     @Test
     public void testBaseBorrowReturn() throws Exception {
         try {
-            _pool = makeEmptyPool(3);
+            pool = makeEmptyPool(3);
         } catch(final UnsupportedOperationException uoe) {
             return; // skip this test if unsupported
         }
         final Object keya = makeKey(0);
-        Object obj0 = _pool.borrowObject(keya);
+        Object obj0 = pool.borrowObject(keya);
         assertEquals(getNthObject(keya,0),obj0);
-        Object obj1 = _pool.borrowObject(keya);
+        Object obj1 = pool.borrowObject(keya);
         assertEquals(getNthObject(keya,1),obj1);
-        Object obj2 = _pool.borrowObject(keya);
+        Object obj2 = pool.borrowObject(keya);
         assertEquals(getNthObject(keya,2),obj2);
-        _pool.returnObject(keya,obj2);
-        obj2 = _pool.borrowObject(keya);
+        pool.returnObject(keya,obj2);
+        obj2 = pool.borrowObject(keya);
         assertEquals(getNthObject(keya,2),obj2);
-        _pool.returnObject(keya,obj1);
-        obj1 = _pool.borrowObject(keya);
+        pool.returnObject(keya,obj1);
+        obj1 = pool.borrowObject(keya);
         assertEquals(getNthObject(keya,1),obj1);
-        _pool.returnObject(keya,obj0);
-        _pool.returnObject(keya,obj2);
-        obj2 = _pool.borrowObject(keya);
+        pool.returnObject(keya,obj0);
+        pool.returnObject(keya,obj2);
+        obj2 = pool.borrowObject(keya);
         if (isLifo()) {
             assertEquals(getNthObject(keya,2),obj2);
         }
         if (isFifo()) {
             assertEquals(getNthObject(keya,0),obj2);
         }
-        obj0 = _pool.borrowObject(keya);
+        obj0 = pool.borrowObject(keya);
         if (isLifo()) {
             assertEquals(getNthObject(keya,0),obj0);
         }
         if (isFifo()) {
             assertEquals(getNthObject(keya,2),obj0);
         }
-        _pool.close();
+        pool.close();
     }
 
     @Test
     public void testBaseClear() throws Exception {
         try {
-            _pool = makeEmptyPool(3);
+            pool = makeEmptyPool(3);
         } catch(final UnsupportedOperationException uoe) {
             return; // skip this test if unsupported
         }
         final Object keya = makeKey(0);
-        assertEquals(0,_pool.getNumActive(keya));
-        assertEquals(0,_pool.getNumIdle(keya));
-        final Object obj0 = _pool.borrowObject(keya);
-        final Object obj1 = _pool.borrowObject(keya);
-        assertEquals(2,_pool.getNumActive(keya));
-        assertEquals(0,_pool.getNumIdle(keya));
-        _pool.returnObject(keya,obj1);
-        _pool.returnObject(keya,obj0);
-        assertEquals(0,_pool.getNumActive(keya));
-        assertEquals(2,_pool.getNumIdle(keya));
-        _pool.clear(keya);
-        assertEquals(0,_pool.getNumActive(keya));
-        assertEquals(0,_pool.getNumIdle(keya));
-        final Object obj2 = _pool.borrowObject(keya);
+        assertEquals(0,pool.getNumActive(keya));
+        assertEquals(0,pool.getNumIdle(keya));
+        final Object obj0 = pool.borrowObject(keya);
+        final Object obj1 = pool.borrowObject(keya);
+        assertEquals(2,pool.getNumActive(keya));
+        assertEquals(0,pool.getNumIdle(keya));
+        pool.returnObject(keya,obj1);
+        pool.returnObject(keya,obj0);
+        assertEquals(0,pool.getNumActive(keya));
+        assertEquals(2,pool.getNumIdle(keya));
+        pool.clear(keya);
+        assertEquals(0,pool.getNumActive(keya));
+        assertEquals(0,pool.getNumIdle(keya));
+        final Object obj2 = pool.borrowObject(keya);
         assertEquals(getNthObject(keya,2),obj2);
-        _pool.close();
+        pool.close();
     }
 
     @Test
     public void testBaseInvalidateObject() throws Exception {
         try {
-            _pool = makeEmptyPool(3);
+            pool = makeEmptyPool(3);
         } catch(final UnsupportedOperationException uoe) {
             return; // skip this test if unsupported
         }
         final Object keya = makeKey(0);
-        assertEquals(0,_pool.getNumActive(keya));
-        assertEquals(0,_pool.getNumIdle(keya));
-        final Object obj0 = _pool.borrowObject(keya);
-        final Object obj1 = _pool.borrowObject(keya);
-        assertEquals(2,_pool.getNumActive(keya));
-        assertEquals(0,_pool.getNumIdle(keya));
-        _pool.invalidateObject(keya,obj0);
-        assertEquals(1,_pool.getNumActive(keya));
-        assertEquals(0,_pool.getNumIdle(keya));
-        _pool.invalidateObject(keya,obj1);
-        assertEquals(0,_pool.getNumActive(keya));
-        assertEquals(0,_pool.getNumIdle(keya));
-        _pool.close();
+        assertEquals(0,pool.getNumActive(keya));
+        assertEquals(0,pool.getNumIdle(keya));
+        final Object obj0 = pool.borrowObject(keya);
+        final Object obj1 = pool.borrowObject(keya);
+        assertEquals(2,pool.getNumActive(keya));
+        assertEquals(0,pool.getNumIdle(keya));
+        pool.invalidateObject(keya,obj0);
+        assertEquals(1,pool.getNumActive(keya));
+        assertEquals(0,pool.getNumIdle(keya));
+        pool.invalidateObject(keya,obj1);
+        assertEquals(0,pool.getNumActive(keya));
+        assertEquals(0,pool.getNumIdle(keya));
+        pool.close();
     }
 
     @Test
     public void testBaseNumActiveNumIdle() throws Exception {
         try {
-            _pool = makeEmptyPool(3);
+            pool = makeEmptyPool(3);
         } catch(final UnsupportedOperationException uoe) {
             return; // skip this test if unsupported
         }
         final Object keya = makeKey(0);
-        assertEquals(0,_pool.getNumActive(keya));
-        assertEquals(0,_pool.getNumIdle(keya));
-        final Object obj0 = _pool.borrowObject(keya);
-        assertEquals(1,_pool.getNumActive(keya));
-        assertEquals(0,_pool.getNumIdle(keya));
-        final Object obj1 = _pool.borrowObject(keya);
-        assertEquals(2,_pool.getNumActive(keya));
-        assertEquals(0,_pool.getNumIdle(keya));
-        _pool.returnObject(keya,obj1);
-        assertEquals(1,_pool.getNumActive(keya));
-        assertEquals(1,_pool.getNumIdle(keya));
-        _pool.returnObject(keya,obj0);
-        assertEquals(0,_pool.getNumActive(keya));
-        assertEquals(2,_pool.getNumIdle(keya));
+        assertEquals(0,pool.getNumActive(keya));
+        assertEquals(0,pool.getNumIdle(keya));
+        final Object obj0 = pool.borrowObject(keya);
+        assertEquals(1,pool.getNumActive(keya));
+        assertEquals(0,pool.getNumIdle(keya));
+        final Object obj1 = pool.borrowObject(keya);
+        assertEquals(2,pool.getNumActive(keya));
+        assertEquals(0,pool.getNumIdle(keya));
+        pool.returnObject(keya,obj1);
+        assertEquals(1,pool.getNumActive(keya));
+        assertEquals(1,pool.getNumIdle(keya));
+        pool.returnObject(keya,obj0);
+        assertEquals(0,pool.getNumActive(keya));
+        assertEquals(2,pool.getNumIdle(keya));
 
-        assertEquals(0,_pool.getNumActive("xyzzy12345"));
-        assertEquals(0,_pool.getNumIdle("xyzzy12345"));
+        assertEquals(0,pool.getNumActive("xyzzy12345"));
+        assertEquals(0,pool.getNumIdle("xyzzy12345"));
 
-        _pool.close();
+        pool.close();
     }
 
     @Test
     public void testBaseNumActiveNumIdle2() throws Exception {
         try {
-            _pool = makeEmptyPool(6);
+            pool = makeEmptyPool(6);
         } catch(final UnsupportedOperationException uoe) {
             return; // skip this test if unsupported
         }
         final Object keya = makeKey(0);
         final Object keyb = makeKey(1);
-        assertEquals(0,_pool.getNumActive());
-        assertEquals(0,_pool.getNumIdle());
-        assertEquals(0,_pool.getNumActive(keya));
-        assertEquals(0,_pool.getNumIdle(keya));
-        assertEquals(0,_pool.getNumActive(keyb));
-        assertEquals(0,_pool.getNumIdle(keyb));
+        assertEquals(0,pool.getNumActive());
+        assertEquals(0,pool.getNumIdle());
+        assertEquals(0,pool.getNumActive(keya));
+        assertEquals(0,pool.getNumIdle(keya));
+        assertEquals(0,pool.getNumActive(keyb));
+        assertEquals(0,pool.getNumIdle(keyb));
 
-        final Object objA0 = _pool.borrowObject(keya);
-        final Object objB0 = _pool.borrowObject(keyb);
+        final Object objA0 = pool.borrowObject(keya);
+        final Object objB0 = pool.borrowObject(keyb);
 
-        assertEquals(2,_pool.getNumActive());
-        assertEquals(0,_pool.getNumIdle());
-        assertEquals(1,_pool.getNumActive(keya));
-        assertEquals(0,_pool.getNumIdle(keya));
-        assertEquals(1,_pool.getNumActive(keyb));
-        assertEquals(0,_pool.getNumIdle(keyb));
+        assertEquals(2,pool.getNumActive());
+        assertEquals(0,pool.getNumIdle());
+        assertEquals(1,pool.getNumActive(keya));
+        assertEquals(0,pool.getNumIdle(keya));
+        assertEquals(1,pool.getNumActive(keyb));
+        assertEquals(0,pool.getNumIdle(keyb));
 
-        final Object objA1 = _pool.borrowObject(keya);
-        final Object objB1 = _pool.borrowObject(keyb);
+        final Object objA1 = pool.borrowObject(keya);
+        final Object objB1 = pool.borrowObject(keyb);
 
-        assertEquals(4,_pool.getNumActive());
-        assertEquals(0,_pool.getNumIdle());
-        assertEquals(2,_pool.getNumActive(keya));
-        assertEquals(0,_pool.getNumIdle(keya));
-        assertEquals(2,_pool.getNumActive(keyb));
-        assertEquals(0,_pool.getNumIdle(keyb));
+        assertEquals(4,pool.getNumActive());
+        assertEquals(0,pool.getNumIdle());
+        assertEquals(2,pool.getNumActive(keya));
+        assertEquals(0,pool.getNumIdle(keya));
+        assertEquals(2,pool.getNumActive(keyb));
+        assertEquals(0,pool.getNumIdle(keyb));
 
-        _pool.returnObject(keya,objA0);
-        _pool.returnObject(keyb,objB0);
+        pool.returnObject(keya,objA0);
+        pool.returnObject(keyb,objB0);
 
-        assertEquals(2,_pool.getNumActive());
-        assertEquals(2,_pool.getNumIdle());
-        assertEquals(1,_pool.getNumActive(keya));
-        assertEquals(1,_pool.getNumIdle(keya));
-        assertEquals(1,_pool.getNumActive(keyb));
-        assertEquals(1,_pool.getNumIdle(keyb));
+        assertEquals(2,pool.getNumActive());
+        assertEquals(2,pool.getNumIdle());
+        assertEquals(1,pool.getNumActive(keya));
+        assertEquals(1,pool.getNumIdle(keya));
+        assertEquals(1,pool.getNumActive(keyb));
+        assertEquals(1,pool.getNumIdle(keyb));
 
-        _pool.returnObject(keya,objA1);
-        _pool.returnObject(keyb,objB1);
+        pool.returnObject(keya,objA1);
+        pool.returnObject(keyb,objB1);
 
-        assertEquals(0,_pool.getNumActive());
-        assertEquals(4,_pool.getNumIdle());
-        assertEquals(0,_pool.getNumActive(keya));
-        assertEquals(2,_pool.getNumIdle(keya));
-        assertEquals(0,_pool.getNumActive(keyb));
-        assertEquals(2,_pool.getNumIdle(keyb));
+        assertEquals(0,pool.getNumActive());
+        assertEquals(4,pool.getNumIdle());
+        assertEquals(0,pool.getNumActive(keya));
+        assertEquals(2,pool.getNumIdle(keya));
+        assertEquals(0,pool.getNumActive(keyb));
+        assertEquals(2,pool.getNumIdle(keyb));
 
-        _pool.close();
+        pool.close();
     }
 
     @Test

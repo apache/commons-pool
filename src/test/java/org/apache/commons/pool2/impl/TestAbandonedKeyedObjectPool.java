@@ -47,16 +47,16 @@ import org.junit.jupiter.api.Test;
 public class TestAbandonedKeyedObjectPool {
 
     class ConcurrentBorrower extends Thread {
-        private final ArrayList<PooledTestObject> _borrowed;
+        private final ArrayList<PooledTestObject> borrowed;
 
         public ConcurrentBorrower(final ArrayList<PooledTestObject> borrowed) {
-            _borrowed = borrowed;
+            this.borrowed = borrowed;
         }
 
         @Override
         public void run() {
             try {
-                _borrowed.add(pool.borrowObject(0));
+                borrowed.add(pool.borrowObject(0));
             } catch (final Exception e) {
                 // expected in most cases
             }
