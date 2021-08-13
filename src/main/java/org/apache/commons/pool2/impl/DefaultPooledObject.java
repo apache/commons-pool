@@ -18,6 +18,7 @@ package org.apache.commons.pool2.impl;
 
 import java.io.PrintWriter;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Deque;
 
@@ -163,12 +164,17 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
     }
 
     @Override
-    public long getIdleTimeMillis() {
-        final long elapsedMillis = System.currentTimeMillis() - lastReturnInstant.toEpochMilli();
+    public Duration getIdleDuration() {
         // elapsed may be negative if:
-        // - another thread updates lastReturnTime during the calculation window
+        // - another thread updates lastReturnInstant during the calculation window
         // - System.currentTimeMillis() is not monotonic (e.g. system time is set back)
-        return elapsedMillis >= 0 ? elapsedMillis : 0;
+        final Duration elapsed = Duration.between(lastReturnInstant, now());
+        return elapsed.isNegative() ? Duration.ZERO : elapsed;
+    }
+
+    @Override
+    public long getIdleTimeMillis() {
+        return getIdleDuration().toMillis();
     }
 
     @Override

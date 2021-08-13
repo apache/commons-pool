@@ -1037,6 +1037,9 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertThat(dpo.getCreateInstant(), lessThanOrEqualTo(lastBorrowInstant1));
         assertThat(dpo.getCreateInstant(), lessThanOrEqualTo(lastReturnInstant1));
         assertThat(dpo.getCreateInstant(), lessThanOrEqualTo(lastUsedInstant1));
+        assertThat(dpo.getCreateTime(), lessThanOrEqualTo(lastBorrowInstant1.toEpochMilli()));
+        assertThat(dpo.getCreateTime(), lessThanOrEqualTo(lastReturnInstant1.toEpochMilli()));
+        assertThat(dpo.getCreateTime(), lessThanOrEqualTo(lastUsedInstant1.toEpochMilli()));
 
         // Sleep MUST be "long enough" to detect that more than 0 milliseconds have elapsed.
         // Need an API in Java 8 to get the clock granularity.

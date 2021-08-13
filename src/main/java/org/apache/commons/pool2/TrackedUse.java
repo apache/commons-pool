@@ -47,6 +47,6 @@ public interface TrackedUse {
      * @since 2.11.0
      */
     default Instant getLastUsedInstant() {
-        return Instant.ofEpochSecond(getLastUsed());
+        return Instant.ofEpochMilli(getLastUsed());
     }
 }
