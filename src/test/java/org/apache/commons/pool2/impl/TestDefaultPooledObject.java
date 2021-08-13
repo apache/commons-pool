@@ -49,6 +49,7 @@ public class TestDefaultPooledObject {
         assertThat(dpo.getActiveDuration().toMillis(), lessThanOrEqualTo(dpo.getActiveTimeMillis()));
         assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getActiveTime()));
         assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getIdleTime()));
+        assertThat(dpo.getActiveDuration().toMillis(), lessThanOrEqualTo(dpo.getIdleTimeMillis()));
     }
 
     @Test
@@ -63,6 +64,7 @@ public class TestDefaultPooledObject {
         assertThat(dpo.getIdleDuration().toMillis(), lessThanOrEqualTo(dpo.getActiveTimeMillis()));
         assertThat(dpo.getIdleDuration(), lessThanOrEqualTo(dpo.getActiveTime()));
         assertThat(dpo.getIdleDuration(), lessThanOrEqualTo(dpo.getIdleTime()));
+        assertThat(dpo.getIdleDuration().toMillis(), lessThanOrEqualTo(dpo.getActiveTimeMillis()));
     }
 
     @Test
