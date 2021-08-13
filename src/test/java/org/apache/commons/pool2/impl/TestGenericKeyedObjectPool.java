@@ -198,12 +198,9 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         }
 
         private void doWait(final long latency) {
-            try {
-                Thread.sleep(latency);
-            } catch (final InterruptedException ex) {
-                // ignore
-            }
+            Waiter.sleepQuietly(latency);
         }
+        
         @Override
         public PooledObject<String> makeObject(final K key) throws Exception {
             if (exceptionOnCreate) {
@@ -336,11 +333,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         @Override
         public boolean evict(final EvictionConfig config, final PooledObject<T> underTest,
                 final int idleCount) {
-            try {
-                Thread.sleep(delay);
-            } catch (final InterruptedException e) {
-                // ignore
-            }
+            Waiter.sleepQuietly(delay);
             return super.evict(config, underTest, idleCount);
         }
     }
@@ -403,11 +396,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         public void run() {
             for(int i=0;i<_iter;i++) {
                 final String key = _key == null ? String.valueOf(_random.nextInt(3)) : _key;
-                try {
-                    Thread.sleep(_randomDelay ? _random.nextInt(_startDelay) : _startDelay);
-                } catch(final InterruptedException e) {
-                    // ignored
-                }
+                Waiter.sleepQuietly(_randomDelay ? _random.nextInt(_startDelay) : _startDelay);
                 T obj = null;
                 try {
                     obj = _pool.borrowObject(key);
@@ -425,11 +414,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                     break;
                 }
 
-                try {
-                    Thread.sleep(_randomDelay ? _random.nextInt(_holdTime) : _holdTime);
-                } catch(final InterruptedException e) {
-                    // ignored
-                }
+                Waiter.sleepQuietly(_randomDelay ? _random.nextInt(_holdTime) : _holdTime);
                 try {
                     _pool.returnObject(key,obj);
                 } catch(final Exception e) {
@@ -857,11 +842,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         }
         for (final TestThread<T> testThread : threads) {
             while(!(testThread.complete())) {
-                try {
-                    Thread.sleep(500L);
-                } catch(final InterruptedException e) {
-                    // ignored
-                }
+                Waiter.sleepQuietly(500L);
             }
             if(testThread.failed()) {
                 fail("Thread failed: " + threads.indexOf(testThread) + "\n" +
@@ -994,16 +975,12 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         }
 
         // Wait for threads to finish
-        for(int i=0;i<numThreads;i++) {
-            while(!(threads[i]).complete()) {
-                try {
-                    Thread.sleep(500L);
-                } catch(final InterruptedException e) {
-                    // ignored
-                }
+        for (int i = 0; i < numThreads; i++) {
+            while (!(threads[i]).complete()) {
+                Waiter.sleepQuietly(500L);
             }
-            if(threads[i].failed()) {
-                fail("Thread "+i+" failed: "+threads[i]._exception.toString());
+            if (threads[i].failed()) {
+                fail("Thread " + i + " failed: " + threads[i]._exception.toString());
             }
         }
     }
@@ -1266,17 +1243,9 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             for (int i = 0; i < 5; i++) {
                 p.addObject("one");
             }
-            try {
-                Thread.sleep(100);
-            } catch (final InterruptedException e) {
-                // ignore
-            }
+            Waiter.sleepQuietly(100);
             assertEquals(5, p.getNumIdle("one"));
-            try {
-                Thread.sleep(500);
-            } catch (final InterruptedException e) {
-                // ignore
-            }
+            Waiter.sleepQuietly(500);
             assertEquals(0, p.getNumIdle("one"));
         }
     }
@@ -1316,17 +1285,17 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             gkoPool.returnObject("",active[i]);
         }
 
-        try { Thread.sleep(1000L); } catch(final InterruptedException e) { }
+        Waiter.sleepQuietly(1000L);
         assertTrue(gkoPool.getNumIdle("") < 500, "Should be less than 500 idle, found " + gkoPool.getNumIdle(""));
-        try { Thread.sleep(600L); } catch(final InterruptedException e) { }
+        Waiter.sleepQuietly(600L);
         assertTrue(gkoPool.getNumIdle("") < 400, "Should be less than 400 idle, found " + gkoPool.getNumIdle(""));
-        try { Thread.sleep(600L); } catch(final InterruptedException e) { }
+        Waiter.sleepQuietly(600L);
         assertTrue(gkoPool.getNumIdle("") < 300,"Should be less than 300 idle, found " + gkoPool.getNumIdle(""));
-        try { Thread.sleep(600L); } catch(final InterruptedException e) { }
+        Waiter.sleepQuietly(600L);
         assertTrue(gkoPool.getNumIdle("") < 200, "Should be less than 200 idle, found " + gkoPool.getNumIdle(""));
-        try { Thread.sleep(600L); } catch(final InterruptedException e) { }
+        Waiter.sleepQuietly(600L);
         assertTrue(gkoPool.getNumIdle("") < 100 , "Should be less than 100 idle, found " + gkoPool.getNumIdle(""));
-        try { Thread.sleep(600L); } catch(final InterruptedException e) { }
+        Waiter.sleepQuietly(600L);
         assertEquals(0,gkoPool.getNumIdle(""),"Should be zero idle, found " + gkoPool.getNumIdle(""));
 
         for(int i=0;i<500;i++) {
@@ -1336,17 +1305,17 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             gkoPool.returnObject("",active[i]);
         }
 
-        try { Thread.sleep(1000L); } catch(final InterruptedException e) { }
+        Waiter.sleepQuietly(1000L);
         assertTrue(gkoPool.getNumIdle("") < 500,"Should be less than 500 idle, found " + gkoPool.getNumIdle(""));
-        try { Thread.sleep(600L); } catch(final InterruptedException e) { }
+        Waiter.sleepQuietly(600L);
         assertTrue(gkoPool.getNumIdle("") < 400,"Should be less than 400 idle, found " + gkoPool.getNumIdle(""));
-        try { Thread.sleep(600L); } catch(final InterruptedException e) { }
+        Waiter.sleepQuietly(600L);
         assertTrue(gkoPool.getNumIdle("") < 300,"Should be less than 300 idle, found " + gkoPool.getNumIdle(""));
-        try { Thread.sleep(600L); } catch(final InterruptedException e) { }
+        Waiter.sleepQuietly(600L);
         assertTrue(gkoPool.getNumIdle("") < 200,"Should be less than 200 idle, found " + gkoPool.getNumIdle(""));
-        try { Thread.sleep(600L); } catch(final InterruptedException e) { }
+        Waiter.sleepQuietly(600L);
         assertTrue(gkoPool.getNumIdle("") < 100,"Should be less than 100 idle, found " + gkoPool.getNumIdle(""));
-        try { Thread.sleep(600L); } catch(final InterruptedException e) { }
+        Waiter.sleepQuietly(600L);
         assertEquals(0,gkoPool.getNumIdle(""),"Should be zero idle, found " + gkoPool.getNumIdle(""));
     }
 
@@ -1370,72 +1339,28 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             gkoPool.returnObject("2", active2[i]);
         }
 
-        try {
-            Thread.sleep(1100L);
-        } catch (final InterruptedException e) {
-            // ignore
-        }
+        Waiter.sleepQuietly(1100L);
         assertTrue(gkoPool.getNumIdle() < 1000, "Should be less than 1000 idle, found " + gkoPool.getNumIdle());
         final long sleepMillisPart2 = 600L;
-        try {
-            Thread.sleep(sleepMillisPart2);
-        } catch (final InterruptedException e) {
-            // ignore
-        }
+        Waiter.sleepQuietly(sleepMillisPart2);
         assertTrue(gkoPool.getNumIdle() < 900, "Should be less than 900 idle, found " + gkoPool.getNumIdle());
-        try {
-            Thread.sleep(sleepMillisPart2);
-        } catch (final InterruptedException e) {
-            // ignore
-        }
+        Waiter.sleepQuietly(sleepMillisPart2);
         assertTrue(gkoPool.getNumIdle() < 800, "Should be less than 800 idle, found " + gkoPool.getNumIdle());
-        try {
-            Thread.sleep(sleepMillisPart2);
-        } catch (final InterruptedException e) {
-            // ignore
-        }
+        Waiter.sleepQuietly(sleepMillisPart2);
         assertTrue(gkoPool.getNumIdle() < 700, "Should be less than 700 idle, found " + gkoPool.getNumIdle());
-        try {
-            Thread.sleep(sleepMillisPart2);
-        } catch (final InterruptedException e) {
-            // ignore
-        }
+        Waiter.sleepQuietly(sleepMillisPart2);
         assertTrue(gkoPool.getNumIdle() < 600, "Should be less than 600 idle, found " + gkoPool.getNumIdle());
-        try {
-            Thread.sleep(sleepMillisPart2);
-        } catch (final InterruptedException e) {
-            // ignore
-        }
+        Waiter.sleepQuietly(sleepMillisPart2);
         assertTrue(gkoPool.getNumIdle() < 500, "Should be less than 500 idle, found " + gkoPool.getNumIdle());
-        try {
-            Thread.sleep(sleepMillisPart2);
-        } catch (final InterruptedException e) {
-            // ignore
-        }
+        Waiter.sleepQuietly(sleepMillisPart2);
         assertTrue(gkoPool.getNumIdle() < 400, "Should be less than 400 idle, found " + gkoPool.getNumIdle());
-        try {
-            Thread.sleep(sleepMillisPart2);
-        } catch (final InterruptedException e) {
-            // ignore
-        }
+        Waiter.sleepQuietly(sleepMillisPart2);
         assertTrue(gkoPool.getNumIdle() < 300, "Should be less than 300 idle, found " + gkoPool.getNumIdle());
-        try {
-            Thread.sleep(sleepMillisPart2);
-        } catch (final InterruptedException e) {
-            // ignore
-        }
+        Waiter.sleepQuietly(sleepMillisPart2);
         assertTrue(gkoPool.getNumIdle() < 200, "Should be less than 200 idle, found " + gkoPool.getNumIdle());
-        try {
-            Thread.sleep(sleepMillisPart2);
-        } catch (final InterruptedException e) {
-            // ignore
-        }
+        Waiter.sleepQuietly(sleepMillisPart2);
         assertTrue(gkoPool.getNumIdle() < 100, "Should be less than 100 idle, found " + gkoPool.getNumIdle());
-        try {
-            Thread.sleep(sleepMillisPart2);
-        } catch (final InterruptedException e) {
-            // ignore
-        }
+        Waiter.sleepQuietly(sleepMillisPart2);
         assertEquals(0, gkoPool.getNumIdle(), "Should be zero idle, found " + gkoPool.getNumIdle());
     }
 
@@ -2122,33 +2047,32 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         gkoPool.setTimeBetweenEvictionRuns(Duration.ofMillis(100));
         gkoPool.setTestWhileIdle(true);
 
-
-        //Generate a random key
+        // Generate a random key
         final String key = "A";
 
         gkoPool.preparePool(key);
 
-        try { Thread.sleep(150L); } catch(final InterruptedException e) { }
+        Waiter.sleepQuietly(150L);
         assertEquals(5, gkoPool.getNumIdle(), "Should be 5 idle, found " + gkoPool.getNumIdle());
 
         final String[] active = new String[5];
         active[0] = gkoPool.borrowObject(key);
 
-        try { Thread.sleep(150L); } catch(final InterruptedException e) { }
+        Waiter.sleepQuietly(150L);
         assertEquals(5, gkoPool.getNumIdle(), "Should be 5 idle, found " + gkoPool.getNumIdle());
 
-        for(int i=1 ; i<5 ; i++) {
+        for (int i = 1; i < 5; i++) {
             active[i] = gkoPool.borrowObject(key);
         }
 
-        try { Thread.sleep(150L); } catch(final InterruptedException e) { }
+        Waiter.sleepQuietly(150L);
         assertEquals(5, gkoPool.getNumIdle(), "Should be 5 idle, found " + gkoPool.getNumIdle());
 
-        for(int i=0 ; i<5 ; i++) {
+        for (int i = 0; i < 5; i++) {
             gkoPool.returnObject(key, active[i]);
         }
 
-        try { Thread.sleep(150L); } catch(final InterruptedException e) { }
+        Waiter.sleepQuietly(150L);
         assertEquals(10, gkoPool.getNumIdle(), "Should be 10 idle, found " + gkoPool.getNumIdle());
     }
 
@@ -2169,40 +2093,40 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         assertEquals(5, gkoPool.getNumIdle(), "Should be 5 idle, found " +
                 gkoPool.getNumIdle());
 
-        try { Thread.sleep(150L); } catch(final InterruptedException e) { }
+        Waiter.sleepQuietly(150L);
         assertEquals(5, gkoPool.getNumIdle(), "Should be 5 idle, found " + gkoPool.getNumIdle());
 
         final String[] active = new String[10];
 
-        try { Thread.sleep(150L); } catch(final InterruptedException e) { }
+        Waiter.sleepQuietly(150L);
         assertEquals(5, gkoPool.getNumIdle(), "Should be 5 idle, found " + gkoPool.getNumIdle());
 
         for(int i=0 ; i<5 ; i++) {
             active[i] = gkoPool.borrowObject(key);
         }
 
-        try { Thread.sleep(150L); } catch(final InterruptedException e) { }
+        Waiter.sleepQuietly(150L);
         assertEquals(5, gkoPool.getNumIdle(), "Should be 5 idle, found " + gkoPool.getNumIdle());
 
         for(int i=0 ; i<5 ; i++) {
             gkoPool.returnObject(key, active[i]);
         }
 
-        try { Thread.sleep(150L); } catch(final InterruptedException e) { }
+        Waiter.sleepQuietly(150L);
         assertEquals(10, gkoPool.getNumIdle(), "Should be 10 idle, found " + gkoPool.getNumIdle());
 
         for(int i=0 ; i<10 ; i++) {
             active[i] = gkoPool.borrowObject(key);
         }
 
-        try { Thread.sleep(150L); } catch(final InterruptedException e) { }
+        Waiter.sleepQuietly(150L);
         assertEquals(0, gkoPool.getNumIdle(), "Should be 0 idle, found " + gkoPool.getNumIdle());
 
         for(int i=0 ; i<10 ; i++) {
             gkoPool.returnObject(key, active[i]);
         }
 
-        try { Thread.sleep(150L); } catch(final InterruptedException e) { }
+        Waiter.sleepQuietly(150L);
         assertEquals(10, gkoPool.getNumIdle(), "Should be 10 idle, found " + gkoPool.getNumIdle());
     }
 
@@ -2221,13 +2145,13 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         //Generate a random key
         final String key = "A";
 
-        try { Thread.sleep(150L); } catch(final InterruptedException e) { }
+        Waiter.sleepQuietly(150L);
         assertEquals(0, gkoPool.getNumIdle(), "Should be 0 idle, found " + gkoPool.getNumIdle());
 
         final Object active = gkoPool.borrowObject(key);
         assertNotNull(active);
 
-        try { Thread.sleep(150L); } catch(final InterruptedException e) { }
+        Waiter.sleepQuietly(150L);
         assertEquals(5, gkoPool.getNumIdle(), "Should be 5 idle, found " + gkoPool.getNumIdle());
     }
 

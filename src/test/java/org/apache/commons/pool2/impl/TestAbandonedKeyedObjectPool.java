@@ -36,6 +36,7 @@ import javax.management.ObjectName;
 import org.apache.commons.pool2.DestroyMode;
 import org.apache.commons.pool2.KeyedPooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.Waiter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -126,11 +127,7 @@ public class TestAbandonedKeyedObjectPool {
 
         @Override
         public boolean validateObject(final Integer key, final PooledObject<PooledTestObject> obj) {
-            try {
-                Thread.sleep(validateLatency);
-            } catch (final Exception ex) {
-                // ignore
-            }
+            Waiter.sleepQuietly(validateLatency);
             return true;
         }
     }

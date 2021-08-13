@@ -19,6 +19,7 @@ package org.apache.commons.pool2.performance;
 
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectFactory;
+import org.apache.commons.pool2.Waiter;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 
 /**
@@ -32,7 +33,7 @@ public class SleepingObjectFactory implements PooledObjectFactory<Integer> {
     @Override
     public void activateObject(final PooledObject<Integer> obj) throws Exception {
         debug("activateObject", obj);
-        sleep(10);
+        Waiter.sleepQuietly(10);
     }
 
     private void debug(final String method, final Object obj) {
@@ -45,7 +46,7 @@ public class SleepingObjectFactory implements PooledObjectFactory<Integer> {
     @Override
     public void destroyObject(final PooledObject<Integer> obj) throws Exception {
         debug("destroyObject", obj);
-        sleep(250);
+        Waiter.sleepQuietly(250);
     }
 
     public boolean isDebug() {
@@ -58,33 +59,24 @@ public class SleepingObjectFactory implements PooledObjectFactory<Integer> {
         // check for a specific object.
         final Integer obj = Integer.valueOf(counter++);
         debug("makeObject", obj);
-        sleep(500);
+        Waiter.sleepQuietly(500);
         return new DefaultPooledObject<>(obj);
     }
 
     @Override
     public void passivateObject(final PooledObject<Integer> obj) throws Exception {
         debug("passivateObject", obj);
-        sleep(10);
+        Waiter.sleepQuietly(10);
     }
 
     public void setDebug(final boolean b) {
         debug = b;
     }
 
-    private void sleep(final long millis) {
-        try {
-            Thread.sleep(millis);
-        }
-        catch (final InterruptedException e) {
-            // ignore
-        }
-    }
-
     @Override
     public boolean validateObject(final PooledObject<Integer> obj) {
         debug("validateObject", obj);
-        sleep(30);
+        Waiter.sleepQuietly(30);
         return true;
     }
 }

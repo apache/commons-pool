@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.Waiter;
 
 /**
  * Factory that sources PooledObjects that wrap AtomicIntegers.
@@ -40,40 +41,24 @@ public class AtomicIntegerFactory
     @Override
     public void activateObject(final PooledObject<AtomicInteger> p) {
         p.getObject().incrementAndGet();
-        try {
-            Thread.sleep(activateLatency);
-        } catch (final InterruptedException ex) {
-            // ignore
-        }
+        Waiter.sleepQuietly(activateLatency);
     }
 
     @Override
     public AtomicInteger create() {
-        try {
-            Thread.sleep(createLatency);
-        } catch (final InterruptedException ex) {
-            // ignore
-        }
+        Waiter.sleepQuietly(createLatency);
         return new AtomicInteger(0);
     }
 
     @Override
     public void destroyObject(final PooledObject<AtomicInteger> p) {
-        try {
-            Thread.sleep(destroyLatency);
-        } catch (final InterruptedException ex) {
-            // ignore
-        }
+        Waiter.sleepQuietly(destroyLatency);
     }
 
     @Override
     public void passivateObject(final PooledObject<AtomicInteger> p) {
         p.getObject().decrementAndGet();
-        try {
-            Thread.sleep(passivateLatency);
-        } catch (final InterruptedException ex) {
-            // ignore
-        }
+        Waiter.sleepQuietly(passivateLatency);
     }
 
     /**
@@ -117,11 +102,7 @@ public class AtomicIntegerFactory
 
     @Override
     public boolean validateObject(final PooledObject<AtomicInteger> instance) {
-        try {
-            Thread.sleep(validateLatency);
-        } catch (final InterruptedException ex) {
-            // ignore
-        }
+        Waiter.sleepQuietly(validateLatency);
         return instance.getObject().intValue() == 1;
     }
 

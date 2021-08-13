@@ -131,11 +131,7 @@ KeyedPooledObjectFactory<K,Waiter> {
         if (latency == 0) {
             return;
         }
-        try {
-            Thread.sleep(latency);
-        } catch (final InterruptedException ex) {
-            // ignore
-        }
+        Waiter.sleepQuietly(latency);
     }
 
     /**

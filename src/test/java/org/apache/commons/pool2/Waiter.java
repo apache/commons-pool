@@ -45,14 +45,10 @@ public class Waiter {
     }
 
     /**
-     * Wait for {@link #getLatency()} ms.
+     * Wait for {@link #getLatency()} milliseconds.
      */
     public void doWait() {
-        try {
-            Thread.sleep(latency);
-        } catch (final InterruptedException ex) {
-            // ignore
-        }
+        sleepQuietly(latency);
     }
 
     @Override
@@ -174,5 +170,14 @@ public class Waiter {
         buff.append("lastIdleTimeMs = " + lastIdleTimeMillis + '\n');
         buff.append("latency = " + latency + '\n');
         return buff.toString();
+    }
+
+    /** TODO Reuse Apache Commons Lang ThreadUtils */
+    public static void sleepQuietly(final long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (final InterruptedException e) {
+            // be quiet
+        }
     }
 }

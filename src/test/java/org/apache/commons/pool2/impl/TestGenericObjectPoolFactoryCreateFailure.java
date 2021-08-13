@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.Waiter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -79,7 +80,7 @@ public class TestGenericObjectPoolFactoryCreateFailure {
                     failed.set(true);
                 } else {
                     // just to make sure, borrowObject has started waiting on queue
-                    sleepIgnoreException(1000);
+                    Waiter.sleepQuietly(1000);
                 }
 
                 pool.returnObject(obj);
@@ -93,14 +94,6 @@ public class TestGenericObjectPoolFactoryCreateFailure {
 
     private static void println(final String msg) {
         // System.out.println(msg);
-    }
-
-    private static void sleepIgnoreException(final long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch(final Throwable e) {
-            // ignore
-        }
     }
 
     @Test
@@ -129,7 +122,7 @@ public class TestGenericObjectPoolFactoryCreateFailure {
 
             // wait for object to be created
             while (!factory.created.get()) {
-                sleepIgnoreException(5);
+                Waiter.sleepQuietly((long) 5);
             }
 
             // now borrow
