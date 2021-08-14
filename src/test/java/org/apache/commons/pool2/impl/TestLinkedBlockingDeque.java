@@ -16,10 +16,10 @@
  */
 package org.apache.commons.pool2.impl;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -34,7 +34,6 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
-
 
 /**
  * Tests for {@link LinkedBlockingDeque}.
@@ -57,14 +56,8 @@ public class TestLinkedBlockingDeque {
     public void testAdd() {
         assertTrue(deque.add(ONE));
         assertTrue(deque.add(TWO));
-        try {
-            assertTrue(deque.add(THREE));
-            fail("Not supposed to get here");
-        } catch (final IllegalStateException e) {}
-        try {
-            assertTrue(deque.add(null));
-            fail("Not supposed to get here");
-        } catch (final NullPointerException e) {}
+        assertThrows(IllegalStateException.class, () -> deque.add(THREE));
+        assertThrows(NullPointerException.class, () -> deque.add(null));
     }
 
     @Test
@@ -72,10 +65,7 @@ public class TestLinkedBlockingDeque {
         deque.addFirst(ONE);
         deque.addFirst(TWO);
         assertEquals(2, deque.size());
-        try {
-            deque.addFirst(THREE);
-            fail("Not supposed to get here");
-        } catch (final IllegalStateException e) {}
+        assertThrows(IllegalStateException.class, () -> deque.add(THREE));
         assertEquals(Integer.valueOf(2), deque.pop());
     }
 
@@ -84,10 +74,7 @@ public class TestLinkedBlockingDeque {
         deque.addLast(ONE);
         deque.addLast(TWO);
         assertEquals(2, deque.size());
-        try {
-            deque.addLast(THREE);
-            fail("Not supposed to get here");
-        } catch (final IllegalStateException e) {}
+        assertThrows(IllegalStateException.class, () -> deque.add(THREE));
         assertEquals(Integer.valueOf(1), deque.pop());
     }
 
@@ -111,12 +98,7 @@ public class TestLinkedBlockingDeque {
         deque = new LinkedBlockingDeque<>(Arrays.asList(ONE, TWO));
         assertEquals(2, deque.size());
 
-        try {
-            deque = new LinkedBlockingDeque<>(Arrays.asList(ONE, null));
-            fail("Not supposed to get here");
-        } catch (final NullPointerException npe) {
-            // OK
-        }
+        assertThrows(NullPointerException.class, () -> new LinkedBlockingDeque<>(Arrays.asList(ONE, null)));
     }
 
     @Test
@@ -132,10 +114,7 @@ public class TestLinkedBlockingDeque {
 
     @Test
     public void testDescendingIterator() {
-        try {
-            deque.descendingIterator().next();
-            fail("Not supposed to get here");
-        } catch (final NoSuchElementException e) {}
+        assertThrows(NoSuchElementException.class, () -> deque.descendingIterator().next());
         deque.add(ONE);
         deque.add(TWO);
         final Iterator<Integer> iter = deque.descendingIterator();
@@ -163,10 +142,7 @@ public class TestLinkedBlockingDeque {
 
     @Test
     public void testElement() {
-        try {
-            deque.element();
-            fail("Not supposed to get here");
-        } catch (final NoSuchElementException e){}
+        assertThrows(NoSuchElementException.class, () -> deque.element());
         deque.add(ONE);
         deque.add(TWO);
         assertEquals(Integer.valueOf(1), deque.element());
@@ -174,10 +150,7 @@ public class TestLinkedBlockingDeque {
 
     @Test
     public void testGetFirst() {
-        try {
-            deque.getFirst();
-            fail("Not supposed to get here");
-        } catch (final NoSuchElementException e){}
+        assertThrows(NoSuchElementException.class, () -> deque.getFirst());
         deque.add(ONE);
         deque.add(TWO);
         assertEquals(Integer.valueOf(1), deque.getFirst());
@@ -185,10 +158,7 @@ public class TestLinkedBlockingDeque {
 
     @Test
     public void testGetLast() {
-        try {
-            deque.getLast();
-            fail("Not supposed to get here");
-        } catch (final NoSuchElementException e){}
+        assertThrows(NoSuchElementException.class, () -> deque.getLast());
         deque.add(ONE);
         deque.add(TWO);
         assertEquals(Integer.valueOf(2), deque.getLast());
@@ -196,10 +166,7 @@ public class TestLinkedBlockingDeque {
 
     @Test
     public void testIterator() {
-        try {
-            deque.iterator().next();
-            fail("Not supposed to get here");
-        } catch (final NoSuchElementException e) {}
+        assertThrows(NoSuchElementException.class, () -> deque.iterator().next());
         deque.add(ONE);
         deque.add(TWO);
         final Iterator<Integer> iter = deque.iterator();
@@ -213,10 +180,7 @@ public class TestLinkedBlockingDeque {
         assertTrue(deque.offer(ONE));
         assertTrue(deque.offer(TWO));
         assertFalse(deque.offer(THREE));
-        try {
-            deque.offer(null);
-            fail("Not supposed to get here");
-        } catch (final NullPointerException e) {}
+        assertThrows(NullPointerException.class, () -> deque.offer(null));
     }
 
     @Test
@@ -224,19 +188,13 @@ public class TestLinkedBlockingDeque {
         deque.offerFirst(ONE);
         deque.offerFirst(TWO);
         assertEquals(2, deque.size());
-        try {
-            deque.offerFirst(null);
-            fail("Not supposed to get here");
-        } catch (final NullPointerException e) {}
+        assertThrows(NullPointerException.class, () -> deque.offerFirst(null));
         assertEquals(Integer.valueOf(2), deque.pop());
     }
 
     @Test
     public void testOfferFirstWithTimeout() throws InterruptedException {
-        try {
-            deque.offerFirst(null);
-            fail("Not supposed to get here");
-        } catch (final NullPointerException e) {}
+        assertThrows(NullPointerException.class, () -> deque.offerFirst(null, TIMEOUT_50_MILLIS));
         assertTrue(deque.offerFirst(ONE, TIMEOUT_50_MILLIS));
         assertTrue(deque.offerFirst(TWO, TIMEOUT_50_MILLIS));
         assertFalse(deque.offerFirst(THREE, TIMEOUT_50_MILLIS));
@@ -247,19 +205,13 @@ public class TestLinkedBlockingDeque {
         deque.offerLast(ONE);
         deque.offerLast(TWO);
         assertEquals(2, deque.size());
-        try {
-            deque.offerLast(null);
-            fail("Not supposed to get here");
-        } catch (final NullPointerException e) {}
+        assertThrows(NullPointerException.class, () -> deque.offerLast(null));
         assertEquals(Integer.valueOf(1), deque.pop());
     }
 
     @Test
     public void testOfferLastWithTimeout() throws InterruptedException {
-        try {
-            deque.offerLast(null);
-            fail("Not supposed to get here");
-        } catch (final NullPointerException e) {}
+        assertThrows(NullPointerException.class, () -> deque.offerLast(null, TIMEOUT_50_MILLIS));
         assertTrue(deque.offerLast(ONE, TIMEOUT_50_MILLIS));
         assertTrue(deque.offerLast(TWO, TIMEOUT_50_MILLIS));
         assertFalse(deque.offerLast(THREE, TIMEOUT_50_MILLIS));
@@ -270,10 +222,7 @@ public class TestLinkedBlockingDeque {
         assertTrue(deque.offer(ONE, TIMEOUT_50_MILLIS));
         assertTrue(deque.offer(TWO, TIMEOUT_50_MILLIS));
         assertFalse(deque.offer(THREE, TIMEOUT_50_MILLIS));
-        try {
-            deque.offer(null, TIMEOUT_50_MILLIS);
-            fail("Not supposed to get here");
-        } catch (final NullPointerException e) {}
+        assertThrows(NullPointerException.class, () -> deque.offer(null, TIMEOUT_50_MILLIS));
     }
 
     @Test
@@ -336,18 +285,14 @@ public class TestLinkedBlockingDeque {
 
     @Test
     public void testPop() {
-        try {
-            deque.pop();
-            fail("Not supposed to get here");
-        } catch (final NoSuchElementException e) {}
+        assertThrows(NoSuchElementException.class, () -> deque.pop());
         deque.add(ONE);
         deque.add(TWO);
         assertEquals(Integer.valueOf(1), deque.pop());
-        try {
+        assertThrows(NoSuchElementException.class, () -> {
             deque.pop();
             deque.pop();
-            fail("Not supposed to get here");
-        } catch (final NoSuchElementException e) {}
+        });
     }
 
     /*
@@ -382,29 +327,20 @@ public class TestLinkedBlockingDeque {
         deque.push(ONE);
         deque.push(TWO);
         assertEquals(2, deque.size());
-        try {
-            deque.push(THREE);
-            fail("Not supposed to get here");
-        } catch (final IllegalStateException e) {}
+        assertThrows(IllegalStateException.class, () -> deque.push(THREE));
         assertEquals(Integer.valueOf(2), deque.pop());
     }
 
     @Test
     public void testPut() throws InterruptedException {
-        try {
-            deque.put(null);
-            fail("Not supposed to get here");
-        } catch (final NullPointerException e) {}
+        assertThrows(NullPointerException.class, () -> deque.put(null));
         deque.put(ONE);
         deque.put(TWO);
     }
 
     @Test
     public void testPutFirst() throws InterruptedException {
-        try {
-            deque.putFirst(null);
-            fail("Not supposed to get here");
-        } catch (final NullPointerException e) {}
+        assertThrows(NullPointerException.class, () -> deque.putFirst(null));
         deque.putFirst(ONE);
         deque.putFirst(TWO);
         assertEquals(2, deque.size());
@@ -413,10 +349,7 @@ public class TestLinkedBlockingDeque {
 
     @Test
     public void testPutLast() throws InterruptedException {
-        try {
-            deque.putLast(null);
-            fail("Not supposed to get here");
-        } catch (final NullPointerException e) {}
+        assertThrows(NullPointerException.class, () -> deque.putLast(null));
         deque.putLast(ONE);
         deque.putLast(TWO);
         assertEquals(2, deque.size());
@@ -425,10 +358,7 @@ public class TestLinkedBlockingDeque {
 
     @Test
     public void testRemove() {
-        try {
-            deque.remove();
-            fail("Not supposed to get here");
-        } catch (final NoSuchElementException e) {}
+        assertThrows(NoSuchElementException.class, deque::remove);
         deque.add(ONE);
         deque.add(TWO);
         assertEquals(Integer.valueOf(1), deque.remove());
@@ -436,34 +366,26 @@ public class TestLinkedBlockingDeque {
 
     @Test
     public void testRemoveFirst() {
-        try {
-            deque.removeFirst();
-            fail("Not supposed to get here");
-        } catch (final NoSuchElementException e) {}
+        assertThrows(NoSuchElementException.class, deque::removeFirst);
         deque.add(ONE);
         deque.add(TWO);
         assertEquals(Integer.valueOf(1), deque.removeFirst());
-        try {
+        assertThrows(NoSuchElementException.class, () -> {
             deque.removeFirst();
             deque.removeFirst();
-            fail("Not supposed to get here");
-        } catch (final NoSuchElementException e) {}
+        });
     }
 
     @Test
     public void testRemoveLast() {
-        try {
-            deque.removeLast();
-            fail("Not supposed to get here");
-        } catch (final NoSuchElementException e) {}
+        assertThrows(NoSuchElementException.class, deque::removeLast);
         deque.add(ONE);
         deque.add(TWO);
         assertEquals(Integer.valueOf(2), deque.removeLast());
-        try {
+        assertThrows(NoSuchElementException.class, () -> {
             deque.removeLast();
             deque.removeLast();
-            fail("Not supposed to get here");
-        } catch (final NoSuchElementException e) {}
+        });
     }
 
     @Test

@@ -17,12 +17,11 @@
 package org.apache.commons.pool2;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
-
-
 
 /**
  */
@@ -203,12 +202,7 @@ public class TestBaseObjectPool extends TestObjectPool {
         pool.returnObject(obj);
 
         pool.close();
-        try {
-            pool.borrowObject();
-            fail("Expected IllegalStateException");
-        } catch(final IllegalStateException e) {
-            // expected
-        }
+        assertThrows(IllegalStateException.class, pool::borrowObject);
     }
 
     @Test
@@ -277,19 +271,8 @@ public class TestBaseObjectPool extends TestObjectPool {
             assertTrue( pool.getNumIdle() < 0,"Negative expected.");
             assertTrue( pool.getNumActive() < 0,"Negative expected.");
 
-            try {
-                pool.clear();
-                fail("Expected UnsupportedOperationException");
-            } catch (final UnsupportedOperationException e) {
-                // expected
-            }
-
-            try {
-                pool.addObject();
-                fail("Expected UnsupportedOperationException");
-            } catch (final UnsupportedOperationException e) {
-                // expected
-            }
+            assertThrows(UnsupportedOperationException.class, pool::clear);
+            assertThrows(UnsupportedOperationException.class, pool::addObject);
         }
     }
 }

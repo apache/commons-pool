@@ -17,6 +17,7 @@
 package org.apache.commons.pool2;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
@@ -481,19 +482,11 @@ public abstract class TestKeyedObjectPool {
 
         pool.close();
 
-        try {
-            pool.addObject(KEY);
-            fail("A closed pool must throw an IllegalStateException when addObject is called.");
-        } catch (final IllegalStateException ise) {
-            // expected
-        }
+        assertThrows(IllegalStateException.class, () -> pool.addObject(KEY),
+                "A closed pool must throw an IllegalStateException when addObject is called.");
 
-        try {
-            pool.borrowObject(KEY);
-            fail("A closed pool must throw an IllegalStateException when borrowObject is called.");
-        } catch (final IllegalStateException ise) {
-            // expected
-        }
+        assertThrows(IllegalStateException.class, () -> pool.borrowObject(KEY),
+                "A closed pool must throw an IllegalStateException when borrowObject is called.");
 
         // The following should not throw exceptions just because the pool is closed.
         assertEquals( 0, pool.getNumIdle(KEY),"A closed pool shouldn't have any idle objects.");
@@ -531,12 +524,7 @@ public abstract class TestKeyedObjectPool {
 
         // makeObject Exceptions should be propagated to client code from addObject
         factory.setMakeObjectFail(true);
-        try {
-            pool.addObject(KEY);
-            fail("Expected addObject to propagate makeObject exception.");
-        } catch (final PrivateException pe) {
-            // expected
-        }
+        assertThrows(PrivateException.class, () -> pool.addObject(KEY), "Expected addObject to propagate makeObject exception.");
         expectedMethods.add(new MethodCall("makeObject", KEY));
         assertEquals(expectedMethods, factory.getMethodCalls());
 
@@ -545,12 +533,7 @@ public abstract class TestKeyedObjectPool {
         // passivateObject Exceptions should be propagated to client code from addObject
         factory.setMakeObjectFail(false);
         factory.setPassivateObjectFail(true);
-        try {
-            pool.addObject(KEY);
-            fail("Expected addObject to propagate passivateObject exception.");
-        } catch (final PrivateException pe) {
-            // expected
-        }
+        assertThrows(PrivateException.class, () -> pool.addObject(KEY), "Expected addObject to propagate passivateObject exception.");
         expectedMethods.add(new MethodCall("makeObject", KEY).returned(ONE));
         expectedMethods.add(new MethodCall("passivateObject", KEY, ONE));
         assertEquals(expectedMethods, factory.getMethodCalls());
@@ -606,12 +589,7 @@ public abstract class TestKeyedObjectPool {
 
         factory.setActivateObjectFail(true);
         expectedMethods.add(new MethodCall("activateObject", KEY, obj));
-        try {
-            pool.borrowObject(KEY);
-            fail("Expecting NoSuchElementException");
-        } catch (final NoSuchElementException e) {
-            //Activate should fail
-        }
+        assertThrows(NoSuchElementException.class, () -> pool.borrowObject(KEY));
         // After idle object fails validation, new on is created and activation
         // fails again for the new one.
         expectedMethods.add(new MethodCall("makeObject", KEY).returned(ONE));
@@ -627,12 +605,7 @@ public abstract class TestKeyedObjectPool {
         factory.setValidateObjectFail(true);
         // testOnBorrow is on, so this will throw when the newly created instance
         // fails validation
-        try {
-            pool.borrowObject(KEY);
-            fail("Expecting NoSuchElementException");
-        } catch (final NoSuchElementException ex) {
-            // expected
-        }
+        assertThrows(NoSuchElementException.class, () -> pool.borrowObject(KEY));
         // Activate, then validate for idle instance
         expectedMethods.add(new MethodCall("activateObject", KEY, ZERO));
         expectedMethods.add(new MethodCall("validateObject", KEY, ZERO));
@@ -716,15 +689,10 @@ public abstract class TestKeyedObjectPool {
 
         //// Test exception handling of invalidateObject
         reset(pool, factory, expectedMethods);
-        obj = pool.borrowObject(KEY);
+        final Object obj2 = pool.borrowObject(KEY);
         clear(factory, expectedMethods);
         factory.setDestroyObjectFail(true);
-        try {
-            pool.invalidateObject(KEY, obj);
-            fail("Expecting destroy exception to propagate");
-        } catch (final PrivateException ex) {
-            // Expected
-        }
+        assertThrows(PrivateException.class, () -> pool.invalidateObject(KEY, obj2), "Expecting destroy exception to propagate");
         Thread.sleep(250); // could be defered
         TestObjectPool.removeDestroyObjectCall(factory.getMethodCalls());
         assertEquals(expectedMethods, factory.getMethodCalls());

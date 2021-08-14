@@ -308,8 +308,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         @Override
         public void run() {
             try {
-                final T obj = pool.borrowObject(key);
-                pool.returnObject(key, obj);
+                pool.returnObject(key, pool.borrowObject(key));
             } catch (final Exception e) {
                 // Ignore
             }
@@ -1436,12 +1435,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         gkoPool.returnObject("one", obj);
 
         simpleFactory.setThrowExceptionOnValidate(true);
-        try {
-            gkoPool.evict();
-            fail("Expecting RuntimeException");
-        } catch (final RuntimeException e) {
-            // expected
-        }
+        assertThrows(RuntimeException.class, gkoPool::evict);
         assertEquals(0, gkoPool.getNumActive());
         assertEquals(0, gkoPool.getNumIdle());
     }
@@ -1467,12 +1461,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         simpleFactory.setValid(false);
         // Validation will now fail on activation when borrowObject returns
         // an idle instance, and then when attempting to create a new instance
-        try {
-            gkoPool.borrowObject("one");
-            fail("Expecting NoSuchElementException");
-        } catch (final NoSuchElementException ex) {
-            // expected
-        }
+        assertThrows(NoSuchElementException.class, () -> gkoPool.borrowObject("one"));
         assertEquals(0, gkoPool.getNumActive("one"));
         assertEquals(0, gkoPool.getNumIdle("one"));
         assertEquals(0, gkoPool.getNumActive());
@@ -1488,12 +1477,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         gkoPool.setTestOnBorrow(true);
         gkoPool.borrowObject("one");
         simpleFactory.setValid(false); // Make validation fail on next borrow attempt
-        try {
-            gkoPool.borrowObject("one");
-            fail("Expecting NoSuchElementException");
-        } catch (final NoSuchElementException ex) {
-            // expected
-        }
+        assertThrows(NoSuchElementException.class, () -> gkoPool.borrowObject("one"));
         assertEquals(1, gkoPool.getNumActive("one"));
         assertEquals(0, gkoPool.getNumIdle("one"));
         assertEquals(1, gkoPool.getNumActive());
@@ -1716,11 +1700,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             pool.setMaxTotalPerKey(1);
             pool.setBlockWhenExhausted(false);
             factory.exceptionOnCreate = true;
-            try {
-                pool.borrowObject("One");
-            } catch (final Exception ex) {
-                // expected
-            }
+            assertThrows(Exception.class, () -> pool.borrowObject("One"));
             factory.exceptionOnCreate = false;
             pool.borrowObject("One");
         }
@@ -1794,12 +1774,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         assertNotNull(o2);
         final String o3 = gkoPool.borrowObject("b");
         assertNotNull(o3);
-        try {
-            gkoPool.borrowObject("c");
-            fail("Expected NoSuchElementException");
-        } catch(final NoSuchElementException e) {
-            // expected
-        }
+        assertThrows(NoSuchElementException.class, () -> gkoPool.borrowObject("c"));
 
         assertEquals(0, gkoPool.getNumIdle());
 
@@ -1904,12 +1879,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         gkoPool.borrowObject("");
         gkoPool.borrowObject("");
         gkoPool.borrowObject("");
-        try {
-            gkoPool.borrowObject("");
-            fail("Expected NoSuchElementException");
-        } catch(final NoSuchElementException e) {
-            // expected
-        }
+        assertThrows(NoSuchElementException.class, () -> gkoPool.borrowObject(""));
     }
 
     @Test
@@ -1918,12 +1888,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         gkoPool.setMaxTotalPerKey(0);
         gkoPool.setBlockWhenExhausted(false);
 
-        try {
-            gkoPool.borrowObject("a");
-            fail("Expected NoSuchElementException");
-        } catch(final NoSuchElementException e) {
-            // expected
-        }
+        assertThrows(NoSuchElementException.class, () -> gkoPool.borrowObject("a"));
     }
 
     /**

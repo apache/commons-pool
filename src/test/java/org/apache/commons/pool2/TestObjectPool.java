@@ -18,6 +18,7 @@ package org.apache.commons.pool2;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -82,19 +83,9 @@ public abstract class TestObjectPool {
 
         pool.close();
 
-        try {
-            pool.addObject();
-            fail("A closed pool must throw an IllegalStateException when addObject is called.");
-        } catch (final IllegalStateException ise) {
-            // expected
-        }
+        assertThrows(IllegalStateException.class, pool::addObject, "A closed pool must throw an IllegalStateException when addObject is called.");
 
-        try {
-            pool.borrowObject();
-            fail("A closed pool must throw an IllegalStateException when borrowObject is called.");
-        } catch (final IllegalStateException ise) {
-            // expected
-        }
+        assertThrows(IllegalStateException.class, pool::borrowObject, "A closed pool must throw an IllegalStateException when borrowObject is called.");
 
         // The following should not throw exceptions just because the pool is closed.
         if (pool.getNumIdle() >= 0) {
@@ -152,12 +143,7 @@ public abstract class TestObjectPool {
 
         // makeObject Exceptions should be propagated to client code from addObject
         factory.setMakeObjectFail(true);
-        try {
-            pool.addObject();
-            fail("Expected addObject to propagate makeObject exception.");
-        } catch (final PrivateException pe) {
-            // expected
-        }
+        assertThrows(PrivateException.class, pool::addObject, "Expected addObject to propagate makeObject exception.");
         expectedMethods.add(new MethodCall("makeObject"));
         assertEquals(expectedMethods, factory.getMethodCalls());
 
@@ -166,17 +152,11 @@ public abstract class TestObjectPool {
         // passivateObject Exceptions should be propagated to client code from addObject
         factory.setMakeObjectFail(false);
         factory.setPassivateObjectFail(true);
-        try {
-            pool.addObject();
-            fail("Expected addObject to propagate passivateObject exception.");
-        } catch (final PrivateException pe) {
-            // expected
-        }
+        assertThrows(PrivateException.class, pool::addObject, "Expected addObject to propagate passivateObject exception.");
         expectedMethods.add(new MethodCall("makeObject").returned(ONE));
         // StackObjectPool, SofReferenceObjectPool also validate on add
         if (pool instanceof SoftReferenceObjectPool) {
-            expectedMethods.add(new MethodCall(
-                    "validateObject", ONE).returned(Boolean.TRUE));
+            expectedMethods.add(new MethodCall("validateObject", ONE).returned(Boolean.TRUE));
         }
         expectedMethods.add(new MethodCall("passivateObject", ONE));
         assertEquals(expectedMethods, factory.getMethodCalls());
@@ -214,12 +194,7 @@ public abstract class TestObjectPool {
 
         // makeObject Exceptions should be propagated to client code from borrowObject
         factory.setMakeObjectFail(true);
-        try {
-            obj = pool.borrowObject();
-            fail("Expected borrowObject to propagate makeObject exception.");
-        } catch (final PrivateException pe) {
-            // expected
-        }
+        assertThrows(PrivateException.class, pool::borrowObject, "Expected borrowObject to propagate makeObject exception.");
         expectedMethods.add(new MethodCall("makeObject"));
         assertEquals(expectedMethods, factory.getMethodCalls());
 
@@ -231,12 +206,8 @@ public abstract class TestObjectPool {
 
         factory.setActivateObjectFail(true);
         expectedMethods.add(new MethodCall("activateObject", obj));
-        try {
-            pool.borrowObject();
-            fail("Expecting NoSuchElementException");
-        } catch (final NoSuchElementException ex) {
-            // Expected - newly created object will also fail to activate
-        }
+        // Expected NoSuchElementException - newly created object will also fail to activate
+        assertThrows(NoSuchElementException.class, pool::borrowObject, "Expecting NoSuchElementException");
         // Idle object fails activation, new one created, also fails
         expectedMethods.add(new MethodCall("makeObject").returned(ONE));
         expectedMethods.add(new MethodCall("activateObject", ONE));
@@ -251,11 +222,8 @@ public abstract class TestObjectPool {
         factory.setValidateObjectFail(true);
         expectedMethods.add(new MethodCall("activateObject", ZERO));
         expectedMethods.add(new MethodCall("validateObject", ZERO));
-        try {
-            pool.borrowObject();
-        } catch (final NoSuchElementException ex) {
-            // Expected - newly created object will also fail to validate
-        }
+        // Expected NoSuchElementException - newly created object will also fail to validate
+        assertThrows(NoSuchElementException.class, pool::borrowObject, "Expecting NoSuchElementException");
         // Idle object is activated, but fails validation.
         // New instance is created, activated and then fails validation
         expectedMethods.add(new MethodCall("makeObject").returned(ONE));
@@ -342,15 +310,10 @@ public abstract class TestObjectPool {
 
         //// Test exception handling of invalidateObject
         reset(pool, factory, expectedMethods);
-        obj = pool.borrowObject();
+        final Object obj2 = pool.borrowObject();
         clear(factory, expectedMethods);
         factory.setDestroyObjectFail(true);
-        try {
-            pool.invalidateObject(obj);
-            fail("Expecting destroy exception to propagate");
-        } catch (final PrivateException ex) {
-            // Expected
-        }
+        assertThrows(PrivateException.class, () -> pool.invalidateObject(obj2));
         Thread.sleep(250); // could be deferred
         removeDestroyObjectCall(factory.getMethodCalls());
         assertEquals(expectedMethods, factory.getMethodCalls());
@@ -399,8 +362,7 @@ public abstract class TestObjectPool {
         pool.returnObject(obj);
         // StackObjectPool, SoftReferenceObjectPool also validate on return
         if (pool instanceof SoftReferenceObjectPool) {
-            expectedMethods.add(new MethodCall(
-                    "validateObject", obj).returned(Boolean.TRUE));
+            expectedMethods.add(new MethodCall("validateObject", obj).returned(Boolean.TRUE));
         }
         expectedMethods.add(new MethodCall("passivateObject", obj));
         removeDestroyObjectCall(factory.getMethodCalls()); // The exact timing of destroyObject is flexible here.
