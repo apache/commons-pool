@@ -1,3 +1,62 @@
+              Apache Commons Pool 2.11.1 RELEASE NOTES
+
+The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.11.1.
+
+Apache Commons Pool provides an object-pooling API and a number of object pool implementations.
+Version 2 contains a completely re-written pooling implementation compared to the 1.x series.
+In addition to performance and scalability improvements, version 2 includes robust instance
+tracking and pool monitoring. 
+
+Version 2.7.x and up requires Java 8 or above.
+Version 2.6.x requires Java 7 or above.
+Version 2.5.x requires Java 7 or above.
+Version 2.0 requires 6 or above. 
+
+No client code changes are required to migrate from versions 2.0-2.3 to version 2.4.3.
+Users of version 1.x should consult the migration guide on the Commons Pool web site.
+
+NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPoolMXBean
+      and GenericKeyedObjectPoolMXBean) exist only to define the attributes and methods
+      that will be made available via JMX. They must not be implemented by clients as
+      they are subject to change between major, minor and patch version releases of
+      Commons Pool. Clients that implement any of these interfaces may not, therefore,
+      be able to upgrade to a new minor or patch release without requiring code
+      changes.
+
+This is a maintenance release (Java 8).
+
+Changes in version 2.11.1 include:
+
+
+Fixed Bugs:
+o            Getting a PooledObject's active duration returns a negative duration when the object is borrowed but not returned. Affects:
+             - PooledObject.getActiveDuration()
+             - PooledObject.getActiveTime()
+             - PooledObject.getActiveTimeMillis() Thanks to Gary Gregory.
+o            The default implementation of TrackedUse.getLastUsedInstant() uses seconds instead of milliseconds. 
+             This interface is not implemented within Apache Commons Pool but affects Apache Commons DBCP. Thanks to Gary Gregory.
+o            DefaultPooledObject.getIdleTime() drops nanoseconds on Java 9 and greater. Thanks to Gary Gregory.
+o            Fix field label in BaseGenericObjectPool toString() builder: From timeBetweenEvictionRunsMillis to durationBetweenEvictionRuns. Thanks to Gary Gregory.
+o            Fix field label in BaseObjectPoolConfig toString() builder: From maxWaitMillis to maxWaitDuration. Thanks to Gary Gregory.
+o            Fix field label in NoSuchElementException message for GenericObjectPool.borrowObject(Duration): From borrowMaxWaitMillis to borrowMaxWaitDuration. Thanks to Gary Gregory.
+o            Reimplement DefaultPooledObject.getIdleDuration() using Duration computation. Thanks to Gary Gregory.
+o            Reimplement BaseGenericObjectPool.maxBorrowWait as a Duration instead of a long. Thanks to Gary Gregory.
+o            Minors Changes #89. Thanks to Arturo Bernal.
+
+Changes:
+o            Bump checkstyle from 8.45 to 8.45.1 #93. Thanks to Dependabot.
+o            Bump spotbugs from 4.2.3 to 4.3.0 and ignore new medium warnings EI_EXPOSE_REP and EI_EXPOSE_REP2. Thanks to Dependabot.
+
+
+For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Apache Commons Pool website:
+
+https://commons.apache.org/proper/commons-pool/
+
+Download page: https://commons.apache.org/proper/commons-pool/download_pool.cgi
+
+-----------------------------------------------------------------------------------------------
+
               Apache Commons Pool 2.11.0 RELEASE NOTES
 
 The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.11.0.
