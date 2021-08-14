@@ -16,7 +16,6 @@
  */
 package org.apache.commons.pool2.impl;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -31,10 +30,14 @@ import org.junit.jupiter.params.provider.MethodSource;
 public class CallStackTest {
 
     public static Stream<Arguments> data() {
+        // @formatter:off
         return Stream.of(
-                Arguments.arguments( new ThrowableCallStack("Test", false)),
-                Arguments.arguments( new SecurityManagerCallStack("Test", false))
+                Arguments.arguments(new ThrowableCallStack("Test", false)),
+                Arguments.arguments(new ThrowableCallStack("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", true)),
+                Arguments.arguments(new SecurityManagerCallStack("Test", false)),
+                Arguments.arguments(new SecurityManagerCallStack("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", true))
         );
+        // @formatter:on
     }
 
     private final StringWriter writer = new StringWriter();
