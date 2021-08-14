@@ -182,11 +182,9 @@
     <!-- Java 6 -->
     <commons.release.3.version>2.4.3</commons.release.3.version>
     <commons.release.3.desc>(Java 6)</commons.release.3.desc>
-    <commons.release.3.hash>sha256</commons.release.3.hash>
     <!-- Java 5 -->
     <commons.release.4.version>1.6</commons.release.4.version>
     <commons.release.4.desc>(Java 5)</commons.release.4.desc>
-    <commons.release.4.hash>sha256</commons.release.4.hash>
     <commons.release.4.binary.suffix>-bin</commons.release.4.binary.suffix>
     <!-- override parent name, because 1.x uses different artifactId -->
     <commons.release.4.name>commons-pool-${commons.release.4.version}</commons.release.4.name>
