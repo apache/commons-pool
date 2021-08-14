@@ -50,7 +50,7 @@ class PooledTestObject implements TrackedUse {
     private static final Instant INSTANT_1 = Instant.ofEpochMilli(1);
     private boolean active;
     private boolean destroyed;
-    private int hash;
+    private final int hash;
     private boolean abandoned;
     private boolean detached;  // destroy-abandoned "detaches"
 

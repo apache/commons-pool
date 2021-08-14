@@ -200,7 +200,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         private void doWait(final long latency) {
             Waiter.sleepQuietly(latency);
         }
-        
+
         @Override
         public PooledObject<String> makeObject(final K key) throws Exception {
             if (exceptionOnCreate) {

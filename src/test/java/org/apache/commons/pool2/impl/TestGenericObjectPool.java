@@ -1123,7 +1123,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     /**
      * On first borrow, first object fails validation, second object is OK.
      * Subsequent borrows are OK. This was POOL-152.
-     * @throws Exception 
+     * @throws Exception
      */
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)

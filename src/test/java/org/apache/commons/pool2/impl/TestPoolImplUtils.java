@@ -122,7 +122,7 @@ public class TestPoolImplUtils {
     public void testToDuration() {
         assertEquals(Duration.ZERO, PoolImplUtils.toDuration(0, TimeUnit.MILLISECONDS));
         assertEquals(Duration.ofMillis(1), PoolImplUtils.toDuration(1, TimeUnit.MILLISECONDS));
-        for (TimeUnit tu : TimeUnit.values()) {
+        for (final TimeUnit tu : TimeUnit.values()) {
             // All TimeUnit should be handled.
             assertEquals(Duration.ZERO, PoolImplUtils.toDuration(0, tu));
         }
