@@ -73,6 +73,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="fix" due-to="Gary Gregory">
       Reimplement BaseGenericObjectPool.maxBorrowWait as a Duration instead of a long.
     </action>
+    <action dev="ggregory" type="fix" due-to="Arturo Bernal">
+      Minors Changes #89.
+    </action>
     <!-- UPDATES -->
     <action dev="ggregory" type="update" due-to="Dependabot">
       Bump checkstyle from 8.45 to 8.45.1 #93.
