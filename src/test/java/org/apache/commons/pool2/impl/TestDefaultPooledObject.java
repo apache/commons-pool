@@ -17,8 +17,10 @@
 package org.apache.commons.pool2.impl;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.time.Duration;
@@ -96,6 +98,19 @@ public class TestDefaultPooledObject {
         assertEquals(dpo.getCreateTime(), dpo.getLastBorrowTime());
         assertEquals(dpo.getCreateTime(), dpo.getLastReturnTime());
         assertEquals(dpo.getCreateTime(), dpo.getLastUsedTime());
+    }
+
+    @Test
+    public void testInitialStateDuration() throws InterruptedException {
+        final PooledObject<Object> dpo = new DefaultPooledObject<>(new Object());
+        final Duration duration1 = dpo.getFullDuration();
+        assertNotNull(duration1);
+        assertFalse(duration1.isNegative());
+        Thread.sleep(100);
+        final Duration duration2 = dpo.getFullDuration();
+        assertNotNull(duration2);
+        assertFalse(duration2.isNegative());
+        assertThat(duration1, lessThan(duration2));
     }
 
     /**

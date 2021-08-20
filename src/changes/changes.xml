@@ -43,7 +43,13 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Pool Release Notes</title>
   </properties>
   <body>
-  <release version="2.11.1" date="2021-08-DD" description="This is a maintenance release (Java 8).">
+  <release version="2.12.0" date="2021-MM-DD" description="This is a maintenance release (Java 8).">
+    <!-- ADD -->
+    <action dev="ggregory" type="add" due-to="Gary Gregory">
+      Add PooledObject.getFullDuration().
+    </action>
+  </release>
+  <release version="2.11.1" date="2021-08-18" description="This is a maintenance release (Java 8).">
     <!-- FIXES -->
     <action dev="ggregory" type="fix" due-to="Gary Gregory">
       Getting a PooledObject's active duration returns a negative duration when the object is borrowed but not returned. Affects:

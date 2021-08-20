@@ -149,6 +149,16 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     long getCreateTime();
 
     /**
+     * Computes the duration since this object was created (using {@link Instant#now()}).
+     *
+     * @return The duration since this object was created.
+     * @since 2.12.0
+     */
+    default Duration getFullDuration() {
+        return Duration.between(getCreateInstant(), Instant.now());
+    }
+
+    /**
      * Gets the amount of time that this object last spend in the
      * idle state (it may still be idle in which case subsequent calls will
      * return an increased value).
