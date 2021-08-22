@@ -122,7 +122,7 @@ public class TestGenericObjectPoolFactoryCreateFailure {
 
             // wait for object to be created
             while (!factory.created.get()) {
-                Waiter.sleepQuietly((long) 5);
+                Waiter.sleepQuietly(5);
             }
 
             // now borrow
