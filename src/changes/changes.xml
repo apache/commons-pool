@@ -48,9 +48,13 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="add" due-to="Gary Gregory">
       Add PooledObject.getFullDuration().
     </action>
+    <!-- UDPATE -->
+    <action dev="ggregory" type="update" due-to="Dependabot">
+      Bump spotbugs from 4.3.0 to 4.4.0 #94.
+    </action>
   </release>
   <release version="2.11.1" date="2021-08-18" description="This is a maintenance release (Java 8).">
-    <!-- FIXES -->
+    <!-- FIX -->
     <action dev="ggregory" type="fix" due-to="Gary Gregory">
       Getting a PooledObject's active duration returns a negative duration when the object is borrowed but not returned. Affects:
       - PooledObject.getActiveDuration()
@@ -82,7 +86,7 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="fix" due-to="Arturo Bernal">
       Minors Changes #89.
     </action>
-    <!-- UPDATES -->
+    <!-- UPDATE -->
     <action dev="ggregory" type="update" due-to="Dependabot">
       Bump checkstyle from 8.45 to 8.45.1 #93.
     </action>
@@ -91,7 +95,7 @@ The <action> type attribute can be add,update,fix,remove.
     </action>
   </release>
   <release version="2.11.0" date="2021-08-08" description="This is a feature release (Java 8).">
-    <!-- FIXES -->
+    <!-- FIX -->
     <action dev="ggregory" type="fix" due-to="Gary Gregory">
       Fix "[WARNING] Old version of checkstyle detected. Consider updating to >= v8.30." Update Checktyle to 8.44.
     </action>
