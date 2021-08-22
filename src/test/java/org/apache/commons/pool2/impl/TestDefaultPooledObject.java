@@ -20,8 +20,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -81,7 +81,7 @@ public class TestDefaultPooledObject {
     }
 
     @Test
-    public void testInitialStateCreateInstant() throws InterruptedException {
+    public void testInitialStateCreateInstant() {
         final PooledObject<Object> dpo = new DefaultPooledObject<>(new Object());
 
         // In the initial state, all instants are the creation instant: last borrow, last use, last return.

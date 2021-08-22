@@ -851,7 +851,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     }
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         simpleFactory = new SimpleFactory<>();
         gkoPool = new GenericKeyedObjectPool<>(simpleFactory);
     }
@@ -1884,7 +1884,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
-    public void testMaxTotalPerKeyZero() throws Exception {
+    public void testMaxTotalPerKeyZero() {
         gkoPool.setMaxTotalPerKey(0);
         gkoPool.setBlockWhenExhausted(false);
 
@@ -1934,7 +1934,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
-    public void testMaxTotalZero() throws Exception {
+    public void testMaxTotalZero() {
         gkoPool.setMaxTotal(0);
         gkoPool.setBlockWhenExhausted(false);
 

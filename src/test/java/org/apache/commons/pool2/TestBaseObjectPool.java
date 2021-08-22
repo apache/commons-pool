@@ -262,7 +262,7 @@ public class TestBaseObjectPool extends TestObjectPool {
 
     // tests
     @Test
-    public void testUnsupportedOperations() throws Exception {
+    public void testUnsupportedOperations() {
         if (!getClass().equals(TestBaseObjectPool.class)) {
             return; // skip redundant tests
         }
