@@ -55,7 +55,7 @@ public class DefaultPooledObjectInfo implements DefaultPooledObjectInfoMBean {
 
     @Override
     public String getCreateTimeFormatted() {
-        return getTimeFormatted(getCreateTime());
+        return getTimeMillisFormatted(getCreateTime());
     }
 
     @Override
@@ -66,7 +66,7 @@ public class DefaultPooledObjectInfo implements DefaultPooledObjectInfoMBean {
 
     @Override
     public String getLastBorrowTimeFormatted() {
-        return getTimeFormatted(getLastBorrowTime());
+        return getTimeMillisFormatted(getLastBorrowTime());
     }
 
     @Override
@@ -83,7 +83,7 @@ public class DefaultPooledObjectInfo implements DefaultPooledObjectInfoMBean {
 
     @Override
     public String getLastReturnTimeFormatted() {
-        return getTimeFormatted(getLastReturnTime());
+        return getTimeMillisFormatted(getLastReturnTime());
     }
 
     @Override
@@ -96,7 +96,7 @@ public class DefaultPooledObjectInfo implements DefaultPooledObjectInfoMBean {
         return pooledObject.getObject().getClass().getName();
     }
 
-    private String getTimeFormatted(final long millis) {
+    private String getTimeMillisFormatted(final long millis) {
         return new SimpleDateFormat(PATTERN).format(Long.valueOf(millis));
     }
 
