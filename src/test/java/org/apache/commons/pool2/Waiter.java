@@ -28,6 +28,14 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class Waiter {
     private static final AtomicInteger instanceCount = new AtomicInteger();
+    /** TODO Reuse Apache Commons Lang ThreadUtils */
+    public static void sleepQuietly(final long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (final InterruptedException e) {
+            // be quiet
+        }
+    }
     private boolean active;
     private boolean valid;
     private long latency;
@@ -35,6 +43,7 @@ public class Waiter {
     private long lastIdleTimeMillis;
     private long passivationCount;
     private long validationCount;
+
     private final int id = instanceCount.getAndIncrement();
 
     public Waiter(final boolean active, final boolean valid, final long latency) {
@@ -170,14 +179,5 @@ public class Waiter {
         buff.append("lastIdleTimeMs = " + lastIdleTimeMillis + '\n');
         buff.append("latency = " + latency + '\n');
         return buff.toString();
-    }
-
-    /** TODO Reuse Apache Commons Lang ThreadUtils */
-    public static void sleepQuietly(final long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (final InterruptedException e) {
-            // be quiet
-        }
     }
 }

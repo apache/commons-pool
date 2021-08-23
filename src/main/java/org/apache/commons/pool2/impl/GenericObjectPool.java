@@ -369,18 +369,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         return p.getObject();
     }
 
-    PooledObject<T> getPooledObject(final T obj) {
-        return allObjects.get(new IdentityWrapper<>(obj));
-    }
-
-    @Override
-    String getStatsString() {
-        // Simply listed in AB order.
-        return super.getStatsString() +
-                String.format(", createdCount=%,d, makeObjectCount=%,d, maxIdle=%,d, minIdle=%,d",
-                        createdCount.get(), makeObjectCount, maxIdle, minIdle);
-    }
-
     /**
      * Borrows an object from the pool using the specific waiting time which only
      * applies if {@link #getBlockWhenExhausted()} is true.
@@ -896,6 +884,18 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             return idleObjects.getTakeQueueLength();
         }
         return 0;
+    }
+
+    PooledObject<T> getPooledObject(final T obj) {
+        return allObjects.get(new IdentityWrapper<>(obj));
+    }
+
+    @Override
+    String getStatsString() {
+        // Simply listed in AB order.
+        return super.getStatsString() +
+                String.format(", createdCount=%,d, makeObjectCount=%,d, maxIdle=%,d, minIdle=%,d",
+                        createdCount.get(), makeObjectCount, maxIdle, minIdle);
     }
 
     /**

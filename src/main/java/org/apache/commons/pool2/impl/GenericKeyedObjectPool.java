@@ -90,8 +90,6 @@ import org.apache.commons.pool2.UsageTracking;
 public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         implements KeyedObjectPool<K, T>, GenericKeyedObjectPoolMXBean<K>, UsageTracking<T> {
 
-    private static final Integer ZERO = Integer.valueOf(0);
-
     /**
      * Maintains information on the per key queue for a given key.
      *
@@ -187,6 +185,8 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         }
 
     }
+
+    private static final Integer ZERO = Integer.valueOf(0);
 
     // JMX specific attributes
     private static final String ONAME_BASE =
@@ -512,14 +512,6 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         return p.getObject();
     }
 
-    @Override
-    String getStatsString() {
-        // Simply listed in AB order.
-        return super.getStatsString() +
-                String.format(", fairness=%s, maxIdlePerKey%,d, maxTotalPerKey=%,d, minIdlePerKey=%,d, numTotal=%,d",
-                        fairness, maxIdlePerKey, maxTotalPerKey, minIdlePerKey, numTotal.get());
-    }
-
     /**
      * Calculate the number of objects that need to be created to attempt to
      * maintain the minimum number of idle objects while not exceeded the limits
@@ -556,7 +548,6 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
 
         return objectDefecit;
     }
-
 
     /**
      * Clears any objects sitting idle in the pool by removing them from the
@@ -701,6 +692,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         }
     }
 
+
     /**
      * Creates a new pooled object.
      *
@@ -838,7 +830,6 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         }
     }
 
-
     /**
      * Destroy the wrapped, pooled object.
      *
@@ -886,6 +877,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         }
     }
 
+
     @Override
     void ensureMinIdle() throws Exception {
         final int minIdlePerKeySave = getMinIdlePerKey();
@@ -930,7 +922,6 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
             }
         }
     }
-
 
     /**
      * {@inheritDoc}
@@ -1080,6 +1071,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         }
     }
 
+
     /**
      * Gets a reference to the factory used to create, destroy and validate
      * the objects used by this pool.
@@ -1185,14 +1177,14 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         return poolMap.values().stream().mapToInt(e -> e.getIdleObjects().size()).sum();
     }
 
-
-    //--- JMX support ----------------------------------------------------------
-
     @Override
     public int getNumIdle(final K key) {
         final ObjectDeque<T> objectDeque = poolMap.get(key);
         return objectDeque != null ? objectDeque.getIdleObjects().size() : 0;
     }
+
+
+    //--- JMX support ----------------------------------------------------------
 
     /**
      * Calculate the number of objects to test in a run of the idle object
@@ -1246,6 +1238,14 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
             }
         }
         return result;
+    }
+
+    @Override
+    String getStatsString() {
+        // Simply listed in AB order.
+        return super.getStatsString() +
+                String.format(", fairness=%s, maxIdlePerKey%,d, maxTotalPerKey=%,d, minIdlePerKey=%,d, numTotal=%,d",
+                        fairness, maxIdlePerKey, maxTotalPerKey, minIdlePerKey, numTotal.get());
     }
 
     /**
@@ -1676,21 +1676,6 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Whether there is at least one thread waiting on this deque, add an pool object.
-     * @param key pool key.
-     * @param idleObjects list of idle pool objects.
-     */
-    private void whenWaitersAddObject(final K key, final LinkedBlockingDeque<PooledObject<T>> idleObjects) {
-        if (idleObjects.hasTakeWaiters()) {
-            try {
-                addObject(key);
-            } catch (final Exception e) {
-                swallowException(e);
-            }
-        }
-    }
-
-    /**
      * @since 2.10.0
      */
     @Override
@@ -1702,6 +1687,21 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
                 .filter(Objects::nonNull)
                 .findFirst()
                 .ifPresent(PooledObject::use);
+        }
+    }
+
+    /**
+     * Whether there is at least one thread waiting on this deque, add an pool object.
+     * @param key pool key.
+     * @param idleObjects list of idle pool objects.
+     */
+    private void whenWaitersAddObject(final K key, final LinkedBlockingDeque<PooledObject<T>> idleObjects) {
+        if (idleObjects.hasTakeWaiters()) {
+            try {
+                addObject(key);
+            } catch (final Exception e) {
+                swallowException(e);
+            }
         }
     }
 

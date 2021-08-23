@@ -181,6 +181,17 @@ class PoolImplUtils {
     }
 
     /**
+     * Returns a non-null duration, value if non-null, otherwise defaultValue.
+     *
+     * @param value May be null.
+     * @param defaultValue May not be null/
+     * @return value if non-null, otherwise defaultValue.
+     */
+    static Duration nonNull(final Duration value, final Duration defaultValue) {
+        return value != null ? value : Objects.requireNonNull(defaultValue, "defaultValue");
+    }
+
+    /**
      * Converts a {@link TimeUnit} to a {@link ChronoUnit}.
      *
      * @param timeUnit A TimeUnit.
@@ -206,17 +217,6 @@ class PoolImplUtils {
         default:
             throw new IllegalArgumentException(timeUnit.toString());
         }
-    }
-
-    /**
-     * Returns a non-null duration, value if non-null, otherwise defaultValue.
-     *
-     * @param value May be null.
-     * @param defaultValue May not be null/
-     * @return value if non-null, otherwise defaultValue.
-     */
-    static Duration nonNull(final Duration value, final Duration defaultValue) {
-        return value != null ? value : Objects.requireNonNull(defaultValue, "defaultValue");
     }
 
     /**

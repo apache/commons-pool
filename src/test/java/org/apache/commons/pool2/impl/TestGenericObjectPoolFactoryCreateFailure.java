@@ -35,8 +35,6 @@ import org.junit.jupiter.api.Timeout;
  */
 public class TestGenericObjectPoolFactoryCreateFailure {
 
-    private static final Duration NEG_ONE_DURATION = Duration.ofMillis(-1);
-
     private static class SingleObjectFactory extends BasePooledObjectFactory<Object> {
         private final AtomicBoolean created = new AtomicBoolean();
 
@@ -91,6 +89,8 @@ public class TestGenericObjectPoolFactoryCreateFailure {
             }
         }
     }
+
+    private static final Duration NEG_ONE_DURATION = Duration.ofMillis(-1);
 
     private static void println(final String msg) {
         // System.out.println(msg);

@@ -560,6 +560,20 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     }
 
     /**
+     * Gets the duration to sleep between runs of the idle
+     * object evictor thread. When non-positive, no idle object evictor thread
+     * will be run.
+     *
+     * @return number of milliseconds to sleep between evictor runs
+     *
+     * @see #setTimeBetweenEvictionRuns
+     * @since 2.11.0
+     */
+    public final Duration getDurationBetweenEvictionRuns() {
+        return durationBetweenEvictionRuns;
+    }
+
+    /**
      * Gets the {@link EvictionPolicy} defined for this pool.
      *
      * @return the eviction policy
@@ -1102,20 +1116,6 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      */
     public final boolean getTestWhileIdle() {
         return testWhileIdle;
-    }
-
-    /**
-     * Gets the duration to sleep between runs of the idle
-     * object evictor thread. When non-positive, no idle object evictor thread
-     * will be run.
-     *
-     * @return number of milliseconds to sleep between evictor runs
-     *
-     * @see #setTimeBetweenEvictionRuns
-     * @since 2.11.0
-     */
-    public final Duration getDurationBetweenEvictionRuns() {
-        return durationBetweenEvictionRuns;
     }
 
     /**
