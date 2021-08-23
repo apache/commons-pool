@@ -1736,7 +1736,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * @param timeBetweenEvictionRuns
      *            duration to sleep between evictor runs
      *
-     * @see #getTimeBetweenEvictionRunsMillis
+     * @see #getDurationBetweenEvictionRuns()
      * @since 2.10.0
      */
     public final void setTimeBetweenEvictionRuns(final Duration timeBetweenEvictionRuns) {
@@ -1754,7 +1754,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * @param timeBetweenEvictionRunsMillis
      *            number of milliseconds to sleep between evictor runs
      *
-     * @see #getTimeBetweenEvictionRunsMillis
+     * @see #getDurationBetweenEvictionRuns()
      * @deprecated Use {@link #setTimeBetweenEvictionRuns(Duration)}.
      */
     @Deprecated
