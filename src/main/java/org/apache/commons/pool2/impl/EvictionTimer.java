@@ -153,7 +153,11 @@ class EvictionTimer {
         }
     }
 
-    /** For testing only. */
+    /**
+     * For testing only.
+     * 
+     * @return The executor.
+     */
     static ScheduledThreadPoolExecutor getExecutor() {
         return executor;
     }
