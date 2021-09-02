@@ -153,6 +153,11 @@ class EvictionTimer {
         }
     }
 
+    /** For testing only. */
+    static ScheduledThreadPoolExecutor getExecutor() {
+        return executor;
+    }
+
     /**
      * @return the number of eviction tasks under management.
      */

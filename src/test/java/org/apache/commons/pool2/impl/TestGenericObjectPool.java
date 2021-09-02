@@ -929,8 +929,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         simpleFactory = null;
 
         final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-        final Set<ObjectName> result = mbs.queryNames(new ObjectName(
-                "org.apache.commoms.pool2:type=GenericObjectPool,*"), null);
+        final Set<ObjectName> result = mbs.queryNames(new ObjectName("org.apache.commoms.pool2:type=GenericObjectPool,*"), null);
         // There should be no registered pools at this point
         final int registeredPoolCount = result.size();
         final StringBuilder msg = new StringBuilder("Current pool is: ");
@@ -944,12 +943,14 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             msg.append('\n');
             mbs.unregisterMBean(name);
         }
-        assertEquals( 0, registeredPoolCount,msg.toString());
+        assertEquals(0, registeredPoolCount, msg.toString());
 
-        // Make sure that EvictionTimer executor is shut down
-        final Field evictorExecutorField = EvictionTimer.class.getDeclaredField("executor");
-        evictorExecutorField.setAccessible(true);
-        assertNull(evictorExecutorField.get(null));
+        // Make sure that EvictionTimer executor is shut down.
+        Thread.yield();
+        if (EvictionTimer.getExecutor() != null) {
+            Thread.sleep(1000);
+        }
+        assertNull(EvictionTimer.getExecutor(), "EvictionTimer.getExecutor()");
     }
 
     /**
