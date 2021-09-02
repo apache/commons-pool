@@ -18,7 +18,6 @@ package org.apache.commons.pool2;
 
 import java.io.Closeable;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
@@ -108,9 +107,8 @@ public interface KeyedObjectPool<K, V> extends Closeable {
         if (keys == null) {
             throw new IllegalArgumentException(PoolUtils.MSG_NULL_KEYS);
         }
-        final Iterator<K> iter = keys.iterator();
-        while (iter.hasNext()) {
-            addObjects(iter.next(), count);
+        for (final K key : keys) {
+            addObjects(key, count);
         }
     }
 
