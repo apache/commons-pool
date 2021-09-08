@@ -29,33 +29,17 @@ import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.Waiter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import java.lang.Exception;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.spy;
+import java.lang.Object;
 
 /**
  * @author Pavel Kolesov as contributed in POOL-340
  */
 public class TestGenericObjectPoolFactoryCreateFailure {
-
-    private static class SingleObjectFactory extends BasePooledObjectFactory<Object> {
-        private final AtomicBoolean created = new AtomicBoolean();
-
-        @Override
-        public Object create() throws Exception {
-            if (!created.getAndSet(true)) {
-                return new Object();
-            }
-            throw new Exception("Already created");
-        }
-
-        @Override
-        public boolean validateObject(final PooledObject<Object> p) {
-            return true;
-        }
-
-        @Override
-        public PooledObject<Object> wrap(final Object obj) {
-            return new DefaultPooledObject<>(new Object());
-        }
-    }
 
     private static class WinnerRunnable implements Runnable {
         private final CountDownLatch barrier;
@@ -98,8 +82,22 @@ public class TestGenericObjectPoolFactoryCreateFailure {
 
     @Test
     @Timeout(value = 10_000, unit = TimeUnit.MILLISECONDS)
-    public void testBorrowObjectStuck() {
-        final SingleObjectFactory factory = new SingleObjectFactory();
+    public void testBorrowObjectStuck() throws Exception {
+        // Create variables for tracking behaviors of mock object
+        AtomicBoolean factoryCreated = new AtomicBoolean();
+        // Construct mock object
+        final BasePooledObjectFactory<Object> factory = spy(BasePooledObjectFactory.class);
+        // Method Stubs
+        doAnswer((stubInvo) -> {
+            return new DefaultPooledObject<>(new Object());
+        }).when(factory).wrap(any(Object.class));
+        doAnswer((stubInvo) -> {
+            if (!factoryCreated.getAndSet(true)) {
+                return new Object();
+            }
+            throw new Exception("Already created");
+        }).when(factory).create();
+        doReturn(true).when(factory).validateObject(any(PooledObject.class));
         final GenericObjectPoolConfig<Object> config = new GenericObjectPoolConfig<>();
         config.setMaxIdle(1);
         config.setMaxTotal(1);
@@ -121,7 +119,7 @@ public class TestGenericObjectPoolFactoryCreateFailure {
             thread1.start();
 
             // wait for object to be created
-            while (!factory.created.get()) {
+            while (!factoryCreated.get()) {
                 Waiter.sleepQuietly(5);
             }
 
