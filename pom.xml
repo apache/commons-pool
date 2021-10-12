@@ -197,7 +197,7 @@
     <commons.checkstyle.version>9.0</commons.checkstyle.version>
     <commons.felix.version>5.1.2</commons.felix.version>
     <spotbugs.plugin.version>4.4.1</spotbugs.plugin.version>
-    <spotbugs.impl.version>4.4.1</spotbugs.impl.version>
+    <spotbugs.impl.version>4.4.2</spotbugs.impl.version>
 
     <!-- Commons Release Plugin -->
     <commons.bc.version>2.11.1</commons.bc.version>
