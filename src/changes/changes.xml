@@ -64,6 +64,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="update" due-to="Dependabot">
       Bump maven-pmd-plugin from 3.14.0 to 3.15.0 #101.
     </action>
+    <action dev="ggregory" type="update" due-to="Dependabot">
+      Bump biz.aQute.bndlib from 5.3.0 to 6.0.0 #105.
+    </action>
   </release>
   <release version="2.11.1" date="2021-08-18" description="This is a maintenance release (Java 8).">
     <!-- FIX -->
