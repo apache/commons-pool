@@ -208,7 +208,7 @@
     <commons.japicmp.version>0.15.3</commons.japicmp.version>
     <clirr.skip>true</clirr.skip>
     <japicmp.skip>false</japicmp.skip>
-    <junit.version>5.8.0</junit.version>
+    <junit.version>5.8.1</junit.version>
     <spotbugs.skip>false</spotbugs.skip>
   </properties> 
 
