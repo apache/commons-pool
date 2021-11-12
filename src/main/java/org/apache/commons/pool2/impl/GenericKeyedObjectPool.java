@@ -1334,10 +1334,8 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         synchronized (p) {
             if (p.getState() != PooledObjectState.INVALID) {
                 destroy(key, p, true, destroyMode);
+                reuseCapacity();
             }
-        }
-        if (objectDeque.idleObjects.hasTakeWaiters()) {
-            addObject(key);
         }
     }
 

@@ -2593,6 +2593,19 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         }
     }
 
+    @Test
+    public void testInvalidateFreesCapacityForOtherKeys() throws Exception {
+        gkoPool.setMaxTotal(1);
+        gkoPool.setMaxWait(Duration.ofMillis(500));
+        Thread borrower = new Thread(new SimpleTestThread<>(gkoPool, "two"));
+        String obj = gkoPool.borrowObject("one");
+        borrower.start();  // Will block
+        Thread.sleep(100);  // Make sure borrower has started
+        gkoPool.invalidateObject("one", obj);  // Should free capacity to serve the other key
+        Thread.sleep(20);  // Should have been served by now
+        assertFalse(borrower.isAlive());
+    }
+
 }
 
 
