@@ -569,11 +569,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      */
     @Override
     public void clear() {
-        final Iterator<K> iter = poolMap.keySet().iterator();
-
-        while (iter.hasNext()) {
-            clear(iter.next(), false);
-        }
+        poolMap.keySet().forEach(key -> clear(key,false));
     }
 
     /**
