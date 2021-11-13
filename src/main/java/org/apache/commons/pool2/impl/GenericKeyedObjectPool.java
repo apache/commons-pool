@@ -557,7 +557,6 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * method on each idle instance.
      * <p>
      * Implementation notes:
-     * </p>
      * <ul>
      * <li>This method does not destroy or effect in any way instances that are
      * checked out when it is invoked.</li>
@@ -570,23 +569,43 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      */
     @Override
     public void clear() {
-        poolMap.keySet().forEach(this::clear);
+        poolMap.keySet().forEach(key -> clear(key,false));
     }
-
 
     /**
      * Clears the specified sub-pool, removing all pooled instances
      * corresponding to the given {@code key}. Exceptions encountered
      * destroying idle instances are swallowed but notified via a
      * {@link SwallowedExceptionListener}.
+     * <p>
+     * If there are clients waiting to borrow objects, this method will
+     * attempt to reuse the capacity freed by this operation, adding
+     * instances to the most loaded keyed pools.  To avoid triggering
+     * possible object creation, use {@link #clear(Object, boolean)}.
      *
      * @param key the key to clear
      */
     @Override
     public void clear(final K key) {
+        clear(key, true);
+    }
 
+    /**
+     * Clears the specified sub-pool, removing all pooled instances
+     * corresponding to the given {@code key}. Exceptions encountered
+     * destroying idle instances are swallowed but notified via a
+     * {@link SwallowedExceptionListener}.
+     * <p>
+     * If reuseCapacity is true and there are clients waiting to
+     * borrow objects, this method will attempt to reuse the capacity freed
+     * by this operation, adding instances to the most loaded keyed pools.
+     *
+     * @param key the key to clear
+     * @param reuseCapacity whether or not to reuse freed capacity
+     */
+    public void clear(final K key, boolean reuseCapacity) {
         final ObjectDeque<T> objectDeque = register(key);
-
+        int freedCapacity = 0;
         try {
             final LinkedBlockingDeque<PooledObject<T>> idleObjects =
                     objectDeque.getIdleObjects();
@@ -595,7 +614,9 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
 
             while (p != null) {
                 try {
-                    destroy(key, p, true, DestroyMode.NORMAL);
+                    if (destroy(key, p, true, DestroyMode.NORMAL)) {
+                        freedCapacity++;
+                    }
                 } catch (final Exception e) {
                     swallowException(e);
                 }
@@ -604,8 +625,11 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         } finally {
             deregister(key);
         }
-    }
+        if (reuseCapacity) {
+            reuseCapacity(freedCapacity);
+        }
 
+    }
 
     /**
      * Clears oldest 15% of objects in pool.  The method sorts the objects into
@@ -1306,10 +1330,8 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         synchronized (p) {
             if (p.getState() != PooledObjectState.INVALID) {
                 destroy(key, p, true, destroyMode);
+                reuseCapacity();
             }
-        }
-        if (objectDeque.idleObjects.hasTakeWaiters()) {
-            addObject(key);
         }
     }
 
@@ -1572,6 +1594,17 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
             } finally {
                 deregister(loadedKey);
             }
+        }
+    }
+
+    /**
+     * Call {@link #reuseCapacity()} repeatedly.
+     *
+     * @param newCapacity number of new instances to attempt to create.
+     */
+    private void reuseCapacity(int newCapacity) {
+        for (int i = 0; i < newCapacity; i++) {
+            reuseCapacity();
         }
     }
 
