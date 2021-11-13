@@ -2475,123 +2475,125 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     }
 
     /**
-     * POOL-391
-     * Adapted from code in the JIRA ticket.
+     * POOL-391 Adapted from code in the JIRA ticket.
      *
      * @throws Exception May occur in some failure modes
      */
     @Test
     @Timeout(value = 2000, unit = TimeUnit.MILLISECONDS)
     public void testClearUnblocksWaiters() {
-    final GenericKeyedObjectPoolConfig<Integer> config = new GenericKeyedObjectPoolConfig<>();
-    config.setMaxTotalPerKey(1);
-    config.setMinIdlePerKey(0);
-    config.setMaxIdlePerKey(-1);
-    config.setMaxTotal(-1);
-    config.setMaxWaitMillis(TimeUnit.SECONDS.toMillis(5));
-    GenericKeyedObjectPool<Integer, Integer> testPool = new GenericKeyedObjectPool<>(
-        new KeyedPooledObjectFactory<Integer, Integer>() {
-          @Override
-          public PooledObject<Integer> makeObject(Integer key) throws Exception {
-            return new DefaultPooledObject<>(10);
-          }
-          @Override
-          public void destroyObject(Integer key, PooledObject<Integer> p) throws Exception {
-            Thread.sleep(500);
-          }
-          @Override
-          public boolean validateObject(Integer key, PooledObject<Integer> p) {
-            return true;
-          }
-          @Override
-          public void activateObject(Integer key, PooledObject<Integer> p) throws Exception {
-            // do nothing
-          }
-          @Override
-          public void passivateObject(Integer key, PooledObject<Integer> p) throws Exception {
-            // do nothing
-          }
-        }, config);
-    final int borrowKey = 10;
-    Thread t = new Thread(() -> {
-        try {
-            while (true) {
-                Integer integer = testPool.borrowObject(borrowKey);
-                testPool.returnObject(borrowKey, integer);
-                Thread.sleep(10);
-            }
-        } catch (Exception e) {
-            fail();
-        }
-    });
-    Thread t2 = new Thread(() -> {
-      try {
-        while (true) {
-          testPool.clear(borrowKey);
-          Thread.sleep(10);
-        }
-      } catch (Exception e) {
-        fail();
-      }
-    });
-    t.start();
-    t2.start();
-  }
+        final GenericKeyedObjectPoolConfig<Integer> config = new GenericKeyedObjectPoolConfig<>();
+        config.setMaxTotalPerKey(1);
+        config.setMinIdlePerKey(0);
+        config.setMaxIdlePerKey(-1);
+        config.setMaxTotal(-1);
+        config.setMaxWait(Duration.ofMillis(5));
+        GenericKeyedObjectPool<Integer, Integer> testPool = new GenericKeyedObjectPool<>(
+                new KeyedPooledObjectFactory<Integer, Integer>() {
+                    @Override
+                    public PooledObject<Integer> makeObject(Integer key) throws Exception {
+                        return new DefaultPooledObject<>(10);
+                    }
 
-  /**
-     * POOL-391
-     * Verify that when clear(key) is called with reuseCapacity true,
-     * capacity freed is reused and allocated to most loaded pools.
-     *
-     * @throws Exception May occur in some failure modes
-     */
-    @Test
-    public void testClearReuseCapacity() throws Exception {
-        gkoPool.setMaxTotalPerKey(6);
-        gkoPool.setMaxTotal(6);
-        gkoPool.setMaxWaitMillis(5000);
-        // Create one thread to wait on "one", two on "two", three on "three"
-        final ArrayList<Thread> testThreads = new ArrayList<>();
-        testThreads.add(new Thread(new SimpleTestThread<>(gkoPool, "one")));
-        testThreads.add(new Thread(new SimpleTestThread<>(gkoPool, "two")));
-        testThreads.add(new Thread(new SimpleTestThread<>(gkoPool, "two")));
-        testThreads.add(new Thread(new SimpleTestThread<>(gkoPool, "three")));
-        testThreads.add(new Thread(new SimpleTestThread<>(gkoPool, "three")));
-        testThreads.add(new Thread(new SimpleTestThread<>(gkoPool, "three")));
-        // Borrow two each from "four", "five", "six" - using all capacity
-        final String four = gkoPool.borrowObject("four");
-        final String four2 = gkoPool.borrowObject("four");
-        final String five = gkoPool.borrowObject("five");
-        final String five2 = gkoPool.borrowObject("five");
-        final String six = gkoPool.borrowObject("six");
-        final String six2 = gkoPool.borrowObject("six");
-        Thread.sleep(100);
-        // Launch the waiters - all will be blocked waiting
-        for (Thread t : testThreads) {
-            t.start();
-        }
-        Thread.sleep(100);
-        // Return and clear the fours - at least one "three" should get served
-        // Other should be a two or a three (three was most loaded)
-        gkoPool.returnObject("four", four);
-        gkoPool.returnObject("four", four2);
-        gkoPool.clear("four");
-        Thread.sleep(20);
-        assertTrue(!testThreads.get(3).isAlive() || !testThreads.get(4).isAlive() || !testThreads.get(5).isAlive());
-        // Now clear the fives
-        gkoPool.returnObject("five", five);
-        gkoPool.returnObject("five", five2);
-        gkoPool.clear("five");
-        Thread.sleep(20);
-        // Clear the sixes
-        gkoPool.returnObject("six", six);
-        gkoPool.returnObject("six", six2);
-        gkoPool.clear("six");
-        Thread.sleep(20);
-        for (Thread t : testThreads) {
-            assertTrue(!t.isAlive());
-        }
+                    @Override
+                    public void destroyObject(Integer key, PooledObject<Integer> p) throws Exception {
+                        Thread.sleep(500);
+                    }
+
+                    @Override
+                    public boolean validateObject(Integer key, PooledObject<Integer> p) {
+                        return true;
+                    }
+
+                    @Override
+                    public void activateObject(Integer key, PooledObject<Integer> p) throws Exception {
+                        // do nothing
+                    }
+
+                    @Override
+                    public void passivateObject(Integer key, PooledObject<Integer> p) throws Exception {
+                        // do nothing
+                    }
+                }, config);
+        final int borrowKey = 10;
+        Thread t = new Thread(() -> {
+            try {
+                while (true) {
+                    Integer integer = testPool.borrowObject(borrowKey);
+                    testPool.returnObject(borrowKey, integer);
+                    Thread.sleep(10);
+                }
+            } catch (Exception e) {
+                fail();
+            }
+        });
+        Thread t2 = new Thread(() -> {
+            try {
+                while (true) {
+                    testPool.clear(borrowKey);
+                    Thread.sleep(10);
+                }
+            } catch (Exception e) {
+                fail();
+            }
+        });
+        t.start();
+        t2.start();
     }
+
+   /**
+   * POOL-391 Verify that when clear(key) is called with reuseCapacity true,
+   * capacity freed is reused and allocated to most loaded pools.
+   *
+   * @throws Exception May occur in some failure modes
+   */
+  @Test
+  public void testClearReuseCapacity() throws Exception {
+      gkoPool.setMaxTotalPerKey(6);
+      gkoPool.setMaxTotal(6);
+      gkoPool.setMaxWait(Duration.ofSeconds(5));
+      // Create one thread to wait on "one", two on "two", three on "three"
+      final ArrayList<Thread> testThreads = new ArrayList<>();
+      testThreads.add(new Thread(new SimpleTestThread<>(gkoPool, "one")));
+      testThreads.add(new Thread(new SimpleTestThread<>(gkoPool, "two")));
+      testThreads.add(new Thread(new SimpleTestThread<>(gkoPool, "two")));
+      testThreads.add(new Thread(new SimpleTestThread<>(gkoPool, "three")));
+      testThreads.add(new Thread(new SimpleTestThread<>(gkoPool, "three")));
+      testThreads.add(new Thread(new SimpleTestThread<>(gkoPool, "three")));
+      // Borrow two each from "four", "five", "six" - using all capacity
+      final String four = gkoPool.borrowObject("four");
+      final String four2 = gkoPool.borrowObject("four");
+      final String five = gkoPool.borrowObject("five");
+      final String five2 = gkoPool.borrowObject("five");
+      final String six = gkoPool.borrowObject("six");
+      final String six2 = gkoPool.borrowObject("six");
+      Thread.sleep(100);
+      // Launch the waiters - all will be blocked waiting
+      for (Thread t : testThreads) {
+          t.start();
+      }
+      Thread.sleep(100);
+      // Return and clear the fours - at least one "three" should get served
+      // Other should be a two or a three (three was most loaded)
+      gkoPool.returnObject("four", four);
+      gkoPool.returnObject("four", four2);
+      gkoPool.clear("four");
+      Thread.sleep(20);
+      assertTrue(!testThreads.get(3).isAlive() || !testThreads.get(4).isAlive() || !testThreads.get(5).isAlive());
+      // Now clear the fives
+      gkoPool.returnObject("five", five);
+      gkoPool.returnObject("five", five2);
+      gkoPool.clear("five");
+      Thread.sleep(20);
+      // Clear the sixes
+      gkoPool.returnObject("six", six);
+      gkoPool.returnObject("six", six2);
+      gkoPool.clear("six");
+      Thread.sleep(20);
+      for (Thread t : testThreads) {
+          assertTrue(!t.isAlive());
+      }
+  }
 
     @Test
     public void testInvalidateFreesCapacityForOtherKeys() throws Exception {
