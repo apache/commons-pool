@@ -18,14 +18,23 @@
 package org.apache.commons.pool2.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.time.Duration;
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.pool2.impl.TestGenericObjectPool.SimpleFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+import org.apache.commons.pool2.Waiter;
+import org.apache.commons.pool2.WaiterFactory;
+
+import java.lang.management.ManagementFactory;
+import java.time.Duration;
+
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 
 /**
  */
@@ -105,5 +114,23 @@ public class TestBaseGenericObjectPool {
             Thread.sleep(1000);
             assertEquals(0, evictingPool.getNumIdle());
         }
+    }
+
+    /**
+     * POOL-393
+     * Emsure JMX registration does not add too much latency to pool creation.
+     */
+    @Test
+    @Timeout(value = 2000, unit = TimeUnit.MILLISECONDS)
+    public void testJMXRegistrationLatency() throws Exception {
+        final int numPools = 1000;
+        final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        final ArrayList<GenericObjectPool<Waiter>> pools = new ArrayList<>();
+        for (int i = 0; i < numPools; i++) {
+            pools.add(new GenericObjectPool<Waiter>(
+                new WaiterFactory<String>(0,0,0,0,0,0), new GenericObjectPoolConfig<Waiter>()));
+        }
+        final ObjectName oname = pools.get(numPools - 1).getJmxName();
+        assertEquals(1, mbs.queryNames(oname, null).size());
     }
 }

@@ -62,6 +62,9 @@ import org.apache.commons.pool2.SwallowedExceptionListener;
  */
 public abstract class BaseGenericObjectPool<T> extends BaseObject {
 
+    /** Suffix appended to name of the next pool to be registered with JMX */
+    private static final AtomicLong NEXT_POOL_SUFFIX = new AtomicLong();
+
     /**
      * The idle object eviction iterator. Holds a reference to the idle objects.
      */
@@ -1187,7 +1190,6 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
             final String jmxNameBase, String jmxNamePrefix) {
         ObjectName newObjectName = null;
         final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-        int i = 1;
         boolean registered = false;
         String base = config.getJmxNameBase();
         if (base == null) {
@@ -1198,10 +1200,11 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
                 ObjectName objName;
                 // Skip the numeric suffix for the first pool in case there is
                 // only one so the names are cleaner.
-                if (i == 1) {
+                final long i = NEXT_POOL_SUFFIX.get();
+                if (NEXT_POOL_SUFFIX.get() == 0) {
                     objName = new ObjectName(base + jmxNamePrefix);
                 } else {
-                    objName = new ObjectName(base + jmxNamePrefix + i);
+                    objName = new ObjectName(base + jmxNamePrefix + NEXT_POOL_SUFFIX.getAndIncrement());
                 }
                 mbs.registerMBean(this, objName);
                 newObjectName = objName;
@@ -1219,7 +1222,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
                 }
             } catch (final InstanceAlreadyExistsException e) {
                 // Increment the index and try again
-                i++;
+                NEXT_POOL_SUFFIX.incrementAndGet();
             } catch (final MBeanRegistrationException | NotCompliantMBeanException e) {
                 // Shouldn't happen. Skip registration if it does.
                 registered = true;
