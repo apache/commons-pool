@@ -1280,7 +1280,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      *         {@code false}
      */
     private boolean hasBorrowWaiters() {
-        return poolMap.values().stream().anyMatch(deque -> deque != null && deque.getIdleObjects().hasTakeWaiters());
+        return getBlockWhenExhausted() && poolMap.values().stream().anyMatch(deque -> deque != null && deque.getIdleObjects().hasTakeWaiters());
     }
 
     /**
