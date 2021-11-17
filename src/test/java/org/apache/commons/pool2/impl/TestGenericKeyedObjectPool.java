@@ -2608,6 +2608,35 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         assertFalse(borrower.isAlive());
     }
 
+    @Test
+    public void testReturnObjectWithBlockWhenExhausted() throws Exception {
+        gkoPool.setBlockWhenExhausted(true);
+        gkoPool.setMaxTotal(1);
+
+        // Test return object with no take waiters
+        String obj = gkoPool.borrowObject("0");
+        gkoPool.returnObject("0", obj);
+
+        // Test return object with a take waiter
+        final TestThread<String> testA = new TestThread<>(gkoPool, 1, 0, 500, false, null, "0");
+        final TestThread<String> testB = new TestThread<>(gkoPool, 1, 0, 0, false, null, "1");
+        final Thread threadA = new Thread(testA);
+        final Thread threadB = new Thread(testB);
+        threadA.start();
+        threadB.start();
+        threadA.join();
+        threadB.join();
+    }
+
+    @Test
+    public void testReturnObjectWithoutBlockWhenExhausted() throws Exception {
+        gkoPool.setBlockWhenExhausted(false);
+
+        // Test return object with no take waiters
+        String obj = gkoPool.borrowObject("0");
+        gkoPool.returnObject("0", obj);
+    }
+
 }
 
 
