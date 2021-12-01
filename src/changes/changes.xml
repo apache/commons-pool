@@ -44,13 +44,17 @@ The <action> type attribute can be add,update,fix,remove.
   </properties>
   <body>
   <release version="2.12.0" date="2021-MM-DD" description="This is a maintenance release (Java 8).">
-    <!-- ADD -->
+    <!-- FIX -->
     <action dev="psteitz" type="fix" issue="POOL-401">
        Ensure that capacity freed by invalidateObject is available to all keyed pools.
     </action>
     <action dev="psteitz" type="fix" due-to="Codievilky August" issue="POOL-391">
        Ensure capacity freed by clear is made available to GKOP borrowers.
     </action>
+    <action dev="ggregory" type="fix" issue="POOL-402" due-to="Cp-John, Phil Steitz, Bruno P. Kinoshita, Gary Gregory">
+       Check blockWhenExhausted in hasBorrowWaiters #116.
+    </action>
+    <!-- ADD -->
     <action dev="ggregory" type="add" due-to="Gary Gregory">
       Add PooledObject.getFullDuration().
     </action>
