@@ -243,6 +243,7 @@
             <artifactId>maven-project-info-reports-plugin</artifactId>
             <version>${commons.project-info.version}</version>
             <dependencies>
+              <!-- Fix org.apache.bcel.classfile.ClassFormatException: Invalid byte tag in constant pool: 19 -->
               <dependency>
                 <groupId>org.apache.bcel</groupId>
                 <artifactId>bcel</artifactId>
