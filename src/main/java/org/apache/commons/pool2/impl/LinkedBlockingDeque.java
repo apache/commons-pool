@@ -16,6 +16,8 @@
  */
 package org.apache.commons.pool2.impl;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.time.Duration;
 import java.util.AbstractQueue;
@@ -1093,8 +1095,8 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * deserialize it).
      * @param s the stream
      */
-    private void readObject(final java.io.ObjectInputStream s)
-        throws java.io.IOException, ClassNotFoundException {
+    private void readObject(final ObjectInputStream s)
+        throws IOException, ClassNotFoundException {
         s.defaultReadObject();
         count = 0;
         first = null;
