@@ -173,6 +173,15 @@ class EvictionTimer {
     }
 
     /**
+     * Gets the task map. Keys are weak references to tasks, values are runners managed by executor.
+     *
+     * @return the task map.
+     */
+    static HashMap<WeakReference<BaseGenericObjectPool<?>.Evictor>, WeakRunner<BaseGenericObjectPool<?>.Evictor>> getTaskMap() {
+        return TASK_MAP;
+    }
+
+    /**
      * Removes evictor from the task set and executor.
      * Only called when holding the class lock.
      *
