@@ -1327,6 +1327,20 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      *
      * @param className Eviction policy class name.
      * @param classLoader Load the class from this class loader.
+     * @throws LinkageError if the linkage fails
+     * @throws ExceptionInInitializerError if the initialization provoked by this method fails
+     * @throws ClassNotFoundException if the class cannot be located by the specified class loader
+     * @throws IllegalAccessException if this {@code Constructor} object is enforcing Java language access control and the underlying constructor is
+     *         inaccessible.
+     * @throws IllegalArgumentException if the number of actual and formal parameters differ; if an unwrapping conversion for primitive arguments fails; or if,
+     *         after possible unwrapping, a parameter value cannot be converted to the corresponding formal parameter type by a method invocation conversion; if
+     *         this constructor pertains to an enum type.
+     * @throws InstantiationException if the class that declares the underlying constructor represents an abstract class.
+     * @throws InvocationTargetException if the underlying constructor throws an exception.
+     * @throws ExceptionInInitializerError if the initialization provoked by this method fails.
+     * @throws NoSuchMethodException if a matching method is not found.
+     * @throws SecurityException If a security manage is present and the caller's class loader is not the same as or an ancestor of the class loader for the
+     *         current class and invocation of {@link SecurityManager#checkPackageAccess s.checkPackageAccess()} denies access to the package of this class.
      */
     @SuppressWarnings("unchecked")
     private void setEvictionPolicy(final String className, final ClassLoader classLoader)
