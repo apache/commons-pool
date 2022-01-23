@@ -128,6 +128,9 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
             scheduledFuture.cancel(false);
         }
 
+        BaseGenericObjectPool<T> owner() {
+            return BaseGenericObjectPool.this;
+        }
 
         /**
          * Run pool maintenance.  Evict objects qualifying for eviction and then
@@ -176,7 +179,6 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
                 Thread.currentThread().setContextClassLoader(savedClassLoader);
             }
         }
-
 
         /**
          * Sets the scheduled future.
