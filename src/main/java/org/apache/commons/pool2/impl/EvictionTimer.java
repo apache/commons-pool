@@ -74,13 +74,13 @@ class EvictionTimer {
         @Override
         public void run() {
             synchronized (EvictionTimer.class) {
-                for (final Entry<WeakReference<BaseGenericObjectPool<?>.Evictor>, WeakRunner<BaseGenericObjectPool<?>.Evictor>> entry : taskMap.entrySet()) {
+                for (final Entry<WeakReference<BaseGenericObjectPool<?>.Evictor>, WeakRunner<BaseGenericObjectPool<?>.Evictor>> entry : TASK_MAP.entrySet()) {
                     if (entry.getKey().get() == null) {
                         executor.remove(entry.getValue());
-                        taskMap.remove(entry.getKey());
+                        TASK_MAP.remove(entry.getKey());
                     }
                 }
-                if (taskMap.isEmpty() && executor != null) {
+                if (TASK_MAP.isEmpty() && executor != null) {
                     executor.shutdown();
                     executor.setCorePoolSize(0);
                     executor = null;
@@ -114,7 +114,7 @@ class EvictionTimer {
                 task.run();
             } else {
                 executor.remove(this);
-                taskMap.remove(ref);
+                TASK_MAP.remove(ref);
             }
         }
     }
@@ -126,7 +126,7 @@ class EvictionTimer {
     /** Keys are weak references to tasks, values are runners managed by executor. */
     private static final HashMap<
         WeakReference<BaseGenericObjectPool<?>.Evictor>, 
-        WeakRunner<BaseGenericObjectPool<?>.Evictor>> taskMap = new HashMap<>(); // @GuardedBy("EvictionTimer.class")
+        WeakRunner<BaseGenericObjectPool<?>.Evictor>> TASK_MAP = new HashMap<>(); // @GuardedBy("EvictionTimer.class")
 
     /**
      * Removes the specified eviction task from the timer.
@@ -143,7 +143,7 @@ class EvictionTimer {
             evictor.cancel();
             remove(evictor);
         }
-        if (!restarting && executor != null && taskMap.isEmpty()) {
+        if (!restarting && executor != null && TASK_MAP.isEmpty()) {
             executor.shutdown();
             try {
                 executor.awaitTermination(timeout.toMillis(), TimeUnit.MILLISECONDS);
@@ -169,7 +169,7 @@ class EvictionTimer {
      * @return the number of eviction tasks under management.
      */
     static synchronized int getNumTasks() {
-        return taskMap.size();
+        return TASK_MAP.size();
     }
 
     /**
@@ -179,10 +179,10 @@ class EvictionTimer {
      * @param evictor Eviction task to remove
      */
     private static void remove(final BaseGenericObjectPool<?>.Evictor evictor) {
-        for (final Entry<WeakReference<BaseGenericObjectPool<?>.Evictor>, WeakRunner<BaseGenericObjectPool<?>.Evictor>> entry : taskMap.entrySet()) {
+        for (final Entry<WeakReference<BaseGenericObjectPool<?>.Evictor>, WeakRunner<BaseGenericObjectPool<?>.Evictor>> entry : TASK_MAP.entrySet()) {
             if (entry.getKey().get() == evictor) {
                 executor.remove(entry.getValue());
-                taskMap.remove(entry.getKey());
+                TASK_MAP.remove(entry.getKey());
                 break;
             }
         }
@@ -211,7 +211,7 @@ class EvictionTimer {
         final ScheduledFuture<?> scheduledFuture = executor.scheduleWithFixedDelay(runner, delay.toMillis(),
                 period.toMillis(), TimeUnit.MILLISECONDS);
         task.setScheduledFuture(scheduledFuture);
-        taskMap.put(ref, runner);
+        TASK_MAP.put(ref, runner);
     }
 
     /** Prevents instantiation */
@@ -228,4 +228,5 @@ class EvictionTimer {
         builder.append("EvictionTimer []");
         return builder.toString();
     }
+
 }
