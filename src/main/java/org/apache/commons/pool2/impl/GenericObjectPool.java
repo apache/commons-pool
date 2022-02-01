@@ -839,10 +839,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     @Override
     public int getMinIdle() {
         final int maxIdleSave = getMaxIdle();
-        if (this.minIdle > maxIdleSave) {
-            return maxIdleSave;
-        }
-        return minIdle;
+        return Math.min(this.minIdle, maxIdleSave);
     }
 
     @Override

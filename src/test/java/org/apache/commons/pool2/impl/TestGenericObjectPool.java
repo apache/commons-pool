@@ -31,7 +31,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.management.ManagementFactory;
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Field;
 import java.nio.charset.UnsupportedCharsetException;
 import java.time.Duration;
 import java.time.Instant;
