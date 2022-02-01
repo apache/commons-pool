@@ -1160,7 +1160,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     @Override
     public int getMinIdlePerKey() {
         final int maxIdlePerKeySave = getMaxIdlePerKey();
-        return this.minIdlePerKey > maxIdlePerKeySave ? maxIdlePerKeySave : minIdlePerKey;
+        return Math.min(this.minIdlePerKey, maxIdlePerKeySave);
     }
 
     @Override
