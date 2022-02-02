@@ -2591,7 +2591,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
       gkoPool.clear("six");
       Thread.sleep(20);
       for (Thread t : testThreads) {
-          assertTrue(!t.isAlive());
+          assertFalse(t.isAlive());
       }
   }
 

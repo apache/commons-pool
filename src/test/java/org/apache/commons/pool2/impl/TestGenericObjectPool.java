@@ -673,8 +673,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         // Order, oldest to youngest, is "0", "1", ...,"4"
         genericObjectPool.evict(); // Should evict "0" and "1"
         final Object obj = genericObjectPool.borrowObject();
-        assertFalse(obj.equals("0"), "oldest not evicted");
-        assertFalse(obj.equals("1"), "second oldest not evicted");
+        assertNotEquals("0", obj, "oldest not evicted");
+        assertNotEquals("1", obj, "second oldest not evicted");
         // 2 should be next out for FIFO, 4 for LIFO
         assertEquals(lifo ? "4" : "2" , obj,"Wrong instance returned");
     }
@@ -2621,7 +2621,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         {
             // The object receives an Exception during its creation to prevent
             // memory leaks. See BaseGenericObjectPool constructor for more details.
-            assertEquals(false, "".equals(genericObjectPool.getCreationStackTrace()));
+            assertNotEquals("", genericObjectPool.getCreationStackTrace());
         }
         {
             assertEquals(0, genericObjectPool.getBorrowedCount());
