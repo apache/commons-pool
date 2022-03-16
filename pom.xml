@@ -182,15 +182,7 @@
     <!-- Java 7 -->
     <commons.release.2.version>2.6.2</commons.release.2.version>
     <commons.release.2.desc>(Java 7)</commons.release.2.desc>
-    <!-- Java 6 -->
-    <commons.release.3.version>2.4.3</commons.release.3.version>
-    <commons.release.3.desc>(Java 6)</commons.release.3.desc>
-    <!-- Java 5 -->
-    <commons.release.4.version>1.6</commons.release.4.version>
-    <commons.release.4.desc>(Java 5)</commons.release.4.desc>
-    <commons.release.4.binary.suffix>-bin</commons.release.4.binary.suffix>
-    <!-- override parent name, because 1.x uses different artifactId -->
-    <commons.release.4.name>commons-pool-${commons.release.4.version}</commons.release.4.name>
+
     <commons.jira.id>POOL</commons.jira.id>
     <commons.jira.pid>12310488</commons.jira.pid>
     <commons.scmPubCheckoutDirectory>site-content</commons.scmPubCheckoutDirectory>
