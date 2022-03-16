@@ -173,66 +173,6 @@ limitations under the License.
         </table>
       </subsection>
     </section>
-    <section name="Apache Commons Pool 2.4.3 (Java 6)">
-      <subsection name="Binaries">
-        <table>
-          <tr>
-              <td><a href="[preferred]/commons/pool/binaries/commons-pool2-2.4.3-bin.tar.gz">commons-pool2-2.4.3-bin.tar.gz</a></td>
-              <td><a href="https://www.apache.org/dist/commons/pool/binaries/commons-pool2-2.4.3-bin.tar.gz.sha512">sha512</a></td>
-              <td><a href="https://www.apache.org/dist/commons/pool/binaries/commons-pool2-2.4.3-bin.tar.gz.asc">pgp</a></td>
-          </tr>
-          <tr>
-              <td><a href="[preferred]/commons/pool/binaries/commons-pool2-2.4.3-bin.zip">commons-pool2-2.4.3-bin.zip</a></td>
-              <td><a href="https://www.apache.org/dist/commons/pool/binaries/commons-pool2-2.4.3-bin.zip.sha512">sha512</a></td>
-              <td><a href="https://www.apache.org/dist/commons/pool/binaries/commons-pool2-2.4.3-bin.zip.asc">pgp</a></td>
-          </tr>
-        </table>
-      </subsection>
-      <subsection name="Source">
-        <table>
-          <tr>
-              <td><a href="[preferred]/commons/pool/source/commons-pool2-2.4.3-src.tar.gz">commons-pool2-2.4.3-src.tar.gz</a></td>
-              <td><a href="https://www.apache.org/dist/commons/pool/source/commons-pool2-2.4.3-src.tar.gz.sha512">sha512</a></td>
-              <td><a href="https://www.apache.org/dist/commons/pool/source/commons-pool2-2.4.3-src.tar.gz.asc">pgp</a></td>
-          </tr>
-          <tr>
-              <td><a href="[preferred]/commons/pool/source/commons-pool2-2.4.3-src.zip">commons-pool2-2.4.3-src.zip</a></td>
-              <td><a href="https://www.apache.org/dist/commons/pool/source/commons-pool2-2.4.3-src.zip.sha512">sha512</a></td>
-              <td><a href="https://www.apache.org/dist/commons/pool/source/commons-pool2-2.4.3-src.zip.asc">pgp</a></td>
-          </tr>
-        </table>
-      </subsection>
-    </section>
-    <section name="Apache Commons Pool 1.6 (Java 5)">
-      <subsection name="Binaries">
-        <table>
-          <tr>
-              <td><a href="[preferred]/commons/pool/binaries/commons-pool-1.6-bin.tar.gz">commons-pool-1.6-bin.tar.gz</a></td>
-              <td><a href="https://www.apache.org/dist/commons/pool/binaries/commons-pool-1.6-bin.tar.gz.sha512">sha512</a></td>
-              <td><a href="https://www.apache.org/dist/commons/pool/binaries/commons-pool-1.6-bin.tar.gz.asc">pgp</a></td>
-          </tr>
-          <tr>
-              <td><a href="[preferred]/commons/pool/binaries/commons-pool-1.6-bin.zip">commons-pool-1.6-bin.zip</a></td>
-              <td><a href="https://www.apache.org/dist/commons/pool/binaries/commons-pool-1.6-bin.zip.sha512">sha512</a></td>
-              <td><a href="https://www.apache.org/dist/commons/pool/binaries/commons-pool-1.6-bin.zip.asc">pgp</a></td>
-          </tr>
-        </table>
-      </subsection>
-      <subsection name="Source">
-        <table>
-          <tr>
-              <td><a href="[preferred]/commons/pool/source/commons-pool-1.6-src.tar.gz">commons-pool-1.6-src.tar.gz</a></td>
-              <td><a href="https://www.apache.org/dist/commons/pool/source/commons-pool-1.6-src.tar.gz.sha512">sha512</a></td>
-              <td><a href="https://www.apache.org/dist/commons/pool/source/commons-pool-1.6-src.tar.gz.asc">pgp</a></td>
-          </tr>
-          <tr>
-              <td><a href="[preferred]/commons/pool/source/commons-pool-1.6-src.zip">commons-pool-1.6-src.zip</a></td>
-              <td><a href="https://www.apache.org/dist/commons/pool/source/commons-pool-1.6-src.zip.sha512">sha512</a></td>
-              <td><a href="https://www.apache.org/dist/commons/pool/source/commons-pool-1.6-src.zip.asc">pgp</a></td>
-          </tr>
-        </table>
-      </subsection>
-    </section>
     <section name="Archives">
         <p>
           Older releases can be obtained from the archives.
