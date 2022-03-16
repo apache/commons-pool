@@ -177,7 +177,7 @@
     <commons.module.name>org.apache.commons.pool2</commons.module.name>
     <commons.rc.version>RC1</commons.rc.version>
     <!-- Java 8 -->
-    <commons.release.version>2.12.0</commons.release.version>
+    <commons.release.version>2.11.1</commons.release.version>
     <commons.release.desc>(Java 8)</commons.release.desc>
     <!-- Java 7 -->
     <commons.release.2.version>2.6.2</commons.release.2.version>
