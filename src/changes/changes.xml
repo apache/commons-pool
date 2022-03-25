@@ -84,7 +84,7 @@ The <action> type attribute can be add,update,fix,remove.
       Bump actions/checkout from 2.3.4 to 3 #109, #112, #134.
     </action>
     <action dev="kinow" type="update" due-to="Dependabot">
-      Bump actions/cache from 2.1.6 to 2.1.7 #117.
+      Bump actions/cache from 2.1.6 to 3 #117, #138.
     </action>
     <action dev="kinow" type="update" due-to="Dependabot">
       Bump maven-bundle-plugin from 5.1.3 to 5.1.4 #127.
