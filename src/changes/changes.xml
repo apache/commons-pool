@@ -89,6 +89,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="kinow" type="update" due-to="Dependabot">
       Bump maven-bundle-plugin from 5.1.3 to 5.1.4 #127.
     </action>
+    <action dev="kinow" type="update" due-to="Dependabot">
+      Bump maven-surefire-plugin from 3.0.0-M5 to 3.0.0-M6 #142.
+    </action>
   </release>
   <release version="2.11.1" date="2021-08-18" description="This is a maintenance release (Java 8).">
     <!-- FIX -->
