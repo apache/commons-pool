@@ -61,6 +61,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="add" due-to="Gary Gregory">
       Add PooledObject.getFullDuration().
     </action>
+    <action dev="ggregory" type="add" due-to="Vamsi Pavan Kumar Sanka, Phil Steitz, Gary Gregory">
+      Add GenericKeyedObjectPool.getKeys().
+    </action>
     <!-- UPDATE -->
     <action dev="ggregory" type="update" due-to="Dependabot">
       Bump actions/checkout from 2.3.4 to 3 #109, #112, #134.

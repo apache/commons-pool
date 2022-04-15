@@ -1650,10 +1650,23 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     }
 
     @Test
+    @Timeout(value = 60, unit = TimeUnit.SECONDS)
+    public void testGetKeys() throws Exception {
+        gkoPool.addObject("one");
+        assertEquals(1, gkoPool.getKeys().size());
+        gkoPool.addObject("two");
+        assertEquals(2, gkoPool.getKeys().size());
+        gkoPool.clear("one");
+        assertEquals(1, gkoPool.getKeys().size());
+        assertEquals("two", (String) gkoPool.getKeys().get(0));
+        gkoPool.clear();
+    }
+
+    @Test
     public void testGetStatsString() {
         assertNotNull((gkoPool.getStatsString()));
     }
-
+    
     /**
      * Verify that threads waiting on a depleted pool get served when a checked out object is
      * invalidated.
@@ -1685,7 +1698,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             }
         }
     }
-
+    
     @Test
     public void testInvalidateFreesCapacityForOtherKeys() throws Exception {
         gkoPool.setMaxTotal(1);

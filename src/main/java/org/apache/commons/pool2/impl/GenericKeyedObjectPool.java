@@ -221,7 +221,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * to ensure any changes to the list of current keys is made in a
      * thread-safe manner.
      */
-    private final List<K> poolKeyList = new ArrayList<>(); // @GuardedBy("keyLock")
+    private final ArrayList<K> poolKeyList = new ArrayList<>(); // @GuardedBy("keyLock")
 
     private final ReadWriteLock keyLock = new ReentrantReadWriteLock(true);
 
@@ -1107,6 +1107,17 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     }
 
     /**
+     * Gets a copy of the pool key list.
+     *
+     * @return a copy of the pool key list.
+     * @since 2.12.0
+     */
+    @SuppressWarnings("unchecked")
+    public List<K> getKeys() {
+        return (List<K>) poolKeyList.clone();
+    }
+
+    /**
      * Gets the cap on the number of "idle" instances per key in the pool.
      * If maxIdlePerKey is set too low on heavily loaded systems it is possible
      * you will see objects being destroyed and almost immediately new objects
@@ -1201,14 +1212,14 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         return poolMap.values().stream().mapToInt(e -> e.getIdleObjects().size()).sum();
     }
 
+
+    //--- JMX support ----------------------------------------------------------
+
     @Override
     public int getNumIdle(final K key) {
         final ObjectDeque<T> objectDeque = poolMap.get(key);
         return objectDeque != null ? objectDeque.getIdleObjects().size() : 0;
     }
-
-
-    //--- JMX support ----------------------------------------------------------
 
     /**
      * Calculate the number of objects to test in a run of the idle object
