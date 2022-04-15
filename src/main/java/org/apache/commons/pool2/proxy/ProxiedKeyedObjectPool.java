@@ -113,7 +113,6 @@ public class ProxiedKeyedObjectPool<K, V> implements KeyedObjectPool<K, V> {
         pool.returnObject(key, proxySource.resolveProxy(proxy));
     }
 
-
     /**
      * @since 2.4.3
      */
