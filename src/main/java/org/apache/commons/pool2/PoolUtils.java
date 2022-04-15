@@ -19,6 +19,7 @@ package org.apache.commons.pool2;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Timer;
@@ -221,6 +222,14 @@ public final class PoolUtils {
          */
         protected KeyedObjectPool<K, V> getKeyedPool() {
             return keyedPool;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public List<K> getKeys() {
+            return keyedPool.getKeys();
         }
 
         /**
@@ -681,7 +690,7 @@ public final class PoolUtils {
      * @param <K> object pool key type
      * @param <V> object pool value type
      */
-    private static final class SynchronizedKeyedObjectPool<K, V> implements
+    static final class SynchronizedKeyedObjectPool<K, V> implements
             KeyedObjectPool<K, V> {
 
         /**
@@ -782,6 +791,20 @@ public final class PoolUtils {
                 // swallowed as of Pool 2
             } finally {
                 writeLock.unlock();
+            }
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public List<K> getKeys() {
+            final ReadLock readLock = readWriteLock.readLock();
+            readLock.lock();
+            try {
+                return keyedPool.getKeys();
+            } finally {
+                readLock.unlock();
             }
         }
 

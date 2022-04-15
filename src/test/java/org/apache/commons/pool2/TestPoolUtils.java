@@ -100,12 +100,13 @@ public class TestPoolUtils {
         return createProxy(clazz, new MethodCallLogger(logger));
     }
 
-    private static List<String> invokeEveryMethod(final KeyedObjectPool<Object,Object> kop) throws Exception {
+    private static List<String> invokeEveryMethod(final KeyedObjectPool<Object, Object> kop) throws Exception {
         kop.addObject(null);
         kop.borrowObject(null);
         kop.clear();
         kop.clear(null);
         kop.close();
+        kop.getKeys();
         kop.getNumActive();
         kop.getNumActive(null);
         kop.getNumIdle();
@@ -114,8 +115,8 @@ public class TestPoolUtils {
         kop.returnObject(null, new Object());
         kop.toString();
 
-        return Arrays.asList("addObject", "borrowObject", "clear", "clear", "close", "getNumActive", "getNumActive",
-                "getNumIdle", "getNumIdle", "invalidateObject", "returnObject", "toString");
+        return Arrays.asList("addObject", "borrowObject", "clear", "clear", "close", "getKeys", "getNumActive", "getNumActive", "getNumIdle", "getNumIdle",
+                "invalidateObject", "returnObject", "toString");
     }
 
     private static <K, V> List<String> invokeEveryMethod(final KeyedPooledObjectFactory<K, V> kpof) throws Exception {
@@ -748,8 +749,8 @@ public class TestPoolUtils {
 
         final List<String> calledMethods = new ArrayList<>();
         try (@SuppressWarnings("unchecked")
-        final KeyedObjectPool<Object, Object> kop = createProxy(KeyedObjectPool.class, calledMethods);
-                final KeyedObjectPool<Object, Object> skop = PoolUtils.synchronizedPool(kop)) {
+            final KeyedObjectPool<Object, Object> kop = createProxy(KeyedObjectPool.class, calledMethods);
+            final KeyedObjectPool<Object, Object> skop = PoolUtils.synchronizedPool(kop)) {
             final List<String> expectedMethods = invokeEveryMethod(skop);
             assertEquals(expectedMethods, calledMethods);
         }

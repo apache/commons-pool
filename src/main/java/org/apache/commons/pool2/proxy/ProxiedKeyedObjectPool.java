@@ -16,6 +16,7 @@
  */
 package org.apache.commons.pool2.proxy;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.apache.commons.pool2.KeyedObjectPool;
@@ -81,6 +82,11 @@ public class ProxiedKeyedObjectPool<K, V> implements KeyedObjectPool<K, V> {
     @Override
     public void close() {
         pool.close();
+    }
+
+    @Override
+    public List<K> getKeys() {
+        return pool.getKeys();
     }
 
     @Override

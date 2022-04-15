@@ -1112,6 +1112,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * @return a copy of the pool key list.
      * @since 2.12.0
      */
+    @Override
     @SuppressWarnings("unchecked")
     public List<K> getKeys() {
         return (List<K>) poolKeyList.clone();

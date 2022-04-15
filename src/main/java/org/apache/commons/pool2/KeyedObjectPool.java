@@ -18,6 +18,8 @@ package org.apache.commons.pool2;
 
 import java.io.Closeable;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
@@ -209,6 +211,16 @@ public interface KeyedObjectPool<K, V> extends Closeable {
      */
     @Override
     void close();
+
+    /**
+     * Gets a copy of the pool key list.
+     *
+     * @return a copy of the pool key list.
+     * @since 2.12.0
+     */
+    default List<K> getKeys() {
+        return Collections.emptyList();
+    }
 
     /**
      * Gets the total number of instances currently borrowed from this pool but
