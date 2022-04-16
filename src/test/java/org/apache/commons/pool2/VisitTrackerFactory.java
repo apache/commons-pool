@@ -24,19 +24,19 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
  *
  */
 public class VisitTrackerFactory<K>
-        implements PooledObjectFactory<VisitTracker<K>>, KeyedPooledObjectFactory<K, VisitTracker<K>> {
+        implements PooledObjectFactory<VisitTracker<K>, RuntimeException>, KeyedPooledObjectFactory<K, VisitTracker<K>> {
     private int nextId;
 
     public VisitTrackerFactory() {
     }
 
     @Override
-    public void activateObject(final K key, final PooledObject<VisitTracker<K>> ref) throws Exception {
+    public void activateObject(final K key, final PooledObject<VisitTracker<K>> ref) {
         ref.getObject().activate();
     }
 
     @Override
-    public void activateObject(final PooledObject<VisitTracker<K>> ref) throws Exception {
+    public void activateObject(final PooledObject<VisitTracker<K>> ref) {
         ref.getObject().activate();
     }
 
@@ -61,12 +61,12 @@ public class VisitTrackerFactory<K>
     }
 
     @Override
-    public void passivateObject(final K key, final PooledObject<VisitTracker<K>> ref) throws Exception {
+    public void passivateObject(final K key, final PooledObject<VisitTracker<K>> ref) {
         ref.getObject().passivate();
     }
 
     @Override
-    public void passivateObject(final PooledObject<VisitTracker<K>> ref) throws Exception {
+    public void passivateObject(final PooledObject<VisitTracker<K>> ref) {
         ref.getObject().passivate();
     }
 

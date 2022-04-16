@@ -44,10 +44,10 @@ public abstract class BaseTestProxiedObjectPool {
         void setData(String data);
     }
     private static class TestObjectFactory extends
-            BasePooledObjectFactory<TestObject> {
+            BasePooledObjectFactory<TestObject, RuntimeException> {
 
         @Override
-        public TestObject create() throws Exception {
+        public TestObject create() {
             return new TestObjectImpl();
         }
         @Override
@@ -75,7 +75,7 @@ public abstract class BaseTestProxiedObjectPool {
     private static final Duration ABANDONED_TIMEOUT_SECS = Duration.ofSeconds(3);
 
 
-    private ObjectPool<TestObject> pool;
+    private ObjectPool<TestObject, RuntimeException> pool;
 
     private StringWriter log;
 
@@ -98,11 +98,10 @@ public abstract class BaseTestProxiedObjectPool {
         final GenericObjectPoolConfig<TestObject> config = new GenericObjectPoolConfig<>();
         config.setMaxTotal(3);
 
-        final PooledObjectFactory<TestObject> factory = new TestObjectFactory();
+        final PooledObjectFactory<TestObject, RuntimeException> factory = new TestObjectFactory();
 
         @SuppressWarnings("resource")
-        final ObjectPool<TestObject> innerPool =
-                new GenericObjectPool<>(factory, config, abandonedConfig);
+        final ObjectPool<TestObject, RuntimeException> innerPool = new GenericObjectPool<>(factory, config, abandonedConfig);
 
         pool = new ProxiedObjectPool<>(innerPool, getproxySource());
     }

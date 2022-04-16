@@ -324,17 +324,19 @@ public final class PoolUtils {
                     erodingFactor + ", keyedPool=" + keyedPool + '}';
         }
     }
+
     /**
      * Decorates an object pool, adding "eroding" behavior. Based on the
      * configured {@link #factor erosion factor}, objects returning to the pool
      * may be invalidated instead of being added to idle capacity.
      *
      * @param <T> type of objects in the pool
+     * @param <E> type of exceptions from the pool
      */
-    private static class ErodingObjectPool<T> implements ObjectPool<T> {
+    private static class ErodingObjectPool<T, E extends Exception> implements ObjectPool<T, E> {
 
         /** Underlying object pool */
-        private final ObjectPool<T> pool;
+        private final ObjectPool<T, E> pool;
 
         /** Erosion factor */
         private final ErodingFactor factor;
@@ -350,7 +352,7 @@ public final class PoolUtils {
          *            events
          * @see #factor
          */
-        public ErodingObjectPool(final ObjectPool<T> pool, final float factor) {
+        public ErodingObjectPool(final ObjectPool<T, E> pool, final float factor) {
             this.pool = pool;
             this.factor = new ErodingFactor(factor);
         }
@@ -359,8 +361,7 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         @Override
-        public void addObject() throws Exception, IllegalStateException,
-                UnsupportedOperationException {
+        public void addObject() throws E, IllegalStateException, UnsupportedOperationException{
             pool.addObject();
         }
 
@@ -368,8 +369,7 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         @Override
-        public T borrowObject() throws Exception, NoSuchElementException,
-                IllegalStateException {
+        public T borrowObject() throws E, NoSuchElementException, IllegalStateException {
             return pool.borrowObject();
         }
 
@@ -377,7 +377,7 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         @Override
-        public void clear() throws Exception, UnsupportedOperationException {
+        public void clear() throws E, UnsupportedOperationException {
             pool.clear();
         }
 
@@ -610,14 +610,15 @@ public final class PoolUtils {
      * as the pool's minIdle setting.
      *
      * @param <T> type of objects in the pool
+     * @param <E> type of exceptions from the pool
      */
-    private static final class ObjectPoolMinIdleTimerTask<T> extends TimerTask {
+    private static final class ObjectPoolMinIdleTimerTask<T, E extends Exception> extends TimerTask {
 
         /** Minimum number of idle instances. Not the same as pool.getMinIdle(). */
         private final int minIdle;
 
         /** Object pool */
-        private final ObjectPool<T> pool;
+        private final ObjectPool<T, E> pool;
 
         /**
          * Constructs a new ObjectPoolMinIdleTimerTask for the given pool with the
@@ -630,7 +631,7 @@ public final class PoolUtils {
          * @throws IllegalArgumentException
          *             if the pool is null
          */
-        ObjectPoolMinIdleTimerTask(final ObjectPool<T> pool, final int minIdle)
+        ObjectPoolMinIdleTimerTask(final ObjectPool<T, E> pool, final int minIdle)
                 throws IllegalArgumentException {
             if (pool == null) {
                 throw new IllegalArgumentException(MSG_NULL_POOL);
@@ -1041,8 +1042,9 @@ public final class PoolUtils {
      * </p>
      *
      * @param <T> type of objects in the pool
+     * @param <E> type of exceptions from the pool
      */
-    private static final class SynchronizedObjectPool<T> implements ObjectPool<T> {
+    private static final class SynchronizedObjectPool<T, E extends Exception> implements ObjectPool<T, E> {
 
         /**
          * Object whose monitor is used to synchronize methods on the wrapped
@@ -1051,7 +1053,7 @@ public final class PoolUtils {
         private final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
         /** the underlying object pool */
-        private final ObjectPool<T> pool;
+        private final ObjectPool<T, E> pool;
 
         /**
          * Creates a new SynchronizedObjectPool wrapping the given pool.
@@ -1062,7 +1064,7 @@ public final class PoolUtils {
          * @throws IllegalArgumentException
          *             if the pool is null
          */
-        SynchronizedObjectPool(final ObjectPool<T> pool)
+        SynchronizedObjectPool(final ObjectPool<T, E> pool)
                 throws IllegalArgumentException {
             if (pool == null) {
                 throw new IllegalArgumentException(MSG_NULL_POOL);
@@ -1074,8 +1076,7 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         @Override
-        public void addObject() throws Exception, IllegalStateException,
-                UnsupportedOperationException {
+        public void addObject() throws E, IllegalStateException, UnsupportedOperationException {
             final WriteLock writeLock = readWriteLock.writeLock();
             writeLock.lock();
             try {
@@ -1089,8 +1090,7 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         @Override
-        public T borrowObject() throws Exception, NoSuchElementException,
-                IllegalStateException {
+        public T borrowObject() throws E, NoSuchElementException, IllegalStateException {
             final WriteLock writeLock = readWriteLock.writeLock();
             writeLock.lock();
             try {
@@ -1104,7 +1104,7 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         @Override
-        public void clear() throws Exception, UnsupportedOperationException {
+        public void clear() throws E, UnsupportedOperationException {
             final WriteLock writeLock = readWriteLock.writeLock();
             writeLock.lock();
             try {
@@ -1214,15 +1214,16 @@ public final class PoolUtils {
      * </p>
      *
      * @param <T> pooled object factory type
+     * @param <E> exception type
      */
-    private static final class SynchronizedPooledObjectFactory<T> implements
-            PooledObjectFactory<T> {
+    private static final class SynchronizedPooledObjectFactory<T, E extends Exception> implements
+            PooledObjectFactory<T, E> {
 
         /** Synchronization lock */
         private final WriteLock writeLock = new ReentrantReadWriteLock().writeLock();
 
         /** Wrapped factory */
-        private final PooledObjectFactory<T> factory;
+        private final PooledObjectFactory<T, E> factory;
 
         /**
          * Creates a SynchronizedPoolableObjectFactory wrapping the given
@@ -1233,7 +1234,7 @@ public final class PoolUtils {
          * @throws IllegalArgumentException
          *             if the factory is null
          */
-        SynchronizedPooledObjectFactory(final PooledObjectFactory<T> factory)
+        SynchronizedPooledObjectFactory(final PooledObjectFactory<T, E> factory)
                 throws IllegalArgumentException {
             if (factory == null) {
                 throw new IllegalArgumentException("factory must not be null.");
@@ -1245,7 +1246,7 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         @Override
-        public void activateObject(final PooledObject<T> p) throws Exception {
+        public void activateObject(final PooledObject<T> p) throws E {
             writeLock.lock();
             try {
                 factory.activateObject(p);
@@ -1258,7 +1259,7 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         @Override
-        public void destroyObject(final PooledObject<T> p) throws Exception {
+        public void destroyObject(final PooledObject<T> p) throws E {
             writeLock.lock();
             try {
                 factory.destroyObject(p);
@@ -1271,7 +1272,7 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         @Override
-        public PooledObject<T> makeObject() throws Exception {
+        public PooledObject<T> makeObject() throws E {
             writeLock.lock();
             try {
                 return factory.makeObject();
@@ -1284,7 +1285,7 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         @Override
-        public void passivateObject(final PooledObject<T> p) throws Exception {
+        public void passivateObject(final PooledObject<T> p) throws E {
             writeLock.lock();
             try {
                 factory.passivateObject(p);
@@ -1438,6 +1439,7 @@ public final class PoolUtils {
      *            the frequency in milliseconds to check the number of idle objects in a pool,
      *            see {@link Timer#schedule(TimerTask, long, long)}.
      * @param <T> the type of objects in the pool
+     * @param <E> type of exceptions from the pool
      * @return the {@link TimerTask} that will periodically check the pools idle
      *         object count.
      * @throws IllegalArgumentException
@@ -1445,7 +1447,7 @@ public final class PoolUtils {
      *             negative or when {@code period} isn't valid for
      *             {@link Timer#schedule(TimerTask, long, long)}
      */
-    public static <T> TimerTask checkMinIdle(final ObjectPool<T> pool,
+    public static <T, E extends Exception> TimerTask checkMinIdle(final ObjectPool<T, E> pool,
             final int minIdle, final long periodMillis)
             throws IllegalArgumentException {
         if (pool == null) {
@@ -1606,13 +1608,14 @@ public final class PoolUtils {
      *            the ObjectPool to be decorated so it shrinks its idle count
      *            when possible.
      * @param <T> the type of objects in the pool
+     * @param <E> type of exceptions from the pool
      * @throws IllegalArgumentException
      *             when {@code pool} is {@code null}.
      * @return a pool that adaptively decreases its size when idle objects are
      *         no longer needed.
      * @see #erodingPool(ObjectPool, float)
      */
-    public static <T> ObjectPool<T> erodingPool(final ObjectPool<T> pool) {
+    public static <T, E extends Exception> ObjectPool<T, E> erodingPool(final ObjectPool<T, E> pool) {
         return erodingPool(pool, 1f);
     }
 
@@ -1638,6 +1641,7 @@ public final class PoolUtils {
      *            shrinks more aggressively. If 1 &lt; factor then the pool
      *            shrinks less aggressively.
      * @param <T> the type of objects in the pool
+     * @param <E> type of exceptions from the pool
      * @throws IllegalArgumentException
      *             when {@code pool} is {@code null} or when {@code factor} is
      *             not positive.
@@ -1645,8 +1649,7 @@ public final class PoolUtils {
      *         no longer needed.
      * @see #erodingPool(ObjectPool)
      */
-    public static <T> ObjectPool<T> erodingPool(final ObjectPool<T> pool,
-            final float factor) {
+    public static <T, E extends Exception> ObjectPool<T, E> erodingPool(final ObjectPool<T, E> pool, final float factor) {
         if (pool == null) {
             throw new IllegalArgumentException(MSG_NULL_POOL);
         }
@@ -1734,15 +1737,16 @@ public final class PoolUtils {
      * @param count
      *            the number of idle objects to add.
      * @param <T> the type of objects in the pool
-     * @throws Exception
+     * @param <E> type of exceptions from the pool
+     * @throws E
      *             when {@link ObjectPool#addObject()} fails.
      * @throws IllegalArgumentException
      *             when {@code pool} is {@code null}.
      * @deprecated Use {@link ObjectPool#addObjects(int)}.
      */
     @Deprecated
-    public static <T> void prefill(final ObjectPool<T> pool, final int count)
-            throws Exception, IllegalArgumentException {
+    public static <T, E extends Exception> void prefill(final ObjectPool<T, E> pool, final int count)
+            throws E, IllegalArgumentException {
         if (pool == null) {
             throw new IllegalArgumentException(MSG_NULL_POOL);
         }
@@ -1810,14 +1814,15 @@ public final class PoolUtils {
      * deadlock.
      * </p>
      *
+     * @param <T> the type of objects in the pool
+     * @param <E> the type of exceptions thrown by the pool
      * @param pool
      *            the ObjectPool to be "wrapped" in a synchronized ObjectPool.
-     * @param <T> the type of objects in the pool
      * @throws IllegalArgumentException
      *             when {@code pool} is {@code null}.
      * @return a synchronized view of the specified ObjectPool.
      */
-    public static <T> ObjectPool<T> synchronizedPool(final ObjectPool<T> pool) {
+    public static <T, E extends Exception> ObjectPool<T, E> synchronizedPool(final ObjectPool<T, E> pool) {
         if (pool == null) {
             throw new IllegalArgumentException(MSG_NULL_POOL);
         }
@@ -1844,10 +1849,10 @@ public final class PoolUtils {
      *            the PooledObjectFactory to be "wrapped" in a synchronized
      *            PooledObjectFactory.
      * @param <T> the type of objects in the pool
+     * @param <E> the type of exceptions thrown by the pool
      * @return a synchronized view of the specified PooledObjectFactory.
      */
-    public static <T> PooledObjectFactory<T> synchronizedPooledFactory(
-            final PooledObjectFactory<T> factory) {
+    public static <T, E extends Exception> PooledObjectFactory<T, E> synchronizedPooledFactory(final PooledObjectFactory<T, E> factory) {
         return new SynchronizedPooledObjectFactory<>(factory);
     }
 

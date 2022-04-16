@@ -43,7 +43,7 @@ public abstract class TestObjectPool {
         calls.removeIf(call -> "destroyObject".equals(call.getName()));
     }
 
-    private static void reset(final ObjectPool<Object> pool, final MethodCallPoolableObjectFactory factory, final List<MethodCall> expectedMethods) throws Exception {
+    private static void reset(final ObjectPool<Object, ?> pool, final MethodCallPoolableObjectFactory factory, final List<MethodCall> expectedMethods) throws Exception {
         pool.clear();
         clear(factory, expectedMethods);
         factory.reset();
@@ -60,6 +60,7 @@ public abstract class TestObjectPool {
      * behaviors described in {@link ObjectPool}.
      * Generally speaking there should be no limits on the various object counts.
      *
+     * @param <E> The exception type throws by the pool
      * @param factory The factory to be used by the object pool
      *
      * @return the newly created empty pool
@@ -67,11 +68,11 @@ public abstract class TestObjectPool {
      * @throws UnsupportedOperationException if the pool being tested does not
      *                                       follow pool contracts.
      */
-    protected abstract ObjectPool<Object> makeEmptyPool(PooledObjectFactory<Object> factory) throws UnsupportedOperationException;
+    protected abstract <E extends Exception> ObjectPool<Object, E> makeEmptyPool(PooledObjectFactory<Object, E> factory) throws UnsupportedOperationException;
 
     @Test
     public void testClosedPoolBehavior() throws Exception {
-        final ObjectPool<Object> pool;
+        final ObjectPool<Object, PrivateException> pool;
         try {
             pool = makeEmptyPool(new MethodCallPoolableObjectFactory());
         } catch (final UnsupportedOperationException uoe) {
@@ -114,7 +115,7 @@ public abstract class TestObjectPool {
     @Test
     public void testPOFAddObjectUsage() throws Exception {
         final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
-        final ObjectPool<Object> pool;
+        final ObjectPool<Object, PrivateException> pool;
         try {
             pool = makeEmptyPool(factory);
         } catch(final UnsupportedOperationException uoe) {
@@ -165,14 +166,14 @@ public abstract class TestObjectPool {
     @Test
     public void testPOFBorrowObjectUsages() throws Exception {
         final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
-        final ObjectPool<Object> pool;
+        final ObjectPool<Object, PrivateException> pool;
         try {
             pool = makeEmptyPool(factory);
         } catch (final UnsupportedOperationException uoe) {
             return; // test not supported
         }
         if (pool instanceof GenericObjectPool) {
-            ((GenericObjectPool<Object>) pool).setTestOnBorrow(true);
+            ((GenericObjectPool<Object, PrivateException>) pool).setTestOnBorrow(true);
         }
         final List<MethodCall> expectedMethods = new ArrayList<>();
         Object obj;
@@ -237,7 +238,7 @@ public abstract class TestObjectPool {
     @Test
     public void testPOFClearUsages() throws Exception {
         final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
-        final ObjectPool<Object> pool;
+        final ObjectPool<Object, PrivateException> pool;
         try {
             pool = makeEmptyPool(factory);
         } catch (final UnsupportedOperationException uoe) {
@@ -260,7 +261,7 @@ public abstract class TestObjectPool {
     @Test
     public void testPOFCloseUsages() throws Exception {
         final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
-        ObjectPool<Object> pool;
+        ObjectPool<Object, PrivateException> pool;
         try {
             pool = makeEmptyPool(factory);
         } catch (final UnsupportedOperationException uoe) {
@@ -288,7 +289,7 @@ public abstract class TestObjectPool {
     @Test
     public void testPOFInvalidateObjectUsages() throws Exception {
         final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
-        final ObjectPool<Object> pool;
+        final ObjectPool<Object, PrivateException> pool;
         try {
             pool = makeEmptyPool(factory);
         } catch (final UnsupportedOperationException uoe) {
@@ -322,7 +323,7 @@ public abstract class TestObjectPool {
     @Test
     public void testPOFReturnObjectUsages() throws Exception {
         final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
-        final ObjectPool<Object> pool;
+        final ObjectPool<Object, PrivateException> pool;
         try {
             pool = makeEmptyPool(factory);
         } catch (final UnsupportedOperationException uoe) {
@@ -381,7 +382,7 @@ public abstract class TestObjectPool {
 
     @Test
     public void testToString() {
-        final ObjectPool<Object> pool;
+        final ObjectPool<Object, PrivateException> pool;
         try {
             pool = makeEmptyPool(new MethodCallPoolableObjectFactory());
         } catch (final UnsupportedOperationException uoe) {

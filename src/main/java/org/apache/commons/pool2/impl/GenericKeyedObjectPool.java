@@ -84,10 +84,11 @@ import org.apache.commons.pool2.UsageTracking;
  *
  * @param <K> The type of keys maintained by this pool.
  * @param <T> Type of element pooled in this pool.
+ * @param <E> Type of exception thrown in this pool.
  *
  * @since 2.0
  */
-public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
+public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGenericObjectPool<T, E>
         implements KeyedObjectPool<K, T>, GenericKeyedObjectPoolMXBean<K>, UsageTracking<T> {
 
     /**
@@ -1579,7 +1580,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         int maxQueueLength = 0;
         LinkedBlockingDeque<PooledObject<T>> mostLoaded = null;
         K loadedKey = null;
-        for (final Entry<K, GenericKeyedObjectPool<K, T>.ObjectDeque<T>> entry : poolMap.entrySet()) {
+        for (final Entry<K, GenericKeyedObjectPool<K, T, E>.ObjectDeque<T>> entry : poolMap.entrySet()) {
             final K k = entry.getKey();
             final ObjectDeque<T> deque = entry.getValue();
             if (deque != null) {

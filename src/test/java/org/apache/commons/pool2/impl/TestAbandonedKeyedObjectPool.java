@@ -132,7 +132,7 @@ public class TestAbandonedKeyedObjectPool {
         }
     }
 
-    private GenericKeyedObjectPool<Integer,PooledTestObject> pool;
+    private GenericKeyedObjectPool<Integer, PooledTestObject, Exception> pool;
 
     private AbandonedConfig abandonedConfig;
 

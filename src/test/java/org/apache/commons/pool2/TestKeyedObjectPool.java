@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  */
 public abstract class TestKeyedObjectPool {
 
-    protected static class FailingKeyedPooledObjectFactory implements KeyedPooledObjectFactory<Object,Object> {
+    protected static class FailingKeyedPooledObjectFactory implements KeyedPooledObjectFactory<Object, Object> {
         private final List<MethodCall> methodCalls = new ArrayList<>();
         private int count;
         private boolean makeObjectFail;
@@ -553,7 +553,7 @@ public abstract class TestKeyedObjectPool {
         Object obj;
 
         if (pool instanceof GenericKeyedObjectPool) {
-            ((GenericKeyedObjectPool<Object,Object>) pool).setTestOnBorrow(true);
+            ((GenericKeyedObjectPool<Object, Object, Exception>) pool).setTestOnBorrow(true);
         }
 
         /// Test correct behavior code paths

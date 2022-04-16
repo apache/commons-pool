@@ -51,11 +51,11 @@ public final class ObjectPoolIssue326 {
         }
     }
 
-    private class Task implements Callable<Object> {
-        private final GenericKeyedObjectPool<Integer, Object> m_pool;
+    private class Task<E extends Exception> implements Callable<Object> {
+        private final GenericKeyedObjectPool<Integer, Object, E> m_pool;
         private final int m_key;
 
-        Task(final GenericKeyedObjectPool<Integer, Object> pool, final int count) {
+        Task(final GenericKeyedObjectPool<Integer, Object, E> pool, final int count) {
             m_pool = pool;
             m_key = count % 20;
         }
@@ -99,10 +99,10 @@ public final class ObjectPoolIssue326 {
         }
     }
 
-    private List<Task> createTasks(final GenericKeyedObjectPool<Integer, Object> pool) {
-        final List<Task> tasks = new ArrayList<>();
+    private <E extends Exception> List<Task<E>> createTasks(final GenericKeyedObjectPool<Integer, Object, E> pool) {
+        final List<Task<E>> tasks = new ArrayList<>();
         for (int i = 0; i < 250; i++) {
-            tasks.add(new Task(pool, i));
+            tasks.add(new Task<>(pool, i));
         }
         return tasks;
     }
@@ -130,7 +130,7 @@ public final class ObjectPoolIssue326 {
         poolConfig.setJmxNameBase(null);
         poolConfig.setJmxNamePrefix(null);
 
-        final GenericKeyedObjectPool<Integer, Object> pool = new GenericKeyedObjectPool<>(new ObjectFactory(), poolConfig);
+        final GenericKeyedObjectPool<Integer, Object, Exception> pool = new GenericKeyedObjectPool<>(new ObjectFactory(), poolConfig);
 
         // number of threads to reproduce is finicky. this count seems to be best for my
         // 4 core box.
@@ -144,7 +144,7 @@ public final class ObjectPoolIssue326 {
                 if (testIter % 1000 == 0) {
                     System.out.println(testIter);
                 }
-                final List<Task> tasks = createTasks(pool);
+                final List<Task<Exception>> tasks = createTasks(pool);
                 final List<Future<Object>> futures = service.invokeAll(tasks);
                 for (final Future<Object> future : futures) {
                     future.get();

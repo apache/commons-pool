@@ -31,8 +31,7 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
  * (per key) exceeds the configured max.
  *
  */
-public class WaiterFactory<K> implements PooledObjectFactory<Waiter>,
-KeyedPooledObjectFactory<K,Waiter> {
+public class WaiterFactory<K> implements PooledObjectFactory<Waiter, IllegalStateException>, KeyedPooledObjectFactory<K, Waiter> {
 
     /** Latency of activateObject */
     private final long activateLatency;
@@ -97,18 +96,18 @@ KeyedPooledObjectFactory<K,Waiter> {
     }
 
     @Override
-    public void activateObject(final K key, final PooledObject<Waiter> obj) throws Exception {
+    public void activateObject(final K key, final PooledObject<Waiter> obj) {
         activateObject(obj);
     }
 
     @Override
-    public void activateObject(final PooledObject<Waiter> obj) throws Exception {
+    public void activateObject(final PooledObject<Waiter> obj) {
         doWait(activateLatency);
         obj.getObject().setActive(true);
     }
 
     @Override
-    public void destroyObject(final K key,final PooledObject<Waiter> obj) throws Exception {
+    public void destroyObject(final K key,final PooledObject<Waiter> obj) {
         destroyObject(obj);
         synchronized (this) {
             final Integer count = activeCounts.get(key);
@@ -117,7 +116,7 @@ KeyedPooledObjectFactory<K,Waiter> {
     }
 
     @Override
-    public void destroyObject(final PooledObject<Waiter> obj) throws Exception {
+    public void destroyObject(final PooledObject<Waiter> obj) {
         doWait(destroyLatency);
         obj.getObject().setValid(false);
         obj.getObject().setActive(false);
@@ -142,7 +141,7 @@ KeyedPooledObjectFactory<K,Waiter> {
     }
 
     @Override
-    public PooledObject<Waiter> makeObject() throws Exception {
+    public PooledObject<Waiter> makeObject() {
         // Increment and test *before* make
         synchronized (this) {
             if (activeCount >= maxActive) {
@@ -156,7 +155,7 @@ KeyedPooledObjectFactory<K,Waiter> {
     }
 
     @Override
-    public PooledObject<Waiter> makeObject(final K key) throws Exception {
+    public PooledObject<Waiter> makeObject(final K key) {
         synchronized (this) {
             Integer count = activeCounts.get(key);
             if (count == null) {
@@ -178,12 +177,12 @@ KeyedPooledObjectFactory<K,Waiter> {
     // KeyedPoolableObjectFactory methods
 
     @Override
-    public void passivateObject(final K key, final PooledObject<Waiter> obj) throws Exception {
+    public void passivateObject(final K key, final PooledObject<Waiter> obj) {
         passivateObject(obj);
     }
 
     @Override
-    public void passivateObject(final PooledObject<Waiter> obj) throws Exception {
+    public void passivateObject(final PooledObject<Waiter> obj) {
         obj.getObject().setActive(false);
         doWait(passivateLatency);
         if (Math.random() < passivateInvalidationProbability) {

@@ -30,7 +30,7 @@ import org.apache.commons.pool2.Waiter;
  *
  */
 public class AtomicIntegerFactory
-    extends BasePooledObjectFactory<AtomicInteger> {
+    extends BasePooledObjectFactory<AtomicInteger, RuntimeException> {
 
     private long activateLatency;
     private long passivateLatency;

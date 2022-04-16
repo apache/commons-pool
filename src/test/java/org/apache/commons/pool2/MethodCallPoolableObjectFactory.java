@@ -27,7 +27,7 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
  *
  * @see MethodCall
  */
-public class MethodCallPoolableObjectFactory implements PooledObjectFactory<Object> {
+public class MethodCallPoolableObjectFactory implements PooledObjectFactory<Object, PrivateException> {
     private final List<MethodCall> methodCalls = new ArrayList<>();
     private int count;
     private boolean valid = true;
@@ -38,7 +38,7 @@ public class MethodCallPoolableObjectFactory implements PooledObjectFactory<Obje
     private boolean destroyObjectFail;
 
     @Override
-    public void activateObject(final PooledObject<Object> obj) throws Exception {
+    public void activateObject(final PooledObject<Object> obj) throws PrivateException {
         methodCalls.add(new MethodCall("activateObject", obj.getObject()));
         if (activateObjectFail) {
             throw new PrivateException("activateObject");
@@ -46,7 +46,7 @@ public class MethodCallPoolableObjectFactory implements PooledObjectFactory<Obje
     }
 
     @Override
-    public void destroyObject(final PooledObject<Object> obj) throws Exception {
+    public void destroyObject(final PooledObject<Object> obj) throws PrivateException {
         methodCalls.add(new MethodCall("destroyObject", obj.getObject()));
         if (destroyObjectFail) {
             throw new PrivateException("destroyObject");
@@ -86,7 +86,7 @@ public class MethodCallPoolableObjectFactory implements PooledObjectFactory<Obje
     }
 
     @Override
-    public PooledObject<Object> makeObject() throws Exception {
+    public PooledObject<Object> makeObject() throws PrivateException {
         final MethodCall call = new MethodCall("makeObject");
         methodCalls.add(call);
         final int originalCount = this.count++;
@@ -100,7 +100,7 @@ public class MethodCallPoolableObjectFactory implements PooledObjectFactory<Obje
     }
 
     @Override
-    public void passivateObject(final PooledObject<Object> obj) throws Exception {
+    public void passivateObject(final PooledObject<Object> obj) throws PrivateException {
         methodCalls.add(new MethodCall("passivateObject", obj.getObject()));
         if (passivateObjectFail) {
             throw new PrivateException("passivateObject");

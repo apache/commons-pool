@@ -158,7 +158,7 @@ public class TestAbandonedObjectPool {
         }
     }
 
-    private static class SimpleFactory implements PooledObjectFactory<PooledTestObject> {
+    private static class SimpleFactory implements PooledObjectFactory<PooledTestObject, InterruptedException> {
 
         private final long destroyLatency;
         private final long validateLatency;
@@ -179,12 +179,12 @@ public class TestAbandonedObjectPool {
         }
 
         @Override
-        public void destroyObject(final PooledObject<PooledTestObject> obj) throws Exception {
+        public void destroyObject(final PooledObject<PooledTestObject> obj) throws InterruptedException {
             destroyObject(obj, DestroyMode.NORMAL);
         }
 
         @Override
-        public void destroyObject(final PooledObject<PooledTestObject> obj, final DestroyMode destroyMode) throws Exception {
+        public void destroyObject(final PooledObject<PooledTestObject> obj, final DestroyMode destroyMode) throws InterruptedException {
             obj.getObject().setActive(false);
             // while destroying instances, yield control to other threads
             // helps simulate threading errors
@@ -212,7 +212,7 @@ public class TestAbandonedObjectPool {
         }
     }
 
-    private GenericObjectPool<PooledTestObject> pool;
+    private GenericObjectPool<PooledTestObject, InterruptedException> pool;
 
     private AbandonedConfig abandonedConfig;
 

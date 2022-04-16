@@ -55,12 +55,13 @@ import org.apache.commons.pool2.SwallowedExceptionListener;
  * reduce code duplication between the two pool implementations.
  *
  * @param <T> Type of element pooled in this pool.
+ * @param <E> Type of exception thrown in this pool.
  *
  * This class is intended to be thread-safe.
  *
  * @since 2.0
  */
-public abstract class BaseGenericObjectPool<T> extends BaseObject {
+public abstract class BaseGenericObjectPool<T, E extends Exception> extends BaseObject {
 
     /**
      * The idle object eviction iterator. Holds a reference to the idle objects.
@@ -128,7 +129,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
             scheduledFuture.cancel(false);
         }
 
-        BaseGenericObjectPool<T> owner() {
+        BaseGenericObjectPool<T, E> owner() {
             return BaseGenericObjectPool.this;
         }
 
@@ -441,6 +442,18 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
         if (isClosed()) {
             throw new IllegalStateException("Pool not open");
         }
+    }
+
+    /**
+     * Casts the given throwable to E.
+     *
+     * @param throwable the throwable.
+     * @return the input.
+     * @since 2.12.0
+     */
+    @SuppressWarnings("unchecked")
+    protected E cast(final Throwable throwable) {
+        return (E) throwable;
     }
 
     /**

@@ -37,13 +37,15 @@ import org.apache.commons.pool2.PooledObjectFactory;
  *
  * @param <T>
  *            Type of element pooled in this pool.
+ * @param <E>
+ *            Type of exception thrown by this pool.
  *
  * @since 2.0
  */
-public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
+public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectPool<T, E> {
 
     /** Factory to source pooled objects */
-    private final PooledObjectFactory<T> factory;
+    private final PooledObjectFactory<T, E> factory;
 
     /**
      * Queue of broken references that might be able to be removed from
@@ -75,7 +77,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
      *
      * @param factory object factory to use.
      */
-    public SoftReferenceObjectPool(final PooledObjectFactory<T> factory) {
+    public SoftReferenceObjectPool(final PooledObjectFactory<T, E> factory) {
         this.factory = factory;
     }
 
@@ -98,12 +100,12 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
      *
      * @throws IllegalStateException
      *             if invoked on a {@link #close() closed} pool
-     * @throws Exception
+     * @throws E
      *             when the {@link #getFactory() factory} has a problem creating
      *             or passivating an object.
      */
     @Override
-    public synchronized void addObject() throws Exception {
+    public synchronized void addObject() throws E {
         assertOpen();
         if (factory == null) {
             throw new IllegalStateException(
@@ -169,13 +171,13 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
      *             if a valid object cannot be provided
      * @throws IllegalStateException
      *             if invoked on a {@link #close() closed} pool
-     * @throws Exception
+     * @throws E
      *             if an exception occurs creating a new instance
      * @return a valid, activated object instance
      */
     @SuppressWarnings("null") // ref cannot be null
     @Override
-    public synchronized T borrowObject() throws Exception {
+    public synchronized T borrowObject() throws E {
         assertOpen();
         T obj = null;
         boolean newlyCreated = false;
@@ -270,7 +272,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
      *
      * @throws Exception If an error occurs while trying to destroy the object
      */
-    private void destroy(final PooledSoftReference<T> toDestroy) throws Exception {
+    private void destroy(final PooledSoftReference<T> toDestroy) throws E {
         toDestroy.invalidate();
         idleReferences.remove(toDestroy);
         allReferences.remove(toDestroy);
@@ -300,7 +302,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
      *
      * @return the factory
      */
-    public synchronized PooledObjectFactory<T> getFactory() {
+    public synchronized PooledObjectFactory<T, E> getFactory() {
         return factory;
     }
 
@@ -330,7 +332,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
      * {@inheritDoc}
      */
     @Override
-    public synchronized void invalidateObject(final T obj) throws Exception {
+    public synchronized void invalidateObject(final T obj) throws E {
         final PooledSoftReference<T> ref = findReference(obj);
         if (ref == null) {
             throw new IllegalStateException(
@@ -392,7 +394,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
      *            if obj is not currently part of this pool
      */
     @Override
-    public synchronized void returnObject(final T obj) throws Exception {
+    public synchronized void returnObject(final T obj) throws E {
         boolean success = !isClosed();
         final PooledSoftReference<T> ref = findReference(obj);
         if (ref == null) {

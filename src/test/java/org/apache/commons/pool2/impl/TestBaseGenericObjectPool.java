@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
  */
 public class TestBaseGenericObjectPool {
 
-    BaseGenericObjectPool<String> pool;
+    BaseGenericObjectPool<String, Exception> pool;
     SimpleFactory factory;
 
     @BeforeEach
@@ -83,7 +83,7 @@ public class TestBaseGenericObjectPool {
     public void testEvictionTimerMultiplePools() throws InterruptedException {
         final AtomicIntegerFactory factory = new AtomicIntegerFactory();
         factory.setValidateLatency(50);
-        try (final GenericObjectPool<AtomicInteger> evictingPool = new GenericObjectPool<>(factory)) {
+        try (final GenericObjectPool<AtomicInteger, RuntimeException> evictingPool = new GenericObjectPool<>(factory)) {
             evictingPool.setTimeBetweenEvictionRuns(Duration.ofMillis(100));
             evictingPool.setNumTestsPerEvictionRun(5);
             evictingPool.setTestWhileIdle(true);
@@ -97,7 +97,7 @@ public class TestBaseGenericObjectPool {
             }
 
             for (int i = 0; i < 1000; i++) {
-                try (final GenericObjectPool<AtomicInteger> nonEvictingPool = new GenericObjectPool<>(factory)) {
+                try (final GenericObjectPool<AtomicInteger, RuntimeException> nonEvictingPool = new GenericObjectPool<>(factory)) {
                     // empty
                 }
             }

@@ -65,24 +65,25 @@ package org.apache.commons.pool2;
  * </p>
  *
  * @param <T> Type of element managed in this factory.
+ * @param <E> Type of exception thrown in this factory.
  *
  * @see ObjectPool
  *
  * @since 2.0
  */
-public interface PooledObjectFactory<T> {
+public interface PooledObjectFactory<T, E extends Exception> {
 
   /**
    * Reinitializes an instance to be returned by the pool.
    *
    * @param p a {@code PooledObject} wrapping the instance to be activated
    *
-   * @throws Exception if there is a problem activating {@code obj},
+   * @throws E if there is a problem activating {@code obj},
    *    this exception may be swallowed by the pool.
    *
    * @see #destroyObject
    */
-  void activateObject(PooledObject<T> p) throws Exception;
+  void activateObject(PooledObject<T> p) throws E;
 
   /**
    * Destroys an instance no longer needed by the pool, using the default (NORMAL)
@@ -99,13 +100,13 @@ public interface PooledObjectFactory<T> {
    *
    * @param p a {@code PooledObject} wrapping the instance to be destroyed
    *
-   * @throws Exception should be avoided as it may be swallowed by
+   * @throws E should be avoided as it may be swallowed by
    *    the pool implementation.
    *
    * @see #validateObject
    * @see ObjectPool#invalidateObject
    */
-  void destroyObject(PooledObject<T> p) throws Exception;
+  void destroyObject(PooledObject<T> p) throws E;
 
   /**
    * Destroys an instance no longer needed by the pool, using the provided
@@ -114,7 +115,7 @@ public interface PooledObjectFactory<T> {
    * @param p a {@code PooledObject} wrapping the instance to be destroyed
    * @param destroyMode DestroyMode providing context to the factory
    *
-   * @throws Exception should be avoided as it may be swallowed by
+   * @throws E should be avoided as it may be swallowed by
    *    the pool implementation.
    *
    * @see #validateObject
@@ -123,7 +124,7 @@ public interface PooledObjectFactory<T> {
    * @see DestroyMode
    * @since 2.9.0
    */
-  default void destroyObject(final PooledObject<T> p, final DestroyMode destroyMode) throws Exception {
+  default void destroyObject(final PooledObject<T> p, final DestroyMode destroyMode) throws E {
       destroyObject(p);
   }
 
@@ -133,22 +134,22 @@ public interface PooledObjectFactory<T> {
    *
    * @return a {@code PooledObject} wrapping an instance that can be served by the pool
    *
-   * @throws Exception if there is a problem creating a new instance,
+   * @throws E if there is a problem creating a new instance,
    *    this will be propagated to the code requesting an object.
    */
-  PooledObject<T> makeObject() throws Exception;
+  PooledObject<T> makeObject() throws E;
 
   /**
    * Uninitializes an instance to be returned to the idle object pool.
    *
    * @param p a {@code PooledObject} wrapping the instance to be passivated
    *
-   * @throws Exception if there is a problem passivating {@code obj},
+   * @throws E if there is a problem passivating {@code obj},
    *    this exception may be swallowed by the pool.
    *
    * @see #destroyObject
    */
-  void passivateObject(PooledObject<T> p) throws Exception;
+  void passivateObject(PooledObject<T> p) throws E;
 
   /**
    * Ensures that the instance is safe to be returned by the pool.
