@@ -211,6 +211,9 @@ public class TestAbandonedKeyedObjectPool {
             obj = pool.borrowObject(0);
         }
         Thread.sleep(1000);          // abandon checked out instances and let evictor start
+        if (!pool.getKeys().contains(0)) {
+            Thread.sleep(1000); // Wait a little more.
+        }
         pool.invalidateObject(0, obj);  // Should not trigger another destroy / decrement
         Thread.sleep(2000);          // give evictor time to finish destroys
         assertEquals(0, pool.getNumActive());
