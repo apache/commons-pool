@@ -173,7 +173,7 @@ public abstract class TestKeyedObjectPool {
 
     protected static final String KEY = "key";
 
-    private KeyedObjectPool<Object,Object> pool;
+    private KeyedObjectPool<Object, Object, RuntimeException> pool;
 
     // Deliberate choice to create a new object in case future unit tests check
     // for a specific object.
@@ -211,7 +211,7 @@ public abstract class TestKeyedObjectPool {
      *
      * @return the newly created keyed object pool
      */
-    protected abstract KeyedObjectPool<Object, Object> makeEmptyPool(int minCapacity);
+    protected abstract <E extends Exception> KeyedObjectPool<Object, Object, E> makeEmptyPool(int minCapacity);
 
     /**
      * Creates an {@code KeyedObjectPool} with the specified factory.
@@ -223,11 +223,12 @@ public abstract class TestKeyedObjectPool {
      * @param factory Factory to use to associate with the pool
      * @return The newly created empty pool
      */
-    protected abstract <E extends Exception> KeyedObjectPool<Object, Object> makeEmptyPool(KeyedPooledObjectFactory<Object, Object, E> factory);
+    protected abstract <E extends Exception> KeyedObjectPool<Object, Object, E> makeEmptyPool(KeyedPooledObjectFactory<Object, Object, E> factory);
 
     protected abstract Object makeKey(int n);
 
-    private void reset(final KeyedObjectPool<Object,Object> pool, final FailingKeyedPooledObjectFactory factory, final List<MethodCall> expectedMethods) throws Exception {
+    private <E extends Exception> void reset(final KeyedObjectPool<Object, Object, E> pool, final FailingKeyedPooledObjectFactory factory,
+        final List<MethodCall> expectedMethods) throws E {
         pool.clear();
         clear(factory, expectedMethods);
         factory.reset();
@@ -469,8 +470,8 @@ public abstract class TestKeyedObjectPool {
     }
 
     @Test
-    public void testClosedPoolBehavior() throws Exception {
-        final KeyedObjectPool<Object,Object> pool;
+    public void testClosedPoolBehavior() {
+        final KeyedObjectPool<Object, Object, RuntimeException> pool;
         try {
             pool = makeEmptyPool(new TestFactory());
         } catch(final UnsupportedOperationException uoe) {
@@ -503,9 +504,9 @@ public abstract class TestKeyedObjectPool {
     }
 
     @Test
-    public void testKPOFAddObjectUsage() throws Exception {
+    public void testKPOFAddObjectUsage() {
         final FailingKeyedPooledObjectFactory factory = new FailingKeyedPooledObjectFactory();
-        final KeyedObjectPool<Object,Object> pool;
+        final KeyedObjectPool<Object, Object, PrivateException> pool;
         try {
             pool = makeEmptyPool(factory);
         } catch(final UnsupportedOperationException uoe) {
@@ -541,9 +542,9 @@ public abstract class TestKeyedObjectPool {
     }
 
     @Test
-    public void testKPOFBorrowObjectUsages() throws Exception {
+    public void testKPOFBorrowObjectUsages() {
         final FailingKeyedPooledObjectFactory factory = new FailingKeyedPooledObjectFactory();
-        final KeyedObjectPool<Object,Object> pool;
+        final KeyedObjectPool<Object, Object, PrivateException> pool;
         try {
             pool = makeEmptyPool(factory);
         } catch(final UnsupportedOperationException uoe) {
@@ -553,7 +554,7 @@ public abstract class TestKeyedObjectPool {
         Object obj;
 
         if (pool instanceof GenericKeyedObjectPool) {
-            ((GenericKeyedObjectPool<Object, Object, Exception>) pool).setTestOnBorrow(true);
+            ((GenericKeyedObjectPool<Object, Object, PrivateException>) pool).setTestOnBorrow(true);
         }
 
         /// Test correct behavior code paths
@@ -619,9 +620,9 @@ public abstract class TestKeyedObjectPool {
     }
 
     @Test
-    public void testKPOFClearUsages() throws Exception {
+    public void testKPOFClearUsages() {
         final FailingKeyedPooledObjectFactory factory = new FailingKeyedPooledObjectFactory();
-        final KeyedObjectPool<Object,Object> pool;
+        final KeyedObjectPool<Object, Object, PrivateException> pool;
         try {
             pool = makeEmptyPool(factory);
         } catch(final UnsupportedOperationException uoe) {
@@ -643,9 +644,9 @@ public abstract class TestKeyedObjectPool {
 
 
     @Test
-    public void testKPOFCloseUsages() throws Exception {
+    public void testKPOFCloseUsages() {
         final FailingKeyedPooledObjectFactory factory = new FailingKeyedPooledObjectFactory();
-        KeyedObjectPool<Object, Object> pool;
+        KeyedObjectPool<Object, Object, PrivateException> pool;
         try {
             pool = makeEmptyPool(factory);
         } catch (final UnsupportedOperationException uoe) {
@@ -658,7 +659,7 @@ public abstract class TestKeyedObjectPool {
         pool.close();
 
         //// Test exception handling close should swallow failures
-        try (final KeyedObjectPool<Object, Object> pool2 = makeEmptyPool(factory)) {
+        try (final KeyedObjectPool<Object, Object, PrivateException> pool2 = makeEmptyPool(factory)) {
             reset(pool2, factory, expectedMethods);
             factory.setDestroyObjectFail(true);
             pool2.addObjects(KEY, 5);
@@ -668,7 +669,7 @@ public abstract class TestKeyedObjectPool {
     @Test
     public void testKPOFInvalidateObjectUsages() throws Exception {
         final FailingKeyedPooledObjectFactory factory = new FailingKeyedPooledObjectFactory();
-        final KeyedObjectPool<Object,Object> pool;
+        final KeyedObjectPool<Object, Object, PrivateException> pool;
         try {
             pool = makeEmptyPool(factory);
         } catch(final UnsupportedOperationException uoe) {
@@ -700,9 +701,9 @@ public abstract class TestKeyedObjectPool {
     }
 
     @Test
-    public void testKPOFReturnObjectUsages() throws Exception {
+    public void testKPOFReturnObjectUsages() {
         final FailingKeyedPooledObjectFactory factory = new FailingKeyedPooledObjectFactory();
-        final KeyedObjectPool<Object,Object> pool;
+        final KeyedObjectPool<Object, Object, PrivateException> pool;
         try {
             pool = makeEmptyPool(factory);
         } catch(final UnsupportedOperationException uoe) {
@@ -759,11 +760,10 @@ public abstract class TestKeyedObjectPool {
 
     @Test
     public void testToString() {
-        final FailingKeyedPooledObjectFactory factory =
-                new FailingKeyedPooledObjectFactory();
-        try (final KeyedObjectPool<Object,Object> pool = makeEmptyPool(factory)) {
+        final FailingKeyedPooledObjectFactory factory = new FailingKeyedPooledObjectFactory();
+        try (final KeyedObjectPool<Object, Object, PrivateException> pool = makeEmptyPool(factory)) {
             pool.toString();
-        } catch(final UnsupportedOperationException uoe) {
+        } catch (final UnsupportedOperationException uoe) {
             return; // test not supported
         }
     }

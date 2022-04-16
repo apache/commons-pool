@@ -111,11 +111,13 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
      * Attempts to invalidate an object, swallowing IllegalStateException.
      */
     static class InvalidateThread implements Runnable {
+        
         private final String obj;
-        private final KeyedObjectPool<String, String> pool;
+        private final KeyedObjectPool<String, String, Exception> pool;
         private final String key;
         private boolean done;
-        public InvalidateThread(final KeyedObjectPool<String, String> pool, final String key, final String obj) {
+        
+        public InvalidateThread(final KeyedObjectPool<String, String, Exception> pool, final String key, final String obj) {
             this.obj = obj;
             this.pool = pool;
             this.key = key;
@@ -294,11 +296,11 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
      * Very simple test thread that just tries to borrow an object from
      * the provided pool with the specified key and returns it
      */
-    static class SimpleTestThread<T> implements Runnable {
-        private final KeyedObjectPool<String,T> pool;
+    static class SimpleTestThread<T, E extends Exception> implements Runnable {
+        private final KeyedObjectPool<String, T, E> pool;
         private final String key;
 
-        public SimpleTestThread(final KeyedObjectPool<String,T> pool, final String key) {
+        public SimpleTestThread(final KeyedObjectPool<String, T, E> pool, final String key) {
             this.pool = pool;
             this.key = key;
         }
@@ -335,11 +337,11 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         }
     }
 
-    static class TestThread<T> implements Runnable {
+    static class TestThread<T, E extends Exception> implements Runnable {
         private final java.util.Random random = new java.util.Random();
 
         /** GKOP to hit */
-        private final KeyedObjectPool<String,T> pool;
+        private final KeyedObjectPool<String, T, E> pool;
         /** number of borrow/return iterations */
         private final int iter;
         /** delay before borrow */
@@ -357,19 +359,19 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         private volatile boolean failed;
         private volatile Exception exception;
 
-        public TestThread(final KeyedObjectPool<String,T> pool) {
+        public TestThread(final KeyedObjectPool<String, T, E> pool) {
             this(pool, 100, 50, 50, true, null, null);
         }
 
-        public TestThread(final KeyedObjectPool<String,T> pool, final int iter) {
+        public TestThread(final KeyedObjectPool<String, T, E> pool, final int iter) {
             this(pool, iter, 50, 50, true, null, null);
         }
 
-        public TestThread(final KeyedObjectPool<String,T> pool, final int iter, final int delay) {
+        public TestThread(final KeyedObjectPool<String, T, E> pool, final int iter, final int delay) {
             this(pool, iter, delay, delay, true, null, null);
         }
 
-        public TestThread(final KeyedObjectPool<String,T> pool, final int iter, final int startDelay,
+        public TestThread(final KeyedObjectPool<String, T, E> pool, final int iter, final int startDelay,
             final int holdTime, final boolean randomDelay, final T expectedObject, final String key) {
             this.pool = pool;
             this.iter = iter;
@@ -429,8 +431,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
      * Very simple test thread that just tries to borrow an object from
      * the provided pool with the specified key and returns it after a wait
      */
-    static class WaitingTestThread extends Thread {
-        private final KeyedObjectPool<String,String> pool;
+    static class WaitingTestThread<E extends Exception> extends Thread {
+        private final KeyedObjectPool<String, String, E> pool;
         private final String key;
         private final long pause;
         private Throwable thrown;
@@ -441,7 +443,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         private long endedMillis;
         private String objectId;
 
-        public WaitingTestThread(final KeyedObjectPool<String,String> pool, final String key, final long pause) {
+        public WaitingTestThread(final KeyedObjectPool<String, String, E> pool, final String key, final long pause) {
             this.pool = pool;
             this.key = key;
             this.pause = pause;
@@ -797,18 +799,18 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         return true;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    protected KeyedObjectPool<Object,Object> makeEmptyPool(final int minCapacity) {
+    protected <E extends Exception> KeyedObjectPool<Object, Object, E> makeEmptyPool(final int minCapacity) {
         final KeyedPooledObjectFactory<Object, Object, RuntimeException> perKeyFactory = new SimplePerKeyFactory();
         final GenericKeyedObjectPool<Object, Object, RuntimeException> perKeyPool = new GenericKeyedObjectPool<>(perKeyFactory);
         perKeyPool.setMaxTotalPerKey(minCapacity);
         perKeyPool.setMaxIdlePerKey(minCapacity);
-        return perKeyPool;
+        return (KeyedObjectPool<Object, Object, E>) perKeyPool;
     }
 
     @Override
-    protected <E extends Exception> KeyedObjectPool<Object, Object> makeEmptyPool(
-        final KeyedPooledObjectFactory<Object, Object, E> fac) {
+    protected <E extends Exception> KeyedObjectPool<Object, Object, E> makeEmptyPool(final KeyedPooledObjectFactory<Object, Object, E> fac) {
         return new GenericKeyedObjectPool<>(fac);
     }
 
@@ -829,14 +831,14 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
      * @param gkopPool      The keyed object pool to use
      */
     public <T, E extends Exception> void runTestThreads(final int numThreads, final int iterations, final int delay, final GenericKeyedObjectPool<String, T, E> gkopPool) {
-        final ArrayList<TestThread<T>> threads = new ArrayList<>();
+        final ArrayList<TestThread<T, E>> threads = new ArrayList<>();
         for(int i=0;i<numThreads;i++) {
-            final TestThread<T> testThread = new TestThread<>(gkopPool, iterations, delay);
+            final TestThread<T, E> testThread = new TestThread<>(gkopPool, iterations, delay);
             threads.add(testThread);
             final Thread t = new Thread(testThread);
             t.start();
         }
-        for (final TestThread<T> testThread : threads) {
+        for (final TestThread<T, E> testThread : threads) {
             while(!(testThread.complete())) {
                 Waiter.sleepQuietly(500L);
             }
@@ -1038,7 +1040,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             // Now set up a race - one thread wants a new instance, triggering clearOldest
             // Other goes after an element on death row
             // See if we end up with dead man walking
-            final SimpleTestThread<Waiter> t2 = new SimpleTestThread<>(waiterPool, "51");
+            final SimpleTestThread<Waiter, RuntimeException> t2 = new SimpleTestThread<>(waiterPool, "51");
             final Thread thread2 = new Thread(t2);
             thread2.start(); // Triggers clearOldest, killing all of the 0's and the 2 oldest 1's
             Thread.sleep(50); // Wait for clearOldest to kick off, but not long enough to reach the 1's
@@ -1230,7 +1232,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             // Launch nThreads threads all trying to invalidate the target
             for (int i = 0; i < nThreads; i++) {
                 threads[i] =
-                        new InvalidateThread(gkoPool,key, obj[targ.intValue()]);
+                        new InvalidateThread(gkoPool, key, obj[targ.intValue()]);
             }
             for (int i = 0; i < nThreads; i++) {
                 new Thread(threads[i]).start();
@@ -2050,8 +2052,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
         final int holdTime = 2000;
 
-        final TestThread<String> testA = new TestThread<>(gkoPool, 1, 0, holdTime, false, null, "a");
-        final TestThread<String> testB = new TestThread<>(gkoPool, 1, 0, holdTime, false, null, "b");
+        final TestThread<String, Exception> testA = new TestThread<>(gkoPool, 1, 0, holdTime, false, null, "a");
+        final TestThread<String, Exception> testB = new TestThread<>(gkoPool, 1, 0, holdTime, false, null, "b");
 
         final Thread threadA = new Thread(testA);
         final Thread threadB = new Thread(testB);
@@ -2389,8 +2391,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         gkoPool.returnObject("0", obj);
 
         // Test return object with a take waiter
-        final TestThread<String> testA = new TestThread<>(gkoPool, 1, 0, 500, false, null, "0");
-        final TestThread<String> testB = new TestThread<>(gkoPool, 1, 0, 0, false, null, "1");
+        final TestThread<String, Exception> testA = new TestThread<>(gkoPool, 1, 0, 500, false, null, "0");
+        final TestThread<String, Exception> testB = new TestThread<>(gkoPool, 1, 0, 0, false, null, "1");
         final Thread threadA = new Thread(testA);
         final Thread threadB = new Thread(testB);
         threadA.start();

@@ -908,7 +908,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
 
 
     @Override
-    void ensureMinIdle() throws Exception {
+    void ensureMinIdle() throws E {
         final int minIdlePerKeySave = getMinIdlePerKey();
         if (minIdlePerKeySave < 1) {
             return;
@@ -925,9 +925,9 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      *
      * @param key The key to check for idle objects
      *
-     * @throws Exception If a new object is required and cannot be created
+     * @throws E If a new object is required and cannot be created
      */
-    private void ensureMinIdle(final K key) throws Exception {
+    private void ensureMinIdle(final K key) throws E {
         // Calculate current pool objects
         ObjectDeque<T> objectDeque = poolMap.get(key);
 
@@ -961,7 +961,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * </p>
      */
     @Override
-    public void evict() throws Exception {
+    public void evict() throws E {
         assertOpen();
 
         if (getNumIdle() > 0) {
@@ -1382,9 +1382,9 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      *
      * @param key - The key to register for pool control.
      *
-     * @throws Exception If the associated factory throws an exception
+     * @throws E If the associated factory throws an exception
      */
-    public void preparePool(final K key) throws Exception {
+    public void preparePool(final K key) throws E {
         final int minIdlePerKeySave = getMinIdlePerKey();
         if (minIdlePerKeySave < 1) {
             return;

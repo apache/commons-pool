@@ -184,7 +184,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
      *
      * @param p The object to make idle
      *
-     * @throws Exception If the factory fails to passivate the object
+     * @throws E If the factory fails to passivate the object
      */
     private void addIdleObject(final PooledObject<T> p) throws E {
         if (p != null) {
@@ -414,10 +414,10 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
      *
      * @throws NoSuchElementException if an instance cannot be returned
      *
-     * @throws Exception if an object instance cannot be returned due to an
+     * @throws E if an object instance cannot be returned due to an
      *                   error
      */
-    public T borrowObject(final long borrowMaxWaitMillis) throws Exception {
+    public T borrowObject(final long borrowMaxWaitMillis) throws E {
         return borrowObject(Duration.ofMillis(borrowMaxWaitMillis));
     }
 
@@ -591,7 +591,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
      * @param toDestroy The wrapped pooled object to destroy
      * @param destroyMode DestroyMode context provided to the factory
      *
-     * @throws Exception If the factory fails to destroy the pooled object
+     * @throws E If the factory fails to destroy the pooled object
      *                   cleanly
      */
     private void destroy(final PooledObject<T> toDestroy, final DestroyMode destroyMode) throws E {
@@ -646,7 +646,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
     }
 
     @Override
-    void ensureMinIdle() throws Exception {
+    void ensureMinIdle() throws E {
         ensureIdle(getMinIdle(), true);
     }
 
@@ -658,7 +658,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
      * </p>
      */
     @Override
-    public void evict() throws Exception {
+    public void evict() throws E {
         assertOpen();
 
         if (!idleObjects.isEmpty()) {
@@ -962,10 +962,10 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
      * Tries to ensure that {@link #getMinIdle()} idle instances are available
      * in the pool.
      *
-     * @throws Exception If the associated factory throws an exception
+     * @throws E If the associated factory throws an exception
      * @since 2.4
      */
-    public void preparePool() throws Exception {
+    public void preparePool() throws E {
         if (getMinIdle() < 1) {
             return;
         }

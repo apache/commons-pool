@@ -486,9 +486,9 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     /**
      * Tries to ensure that the configured minimum number of idle instances are
      * available in the pool.
-     * @throws Exception if an error occurs creating idle instances
+     * @throws E if an error occurs creating idle instances
      */
-    abstract void ensureMinIdle() throws Exception;
+    abstract void ensureMinIdle() throws E;
 
     /**
      * Perform {@code numTests} idle object eviction tests, evicting
@@ -498,9 +498,9 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      * have been idle for more than {@code minEvicableIdleTimeMillis}
      * are removed.
      *
-     * @throws Exception when there is a problem evicting idle objects.
+     * @throws E when there is a problem evicting idle objects.
      */
-    public abstract void evict() throws Exception;
+    public abstract void evict() throws E;
 
     /**
      * Gets whether to block when the {@code borrowObject()} method is

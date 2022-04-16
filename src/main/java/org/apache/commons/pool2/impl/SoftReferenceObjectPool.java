@@ -270,7 +270,7 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
      *
      * @param toDestroy PooledSoftReference to destroy
      *
-     * @throws Exception If an error occurs while trying to destroy the object
+     * @throws E If an error occurs while trying to destroy the object
      */
     private void destroy(final PooledSoftReference<T> toDestroy) throws E {
         toDestroy.invalidate();

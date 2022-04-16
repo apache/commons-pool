@@ -40,8 +40,7 @@ import org.junit.jupiter.api.Test;
 
 public abstract class BaseTestProxiedKeyedObjectPool {
 
-    private static class TestKeyedObjectFactory extends
-            BaseKeyedPooledObjectFactory<String, TestObject, RuntimeException> {
+    private static class TestKeyedObjectFactory extends BaseKeyedPooledObjectFactory<String, TestObject, RuntimeException> {
 
         @Override
         public TestObject create(final String key) {
@@ -53,6 +52,7 @@ public abstract class BaseTestProxiedKeyedObjectPool {
             return new DefaultPooledObject<>(value);
         }
     }
+
     protected interface TestObject {
         String getData();
         void setData(String data);
@@ -80,7 +80,7 @@ public abstract class BaseTestProxiedKeyedObjectPool {
 
     private static final Duration ABANDONED_TIMEOUT_SECS = Duration.ofSeconds(3);
 
-    private KeyedObjectPool<String,TestObject> pool;
+    private KeyedObjectPool<String, TestObject, RuntimeException> pool;
 
     private StringWriter log;
 
@@ -106,9 +106,7 @@ public abstract class BaseTestProxiedKeyedObjectPool {
         final KeyedPooledObjectFactory<String, TestObject, RuntimeException> factory = new TestKeyedObjectFactory();
 
         @SuppressWarnings("resource")
-        final KeyedObjectPool<String, TestObject> innerPool =
-                new GenericKeyedObjectPool<>(
-                        factory, config, abandonedConfig);
+        final KeyedObjectPool<String, TestObject, RuntimeException> innerPool = new GenericKeyedObjectPool<>(factory, config, abandonedConfig);
 
         pool = new ProxiedKeyedObjectPool<>(innerPool, getproxySource());
     }
