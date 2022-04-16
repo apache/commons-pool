@@ -39,9 +39,9 @@ import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
  * negatively since you need to run it for a while.
  */
 public final class ObjectPoolIssue326 {
-    private class ObjectFactory extends BaseKeyedPooledObjectFactory<Integer, Object> {
+    private class ObjectFactory extends BaseKeyedPooledObjectFactory<Integer, Object, RuntimeException> {
         @Override
-        public Object create(final Integer s) throws Exception {
+        public Object create(final Integer s) {
             return new TestObject();
         }
 
@@ -130,7 +130,7 @@ public final class ObjectPoolIssue326 {
         poolConfig.setJmxNameBase(null);
         poolConfig.setJmxNamePrefix(null);
 
-        final GenericKeyedObjectPool<Integer, Object, Exception> pool = new GenericKeyedObjectPool<>(new ObjectFactory(), poolConfig);
+        final GenericKeyedObjectPool<Integer, Object, RuntimeException> pool = new GenericKeyedObjectPool<>(new ObjectFactory(), poolConfig);
 
         // number of threads to reproduce is finicky. this count seems to be best for my
         // 4 core box.
@@ -144,7 +144,7 @@ public final class ObjectPoolIssue326 {
                 if (testIter % 1000 == 0) {
                     System.out.println(testIter);
                 }
-                final List<Task<Exception>> tasks = createTasks(pool);
+                final List<Task<RuntimeException>> tasks = createTasks(pool);
                 final List<Future<Object>> futures = service.invokeAll(tasks);
                 for (final Future<Object> future : futures) {
                     future.get();

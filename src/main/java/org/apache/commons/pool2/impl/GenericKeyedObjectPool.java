@@ -204,7 +204,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
     private volatile int maxTotalPerKey =
             GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL_PER_KEY;
 
-    private final KeyedPooledObjectFactory<K, T> factory;
+    private final KeyedPooledObjectFactory<K, T, E> factory;
 
     private final boolean fairness;
 
@@ -244,7 +244,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * {@link GenericKeyedObjectPoolConfig}.
      * @param factory the factory to be used to create entries
      */
-    public GenericKeyedObjectPool(final KeyedPooledObjectFactory<K, T> factory) {
+    public GenericKeyedObjectPool(final KeyedPooledObjectFactory<K, T, E> factory) {
         this(factory, new GenericKeyedObjectPoolConfig<>());
     }
 
@@ -258,7 +258,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      *                  the configuration object will not be reflected in the
      *                  pool.
      */
-    public GenericKeyedObjectPool(final KeyedPooledObjectFactory<K, T> factory,
+    public GenericKeyedObjectPool(final KeyedPooledObjectFactory<K, T, E> factory,
             final GenericKeyedObjectPoolConfig<T> config) {
 
         super(config, ONAME_BASE, config.getJmxNamePrefix());
@@ -287,7 +287,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      *                         and removal.  The configuration is used by value.
      * @since 2.10.0
      */
-    public GenericKeyedObjectPool(final KeyedPooledObjectFactory<K, T> factory,
+    public GenericKeyedObjectPool(final KeyedPooledObjectFactory<K, T, E> factory,
             final GenericKeyedObjectPoolConfig<T> config, final AbandonedConfig abandonedConfig) {
         this(factory, config);
         setAbandonedConfig(abandonedConfig);
@@ -1103,7 +1103,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      *
      * @return the factory
      */
-    public KeyedPooledObjectFactory<K, T> getFactory() {
+    public KeyedPooledObjectFactory<K, T, E> getFactory() {
         return factory;
     }
 

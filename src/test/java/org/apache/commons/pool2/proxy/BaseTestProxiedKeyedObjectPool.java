@@ -41,12 +41,13 @@ import org.junit.jupiter.api.Test;
 public abstract class BaseTestProxiedKeyedObjectPool {
 
     private static class TestKeyedObjectFactory extends
-            BaseKeyedPooledObjectFactory<String,TestObject> {
+            BaseKeyedPooledObjectFactory<String, TestObject, RuntimeException> {
 
         @Override
-        public TestObject create(final String key) throws Exception {
+        public TestObject create(final String key) {
             return new TestObjectImpl();
         }
+
         @Override
         public PooledObject<TestObject> wrap(final TestObject value) {
             return new DefaultPooledObject<>(value);
@@ -102,8 +103,7 @@ public abstract class BaseTestProxiedKeyedObjectPool {
         final GenericKeyedObjectPoolConfig<TestObject> config = new GenericKeyedObjectPoolConfig<>();
         config.setMaxTotal(3);
 
-        final KeyedPooledObjectFactory<String, TestObject> factory =
-                new TestKeyedObjectFactory();
+        final KeyedPooledObjectFactory<String, TestObject, RuntimeException> factory = new TestKeyedObjectFactory();
 
         @SuppressWarnings("resource")
         final KeyedObjectPool<String, TestObject> innerPool =

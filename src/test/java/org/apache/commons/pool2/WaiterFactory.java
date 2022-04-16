@@ -29,9 +29,10 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
  * If the factory's maxActive / maxActivePerKey are set to match those of the
  * pool, makeObject will throw IllegalStateException if the number of makes - destroys
  * (per key) exceeds the configured max.
- *
+ * 
+ * @param <K> The type of keys managed by this factory.
  */
-public class WaiterFactory<K> implements PooledObjectFactory<Waiter, IllegalStateException>, KeyedPooledObjectFactory<K, Waiter> {
+public class WaiterFactory<K> implements PooledObjectFactory<Waiter, IllegalStateException>, KeyedPooledObjectFactory<K, Waiter, RuntimeException> {
 
     /** Latency of activateObject */
     private final long activateLatency;

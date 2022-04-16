@@ -78,7 +78,7 @@ public class TestAbandonedKeyedObjectPool {
         }
     }
 
-    private static class SimpleFactory implements KeyedPooledObjectFactory<Integer,PooledTestObject> {
+    private static class SimpleFactory implements KeyedPooledObjectFactory<Integer, PooledTestObject, InterruptedException> {
 
         private final long destroyLatency;
         private final long validateLatency;
@@ -99,12 +99,12 @@ public class TestAbandonedKeyedObjectPool {
         }
 
         @Override
-        public void destroyObject(final Integer key, final PooledObject<PooledTestObject> obj) throws Exception {
+        public void destroyObject(final Integer key, final PooledObject<PooledTestObject> obj) throws InterruptedException {
             destroyObject(key, obj, DestroyMode.NORMAL);
         }
 
         @Override
-        public void destroyObject(final Integer key, final PooledObject<PooledTestObject> obj, final DestroyMode destroyMode) throws Exception {
+        public void destroyObject(final Integer key, final PooledObject<PooledTestObject> obj, final DestroyMode destroyMode) throws InterruptedException {
             obj.getObject().setActive(false);
             // while destroying instances, yield control to other threads
             // helps simulate threading errors
@@ -132,7 +132,7 @@ public class TestAbandonedKeyedObjectPool {
         }
     }
 
-    private GenericKeyedObjectPool<Integer, PooledTestObject, Exception> pool;
+    private GenericKeyedObjectPool<Integer, PooledTestObject, InterruptedException> pool;
 
     private AbandonedConfig abandonedConfig;
 

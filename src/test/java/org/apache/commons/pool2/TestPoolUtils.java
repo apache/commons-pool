@@ -119,7 +119,7 @@ public class TestPoolUtils {
                 "invalidateObject", "returnObject", "toString");
     }
 
-    private static <K, V> List<String> invokeEveryMethod(final KeyedPooledObjectFactory<K, V> kpof) throws Exception {
+    private static <K, V> List<String> invokeEveryMethod(final KeyedPooledObjectFactory<K, V, RuntimeException> kpof) throws Exception {
         kpof.activateObject(null, null);
         kpof.destroyObject(null, null);
         kpof.makeObject(null);
@@ -176,7 +176,7 @@ public class TestPoolUtils {
 
         // Test that the minIdle check doesn't add too many idle objects
         @SuppressWarnings("unchecked")
-        final KeyedPooledObjectFactory<Object, Object> kpof = createProxy(KeyedPooledObjectFactory.class, calledMethods);
+        final KeyedPooledObjectFactory<Object, Object, RuntimeException> kpof = createProxy(KeyedPooledObjectFactory.class, calledMethods);
         try (final KeyedObjectPool<Object, Object> kop = new GenericKeyedObjectPool<>(kpof)) {
             PoolUtils.checkMinIdle(kop, key, 2, 100);
             Thread.sleep(400);
@@ -712,14 +712,15 @@ public class TestPoolUtils {
 
     @Test
     public void testSynchronizedPoolableFactoryKeyedPoolableObjectFactory() throws Exception {
-        assertThrows(IllegalArgumentException.class, () -> PoolUtils.synchronizedKeyedPooledFactory((KeyedPooledObjectFactory<Object, Object>) null),
-                "PoolUtils.synchronizedPoolableFactory(KeyedPoolableObjectFactory) must not allow a null factory.");
+        assertThrows(IllegalArgumentException.class,
+            () -> PoolUtils.synchronizedKeyedPooledFactory((KeyedPooledObjectFactory<Object, Object, RuntimeException>) null),
+            "PoolUtils.synchronizedPoolableFactory(KeyedPoolableObjectFactory) must not allow a null factory.");
 
         final List<String> calledMethods = new ArrayList<>();
         @SuppressWarnings("unchecked")
-        final KeyedPooledObjectFactory<Object, Object> kpof = createProxy(KeyedPooledObjectFactory.class, calledMethods);
+        final KeyedPooledObjectFactory<Object, Object, RuntimeException> kpof = createProxy(KeyedPooledObjectFactory.class, calledMethods);
 
-        final KeyedPooledObjectFactory<Object, Object> skpof = PoolUtils.synchronizedKeyedPooledFactory(kpof);
+        final KeyedPooledObjectFactory<Object, Object, RuntimeException> skpof = PoolUtils.synchronizedKeyedPooledFactory(kpof);
         final List<String> expectedMethods = invokeEveryMethod(skpof);
         assertEquals(expectedMethods, calledMethods);
 

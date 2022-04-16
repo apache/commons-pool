@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  */
 public abstract class TestKeyedObjectPool {
 
-    protected static class FailingKeyedPooledObjectFactory implements KeyedPooledObjectFactory<Object, Object> {
+    protected static class FailingKeyedPooledObjectFactory implements KeyedPooledObjectFactory<Object, Object, PrivateException> {
         private final List<MethodCall> methodCalls = new ArrayList<>();
         private int count;
         private boolean makeObjectFail;
@@ -47,7 +47,7 @@ public abstract class TestKeyedObjectPool {
         }
 
         @Override
-        public void activateObject(final Object key, final PooledObject<Object> obj) throws Exception {
+        public void activateObject(final Object key, final PooledObject<Object> obj) {
             methodCalls.add(new MethodCall("activateObject", key, obj.getObject()));
             if (activateObjectFail) {
                 throw new PrivateException("activateObject");
@@ -55,7 +55,7 @@ public abstract class TestKeyedObjectPool {
         }
 
         @Override
-        public void destroyObject(final Object key, final PooledObject<Object> obj) throws Exception {
+        public void destroyObject(final Object key, final PooledObject<Object> obj) {
             methodCalls.add(new MethodCall("destroyObject", key, obj.getObject()));
             if (destroyObjectFail) {
                 throw new PrivateException("destroyObject");
@@ -91,7 +91,7 @@ public abstract class TestKeyedObjectPool {
         }
 
         @Override
-        public PooledObject<Object> makeObject(final Object key) throws Exception {
+        public PooledObject<Object> makeObject(final Object key) {
             final MethodCall call = new MethodCall("makeObject", key);
             methodCalls.add(call);
             final int originalCount = this.count++;
@@ -106,7 +106,7 @@ public abstract class TestKeyedObjectPool {
         }
 
         @Override
-        public void passivateObject(final Object key, final PooledObject<Object> obj) throws Exception {
+        public void passivateObject(final Object key, final PooledObject<Object> obj) {
             methodCalls.add(new MethodCall("passivateObject", key, obj.getObject()));
             if (passivateObjectFail) {
                 throw new PrivateException("passivateObject");
@@ -160,10 +160,9 @@ public abstract class TestKeyedObjectPool {
         }
     }
 
-    private static class TestFactory
-            extends BaseKeyedPooledObjectFactory<Object,Object> {
+    private static class TestFactory extends BaseKeyedPooledObjectFactory<Object, Object, RuntimeException> {
         @Override
-        public Object create(final Object key) throws Exception {
+        public Object create(final Object key) {
             return new Object();
         }
         @Override
@@ -212,7 +211,7 @@ public abstract class TestKeyedObjectPool {
      *
      * @return the newly created keyed object pool
      */
-    protected abstract KeyedObjectPool<Object,Object> makeEmptyPool(int minCapacity);
+    protected abstract KeyedObjectPool<Object, Object> makeEmptyPool(int minCapacity);
 
     /**
      * Creates an {@code KeyedObjectPool} with the specified factory.
@@ -220,10 +219,11 @@ public abstract class TestKeyedObjectPool {
      * behaviors described in {@link KeyedObjectPool}.
      * Generally speaking there should be no limits on the various object counts.
      *
+     * @param <E> The type of exception thrown by the pool 
      * @param factory Factory to use to associate with the pool
      * @return The newly created empty pool
      */
-    protected abstract KeyedObjectPool<Object, Object> makeEmptyPool(KeyedPooledObjectFactory<Object, Object> factory);
+    protected abstract <E extends Exception> KeyedObjectPool<Object, Object> makeEmptyPool(KeyedPooledObjectFactory<Object, Object, E> factory);
 
     protected abstract Object makeKey(int n);
 
