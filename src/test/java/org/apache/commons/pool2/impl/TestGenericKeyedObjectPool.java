@@ -270,7 +270,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                 throw new RuntimeException("validation failed");
             }
             if (enableValidation) {
-                return validateCounter++%2 == 0 ? evenValid : oddValid;
+                return validateCounter++ % 2 == 0 ? evenValid : oddValid;
             }
             return valid;
         }
