@@ -1340,7 +1340,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
     @Override
     public void invalidateObject(final K key, final T obj, final DestroyMode destroyMode) throws E {
         final ObjectDeque<T> objectDeque = poolMap.get(key);
-        final PooledObject<T> p = objectDeque.getAllObjects().get(new IdentityWrapper<>(obj));
+        final PooledObject<T> p = objectDeque != null ? objectDeque.getAllObjects().get(new IdentityWrapper<>(obj)) : null;
         if (p == null) {
             throw new IllegalStateException(appendStats("Object not currently part of this pool"));
         }

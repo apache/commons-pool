@@ -53,6 +53,7 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
 import org.apache.commons.pool2.BaseKeyedPooledObjectFactory;
+import org.apache.commons.pool2.DestroyMode;
 import org.apache.commons.pool2.KeyedObjectPool;
 import org.apache.commons.pool2.KeyedPooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
@@ -65,6 +66,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 /**
  */
@@ -111,12 +114,12 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
      * Attempts to invalidate an object, swallowing IllegalStateException.
      */
     static class InvalidateThread implements Runnable {
-        
+
         private final String obj;
         private final KeyedObjectPool<String, String, Exception> pool;
         private final String key;
         private boolean done;
-        
+
         public InvalidateThread(final KeyedObjectPool<String, String, Exception> pool, final String key, final String obj) {
             this.obj = obj;
             this.pool = pool;
@@ -1013,7 +1016,6 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         gkoPool.close();
     }
 
-
     /**
      * Test to make sure that clearOldest does not destroy instances that have been checked out.
      *
@@ -1049,6 +1051,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             waiterPool.returnObject("1", waiter); // Will throw IllegalStateException if dead
         }
     }
+
 
     /**
        * POOL-391 Verify that when clear(key) is called with reuseCapacity true,
@@ -1544,7 +1547,6 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         checkEvictorVisiting(false);
     }
 
-
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
     public void testExceptionInValidationDuringEviction() throws Exception {
@@ -1560,6 +1562,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         assertEquals(0, gkoPool.getNumActive());
         assertEquals(0, gkoPool.getNumIdle());
     }
+
 
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
@@ -1665,7 +1668,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     public void testGetStatsString() {
         assertNotNull((gkoPool.getStatsString()));
     }
-    
+
     /**
      * Verify that threads waiting on a depleted pool get served when a checked out object is
      * invalidated.
@@ -1697,7 +1700,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             }
         }
     }
-    
+
     @Test
     public void testInvalidateFreesCapacityForOtherKeys() throws Exception {
         gkoPool.setMaxTotal(1);
@@ -1709,6 +1712,17 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         gkoPool.invalidateObject("one", obj);  // Should free capacity to serve the other key
         Thread.sleep(20);  // Should have been served by now
         assertFalse(borrower.isAlive());
+    }
+
+    @Test
+    public void testInvalidateMissingKey() throws Exception {
+        assertThrows(IllegalStateException.class, () -> gkoPool.invalidateObject("UnknownKey", "Ignored"));
+    }
+
+    @ParameterizedTest
+    @EnumSource(DestroyMode.class)
+    public void testInvalidateMissingKeyForDestroyMode(final DestroyMode destroyMode) throws Exception {
+        assertThrows(IllegalStateException.class, () -> gkoPool.invalidateObject("UnknownKey", "Ignored", destroyMode));
     }
 
     /**
