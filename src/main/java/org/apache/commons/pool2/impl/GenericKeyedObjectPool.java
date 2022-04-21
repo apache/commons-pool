@@ -721,11 +721,11 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
     /**
      * Creates a new pooled object.
      *
-     * @param key Key associated with new pooled object
+     * @param key Key associated with new pooled object.
      *
-     * @return The new, wrapped pooled object
+     * @return The new, wrapped pooled object. May return null.
      *
-     * @throws E If the objection creation fails
+     * @throws E If the objection creation fails.
      */
     private PooledObject<T> create(final K key) throws E {
         int maxTotalPerKeySave = getMaxTotalPerKey(); // Per key
