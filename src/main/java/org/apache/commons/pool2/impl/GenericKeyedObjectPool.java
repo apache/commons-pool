@@ -332,8 +332,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
         assertOpen();
         register(key);
         try {
-            final PooledObject<T> p = create(key);
-            addIdleObject(key, p);
+            addIdleObject(key, create(key));
         } finally {
             deregister(key);
         }
