@@ -719,7 +719,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
 
 
     /**
-     * Creates a new pooled object.
+     * Creates a new pooled object or null.
      *
      * @param key Key associated with new pooled object.
      *
