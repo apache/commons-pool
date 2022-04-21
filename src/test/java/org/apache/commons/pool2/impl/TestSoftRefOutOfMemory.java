@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 /**
  */
 public class TestSoftRefOutOfMemory {
-    public static class LargePoolableObjectFactory extends BasePooledObjectFactory<String> {
+    public static class LargePoolableObjectFactory extends BasePooledObjectFactory<String, RuntimeException> {
         private final String buffer;
         private int counter;
 
@@ -56,7 +56,7 @@ public class TestSoftRefOutOfMemory {
         }
     }
 
-    private static class OomeFactory extends BasePooledObjectFactory<String> {
+    private static class OomeFactory extends BasePooledObjectFactory<String, RuntimeException> {
 
         private final OomeTrigger trigger;
 
@@ -65,7 +65,7 @@ public class TestSoftRefOutOfMemory {
         }
 
         @Override
-        public String create() throws Exception {
+        public String create() {
             if (trigger.equals(OomeTrigger.CREATE)) {
                 throw new OutOfMemoryError();
             }
@@ -78,7 +78,7 @@ public class TestSoftRefOutOfMemory {
         }
 
         @Override
-        public void destroyObject(final PooledObject<String> p) throws Exception {
+        public void destroyObject(final PooledObject<String> p) {
             if (trigger.equals(OomeTrigger.DESTROY)) {
                 throw new OutOfMemoryError();
             }
@@ -105,7 +105,7 @@ public class TestSoftRefOutOfMemory {
         DESTROY
     }
 
-    public static class SmallPoolableObjectFactory extends BasePooledObjectFactory<String> {
+    public static class SmallPoolableObjectFactory extends BasePooledObjectFactory<String, RuntimeException> {
         private int counter;
 
         @Override
@@ -124,7 +124,7 @@ public class TestSoftRefOutOfMemory {
         }
     }
 
-    private SoftReferenceObjectPool<String> pool;
+    private SoftReferenceObjectPool<String, RuntimeException> pool;
 
     @AfterEach
     public void tearDown() {
@@ -134,7 +134,6 @@ public class TestSoftRefOutOfMemory {
         }
         System.gc();
     }
-
 
     @Test
     public void testOutOfMemory() throws Exception {

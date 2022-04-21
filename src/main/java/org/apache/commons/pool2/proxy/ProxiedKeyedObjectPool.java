@@ -30,12 +30,13 @@ import org.apache.commons.pool2.UsageTracking;
  *
  * @param <K> type of the key
  * @param <V> type of the pooled object
+ * @param <E> type of exception thrown by this pool
  *
  * @since 2.0
  */
-public class ProxiedKeyedObjectPool<K, V> implements KeyedObjectPool<K, V> {
+public class ProxiedKeyedObjectPool<K, V, E extends Exception> implements KeyedObjectPool<K, V, E> {
 
-    private final KeyedObjectPool<K, V> pool;
+    private final KeyedObjectPool<K, V, E> pool;
     private final ProxySource<V> proxySource;
 
 
@@ -45,7 +46,7 @@ public class ProxiedKeyedObjectPool<K, V> implements KeyedObjectPool<K, V> {
      * @param pool  The object pool to wrap
      * @param proxySource The source of the proxy objects
      */
-    public ProxiedKeyedObjectPool(final KeyedObjectPool<K, V> pool,
+    public ProxiedKeyedObjectPool(final KeyedObjectPool<K, V, E> pool,
             final ProxySource<V> proxySource) {
         this.pool = pool;
         this.proxySource = proxySource;
@@ -53,14 +54,14 @@ public class ProxiedKeyedObjectPool<K, V> implements KeyedObjectPool<K, V> {
 
 
     @Override
-    public void addObject(final K key) throws Exception, IllegalStateException,
+    public void addObject(final K key) throws E, IllegalStateException,
             UnsupportedOperationException {
         pool.addObject(key);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public V borrowObject(final K key) throws Exception, NoSuchElementException,
+    public V borrowObject(final K key) throws E, NoSuchElementException,
             IllegalStateException {
         UsageTracking<V> usageTracking = null;
         if (pool instanceof UsageTracking) {
@@ -70,12 +71,12 @@ public class ProxiedKeyedObjectPool<K, V> implements KeyedObjectPool<K, V> {
     }
 
     @Override
-    public void clear() throws Exception, UnsupportedOperationException {
+    public void clear() throws E, UnsupportedOperationException {
         pool.clear();
     }
 
     @Override
-    public void clear(final K key) throws Exception, UnsupportedOperationException {
+    public void clear(final K key) throws E, UnsupportedOperationException {
         pool.clear(key);
     }
 
@@ -110,12 +111,12 @@ public class ProxiedKeyedObjectPool<K, V> implements KeyedObjectPool<K, V> {
     }
 
     @Override
-    public void invalidateObject(final K key, final V proxy) throws Exception {
+    public void invalidateObject(final K key, final V proxy) throws E {
         pool.invalidateObject(key, proxySource.resolveProxy(proxy));
     }
 
     @Override
-    public void returnObject(final K key, final V proxy) throws Exception {
+    public void returnObject(final K key, final V proxy) throws E {
         pool.returnObject(key, proxySource.resolveProxy(proxy));
     }
 

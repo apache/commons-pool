@@ -25,10 +25,11 @@ package org.apache.commons.pool2;
  * </p>
  *
  * @param <T> Type of element pooled in this pool.
+ * @param <E> Type of exception thrown by this pool.
  *
  * @since 2.0
  */
-public abstract class BaseObjectPool<T> extends BaseObject implements ObjectPool<T> {
+public abstract class BaseObjectPool<T, E extends Exception> extends BaseObject implements ObjectPool<T, E> {
 
     private volatile boolean closed;
 
@@ -40,7 +41,7 @@ public abstract class BaseObjectPool<T> extends BaseObject implements ObjectPool
      *          method
      */
     @Override
-    public void addObject() throws Exception, UnsupportedOperationException {
+    public void addObject() throws E, UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 
@@ -59,7 +60,7 @@ public abstract class BaseObjectPool<T> extends BaseObject implements ObjectPool
     }
 
     @Override
-    public abstract T borrowObject() throws Exception;
+    public abstract T borrowObject() throws E;
 
     /**
      * Not supported in this base implementation.
@@ -68,7 +69,7 @@ public abstract class BaseObjectPool<T> extends BaseObject implements ObjectPool
      *          method
      */
     @Override
-    public void clear() throws Exception, UnsupportedOperationException {
+    public void clear() throws E, UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 
@@ -105,7 +106,7 @@ public abstract class BaseObjectPool<T> extends BaseObject implements ObjectPool
     }
 
     @Override
-    public abstract void invalidateObject(T obj) throws Exception;
+    public abstract void invalidateObject(T obj) throws E;
 
     /**
      * Has this pool instance been closed.
@@ -117,7 +118,7 @@ public abstract class BaseObjectPool<T> extends BaseObject implements ObjectPool
     }
 
     @Override
-    public abstract void returnObject(T obj) throws Exception;
+    public abstract void returnObject(T obj) throws E;
 
     @Override
     protected void toStringAppendFields(final StringBuilder builder) {

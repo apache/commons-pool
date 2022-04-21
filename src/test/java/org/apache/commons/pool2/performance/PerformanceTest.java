@@ -126,7 +126,7 @@ public class PerformanceTest {
 
     private int nrIterations = 5;
 
-    private GenericObjectPool<Integer> pool;
+    private GenericObjectPool<Integer, RuntimeException> pool;
 
     private void run(final int iterations, final int nrThreads, final int maxTotal, final int maxIdle) {
         this.nrIterations = iterations;

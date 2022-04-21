@@ -74,7 +74,8 @@ class EvictionTimer {
         @Override
         public void run() {
             synchronized (EvictionTimer.class) {
-                for (final Entry<WeakReference<BaseGenericObjectPool<?>.Evictor>, WeakRunner<BaseGenericObjectPool<?>.Evictor>> entry : TASK_MAP.entrySet()) {
+                for (final Entry<WeakReference<BaseGenericObjectPool<?, ?>.Evictor>, WeakRunner<BaseGenericObjectPool<?, ?>.Evictor>> entry : TASK_MAP
+                        .entrySet()) {
                     if (entry.getKey().get() == null) {
                         executor.remove(entry.getValue());
                         TASK_MAP.remove(entry.getKey());
@@ -125,8 +126,8 @@ class EvictionTimer {
 
     /** Keys are weak references to tasks, values are runners managed by executor. */
     private static final HashMap<
-        WeakReference<BaseGenericObjectPool<?>.Evictor>, 
-        WeakRunner<BaseGenericObjectPool<?>.Evictor>> TASK_MAP = new HashMap<>(); // @GuardedBy("EvictionTimer.class")
+        WeakReference<BaseGenericObjectPool<?, ?>.Evictor>, 
+        WeakRunner<BaseGenericObjectPool<?, ?>.Evictor>> TASK_MAP = new HashMap<>(); // @GuardedBy("EvictionTimer.class")
 
     /**
      * Removes the specified eviction task from the timer.
@@ -137,7 +138,7 @@ class EvictionTimer {
      *                  terminate?
      * @param restarting The state of the evictor.
      */
-    static synchronized void cancel(final BaseGenericObjectPool<?>.Evictor evictor, final Duration timeout,
+    static synchronized void cancel(final BaseGenericObjectPool<?, ?>.Evictor evictor, final Duration timeout,
             final boolean restarting) {
         if (evictor != null) {
             evictor.cancel();
@@ -177,7 +178,7 @@ class EvictionTimer {
      *
      * @return the task map.
      */
-    static HashMap<WeakReference<BaseGenericObjectPool<?>.Evictor>, WeakRunner<BaseGenericObjectPool<?>.Evictor>> getTaskMap() {
+    static HashMap<WeakReference<BaseGenericObjectPool<?, ?>.Evictor>, WeakRunner<BaseGenericObjectPool<?, ?>.Evictor>> getTaskMap() {
         return TASK_MAP;
     }
 
@@ -187,8 +188,8 @@ class EvictionTimer {
      *
      * @param evictor Eviction task to remove
      */
-    private static void remove(final BaseGenericObjectPool<?>.Evictor evictor) {
-        for (final Entry<WeakReference<BaseGenericObjectPool<?>.Evictor>, WeakRunner<BaseGenericObjectPool<?>.Evictor>> entry : TASK_MAP.entrySet()) {
+    private static void remove(final BaseGenericObjectPool<?, ?>.Evictor evictor) {
+        for (final Entry<WeakReference<BaseGenericObjectPool<?, ?>.Evictor>, WeakRunner<BaseGenericObjectPool<?, ?>.Evictor>> entry : TASK_MAP.entrySet()) {
             if (entry.getKey().get() == evictor) {
                 executor.remove(entry.getValue());
                 TASK_MAP.remove(entry.getKey());
@@ -209,14 +210,14 @@ class EvictionTimer {
      * @param period    Time in milliseconds between executions.
      */
     static synchronized void schedule(
-            final BaseGenericObjectPool<?>.Evictor task, final Duration delay, final Duration period) {
+            final BaseGenericObjectPool<?, ?>.Evictor task, final Duration delay, final Duration period) {
         if (null == executor) {
             executor = new ScheduledThreadPoolExecutor(1, new EvictorThreadFactory());
             executor.setRemoveOnCancelPolicy(true);
             executor.scheduleAtFixedRate(new Reaper(), delay.toMillis(), period.toMillis(), TimeUnit.MILLISECONDS);
         }
-        final WeakReference<BaseGenericObjectPool<?>.Evictor> ref = new WeakReference<>(task);
-        final WeakRunner<BaseGenericObjectPool<?>.Evictor> runner = new WeakRunner<>(ref);
+        final WeakReference<BaseGenericObjectPool<?, ?>.Evictor> ref = new WeakReference<>(task);
+        final WeakRunner<BaseGenericObjectPool<?, ?>.Evictor> runner = new WeakRunner<>(ref);
         final ScheduledFuture<?> scheduledFuture = executor.scheduleWithFixedDelay(runner, delay.toMillis(),
                 period.toMillis(), TimeUnit.MILLISECONDS);
         task.setScheduledFuture(scheduledFuture);

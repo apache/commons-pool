@@ -55,12 +55,13 @@ import org.apache.commons.pool2.SwallowedExceptionListener;
  * reduce code duplication between the two pool implementations.
  *
  * @param <T> Type of element pooled in this pool.
+ * @param <E> Type of exception thrown in this pool.
  *
  * This class is intended to be thread-safe.
  *
  * @since 2.0
  */
-public abstract class BaseGenericObjectPool<T> extends BaseObject {
+public abstract class BaseGenericObjectPool<T, E extends Exception> extends BaseObject {
 
     /**
      * The idle object eviction iterator. Holds a reference to the idle objects.
@@ -128,7 +129,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
             scheduledFuture.cancel(false);
         }
 
-        BaseGenericObjectPool<T> owner() {
+        BaseGenericObjectPool<T, E> owner() {
             return BaseGenericObjectPool.this;
         }
 
@@ -444,6 +445,18 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     }
 
     /**
+     * Casts the given throwable to E.
+     *
+     * @param throwable the throwable.
+     * @return the input.
+     * @since 2.12.0
+     */
+    @SuppressWarnings("unchecked")
+    protected E cast(final Throwable throwable) {
+        return (E) throwable;
+    }
+
+    /**
      * Closes the pool, destroys the remaining idle objects and, if registered
      * in JMX, deregisters it.
      */
@@ -473,9 +486,9 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
     /**
      * Tries to ensure that the configured minimum number of idle instances are
      * available in the pool.
-     * @throws Exception if an error occurs creating idle instances
+     * @throws E if an error occurs creating idle instances
      */
-    abstract void ensureMinIdle() throws Exception;
+    abstract void ensureMinIdle() throws E;
 
     /**
      * Perform {@code numTests} idle object eviction tests, evicting
@@ -485,9 +498,9 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject {
      * have been idle for more than {@code minEvicableIdleTimeMillis}
      * are removed.
      *
-     * @throws Exception when there is a problem evicting idle objects.
+     * @throws E when there is a problem evicting idle objects.
      */
-    public abstract void evict() throws Exception;
+    public abstract void evict() throws E;
 
     /**
      * Gets whether to block when the {@code borrowObject()} method is

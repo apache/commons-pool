@@ -25,13 +25,13 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
 /**
  * Sleepy ObjectFactory (everything takes a while longer)
  */
-public class SleepingObjectFactory implements PooledObjectFactory<Integer> {
+public class SleepingObjectFactory implements PooledObjectFactory<Integer, RuntimeException> {
 
     private int counter;
     private boolean debug;
 
     @Override
-    public void activateObject(final PooledObject<Integer> obj) throws Exception {
+    public void activateObject(final PooledObject<Integer> obj) {
         debug("activateObject", obj);
         Waiter.sleepQuietly(10);
     }
@@ -44,7 +44,7 @@ public class SleepingObjectFactory implements PooledObjectFactory<Integer> {
     }
 
     @Override
-    public void destroyObject(final PooledObject<Integer> obj) throws Exception {
+    public void destroyObject(final PooledObject<Integer> obj) {
         debug("destroyObject", obj);
         Waiter.sleepQuietly(250);
     }
@@ -54,7 +54,7 @@ public class SleepingObjectFactory implements PooledObjectFactory<Integer> {
     }
 
     @Override
-    public PooledObject<Integer> makeObject() throws Exception {
+    public PooledObject<Integer> makeObject() {
         // Deliberate choice to create a new object in case future unit tests
         // check for a specific object.
         final Integer obj = Integer.valueOf(counter++);
@@ -64,7 +64,7 @@ public class SleepingObjectFactory implements PooledObjectFactory<Integer> {
     }
 
     @Override
-    public void passivateObject(final PooledObject<Integer> obj) throws Exception {
+    public void passivateObject(final PooledObject<Integer> obj) {
         debug("passivateObject", obj);
         Waiter.sleepQuietly(10);
     }

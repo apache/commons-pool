@@ -26,20 +26,23 @@ import org.junit.jupiter.api.Test;
 /**
  */
 public class TestBaseObjectPool extends TestObjectPool {
-    private static class TestObjectPool extends BaseObjectPool<Object> {
+    private static class TestObjectPool extends BaseObjectPool<Object, RuntimeException> {
+        
         @Override
         public Object borrowObject() {
             return null;
         }
+        
         @Override
         public void invalidateObject(final Object obj) {
         }
+        
         @Override
         public void returnObject(final Object obj) {
         }
     }
 
-    private ObjectPool<String> pool;
+    private ObjectPool<String, RuntimeException> pool;
 
     /**
      * @param n Ignored by this implemented. Used by sub-classes.
@@ -72,7 +75,7 @@ public class TestBaseObjectPool extends TestObjectPool {
      *
      * @return A newly created empty pool
      */
-    protected ObjectPool<String> makeEmptyPool(final int minCapacity) {
+    protected <E extends Exception> ObjectPool<String, E> makeEmptyPool(final int minCapacity) {
         if (this.getClass() != TestBaseObjectPool.class) {
             fail("Subclasses of TestBaseObjectPool must reimplement this method.");
         }
@@ -80,7 +83,7 @@ public class TestBaseObjectPool extends TestObjectPool {
     }
 
     @Override
-    protected ObjectPool<Object> makeEmptyPool(final PooledObjectFactory<Object> factory) {
+    protected <E extends Exception> ObjectPool<Object, E> makeEmptyPool(final PooledObjectFactory<Object, E> factory) {
         if (this.getClass() != TestBaseObjectPool.class) {
             fail("Subclasses of TestBaseObjectPool must reimplement this method.");
         }
@@ -254,7 +257,7 @@ public class TestBaseObjectPool extends TestObjectPool {
     @Test
     public void testClose() {
         @SuppressWarnings("resource")
-        final ObjectPool<Object> pool = new TestObjectPool();
+        final ObjectPool<Object, RuntimeException> pool = new TestObjectPool();
 
         pool.close();
         pool.close(); // should not error as of Pool 2.0.
@@ -266,7 +269,7 @@ public class TestBaseObjectPool extends TestObjectPool {
         if (!getClass().equals(TestBaseObjectPool.class)) {
             return; // skip redundant tests
         }
-        try (final ObjectPool<Object> pool = new TestObjectPool()) {
+        try (final ObjectPool<Object,RuntimeException> pool = new TestObjectPool()) {
 
             assertTrue( pool.getNumIdle() < 0,"Negative expected.");
             assertTrue( pool.getNumActive() < 0,"Negative expected.");

@@ -24,13 +24,14 @@ package org.apache.commons.pool2;
  * This class is immutable, and therefore thread-safe
  *
  * @param <T> Type of element managed in this factory.
+ * @param <E> Type of exception thrown in this factory.
  *
  * @see PooledObjectFactory
  * @see BaseKeyedPooledObjectFactory
  *
  * @since 2.0
  */
-public abstract class BasePooledObjectFactory<T> extends BaseObject implements PooledObjectFactory<T> {
+public abstract class BasePooledObjectFactory<T, E extends Exception> extends BaseObject implements PooledObjectFactory<T, E> {
 
     /**
      *  No-op.
@@ -38,7 +39,7 @@ public abstract class BasePooledObjectFactory<T> extends BaseObject implements P
      *  @param p ignored
      */
     @Override
-    public void activateObject(final PooledObject<T> p) throws Exception {
+    public void activateObject(final PooledObject<T> p) throws E {
         // The default implementation is a no-op.
     }
 
@@ -49,10 +50,10 @@ public abstract class BasePooledObjectFactory<T> extends BaseObject implements P
      *
      * @return an instance to be served by the pool
      *
-     * @throws Exception if there is a problem creating a new instance,
+     * @throws E if there is a problem creating a new instance,
      *    this will be propagated to the code requesting an object.
      */
-    public abstract T create() throws Exception;
+    public abstract T create() throws E;
 
     /**
      *  No-op.
@@ -61,12 +62,12 @@ public abstract class BasePooledObjectFactory<T> extends BaseObject implements P
      */
     @Override
     public void destroyObject(final PooledObject<T> p)
-        throws Exception  {
+        throws E  {
         // The default implementation is a no-op.
     }
 
     @Override
-    public PooledObject<T> makeObject() throws Exception {
+    public PooledObject<T> makeObject() throws E {
         return wrap(create());
     }
 
@@ -77,7 +78,7 @@ public abstract class BasePooledObjectFactory<T> extends BaseObject implements P
      */
     @Override
     public void passivateObject(final PooledObject<T> p)
-        throws Exception {
+        throws E {
         // The default implementation is a no-op.
     }
 

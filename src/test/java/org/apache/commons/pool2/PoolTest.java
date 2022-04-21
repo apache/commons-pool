@@ -33,24 +33,24 @@ import org.junit.jupiter.api.Test;
 public class PoolTest {
     private static class Foo {
     }
-    private static class PooledFooFactory implements PooledObjectFactory<Foo> {
+    private static class PooledFooFactory implements PooledObjectFactory<Foo, RuntimeException> {
         private static final long VALIDATION_WAIT_IN_MILLIS = 1000;
 
         @Override
-        public void activateObject(final PooledObject<Foo> pooledObject) throws Exception {
+        public void activateObject(final PooledObject<Foo> pooledObject) {
         }
 
         @Override
-        public void destroyObject(final PooledObject<Foo> pooledObject) throws Exception {
+        public void destroyObject(final PooledObject<Foo> pooledObject) {
         }
 
         @Override
-        public PooledObject<Foo> makeObject() throws Exception {
+        public PooledObject<Foo> makeObject() {
             return new DefaultPooledObject<>(new Foo());
         }
 
         @Override
-        public void passivateObject(final PooledObject<Foo> pooledObject) throws Exception {
+        public void passivateObject(final PooledObject<Foo> pooledObject) {
         }
 
         @Override
@@ -73,7 +73,7 @@ public class PoolTest {
         final GenericObjectPoolConfig<Foo> poolConfig = new GenericObjectPoolConfig<>();
         poolConfig.setTestWhileIdle(true /* testWhileIdle */);
         final PooledFooFactory pooledFooFactory = new PooledFooFactory();
-        try (GenericObjectPool<Foo> pool = new GenericObjectPool<>(pooledFooFactory, poolConfig)) {
+        try (GenericObjectPool<Foo, RuntimeException> pool = new GenericObjectPool<>(pooledFooFactory, poolConfig)) {
             pool.setTimeBetweenEvictionRunsMillis(EVICTION_PERIOD_IN_MILLIS);
             assertEquals(EVICTION_PERIOD_IN_MILLIS, pool.getDurationBetweenEvictionRuns().toMillis());
             assertEquals(EVICTION_PERIOD_IN_MILLIS, pool.getTimeBetweenEvictionRuns().toMillis());

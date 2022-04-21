@@ -26,7 +26,7 @@ import org.apache.commons.pool2.TestBaseObjectPool;
  */
 public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
 
-    private static class SimpleFactory extends BasePooledObjectFactory<String>  {
+    private static class SimpleFactory extends BasePooledObjectFactory<String, RuntimeException>  {
         int counter;
         @Override
         public String create() {
@@ -54,13 +54,13 @@ public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
     }
 
     @Override
-    protected ObjectPool<String> makeEmptyPool(final int cap) {
-        return new SoftReferenceObjectPool<>(new SimpleFactory());
+    protected <E extends Exception> ObjectPool<String, E> makeEmptyPool(final int cap) {
+        return (ObjectPool<String, E>) new SoftReferenceObjectPool<>(new SimpleFactory());
     }
 
 
     @Override
-    protected ObjectPool<Object> makeEmptyPool(final PooledObjectFactory<Object> factory) {
+    protected <E extends Exception> ObjectPool<Object, E> makeEmptyPool(final PooledObjectFactory<Object, E> factory) {
         return new SoftReferenceObjectPool<>(factory);
     }
 }
