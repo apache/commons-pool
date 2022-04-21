@@ -185,10 +185,11 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
         @Override
         public void activateObject(final K key, final PooledObject<String> obj) throws Exception {
-            if (exceptionOnActivate && !(validateCounter++%2 == 0 ? evenValid : oddValid)) {
+            if (exceptionOnActivate && !(validateCounter++ % 2 == 0 ? evenValid : oddValid)) {
                 throw new Exception();
             }
         }
+
         @Override
         public void destroyObject(final K key, final PooledObject<String> obj) throws Exception {
             doWait(destroyLatency);
