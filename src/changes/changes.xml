@@ -43,7 +43,7 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Pool Release Notes</title>
   </properties>
   <body>
-  <release version="2.12.0" date="2021-MM-DD" description="This is a maintenance release (Java 8).">
+  <release version="2.12.0" date="2021-MM-DD" description="This is a feature and maintenance release (Java 8).">
     <!-- FIX -->
     <action dev="psteitz" type="fix" issue="POOL-401">
       Ensure that capacity freed by invalidateObject is available to all keyed pools.
@@ -56,6 +56,9 @@ The <action> type attribute can be add,update,fix,remove.
     </action>
     <action dev="ggregory" type="fix" due-to="Arturo Bernal">
       Simplify test assertion with similar call but simpler. #131.
+    </action>       
+    <action dev="ggregory" type="fix" due-to="Gary Gregory" issue="POOL-269">
+      Use generic exceptions instead of java.lang.Exception.
     </action>       
     <!-- ADD -->
     <action dev="ggregory" type="add" due-to="Gary Gregory">
