@@ -22,13 +22,12 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
 /**
  * Factory that creates VisitTracker instances. Used to test Evictor runs.
  *
+ * @param <K> The VisitTracker key type.
  */
 public class VisitTrackerFactory<K>
         implements PooledObjectFactory<VisitTracker<K>, RuntimeException>, KeyedPooledObjectFactory<K, VisitTracker<K>, RuntimeException> {
-    private int nextId;
 
-    public VisitTrackerFactory() {
-    }
+    private int nextId;
 
     @Override
     public void activateObject(final K key, final PooledObject<VisitTracker<K>> ref) {

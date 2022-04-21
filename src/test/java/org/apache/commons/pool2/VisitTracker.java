@@ -17,11 +17,12 @@
 package org.apache.commons.pool2;
 
 /**
- * Test pooled object class.  Keeps track of how many times it has been
- * validated, activated, passivated.
+ * Test pooled object class. Keeps track of how many times it has been validated, activated, passivated.
  *
+ * @param <K> The key type.
  */
 public class VisitTracker<K> {
+
     private int validateCount;
     private int activateCount;
     private int passivateCount;
@@ -50,42 +51,53 @@ public class VisitTracker<K> {
         }
         activateCount++;
     }
+
     public void destroy() {
         destroyed = true;
     }
+
     private void fail(final String message) {
         throw new IllegalStateException(message);
     }
+
     public int getActivateCount() {
         return activateCount;
     }
+
     public int getId() {
         return id;
     }
+
     public K getKey() {
         return key;
     }
+
     public int getPassivateCount() {
         return passivateCount;
     }
+
     public int getValidateCount() {
         return validateCount;
     }
+
     public boolean isDestroyed() {
         return destroyed;
     }
+
     public void passivate() {
         if (destroyed) {
             fail("attempted to passivate a destroyed object");
         }
         passivateCount++;
     }
+
     public void reset() {
         validateCount = 0;
         activateCount = 0;
         passivateCount = 0;
         destroyed = false;
     }
+
     @Override
     public String toString() {
         return "Key: " + key + " id: " + id;

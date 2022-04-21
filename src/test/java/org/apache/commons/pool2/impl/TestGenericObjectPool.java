@@ -272,10 +272,12 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         public SimpleFactory(final boolean valid) {
             this(valid,valid);
         }
+        
         public SimpleFactory(final boolean evalid, final boolean ovalid) {
             evenValid = evalid;
             oddValid = ovalid;
         }
+        
         @Override
         public void activateObject(final PooledObject<String> obj) throws Exception {
             final boolean hurl;
@@ -292,6 +294,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 throw new Exception();
             }
         }
+        
         @Override
         public void destroyObject(final PooledObject<String> obj) throws Exception {
             final long waitLatency;
@@ -310,18 +313,23 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 throw new Exception();
             }
         }
+        
         private void doWait(final long latency) {
             Waiter.sleepQuietly(latency);
         }
+        
         public synchronized int getMakeCounter() {
             return makeCounter;
         }
+        
         public synchronized boolean isThrowExceptionOnActivate() {
             return exceptionOnActivate;
         }
+        
         public synchronized boolean isValidationEnabled() {
             return enableValidation;
         }
+        
         @Override
         public PooledObject<String> makeObject() {
             final long waitLatency;
@@ -342,6 +350,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             }
             return new DefaultPooledObject<>(String.valueOf(counter));
         }
+        
         @Override
         public void passivateObject(final PooledObject<String> obj) throws Exception {
             final boolean hurl;
@@ -352,18 +361,23 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 throw new Exception();
             }
         }
+        
         public synchronized void setDestroyLatency(final long destroyLatency) {
             this.destroyLatency = destroyLatency;
         }
+        
         public synchronized void setEvenValid(final boolean valid) {
             evenValid = valid;
         }
+        
         public synchronized void setMakeLatency(final long makeLatency) {
             this.makeLatency = makeLatency;
         }
+        
         public synchronized void setMaxTotal(final int maxTotal) {
             this.maxTotal = maxTotal;
         }
+        
         public synchronized void setOddValid(final boolean valid) {
             oddValid = valid;
         }
