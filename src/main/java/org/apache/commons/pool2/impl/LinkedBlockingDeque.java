@@ -1500,8 +1500,9 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * @serialData The capacity (int), followed by elements (each an
      * {@code Object}) in the proper order, followed by a null
      * @param s the stream
+     * @throws  IOException if I/O errors occur while writing to the underlying {@code OutputStream}
      */
-    private void writeObject(final java.io.ObjectOutputStream s) throws java.io.IOException {
+    private void writeObject(final java.io.ObjectOutputStream s) throws IOException {
         lock.lock();
         try {
             // Write out capacity and any hidden stuff
