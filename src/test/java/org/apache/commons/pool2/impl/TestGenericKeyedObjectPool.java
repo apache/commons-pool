@@ -2123,8 +2123,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         gkoPool.setMaxTotalPerKey(threadsPerKey);
         // Create enough threads so half the threads will have to wait
         final WaitingTestThread<Exception>[] wtt = new WaitingTestThread[keyCount * threadsPerKey * 2];
-        for(int i=0; i < wtt.length; i++){
-            wtt[i] = new WaitingTestThread(gkoPool,Integer.toString(i % keyCount),holdTime);
+        for (int i = 0; i < wtt.length; i++) {
+            wtt[i] = new WaitingTestThread(gkoPool, Integer.toString(i % keyCount), holdTime);
         }
         final long originMillis = System.currentTimeMillis() - 1000;
         for (final WaitingTestThread<Exception> element : wtt) {
