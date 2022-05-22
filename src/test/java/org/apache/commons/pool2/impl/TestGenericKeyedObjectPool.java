@@ -1661,7 +1661,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         assertEquals(2, gkoPool.getKeys().size());
         gkoPool.clear("one");
         assertEquals(1, gkoPool.getKeys().size());
-        assertEquals("two", (String) gkoPool.getKeys().get(0));
+        assertEquals("two", gkoPool.getKeys().get(0));
         gkoPool.clear();
     }
 
@@ -1685,12 +1685,12 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             pool.setMaxTotalPerKey(2);
             pool.setMaxWaitMillis(500);
             // Borrow an instance and hold if for 5 seconds
-            final WaitingTestThread thread1 = new WaitingTestThread(pool, "one", 5000);
+            final WaitingTestThread<Exception> thread1 = new WaitingTestThread<>(pool, "one", 5000);
             thread1.start();
             // Borrow another instance
             final String obj = pool.borrowObject("one");
             // Launch another thread - will block, but fail in 500 ms
-            final WaitingTestThread thread2 = new WaitingTestThread(pool, "one", 100);
+            final WaitingTestThread<Exception> thread2 = new WaitingTestThread<>(pool, "one", 100);
             thread2.start();
             // Invalidate the object borrowed by this thread - should allow thread2 to create
             Thread.sleep(20);
@@ -1834,9 +1834,9 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         gkoPool.setMaxWaitMillis(3000);  // Really a timeout for the test
 
         // Check out and briefly hold 3 "1"s
-        final WaitingTestThread t1 = new WaitingTestThread(gkoPool, "1", 100);
-        final WaitingTestThread t2 = new WaitingTestThread(gkoPool, "1", 100);
-        final WaitingTestThread t3 = new WaitingTestThread(gkoPool, "1", 100);
+        final WaitingTestThread<Exception> t1 = new WaitingTestThread<>(gkoPool, "1", 100);
+        final WaitingTestThread<Exception> t2 = new WaitingTestThread<>(gkoPool, "1", 100);
+        final WaitingTestThread<Exception> t3 = new WaitingTestThread<>(gkoPool, "1", 100);
         t1.start();
         t2.start();
         t3.start();
@@ -2122,16 +2122,16 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         gkoPool.setMaxWaitMillis(maxWait);
         gkoPool.setMaxTotalPerKey(threadsPerKey);
         // Create enough threads so half the threads will have to wait
-        final WaitingTestThread[] wtt = new WaitingTestThread[keyCount * threadsPerKey * 2];
+        final WaitingTestThread<Exception>[] wtt = new WaitingTestThread[keyCount * threadsPerKey * 2];
         for(int i=0; i < wtt.length; i++){
             wtt[i] = new WaitingTestThread(gkoPool,Integer.toString(i % keyCount),holdTime);
         }
         final long originMillis = System.currentTimeMillis() - 1000;
-        for (final WaitingTestThread element : wtt) {
+        for (final WaitingTestThread<Exception> element : wtt) {
             element.start();
         }
         int failed = 0;
-        for (final WaitingTestThread element : wtt) {
+        for (final WaitingTestThread<Exception> element : wtt) {
             element.join();
             if (element.thrown != null){
                 failed++;
@@ -2146,7 +2146,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                     " Threads: " + wtt.length +
                     " Failed: " + failed
                     );
-            for (final WaitingTestThread wt : wtt) {
+            for (final WaitingTestThread<Exception> wt : wtt) {
                 System.out.println(
                         "Preborrow: " + (wt.preBorrowMillis - originMillis) +
                         " Postborrow: " + (wt.postBorrowMillis != 0 ? wt.postBorrowMillis - originMillis : -1) +
@@ -2591,10 +2591,10 @@ public void testValidateOnCreateFailure() throws Exception {
             pool.setTestOnReturn(true);
             pool.setTestOnBorrow(false);
             // Borrow an instance and hold if for 5 seconds
-            final WaitingTestThread thread1 = new WaitingTestThread(pool, "one", 5000);
+            final WaitingTestThread<Exception> thread1 = new WaitingTestThread<>(pool, "one", 5000);
             thread1.start();
             // Borrow another instance and return it after 500 ms (validation will fail)
-            final WaitingTestThread thread2 = new WaitingTestThread(pool, "one", 500);
+            final WaitingTestThread<Exception> thread2 = new WaitingTestThread<>(pool, "one", 500);
             thread2.start();
             Thread.sleep(50);
             // Try to borrow an object
@@ -2648,7 +2648,7 @@ public void testValidateOnCreateFailure() throws Exception {
         assertNotNull(obj1);
 
         // Create a separate thread to try and borrow another object
-        final WaitingTestThread wtt = new WaitingTestThread(gkoPool, "a", 200);
+        final WaitingTestThread<Exception> wtt = new WaitingTestThread<>(gkoPool, "a", 200);
         wtt.start();
         // Give wtt time to start
         Thread.sleep(200);
