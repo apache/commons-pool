@@ -2294,7 +2294,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         // Create enough threads so half the threads will have to wait
         final WaitingTestThread<TestException>[] wtt = new WaitingTestThread[threads * 2];
         for (int i = 0; i < wtt.length; i++) {
-            wtt[i] = new WaitingTestThread(genericObjectPool,holdTime);
+            wtt[i] = new WaitingTestThread<>(genericObjectPool, holdTime);
         }
         final long originMillis = System.currentTimeMillis() - 1000;
         for (final WaitingTestThread<TestException> element : wtt) {
@@ -2528,7 +2528,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         // Make validation fail - this will cause create() to return null
         simpleFactory.setValid(false);
         // Create a take waiter
-        final WaitingTestThread wtt = new WaitingTestThread(genericObjectPool, 200);
+        final WaitingTestThread<TestException> wtt = new WaitingTestThread<>(genericObjectPool, 200);
         wtt.start();
         // Give wtt time to start
         Thread.sleep(200);
@@ -2938,7 +2938,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertNotNull(obj1);
 
         // Create a separate thread to try and borrow another object
-        final WaitingTestThread wtt = new WaitingTestThread(genericObjectPool, 200);
+        final WaitingTestThread<TestException> wtt = new WaitingTestThread<TestException>(genericObjectPool, 200);
         wtt.start();
         // Give wtt time to start
         Thread.sleep(200);
@@ -2965,7 +2965,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertNotNull(obj1);
 
         // Create a separate thread to try and borrow another object
-        final WaitingTestThread wtt = new WaitingTestThread(genericObjectPool, 200000);
+        final WaitingTestThread<TestException> wtt = new WaitingTestThread<>(genericObjectPool, 200000);
         wtt.start();
         // Give wtt time to start
         Thread.sleep(200);

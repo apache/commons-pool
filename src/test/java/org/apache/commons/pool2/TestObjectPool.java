@@ -269,12 +269,12 @@ public abstract class TestObjectPool {
         }
         final List<MethodCall> expectedMethods = new ArrayList<>();
 
-        /// Test correct behavior code paths
+        // Test correct behavior code paths
         pool.addObjects(5);
         pool.close();
 
 
-        //// Test exception handling close should swallow failures
+        // Test exception handling close should swallow failures
         try {
             pool = makeEmptyPool(factory);
         } catch (final UnsupportedOperationException uoe) {
@@ -298,7 +298,7 @@ public abstract class TestObjectPool {
         final List<MethodCall> expectedMethods = new ArrayList<>();
         Object obj;
 
-        /// Test correct behavior code paths
+        // Test correct behavior code paths
 
         obj = pool.borrowObject();
         clear(factory, expectedMethods);
@@ -308,7 +308,7 @@ public abstract class TestObjectPool {
         expectedMethods.add(new MethodCall("destroyObject", obj));
         assertEquals(expectedMethods, factory.getMethodCalls());
 
-        //// Test exception handling of invalidateObject
+        // Test exception handling of invalidateObject
         reset(pool, factory, expectedMethods);
         final Object obj2 = pool.borrowObject();
         clear(factory, expectedMethods);
