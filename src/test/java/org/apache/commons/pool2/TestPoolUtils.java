@@ -641,7 +641,7 @@ public class TestPoolUtils {
         assertThrows(IllegalArgumentException.class, () -> PoolUtils.prefill(null, new Object(), 1),
                 "PoolUtils.prefill(KeyedObjectPool,Object,int) must not accept null pool.");
 
-        try (final KeyedObjectPool<Object, String, Exception> pool = new GenericKeyedObjectPool<>(new TestGenericKeyedObjectPool.SimpleFactory<>())) {
+        try (final KeyedObjectPool<Object, String, TestException> pool = new GenericKeyedObjectPool<>(new TestGenericKeyedObjectPool.SimpleFactory<>())) {
             assertThrows(IllegalArgumentException.class, () -> PoolUtils.prefill(pool, (Object) null, 1),
                     "PoolUtils.prefill(KeyedObjectPool,Object,int) must not accept null key.");
         }

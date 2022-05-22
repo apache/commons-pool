@@ -57,6 +57,7 @@ import org.apache.commons.pool2.DestroyMode;
 import org.apache.commons.pool2.KeyedObjectPool;
 import org.apache.commons.pool2.KeyedPooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.TestException;
 import org.apache.commons.pool2.TestKeyedObjectPool;
 import org.apache.commons.pool2.VisitTracker;
 import org.apache.commons.pool2.VisitTrackerFactory;
@@ -116,11 +117,11 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     static class InvalidateThread implements Runnable {
 
         private final String obj;
-        private final KeyedObjectPool<String, String, Exception> pool;
+        private final KeyedObjectPool<String, String, ? extends Exception> pool;
         private final String key;
         private boolean done;
 
-        public InvalidateThread(final KeyedObjectPool<String, String, Exception> pool, final String key, final String obj) {
+        public InvalidateThread(final KeyedObjectPool<String, String, ? extends Exception> pool, final String key, final String obj) {
             this.obj = obj;
             this.pool = pool;
             this.key = key;
@@ -158,7 +159,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         }
     }
 
-    public static class SimpleFactory<K> implements KeyedPooledObjectFactory<K, String, Exception> {
+    public static class SimpleFactory<K> implements KeyedPooledObjectFactory<K, String, TestException> {
         volatile int counter;
         final boolean valid;
         int activeCount;
@@ -187,20 +188,20 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         }
 
         @Override
-        public void activateObject(final K key, final PooledObject<String> obj) throws Exception {
+        public void activateObject(final K key, final PooledObject<String> obj) throws TestException {
             if (exceptionOnActivate && !(validateCounter++ % 2 == 0 ? evenValid : oddValid)) {
-                throw new Exception();
+                throw new TestException();
             }
         }
 
         @Override
-        public void destroyObject(final K key, final PooledObject<String> obj) throws Exception {
+        public void destroyObject(final K key, final PooledObject<String> obj) throws TestException {
             doWait(destroyLatency);
             synchronized(this) {
                 activeCount--;
             }
             if (exceptionOnDestroy) {
-                throw new Exception();
+                throw new TestException();
             }
         }
 
@@ -209,9 +210,9 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         }
 
         @Override
-        public PooledObject<String> makeObject(final K key) throws Exception {
+        public PooledObject<String> makeObject(final K key) throws TestException {
             if (exceptionOnCreate) {
-                throw new Exception();
+                throw new TestException();
             }
             doWait(makeLatency);
             String out = null;
@@ -227,9 +228,9 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         }
         
         @Override
-        public void passivateObject(final K key, final PooledObject<String> obj) throws Exception {
+        public void passivateObject(final K key, final PooledObject<String> obj) throws TestException {
             if (exceptionOnPassivate) {
-                throw new Exception();
+                throw new TestException();
             }
         }
         
@@ -501,14 +502,14 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     // @see https://issues.apache.org/jira/browse/SUREFIRE-121
 
     /** setUp(): {@code new GenericKeyedObjectPool<String,String>(factory)} */
-    private GenericKeyedObjectPool<String, String, Exception> gkoPool;
+    private GenericKeyedObjectPool<String, String, TestException> gkoPool;
 
     /** setUp(): {@code new SimpleFactory<String>()} */
     private SimpleFactory<String> simpleFactory;
 
-    private void checkEvictionOrder(final boolean lifo) throws Exception {
+    private void checkEvictionOrder(final boolean lifo) throws InterruptedException, TestException {
         final SimpleFactory<Integer> intFactory = new SimpleFactory<>();
-        try (final GenericKeyedObjectPool<Integer, String, Exception> intPool = new GenericKeyedObjectPool<>(intFactory)) {
+        try (final GenericKeyedObjectPool<Integer, String, TestException> intPool = new GenericKeyedObjectPool<>(intFactory)) {
             intPool.setNumTestsPerEvictionRun(2);
             intPool.setMinEvictableIdleTime(Duration.ofMillis(100));
             intPool.setLifo(lifo);
@@ -909,7 +910,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     public void testAppendStats() {
         assertFalse(gkoPool.getMessageStatistics());
         assertEquals("foo", (gkoPool.appendStats("foo")));
-        try (final GenericKeyedObjectPool<?, ?, Exception> pool = new GenericKeyedObjectPool<>(new SimpleFactory<>())) {
+        try (final GenericKeyedObjectPool<?, ?, TestException> pool = new GenericKeyedObjectPool<>(new SimpleFactory<>())) {
             pool.setMessagesStatistics(true);
             assertNotEquals("foo", (pool.appendStats("foo")));
             pool.setMessagesStatistics(false);
@@ -1193,11 +1194,11 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
     // POOL-259
     @Test
-    public void testClientWaitStats() throws Exception {
+    public void testClientWaitStats() throws TestException {
         final SimpleFactory<String> factory = new SimpleFactory<>();
         // Give makeObject a little latency
         factory.setMakeLatency(200);
-        try (final GenericKeyedObjectPool<String, String, Exception> pool = new GenericKeyedObjectPool<>(factory,
+        try (final GenericKeyedObjectPool<String, String, TestException> pool = new GenericKeyedObjectPool<>(factory,
                 new GenericKeyedObjectPoolConfig<>())) {
             final String s = pool.borrowObject("one");
             // First borrow waits on create, so wait time should be at least 200 ms
@@ -1251,8 +1252,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             targets.add(targ);
             // Launch nThreads threads all trying to invalidate the target
             for (int i = 0; i < nThreads; i++) {
-                threads[i] =
-                        new InvalidateThread(gkoPool, key, obj[targ.intValue()]);
+                threads[i] = new InvalidateThread(gkoPool, key, obj[targ.intValue()]);
             }
             for (int i = 0; i < nThreads; i++) {
                 new Thread(threads[i]).start();
@@ -1373,12 +1373,12 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
      * frequency of evictor timer.
      */
     @Test
-    public void testContructorEvictionConfig() throws Exception {
+    public void testContructorEvictionConfig() throws TestException {
         final GenericKeyedObjectPoolConfig<String> config = new GenericKeyedObjectPoolConfig<>();
         config.setTimeBetweenEvictionRuns(Duration.ofMillis(500));
         config.setMinEvictableIdleTime(Duration.ofMillis(50));
         config.setNumTestsPerEvictionRun(5);
-        try (final GenericKeyedObjectPool<String, String, Exception> p = new GenericKeyedObjectPool<>(simpleFactory, config)) {
+        try (final GenericKeyedObjectPool<String, String, TestException> p = new GenericKeyedObjectPool<>(simpleFactory, config)) {
             for (int i = 0; i < 5; i++) {
                 p.addObject("one");
             }
@@ -1691,22 +1691,22 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
      * invalidated.
      *
      * JIRA: POOL-240
-     *
+     * @throws InterruptedException Custom exception
      * @throws Exception May occur in some failure modes
      */
     @Test
-    public void testInvalidateFreesCapacity() throws Exception {
+    public void testInvalidateFreesCapacity() throws TestException, InterruptedException {
         final SimpleFactory<String> factory = new SimpleFactory<>();
-        try (final GenericKeyedObjectPool<String, String, Exception> pool = new GenericKeyedObjectPool<>(factory)) {
+        try (final GenericKeyedObjectPool<String, String, TestException> pool = new GenericKeyedObjectPool<>(factory)) {
             pool.setMaxTotalPerKey(2);
             pool.setMaxWaitMillis(500);
             // Borrow an instance and hold if for 5 seconds
-            final WaitingTestThread<Exception> thread1 = new WaitingTestThread<>(pool, "one", 5000);
+            final WaitingTestThread<TestException> thread1 = new WaitingTestThread<>(pool, "one", 5000);
             thread1.start();
             // Borrow another instance
             final String obj = pool.borrowObject("one");
             // Launch another thread - will block, but fail in 500 ms
-            final WaitingTestThread<Exception> thread2 = new WaitingTestThread<>(pool, "one", 100);
+            final WaitingTestThread<TestException> thread2 = new WaitingTestThread<>(pool, "one", 100);
             thread2.start();
             // Invalidate the object borrowed by this thread - should allow thread2 to create
             Thread.sleep(20);
@@ -1850,9 +1850,9 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         gkoPool.setMaxWaitMillis(3000);  // Really a timeout for the test
 
         // Check out and briefly hold 3 "1"s
-        final WaitingTestThread<Exception> t1 = new WaitingTestThread<>(gkoPool, "1", 100);
-        final WaitingTestThread<Exception> t2 = new WaitingTestThread<>(gkoPool, "1", 100);
-        final WaitingTestThread<Exception> t3 = new WaitingTestThread<>(gkoPool, "1", 100);
+        final WaitingTestThread<TestException> t1 = new WaitingTestThread<>(gkoPool, "1", 100);
+        final WaitingTestThread<TestException> t2 = new WaitingTestThread<>(gkoPool, "1", 100);
+        final WaitingTestThread<TestException> t3 = new WaitingTestThread<>(gkoPool, "1", 100);
         t1.start();
         t2.start();
         t3.start();
@@ -1872,7 +1872,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     @Test
     public void testMakeObjectException() throws Exception {
         final SimpleFactory<String> factory = new SimpleFactory<>();
-        try (final GenericKeyedObjectPool<String, String, Exception> pool = new GenericKeyedObjectPool<>(factory)) {
+        try (final GenericKeyedObjectPool<String, String, TestException> pool = new GenericKeyedObjectPool<>(factory)) {
             pool.setMaxTotalPerKey(1);
             pool.setBlockWhenExhausted(false);
             factory.exceptionOnCreate = true;
@@ -2083,8 +2083,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
         final int holdTime = 2000;
 
-        final TestThread<String, Exception> testA = new TestThread<>(gkoPool, 1, 0, holdTime, false, null, "a");
-        final TestThread<String, Exception> testB = new TestThread<>(gkoPool, 1, 0, holdTime, false, null, "b");
+        final TestThread<String, TestException> testA = new TestThread<>(gkoPool, 1, 0, holdTime, false, null, "a");
+        final TestThread<String, TestException> testB = new TestThread<>(gkoPool, 1, 0, holdTime, false, null, "b");
 
         final Thread threadA = new Thread(testA);
         final Thread threadB = new Thread(testB);
@@ -2138,16 +2138,16 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         gkoPool.setMaxWaitMillis(maxWait);
         gkoPool.setMaxTotalPerKey(threadsPerKey);
         // Create enough threads so half the threads will have to wait
-        final WaitingTestThread<Exception>[] wtt = new WaitingTestThread[keyCount * threadsPerKey * 2];
+        final WaitingTestThread<TestException>[] wtt = new WaitingTestThread[keyCount * threadsPerKey * 2];
         for (int i = 0; i < wtt.length; i++) {
             wtt[i] = new WaitingTestThread<>(gkoPool, Integer.toString(i % keyCount), holdTime);
         }
         final long originMillis = System.currentTimeMillis() - 1000;
-        for (final WaitingTestThread<Exception> element : wtt) {
+        for (final WaitingTestThread<TestException> element : wtt) {
             element.start();
         }
         int failed = 0;
-        for (final WaitingTestThread<Exception> element : wtt) {
+        for (final WaitingTestThread<TestException> element : wtt) {
             element.join();
             if (element.thrown != null){
                 failed++;
@@ -2162,7 +2162,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                     " Threads: " + wtt.length +
                     " Failed: " + failed
                     );
-            for (final WaitingTestThread<Exception> wt : wtt) {
+            for (final WaitingTestThread<TestException> wt : wtt) {
                 System.out.println(
                         "Preborrow: " + (wt.preBorrowMillis - originMillis) +
                         " Postborrow: " + (wt.postBorrowMillis != 0 ? wt.postBorrowMillis - originMillis : -1) +
@@ -2405,7 +2405,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
     @Test
     public void testReturnObjectThrowsIllegalStateException() {
-        try (final GenericKeyedObjectPool<String, String, Exception> pool = new GenericKeyedObjectPool<>(new SimpleFactory<>())) {
+        try (final GenericKeyedObjectPool<String, String, TestException> pool = new GenericKeyedObjectPool<>(new SimpleFactory<>())) {
             assertThrows(IllegalStateException.class,
                     () ->  pool.returnObject("Foo", "Bar"));
         }
@@ -2422,8 +2422,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         gkoPool.returnObject("0", obj);
 
         // Test return object with a take waiter
-        final TestThread<String, Exception> testA = new TestThread<>(gkoPool, 1, 0, 500, false, null, "0");
-        final TestThread<String, Exception> testB = new TestThread<>(gkoPool, 1, 0, 0, false, null, "1");
+        final TestThread<String, TestException> testA = new TestThread<>(gkoPool, 1, 0, 500, false, null, "0");
+        final TestThread<String, TestException> testB = new TestThread<>(gkoPool, 1, 0, 0, false, null, "1");
         final Thread threadA = new Thread(testA);
         final Thread threadB = new Thread(testB);
         threadA.start();
@@ -2454,7 +2454,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         final SimpleFactory<String> factory = new SimpleFactory<>();
         factory.setValidateLatency(100);
         factory.setValid(true); // Validation always succeeds
-        try (final GenericKeyedObjectPool<String, String, Exception> pool = new GenericKeyedObjectPool<>(factory)) {
+        try (final GenericKeyedObjectPool<String, String, TestException> pool = new GenericKeyedObjectPool<>(factory)) {
             pool.setMaxWaitMillis(1000);
             pool.setTestWhileIdle(true);
             pool.setMaxTotalPerKey(2);
@@ -2601,16 +2601,16 @@ public void testValidateOnCreateFailure() throws Exception {
         final SimpleFactory<String> factory = new SimpleFactory<>();
         factory.setValid(false); // Validate will always fail
         factory.setValidationEnabled(true);
-        try (final GenericKeyedObjectPool<String, String, Exception> pool = new GenericKeyedObjectPool<>(factory)) {
+        try (final GenericKeyedObjectPool<String, String, TestException> pool = new GenericKeyedObjectPool<>(factory)) {
             pool.setMaxTotalPerKey(2);
             pool.setMaxWaitMillis(1500);
             pool.setTestOnReturn(true);
             pool.setTestOnBorrow(false);
             // Borrow an instance and hold if for 5 seconds
-            final WaitingTestThread<Exception> thread1 = new WaitingTestThread<>(pool, "one", 5000);
+            final WaitingTestThread<TestException> thread1 = new WaitingTestThread<>(pool, "one", 5000);
             thread1.start();
             // Borrow another instance and return it after 500 ms (validation will fail)
-            final WaitingTestThread<Exception> thread2 = new WaitingTestThread<>(pool, "one", 500);
+            final WaitingTestThread<TestException> thread2 = new WaitingTestThread<>(pool, "one", 500);
             thread2.start();
             Thread.sleep(50);
             // Try to borrow an object
@@ -2664,7 +2664,7 @@ public void testValidateOnCreateFailure() throws Exception {
         assertNotNull(obj1);
 
         // Create a separate thread to try and borrow another object
-        final WaitingTestThread<Exception> wtt = new WaitingTestThread<>(gkoPool, "a", 200);
+        final WaitingTestThread<TestException> wtt = new WaitingTestThread<>(gkoPool, "a", 200);
         wtt.start();
         // Give wtt time to start
         Thread.sleep(200);
