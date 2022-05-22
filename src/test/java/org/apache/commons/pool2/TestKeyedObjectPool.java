@@ -520,7 +520,7 @@ public abstract class TestKeyedObjectPool {
         expectedMethods.add(new MethodCall("passivateObject", KEY, ZERO));
         assertEquals(expectedMethods, factory.getMethodCalls());
 
-        //// Test exception handling of addObject
+        // Test exception handling of addObject
         reset(pool, factory, expectedMethods);
 
         // makeObject Exceptions should be propagated to client code from addObject
@@ -557,7 +557,7 @@ public abstract class TestKeyedObjectPool {
             ((GenericKeyedObjectPool<Object, Object, PrivateException>) pool).setTestOnBorrow(true);
         }
 
-        /// Test correct behavior code paths
+        // Test correct behavior code paths
 
         // existing idle object should be activated and validated
         pool.addObject(KEY);
@@ -568,7 +568,7 @@ public abstract class TestKeyedObjectPool {
         assertEquals(expectedMethods, factory.getMethodCalls());
         pool.returnObject(KEY, obj);
 
-        //// Test exception handling of borrowObject
+        // Test exception handling of borrowObject
         reset(pool, factory, expectedMethods);
 
         // makeObject Exceptions should be propagated to client code from borrowObject
@@ -630,11 +630,11 @@ public abstract class TestKeyedObjectPool {
         }
         final List<MethodCall> expectedMethods = new ArrayList<>();
 
-        /// Test correct behavior code paths
+        // Test correct behavior code paths
         pool.addObjects(KEY, 5);
         pool.clear();
 
-        //// Test exception handling clear should swallow destroy object failures
+        // Test exception handling clear should swallow destroy object failures
         reset(pool, factory, expectedMethods);
         factory.setDestroyObjectFail(true);
         pool.addObjects(KEY, 5);
@@ -654,11 +654,11 @@ public abstract class TestKeyedObjectPool {
         }
         final List<MethodCall> expectedMethods = new ArrayList<>();
 
-        /// Test correct behavior code paths
+        // Test correct behavior code paths
         pool.addObjects(KEY, 5);
         pool.close();
 
-        //// Test exception handling close should swallow failures
+        // Test exception handling close should swallow failures
         try (final KeyedObjectPool<Object, Object, PrivateException> pool2 = makeEmptyPool(factory)) {
             reset(pool2, factory, expectedMethods);
             factory.setDestroyObjectFail(true);
@@ -678,7 +678,7 @@ public abstract class TestKeyedObjectPool {
         final List<MethodCall> expectedMethods = new ArrayList<>();
         Object obj;
 
-        /// Test correct behavior code paths
+        // Test correct behavior code paths
 
         obj = pool.borrowObject(KEY);
         clear(factory, expectedMethods);
@@ -688,7 +688,7 @@ public abstract class TestKeyedObjectPool {
         expectedMethods.add(new MethodCall("destroyObject", KEY, obj));
         assertEquals(expectedMethods, factory.getMethodCalls());
 
-        //// Test exception handling of invalidateObject
+        // Test exception handling of invalidateObject
         reset(pool, factory, expectedMethods);
         final Object obj2 = pool.borrowObject(KEY);
         clear(factory, expectedMethods);
@@ -712,7 +712,7 @@ public abstract class TestKeyedObjectPool {
         final List<MethodCall> expectedMethods = new ArrayList<>();
         Object obj;
 
-        /// Test correct behavior code paths
+        // Test correct behavior code paths
         obj = pool.borrowObject(KEY);
         clear(factory, expectedMethods);
 
@@ -721,7 +721,7 @@ public abstract class TestKeyedObjectPool {
         expectedMethods.add(new MethodCall("passivateObject", KEY, obj));
         assertEquals(expectedMethods, factory.getMethodCalls());
 
-        //// Test exception handling of returnObject
+        // Test exception handling of returnObject
         reset(pool, factory, expectedMethods);
 
         // passivateObject should swallow exceptions and not add the object to the pool

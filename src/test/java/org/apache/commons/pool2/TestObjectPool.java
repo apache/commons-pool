@@ -138,7 +138,7 @@ public abstract class TestObjectPool {
         expectedMethods.add(new MethodCall("passivateObject", ZERO));
         assertEquals(expectedMethods, factory.getMethodCalls());
 
-        //// Test exception handling of addObject
+        // Test exception handling of addObject
         reset(pool, factory, expectedMethods);
 
         // makeObject Exceptions should be propagated to client code from addObject
@@ -178,7 +178,7 @@ public abstract class TestObjectPool {
         final List<MethodCall> expectedMethods = new ArrayList<>();
         Object obj;
 
-        /// Test correct behavior code paths
+        // Test correct behavior code paths
 
         // existing idle object should be activated and validated
         pool.addObject();
@@ -189,7 +189,7 @@ public abstract class TestObjectPool {
         assertEquals(expectedMethods, factory.getMethodCalls());
         pool.returnObject(obj);
 
-        //// Test exception handling of borrowObject
+        // Test exception handling of borrowObject
         reset(pool, factory, expectedMethods);
 
         // makeObject Exceptions should be propagated to client code from borrowObject
@@ -246,11 +246,11 @@ public abstract class TestObjectPool {
         }
         final List<MethodCall> expectedMethods = new ArrayList<>();
 
-        /// Test correct behavior code paths
+        // Test correct behavior code paths
         pool.addObjects(5);
         pool.clear();
 
-        //// Test exception handling clear should swallow destroy object failures
+        // Test exception handling clear should swallow destroy object failures
         reset(pool, factory, expectedMethods);
         factory.setDestroyObjectFail(true);
         pool.addObjects(5);
@@ -332,7 +332,7 @@ public abstract class TestObjectPool {
         final List<MethodCall> expectedMethods = new ArrayList<>();
         Object obj;
 
-        /// Test correct behavior code paths
+        // Test correct behavior code paths
         obj = pool.borrowObject();
         clear(factory, expectedMethods);
 
@@ -346,7 +346,7 @@ public abstract class TestObjectPool {
         expectedMethods.add(new MethodCall("passivateObject", obj));
         assertEquals(expectedMethods, factory.getMethodCalls());
 
-        //// Test exception handling of returnObject
+        // Test exception handling of returnObject
         reset(pool, factory, expectedMethods);
         pool.addObject();
         pool.addObject();
