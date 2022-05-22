@@ -125,9 +125,11 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             this.pool = pool;
             this.key = key;
         }
+        
         public boolean complete() {
             return done;
         }
+        
         @Override
         public void run() {
             try {
@@ -155,6 +157,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             return new DefaultPooledObject<>(value);
         }
     }
+
     public static class SimpleFactory<K> implements KeyedPooledObjectFactory<K, String, Exception> {
         volatile int counter;
         final boolean valid;
@@ -222,43 +225,55 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             }
             return new DefaultPooledObject<>(out);
         }
+        
         @Override
         public void passivateObject(final K key, final PooledObject<String> obj) throws Exception {
             if (exceptionOnPassivate) {
                 throw new Exception();
             }
         }
+        
         public void setDestroyLatency(final long destroyLatency) {
             this.destroyLatency = destroyLatency;
         }
+        
         void setEvenValid(final boolean valid) {
             evenValid = valid;
         }
+        
         public void setMakeLatency(final long makeLatency) {
             this.makeLatency = makeLatency;
         }
+        
         public void setMaxTotalPerKey(final int maxTotalPerKey) {
             this.maxTotalPerKey = maxTotalPerKey;
         }
+        
         public void setThrowExceptionOnActivate(final boolean b) {
             exceptionOnActivate = b;
         }
+        
         public void setThrowExceptionOnDestroy(final boolean b) {
             exceptionOnDestroy = b;
         }
+        
         public void setThrowExceptionOnPassivate(final boolean b) {
             exceptionOnPassivate = b;
         }
+        
         public void setThrowExceptionOnValidate(final boolean b) {
             exceptionOnValidate = b;
         }
+        
         void setValid(final boolean valid) {
             evenValid = valid;
             oddValid = valid;
         }
+        
         public void setValidateLatency(final long validateLatency) {
             this.validateLatency = validateLatency;
         }
+        
         public void setValidationEnabled(final boolean b) {
             enableValidation = b;
         }
@@ -275,6 +290,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             return valid;
         }
     }
+    
     private static class SimplePerKeyFactory extends BaseKeyedPooledObjectFactory<Object, Object, RuntimeException> {
         final ConcurrentHashMap<Object, AtomicInteger> map = new ConcurrentHashMap<>();
 
