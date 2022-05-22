@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.pool2.TestException;
 import org.apache.commons.pool2.impl.TestGenericObjectPool.SimpleFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +32,7 @@ import org.junit.jupiter.api.Test;
  */
 public class TestBaseGenericObjectPool {
 
-    BaseGenericObjectPool<String, Exception> pool;
+    BaseGenericObjectPool<String, TestException> pool;
     SimpleFactory factory;
 
     @BeforeEach

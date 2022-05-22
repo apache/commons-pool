@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.text.SimpleDateFormat;
 import java.util.Set;
 
+import org.apache.commons.pool2.TestException;
 import org.apache.commons.pool2.impl.TestGenericObjectPool.SimpleFactory;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +35,7 @@ public class TestDefaultPooledObjectInfo {
         abandonedConfig.setRemoveAbandonedOnBorrow(true);
         abandonedConfig.setRemoveAbandonedTimeout(TestConstants.ONE_SECOND_DURATION);
         abandonedConfig.setLogAbandoned(true);
-        try (final GenericObjectPool<String, Exception> pool = new GenericObjectPool<>(new SimpleFactory(),
+        try (final GenericObjectPool<String, TestException> pool = new GenericObjectPool<>(new SimpleFactory(),
                 new GenericObjectPoolConfig<>(), abandonedConfig)) {
 
             pool.borrowObject();
@@ -50,7 +51,7 @@ public class TestDefaultPooledObjectInfo {
 
     @Test
     public void testGetPooledObjectToString() throws Exception {
-        try (final GenericObjectPool<String, Exception> pool = new GenericObjectPool<>(new SimpleFactory())) {
+        try (final GenericObjectPool<String, TestException> pool = new GenericObjectPool<>(new SimpleFactory())) {
 
             final String s1 = pool.borrowObject();
 
@@ -66,7 +67,7 @@ public class TestDefaultPooledObjectInfo {
 
     @Test
     public void testGetPooledObjectType() throws Exception {
-        try (final GenericObjectPool<String, Exception> pool = new GenericObjectPool<>(new SimpleFactory())) {
+        try (final GenericObjectPool<String, TestException> pool = new GenericObjectPool<>(new SimpleFactory())) {
 
             pool.borrowObject();
 
@@ -82,7 +83,7 @@ public class TestDefaultPooledObjectInfo {
 
     @Test
     public void testTiming() throws Exception {
-        try (final GenericObjectPool<String, Exception> pool = new GenericObjectPool<>(new SimpleFactory())) {
+        try (final GenericObjectPool<String, TestException> pool = new GenericObjectPool<>(new SimpleFactory())) {
 
             final long t1Millis = System.currentTimeMillis();
 
