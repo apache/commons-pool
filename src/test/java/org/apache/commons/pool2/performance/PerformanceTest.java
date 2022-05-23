@@ -29,16 +29,16 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 
 /**
  * Multi-thread performance test
- *
  */
 public class PerformanceTest {
+
     class PerfTask implements Callable<TaskStats> {
         final TaskStats taskStats = new TaskStats();
         long borrowTimeMillis;
         long returnTimeMillis;
 
         @Override
-        public TaskStats call() throws Exception {
+        public TaskStats call() {
                runOnce(); // warmup
                for (int i = 0; i < nrIterations; i++) {
                    runOnce();

@@ -157,7 +157,7 @@ public class TestPoolUtils {
     }
 
     @Test
-    public void testCheckMinIdleKeyedObjectPool() throws Exception {
+    public void testCheckMinIdleKeyedObjectPool() throws InterruptedException {
         assertThrows(IllegalArgumentException.class, () -> PoolUtils.checkMinIdle(null, new Object(), 1, 1),
                 "PoolUtils.checkMinIdle(KeyedObjectPool,Object,int,long) must not allow null pool.");
         try (@SuppressWarnings("unchecked")
@@ -552,7 +552,7 @@ public class TestPoolUtils {
     }
 
     @Test
-    public void testErodingPoolObjectPool() throws Exception {
+    public void testErodingPoolObjectPool() throws InterruptedException {
         assertThrows(IllegalArgumentException.class, () -> PoolUtils.erodingPool((ObjectPool<Object, RuntimeException>) null),
                 "PoolUtils.erodingPool(ObjectPool) must not allow a null pool.");
 

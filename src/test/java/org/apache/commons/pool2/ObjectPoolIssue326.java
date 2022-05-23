@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -69,7 +70,7 @@ public final class ObjectPoolIssue326 {
         }
 
         @Override
-        public Object call() throws Exception {
+        public Object call() throws E {
             try {
                 final Object value;
                 value = m_pool.borrowObject(m_key);
@@ -107,7 +108,7 @@ public final class ObjectPoolIssue326 {
         return tasks;
     }
 
-    private void run() throws Exception {
+    private void run() throws InterruptedException, ExecutionException {
         final GenericKeyedObjectPoolConfig<Object> poolConfig = new GenericKeyedObjectPoolConfig<>();
         poolConfig.setMaxTotal(10);
         poolConfig.setMaxTotalPerKey(5);

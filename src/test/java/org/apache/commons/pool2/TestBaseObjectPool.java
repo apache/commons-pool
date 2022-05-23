@@ -91,7 +91,7 @@ public class TestBaseObjectPool extends TestObjectPool {
     }
 
     @Test
-    public void testBaseAddObject() throws Exception {
+    public void testBaseAddObject() {
         try {
             pool = makeEmptyPool(3);
         } catch(final UnsupportedOperationException e) {
@@ -118,7 +118,7 @@ public class TestBaseObjectPool extends TestObjectPool {
     }
 
     @Test
-    public void testBaseBorrow() throws Exception {
+    public void testBaseBorrow() {
         try {
             pool = makeEmptyPool(3);
         } catch(final UnsupportedOperationException e) {
@@ -131,7 +131,7 @@ public class TestBaseObjectPool extends TestObjectPool {
     }
 
     @Test
-    public void testBaseBorrowReturn() throws Exception {
+    public void testBaseBorrowReturn() {
         try {
             pool = makeEmptyPool(3);
         } catch(final UnsupportedOperationException e) {
@@ -170,7 +170,7 @@ public class TestBaseObjectPool extends TestObjectPool {
     }
 
     @Test
-    public void testBaseClear() throws Exception {
+    public void testBaseClear() {
         try {
             pool = makeEmptyPool(3);
         } catch (final UnsupportedOperationException e) {
@@ -195,7 +195,7 @@ public class TestBaseObjectPool extends TestObjectPool {
     }
 
     @Test
-    public void testBaseClosePool() throws Exception {
+    public void testBaseClosePool() {
         try {
             pool = makeEmptyPool(3);
         } catch(final UnsupportedOperationException e) {
@@ -209,7 +209,7 @@ public class TestBaseObjectPool extends TestObjectPool {
     }
 
     @Test
-    public void testBaseInvalidateObject() throws Exception {
+    public void testBaseInvalidateObject() {
         try {
             pool = makeEmptyPool(3);
         } catch (final UnsupportedOperationException e) {
@@ -231,7 +231,7 @@ public class TestBaseObjectPool extends TestObjectPool {
     }
 
     @Test
-    public void testBaseNumActiveNumIdle() throws Exception {
+    public void testBaseNumActiveNumIdle() {
         try {
             pool = makeEmptyPool(3);
         } catch (final UnsupportedOperationException e) {

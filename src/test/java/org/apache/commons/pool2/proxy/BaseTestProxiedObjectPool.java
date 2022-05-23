@@ -108,7 +108,7 @@ public abstract class BaseTestProxiedObjectPool {
 
 
     @Test
-    public void testAccessAfterInvalidate() throws Exception {
+    public void testAccessAfterInvalidate() {
         final TestObject obj = pool.borrowObject();
         assertNotNull(obj);
 
@@ -127,7 +127,7 @@ public abstract class BaseTestProxiedObjectPool {
 
 
     @Test
-    public void testAccessAfterReturn() throws Exception {
+    public void testAccessAfterReturn() {
         final TestObject obj = pool.borrowObject();
         assertNotNull(obj);
 
@@ -145,7 +145,7 @@ public abstract class BaseTestProxiedObjectPool {
 
 
     @Test
-    public void testBorrowObject() throws Exception {
+    public void testBorrowObject() {
         final TestObject obj = pool.borrowObject();
         assertNotNull(obj);
 
@@ -157,7 +157,7 @@ public abstract class BaseTestProxiedObjectPool {
     }
 
     @Test
-    public void testPassThroughMethods01() throws Exception {
+    public void testPassThroughMethods01() {
         assertEquals(0, pool.getNumActive());
         assertEquals(0, pool.getNumIdle());
 
@@ -183,7 +183,7 @@ public abstract class BaseTestProxiedObjectPool {
 
 
     @Test
-    public void testUsageTracking() throws Exception {
+    public void testUsageTracking() throws InterruptedException {
         final TestObject obj = pool.borrowObject();
         assertNotNull(obj);
 

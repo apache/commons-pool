@@ -190,10 +190,10 @@ public class TestAbandonedKeyedObjectPool {
      * Verify that an object that gets flagged as abandoned and is subsequently
      * invalidated is only destroyed (and pool counter decremented) once.
      *
-     * @throws Exception May occur in some failure modes
+     * @throws InterruptedException May occur in some failure modes
      */
     @Test
-    public void testAbandonedInvalidate() throws Exception {
+    public void testAbandonedInvalidate() throws InterruptedException {
         abandonedConfig = new AbandonedConfig();
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
         abandonedConfig.setRemoveAbandonedTimeout(TestConstants.ONE_SECOND_DURATION);
