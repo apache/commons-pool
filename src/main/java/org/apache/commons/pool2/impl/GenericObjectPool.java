@@ -757,10 +757,9 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
                                 }
                             }
                         }
-                        if (!underTest.endEvictionTest(idleObjects)) {
-                            // TODO - May need to add code here once additional
-                            // states are used
-                        }
+                        underTest.endEvictionTest(idleObjects);
+                        // TODO - May need to add code here once additional
+                        // states are used
                     }
                 }
             }

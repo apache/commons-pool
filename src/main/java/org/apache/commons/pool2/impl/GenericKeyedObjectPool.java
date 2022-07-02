@@ -1085,10 +1085,9 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
                                 }
                             }
                         }
-                        if (!underTest.endEvictionTest(idleObjects)) {
-                            // TODO - May need to add code here once additional
-                            // states are used
-                        }
+                        underTest.endEvictionTest(idleObjects);
+                        // TODO - May need to add code here once additional
+                        // states are used
                     }
                 }
             }
