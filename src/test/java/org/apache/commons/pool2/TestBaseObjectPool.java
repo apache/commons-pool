@@ -27,16 +27,16 @@ import org.junit.jupiter.api.Test;
  */
 public class TestBaseObjectPool extends TestObjectPool {
     private static class TestObjectPool extends BaseObjectPool<Object, RuntimeException> {
-        
+
         @Override
         public Object borrowObject() {
             return null;
         }
-        
+
         @Override
         public void invalidateObject(final Object obj) {
         }
-        
+
         @Override
         public void returnObject(final Object obj) {
         }

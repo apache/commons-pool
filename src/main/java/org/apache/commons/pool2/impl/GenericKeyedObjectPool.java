@@ -416,8 +416,8 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
         assertOpen();
 
         final AbandonedConfig ac = this.abandonedConfig;
-        if (ac != null && ac.getRemoveAbandonedOnBorrow() && (getNumIdle() < 2) &&
-                (getNumActive() > getMaxTotal() - 3)) {
+        if (ac != null && ac.getRemoveAbandonedOnBorrow() && getNumIdle() < 2 &&
+                getNumActive() > getMaxTotal() - 3) {
             removeAbandoned(ac);
         }
 
@@ -444,7 +444,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
                 if (blockWhenExhausted) {
                     if (p == null) {
                         try {
-                            p = borrowMaxWaitMillis < 0 ? objectDeque.getIdleObjects().takeFirst() : 
+                            p = borrowMaxWaitMillis < 0 ? objectDeque.getIdleObjects().takeFirst() :
                                 objectDeque.getIdleObjects().pollFirst(borrowMaxWaitMillis, TimeUnit.MILLISECONDS);
                         } catch (InterruptedException e) {
                             throw cast(e);
@@ -604,7 +604,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * @param key the key to clear
      * @param reuseCapacity whether or not to reuse freed capacity
      */
-    public void clear(final K key, boolean reuseCapacity) {
+    public void clear(final K key, final boolean reuseCapacity) {
         final ObjectDeque<T> objectDeque = register(key);
         int freedCapacity = 0;
         try {
@@ -653,7 +653,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
 
         // Now iterate created map and kill the first 15% plus one to account
         // for zero
-        int itemsToRemove = ((int) (map.size() * 0.15)) + 1;
+        int itemsToRemove = (int) (map.size() * 0.15) + 1;
         final Iterator<Entry<PooledObject<T>, K>> iter = map.entrySet().iterator();
 
         while (iter.hasNext() && itemsToRemove > 0) {
@@ -1237,7 +1237,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
         if (numTests >= 0) {
             return Math.min(numTests, totalIdle);
         }
-        return (int) (Math.ceil(totalIdle / Math.abs((double) numTests)));
+        return (int) Math.ceil(totalIdle / Math.abs((double) numTests));
     }
 
     /**
@@ -1617,7 +1617,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      *
      * @param newCapacity number of new instances to attempt to create.
      */
-    private void reuseCapacity(int newCapacity) {
+    private void reuseCapacity(final int newCapacity) {
         for (int i = 0; i < newCapacity; i++) {
             reuseCapacity();
         }

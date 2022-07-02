@@ -126,7 +126,7 @@ class EvictionTimer {
 
     /** Keys are weak references to tasks, values are runners managed by executor. */
     private static final HashMap<
-        WeakReference<BaseGenericObjectPool<?, ?>.Evictor>, 
+        WeakReference<BaseGenericObjectPool<?, ?>.Evictor>,
         WeakRunner<BaseGenericObjectPool<?, ?>.Evictor>> TASK_MAP = new HashMap<>(); // @GuardedBy("EvictionTimer.class")
 
     /**
@@ -159,7 +159,7 @@ class EvictionTimer {
 
     /**
      * For testing only.
-     * 
+     *
      * @return The executor.
      */
     static ScheduledThreadPoolExecutor getExecutor() {

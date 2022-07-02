@@ -219,7 +219,7 @@ public abstract class TestKeyedObjectPool {
      * behaviors described in {@link KeyedObjectPool}.
      * Generally speaking there should be no limits on the various object counts.
      *
-     * @param <E> The type of exception thrown by the pool 
+     * @param <E> The type of exception thrown by the pool
      * @param factory Factory to use to associate with the pool
      * @return The newly created empty pool
      */

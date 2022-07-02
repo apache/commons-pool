@@ -354,7 +354,7 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
         removeClearedReferences(idleReferences.iterator());
         removeClearedReferences(allReferences.iterator());
         while (refQueue.poll() != null) {
-            // empty
+            // draining queue
         }
     }
 

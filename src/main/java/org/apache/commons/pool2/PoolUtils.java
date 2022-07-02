@@ -99,7 +99,7 @@ public final class PoolUtils {
             idleHighWaterMark = Math.max(idle, idleHighWaterMark);
             final float maxInterval = 15f;
             final float minutes = maxInterval +
-                    ((1f - maxInterval) / idleHighWaterMark) * idle;
+                    (1f - maxInterval) / idleHighWaterMark * idle;
             nextShrinkMillis = nowMillis + (long) (minutes * 60000f * factor);
         }
     }

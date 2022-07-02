@@ -275,8 +275,8 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
         assertOpen();
 
         final AbandonedConfig ac = this.abandonedConfig;
-        if (ac != null && ac.getRemoveAbandonedOnBorrow() && (getNumIdle() < 2) &&
-                (getNumActive() > getMaxTotal() - 3)) {
+        if (ac != null && ac.getRemoveAbandonedOnBorrow() && getNumIdle() < 2 &&
+                getNumActive() > getMaxTotal() - 3) {
             removeAbandoned(ac);
         }
 
@@ -305,7 +305,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
                     } catch (final InterruptedException e) {
                         // Don't surface exception type of internal locking mechanism.
                         throw cast(e);
-                    }  
+                    }
                 }
                 if (p == null) {
                     throw new NoSuchElementException(appendStats(
@@ -547,8 +547,8 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
 
             // Do not block more if maxWaitTimeMillis is set.
             if (create == null &&
-                (localMaxWaitTimeMillis > 0 &&
-                 System.currentTimeMillis() - localStartTimeMillis >= localMaxWaitTimeMillis)) {
+                localMaxWaitTimeMillis > 0 &&
+                 System.currentTimeMillis() - localStartTimeMillis >= localMaxWaitTimeMillis) {
                 create = Boolean.FALSE;
             }
         }
@@ -620,7 +620,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
      * @throws E if the factory's makeObject throws
      */
     private void ensureIdle(final int idleCount, final boolean always) throws E {
-        if (idleCount < 1 || isClosed() || (!always && !idleObjects.hasTakeWaiters())) {
+        if (idleCount < 1 || isClosed() || !always && !idleObjects.hasTakeWaiters()) {
             return;
         }
 
@@ -865,8 +865,8 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
         if (numTestsPerEvictionRun >= 0) {
             return Math.min(numTestsPerEvictionRun, idleObjects.size());
         }
-        return (int) (Math.ceil(idleObjects.size() /
-                Math.abs((double) numTestsPerEvictionRun)));
+        return (int) Math.ceil(idleObjects.size() /
+                Math.abs((double) numTestsPerEvictionRun));
     }
 
     /**
@@ -918,7 +918,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
      * Activation of this method decrements the active count and attempts to destroy the instance, using the provided
      * {@link DestroyMode}.
      * </p>
-     * 
+     *
      * @throws E if an exception occurs destroying the object
      * @throws IllegalStateException if obj does not belong to this pool
      * @since 2.9.0
@@ -1177,5 +1177,5 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
             getPooledObject(pooledObject).use();
         }
     }
-    
+
 }
