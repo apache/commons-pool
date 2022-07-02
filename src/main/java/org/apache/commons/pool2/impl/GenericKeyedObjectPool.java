@@ -467,8 +467,8 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
                     } catch (final Exception e) {
                         try {
                             destroy(key, p, true, DestroyMode.NORMAL);
-                        } catch (final Exception e1) {
-                            // Ignore - activation failure is more important
+                        } catch (final Exception ignored) {
+                            // ignored - activation failure is more important
                         }
                         p = null;
                         if (create) {
@@ -490,8 +490,8 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
                             try {
                                 destroy(key, p, true, DestroyMode.NORMAL);
                                 destroyedByBorrowValidationCount.incrementAndGet();
-                            } catch (final Exception e) {
-                                // Ignore - validation failure is more important
+                            } catch (final Exception ignored) {
+                                // ignored - validation failure is more important
                             }
                             p = null;
                             if (create) {

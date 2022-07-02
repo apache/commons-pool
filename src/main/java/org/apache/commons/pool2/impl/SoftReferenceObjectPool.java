@@ -134,7 +134,7 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
         if (shouldDestroy) {
             try {
                 destroy(ref);
-            } catch (final Exception e) {
+            } catch (final Exception ignored) {
                 // ignored
             }
         }
@@ -240,8 +240,8 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
                     if (null != ref.getObject()) {
                         factory.destroyObject(ref);
                     }
-                } catch (final Exception e) {
-                    // ignore error, keep destroying the rest
+                } catch (final Exception ignored) {
+                    // ignored, keep destroying the rest
                 }
             });
         }
@@ -426,7 +426,7 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
         if (shouldDestroy && factory != null) {
             try {
                 destroy(ref);
-            } catch (final Exception e) {
+            } catch (final Exception ignored) {
                 // ignored
             }
         }

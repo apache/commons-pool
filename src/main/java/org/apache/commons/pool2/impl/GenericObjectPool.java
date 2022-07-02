@@ -324,8 +324,8 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
                 } catch (final Exception e) {
                     try {
                         destroy(p, DestroyMode.NORMAL);
-                    } catch (final Exception e1) {
-                        // Ignore - activation failure is more important
+                    } catch (final Exception ignored) {
+                        // ignored - activation failure is more important
                     }
                     p = null;
                     if (create) {
@@ -348,8 +348,8 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
                         try {
                             destroy(p, DestroyMode.NORMAL);
                             destroyedByBorrowValidationCount.incrementAndGet();
-                        } catch (final Exception e) {
-                            // Ignore - validation failure is more important
+                        } catch (final Exception ignored) {
+                            // ignored - validation failure is more important
                         }
                         p = null;
                         if (create) {

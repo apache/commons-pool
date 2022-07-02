@@ -196,8 +196,8 @@ public final class PoolUtils {
         public void close() {
             try {
                 keyedPool.close();
-            } catch (final Exception e) {
-                // swallowed
+            } catch (final Exception ignored) {
+                // ignored
             }
         }
 
@@ -268,8 +268,8 @@ public final class PoolUtils {
         public void invalidateObject(final K key, final V obj) {
             try {
                 keyedPool.invalidateObject(key, obj);
-            } catch (final Exception e) {
-                // swallowed
+            } catch (final Exception ignored) {
+                // ignored
             }
         }
 
@@ -307,8 +307,8 @@ public final class PoolUtils {
                 } else {
                     keyedPool.returnObject(key, obj);
                 }
-            } catch (final Exception e) {
-                // swallowed
+            } catch (final Exception ignored) {
+                // ignored
             }
         }
 
@@ -385,8 +385,8 @@ public final class PoolUtils {
         public void close() {
             try {
                 pool.close();
-            } catch (final Exception e) {
-                // swallowed
+            } catch (final Exception ignored) {
+                // ignored
             }
         }
 
@@ -413,8 +413,8 @@ public final class PoolUtils {
         public void invalidateObject(final T obj) {
             try {
                 pool.invalidateObject(obj);
-            } catch (final Exception e) {
-                // swallowed
+            } catch (final Exception ignored) {
+                // ignored
             }
         }
 
@@ -450,8 +450,8 @@ public final class PoolUtils {
                 } else {
                     pool.returnObject(obj);
                 }
-            } catch (final Exception e) {
-                // swallowed
+            } catch (final Exception ignored) {
+                // ignored
             }
         }
 
@@ -781,8 +781,8 @@ public final class PoolUtils {
             writeLock.lock();
             try {
                 keyedPool.close();
-            } catch (final Exception e) {
-                // swallowed as of Pool 2
+            } catch (final Exception ignored) {
+                // ignored as of Pool 2
             } finally {
                 writeLock.unlock();
             }
@@ -867,8 +867,8 @@ public final class PoolUtils {
             writeLock.lock();
             try {
                 keyedPool.invalidateObject(key, obj);
-            } catch (final Exception e) {
-                // swallowed as of Pool 2
+            } catch (final Exception ignored) {
+                // ignored as of Pool 2
             } finally {
                 writeLock.unlock();
             }
@@ -883,8 +883,8 @@ public final class PoolUtils {
             writeLock.lock();
             try {
                 keyedPool.returnObject(key, obj);
-            } catch (final Exception e) {
-                // swallowed
+            } catch (final Exception ignored) {
+                // ignored
             } finally {
                 writeLock.unlock();
             }
@@ -1114,8 +1114,8 @@ public final class PoolUtils {
             writeLock.lock();
             try {
                 pool.close();
-            } catch (final Exception e) {
-                // swallowed as of Pool 2
+            } catch (final Exception ignored) {
+                // ignored as of Pool 2
             } finally {
                 writeLock.unlock();
             }
@@ -1158,8 +1158,8 @@ public final class PoolUtils {
             writeLock.lock();
             try {
                 pool.invalidateObject(obj);
-            } catch (final Exception e) {
-                // swallowed as of Pool 2
+            } catch (final Exception ignored) {
+                // ignored as of Pool 2
             } finally {
                 writeLock.unlock();
             }
@@ -1174,8 +1174,8 @@ public final class PoolUtils {
             writeLock.lock();
             try {
                 pool.returnObject(obj);
-            } catch (final Exception e) {
-                // swallowed as of Pool 2
+            } catch (final Exception ignored) {
+                // ignored as of Pool 2
             } finally {
                 writeLock.unlock();
             }

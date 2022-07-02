@@ -1847,7 +1847,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
             listener.onSwallowException(swallowException);
         } catch (final VirtualMachineError e) {
             throw e;
-        } catch (final Throwable t) {
+        } catch (final Throwable ignored) {
             // Ignore. Enjoy the irony.
         }
     }
