@@ -260,7 +260,7 @@
               </dependency>
             </dependencies>
             <configuration>
-              <configLocation>${basedir}/checkstyle.xml</configLocation>
+              <configLocation>${basedir}/src/conf/checkstyle.xml</configLocation>
               <enableRulesSummary>false</enableRulesSummary>
               <headerLocation>${basedir}/license-header.txt</headerLocation>
             </configuration>
@@ -277,7 +277,7 @@
               </dependency>
             </dependencies>
             <configuration>
-              <excludeFilterFile>${basedir}/findbugs-exclude-filter.xml</excludeFilterFile>
+              <excludeFilterFile>${basedir}/src/conf/findbugs-exclude-filter.xml</excludeFilterFile>
             </configuration>
           </plugin>
         </plugins>
