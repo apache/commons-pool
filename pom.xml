@@ -210,7 +210,7 @@
   </properties> 
 
   <build>
-      <defaultGoal>clean verify apache-rat:check checkstyle:check japicmp:cmp javadoc:javadoc spotbugs:check</defaultGoal>
+      <defaultGoal>clean verify apache-rat:check checkstyle:check japicmp:cmp javadoc:javadoc spotbugs:check pmd:check</defaultGoal>
       <pluginManagement>
         <plugins>
           <plugin>
