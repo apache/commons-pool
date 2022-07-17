@@ -1269,13 +1269,11 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
     public Map<String, Integer> getNumWaitersByKey() {
         final Map<String, Integer> result = new HashMap<>();
 
-        for (final Entry<K, ObjectDeque<T>> entry : poolMap.entrySet()) {
-            final K k = entry.getKey();
-            final ObjectDeque<T> deque = entry.getValue();
-            if (deque != null) {
-                result.put(k.toString(), getBlockWhenExhausted() ? Integer.valueOf(deque.getIdleObjects().getTakeQueueLength()) : ZERO);
+        poolMap.forEach((k, v) -> {
+            if (v != null) {
+                result.put(k.toString(), getBlockWhenExhausted() ? Integer.valueOf(v.getIdleObjects().getTakeQueueLength()) : ZERO);
             }
-        }
+        });
         return result;
     }
 
