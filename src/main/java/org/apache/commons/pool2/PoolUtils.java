@@ -1366,10 +1366,7 @@ public final class PoolUtils {
             throw new IllegalArgumentException(MSG_NULL_KEYS);
         }
         final Map<K, TimerTask> tasks = new HashMap<>(keys.size());
-        for (final K key : keys) {
-            final TimerTask task = checkMinIdle(keyedPool, key, minIdle, periodMillis);
-            tasks.put(key, task);
-        }
+        keys.forEach(key -> tasks.put(key, checkMinIdle(keyedPool, key, minIdle, periodMillis)));
         return tasks;
     }
 
