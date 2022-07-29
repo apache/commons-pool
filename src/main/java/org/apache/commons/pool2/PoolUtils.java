@@ -27,8 +27,6 @@ import java.util.TimerTask;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * This class consists exclusively of static methods that operate on or return
@@ -1367,7 +1365,12 @@ public final class PoolUtils {
         if (keys == null) {
             throw new IllegalArgumentException(MSG_NULL_KEYS);
         }
-        return keys.stream().collect(Collectors.toMap(Function.identity(), key -> checkMinIdle(keyedPool, key, minIdle, periodMillis)));
+        final Map<K, TimerTask> tasks = new HashMap<>(keys.size());
+        for (final K key : keys) {
+            final TimerTask task = checkMinIdle(keyedPool, key, minIdle, periodMillis);
+            tasks.put(key, task);
+        }
+        return tasks;
     }
 
     /**

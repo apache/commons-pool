@@ -74,12 +74,13 @@ class EvictionTimer {
         @Override
         public void run() {
             synchronized (EvictionTimer.class) {
-                TASK_MAP.forEach((k, v) -> {
-                    if (k.get() == null) {
-                        executor.remove(v);
-                        TASK_MAP.remove(k);
+                for (final Entry<WeakReference<BaseGenericObjectPool<?, ?>.Evictor>, WeakRunner<BaseGenericObjectPool<?, ?>.Evictor>> entry : TASK_MAP
+                        .entrySet()) {
+                    if (entry.getKey().get() == null) {
+                        executor.remove(entry.getValue());
+                        TASK_MAP.remove(entry.getKey());
                     }
-                });
+                }
                 if (TASK_MAP.isEmpty() && executor != null) {
                     executor.shutdown();
                     executor.setCorePoolSize(0);
@@ -188,10 +189,13 @@ class EvictionTimer {
      * @param evictor Eviction task to remove
      */
     private static void remove(final BaseGenericObjectPool<?, ?>.Evictor evictor) {
-        TASK_MAP.entrySet().stream().filter(entry -> entry.getKey().get() == evictor).findFirst().ifPresent(entry -> {
-            executor.remove(entry.getValue());
-            TASK_MAP.remove(entry.getKey());
-        });
+        for (final Entry<WeakReference<BaseGenericObjectPool<?, ?>.Evictor>, WeakRunner<BaseGenericObjectPool<?, ?>.Evictor>> entry : TASK_MAP.entrySet()) {
+            if (entry.getKey().get() == evictor) {
+                executor.remove(entry.getValue());
+                TASK_MAP.remove(entry.getKey());
+                break;
+            }
+        }
     }
 
     /**
