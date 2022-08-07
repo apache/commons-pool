@@ -302,11 +302,9 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * @throws E If the associated factory fails to passivate the object
      */
     private void addIdleObject(final K key, final PooledObject<T> p) throws E {
-
         if (p != null) {
             factory.passivateObject(key, p);
-            final LinkedBlockingDeque<PooledObject<T>> idleObjects =
-                    poolMap.get(key).getIdleObjects();
+            final LinkedBlockingDeque<PooledObject<T>> idleObjects = poolMap.get(key).getIdleObjects();
             if (getLifo()) {
                 idleObjects.addFirst(p);
             } else {
