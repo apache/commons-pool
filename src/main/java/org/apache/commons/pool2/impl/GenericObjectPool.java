@@ -18,7 +18,6 @@ package org.apache.commons.pool2.impl;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -102,8 +101,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
      * #_maxActive}. Map keys are pooled objects, values are the PooledObject
      * wrappers used internally by the pool.
      */
-    private final Map<IdentityWrapper<T>, PooledObject<T>> allObjects =
-        new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<IdentityWrapper<T>, PooledObject<T>> allObjects = new ConcurrentHashMap<>();
 
     /*
      * The combined count of the currently created objects and those in the

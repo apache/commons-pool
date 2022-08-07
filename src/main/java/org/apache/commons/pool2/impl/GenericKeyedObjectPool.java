@@ -193,7 +193,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
     private static final String ONAME_BASE =
             "org.apache.commons.pool2:type=GenericKeyedObjectPool,name=";
 
-    //--- configuration attributes ---------------------------------------------
     private volatile int maxIdlePerKey =
             GenericKeyedObjectPoolConfig.DEFAULT_MAX_IDLE_PER_KEY;
 
@@ -637,7 +636,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
     public void clearOldest() {
 
         // build sorted map of idle objects
-        final Map<PooledObject<T>, K> map = new TreeMap<>();
+        final TreeMap<PooledObject<T>, K> map = new TreeMap<>();
 
         poolMap.forEach((key, value) -> {
             // Each item into the map using the PooledObject object as the
@@ -1189,23 +1188,16 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
 
     @Override
     public Map<String, Integer> getNumActivePerKey() {
-        final HashMap<String, Integer> result = new HashMap<>();
-
-        poolMap.forEach((key, objectDequeue) -> {
-            result.put(key.toString(), Integer.valueOf(
-                objectDequeue.getAllObjects().size() -
-                objectDequeue.getIdleObjects().size()));
-        });
-        return result;
+        return poolMap.entrySet().stream().collect(Collectors.toMap(
+                e -> e.getKey().toString(),
+                e -> Integer.valueOf(e.getValue().getAllObjects().size() - e.getValue().getIdleObjects().size()),
+                (t, u) -> u));
     }
 
     @Override
     public int getNumIdle() {
         return poolMap.values().stream().mapToInt(e -> e.getIdleObjects().size()).sum();
     }
-
-
-    //--- JMX support ----------------------------------------------------------
 
     @Override
     public int getNumIdle(final K key) {
@@ -1214,7 +1206,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
     }
 
     /**
-     * Calculate the number of objects to test in a run of the idle object
+     * Gets the number of objects to test in a run of the idle object
      * evictor.
      *
      * @return The number of objects to test for validity
@@ -1229,7 +1221,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
     }
 
     /**
-     * Return an estimate of the number of threads currently blocked waiting for
+     * Gets an estimate of the number of threads currently blocked waiting for
      * an object from the pool. This is intended for monitoring only, not for
      * synchronization control.
      *
@@ -1246,7 +1238,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
     }
 
     /**
-     * Return an estimate of the number of threads currently blocked waiting for
+     * Gets an estimate of the number of threads currently blocked waiting for
      * an object from the pool for each key. This is intended for
      * monitoring only, not for synchronization control.
      *
@@ -1256,12 +1248,9 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
     @Override
     public Map<String, Integer> getNumWaitersByKey() {
         final Map<String, Integer> result = new HashMap<>();
-
-        for (final Entry<K, ObjectDeque<T>> entry : poolMap.entrySet()) {
-            final K k = entry.getKey();
-            final ObjectDeque<T> deque = entry.getValue();
-            result.put(k.toString(), getBlockWhenExhausted() ? Integer.valueOf(deque.getIdleObjects().getTakeQueueLength()) : ZERO);
-        }
+        poolMap.forEach((k, deque) -> result.put(k.toString(), getBlockWhenExhausted() ?
+                Integer.valueOf(deque.getIdleObjects().getTakeQueueLength()) :
+                ZERO));
         return result;
     }
 
@@ -1274,7 +1263,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
     }
 
     /**
-     * Checks to see if there are any threads currently waiting to borrow
+     * Tests to see if there are any threads currently waiting to borrow
      * objects but are blocked waiting for more objects to become available.
      *
      * @return {@code true} if there is at least one thread waiting otherwise
@@ -1351,7 +1340,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
     @Override
     public Map<String, List<DefaultPooledObjectInfo>> listAllObjects() {
         final Map<String, List<DefaultPooledObjectInfo>> result = new HashMap<>();
-
         poolMap.forEach((k, v) -> result.put(k.toString(), v.getAllObjects().values().stream().map(DefaultPooledObjectInfo::new).collect(Collectors.toList())));
         return result;
     }
