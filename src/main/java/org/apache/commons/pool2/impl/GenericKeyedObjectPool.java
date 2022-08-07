@@ -1197,15 +1197,11 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
     public Map<String, Integer> getNumActivePerKey() {
         final HashMap<String, Integer> result = new HashMap<>();
 
-        poolMap.entrySet().forEach(entry -> {
-            if (entry != null) {
-                final K key = entry.getKey();
-                final ObjectDeque<T> objectDequeue = entry.getValue();
-                if (key != null && objectDequeue != null) {
-                    result.put(key.toString(), Integer.valueOf(
-                            objectDequeue.getAllObjects().size() -
-                            objectDequeue.getIdleObjects().size()));
-                }
+        poolMap.forEach((key, objectDequeue) -> {
+            if (key != null && objectDequeue != null) {
+                result.put(key.toString(), Integer.valueOf(
+                    objectDequeue.getAllObjects().size() -
+                    objectDequeue.getIdleObjects().size()));
             }
         });
         return result;
