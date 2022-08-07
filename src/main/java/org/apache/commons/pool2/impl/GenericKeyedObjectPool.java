@@ -570,7 +570,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      */
     @Override
     public void clear() {
-        poolMap.keySet().forEach(key -> clear(key,false));
+        poolMap.keySet().forEach(key -> clear(key, false));
     }
 
     /**
