@@ -517,7 +517,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     }
 
     /**
-     * The total number of objects successfully borrowed from this pool over the
+     * Gets the total number of objects successfully borrowed from this pool over the
      * lifetime of the pool.
      * @return the borrowed object count
      */
@@ -526,7 +526,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     }
 
     /**
-     * The total number of objects created for this pool over the lifetime of
+     * Gets the total number of objects created for this pool over the lifetime of
      * the pool.
      * @return the created object count
      */
@@ -535,7 +535,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     }
 
     /**
-     * Provides the stack trace for the call that created this pool. JMX
+     * Gets the stack trace for the call that created this pool. JMX
      * registration may trigger a memory leak so it is important that pools are
      * deregistered when no longer used by calling the {@link #close()} method.
      * This method is provided to assist with identifying code that creates but
@@ -547,7 +547,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     }
 
     /**
-     * The total number of objects destroyed by this pool as a result of failing
+     * Gets the total number of objects destroyed by this pool as a result of failing
      * validation during {@code borrowObject()} over the lifetime of the
      * pool.
      * @return validation destroyed object count
@@ -557,7 +557,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     }
 
     /**
-     * The total number of objects destroyed by the evictor associated with this
+     * Gets the total number of objects destroyed by the evictor associated with this
      * pool over the lifetime of the pool.
      * @return the evictor destroyed object count
      */
@@ -566,7 +566,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     }
 
     /**
-     * The total number of objects destroyed by this pool over the lifetime of
+     * Gets the total number of objects destroyed by this pool over the lifetime of
      * the pool.
      * @return the destroyed object count
      */
@@ -665,7 +665,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     }
 
     /**
-     * Provides the name under which the pool has been registered with the
+     * Gets the name under which the pool has been registered with the
      * platform MBean server or {@code null} if the pool has not been
      * registered.
      * @return the JMX name
@@ -765,7 +765,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     }
 
     /**
-     * The mean time objects are active for based on the last {@link
+     * Gets the mean time objects are active for based on the last {@link
      * #MEAN_TIMING_STATS_CACHE_SIZE} objects returned to the pool.
      * @return mean time an object has been checked out from the pool among
      * recently returned objects
@@ -775,7 +775,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     }
 
     /**
-     * The mean time threads wait to borrow an object based on the last {@link
+     * Gets the mean time threads wait to borrow an object based on the last {@link
      * #MEAN_TIMING_STATS_CACHE_SIZE} objects borrowed from the pool.
      * @return mean time in milliseconds that a recently served thread has had
      * to wait to borrow an object from the pool
@@ -785,7 +785,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     }
 
     /**
-     * The mean time objects are idle for based on the last {@link
+     * Gets the mean time objects are idle for based on the last {@link
      * #MEAN_TIMING_STATS_CACHE_SIZE} objects borrowed from the pool.
      * @return mean time an object has been idle in the pool among recently
      * borrowed objects
@@ -863,7 +863,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     }
 
     /**
-     * The number of instances currently idle in this pool.
+     * Gets the number of instances currently idle in this pool.
      * @return count of instances available for checkout from the pool
      */
     public abstract int getNumIdle();
@@ -949,7 +949,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     }
 
     /**
-     * The total number of objects returned to this pool over the lifetime of
+     * Gets the total number of objects returned to this pool over the lifetime of
      * the pool. This excludes attempts to return the same object multiple
      * times.
      * @return the returned object count
@@ -1164,10 +1164,8 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
         return durationBetweenEvictionRuns.toMillis();
     }
 
-    // Monitoring (primarily JMX) related methods
-
     /**
-     * Gets whether or not abandoned object removal is configured for this pool.
+     * Tests whether or not abandoned object removal is configured for this pool.
      *
      * @return true if this pool is configured to detect and remove
      * abandoned objects
@@ -1178,7 +1176,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     }
 
     /**
-     * Has this pool instance been closed.
+     * Tests whether this pool instance been closed.
      * @return {@code true} when this pool has been closed.
      */
     public final boolean isClosed() {
@@ -1297,7 +1295,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     }
 
     /**
-     * Initializes the receiver with the given configuration.
+     * Sets the receiver with the given configuration.
      *
      * @param config Initialization source.
      */
@@ -1670,7 +1668,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     }
 
     /**
-     * The listener used (if any) to receive notifications of exceptions
+     * Sets the listener used (if any) to receive notifications of exceptions
      * unavoidably swallowed by the pool.
      *
      * @param swallowedExceptionListener    The listener or {@code null}
