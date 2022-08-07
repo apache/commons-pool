@@ -640,13 +640,9 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
         final Map<PooledObject<T>, K> map = new TreeMap<>();
 
         poolMap.forEach((key, value) -> {
-            // Protect against possible NPE if key has been removed in another
-            // thread. Not worth locking the keys while this loop completes.
-            if (value != null) {
-                // Each item into the map using the PooledObject object as the
-                // key. It then gets sorted based on the idle time
-                value.getIdleObjects().forEach(p -> map.put(p, key));
-            }
+            // Each item into the map using the PooledObject object as the
+            // key. It then gets sorted based on the idle time
+            value.getIdleObjects().forEach(p -> map.put(p, key));
         });
 
         // Now iterate created map and kill the first 15% plus one to account
@@ -1196,11 +1192,9 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
         final HashMap<String, Integer> result = new HashMap<>();
 
         poolMap.forEach((key, objectDequeue) -> {
-            if (key != null && objectDequeue != null) {
-                result.put(key.toString(), Integer.valueOf(
-                    objectDequeue.getAllObjects().size() -
-                    objectDequeue.getIdleObjects().size()));
-            }
+            result.put(key.toString(), Integer.valueOf(
+                objectDequeue.getAllObjects().size() -
+                objectDequeue.getIdleObjects().size()));
         });
         return result;
     }
@@ -1266,9 +1260,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
         for (final Entry<K, ObjectDeque<T>> entry : poolMap.entrySet()) {
             final K k = entry.getKey();
             final ObjectDeque<T> deque = entry.getValue();
-            if (deque != null) {
-                result.put(k.toString(), getBlockWhenExhausted() ? Integer.valueOf(deque.getIdleObjects().getTakeQueueLength()) : ZERO);
-            }
+            result.put(k.toString(), getBlockWhenExhausted() ? Integer.valueOf(deque.getIdleObjects().getTakeQueueLength()) : ZERO);
         }
         return result;
     }
@@ -1289,7 +1281,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      *         {@code false}
      */
     private boolean hasBorrowWaiters() {
-        return getBlockWhenExhausted() && poolMap.values().stream().anyMatch(deque -> deque != null && deque.getIdleObjects().hasTakeWaiters());
+        return getBlockWhenExhausted() && poolMap.values().stream().anyMatch(deque -> deque.getIdleObjects().hasTakeWaiters());
     }
 
     /**
@@ -1360,11 +1352,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
     public Map<String, List<DefaultPooledObjectInfo>> listAllObjects() {
         final Map<String, List<DefaultPooledObjectInfo>> result = new HashMap<>();
 
-        poolMap.forEach((k, value) -> {
-            if (value != null) {
-                result.put(k.toString(), value.getAllObjects().values().stream().map(DefaultPooledObjectInfo::new).collect(Collectors.toList()));
-            }
-        });
+        poolMap.forEach((k, v) -> result.put(k.toString(), v.getAllObjects().values().stream().map(DefaultPooledObjectInfo::new).collect(Collectors.toList())));
         return result;
     }
 
@@ -1579,14 +1567,12 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
         for (final Entry<K, GenericKeyedObjectPool<K, T, E>.ObjectDeque<T>> entry : poolMap.entrySet()) {
             final K k = entry.getKey();
             final ObjectDeque<T> deque = entry.getValue();
-            if (deque != null) {
-                final LinkedBlockingDeque<PooledObject<T>> pool = deque.getIdleObjects();
-                final int queueLength = pool.getTakeQueueLength();
-                if (getNumActive(k) < maxTotalPerKeySave && queueLength > maxQueueLength) {
-                    maxQueueLength = queueLength;
-                    mostLoaded = pool;
-                    loadedKey = k;
-                }
+            final LinkedBlockingDeque<PooledObject<T>> pool = deque.getIdleObjects();
+            final int queueLength = pool.getTakeQueueLength();
+            if (getNumActive(k) < maxTotalPerKeySave && queueLength > maxQueueLength) {
+                maxQueueLength = queueLength;
+                mostLoaded = pool;
+                loadedKey = k;
             }
         }
 
