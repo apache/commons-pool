@@ -42,7 +42,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * TestCase for AbandonedObjectPool
+ * Tests for {@link AbandonedConfig}.
  */
 public class TestAbandonedKeyedObjectPool {
 
