@@ -193,7 +193,7 @@
     <commons.felix.version>5.1.8</commons.felix.version>
     <spotbugs.plugin.version>4.7.1.1</spotbugs.plugin.version>
     <spotbugs.impl.version>4.7.1</spotbugs.impl.version>
-    <commons.pmd.version>3.17.0</commons.pmd.version>
+    <commons.pmd.version>3.18.0</commons.pmd.version>
     <commons.pmd-impl.version>6.48.0</commons.pmd-impl.version>
 
     <!-- Commons Release Plugin -->
