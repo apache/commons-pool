@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
 /**
- * @author Pavel Kolesov as contributed in POOL-340
+ * Tests POOL-340.
  */
 public class TestGenericObjectPoolFactoryCreateFailure {
 
