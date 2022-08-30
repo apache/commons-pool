@@ -80,17 +80,17 @@ public class TestAbandonedKeyedObjectPool {
 
     private static class SimpleFactory implements KeyedPooledObjectFactory<Integer, PooledTestObject, InterruptedException> {
 
-        private final long destroyLatency;
-        private final long validateLatency;
+        private final long destroyLatencyMillis;
+        private final long validateLatencyMillis;
 
         public SimpleFactory() {
-            destroyLatency = 0;
-            validateLatency = 0;
+            destroyLatencyMillis = 0;
+            validateLatencyMillis = 0;
         }
 
-        public SimpleFactory(final long destroyLatency, final long validateLatency) {
-            this.destroyLatency = destroyLatency;
-            this.validateLatency = validateLatency;
+        public SimpleFactory(final long destroyLatencyMillis, final long validateLatencyMillis) {
+            this.destroyLatencyMillis = destroyLatencyMillis;
+            this.validateLatencyMillis = validateLatencyMillis;
         }
 
         @Override
@@ -109,8 +109,8 @@ public class TestAbandonedKeyedObjectPool {
             // while destroying instances, yield control to other threads
             // helps simulate threading errors
             Thread.yield();
-            if (destroyLatency != 0) {
-                Thread.sleep(destroyLatency);
+            if (destroyLatencyMillis != 0) {
+                Thread.sleep(destroyLatencyMillis);
             }
             obj.getObject().destroy(destroyMode);
         }
@@ -127,7 +127,7 @@ public class TestAbandonedKeyedObjectPool {
 
         @Override
         public boolean validateObject(final Integer key, final PooledObject<PooledTestObject> obj) {
-            Waiter.sleepQuietly(validateLatency);
+            Waiter.sleepQuietly(validateLatencyMillis);
             return true;
         }
     }
