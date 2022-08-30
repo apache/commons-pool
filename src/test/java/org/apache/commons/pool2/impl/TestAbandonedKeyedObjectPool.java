@@ -183,7 +183,7 @@ public class TestAbandonedKeyedObjectPool {
             msg.append('\n');
             mbs.unregisterMBean(name);
         }
-        assertEquals( 0, registeredPoolCount,msg.toString());
+        assertEquals(0, registeredPoolCount,msg.toString());
     }
 
     /**
@@ -211,6 +211,9 @@ public class TestAbandonedKeyedObjectPool {
             obj = pool.borrowObject(0);
         }
         Thread.sleep(1000);          // abandon checked out instances and let evictor start
+        if (!pool.getKeys().contains(0)) {
+            Thread.sleep(1000); // Wait a little more.
+        }
         if (!pool.getKeys().contains(0)) {
             Thread.sleep(1000); // Wait a little more.
         }
