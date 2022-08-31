@@ -188,7 +188,7 @@
     <commons.scmPubCheckoutDirectory>site-content</commons.scmPubCheckoutDirectory>
     <commons.osgi.import>net.sf.cglib.proxy;resolution:=optional,*</commons.osgi.import>
     <commons.animal-sniffer.version>1.21</commons.animal-sniffer.version>
-    <commons.checkstyle-plugin.version>3.1.2</commons.checkstyle-plugin.version>
+    <commons.checkstyle-plugin.version>3.2.0</commons.checkstyle-plugin.version>
     <commons.checkstyle.version>9.3</commons.checkstyle.version>
     <commons.felix.version>5.1.8</commons.felix.version>
     <spotbugs.plugin.version>4.7.1.1</spotbugs.plugin.version>
