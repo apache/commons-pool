@@ -196,29 +196,30 @@ public class TestAbandonedKeyedObjectPool {
     public void testAbandonedInvalidate() throws InterruptedException {
         abandonedConfig = new AbandonedConfig();
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
-        abandonedConfig.setRemoveAbandonedTimeout(TestConstants.ONE_SECOND_DURATION);
+        abandonedConfig.setRemoveAbandonedTimeout(Duration.ofMillis(2000));
         pool.close();  // Unregister pool created by setup
         pool = new GenericKeyedObjectPool<>(
-                // destroys take 200 ms
-                new SimpleFactory(200, 0),
+                // destroys take 100 millis
+                new SimpleFactory(100, 0),
                 new GenericKeyedObjectPoolConfig<>(), abandonedConfig);
         final int n = 10;
         pool.setMaxTotal(n);
         pool.setBlockWhenExhausted(false);
-        pool.setTimeBetweenEvictionRuns(Duration.ofMillis(500));
-        PooledTestObject obj = null;
+        pool.setTimeBetweenEvictionRuns(Duration.ofMillis(250));
+        PooledTestObject pooledObj = null;
+        final Integer key = 0;
         for (int i = 0; i < 5; i++) {
-            obj = pool.borrowObject(0);
+            pooledObj = pool.borrowObject(key);
         }
-        Thread.sleep(1000);          // abandon checked out instances and let evictor start
-        if (!pool.getKeys().contains(0)) {
+        Thread.sleep(1000); // abandon checked out instances and let evictor start
+        if (!pool.getKeys().contains(key)) {
             Thread.sleep(1000); // Wait a little more.
         }
-        if (!pool.getKeys().contains(0)) {
+        if (!pool.getKeys().contains(key)) {
             Thread.sleep(1000); // Wait a little more.
         }
-        pool.invalidateObject(0, obj);  // Should not trigger another destroy / decrement
-        Thread.sleep(2000);          // give evictor time to finish destroys
+        pool.invalidateObject(key, pooledObj); // Should not trigger another destroy / decrement
+        Thread.sleep(2000); // give evictor time to finish destroys
         assertEquals(0, pool.getNumActive());
         assertEquals(5, pool.getDestroyedCount());
     }
