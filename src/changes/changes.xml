@@ -102,7 +102,7 @@ The <action> type attribute can be add,update,fix,remove.
       Bump maven-checkstyle-plugin from 3.1.2 to 3.2.0 #166.
     </action>
     <action dev="ggregory" type="update" due-to="Dependabot">
-      Bump maven-pmd-plugin from 3.14.0 to 3.18.0 #101, #153.
+      Bump maven-pmd-plugin from 3.14.0 to 3.19.0 #101, #153, #170.
     </action>
     <action dev="ggregory" type="update" due-to="Gary Gregory">
       Bump pmd from 6.44.0 to 6.48.0.
