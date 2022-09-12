@@ -175,8 +175,6 @@ public class WaiterFactory<K> implements PooledObjectFactory<Waiter, IllegalStat
         return makeObject();
     }
 
-    // KeyedPoolableObjectFactory methods
-
     @Override
     public void passivateObject(final K key, final PooledObject<Waiter> obj) {
         passivateObject(obj);

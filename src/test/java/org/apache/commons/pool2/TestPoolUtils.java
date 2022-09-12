@@ -711,10 +711,10 @@ public class TestPoolUtils {
     }
 
     @Test
-    public void testSynchronizedPoolableFactoryKeyedPoolableObjectFactory() {
+    public void testSynchronizedPoolableFactoryKeyedPooledObjectFactory() {
         assertThrows(IllegalArgumentException.class,
             () -> PoolUtils.synchronizedKeyedPooledFactory((KeyedPooledObjectFactory<Object, Object, RuntimeException>) null),
-            "PoolUtils.synchronizedPoolableFactory(KeyedPoolableObjectFactory) must not allow a null factory.");
+            "PoolUtils.synchronizedPoolableFactory(KeyedPooledObjectFactory) must not allow a null factory.");
 
         final List<String> calledMethods = new ArrayList<>();
         @SuppressWarnings("unchecked")

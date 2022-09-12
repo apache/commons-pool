@@ -926,7 +926,7 @@ public final class PoolUtils {
         private final KeyedPooledObjectFactory<K, V, E> keyedFactory;
 
         /**
-         * Creates a SynchronizedKeyedPoolableObjectFactory wrapping the given
+         * Creates a SynchronizedKeyedPooledObjectFactory wrapping the given
          * factory.
          *
          * @param keyedFactory
@@ -1000,7 +1000,7 @@ public final class PoolUtils {
         @Override
         public String toString() {
             final StringBuilder sb = new StringBuilder();
-            sb.append("SynchronizedKeyedPoolableObjectFactory");
+            sb.append("SynchronizedKeyedPooledObjectFactory");
             sb.append("{keyedFactory=").append(keyedFactory);
             sb.append('}');
             return sb.toString();
@@ -1748,7 +1748,7 @@ public final class PoolUtils {
 
     /**
      * Returns a synchronized (thread-safe) KeyedPooledObjectFactory backed by
-     * the specified KeyedPoolableObjectFactory.
+     * the specified KeyedPooledObjectFactory.
      *
      * @param keyedFactory
      *            the KeyedPooledObjectFactory to be "wrapped" in a

@@ -62,7 +62,10 @@ The <action> type attribute can be add,update,fix,remove.
     </action>       
     <action dev="ggregory" type="fix" due-to="Gary Gregory" issue="POOL-405">
       NullPointerException at org.apache.commons.pool2.impl.GenericKeyedObjectPool.invalidateObject(GenericKeyedObjectPool.java:1343).
-    </action>       
+    </action>
+    <action dev="ggregory" type="fix" due-to="Zhenyu Luo, Gary Gregory" issue="POOL-408">
+      A typo of KeyedPooledObjectFactory on the site and Javadoc.
+    </action>
     <!-- ADD -->
     <action dev="ggregory" type="add" due-to="Gary Gregory">
       Add PooledObject.getFullDuration().

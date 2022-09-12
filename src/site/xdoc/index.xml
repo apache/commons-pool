@@ -97,7 +97,7 @@ public interface PooledObjectFactory&lt;T&gt; {
              defines a similar interface for <code>KeyedObjectPool</code>s:
           </p>
 <source>
-public interface KeyedPoolableObjectFactory&lt;K,V&gt; {
+public interface KeyedPooledObjectFactory&lt;K,V&gt; {
     PooledObject&lt;V&gt; makeObject(K key);
     void activateObject(K key, PooledObject&lt;V&gt; obj);
     void passivateObject(K key, PooledObject&lt;V&gt; obj);
