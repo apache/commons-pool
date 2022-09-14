@@ -30,7 +30,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -184,9 +183,7 @@ public class TestPoolUtils {
             assertEquals(2, kop.getNumIdle());
         }
         int makeObjectCount = 0;
-        final Iterator<String> iter = calledMethods.iterator();
-        while (iter.hasNext()) {
-            final String methodName = iter.next();
+        for (String methodName : calledMethods) {
             if ("makeObject".equals(methodName)) {
                 makeObjectCount++;
             }
@@ -299,9 +296,7 @@ public class TestPoolUtils {
             assertEquals(2, op.getNumIdle());
         }
         int makeObjectCount = 0;
-        final Iterator<String> iter = calledMethods.iterator();
-        while (iter.hasNext()) {
-            final String methodName = iter.next();
+        for (String methodName : calledMethods) {
             if ("makeObject".equals(methodName)) {
                 makeObjectCount++;
             }

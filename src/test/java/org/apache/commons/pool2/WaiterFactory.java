@@ -18,7 +18,6 @@
 package org.apache.commons.pool2;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.pool2.impl.DefaultPooledObject;
@@ -194,9 +193,7 @@ public class WaiterFactory<K> implements PooledObjectFactory<Waiter, IllegalStat
         if (activeCounts.isEmpty()) {
             return;
         }
-        final Iterator<K> it = activeCounts.keySet().iterator();
-        while (it.hasNext()) {
-            final K key = it.next();
+        for (K key : activeCounts.keySet()) {
             activeCounts.put(key, Integer.valueOf(0));
         }
     }
