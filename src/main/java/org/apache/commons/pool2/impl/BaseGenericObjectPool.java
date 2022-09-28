@@ -190,6 +190,11 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
             this.scheduledFuture = scheduledFuture;
         }
 
+        @Override
+        public String toString() {
+            return getClass().getName() + " [scheduledFuture=" + scheduledFuture + "]";
+        }
+
     }
 
     /**
