@@ -313,7 +313,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             return new DefaultPooledObject<>(value);
         }
     }
-    /*
+
+    /**
      * Very simple test thread that just tries to borrow an object from
      * the provided pool with the specified key and returns it
      */
@@ -335,7 +336,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             }
         }
     }
-    /*
+
+    /**
      * DefaultEvictionPolicy modified to add latency
      */
     private static class SlowEvictionPolicy<T> extends DefaultEvictionPolicy<T> {
