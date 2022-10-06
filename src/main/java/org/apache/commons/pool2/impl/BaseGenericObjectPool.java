@@ -266,9 +266,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
         StatsStore(final int size) {
             this.size = size;
             values = new AtomicLong[size];
-            for (int i = 0; i < size; i++) {
-                values[i] = new AtomicLong(NULL);
-            }
+            Arrays.setAll(values, i -> new AtomicLong(NULL));
         }
 
         void add(final Duration value) {
