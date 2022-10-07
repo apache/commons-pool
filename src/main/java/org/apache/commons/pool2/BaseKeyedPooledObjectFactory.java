@@ -36,7 +36,7 @@ package org.apache.commons.pool2;
 public abstract class BaseKeyedPooledObjectFactory<K, V, E extends Exception> extends BaseObject implements KeyedPooledObjectFactory<K, V, E> {
 
     /**
-     * Reinitialize an instance to be returned by the pool.
+     * Reinitializes an instance to be returned by the pool.
      * <p>
      * The default implementation is a no-op.
      * </p>
@@ -50,7 +50,7 @@ public abstract class BaseKeyedPooledObjectFactory<K, V, E extends Exception> ex
     }
 
     /**
-     * Create an instance that can be served by the pool.
+     * Creates an instance that can be served by the pool.
      *
      * @param key the key used when constructing the object
      * @return an instance that can be served by the pool
@@ -61,7 +61,7 @@ public abstract class BaseKeyedPooledObjectFactory<K, V, E extends Exception> ex
     public abstract V create(K key) throws E;
 
     /**
-     * Destroy an instance no longer needed by the pool.
+     * Destroys an instance no longer needed by the pool.
      * <p>
      * The default implementation is a no-op.
      * </p>
@@ -80,7 +80,7 @@ public abstract class BaseKeyedPooledObjectFactory<K, V, E extends Exception> ex
     }
 
     /**
-     * Uninitialize an instance to be returned to the idle object pool.
+     * Uninitializes an instance to be returned to the idle object pool.
      * <p>
      * The default implementation is a no-op.
      * </p>
@@ -101,7 +101,7 @@ public abstract class BaseKeyedPooledObjectFactory<K, V, E extends Exception> ex
      *
      * @param key the key used when selecting the object
      * @param p a {@code PooledObject} wrapping the instance to be validated
-     * @return always {@code true} in the default implementation
+     * @return always {@code true} in this default implementation
      */
     @Override
     public boolean validateObject(final K key, final PooledObject<V> p) {
@@ -109,12 +109,13 @@ public abstract class BaseKeyedPooledObjectFactory<K, V, E extends Exception> ex
     }
 
     /**
-     * Wrap the provided instance with an implementation of
+     * Wraps the provided instance with an implementation of
      * {@link PooledObject}.
      *
      * @param value the instance to wrap
-     *
      * @return The provided instance, wrapped by a {@link PooledObject}
+     * @throws E if there is a problem wrapping an instance,
+     *    this will be propagated to the code requesting an object.
      */
-    public abstract PooledObject<V> wrap(V value);
+    public abstract PooledObject<V> wrap(V value) throws E;
 }
