@@ -26,12 +26,15 @@ import org.apache.commons.pool2.TestBaseObjectPool;
  */
 public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
 
-    private static class SimpleFactory extends BasePooledObjectFactory<String, RuntimeException>  {
+    private static class SimpleFactory extends BasePooledObjectFactory<String, RuntimeException> {
+
         int counter;
+
         @Override
         public String create() {
             return String.valueOf(counter++);
         }
+
         @Override
         public PooledObject<String> wrap(final String value) {
             return new DefaultPooledObject<>(value);
