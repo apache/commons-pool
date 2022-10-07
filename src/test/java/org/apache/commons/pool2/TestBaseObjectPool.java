@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 /**
  */
 public class TestBaseObjectPool extends TestObjectPool {
+
     private static class TestObjectPool extends BaseObjectPool<Object, RuntimeException> {
 
         @Override
@@ -263,7 +264,6 @@ public class TestBaseObjectPool extends TestObjectPool {
         pool.close(); // should not error as of Pool 2.0.
     }
 
-    // tests
     @Test
     public void testUnsupportedOperations() {
         if (!getClass().equals(TestBaseObjectPool.class)) {
