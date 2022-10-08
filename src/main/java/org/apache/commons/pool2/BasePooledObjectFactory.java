@@ -16,6 +16,8 @@
  */
 package org.apache.commons.pool2;
 
+import java.util.Objects;
+
 /**
  * A base implementation of {@code PoolableObjectFactory}.
  * <p>
@@ -68,7 +70,7 @@ public abstract class BasePooledObjectFactory<T, E extends Exception> extends Ba
 
     @Override
     public PooledObject<T> makeObject() throws E {
-        return wrap(create());
+        return wrap(Objects.requireNonNull(create(), "BasePooledObjectFactory.create()"));
     }
 
     /**
