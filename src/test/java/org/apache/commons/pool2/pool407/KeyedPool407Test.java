@@ -23,6 +23,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.pool2.BaseKeyedPooledObjectFactory;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class KeyedPool407Test {
@@ -50,9 +52,10 @@ public class KeyedPool407Test {
 
     private static final int POOL_SIZE = 3;
 
-    private void test(final KeyedPool407Fixture fixture, final int poolSize) throws InterruptedException {
+    private void test(final BaseKeyedPooledObjectFactory<String, KeyedPool407Fixture, RuntimeException> factory, final int poolSize)
+            throws InterruptedException {
         final ExecutorService executor = Executors.newFixedThreadPool(poolSize);
-        final KeyedPool407 pool = new KeyedPool407(fixture);
+        final KeyedPool407 pool = new KeyedPool407(factory);
 
         // start 'poolSize' threads that try to borrow a Pool407Fixture with the same key
         for (int i = 0; i < poolSize; i++) {
@@ -65,12 +68,24 @@ public class KeyedPool407Test {
     }
 
     @Test
-    public void testFail() throws InterruptedException {
-        test(null, POOL_SIZE);
+    public void testNormalFactoryNonNullFixture() throws InterruptedException {
+        test(new KeyedPool407NormalFactory(new KeyedPool407Fixture()), 3);
     }
 
     @Test
-    public void testPass() throws InterruptedException {
-        test(new KeyedPool407Fixture(), 3);
+    public void testNormalFactoryNullFixture() throws InterruptedException {
+        test(new KeyedPool407NormalFactory(null), POOL_SIZE);
+    }
+
+    @Test
+    @Disabled("Either normal to fail or we should handle nulls internally better.")
+    public void testNullObjectFactory() throws InterruptedException {
+        test(new KeyedPool407NullObjectFactory(), POOL_SIZE);
+    }
+
+    @Test
+    @Disabled("Either normal to fail or we should handle nulls internally better.")
+    public void testNullPoolableFactory() throws InterruptedException {
+        test(new KeyedPool407NullPoolableObjectFactory(), POOL_SIZE);
     }
 }

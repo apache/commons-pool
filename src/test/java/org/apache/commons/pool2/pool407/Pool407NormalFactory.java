@@ -21,11 +21,11 @@ import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 
-public final class Pool407Factory extends BasePooledObjectFactory<Pool407Fixture, RuntimeException> {
+public final class Pool407NormalFactory extends BasePooledObjectFactory<Pool407Fixture, RuntimeException> {
 
     private final Pool407Fixture fixture;
 
-    Pool407Factory(final Pool407Fixture fixture) {
+    Pool407NormalFactory(final Pool407Fixture fixture) {
         this.fixture = fixture;
     }
 

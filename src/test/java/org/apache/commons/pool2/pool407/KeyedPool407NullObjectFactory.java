@@ -18,12 +18,28 @@
 package org.apache.commons.pool2.pool407;
 
 import org.apache.commons.pool2.BaseKeyedPooledObjectFactory;
-import org.apache.commons.pool2.impl.GenericKeyedObjectPool;
+import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.impl.DefaultPooledObject;
 
-public final class KeyedPool407 extends GenericKeyedObjectPool<String, KeyedPool407Fixture, RuntimeException> {
+public final class KeyedPool407NullObjectFactory extends BaseKeyedPooledObjectFactory<String, KeyedPool407Fixture, RuntimeException> {
 
-    public KeyedPool407(final BaseKeyedPooledObjectFactory<String, KeyedPool407Fixture, RuntimeException> factory) {
-        super(factory, new KeyedPool407Config());
+    @Override
+    public KeyedPool407Fixture create(final String key) {
+        return null;
     }
 
+    @Override
+    public PooledObject<KeyedPool407Fixture> makeObject(final String key) throws RuntimeException {
+        return new DefaultPooledObject<>(null);
+    }
+
+    @Override
+    public boolean validateObject(final String key, final PooledObject<KeyedPool407Fixture> p) {
+        return p != null && p.getObject() != null;
+    }
+
+    @Override
+    public PooledObject<KeyedPool407Fixture> wrap(final KeyedPool407Fixture value) {
+        return new DefaultPooledObject<>(null);
+    }
 }

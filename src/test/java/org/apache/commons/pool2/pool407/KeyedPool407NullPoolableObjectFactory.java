@@ -19,34 +19,26 @@ package org.apache.commons.pool2.pool407;
 
 import org.apache.commons.pool2.BaseKeyedPooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
-import org.apache.commons.pool2.impl.DefaultPooledObject;
 
-public final class KeyedPool407Factory extends BaseKeyedPooledObjectFactory<String, KeyedPool407Fixture, RuntimeException> {
-
-    private final KeyedPool407Fixture fixture;
-
-    KeyedPool407Factory(final KeyedPool407Fixture fixture) {
-        this.fixture = fixture;
-    }
+public final class KeyedPool407NullPoolableObjectFactory extends BaseKeyedPooledObjectFactory<String, KeyedPool407Fixture, RuntimeException> {
 
     @Override
     public KeyedPool407Fixture create(final String key) {
-        // This is key to the test, creation failed and returns null for instance see
-        // https://github.com/openhab/openhab-core/blob/main/bundles/org.openhab.core.io.transport.modbus/src/main/java/org/openhab/core/io/transport/modbus/internal/pooling/ModbusSlaveConnectionFactoryImpl.java#L163
-        // the test passes when this returns new Pool407Fixture();
-        return fixture;
+        return null;
+    }
+
+    @Override
+    public PooledObject<KeyedPool407Fixture> makeObject(final String key) throws RuntimeException {
+        return null;
     }
 
     @Override
     public boolean validateObject(final String key, final PooledObject<KeyedPool407Fixture> p) {
-        // TODO Should this be enough even if wrap() does throw and returns a DefaultPooledObject wrapping a null?
-        return p.getObject() != null;
+        return p != null && p.getObject() != null;
     }
 
     @Override
     public PooledObject<KeyedPool407Fixture> wrap(final KeyedPool407Fixture value) {
-        // Require a non-null value.
-        // return new DefaultPooledObject<>(Objects.requireNonNull(value, "value"));
-        return new DefaultPooledObject<>(value);
+        return null;
     }
 }
