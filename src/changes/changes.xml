@@ -67,6 +67,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="fix" due-to="Zhenyu Luo, Gary Gregory" issue="POOL-408">
       A typo of KeyedPooledObjectFactory on the site and Javadoc.
     </action>
+    <action dev="ggregory" type="fix" due-to="Gary Gregory">
+      Fail-fast on null input for DefaultPooledObjectInfo.DefaultPooledObjectInfo(PooledObject) with a NullPointerException.
+    </action>       
     <!-- ADD -->
     <action dev="ggregory" type="add" due-to="Gary Gregory">
       Add PooledObject.getFullDuration().

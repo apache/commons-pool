@@ -19,6 +19,7 @@ package org.apache.commons.pool2.impl;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
+import java.util.Objects;
 
 import org.apache.commons.pool2.PooledObject;
 
@@ -38,9 +39,10 @@ public class DefaultPooledObjectInfo implements DefaultPooledObjectInfoMBean {
      * Constructs a new instance for the given pooled object.
      *
      * @param pooledObject The pooled object that this instance will represent
+     * @throws NullPointerException if {@code obj} is {@code null}
      */
     public DefaultPooledObjectInfo(final PooledObject<?> pooledObject) {
-        this.pooledObject = pooledObject;
+        this.pooledObject = Objects.requireNonNull(pooledObject, "pooledObject");
     }
 
     @Override
