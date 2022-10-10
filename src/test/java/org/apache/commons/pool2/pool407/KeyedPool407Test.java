@@ -69,7 +69,7 @@ public class KeyedPool407Test {
 
     @Test
     public void testNormalFactoryNonNullFixture() throws InterruptedException {
-        test(new KeyedPool407NormalFactory(new KeyedPool407Fixture()), 3);
+        test(new KeyedPool407NormalFactory(new KeyedPool407Fixture()), POOL_SIZE);
     }
 
     @Test
