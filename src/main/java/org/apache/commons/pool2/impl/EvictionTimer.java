@@ -21,6 +21,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -74,11 +75,13 @@ class EvictionTimer {
         @Override
         public void run() {
             synchronized (EvictionTimer.class) {
-                for (final Entry<WeakReference<BaseGenericObjectPool<?, ?>.Evictor>, WeakRunner<BaseGenericObjectPool<?, ?>.Evictor>> entry : TASK_MAP
-                        .entrySet()) {
+                Iterator<Entry<WeakReference<BaseGenericObjectPool<?, ?>.Evictor>, WeakRunner<BaseGenericObjectPool<?, ?>.Evictor>>> taskIter = TASK_MAP.entrySet()
+                    .iterator();
+                while (taskIter.hasNext()) {
+                    final Entry<WeakReference<BaseGenericObjectPool<?, ?>.Evictor>, WeakRunner<BaseGenericObjectPool<?, ?>.Evictor>> entry = taskIter.next();
                     if (entry.getKey().get() == null) {
                         executor.remove(entry.getValue());
-                        TASK_MAP.remove(entry.getKey());
+                        taskIter.remove();
                     }
                 }
                 if (TASK_MAP.isEmpty() && executor != null) {
@@ -189,10 +192,13 @@ class EvictionTimer {
      * @param evictor Eviction task to remove
      */
     private static void remove(final BaseGenericObjectPool<?, ?>.Evictor evictor) {
-        for (final Entry<WeakReference<BaseGenericObjectPool<?, ?>.Evictor>, WeakRunner<BaseGenericObjectPool<?, ?>.Evictor>> entry : TASK_MAP.entrySet()) {
+        Iterator<Entry<WeakReference<BaseGenericObjectPool<?, ?>.Evictor>, WeakRunner<BaseGenericObjectPool<?, ?>.Evictor>>> taskIter = TASK_MAP.entrySet()
+            .iterator();
+        while (taskIter.hasNext()) {
+            final Entry<WeakReference<BaseGenericObjectPool<?, ?>.Evictor>, WeakRunner<BaseGenericObjectPool<?, ?>.Evictor>> entry = taskIter.next();
             if (entry.getKey().get() == evictor) {
                 executor.remove(entry.getValue());
-                TASK_MAP.remove(entry.getKey());
+                taskIter.remove();
                 break;
             }
         }
