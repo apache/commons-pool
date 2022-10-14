@@ -75,10 +75,11 @@ class EvictionTimer {
         @Override
         public void run() {
             synchronized (EvictionTimer.class) {
-                Iterator<Entry<WeakReference<BaseGenericObjectPool<?, ?>.Evictor>, WeakRunner<BaseGenericObjectPool<?, ?>.Evictor>>> taskIter = TASK_MAP.entrySet()
-                    .iterator();
+                Iterator<Entry<WeakReference<BaseGenericObjectPool<?, ?>.Evictor>, WeakRunner<BaseGenericObjectPool<?, ?>.Evictor>>> taskIter =
+                    TASK_MAP.entrySet().iterator();
                 while (taskIter.hasNext()) {
-                    final Entry<WeakReference<BaseGenericObjectPool<?, ?>.Evictor>, WeakRunner<BaseGenericObjectPool<?, ?>.Evictor>> entry = taskIter.next();
+                    final Entry<WeakReference<BaseGenericObjectPool<?, ?>.Evictor>, WeakRunner<BaseGenericObjectPool<?, ?>.Evictor>> entry =
+                        taskIter.next();
                     if (entry.getKey().get() == null) {
                         executor.remove(entry.getValue());
                         taskIter.remove();
@@ -192,10 +193,11 @@ class EvictionTimer {
      * @param evictor Eviction task to remove
      */
     private static void remove(final BaseGenericObjectPool<?, ?>.Evictor evictor) {
-        Iterator<Entry<WeakReference<BaseGenericObjectPool<?, ?>.Evictor>, WeakRunner<BaseGenericObjectPool<?, ?>.Evictor>>> taskIter = TASK_MAP.entrySet()
-            .iterator();
+        Iterator<Entry<WeakReference<BaseGenericObjectPool<?, ?>.Evictor>, WeakRunner<BaseGenericObjectPool<?, ?>.Evictor>>> taskIter =
+            TASK_MAP.entrySet().iterator();
         while (taskIter.hasNext()) {
-            final Entry<WeakReference<BaseGenericObjectPool<?, ?>.Evictor>, WeakRunner<BaseGenericObjectPool<?, ?>.Evictor>> entry = taskIter.next();
+            final Entry<WeakReference<BaseGenericObjectPool<?, ?>.Evictor>, WeakRunner<BaseGenericObjectPool<?, ?>.Evictor>> entry =
+                taskIter.next();
             if (entry.getKey().get() == evictor) {
                 executor.remove(entry.getValue());
                 taskIter.remove();
