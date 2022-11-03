@@ -138,7 +138,7 @@ The <action> type attribute can be add,update,fix,remove.
       Bump animal-sniffer-maven-plugin 1.20 to 1.21.
     </action>
     <action dev="ggregory" type="update" due-to="Gary Gregory">
-      Bump bcel 6.5.0 to 6.6.0.
+      Bump Apache Commons BCEL 6.5.0 to 6.6.1.
     </action>
   </release>
   <release version="2.11.1" date="2021-08-18" description="This is a maintenance release (Java 8).">
