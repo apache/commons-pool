@@ -436,18 +436,6 @@
     </plugins>
   </reporting>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.junit</groupId>
-        <artifactId>junit-bom</artifactId>
-        <version>${commons.junit.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-    
   <profiles>
     <profile>
       <id>java9</id>
