@@ -204,7 +204,6 @@
     
     <commons.japicmp.version>0.16.0</commons.japicmp.version>
     <japicmp.skip>false</japicmp.skip>
-    <junit.version>5.9.1</junit.version>
     <spotbugs.skip>false</spotbugs.skip>
   </properties> 
 
@@ -442,7 +441,7 @@
       <dependency>
         <groupId>org.junit</groupId>
         <artifactId>junit-bom</artifactId>
-        <version>${junit.version}</version>
+        <version>${commons.junit.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
