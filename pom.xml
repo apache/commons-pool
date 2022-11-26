@@ -194,7 +194,7 @@
     <spotbugs.plugin.version>4.7.3.0</spotbugs.plugin.version>
     <spotbugs.impl.version>4.7.3</spotbugs.impl.version>
     <commons.pmd.version>3.19.0</commons.pmd.version>
-    <commons.pmd-impl.version>6.51.0</commons.pmd-impl.version>
+    <commons.pmd-impl.version>6.52.0</commons.pmd-impl.version>
 
     <!-- Commons Release Plugin -->
     <commons.bc.version>2.11.1</commons.bc.version>
