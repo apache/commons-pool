@@ -118,7 +118,7 @@ public class TestBaseGenericObjectPool {
     }
     /**
      * POOL-393
-     * Emsure JMX registration does not add too much latency to pool creation.
+     * Ensure JMX registration does not add too much latency to pool creation.
      */
     @Test
     @Timeout(value = 2000, unit = TimeUnit.MILLISECONDS)
