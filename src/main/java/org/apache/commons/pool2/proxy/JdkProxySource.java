@@ -33,7 +33,6 @@ public class JdkProxySource<T> implements ProxySource<T> {
     private final ClassLoader classLoader;
     private final Class<?>[] interfaces;
 
-
     /**
      * Constructs a new proxy source for the given interfaces.
      *
@@ -43,10 +42,8 @@ public class JdkProxySource<T> implements ProxySource<T> {
     public JdkProxySource(final ClassLoader classLoader, final Class<?>[] interfaces) {
         this.classLoader = classLoader;
         // Defensive copy
-        this.interfaces = new Class<?>[interfaces.length];
-        System.arraycopy(interfaces, 0, this.interfaces, 0, interfaces.length);
+        this.interfaces = Arrays.copyOf(interfaces, interfaces.length);
     }
-
 
     @SuppressWarnings("unchecked") // Cast to T on return.
     @Override
@@ -55,13 +52,11 @@ public class JdkProxySource<T> implements ProxySource<T> {
                 new JdkProxyHandler<>(pooledObject, usageTracking));
     }
 
-
     @SuppressWarnings("unchecked")
     @Override
     public T resolveProxy(final T proxy) {
         return ((JdkProxyHandler<T>) Proxy.getInvocationHandler(proxy)).disableProxy();
     }
-
 
     /**
      * @since 2.4.3
