@@ -116,23 +116,28 @@ public class TestBaseGenericObjectPool {
             assertEquals(0, evictingPool.getNumIdle());
         }
     }
+
     /**
      * POOL-393
-     * Ensure JMX registration does not add too much latency to pool creation.
+     * Tests JMX registration does not add too much latency to pool creation.
      */
+    @SuppressWarnings("resource") // pools closed in finally block
     @Test
     @Timeout(value = 2000, unit = TimeUnit.MILLISECONDS)
-    public void testJMXRegistrationLatency() throws Exception {
+    public void testJMXRegistrationLatency() {
         final int numPools = 1000;
         final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         final ArrayList<GenericObjectPool<Waiter, IllegalStateException>> pools = new ArrayList<>();
-        long startTime = System.currentTimeMillis();
-        for (int i = 0; i < numPools; i++) {
-            pools.add(new GenericObjectPool<Waiter, IllegalStateException>(
-                new WaiterFactory<String>(0,0,0,0,0,0), new GenericObjectPoolConfig<Waiter>()));
+        try {
+            // final long startTime = System.currentTimeMillis();
+            for (int i = 0; i < numPools; i++) {
+                pools.add(new GenericObjectPool<>(new WaiterFactory<String>(0, 0, 0, 0, 0, 0), new GenericObjectPoolConfig<Waiter>()));
+            }
+            // System.out.println("Duration: " + (System.currentTimeMillis() - startTime));
+            final ObjectName oname = pools.get(numPools - 1).getJmxName();
+            assertEquals(1, mbs.queryNames(oname, null).size());
+        } finally {
+            pools.forEach(GenericObjectPool::close);
         }
-        System.out.println("Duration: " + (System.currentTimeMillis() - startTime));
-        final ObjectName oname = pools.get(numPools - 1).getJmxName();
-        assertEquals(1, mbs.queryNames(oname, null).size());
     }
 }
