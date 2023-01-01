@@ -1219,9 +1219,14 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
                 } else {
                     objName = new ObjectName(base + jmxNamePrefix + i);
                 }
-                mbs.registerMBean(this, objName);
-                newObjectName = objName;
-                registered = true;
+                if (!mbs.isRegistered(objName)) {
+                    mbs.registerMBean(this, objName);
+                    newObjectName = objName;
+                    registered = true;
+                } else {
+                    // Increment the index and try again
+                    i++;
+                }
             } catch (final MalformedObjectNameException e) {
                 if (BaseObjectPoolConfig.DEFAULT_JMX_NAME_PREFIX.equals(
                         jmxNamePrefix) && jmxNameBase.equals(base)) {
