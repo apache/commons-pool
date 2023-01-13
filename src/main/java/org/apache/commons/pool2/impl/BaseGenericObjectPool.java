@@ -1422,7 +1422,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
 
     /**
      * Sets the timeout that will be used when waiting for the Evictor to shutdown if this pool is closed and it is the
-     * only pool still using the the value for the Evictor.
+     * only pool still using the value for the Evictor.
      *
      * @param evictorShutdownTimeout the timeout in milliseconds that will be used while waiting for the Evictor
      *                                     to shut down.
@@ -1434,7 +1434,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
 
     /**
      * Sets the timeout that will be used when waiting for the Evictor to shutdown if this pool is closed and it is the
-     * only pool still using the the value for the Evictor.
+     * only pool still using the value for the Evictor.
      *
      * @param evictorShutdownTimeoutMillis the timeout in milliseconds that will be used while waiting for the Evictor
      *                                     to shut down.
