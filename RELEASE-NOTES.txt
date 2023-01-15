@@ -49,7 +49,7 @@ o            Bump spotbugs from 4.2.3 to 4.3.0 and ignore new medium warnings EI
 
 
 For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
-patches, or suggestions for improvement, see the Apache Apache Commons Pool website:
+patches, or suggestions for improvement, see the Apache Commons Pool website:
 
 https://commons.apache.org/proper/commons-pool/
 
@@ -136,7 +136,7 @@ o            Bump checkstyle from 8.44 to 8.45 #92. Thanks to Dependabot.
 
 
 For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
-patches, or suggestions for improvement, see the Apache Apache Commons Pool website:
+patches, or suggestions for improvement, see the Apache Commons Pool website:
 
 https://commons.apache.org/proper/commons-pool/
 
@@ -208,7 +208,7 @@ o            Bump animal-sniffer-maven-plugin from 1.19 to 1.20. Thanks to Depen
 
 
 For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
-patches, or suggestions for improvement, see the Apache Apache Commons Pool website:
+patches, or suggestions for improvement, see the Apache Commons Pool website:
 
 https://commons.apache.org/proper/commons-pool/
 
@@ -255,7 +255,7 @@ o            Update actions/setup-java from v1.4.0 to v1.4.2 #42. Thanks to Depe
 o            Update optional asm-util from 8.0.1 to 9.0 #44. Thanks to Dependabot.
 
 For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
-patches, or suggestions for improvement, see the Apache Apache Commons Pool website:
+patches, or suggestions for improvement, see the Apache Commons Pool website:
 
 https://commons.apache.org/proper/commons-pool/
 
@@ -307,7 +307,7 @@ o            Update animal-sniffer-maven-plugin from 1.16 to 1.19. Thanks to Gar
 
 
 For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
-patches, or suggestions for improvement, see the Apache Apache Commons Pool website:
+patches, or suggestions for improvement, see the Apache Commons Pool website:
 
 https://commons.apache.org/proper/commons-pool/
 
@@ -359,7 +359,7 @@ o POOL-377:  Update optional library org.ow2.asm:asm-util from 7.1 to 7.2. Thank
 
 
 For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
-patches, or suggestions for improvement, see the Apache Apache Commons Pool website:
+patches, or suggestions for improvement, see the Apache Commons Pool website:
 
 https://commons.apache.org/proper/commons-pool/
 
@@ -407,7 +407,7 @@ o POOL-367:  Fix typo in package private method name stopEvitor() -> stopEvictor
 
 
 For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
-patches, or suggestions for improvement, see the Apache Apache Commons Pool website:
+patches, or suggestions for improvement, see the Apache Commons Pool website:
 
 https://commons.apache.org/proper/commons-pool/
 
@@ -445,7 +445,7 @@ o POOL-363:  Evictor Thread prevents Spring Context shutdown in standalone app. 
 o POOL-348:  The commons-pool-evictor-thread should run as a Deamon. Thanks to Josh Landin.
 
 For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
-patches, or suggestions for improvement, see the Apache Apache Commons Pool website:
+patches, or suggestions for improvement, see the Apache Commons Pool website:
 
 https://commons.apache.org/proper/commons-pool/
 
@@ -494,7 +494,7 @@ o POOL-360:  Update optional library cglib from 3.2.9 to 3.2.10.
 
 
 For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
-patches, or suggestions for improvement, see the Apache Apache Commons Pool website:
+patches, or suggestions for improvement, see the Apache Commons Pool website:
 
 https://commons.apache.org/proper/commons-pool/
 
@@ -548,7 +548,7 @@ The value is initialized as "public static final String DEFAULT_EVICTION_POLICY_
 The value should not change from one run to the next.
 
 For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
-patches, or suggestions for improvement, see the Apache Apache Commons Pool website:
+patches, or suggestions for improvement, see the Apache Commons Pool website:
 
 https://commons.apache.org/proper/commons-pool/
 
@@ -593,7 +593,7 @@ o POOL-334:  org.apache.commons.pool2.impl.ThrowableCallStack.Snapshot is missin
 
 
 For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
-patches, or suggestions for improvement, see the Apache Apache Commons Pool website:
+patches, or suggestions for improvement, see the Apache Commons Pool website:
 
 https://commons.apache.org/proper/commons-pool/
 
@@ -652,7 +652,7 @@ o POOL-323:  Update optional OW2 ASM from 5.0.4 to 5.2.
 
 
 For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
-patches, or suggestions for improvement, see the Apache Apache Commons Pool website:
+patches, or suggestions for improvement, see the Apache Commons Pool website:
 
 https://commons.apache.org/proper/commons-pool/
 
@@ -691,7 +691,7 @@ o POOL-300:  Added PrintWriter flush to DefaultPooledObject's printStackTrace me
 
 
 For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
-patches, or suggestions for improvement, see the Apache Apache Commons Pool website:
+patches, or suggestions for improvement, see the Apache Commons Pool website:
 
 https://commons.apache.org/proper/commons-pool/
 
