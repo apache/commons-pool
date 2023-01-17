@@ -70,7 +70,10 @@ The <action> type attribute can be add,update,fix,remove.
       Fail-fast on null input for DefaultPooledObjectInfo.DefaultPooledObjectInfo(PooledObject) with a NullPointerException.
     </action>       
     <action dev="niallp" type="fix" due-to="Shichao Yuan, Phil Steitz, Niall Pemberton" issue="POOL-393">
-       Improve BaseGenericObjectPool's JMX Register performance when creating many pools.
+      Improve BaseGenericObjectPool's JMX Register performance when creating many pools.
+    </action>
+    <action dev="ggregory" type="fix" due-to="Réda Housni Alaoui, Gary Gregory">
+      Null-guard in GenericObjectPool.use(T) like other call sites of GenericObjectPool.getPooledObject(T).
     </action>
     <!-- ADD -->
     <action dev="ggregory" type="add" due-to="Gary Gregory">

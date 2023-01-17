@@ -1172,7 +1172,10 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
     public void use(final T pooledObject) {
         final AbandonedConfig abandonedCfg = this.abandonedConfig;
         if (abandonedCfg != null && abandonedCfg.getUseUsageTracking()) {
-            getPooledObject(pooledObject).use();
+            final PooledObject<T> po = getPooledObject(pooledObject);
+            if (po != null) {
+                po.use();
+            }
         }
     }
 
