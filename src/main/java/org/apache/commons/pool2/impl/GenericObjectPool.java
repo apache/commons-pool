@@ -19,6 +19,7 @@ package org.apache.commons.pool2.impl;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -1172,7 +1173,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
     public void use(final T pooledObject) {
         final AbandonedConfig abandonedCfg = this.abandonedConfig;
         if (abandonedCfg != null && abandonedCfg.getUseUsageTracking()) {
-            getPooledObject(pooledObject).use();
+            Optional.ofNullable(getPooledObject(pooledObject)).ifPresent(PooledObject::use);
         }
     }
 
