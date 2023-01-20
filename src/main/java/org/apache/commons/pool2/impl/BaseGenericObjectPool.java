@@ -61,7 +61,7 @@ import org.apache.commons.pool2.SwallowedExceptionListener;
  *
  * @since 2.0
  */
-public abstract class BaseGenericObjectPool<T, E extends Exception> extends BaseObject {
+public abstract class BaseGenericObjectPool<T, E extends Exception> extends BaseObject implements AutoCloseable {
 
     /**
      * The idle object eviction iterator. Holds a reference to the idle objects.
@@ -463,6 +463,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      * Closes the pool, destroys the remaining idle objects and, if registered
      * in JMX, deregisters it.
      */
+    @Override
     public abstract void close();
 
     /**

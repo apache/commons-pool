@@ -91,6 +91,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="add">
       Add BaseGenericObjectPool.Evictor.toString().
     </action>
+    <action dev="ggregory" type="add">
+      BaseGenericObjectPool now implements AutoCloseable.
+    </action>
     <!-- UPDATE -->
     <action dev="kinow" type="update" due-to="Dependabot, Gary Gregory">
       Bump actions/cache from 2.1.6 to 3.0.10 #117, #138, #158, #174, #178.
