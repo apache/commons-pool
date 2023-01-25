@@ -78,7 +78,7 @@ public abstract class BaseKeyedPooledObjectFactory<K, V, E extends Exception> ex
 
     @Override
     public PooledObject<V> makeObject(final K key) throws E {
-        return wrap(Objects.requireNonNull(create(key), "BaseKeyedPooledObjectFactory.create(key)"));
+        return wrap(Objects.requireNonNull(create(key), () -> String.format("BaseKeyedPooledObjectFactory(%s).create(key=%s)", getClass().getName(), key)));
     }
 
     /**
@@ -114,7 +114,7 @@ public abstract class BaseKeyedPooledObjectFactory<K, V, E extends Exception> ex
      * Wraps the provided instance with an implementation of
      * {@link PooledObject}.
      *
-     * @param value the instance to wrap
+     * @param value the instance to wrap, should not be null.
      * @return The provided instance, wrapped by a {@link PooledObject}
      * @throws E if there is a problem wrapping an instance,
      *    this will be propagated to the code requesting an object.

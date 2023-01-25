@@ -63,14 +63,13 @@ public abstract class BasePooledObjectFactory<T, E extends Exception> extends Ba
      *  @param p ignored
      */
     @Override
-    public void destroyObject(final PooledObject<T> p)
-        throws E  {
+    public void destroyObject(final PooledObject<T> p) throws E  {
         // The default implementation is a no-op.
     }
 
     @Override
     public PooledObject<T> makeObject() throws E {
-        return wrap(Objects.requireNonNull(create(), "BasePooledObjectFactory.create()"));
+        return wrap(Objects.requireNonNull(create(), () -> String.format("BasePooledObjectFactory(%s).create()", getClass().getName())));
     }
 
     /**
@@ -79,8 +78,7 @@ public abstract class BasePooledObjectFactory<T, E extends Exception> extends Ba
      * @param p ignored
      */
     @Override
-    public void passivateObject(final PooledObject<T> p)
-        throws E {
+    public void passivateObject(final PooledObject<T> p) throws E {
         // The default implementation is a no-op.
     }
 
@@ -100,7 +98,7 @@ public abstract class BasePooledObjectFactory<T, E extends Exception> extends Ba
      * Wraps the provided instance with an implementation of
      * {@link PooledObject}.
      *
-     * @param obj the instance to wrap
+     * @param obj the instance to wrap, should not be null.
      *
      * @return The provided instance, wrapped by a {@link PooledObject}
      */
