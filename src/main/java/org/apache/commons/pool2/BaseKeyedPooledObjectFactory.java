@@ -78,7 +78,7 @@ public abstract class BaseKeyedPooledObjectFactory<K, V, E extends Exception> ex
 
     @Override
     public PooledObject<V> makeObject(final K key) throws E {
-        return wrap(Objects.requireNonNull(create(key), () -> String.format("BaseKeyedPooledObjectFactory(%s).create(key=%s)", getClass().getName(), key)));
+        return wrap(Objects.requireNonNull(create(key), () -> String.format("BaseKeyedPooledObjectFactory(%s).create(key=%s) = null", getClass().getName(), key)));
     }
 
     /**

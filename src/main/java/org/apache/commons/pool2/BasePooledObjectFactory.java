@@ -69,7 +69,7 @@ public abstract class BasePooledObjectFactory<T, E extends Exception> extends Ba
 
     @Override
     public PooledObject<T> makeObject() throws E {
-        return wrap(Objects.requireNonNull(create(), () -> String.format("BasePooledObjectFactory(%s).create()", getClass().getName())));
+        return wrap(Objects.requireNonNull(create(), () -> String.format("BasePooledObjectFactory(%s).create() = null", getClass().getName())));
     }
 
     /**
