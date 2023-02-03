@@ -188,8 +188,6 @@
     <commons.scmPubCheckoutDirectory>site-content</commons.scmPubCheckoutDirectory>
     <commons.osgi.import>net.sf.cglib.proxy;resolution:=optional,*</commons.osgi.import>
     <commons.animal-sniffer.version>1.21</commons.animal-sniffer.version>
-    <spotbugs.plugin.version>4.7.3.0</spotbugs.plugin.version>
-    <spotbugs.impl.version>4.7.3</spotbugs.impl.version>
 
     <!-- Commons Release Plugin -->
     <commons.bc.version>2.11.1</commons.bc.version>
@@ -252,14 +250,6 @@
           <plugin>
             <groupId>com.github.spotbugs</groupId>
             <artifactId>spotbugs-maven-plugin</artifactId>
-            <version>${spotbugs.plugin.version}</version>
-            <dependencies>
-              <dependency>
-                <groupId>com.github.spotbugs</groupId>
-                <artifactId>spotbugs</artifactId>
-                <version>${spotbugs.impl.version}</version>
-              </dependency>
-            </dependencies>
             <configuration>
               <excludeFilterFile>${basedir}/src/conf/findbugs-exclude-filter.xml</excludeFilterFile>
             </configuration>
