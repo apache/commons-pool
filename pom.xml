@@ -243,15 +243,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-checkstyle-plugin</artifactId>
-            <version>${commons.checkstyle-plugin.version}</version>
-            <dependencies>
-              <dependency>
-                <groupId>com.puppycrawl.tools</groupId>
-                <artifactId>checkstyle</artifactId>
-                <version>${commons.checkstyle.version}</version>
-              </dependency>
-            </dependencies>
-            <configuration>
+             <configuration>
               <configLocation>${basedir}/src/conf/checkstyle.xml</configLocation>
               <enableRulesSummary>false</enableRulesSummary>
               <headerLocation>${basedir}/license-header.txt</headerLocation>
