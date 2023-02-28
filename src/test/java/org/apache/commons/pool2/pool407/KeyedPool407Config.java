@@ -23,9 +23,9 @@ import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
 
 public final class KeyedPool407Config extends GenericKeyedObjectPoolConfig<KeyedPool407Fixture> {
 
-    public KeyedPool407Config() {
-        setBlockWhenExhausted(true);
-        setMaxTotalPerKey(1);
-        setMaxWait(Duration.ofMillis(-1));
+    public KeyedPool407Config(final Duration poolConfigMaxWait) {
+        setBlockWhenExhausted(Pool407Constants.BLOCK_WHEN_EXHAUSTED);
+        setMaxTotalPerKey(Pool407Constants.MAX_TOTAL);
+        setMaxWait(poolConfigMaxWait);
     }
 }

@@ -21,11 +21,14 @@ import java.time.Duration;
 
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
+/**
+ * Tests POOL-407.
+ */
 public final class Pool407Config extends GenericObjectPoolConfig<Pool407Fixture> {
 
-    public Pool407Config() {
-        setBlockWhenExhausted(true);
-        setMaxTotal(1);
-        setMaxWait(Duration.ofMillis(-1));
+    public Pool407Config(final Duration poolConfigMaxWait) {
+        setBlockWhenExhausted(Pool407Constants.BLOCK_WHEN_EXHAUSTED);
+        setMaxTotal(Pool407Constants.MAX_TOTAL);
+        setMaxWait(poolConfigMaxWait);
     }
 }

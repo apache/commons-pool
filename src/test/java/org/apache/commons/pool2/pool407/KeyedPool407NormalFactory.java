@@ -17,11 +17,13 @@
 
 package org.apache.commons.pool2.pool407;
 
-import org.apache.commons.pool2.BaseKeyedPooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 
-public final class KeyedPool407NormalFactory extends BaseKeyedPooledObjectFactory<String, KeyedPool407Fixture, RuntimeException> {
+/**
+ * Tests POOL-407.
+ */
+public final class KeyedPool407NormalFactory extends AbstractKeyedPool407Factory {
 
     private final KeyedPool407Fixture fixture;
 
@@ -38,15 +40,13 @@ public final class KeyedPool407NormalFactory extends BaseKeyedPooledObjectFactor
     }
 
     @Override
-    public boolean validateObject(final String key, final PooledObject<KeyedPool407Fixture> p) {
-        // TODO Should this be enough even if wrap() does throw and returns a DefaultPooledObject wrapping a null?
-        return p.getObject() != null;
+    boolean isDefaultMakeObject() {
+        return true;
     }
 
     @Override
     public PooledObject<KeyedPool407Fixture> wrap(final KeyedPool407Fixture value) {
-        // Require a non-null value.
-        // return new DefaultPooledObject<>(Objects.requireNonNull(value, "value"));
+        // value will never be null here.
         return new DefaultPooledObject<>(value);
     }
 }

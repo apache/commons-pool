@@ -17,25 +17,33 @@
 
 package org.apache.commons.pool2.pool407;
 
-import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 
-public final class Pool407NullObjectFactory extends BasePooledObjectFactory<Pool407Fixture, RuntimeException> {
+/**
+ * Tests POOL-407.
+ */
+public final class Pool407NullObjectFactory extends AbstractPool407Factory {
 
     @Override
     public Pool407Fixture create() {
+        // Never called because this class calls makeObject() and wrap().
         return null;
+    }
+
+    @Override
+    boolean isDefaultMakeObject() {
+        return false;
+    }
+
+    @Override
+    boolean isNullFactory() {
+        return true;
     }
 
     @Override
     public PooledObject<Pool407Fixture> makeObject() throws RuntimeException {
         return new DefaultPooledObject<>(null);
-    }
-
-    @Override
-    public boolean validateObject(final PooledObject<Pool407Fixture> p) {
-        return p != null && p.getObject() != null;
     }
 
     @Override

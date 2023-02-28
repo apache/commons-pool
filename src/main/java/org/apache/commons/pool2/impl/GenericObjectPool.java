@@ -185,7 +185,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
      * @throws E If the factory fails to passivate the object
      */
     private void addIdleObject(final PooledObject<T> p) throws E {
-        if (p != null) {
+        if (!PooledObject.isNull(p)) {
             factory.passivateObject(p);
             if (getLifo()) {
                 idleObjects.addFirst(p);
@@ -292,12 +292,12 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
             p = idleObjects.pollFirst();
             if (p == null) {
                 p = create();
-                if (p != null) {
+                if (!PooledObject.isNull(p)) {
                     create = true;
                 }
             }
             if (blockWhenExhausted) {
-                if (p == null) {
+                if (PooledObject.isNull(p)) {
                     try {
                         p = borrowMaxWaitDuration.isNegative() ? idleObjects.takeFirst() : idleObjects.pollFirst(borrowMaxWaitDuration);
                     } catch (final InterruptedException e) {
@@ -305,18 +305,18 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
                         throw cast(e);
                     }
                 }
-                if (p == null) {
+                if (PooledObject.isNull(p)) {
                     throw new NoSuchElementException(appendStats(
                             "Timeout waiting for idle object, borrowMaxWaitDuration=" + borrowMaxWaitDuration));
                 }
-            } else if (p == null) {
+            } else if (PooledObject.isNull(p)) {
                 throw new NoSuchElementException(appendStats("Pool exhausted"));
             }
             if (!p.allocate()) {
                 p = null;
             }
 
-            if (p != null) {
+            if (!PooledObject.isNull(p)) {
                 try {
                     factory.activateObject(p);
                 } catch (final Exception e) {
@@ -333,7 +333,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
                         throw nsee;
                     }
                 }
-                if (p != null && getTestOnBorrow()) {
+                if (!PooledObject.isNull(p) && getTestOnBorrow()) {
                     boolean validate = false;
                     Throwable validationThrowable = null;
                     try {
@@ -493,7 +493,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
      * returns null.
      * </p>
      *
-     * @return The new wrapped pooled object
+     * @return The new wrapped pooled object or null.
      * @throws E if the object factory's {@code makeObject} fails
      */
     private PooledObject<T> create() throws E {
@@ -558,6 +558,10 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
         final PooledObject<T> p;
         try {
             p = factory.makeObject();
+            if (PooledObject.isNull(p)) {
+                createCount.decrementAndGet();
+                throw new NullPointerException(String.format("%s.makeObject() = null", factory.getClass().getSimpleName()));
+            }
             if (getTestOnCreate() && !factory.validateObject(p)) {
                 createCount.decrementAndGet();
                 return null;
@@ -624,7 +628,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
 
         while (idleObjects.size() < idleCount) {
             final PooledObject<T> p = create();
-            if (p == null) {
+            if (PooledObject.isNull(p)) {
                 // Can't create objects, no reason to think another call to
                 // create will work. Give up.
                 break;

@@ -17,13 +17,16 @@
 
 package org.apache.commons.pool2.pool407;
 
+import java.time.Duration;
+
 import org.apache.commons.pool2.BaseKeyedPooledObjectFactory;
+import org.apache.commons.pool2.impl.BaseObjectPoolConfig;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPool;
 
 public final class KeyedPool407 extends GenericKeyedObjectPool<String, KeyedPool407Fixture, RuntimeException> {
 
-    public KeyedPool407(final BaseKeyedPooledObjectFactory<String, KeyedPool407Fixture, RuntimeException> factory) {
-        super(factory, new KeyedPool407Config());
+    public KeyedPool407(final BaseKeyedPooledObjectFactory<String, KeyedPool407Fixture, RuntimeException> factory, final Duration maxWait) {
+        super(factory, new KeyedPool407Config(BaseObjectPoolConfig.DEFAULT_MAX_WAIT));
     }
 
 }

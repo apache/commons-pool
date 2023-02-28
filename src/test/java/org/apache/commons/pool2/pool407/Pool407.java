@@ -17,16 +17,17 @@
 
 package org.apache.commons.pool2.pool407;
 
+import java.time.Duration;
+
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 
+/**
+ * Tests POOL-407.
+ */
 public final class Pool407 extends GenericObjectPool<Pool407Fixture, RuntimeException> {
 
-    public Pool407(final Pool407Fixture fixture) {
-        super(new Pool407NormalFactory(fixture), new Pool407Config());
-    }
-
-    public Pool407(final BasePooledObjectFactory<Pool407Fixture, RuntimeException> factory) {
-        super(factory, new Pool407Config());
+    public Pool407(final BasePooledObjectFactory<Pool407Fixture, RuntimeException> factory, final Duration poolConfigMaxWait) {
+        super(factory, new Pool407Config(poolConfigMaxWait));
     }
 }

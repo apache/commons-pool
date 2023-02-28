@@ -28,11 +28,21 @@ import java.util.Deque;
  * Implementations of this class are required to be thread-safe.
  * </p>
  *
- * @param <T> the type of object in the pool
- *
+ * @param <T> the type of object in the pool.
  * @since 2.0
  */
 public interface PooledObject<T> extends Comparable<PooledObject<T>> {
+
+    /**
+     * Tests whether the given PooledObject is null <em>or</em> contains a null.
+     *
+     * @param pooledObject the PooledObject to test.
+     * @return whether the given PooledObject is null <em>or</em> contains a null.
+     * @since 2.12.0
+     */
+    static boolean isNull(PooledObject<?> pooledObject) {
+        return pooledObject == null || pooledObject.getObject() == null;
+    }
 
     /**
      * Allocates the object.

@@ -17,35 +17,31 @@
 
 package org.apache.commons.pool2.pool407;
 
+import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 
 /**
  * Tests POOL-407.
  */
-public final class Pool407NullPoolableObjectFactory extends AbstractPool407Factory {
-    
-    @Override
-    public Pool407Fixture create() {
-        return null;
-    }
+public abstract class AbstractPool407Factory extends BasePooledObjectFactory<Pool407Fixture, RuntimeException> {
+
+    /**
+     * Tests whether the subclass relies on the Pool's implementation of makeObject(). If the subclass returns false, then it implements makeObject(), in which
+     * case makeObject() returns a bad object like null or a null wrapper.
+     */
+    abstract boolean isDefaultMakeObject();
+
+    /**
+     * Tests whether this instance makes null or null wrappers.
+     *
+     * @return whether this instance makes null or null wrappers.
+     */
+    abstract boolean isNullFactory();
 
     @Override
-    boolean isDefaultMakeObject() {
-        return false;
+    public boolean validateObject(final PooledObject<Pool407Fixture> p) {
+        // TODO Should this be enough even if wrap() does throw and returns a DefaultPooledObject wrapping a null?
+        return !PooledObject.isNull(p);
     }
 
-    @Override
-    boolean isNullFactory() {
-        return true;
-    }
-
-    @Override
-    public PooledObject<Pool407Fixture> makeObject() throws RuntimeException {
-        return null;
-    }
-
-    @Override
-    public PooledObject<Pool407Fixture> wrap(final Pool407Fixture value) {
-        return null;
-    }
 }

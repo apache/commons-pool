@@ -17,11 +17,13 @@
 
 package org.apache.commons.pool2.pool407;
 
-import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 
-public final class Pool407NormalFactory extends BasePooledObjectFactory<Pool407Fixture, RuntimeException> {
+/**
+ * Tests POOL-407.
+ */
+public final class Pool407NormalFactory extends AbstractPool407Factory {
 
     private final Pool407Fixture fixture;
 
@@ -31,6 +33,9 @@ public final class Pool407NormalFactory extends BasePooledObjectFactory<Pool407F
 
     @Override
     public Pool407Fixture create() {
+        // When this returns null, we fail-fast internally and borrowsObject() throws an exception.
+        //
+        // Old note: 
         // This is key to the test, creation failed and returns null for instance see
         // https://github.com/openhab/openhab-core/blob/main/bundles/org.openhab.core.io.transport.modbus/src/main/java/org/openhab/core/io/transport/modbus/internal/pooling/ModbusSlaveConnectionFactoryImpl.java#L163
         // the test passes when this returns new Pool407Fixture();
@@ -38,15 +43,18 @@ public final class Pool407NormalFactory extends BasePooledObjectFactory<Pool407F
     }
 
     @Override
-    public boolean validateObject(final PooledObject<Pool407Fixture> p) {
-        // TODO Should this be enough even if wrap() does throw and returns a DefaultPooledObject wrapping a null?
-        return p.getObject() != null;
+    boolean isDefaultMakeObject() {
+        return true;
+    }
+
+    @Override
+    boolean isNullFactory() {
+        return fixture == null;
     }
 
     @Override
     public PooledObject<Pool407Fixture> wrap(final Pool407Fixture value) {
-        // Require a non-null value.
-        // return new DefaultPooledObject<>(Objects.requireNonNull(value, "value"));
+        // value will never be null here.
         return new DefaultPooledObject<>(value);
     }
 }

@@ -301,7 +301,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * @throws E If the associated factory fails to passivate the object
      */
     private void addIdleObject(final K key, final PooledObject<T> p) throws E {
-        if (p != null) {
+        if (!PooledObject.isNull(p)) {
             factory.passivateObject(key, p);
             final LinkedBlockingDeque<PooledObject<T>> idleObjects = poolMap.get(key).getIdleObjects();
             if (getLifo()) {
@@ -434,12 +434,12 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
                 p = objectDeque.getIdleObjects().pollFirst();
                 if (p == null) {
                     p = create(key);
-                    if (p != null) {
+                    if (!PooledObject.isNull(p)) {
                         create = true;
                     }
                 }
                 if (blockWhenExhausted) {
-                    if (p == null) {
+                    if (PooledObject.isNull(p)) {
                         try {
                             p = borrowMaxWaitMillis < 0 ? objectDeque.getIdleObjects().takeFirst() :
                                 objectDeque.getIdleObjects().pollFirst(borrowMaxWaitMillis, TimeUnit.MILLISECONDS);
@@ -447,18 +447,18 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
                             throw cast(e);
                         }
                     }
-                    if (p == null) {
+                    if (PooledObject.isNull(p)) {
                         throw new NoSuchElementException(appendStats(
                                 "Timeout waiting for idle object, borrowMaxWaitMillis=" + borrowMaxWaitMillis));
                     }
-                } else if (p == null) {
+                } else if (PooledObject.isNull(p)) {
                     throw new NoSuchElementException(appendStats("Pool exhausted"));
                 }
                 if (!p.allocate()) {
                     p = null;
                 }
 
-                if (p != null) {
+                if (!PooledObject.isNull(p)) {
                     try {
                         factory.activateObject(key, p);
                     } catch (final Exception e) {
@@ -474,7 +474,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
                             throw nsee;
                         }
                     }
-                    if (p != null && getTestOnBorrow()) {
+                    if (!PooledObject.isNull(p) && getTestOnBorrow()) {
                         boolean validate = false;
                         Throwable validationThrowable = null;
                         try {
@@ -792,6 +792,11 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
         PooledObject<T> p = null;
         try {
             p = factory.makeObject(key);
+            if (PooledObject.isNull(p)) {
+                numTotal.decrementAndGet();
+                objectDeque.getCreateCount().decrementAndGet();
+                throw new NullPointerException(String.format("%s.makeObject() = null", factory.getClass().getSimpleName()));
+            }
             if (getTestOnCreate() && !factory.validateObject(key, p)) {
                 numTotal.decrementAndGet();
                 objectDeque.getCreateCount().decrementAndGet();
@@ -1465,7 +1470,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
 
         final PooledObject<T> p = objectDeque.getAllObjects().get(new IdentityWrapper<>(obj));
 
-        if (p == null) {
+        if (PooledObject.isNull(p)) {
             throw new IllegalStateException("Returned object not currently part of this pool");
         }
 
@@ -1568,10 +1573,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
         if (mostLoaded != null) {
             register(loadedKey);
             try {
-                final PooledObject<T> p = create(loadedKey);
-                if (p != null) {
-                    addIdleObject(loadedKey, p);
-                }
+                addIdleObject(loadedKey, create(loadedKey));
             } catch (final Exception e) {
                 swallowException(e);
             } finally {

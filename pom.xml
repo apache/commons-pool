@@ -277,10 +277,9 @@
               <forkedProcessTimeoutInSeconds>1800</forkedProcessTimeoutInSeconds>
               <includes>
                 <include>**/Test*.java</include>
+                <include>**/*Test.java</include>
               </includes>
               <excludes>
-                <!-- nested classes are not handled properly by Surefire -->
-                <exclude>**/Test*$*.java</exclude>
                 <!-- Don't run this test by default - it uses lots of memory -->
                 <exclude>**/TestSoftRefOutOfMemory.java</exclude>
               </excludes>

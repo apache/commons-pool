@@ -17,35 +17,20 @@
 
 package org.apache.commons.pool2.pool407;
 
-import org.apache.commons.pool2.PooledObject;
+import java.time.Duration;
+
+import org.apache.commons.pool2.impl.BaseObjectPoolConfig;
 
 /**
  * Tests POOL-407.
  */
-public final class Pool407NullPoolableObjectFactory extends AbstractPool407Factory {
-    
-    @Override
-    public Pool407Fixture create() {
-        return null;
-    }
+class Pool407Constants {
 
-    @Override
-    boolean isDefaultMakeObject() {
-        return false;
-    }
+    static final int AWAIT_TERMINATION_SECONDS = 10;
+    static final boolean BLOCK_WHEN_EXHAUSTED = true;
+    static final int MAX_TOTAL = 1;
+    static final int POOL_SIZE = 3;
+    static final Duration WAIT_FOREVER = BaseObjectPoolConfig.DEFAULT_MAX_WAIT;
+    static final Duration WAIT_SHORT = Duration.ofSeconds(1);
 
-    @Override
-    boolean isNullFactory() {
-        return true;
-    }
-
-    @Override
-    public PooledObject<Pool407Fixture> makeObject() throws RuntimeException {
-        return null;
-    }
-
-    @Override
-    public PooledObject<Pool407Fixture> wrap(final Pool407Fixture value) {
-        return null;
-    }
 }

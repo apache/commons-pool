@@ -17,10 +17,12 @@
 
 package org.apache.commons.pool2.pool407;
 
-import org.apache.commons.pool2.BaseKeyedPooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 
-public final class KeyedPool407NullPoolableObjectFactory extends BaseKeyedPooledObjectFactory<String, KeyedPool407Fixture, RuntimeException> {
+/**
+ * Tests POOL-407.
+ */
+public final class KeyedPool407NullPoolableObjectFactory extends AbstractKeyedPool407Factory {
 
     @Override
     public KeyedPool407Fixture create(final String key) {
@@ -28,13 +30,13 @@ public final class KeyedPool407NullPoolableObjectFactory extends BaseKeyedPooled
     }
 
     @Override
-    public PooledObject<KeyedPool407Fixture> makeObject(final String key) throws RuntimeException {
-        return null;
+    boolean isDefaultMakeObject() {
+        return false;
     }
 
     @Override
-    public boolean validateObject(final String key, final PooledObject<KeyedPool407Fixture> p) {
-        return p != null && p.getObject() != null;
+    public PooledObject<KeyedPool407Fixture> makeObject(final String key) throws RuntimeException {
+        return null;
     }
 
     @Override
