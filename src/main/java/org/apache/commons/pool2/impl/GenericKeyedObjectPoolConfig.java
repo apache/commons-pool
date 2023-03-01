@@ -17,7 +17,7 @@
 package org.apache.commons.pool2.impl;
 
 /**
- * A simple "struct" encapsulating the configuration for a
+ * A simple structure encapsulating the configuration for a
  * {@link GenericKeyedObjectPool}.
  *
  * <p>
