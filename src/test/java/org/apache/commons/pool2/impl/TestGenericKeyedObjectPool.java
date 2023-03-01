@@ -952,9 +952,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
      * enough margin for this to work correctly on most (all?) systems but be
      * aware of this if you see a failure of this test.
      */
-    @SuppressWarnings({
-        "rawtypes"
-    })
+    @SuppressWarnings("rawtypes")
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
     public void testBorrowObjectFairness() throws Exception {

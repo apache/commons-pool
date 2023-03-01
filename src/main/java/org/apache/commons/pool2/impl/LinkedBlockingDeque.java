@@ -1104,8 +1104,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
         // Read in all elements and place in queue
         for (;;) {
             @SuppressWarnings("unchecked")
-            final
-            E item = (E)s.readObject();
+            final E item = (E)s.readObject();
             if (item == null) {
                 break;
             }
