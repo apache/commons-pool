@@ -285,7 +285,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             final boolean evenTest;
             final boolean oddTest;
             final int counter;
-            synchronized(this) {
+            synchronized (this) {
                 hurl = exceptionOnActivate;
                 evenTest = evenValid;
                 oddTest = oddValid;
@@ -300,14 +300,14 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         public void destroyObject(final PooledObject<String> obj) throws TestException {
             final long waitLatency;
             final boolean hurl;
-            synchronized(this) {
+            synchronized (this) {
                 waitLatency = destroyLatency;
                 hurl = exceptionOnDestroy;
             }
             if (waitLatency > 0) {
                 doWait(waitLatency);
             }
-            synchronized(this) {
+            synchronized (this) {
                 activeCount--;
             }
             if (hurl) {
@@ -334,7 +334,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         @Override
         public PooledObject<String> makeObject() {
             final long waitLatency;
-            synchronized(this) {
+            synchronized (this) {
                 activeCount++;
                 if (activeCount > maxTotal) {
                     throw new IllegalStateException(
@@ -346,7 +346,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 doWait(waitLatency);
             }
             final int counter;
-            synchronized(this) {
+            synchronized (this) {
                 counter = makeCounter++;
             }
             return new DefaultPooledObject<>(String.valueOf(counter));
@@ -355,7 +355,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         @Override
         public void passivateObject(final PooledObject<String> obj) throws TestException {
             final boolean hurl;
-            synchronized(this) {
+            synchronized (this) {
                 hurl = exceptionOnPassivate;
             }
             if (hurl) {
@@ -420,7 +420,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             final boolean oddTest;
             final long waitLatency;
             final int counter;
-            synchronized(this) {
+            synchronized (this) {
                 validate = enableValidation;
                 throwException = exceptionOnValidate;
                 evenTest = evenValid;
