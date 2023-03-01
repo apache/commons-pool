@@ -875,7 +875,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
 
         try {
             boolean isIdle;
-            synchronized(toDestroy) {
+            synchronized (toDestroy) {
                 // Check idle state directly
                 isIdle = toDestroy.getState().equals(PooledObjectState.IDLE);
                 // If idle, not under eviction test, or always is true, remove instance,
