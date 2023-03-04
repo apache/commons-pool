@@ -597,6 +597,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * If reuseCapacity is true and there are clients waiting to
      * borrow objects, this method will attempt to reuse the capacity freed
      * by this operation, adding instances to the most loaded keyed pools.
+     * </p>
      *
      * @param key the key to clear
      * @param reuseCapacity whether or not to reuse freed capacity
@@ -605,11 +606,8 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
         final ObjectDeque<T> objectDeque = register(key);
         int freedCapacity = 0;
         try {
-            final LinkedBlockingDeque<PooledObject<T>> idleObjects =
-                    objectDeque.getIdleObjects();
-
+            final LinkedBlockingDeque<PooledObject<T>> idleObjects = objectDeque.getIdleObjects();
             PooledObject<T> p = idleObjects.poll();
-
             while (p != null) {
                 try {
                     if (destroy(key, p, true, DestroyMode.NORMAL)) {
@@ -626,7 +624,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
         if (reuseCapacity) {
             reuseCapacity(freedCapacity);
         }
-
     }
 
     /**
