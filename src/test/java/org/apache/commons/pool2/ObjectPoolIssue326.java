@@ -52,7 +52,7 @@ public final class ObjectPoolIssue326 {
         }
     }
 
-    private class Task<E extends Exception> implements Callable<Object> {
+    private static class Task<E extends Exception> implements Callable<Object> {
         private final GenericKeyedObjectPool<Integer, Object, E> m_pool;
         private final int m_key;
 
@@ -89,7 +89,7 @@ public final class ObjectPoolIssue326 {
         }
     }
 
-    private class TestObject {
+    private static class TestObject {
     }
 
     public static void main(final String[] args) {
