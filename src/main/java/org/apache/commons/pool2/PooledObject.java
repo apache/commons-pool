@@ -40,7 +40,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      * @return whether the given PooledObject is null <em>or</em> contains a null.
      * @since 2.12.0
      */
-    static boolean isNull(PooledObject<?> pooledObject) {
+    static boolean isNull(final PooledObject<?> pooledObject) {
         return pooledObject == null || pooledObject.getObject() == null;
     }
 
