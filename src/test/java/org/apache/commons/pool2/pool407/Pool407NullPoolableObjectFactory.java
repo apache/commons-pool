@@ -23,7 +23,7 @@ import org.apache.commons.pool2.PooledObject;
  * Tests POOL-407.
  */
 public final class Pool407NullPoolableObjectFactory extends AbstractPool407Factory {
-    
+
     @Override
     public Pool407Fixture create() {
         return null;
