@@ -40,7 +40,7 @@ import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
  * negatively since you need to run it for a while.
  */
 public final class ObjectPoolIssue326 {
-    private class ObjectFactory extends BaseKeyedPooledObjectFactory<Integer, Object, RuntimeException> {
+    private static class ObjectFactory extends BaseKeyedPooledObjectFactory<Integer, Object, RuntimeException> {
         @Override
         public Object create(final Integer s) {
             return new TestObject();
