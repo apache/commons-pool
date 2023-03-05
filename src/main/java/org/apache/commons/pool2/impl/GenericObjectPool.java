@@ -17,6 +17,7 @@
 package org.apache.commons.pool2.impl;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -285,7 +286,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
         final boolean blockWhenExhausted = getBlockWhenExhausted();
 
         boolean create;
-        final long waitTimeMillis = System.currentTimeMillis();
+        final Instant waitTime = Instant.now();
 
         while (p == null) {
             create = false;
@@ -361,7 +362,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
             }
         }
 
-        updateStatsBorrow(p, Duration.ofMillis(System.currentTimeMillis() - waitTimeMillis));
+        updateStatsBorrow(p, Duration.between(waitTime, Instant.now()));
 
         return p.getObject();
     }
@@ -544,9 +545,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
             }
 
             // Do not block more if maxWaitTimeMillis is set.
-            if (create == null &&
-                localMaxWaitTimeMillis > 0 &&
-                 System.currentTimeMillis() - localStartTimeMillis >= localMaxWaitTimeMillis) {
+            if (create == null && localMaxWaitTimeMillis > 0 && System.currentTimeMillis() - localStartTimeMillis >= localMaxWaitTimeMillis) {
                 create = Boolean.FALSE;
             }
         }

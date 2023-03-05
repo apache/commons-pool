@@ -17,6 +17,7 @@
 package org.apache.commons.pool2.impl;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
@@ -422,7 +423,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
         final boolean blockWhenExhausted = getBlockWhenExhausted();
 
         boolean create;
-        final long waitTimeMillis = System.currentTimeMillis();
+        final Instant waitTime = Instant.now();
         final ObjectDeque<T> objectDeque = register(key);
 
         try {
@@ -502,7 +503,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
             deregister(key);
         }
 
-        updateStatsBorrow(p, Duration.ofMillis(System.currentTimeMillis() - waitTimeMillis));
+        updateStatsBorrow(p, Duration.between(waitTime, Instant.now()));
 
         return p.getObject();
     }

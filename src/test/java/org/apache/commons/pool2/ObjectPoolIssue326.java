@@ -18,6 +18,7 @@
 package org.apache.commons.pool2;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -137,7 +138,7 @@ public final class ObjectPoolIssue326 {
         // 4 core box.
         // too many doesn't reproduce it ever, too few doesn't either.
         final ExecutorService service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
-        final long startTimeMillis = System.currentTimeMillis();
+        final Instant startTime = Instant.now();
         long testIter = 0;
         try {
             while (true) {
@@ -152,7 +153,7 @@ public final class ObjectPoolIssue326 {
                 }
             }
         } finally {
-            System.out.println("Time: " + (System.currentTimeMillis() - startTimeMillis) / 1000.0);
+            System.out.println("Time: " + Duration.between(startTime, Instant.now()));
             service.shutdown();
         }
     }
