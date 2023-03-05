@@ -41,7 +41,7 @@ public interface DefaultPooledObjectInfoMBean {
 
     /**
      * Gets the time (using the same basis as
-     * {@link System#currentTimeMillis()}) that pooled object was created.
+     * {@link java.time.Clock#instant()}) that pooled object was created.
      *
      * @return The creation time for the pooled object
      */
@@ -57,7 +57,7 @@ public interface DefaultPooledObjectInfoMBean {
 
     /**
      * Gets the time (using the same basis as
-     * {@link System#currentTimeMillis()}) the polled object was last borrowed.
+     * {@link java.time.Clock#instant()}) the polled object was last borrowed.
      *
      * @return The time the pooled object was last borrowed
      */
@@ -81,7 +81,7 @@ public interface DefaultPooledObjectInfoMBean {
 
     /**
      * Gets the time (using the same basis as
-     * {@link System#currentTimeMillis()})the wrapped object was last returned.
+     * {@link java.time.Clock#instant()})the wrapped object was last returned.
      *
      * @return The time the object was last returned
      */
