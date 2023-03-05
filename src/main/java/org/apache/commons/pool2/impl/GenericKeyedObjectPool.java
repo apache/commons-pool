@@ -96,7 +96,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      *
      * @param <S> type of objects in the pool
      */
-    private class ObjectDeque<S> {
+    private static class ObjectDeque<S> {
 
         private final LinkedBlockingDeque<PooledObject<S>> idleObjects;
 
@@ -440,7 +440,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
                         try {
                             p = borrowMaxWaitMillis < 0 ? objectDeque.getIdleObjects().takeFirst() :
                                 objectDeque.getIdleObjects().pollFirst(borrowMaxWaitMillis, TimeUnit.MILLISECONDS);
-                        } catch (InterruptedException e) {
+                        } catch (final InterruptedException e) {
                             throw cast(e);
                         }
                     }
@@ -766,7 +766,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
                         // the pool is at capacity or not.
                         try {
                             objectDeque.makeObjectCountLock.wait();
-                        } catch (InterruptedException e) {
+                        } catch (final InterruptedException e) {
                             throw cast(e);
                         }
                     }
@@ -1553,7 +1553,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
         int maxQueueLength = 0;
         LinkedBlockingDeque<PooledObject<T>> mostLoaded = null;
         K loadedKey = null;
-        for (final Entry<K, GenericKeyedObjectPool<K, T, E>.ObjectDeque<T>> entry : poolMap.entrySet()) {
+        for (final Entry<K, GenericKeyedObjectPool.ObjectDeque<T>> entry : poolMap.entrySet()) {
             final K k = entry.getKey();
             final ObjectDeque<T> deque = entry.getValue();
             final LinkedBlockingDeque<PooledObject<T>> pool = deque.getIdleObjects();
