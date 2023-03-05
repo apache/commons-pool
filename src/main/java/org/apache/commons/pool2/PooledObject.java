@@ -150,7 +150,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
 
     /**
      * Gets the time (using the same basis as
-     * {@link System#currentTimeMillis()}) that this object was created.
+     * {@link java.time.Clock#instant()}) that this object was created.
      *
      * @return The creation time for the wrapped object.
      * @deprecated Use {@link #getCreateInstant()} which offers the best precision.
