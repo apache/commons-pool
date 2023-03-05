@@ -17,6 +17,7 @@
 
 package org.apache.commons.pool2.performance;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -34,22 +35,22 @@ public class PerformanceTest {
 
     class PerfTask implements Callable<TaskStats> {
         final TaskStats taskStats = new TaskStats();
-        long borrowTimeMillis;
-        long returnTimeMillis;
+        long borrowTimeNanos;
+        long returnTimeNanos;
 
         @Override
         public TaskStats call() {
                runOnce(); // warmup
                for (int i = 0; i < nrIterations; i++) {
                    runOnce();
-                   taskStats.totalBorrowTime += borrowTimeMillis;
-                   taskStats.totalReturnTime += returnTimeMillis;
+                   taskStats.totalBorrowNanos += borrowTimeNanos;
+                   taskStats.totalReturnNanos += returnTimeNanos;
                    taskStats.nrSamples++;
                    if (logLevel >= 2) {
                        final String name = "thread" + Thread.currentThread().getName();
                        System.out.println("result " + taskStats.nrSamples + '\t' +
-                               name + '\t' + "borrow time: " + borrowTimeMillis + '\t' +
-                               "return time: " + returnTimeMillis + '\t' + "waiting: " +
+                               name + '\t' + "borrow time: " + Duration.ofNanos(borrowTimeNanos) + '\t' +
+                               "return time: " + Duration.ofNanos(returnTimeNanos) + '\t' + "waiting: " +
                                taskStats.waiting + '\t' + "complete: " +
                                taskStats.complete);
                    }
@@ -66,9 +67,9 @@ public class PerformanceTest {
                         "   waiting: " + taskStats.waiting +
                         "   complete: " + taskStats.complete);
             }
-            final long bbeginMillis = System.currentTimeMillis();
+            final long bbeginNanos = System.nanoTime();
             final Integer o = pool.borrowObject();
-            final long bendMillis = System.currentTimeMillis();
+            final long bendNanos = System.nanoTime();
             taskStats.waiting--;
 
             if (logLevel >= 3) {
@@ -78,13 +79,13 @@ public class PerformanceTest {
                         "   complete: " + taskStats.complete);
             }
 
-            final long rbeginMillis = System.currentTimeMillis();
+            final long rbeginNanos = System.nanoTime();
             pool.returnObject(o);
-            final long rendMillis = System.currentTimeMillis();
+            final long rendNanos = System.nanoTime();
             Thread.yield();
             taskStats.complete++;
-            borrowTimeMillis = bendMillis - bbeginMillis;
-            returnTimeMillis = rendMillis - rbeginMillis;
+            borrowTimeNanos = bendNanos - bbeginNanos;
+            returnTimeNanos = rendNanos - rbeginNanos;
         } catch (final Exception e) {
             e.printStackTrace();
         }
@@ -93,8 +94,8 @@ public class PerformanceTest {
     private static class TaskStats {
         public int waiting;
         public int complete;
-        public long totalBorrowTime;
-        public long totalReturnTime;
+        public long totalBorrowNanos;
+        public long totalReturnNanos;
         public int nrSamples;
     }
 
@@ -177,25 +178,25 @@ public class PerformanceTest {
                 if (taskStats != null) {
                     aggregate.complete += taskStats.complete;
                     aggregate.nrSamples += taskStats.nrSamples;
-                    aggregate.totalBorrowTime += taskStats.totalBorrowTime;
-                    aggregate.totalReturnTime += taskStats.totalReturnTime;
+                    aggregate.totalBorrowNanos += taskStats.totalBorrowNanos;
+                    aggregate.totalReturnNanos += taskStats.totalReturnNanos;
                     aggregate.waiting += taskStats.waiting;
                 }
             }
         }
 
+        final Duration totalBorrowDuration = Duration.ofNanos(aggregate.totalBorrowNanos);
+        final Duration totalReturnDuration = Duration.ofNanos(aggregate.totalReturnNanos);
         System.out.println("-----------------------------------------");
         System.out.println("nrIterations: " + iterations);
         System.out.println("nrThreads: " + nrThreads);
         System.out.println("maxTotal: " + maxTotal);
         System.out.println("maxIdle: " + maxIdle);
         System.out.println("nrSamples: " + aggregate.nrSamples);
-        System.out.println("totalBorrowTime: " + aggregate.totalBorrowTime);
-        System.out.println("totalReturnTime: " + aggregate.totalReturnTime);
-        System.out.println("avg BorrowTime: " +
-                aggregate.totalBorrowTime / aggregate.nrSamples);
-        System.out.println("avg ReturnTime: " +
-                aggregate.totalReturnTime / aggregate.nrSamples);
+        System.out.println("totalBorrowTime: " + totalBorrowDuration);
+        System.out.println("totalReturnTime: " + totalReturnDuration);
+        System.out.println("avg BorrowTime: " + totalBorrowDuration.dividedBy(aggregate.nrSamples));
+        System.out.println("avg ReturnTime: " + totalReturnDuration.dividedBy(aggregate.nrSamples));
 
         threadPool.shutdown();
     }
