@@ -33,7 +33,9 @@ import java.io.StringWriter;
 import java.lang.management.ManagementFactory;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Random;
@@ -41,6 +43,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -976,7 +979,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
         // Start and park threads waiting to borrow objects
         final TestThread[] threads = new TestThread[numThreads];
-        for(int i=0;i<numThreads;i++) {
+        for (int i = 0; i < numThreads; i++) {
             threads[i] = new TestThread<>(gkoPool, 1, 0, 2000, false, "0" + String.valueOf(i % maxTotal), "0");
             final Thread t = new Thread(threads[i]);
             t.start();
@@ -1001,6 +1004,69 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             if (threads[i].failed()) {
                 fail("Thread " + i + " failed: " + threads[i].exception.toString());
             }
+        }
+    }
+
+    /**
+     * TODO Tests POOL-411, or least tries to reproduce the NPE, but does not.
+     *
+     * @throws TestException a test failure.
+     */
+    @Test
+    public void testConcurrentBorrowAndClear() throws TestException {
+        final int threadCount = 64;
+        final int taskCount = 64;
+        final int addCount = 1;
+        final int borrowCycles = 1024;
+        final int clearCycles = 1024;
+
+        final GenericKeyedObjectPoolConfig<String> config = new GenericKeyedObjectPoolConfig<>();
+        final int maxTotalPerKey = borrowCycles + 1;
+        config.setMaxTotalPerKey(threadCount);
+        config.setMaxIdlePerKey(threadCount);
+        config.setMaxTotal(maxTotalPerKey * threadCount);
+        config.setBlockWhenExhausted(false); // pool exhausted indicates a bug in the test
+
+        gkoPool = new GenericKeyedObjectPool<>(simpleFactory, config);
+        gkoPool.addObjects(Arrays.asList("0"), threadCount);
+        // all objects in the pool are now idle.
+
+        final ExecutorService threadPool = Executors.newFixedThreadPool(threadCount);
+        final List<Future<?>> futures = new ArrayList<>();
+        try {
+            for (int t = 0; t < taskCount; t++) {
+                futures.add(threadPool.submit(() -> {
+                    for (int i = 0; i < clearCycles; i++) {
+                        Thread.yield();
+                        gkoPool.clear("0", true);
+                        try {
+                            gkoPool.addObjects(Arrays.asList("0"), addCount);
+                        } catch (IllegalArgumentException | TestException e) {
+                            fail(e);
+                        }
+                    }
+                }));
+                futures.add(threadPool.submit(() -> {
+                    try {
+                        for (int i = 0; i < borrowCycles; i++) {
+                            Thread.yield();
+                            final String pooled = gkoPool.borrowObject("0");
+                            gkoPool.returnObject("0", pooled);
+                        }
+                    } catch (TestException e) {
+                        fail(e);
+                    }
+                }));
+            }
+            futures.forEach(f -> {
+                try {
+                    f.get();
+                } catch (InterruptedException | ExecutionException e) {
+                    fail(e);
+                }
+            });
+        } finally {
+            threadPool.shutdownNow();
         }
     }
 

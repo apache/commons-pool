@@ -75,6 +75,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="fix" due-to="Réda Housni Alaoui, Gary Gregory">
       Null-guard in GenericObjectPool.use(T) like other call sites of GenericObjectPool.getPooledObject(T).
     </action>
+    <action dev="ggregory" type="fix" issue="POOL-411" due-to="Richard Eckart de Castilho, Gary Gregory">
+      NPE when deregistering key at end of borrow.
+    </action>
     <!-- ADD -->
     <action dev="ggregory" type="add" due-to="Gary Gregory">
       Add PooledObject.getFullDuration().

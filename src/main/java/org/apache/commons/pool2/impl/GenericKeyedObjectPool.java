@@ -312,7 +312,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
         }
     }
 
-
     /**
      * Create an object using the {@link KeyedPooledObjectFactory#makeObject
      * factory}, passivate it, and then place it in the idle object pool.
@@ -335,7 +334,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
         }
     }
 
-
     /**
      * Equivalent to <code>{@link #borrowObject(Object, long) borrowObject}(key,
      * {@link #getMaxWaitDuration()})</code>.
@@ -346,7 +344,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
     public T borrowObject(final K key) throws E {
         return borrowObject(key, getMaxWaitDuration().toMillis());
     }
-
 
     /**
      * Borrows an object from the sub-pool associated with the given key using
@@ -834,19 +831,21 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
         try {
             lock.lock();
             final ObjectDeque<T> objectDeque = poolMap.get(k);
-            final long numInterested = objectDeque.getNumInterested().decrementAndGet();
-            if (numInterested == 0 && objectDeque.getCreateCount().get() == 0) {
-                // Potential to remove key
-                // Upgrade to write lock
-                lock.unlock();
-                lock = keyLock.writeLock();
-                lock.lock();
-                if (objectDeque.getCreateCount().get() == 0 && objectDeque.getNumInterested().get() == 0) {
-                    // NOTE: Keys must always be removed from both poolMap and
-                    //       poolKeyList at the same time while protected by
-                    //       keyLock.writeLock()
-                    poolMap.remove(k);
-                    poolKeyList.remove(k);
+            if (objectDeque != null) {
+                final long numInterested = objectDeque.getNumInterested().decrementAndGet();
+                if (numInterested == 0 && objectDeque.getCreateCount().get() == 0) {
+                    // Potential to remove key
+                    // Upgrade to write lock
+                    lock.unlock();
+                    lock = keyLock.writeLock();
+                    lock.lock();
+                    if (objectDeque.getCreateCount().get() == 0 && objectDeque.getNumInterested().get() == 0) {
+                        // NOTE: Keys must always be removed from both poolMap and
+                        // poolKeyList at the same time while protected by
+                        // keyLock.writeLock()
+                        poolMap.remove(k);
+                        poolKeyList.remove(k);
+                    }
                 }
             }
         } finally {
