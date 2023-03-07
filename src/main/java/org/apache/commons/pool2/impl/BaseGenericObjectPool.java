@@ -143,8 +143,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
          */
         @Override
         public void run() {
-            final ClassLoader savedClassLoader =
-                    Thread.currentThread().getContextClassLoader();
+            final ClassLoader savedClassLoader = Thread.currentThread().getContextClassLoader();
             try {
                 if (factoryClassLoader != null) {
                     // Set the class loader for the factory
@@ -162,9 +161,9 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
                 // Evict from the pool
                 try {
                     evict();
-                } catch(final Exception e) {
+                } catch (final Exception e) {
                     swallowException(e);
-                } catch(final OutOfMemoryError oome) {
+                } catch (final OutOfMemoryError oome) {
                     // Log problem but give evictor thread a chance to continue
                     // in case error is recoverable
                     oome.printStackTrace(System.err);
