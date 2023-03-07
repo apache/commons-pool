@@ -55,6 +55,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.pool2.BaseKeyedPooledObjectFactory;
 import org.apache.commons.pool2.DestroyMode;
 import org.apache.commons.pool2.KeyedObjectPool;
@@ -1002,7 +1003,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                 Waiter.sleepQuietly(500L);
             }
             if (threads[i].failed()) {
-                fail("Thread " + i + " failed: " + threads[i].exception.toString());
+                fail("Thread " + i + " failed: " + ExceptionUtils.getStackTrace(threads[i].exception));
             }
         }
     }
