@@ -804,12 +804,6 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         return sb.toString();
     }
 
-    private String getExceptionTrace(final Throwable t){
-        final StringWriter sw = new StringWriter();
-        t.printStackTrace(new PrintWriter(sw));
-        return sw.toString();
-    }
-
     @Override
     protected Object getNthObject(final Object key, final int n) {
         return String.valueOf(key) + String.valueOf(n);
@@ -871,7 +865,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                 Waiter.sleepQuietly(500L);
             }
             if (testThread.failed()) {
-                fail("Thread failed: " + threads.indexOf(testThread) + "\n" + getExceptionTrace(testThread.exception));
+                fail("Thread failed: " + threads.indexOf(testThread) + "\n" + ExceptionUtils.getStackTrace(testThread.exception));
             }
         }
     }
