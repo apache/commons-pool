@@ -87,6 +87,10 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
     private static final String ONAME_BASE =
         "org.apache.commons.pool2:type=GenericObjectPool,name=";
 
+    private static void wait(final Object obj, final Duration duration) throws InterruptedException {
+        obj.wait(duration.toMillis(), duration.getNano() % 1_000_000);
+    }
+
     private volatile String factoryType;
 
     private volatile int maxIdle = GenericObjectPoolConfig.DEFAULT_MAX_IDLE;
@@ -504,8 +508,9 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
             localMaxTotal = Integer.MAX_VALUE;
         }
 
-        final long localStartTimeMillis = System.currentTimeMillis();
-        final long localMaxWaitTimeMillis = Math.max(getMaxWaitDuration().toMillis(), 0);
+        final Instant localStartInstant = Instant.now();
+        final Duration maxWaitDurationRaw = getMaxWaitDuration();
+        final Duration localMaxWaitDuration = maxWaitDurationRaw.isNegative() ? Duration.ZERO : maxWaitDurationRaw;
 
         // Flag that indicates if create should:
         // - TRUE:  call the factory to create an object
@@ -531,7 +536,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
                         // fail so wait until they complete and then re-test if
                         // the pool is at capacity or not.
                         try {
-                            makeObjectCountLock.wait(localMaxWaitTimeMillis);
+                            wait(makeObjectCountLock, localMaxWaitDuration);
                         } catch (final InterruptedException e) {
                             // Don't surface exception type of internal locking mechanism.
                             throw cast(e);
@@ -545,7 +550,8 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
             }
 
             // Do not block more if maxWaitTimeMillis is set.
-            if (create == null && localMaxWaitTimeMillis > 0 && System.currentTimeMillis() - localStartTimeMillis >= localMaxWaitTimeMillis) {
+            if (create == null && localMaxWaitDuration.compareTo(Duration.ZERO) > 0 &&
+                    Duration.between(localStartInstant, Instant.now()).compareTo(localMaxWaitDuration) >= 0) {
                 create = Boolean.FALSE;
             }
         }
