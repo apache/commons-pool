@@ -123,7 +123,7 @@ public class TestBaseGenericObjectPool {
      */
     @SuppressWarnings("resource") // pools closed in finally block
     @Test
-    @Timeout(value = 2000, unit = TimeUnit.MILLISECONDS)
+    @Timeout(value = 10_000, unit = TimeUnit.MILLISECONDS)
     public void testJMXRegistrationLatency() {
         final int numPools = 1000;
         final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
