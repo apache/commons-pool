@@ -38,7 +38,9 @@ and commit
 The <action> type attribute can be add,update,fix,remove.
 -->
 
-<document>
+<document xmlns="http://maven.apache.org/changes/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
   <properties>
     <title>Apache Commons Pool Release Notes</title>
   </properties>
@@ -1135,7 +1137,7 @@ threadsafe.">
         a Config instance as a parameter. The minIdle setting in the Config
         was being ignored by the constructor.
       </action>
-      <action def="psteitz" type="fix" issue="POOL-117">
+      <action dev="psteitz" type="fix" issue="POOL-117">
         Made behavior on instance validation failure consistent across pools,
         eliminating possible infinite loops in StackObjectPool,
         StackKeyedObjectPool, SoftReferenceObjectPool when factory fails to
