@@ -27,7 +27,6 @@ import org.apache.commons.pool2.Waiter;
  * {@link #create()} creates an AtomicInteger with value 0, activate increments
  * the value of the wrapped AtomicInteger and passivate decrements it. Latency
  * of factory methods is configurable.
- *
  */
 public class AtomicIntegerFactory
     extends BasePooledObjectFactory<AtomicInteger, RuntimeException> {

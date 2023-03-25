@@ -160,7 +160,6 @@ public final class ObjectPoolIssue326 {
 }
 
 /*
- *
  * Example stack trace: java.util.concurrent.ExecutionException:
  * java.lang.NullPointerException at
  * java.util.concurrent.FutureTask.report(FutureTask.java:122) at
@@ -182,5 +181,4 @@ public final class ObjectPoolIssue326 {
  * 1142) at
  * java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:
  * 617) at java.lang.Thread.run(Thread.java:745)
- *
  */
