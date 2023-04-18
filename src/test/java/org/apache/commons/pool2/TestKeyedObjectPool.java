@@ -243,7 +243,7 @@ public abstract class TestKeyedObjectPool {
     public void testBaseAddObject() {
         try {
             pool = makeEmptyPool(3);
-        } catch(final UnsupportedOperationException uoe) {
+        } catch (final UnsupportedOperationException uoe) {
             return; // skip this test if unsupported
         }
         final Object key = makeKey(0);
@@ -268,7 +268,7 @@ public abstract class TestKeyedObjectPool {
             assertEquals(0,pool.getNumActive());
             assertEquals(1,pool.getNumIdle(key));
             assertEquals(0,pool.getNumActive(key));
-        } catch(final UnsupportedOperationException e) {
+        } catch (final UnsupportedOperationException e) {
             return; // skip this test if one of those calls is unsupported
         } finally {
             pool.close();
@@ -279,7 +279,7 @@ public abstract class TestKeyedObjectPool {
     public void testBaseBorrow() {
         try {
             pool = makeEmptyPool(3);
-        } catch(final UnsupportedOperationException uoe) {
+        } catch (final UnsupportedOperationException uoe) {
             return; // skip this test if unsupported
         }
         final Object keya = makeKey(0);
@@ -297,7 +297,7 @@ public abstract class TestKeyedObjectPool {
     public void testBaseBorrowReturn() {
         try {
             pool = makeEmptyPool(3);
-        } catch(final UnsupportedOperationException uoe) {
+        } catch (final UnsupportedOperationException uoe) {
             return; // skip this test if unsupported
         }
         final Object keya = makeKey(0);
@@ -336,7 +336,7 @@ public abstract class TestKeyedObjectPool {
     public void testBaseClear() {
         try {
             pool = makeEmptyPool(3);
-        } catch(final UnsupportedOperationException uoe) {
+        } catch (final UnsupportedOperationException uoe) {
             return; // skip this test if unsupported
         }
         final Object keya = makeKey(0);
@@ -362,7 +362,7 @@ public abstract class TestKeyedObjectPool {
     public void testBaseInvalidateObject() {
         try {
             pool = makeEmptyPool(3);
-        } catch(final UnsupportedOperationException uoe) {
+        } catch (final UnsupportedOperationException uoe) {
             return; // skip this test if unsupported
         }
         final Object keya = makeKey(0);
@@ -385,7 +385,7 @@ public abstract class TestKeyedObjectPool {
     public void testBaseNumActiveNumIdle() {
         try {
             pool = makeEmptyPool(3);
-        } catch(final UnsupportedOperationException uoe) {
+        } catch (final UnsupportedOperationException uoe) {
             return; // skip this test if unsupported
         }
         final Object keya = makeKey(0);
@@ -414,7 +414,7 @@ public abstract class TestKeyedObjectPool {
     public void testBaseNumActiveNumIdle2() {
         try {
             pool = makeEmptyPool(6);
-        } catch(final UnsupportedOperationException uoe) {
+        } catch (final UnsupportedOperationException uoe) {
             return; // skip this test if unsupported
         }
         final Object keya = makeKey(0);
@@ -474,7 +474,7 @@ public abstract class TestKeyedObjectPool {
         final KeyedObjectPool<Object, Object, RuntimeException> pool;
         try {
             pool = makeEmptyPool(new TestFactory());
-        } catch(final UnsupportedOperationException uoe) {
+        } catch (final UnsupportedOperationException uoe) {
             return; // test not supported
         }
 
@@ -509,7 +509,7 @@ public abstract class TestKeyedObjectPool {
         final KeyedObjectPool<Object, Object, PrivateException> pool;
         try {
             pool = makeEmptyPool(factory);
-        } catch(final UnsupportedOperationException uoe) {
+        } catch (final UnsupportedOperationException uoe) {
             return; // test not supported
         }
         final List<MethodCall> expectedMethods = new ArrayList<>();
@@ -547,7 +547,7 @@ public abstract class TestKeyedObjectPool {
         final KeyedObjectPool<Object, Object, PrivateException> pool;
         try {
             pool = makeEmptyPool(factory);
-        } catch(final UnsupportedOperationException uoe) {
+        } catch (final UnsupportedOperationException uoe) {
             return; // test not supported
         }
         final List<MethodCall> expectedMethods = new ArrayList<>();
@@ -625,7 +625,7 @@ public abstract class TestKeyedObjectPool {
         final KeyedObjectPool<Object, Object, PrivateException> pool;
         try {
             pool = makeEmptyPool(factory);
-        } catch(final UnsupportedOperationException uoe) {
+        } catch (final UnsupportedOperationException uoe) {
             return; // test not supported
         }
         final List<MethodCall> expectedMethods = new ArrayList<>();
@@ -672,7 +672,7 @@ public abstract class TestKeyedObjectPool {
         final KeyedObjectPool<Object, Object, PrivateException> pool;
         try {
             pool = makeEmptyPool(factory);
-        } catch(final UnsupportedOperationException uoe) {
+        } catch (final UnsupportedOperationException uoe) {
             return; // test not supported
         }
         final List<MethodCall> expectedMethods = new ArrayList<>();
@@ -706,7 +706,7 @@ public abstract class TestKeyedObjectPool {
         final KeyedObjectPool<Object, Object, PrivateException> pool;
         try {
             pool = makeEmptyPool(factory);
-        } catch(final UnsupportedOperationException uoe) {
+        } catch (final UnsupportedOperationException uoe) {
             return; // test not supported
         }
         final List<MethodCall> expectedMethods = new ArrayList<>();

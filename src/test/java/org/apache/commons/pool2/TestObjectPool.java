@@ -118,7 +118,7 @@ public abstract class TestObjectPool {
         final ObjectPool<Object, PrivateException> pool;
         try {
             pool = makeEmptyPool(factory);
-        } catch(final UnsupportedOperationException uoe) {
+        } catch (final UnsupportedOperationException uoe) {
             return; // test not supported
         }
         final List<MethodCall> expectedMethods = new ArrayList<>();
