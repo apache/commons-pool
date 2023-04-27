@@ -147,7 +147,7 @@ The <action> type attribute can be add,update,fix,remove.
       Bump asm-util from 9.2 to 9.5 #141, #179, #220.
     </action>
     <action dev="ggregory" type="update" due-to="Gary Gregory, Dependabot">
-      Bump commons-parent from 52 to 56 #173, #195, #204.
+      Bump commons-parent from 52 to 57 #173, #195, #204, #222.
     </action>
     <action dev="ggregory" type="update" due-to="Gary Gregory">
       Bump japicmp-maven-plugin from 0.15.3 to 0.16.0.
