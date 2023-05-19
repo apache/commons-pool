@@ -174,7 +174,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     /**
      * Factory that creates HashSets.  Note that this means
      *  0) All instances are initially equal (not discernible by equals)
-     *  1) Instances are mutable and mutation can cause change in identity / hashcode.
+     *  1) Instances are mutable and mutation can cause change in identity / hash code.
      */
     private static final class HashSetFactory
             extends BasePooledObjectFactory<HashSet<String>, RuntimeException> {
@@ -2466,7 +2466,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
     /**
      * Verifies that when a borrowed object is mutated in a way that does not
-     * preserve equality and hashcode, the pool can recognized it on return.
+     * preserve equality and hash code, the pool can recognized it on return.
      *
      * JIRA: POOL-284
      */
