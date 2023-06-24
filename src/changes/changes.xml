@@ -84,6 +84,9 @@ The <action> type attribute can be add,update,fix,remove.
       Make private class GenericKeyedObjectPool.ObjectDeque class static.
       Make private class BaseGenericObjectPool.StatsStore class static.      
     </action>
+    <action type="fix" dev="ggregory" due-to="step-security-bot, Gary Gregory">
+      [StepSecurity] ci: Harden GitHub Actions #225.
+    </action>
     <!-- ADD -->
     <action dev="ggregory" type="add" due-to="Gary Gregory">
       Add PooledObject.getFullDuration().
