@@ -415,7 +415,7 @@
     </profile>
     <profile>
       <id>java16</id>
-      <!-- For testing with CGLIB on Java 16 and 17-ea. -->
+      <!-- For testing with CGLIB on Java 16 and up. -->
       <activation>
         <jdk>[16,)</jdk>
       </activation>
