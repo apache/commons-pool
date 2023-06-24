@@ -447,7 +447,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     }
 
     /**
-     * Casts the given throwable to E.
+     * Casts the given throwable to {@code E}.
      *
      * @param throwable the throwable.
      * @return the input.

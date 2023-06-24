@@ -159,7 +159,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     long getCreateTime();
 
     /**
-     * Computes the duration since this object was created (using {@link Instant#now()}).
+     * Gets the duration since this object was created (using {@link Instant#now()}).
      *
      * @return The duration since this object was created.
      * @since 2.12.0
