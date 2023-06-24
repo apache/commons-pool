@@ -82,6 +82,8 @@ The <action> type attribute can be add,update,fix,remove.
     </action>
     <action dev="ggregory" type="fix" due-to="Gary Gregory">
       Make private class GenericKeyedObjectPool.ObjectDeque class static.
+    </action>
+    <action dev="ggregory" type="fix" due-to="Gary Gregory">
       Make private class BaseGenericObjectPool.StatsStore class static.      
     </action>
     <action type="fix" dev="ggregory" due-to="step-security-bot, Gary Gregory">
