@@ -131,7 +131,7 @@ public class TestBaseGenericObjectPool {
         try {
             // final long startTime = System.currentTimeMillis();
             for (int i = 0; i < numPools; i++) {
-                pools.add(new GenericObjectPool<>(new WaiterFactory<String>(0, 0, 0, 0, 0, 0), new GenericObjectPoolConfig<Waiter>()));
+                pools.add(new GenericObjectPool<>(new WaiterFactory<>(0, 0, 0, 0, 0, 0), new GenericObjectPoolConfig<>()));
             }
             // System.out.println("Duration: " + (System.currentTimeMillis() - startTime));
             final ObjectName oname = pools.get(numPools - 1).getJmxName();
