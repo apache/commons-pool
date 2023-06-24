@@ -41,6 +41,11 @@
     <url>https://issues.apache.org/jira/browse/POOL</url>
   </issueManagement>
 
+  <ciManagement>
+    <system>GitHub</system>
+    <url>https://github.com/apache/commons-pool/actions</url>
+  </ciManagement>
+
   <scm>
     <connection>scm:git:https://gitbox.apache.org/repos/asf/commons-pool.git</connection>
     <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/commons-pool.git</developerConnection>
