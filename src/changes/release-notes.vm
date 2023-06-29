@@ -28,9 +28,6 @@ Version 2.6.x requires Java 7 or above.
 Version 2.5.x requires Java 7 or above.
 Version 2.0 requires 6 or above. 
 
-No client code changes are required to migrate from versions 2.0-2.3 to version 2.4.3.
-Users of version 1.x should consult the migration guide on the Commons Pool web site.
-
 NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPoolMXBean
       and GenericKeyedObjectPoolMXBean) exist only to define the attributes and methods
       that will be made available via JMX. They must not be implemented by clients as
