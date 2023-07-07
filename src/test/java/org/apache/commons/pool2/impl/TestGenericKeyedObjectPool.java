@@ -1001,7 +1001,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     }
 
     /**
-     * TODO Tests POOL-411, or least tries to reproduce the NPE, but does not.
+     * Tests POOL-411, or least tries to reproduce the NPE, but does not.
      *
      * @throws TestException a test failure.
      */
@@ -1012,7 +1012,18 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         final int addCount = 1;
         final int borrowCycles = 1024;
         final int clearCycles = 1024;
+        final boolean useYield = true;
 
+        testConcurrentBorrowAndClear(threadCount, taskCount, addCount, borrowCycles, clearCycles, useYield);
+    }
+
+    /**
+     * Tests POOL-411, or least tries to reproduce the NPE, but does not.
+     *
+     * @throws TestException a test failure.
+     */
+    private void testConcurrentBorrowAndClear(final int threadCount, final int taskCount, final int addCount, final int borrowCycles, final int clearCycles,
+            final boolean useYield) throws TestException {
         final GenericKeyedObjectPoolConfig<String> config = new GenericKeyedObjectPoolConfig<>();
         final int maxTotalPerKey = borrowCycles + 1;
         config.setMaxTotalPerKey(threadCount);
@@ -1030,7 +1041,9 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             for (int t = 0; t < taskCount; t++) {
                 futures.add(threadPool.submit(() -> {
                     for (int i = 0; i < clearCycles; i++) {
-                        Thread.yield();
+                        if (useYield) {
+                            Thread.yield();
+                        }
                         gkoPool.clear("0", true);
                         try {
                             gkoPool.addObjects(Arrays.asList("0"), addCount);
@@ -1042,7 +1055,9 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                 futures.add(threadPool.submit(() -> {
                     try {
                         for (int i = 0; i < borrowCycles; i++) {
-                            Thread.yield();
+                            if (useYield) {
+                                Thread.yield();
+                            }
                             final String pooled = gkoPool.borrowObject("0");
                             gkoPool.returnObject("0", pooled);
                         }
