@@ -1018,6 +1018,23 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
     }
 
     /**
+     * See https://issues.apache.org/jira/browse/POOL-411?focusedCommentId=17741156&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-17741156
+     *
+     * @throws TestException a test failure.
+     */
+    @Test
+    public void testConcurrentBorrowAndClear_JiraComment17741156() throws TestException {
+        final int threadCount = 2;
+        final int taskCount = 2;
+        final int addCount = 1;
+        final int borrowCycles = 5_000;
+        final int clearCycles = 5_000;
+        final boolean useYield = false;
+
+        testConcurrentBorrowAndClear(threadCount, taskCount, addCount, borrowCycles, clearCycles, useYield);
+    }
+
+    /**
      * Tests POOL-411, or least tries to reproduce the NPE, but does not.
      *
      * @throws TestException a test failure.
