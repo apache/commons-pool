@@ -1049,7 +1049,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         config.setBlockWhenExhausted(false); // pool exhausted indicates a bug in the test
 
         gkoPool = new GenericKeyedObjectPool<>(simpleFactory, config);
-        gkoPool.addObjects(Arrays.asList("0"), threadCount);
+        final String key = "0";
+        gkoPool.addObjects(Arrays.asList(key), threadCount);
         // all objects in the pool are now idle.
 
         final ExecutorService threadPool = Executors.newFixedThreadPool(threadCount);
@@ -1061,9 +1062,9 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                         if (useYield) {
                             Thread.yield();
                         }
-                        gkoPool.clear("0", true);
+                        gkoPool.clear(key, true);
                         try {
-                            gkoPool.addObjects(Arrays.asList("0"), addCount);
+                            gkoPool.addObjects(Arrays.asList(key), addCount);
                         } catch (IllegalArgumentException | TestException e) {
                             fail(e);
                         }
@@ -1075,8 +1076,8 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                             if (useYield) {
                                 Thread.yield();
                             }
-                            final String pooled = gkoPool.borrowObject("0");
-                            gkoPool.returnObject("0", pooled);
+                            final String pooled = gkoPool.borrowObject(key);
+                            gkoPool.returnObject(key, pooled);
                         }
                     } catch (TestException e) {
                         fail(e);
