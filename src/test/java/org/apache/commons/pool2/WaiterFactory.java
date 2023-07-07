@@ -33,6 +33,12 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
  */
 public class WaiterFactory<K> implements PooledObjectFactory<Waiter, IllegalStateException>, KeyedPooledObjectFactory<K, Waiter, RuntimeException> {
 
+    /** Integer value 0. */
+    private static final Integer ZERO = Integer.valueOf(0);
+
+    /** Integer value 1. */
+    private static final Integer ONE = Integer.valueOf(1);
+
     /** Latency of activateObject */
     private final long activateLatency;
 
@@ -157,19 +163,15 @@ public class WaiterFactory<K> implements PooledObjectFactory<Waiter, IllegalStat
     @Override
     public PooledObject<Waiter> makeObject(final K key) {
         synchronized (this) {
-            Integer count = activeCounts.get(key);
-            if (count == null) {
-                count = Integer.valueOf(1);
-                activeCounts.put(key, count);
-            } else {
-                if (count.intValue() >= maxActivePerKey) {
+            activeCounts.merge(key, ONE, (v1, v2) -> {
+                if (v1.intValue() >= maxActivePerKey) {
                     throw new IllegalStateException("Too many active " +
-                    "instances for key = " + key + ": " + count.intValue() +
+                    "instances for key = " + key + ": " + v1.intValue() +
                     " in circulation " + "with maxActivePerKey = " +
                     maxActivePerKey);
                 }
-                activeCounts.put(key, Integer.valueOf(count.intValue() + 1));
-            }
+                return Integer.valueOf(v1.intValue() + 1);
+            });
         }
         return makeObject();
     }
@@ -194,7 +196,7 @@ public class WaiterFactory<K> implements PooledObjectFactory<Waiter, IllegalStat
             return;
         }
         for (K key : activeCounts.keySet()) {
-            activeCounts.put(key, Integer.valueOf(0));
+            activeCounts.put(key, ZERO);
         }
     }
 
