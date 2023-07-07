@@ -126,7 +126,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
         private final AtomicLong numInterested = new AtomicLong();
 
         /**
-         * Constructs a new ObjecDeque with the given fairness policy.
+         * Constructs a new ObjectDeque with the given fairness policy.
          * @param fairness true means client threads waiting to borrow / return instances
          * will be served as if waiting in a FIFO queue.
          */
