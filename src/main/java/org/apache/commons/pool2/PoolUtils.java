@@ -500,14 +500,9 @@ public final class PoolUtils {
          */
         @Override
         protected ErodingFactor getErodingFactor(final K key) {
-            ErodingFactor eFactor = factors.get(key);
-            // this may result in two ErodingFactors being created for a key
+            // This may result in two ErodingFactors being created for a key
             // since they are small and cheap this is okay.
-            if (eFactor == null) {
-                eFactor = new ErodingFactor(this.factor);
-                factors.put(key, eFactor);
-            }
-            return eFactor;
+            return factors.computeIfAbsent(key, k -> new ErodingFactor(this.factor));
         }
 
         /**
