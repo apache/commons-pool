@@ -30,6 +30,7 @@ import java.util.Objects;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
@@ -833,20 +834,17 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
             lock.lock();
             final ObjectDeque<T> objectDeque = poolMap.get(k);
             if (objectDeque != null) {
-                final long numInterested = objectDeque.getNumInterested().decrementAndGet();
-                if (numInterested == 0 && objectDeque.getCreateCount().get() == 0) {
-                    // Potential to remove key
-                    // Upgrade to write lock
-                    lock.unlock();
-                    lock = keyLock.writeLock();
-                    lock.lock();
-                    if (objectDeque.getCreateCount().get() == 0 && objectDeque.getNumInterested().get() == 0) {
-                        // NOTE: Keys must always be removed from both poolMap and
-                        // poolKeyList at the same time while protected by
-                        // keyLock.writeLock()
-                        poolMap.remove(k);
-                        poolKeyList.remove(k);
-                    }
+                // Potential to remove key
+                // Upgrade to write lock
+                lock.unlock();
+                lock = keyLock.writeLock();
+                lock.lock();
+                if (objectDeque.getNumInterested().decrementAndGet() == 0 && objectDeque.getCreateCount().get() == 0) {
+                    // NOTE: Keys must always be removed from both poolMap and
+                    // poolKeyList at the same time while protected by
+                    // keyLock.writeLock()
+                    poolMap.remove(k);
+                    poolKeyList.remove(k);
                 }
             }
         } finally {
@@ -1385,16 +1383,17 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
                 lock.unlock();
                 lock = keyLock.writeLock();
                 lock.lock();
-                objectDeque = poolMap.get(k);
-                if (objectDeque == null) {
-                    objectDeque = new ObjectDeque<>(fairness);
-                    objectDeque.getNumInterested().incrementAndGet();
+                final AtomicBoolean allocated = new AtomicBoolean(); 
+                objectDeque = poolMap.computeIfAbsent(k, key -> {
+                    allocated.set(true);
+                    final ObjectDeque<T> deque = new ObjectDeque<>(fairness);
+                    deque.getNumInterested().incrementAndGet();
                     // NOTE: Keys must always be added to both poolMap and
                     //       poolKeyList at the same time while protected by
-                    //       keyLock.writeLock()
-                    poolMap.put(k, objectDeque);
                     poolKeyList.add(k);
-                } else {
+                    return deque;
+                });
+                if (!allocated.get()) {
                     objectDeque.getNumInterested().incrementAndGet();
                 }
             } else {
