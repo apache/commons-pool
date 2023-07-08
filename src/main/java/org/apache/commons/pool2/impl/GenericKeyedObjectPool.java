@@ -145,10 +145,10 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
         }
 
         /**
-         * Gets the count of the number of objects created for the current
-         * key.
+         * Gets the number of instances created - number destroyed.
+         * Should always be less than or equal to maxTotalPerKey.
          *
-         * @return The number of objects created for this key
+         * @return The net instance addition count for this deque
          */
         public AtomicInteger getCreateCount() {
             return createCount;
@@ -296,6 +296,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
 
     /**
      * Add an object to the set of idle objects for a given key.
+     * If the object is null this is a no-op.
      *
      * @param key The key to associate with the idle object
      * @param p The wrapped object to add.
@@ -602,6 +603,10 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * @param reuseCapacity whether or not to reuse freed capacity
      */
     public void clear(final K key, final boolean reuseCapacity) {
+        // Return immediately if there is no pool under this key.
+        if (poolMap.get(key) == null) {
+            return;
+        }
         final ObjectDeque<T> objectDeque = register(key);
         int freedCapacity = 0;
         try {
@@ -1503,8 +1508,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
             }
 
             final int maxIdle = getMaxIdlePerKey();
-            final LinkedBlockingDeque<PooledObject<T>> idleObjects =
-                    objectDeque.getIdleObjects();
+            final LinkedBlockingDeque<PooledObject<T>> idleObjects = objectDeque.getIdleObjects();
 
             if (isClosed() || maxIdle > -1 && maxIdle <= idleObjects.size()) {
                 try {
@@ -1548,43 +1552,47 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      */
     private void reuseCapacity() {
         final int maxTotalPerKeySave = getMaxTotalPerKey();
+        int maxQueueLength = 0;
+        LinkedBlockingDeque<PooledObject<T>> mostLoadedPool = null;
+        K mostLoadedKey = null;
 
         // Find the most loaded pool that could take a new instance
-        int maxQueueLength = 0;
-        LinkedBlockingDeque<PooledObject<T>> mostLoaded = null;
-        K loadedKey = null;
-        for (final Entry<K, GenericKeyedObjectPool.ObjectDeque<T>> entry : poolMap.entrySet()) {
+        for (final Map.Entry<K, ObjectDeque<T>> entry : poolMap.entrySet()) {
             final K k = entry.getKey();
-            final ObjectDeque<T> deque = entry.getValue();
-            final LinkedBlockingDeque<PooledObject<T>> pool = deque.getIdleObjects();
+            final LinkedBlockingDeque<PooledObject<T>> pool = entry.getValue().getIdleObjects();
             final int queueLength = pool.getTakeQueueLength();
             if (getNumActive(k) < maxTotalPerKeySave && queueLength > maxQueueLength) {
                 maxQueueLength = queueLength;
-                mostLoaded = pool;
-                loadedKey = k;
+                mostLoadedPool = pool;
+                mostLoadedKey = k;
             }
         }
 
-        // Attempt to add an instance to the most loaded pool
-        if (mostLoaded != null) {
-            register(loadedKey);
+        // Attempt to add an instance to the most loaded pool.
+        if (mostLoadedPool != null) {
+            register(mostLoadedKey);
             try {
-                addIdleObject(loadedKey, create(loadedKey));
+                // If there is no capacity to add, create will return null
+                // and addIdleObject will no-op.
+                addIdleObject(mostLoadedKey, create(mostLoadedKey));
             } catch (final Exception e) {
                 swallowException(e);
             } finally {
-                deregister(loadedKey);
+                deregister(mostLoadedKey);
             }
         }
     }
 
     /**
      * Call {@link #reuseCapacity()} repeatedly.
+     * <p>
+     * Always activates {@link #reuseCapacity()} at least once.
      *
      * @param newCapacity number of new instances to attempt to create.
      */
     private void reuseCapacity(final int newCapacity) {
-        for (int i = 0; i < newCapacity; i++) {
+        final int bound = newCapacity < 1 ? 1 : newCapacity;
+        for (int i = 0; i < bound; i++) {
             reuseCapacity();
         }
     }

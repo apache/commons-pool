@@ -1212,18 +1212,14 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
     /**
      * POOL-391 Adapted from code in the JIRA ticket.
-     *
-     * @throws Exception May occur in some failure modes
      */
     @Test
-    @Timeout(value = 2000, unit = TimeUnit.MILLISECONDS)
-    public void testClearUnblocksWaiters() {
+    @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS)
+    public void testClearUnblocksWaiters() throws Exception {
         final GenericKeyedObjectPoolConfig<Integer> config = new GenericKeyedObjectPoolConfig<>();
         config.setMaxTotalPerKey(1);
-        config.setMinIdlePerKey(0);
-        config.setMaxIdlePerKey(-1);
-        config.setMaxTotal(-1);
-        config.setMaxWait(Duration.ofMillis(5));
+        config.setMaxTotal(1);
+        config.setMaxWait(Duration.ofMillis(500));
         final GenericKeyedObjectPool<Integer, Integer, InterruptedException> testPool = new GenericKeyedObjectPool<>(
                 new KeyedPooledObjectFactory<Integer, Integer, InterruptedException>() {
                     @Override
@@ -1232,8 +1228,9 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                     }
 
                     @Override
-                    public void destroyObject(final Integer key, final PooledObject<Integer> p) throws InterruptedException {
-                        Thread.sleep(500);
+                    public void destroyObject(final Integer key, final PooledObject<Integer> p)
+                            throws InterruptedException {
+                        Thread.sleep(10);
                     }
 
                     @Override
@@ -1251,30 +1248,35 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
                         return true;
                     }
                 }, config);
-        final int borrowKey = 10;
+        final Integer borrowKey = 10;
+        final int iterations = 100;
+        final ExecutorService executor = Executors.newFixedThreadPool(2);
         final Thread t = new Thread(() -> {
             try {
-                while (true) {
+                for (int i = 0; i < iterations; i++) {
                     final Integer integer = testPool.borrowObject(borrowKey);
                     testPool.returnObject(borrowKey, integer);
                     Thread.sleep(10);
                 }
+
             } catch (final Exception e) {
-                fail();
+                fail(e);
             }
         });
         final Thread t2 = new Thread(() -> {
             try {
-                while (true) {
+                for (int i = 0; i < iterations; i++) {
                     testPool.clear(borrowKey);
                     Thread.sleep(10);
                 }
             } catch (final Exception e) {
-                fail();
+                fail(e);
             }
         });
-        t.start();
-        t2.start();
+        final Future<?> f1 = executor.submit(t);
+        final Future<?> f2 = executor.submit(t2);
+        f2.get();
+        f1.get();
     }
 
     // POOL-259
