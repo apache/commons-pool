@@ -601,6 +601,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      *
      * @param key the key to clear
      * @param reuseCapacity whether or not to reuse freed capacity
+     * @since 2.12.0
      */
     public void clear(final K key, final boolean reuseCapacity) {
         // Return immediately if there is no pool under this key.
