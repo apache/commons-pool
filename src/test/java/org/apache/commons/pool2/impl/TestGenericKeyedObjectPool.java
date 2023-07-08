@@ -299,14 +299,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
 
         @Override
         public Object create(final Object key) {
-            int counter = 0;
-            final AtomicInteger Counter = map.get(key);
-            if(null != Counter) {
-                counter = Counter.incrementAndGet();
-            } else {
-                map.put(key, new AtomicInteger(0));
-                counter = 0;
-            }
+            int counter = map.computeIfAbsent(key, k -> new AtomicInteger(-1)).incrementAndGet();
             return String.valueOf(key) + String.valueOf(counter);
         }
 
