@@ -113,11 +113,10 @@ public class WaiterFactory<K> implements PooledObjectFactory<Waiter, IllegalStat
     }
 
     @Override
-    public void destroyObject(final K key,final PooledObject<Waiter> obj) {
+    public void destroyObject(final K key, final PooledObject<Waiter> obj) {
         destroyObject(obj);
         synchronized (this) {
-            final Integer count = activeCounts.get(key);
-            activeCounts.put(key, Integer.valueOf(count.intValue() - 1));
+            activeCounts.computeIfPresent(key, (k, v) -> Integer.valueOf(v.intValue() - 1));
         }
     }
 
