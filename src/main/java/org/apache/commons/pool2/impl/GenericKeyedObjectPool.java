@@ -1345,9 +1345,8 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      */
     @Override
     public Map<String, List<DefaultPooledObjectInfo>> listAllObjects() {
-        final Map<String, List<DefaultPooledObjectInfo>> result = new HashMap<>();
-        poolMap.forEach((k, v) -> result.put(k.toString(), v.getAllObjects().values().stream().map(DefaultPooledObjectInfo::new).collect(Collectors.toList())));
-        return result;
+        return poolMap.entrySet().stream().collect(Collectors.toMap(e -> e.getKey().toString(), 
+                e -> e.getValue().getAllObjects().values().stream().map(DefaultPooledObjectInfo::new).collect(Collectors.toList())));
     }
 
     /**
