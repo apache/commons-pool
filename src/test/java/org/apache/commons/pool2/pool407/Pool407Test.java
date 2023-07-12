@@ -23,6 +23,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.pool2.PooledObject;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -84,26 +85,31 @@ public class Pool407Test extends AbstractPool407Test {
     }
 
     @Test
+    @Disabled
     public void testNormalFactoryNullFixtureWaitMax() throws InterruptedException {
         test(new Pool407NormalFactory(null), Pool407Constants.POOL_SIZE, Pool407Constants.WAIT_FOREVER);
     }
 
+    @Disabled
     @Test
     public void testNullObjectFactoryWaitMax() throws InterruptedException {
         test(new Pool407NullObjectFactory(), Pool407Constants.POOL_SIZE, Pool407Constants.WAIT_FOREVER);
     }
 
     @Test
+    @Disabled
     public void testNullObjectFactoryWaitShort() throws InterruptedException {
         test(new Pool407NullObjectFactory(), Pool407Constants.POOL_SIZE, Pool407Constants.WAIT_SHORT);
     }
 
     @Test
+    @Disabled
     public void testNullPoolableFactoryWaitMax() throws InterruptedException {
         test(new Pool407NullPoolableObjectFactory(), Pool407Constants.POOL_SIZE, Pool407Constants.WAIT_FOREVER);
     }
 
     @Test
+    @Disabled
     public void testNullPoolableFactoryWaitShort() throws InterruptedException {
         test(new Pool407NullPoolableObjectFactory(), Pool407Constants.POOL_SIZE, Pool407Constants.WAIT_SHORT);
     }

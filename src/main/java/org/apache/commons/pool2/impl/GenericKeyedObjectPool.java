@@ -320,6 +320,13 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * factory}, passivate it, and then place it in the idle object pool.
      * {@code addObject} is useful for "pre-loading" a pool with idle
      * objects.
+     * <p>
+     * If there is no capacity available to add to the pool under the given key,
+     * this is a no-op (no exception, no impact to the pool). </p>
+     * <p>
+     * If the factory returns null when creating an instance,
+     * a {@code NullPointerException} is thrown.
+     * </p>
      *
      * @param key the key a new instance should be added to
      *
@@ -372,7 +379,8 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * circulation (under all keys) is less than {@code maxTotal}, a new
      * instance is created, activated and (if applicable) validated and returned
      * to the caller. If validation fails, a {@code NoSuchElementException}
-     * will be thrown.
+     * will be thrown. If the factory returns null when creating an instance,
+     * a {@code NullPointerException} is thrown.
      * </p>
      * <p>
      * If the associated sub-pool is exhausted (no available idle instances and
@@ -918,8 +926,15 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
     }
 
     /**
-     * Ensure that the configured number of minimum idle objects is available in
+     * Try to ensure that the configured number of minimum idle objects is available in
      * the pool for the given key.
+     * <p>
+     * If there is no capacity available to add to the pool, this is a no-op
+     * (no exception, no impact to the pool). </p>
+     * <p>
+     * If the factory returns null when creating an object, a {@code NullPointerException}
+     * is thrown.
+     * </p>
      *
      * @param key The key to check for idle objects
      *

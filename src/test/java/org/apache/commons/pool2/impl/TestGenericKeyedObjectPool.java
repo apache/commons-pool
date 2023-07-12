@@ -2439,6 +2439,45 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
         gkoPool.returnObject("",obj);
     }
 
+    /**
+     * Verify that when a factory returns a null object, pool methods throw NPE.
+     */
+    @Test
+    @Timeout(value = 1000, unit = TimeUnit.MILLISECONDS)
+    public void testNPEOnFactoryNull() throws InterruptedException {
+        final DisconnectingWaiterFactory<String> factory = new DisconnectingWaiterFactory<>(
+            () -> null,  // Override default to always return null from makeObject
+            DisconnectingWaiterFactory.DEFAULT_DISCONNECTED_LIFECYCLE_ACTION,
+            DisconnectingWaiterFactory.DEFAULT_DISCONNECTED_VALIDATION_ACTION
+        );
+        final GenericKeyedObjectPool<String,Waiter,RuntimeException> pool = new GenericKeyedObjectPool<>(factory);
+        final String key = "one";
+        pool.setTestOnBorrow(true);
+        pool.setMaxTotal(-1);
+        pool.setMinIdlePerKey(1);
+        // Disconnect the factory - will always return null in this state
+        factory.disconnect();
+        try {
+            pool.borrowObject(key);
+            fail("Expecting NullPointerException");
+        } catch (final NullPointerException ex) {
+            // expected
+        }
+        try {
+            pool.addObject(key);
+            fail("Expecting NullPointerException");
+        } catch (final NullPointerException ex2) {
+            // expected
+        }
+        try {
+            pool.ensureMinIdle();
+            fail("Expecting NullPointerException");
+        } catch (final NullPointerException ex3) {
+            // expected
+        }
+        pool.close();
+    }
+
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
     public void testNumActiveNumIdle2() throws Exception {

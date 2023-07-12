@@ -206,6 +206,11 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
      * <p>
      * If there is no capacity available to add to the pool, this is a no-op
      * (no exception, no impact to the pool). </p>
+     * <p>
+     * If the factory returns null when creating an object, a {@code NullPointerException}
+     * is thrown. If there is no factory set (factory == null), an {@code IllegalStateException}
+     * is thrown. </p>
+     * 
      */
     @Override
     public void addObject() throws E {
@@ -247,7 +252,8 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
      * checked out from the pool is less than {@code maxTotal,} a new
      * instance is created, activated and (if applicable) validated and returned
      * to the caller. If validation fails, a {@code NoSuchElementException}
-     * is thrown.
+     * is thrown. If the factory returns null when creating an instance,
+     * a {@code NullPointerException} is thrown.
      * </p>
      * <p>
      * If the pool is exhausted (no available idle instances and no capacity to
@@ -391,7 +397,8 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
      * checked out from the pool is less than {@code maxTotal,} a new
      * instance is created, activated and (if applicable) validated and returned
      * to the caller. If validation fails, a {@code NoSuchElementException}
-     * is thrown.
+     * is thrown. If the factory returns null when creating an instance,
+     * a {@code NullPointerException} is thrown.
      * </p>
      * <p>
      * If the pool is exhausted (no available idle instances and no capacity to
@@ -496,6 +503,9 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
      * <p>
      * If there are {@link #getMaxTotal()} objects already in circulation or in process of being created, this method
      * returns null.
+     * </p>
+     * <p>
+     * If the factory makeObject returns null, this method throws a NullPointerException.
      * </p>
      *
      * @return The new wrapped pooled object or null.
@@ -621,6 +631,9 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
      * {@link #getMaxTotal()}. If {@code always} is false, no instances are created unless
      * there are threads waiting to check out instances from the pool.
      * </p>
+     * <p>
+     * If the factory returns null when creating an instance, a {@code NullPointerException}
+     * is thrown. </p>
      *
      * @param idleCount the number of idle instances desired
      * @param always true means create instances even if the pool has no threads waiting

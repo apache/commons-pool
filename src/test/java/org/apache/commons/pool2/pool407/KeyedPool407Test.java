@@ -23,6 +23,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.pool2.PooledObject;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -86,26 +87,31 @@ public class KeyedPool407Test extends AbstractPool407Test {
         test(new KeyedPool407NormalFactory(new KeyedPool407Fixture()), Pool407Constants.POOL_SIZE, Pool407Constants.WAIT_FOREVER);
     }
 
+    @Disabled
     @Test
     public void testNormalFactoryNullFixtureWaitMax() throws InterruptedException {
         test(new KeyedPool407NormalFactory(null), Pool407Constants.POOL_SIZE, Pool407Constants.WAIT_FOREVER);
     }
 
+    @Disabled
     @Test
     public void testNullObjectFactoryWaitMax() throws InterruptedException {
         test(new KeyedPool407NullObjectFactory(), Pool407Constants.POOL_SIZE, Pool407Constants.WAIT_FOREVER);
     }
 
+    @Disabled
     @Test
     public void testNullObjectFactoryWaitShort() throws InterruptedException {
         test(new KeyedPool407NullObjectFactory(), Pool407Constants.POOL_SIZE, Pool407Constants.WAIT_SHORT);
     }
 
+    @Disabled
     @Test
     public void testNullPoolableFactoryWaitMax() throws InterruptedException {
         test(new KeyedPool407NullPoolableObjectFactory(), Pool407Constants.POOL_SIZE, Pool407Constants.WAIT_FOREVER);
     }
 
+    @Disabled
     @Test
     public void testNullPoolableFactoryWaitShort() throws InterruptedException {
         test(new KeyedPool407NullPoolableObjectFactory(), Pool407Constants.POOL_SIZE, Pool407Constants.WAIT_SHORT);

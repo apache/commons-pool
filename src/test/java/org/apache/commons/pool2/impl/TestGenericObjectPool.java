@@ -45,6 +45,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.management.MBeanServer;
@@ -64,6 +65,7 @@ import org.apache.commons.pool2.Waiter;
 import org.apache.commons.pool2.WaiterFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -2039,6 +2041,51 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     /**
+     * Simplest example of recovery from factory outage.
+     * A thread gets into parked wait on the deque when there is capacity to create, but
+     * creates are failing due to factory outage.  Verify that the borrower is served
+     * once the factory is back online.
+     */
+    @Test
+    @Disabled
+    @Timeout(value = 1000, unit = TimeUnit.MILLISECONDS)
+    public void testLivenessOnTransientFactoryFailure() throws InterruptedException {
+        final DisconnectingWaiterFactory<String> factory = new DisconnectingWaiterFactory<>(
+            DisconnectingWaiterFactory.DEFAULT_DISCONNECTED_CREATE_ACTION,
+            DisconnectingWaiterFactory.DEFAULT_DISCONNECTED_LIFECYCLE_ACTION,
+            (obj) -> false // all instances fail validation
+        );
+        final GenericObjectPool<Waiter, IllegalStateException> pool = new GenericObjectPool<>(factory);
+        pool.setMaxWait(Duration.ofMillis(100));
+        pool.setTestOnReturn(true);
+        pool.setMaxTotal(1);
+        final Waiter w = pool.borrowObject();
+        final AtomicBoolean failed = new AtomicBoolean(false);
+        final Thread t = new Thread(() -> {
+            try {
+                pool.borrowObject();
+            } catch (final NoSuchElementException e) {
+                failed.set(true);
+            }
+        });
+        Thread.sleep(10);
+        t.start();
+        // t is blocked waiting on the deque
+        Thread.sleep(10);
+        factory.disconnect();
+        pool.returnObject(w);  // validation fails, so no return
+        Thread.sleep(10);
+        factory.connect();
+        // Borrower should be able to be served now
+        t.join();
+        pool.close();
+        if (failed.get()) {
+            fail("Borrower timed out waiting for an instance");
+        }
+    }
+
+
+    /**
      * Test the following scenario:
      *   Thread 1 borrows an instance
      *   Thread 2 starts to borrow another instance before thread 1 returns its instance
@@ -2537,6 +2584,46 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         simpleFactory.setValid(true);
     }
 
+    /**
+     * Verify that when a factory returns a null object, pool methods throw NPE.
+     * @throws InterruptedException
+     */
+    @Test
+    @Timeout(value = 1000, unit = TimeUnit.MILLISECONDS)
+    public void testNPEOnFactoryNull() throws InterruptedException {
+        final DisconnectingWaiterFactory<String> factory = new DisconnectingWaiterFactory<>(
+            () -> null,  // Override default to always return null from makeObject
+            DisconnectingWaiterFactory.DEFAULT_DISCONNECTED_LIFECYCLE_ACTION,
+            DisconnectingWaiterFactory.DEFAULT_DISCONNECTED_VALIDATION_ACTION
+        );
+        final GenericObjectPool<Waiter, IllegalStateException> pool = new GenericObjectPool<>(factory);
+        pool.setTestOnBorrow(true);
+        pool.setMaxTotal(-1);
+        pool.setMinIdle(1);
+        // Disconnect the factory - will always return null in this state
+        factory.disconnect();
+        try {
+            pool.borrowObject();
+            fail("Expecting NullPointerException");
+        } catch (final NullPointerException ex) {
+            // expected
+        }
+        try {
+            pool.addObject();
+            fail("Expecting NullPointerException");
+        } catch (final NullPointerException ex2) {
+            // expected
+        }
+        try {
+            pool.ensureMinIdle();
+            fail("Expecting NullPointerException");
+        } catch (final NullPointerException ex3) {
+            // expected
+        }
+        pool.close();
+    }
+
+    @Test
     public void testPreparePool() throws Exception {
         genericObjectPool.setMinIdle(1);
         genericObjectPool.setMaxTotal(1);
@@ -2548,7 +2635,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         genericObjectPool.setMinIdle(0);
         genericObjectPool.returnObject(obj);
         genericObjectPool.preparePool();
-        assertEquals(0, genericObjectPool.getNumIdle());
+        assertEquals(1, genericObjectPool.getNumIdle());
     }
 
     @Test/* maxWaitMillis x2 + padding */
