@@ -205,11 +205,13 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
      * "pre-loading" a pool with idle objects.
      * <p>
      * If there is no capacity available to add to the pool, this is a no-op
-     * (no exception, no impact to the pool). </p>
+     * (no exception, no impact to the pool).
+     * </p>
      * <p>
      * If the factory returns null when creating an object, a {@code NullPointerException}
      * is thrown. If there is no factory set (factory == null), an {@code IllegalStateException}
-     * is thrown. </p>
+     * is thrown.
+     * </p>
      * 
      */
     @Override
@@ -633,7 +635,8 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
      * </p>
      * <p>
      * If the factory returns null when creating an instance, a {@code NullPointerException}
-     * is thrown. </p>
+     * is thrown.
+     * </p>
      *
      * @param idleCount the number of idle instances desired
      * @param always true means create instances even if the pool has no threads waiting

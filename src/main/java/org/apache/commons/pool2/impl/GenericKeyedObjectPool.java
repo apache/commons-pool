@@ -322,7 +322,8 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * objects.
      * <p>
      * If there is no capacity available to add to the pool under the given key,
-     * this is a no-op (no exception, no impact to the pool). </p>
+     * this is a no-op (no exception, no impact to the pool).
+     * </p>
      * <p>
      * If the factory returns null when creating an instance,
      * a {@code NullPointerException} is thrown.
@@ -930,7 +931,8 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * the pool for the given key.
      * <p>
      * If there is no capacity available to add to the pool, this is a no-op
-     * (no exception, no impact to the pool). </p>
+     * (no exception, no impact to the pool).
+     * </p>
      * <p>
      * If the factory returns null when creating an object, a {@code NullPointerException}
      * is thrown.
