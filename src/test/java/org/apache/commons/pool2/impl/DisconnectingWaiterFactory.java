@@ -31,14 +31,12 @@ import org.apache.commons.pool2.WaiterFactory;
 public class DisconnectingWaiterFactory<K> extends WaiterFactory<K> {
     /**
      * 
-     * A WaiterFactory that simulates a resource required by factory methods going down (and coming back).
-     * When the factory is not connected, factory methods behave according to 
-     * timeBetweenConnectionChecks time units. Validate returns false immediately if the factory
-     * is disconnected; otherwise does super.validate(). Destroy does super.destroy()
-     * regardless of connect status.
-     * 
-     * Blocking vs throwing immediately is controlled by blockWhenDisconnected.
-     * Time to wait for reconnect is controlled by maxWait.
+     * A WaiterFactory that simulates a resource required by factory methods going
+     * down (and coming back).
+     * <p>
+     * When connected, this factory behaves like a normal WaiterFactory.
+     * When disconnected, factory methods are determined by functional parameters.
+     * </p>
      */
     private final AtomicBoolean connected = new AtomicBoolean(true);
 
@@ -46,32 +44,46 @@ public class DisconnectingWaiterFactory<K> extends WaiterFactory<K> {
 
     private static final Duration DEFAULT_MAX_WAIT = Duration.ofSeconds(10);
 
-    /** Default function to perform for activate, passivate, destroy in disconnected mode - no-op */
-    protected static final Consumer<PooledObject<Waiter>> DEFAULT_DISCONNECTED_LIFECYCLE_ACTION = w -> {};
-    
-    /** 
-     * Default supplier determining makeObject action when invoked in disconnected mode.
-     * Default behavior is to block until reconnected for up to DEFAULT_MAX_WAIT duration.
-     * If DEFAULT_MAX_WAIT is exceeded, throw ISE; if reconnect happens in time, invoke super.makeObject().
+    /**
+     * Default function to perform for activate, passivate, destroy in disconnected
+     * mode - no-op
+     */
+    protected static final Consumer<PooledObject<Waiter>> DEFAULT_DISCONNECTED_LIFECYCLE_ACTION = w -> {
+    };
+
+    /**
+     * Default supplier determining makeObject action when invoked in disconnected
+     * mode. Default behavior is to block until reconnected for up to maxWait
+     * duration. If maxWait is exceeded, throw ISE; if reconnect happens in time,
+     * return a new DefaultPooledObject<Waiter>.
      */
     protected static final Supplier<PooledObject<Waiter>> DEFAULT_DISCONNECTED_CREATE_ACTION = () -> {
         waitForConnection(null, DEFAULT_TIME_BETWEEN_CONNECTION_CHECKS, DEFAULT_MAX_WAIT);
         return new DefaultPooledObject<Waiter>(new Waiter(true, true, 0));
     };
-         
-    /** Default predicate determining what validate does in disconnected state - always return false */
+
+    /**
+     * Default predicate determining what validate does in disconnected state -
+     * default is to always return false
+     */
     protected static final Predicate<PooledObject<Waiter>> DEFAULT_DISCONNECTED_VALIDATION_ACTION = w -> false;
 
     /** Time between reconnection checks */
     final Duration timeBetweenConnectionChecks;
 
-    /** Maximum amount of time a factory method will wait for reconnect before throwing TimeOutException */
+    /**
+     * Maximum amount of time a factory method will wait for reconnect before
+     * throwing TimeOutException
+     */
     final Duration maxWait;
 
     /** Function to perform when makeObject is executed in disconnected mode */
     final Supplier<PooledObject<Waiter>> disconnectedCreateAction;
 
-    /** Function to perform for activate, passsivate and destroy when invoked in disconnected mode */
+    /**
+     * Function to perform for activate, passsivate and destroy when invoked in
+     * disconnected mode
+     */
     final Consumer<PooledObject<Waiter>> disconnectedLifcycleAction;
 
     /** Function to perform for validate when invoked in disconnected mode */
@@ -86,10 +98,10 @@ public class DisconnectingWaiterFactory<K> extends WaiterFactory<K> {
 
     public DisconnectingWaiterFactory(final long activateLatency, final long destroyLatency,
             final long makeLatency, final long passivateLatency, final long validateLatency,
-            final long waiterLatency,final long maxActive) {
+            final long waiterLatency, final long maxActive) {
         this(activateLatency, destroyLatency, makeLatency, passivateLatency,
                 validateLatency, waiterLatency, maxActive,
-                 Long.MAX_VALUE, 0);
+                Long.MAX_VALUE, 0);
     }
 
     public DisconnectingWaiterFactory(final long activateLatency, final long destroyLatency,
@@ -105,15 +117,15 @@ public class DisconnectingWaiterFactory<K> extends WaiterFactory<K> {
         this.disconnectedLifcycleAction = DEFAULT_DISCONNECTED_LIFECYCLE_ACTION;
         this.disconnectedValidationAction = DEFAULT_DISCONNECTED_VALIDATION_ACTION;
     }
-    
+
     public DisconnectingWaiterFactory(final Supplier<PooledObject<Waiter>> disconnectedCreateAction,
             final Consumer<PooledObject<Waiter>> disconnectedLifcycleAction,
-            final Predicate<PooledObject<Waiter>> disconnectedValidationAction) { 
-        super(0,0,0,
-        0,0,0,
-        Integer.MAX_VALUE,
-        Integer.MAX_VALUE,
-        0);
+            final Predicate<PooledObject<Waiter>> disconnectedValidationAction) {
+        super(0, 0, 0,
+                0, 0, 0,
+                Integer.MAX_VALUE,
+                Integer.MAX_VALUE,
+                0);
         this.timeBetweenConnectionChecks = DEFAULT_TIME_BETWEEN_CONNECTION_CHECKS;
         this.maxWait = DEFAULT_MAX_WAIT;
         this.disconnectedCreateAction = disconnectedCreateAction;
@@ -123,7 +135,7 @@ public class DisconnectingWaiterFactory<K> extends WaiterFactory<K> {
 
     public DisconnectingWaiterFactory() {
         this(DEFAULT_DISCONNECTED_CREATE_ACTION, DEFAULT_DISCONNECTED_LIFECYCLE_ACTION,
-         DEFAULT_DISCONNECTED_VALIDATION_ACTION);
+                DEFAULT_DISCONNECTED_VALIDATION_ACTION);
     }
 
     private boolean validate(final PooledObject<Waiter> obj) {
@@ -143,7 +155,7 @@ public class DisconnectingWaiterFactory<K> extends WaiterFactory<K> {
     public boolean validateObject(final PooledObject<Waiter> obj) {
         return validate(obj);
     }
-        
+
     private void activate(final PooledObject<Waiter> obj) {
         if (!connected.get()) {
             disconnectedLifcycleAction.accept(obj);
@@ -151,7 +163,7 @@ public class DisconnectingWaiterFactory<K> extends WaiterFactory<K> {
             super.activateObject(obj);
         }
     }
-    
+
     private void passivate(final PooledObject<Waiter> obj) {
         if (!connected.get()) {
             disconnectedLifcycleAction.accept(obj);
@@ -170,7 +182,7 @@ public class DisconnectingWaiterFactory<K> extends WaiterFactory<K> {
         passivate(obj);
     }
 
-    @Override 
+    @Override
     public void activateObject(final K key, final PooledObject<Waiter> obj) {
         activate(obj);
     }
@@ -187,7 +199,7 @@ public class DisconnectingWaiterFactory<K> extends WaiterFactory<K> {
 
     @Override
     public PooledObject<Waiter> makeObject() {
-         return make();
+        return make();
     }
 
     private PooledObject<Waiter> make() {
@@ -199,7 +211,7 @@ public class DisconnectingWaiterFactory<K> extends WaiterFactory<K> {
     }
 
     /**
-     * Blocks until connected is true or maxWait is exceeded.
+     * Blocks until connected or maxWait is exceeded.
      * 
      * @throws TimeoutException if maxWait is exceeded.
      */
@@ -218,12 +230,22 @@ public class DisconnectingWaiterFactory<K> extends WaiterFactory<K> {
         }
     }
 
+    /**
+     * Disconnect the factory.
+     */
     public void disconnect() {
         connected.set(false);
-    }   
+    }
 
+    /**
+     * Reconnect the factory.
+     */
     public void connect() {
         connected.set(true);
     }
-}
+    /*
+     * TODO: add builder to clean up constructors and make maxWait,
+     * timeBetweenConnectionChecks configurable.
+     */
 
+}
