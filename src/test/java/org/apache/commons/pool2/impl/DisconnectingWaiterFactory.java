@@ -59,7 +59,7 @@ public class DisconnectingWaiterFactory<K> extends WaiterFactory<K> {
      */
     protected static final Supplier<PooledObject<Waiter>> DEFAULT_DISCONNECTED_CREATE_ACTION = () -> {
         waitForConnection(null, DEFAULT_TIME_BETWEEN_CONNECTION_CHECKS, DEFAULT_MAX_WAIT);
-        return new DefaultPooledObject<Waiter>(new Waiter(true, true, 0));
+        return new DefaultPooledObject<>(new Waiter(true, true, 0));
     };
 
     /**
