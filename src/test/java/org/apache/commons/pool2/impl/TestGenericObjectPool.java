@@ -1054,11 +1054,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             final Thread t = new Thread(threads[i]);
             t.start();
             // Short delay to ensure threads start in correct order
-            try {
-                Thread.sleep(10);
-            } catch (final InterruptedException e) {
-                fail(e.toString());
-            }
+            Thread.sleep(10);
         }
 
         // Return objects, other threads should get served in order
