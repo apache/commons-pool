@@ -573,12 +573,7 @@ public abstract class TestKeyedObjectPool {
 
         // makeObject Exceptions should be propagated to client code from borrowObject
         factory.setMakeObjectFail(true);
-        try {
-            obj = pool.borrowObject(KEY);
-            fail("Expected borrowObject to propagate makeObject exception.");
-        } catch (final PrivateException pe) {
-            // expected
-        }
+        assertThrows(PrivateException.class, () -> pool.borrowObject(KEY), "Expected borrowObject to propagate makeObject exception.");
         expectedMethods.add(new MethodCall("makeObject", KEY));
         assertEquals(expectedMethods, factory.getMethodCalls());
 
