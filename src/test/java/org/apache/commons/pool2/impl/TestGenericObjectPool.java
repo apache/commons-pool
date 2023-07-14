@@ -2055,30 +2055,30 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             DisconnectingWaiterFactory.DEFAULT_DISCONNECTED_LIFECYCLE_ACTION,
             (obj) -> false // all instances fail validation
         );
-        final GenericObjectPool<Waiter, IllegalStateException> pool = new GenericObjectPool<>(factory);
-        pool.setMaxWait(Duration.ofMillis(100));
-        pool.setTestOnReturn(true);
-        pool.setMaxTotal(1);
-        final Waiter w = pool.borrowObject();
         final AtomicBoolean failed = new AtomicBoolean(false);
-        final Thread t = new Thread(() -> {
-            try {
-                pool.borrowObject();
-            } catch (final NoSuchElementException e) {
-                failed.set(true);
-            }
-        });
-        Thread.sleep(10);
-        t.start();
-        // t is blocked waiting on the deque
-        Thread.sleep(10);
-        factory.disconnect();
-        pool.returnObject(w);  // validation fails, so no return
-        Thread.sleep(10);
-        factory.connect();
-        // Borrower should be able to be served now
-        t.join();
-        pool.close();
+        try (GenericObjectPool<Waiter, IllegalStateException> pool = new GenericObjectPool<>(factory)) {
+            pool.setMaxWait(Duration.ofMillis(100));
+            pool.setTestOnReturn(true);
+            pool.setMaxTotal(1);
+            final Waiter w = pool.borrowObject();
+            final Thread t = new Thread(() -> {
+                try {
+                    pool.borrowObject();
+                } catch (final NoSuchElementException e) {
+                    failed.set(true);
+                }
+            });
+            Thread.sleep(10);
+            t.start();
+            // t is blocked waiting on the deque
+            Thread.sleep(10);
+            factory.disconnect();
+            pool.returnObject(w); // validation fails, so no return
+            Thread.sleep(10);
+            factory.connect();
+            // Borrower should be able to be served now
+            t.join();
+        }
         if (failed.get()) {
             fail("Borrower timed out waiting for an instance");
         }
