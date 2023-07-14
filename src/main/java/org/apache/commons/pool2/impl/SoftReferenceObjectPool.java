@@ -20,7 +20,7 @@ import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
@@ -337,24 +337,19 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
      */
     private void pruneClearedReferences() {
         // Remove wrappers for enqueued references from idle and allReferences lists
-        removeClearedReferences(idleReferences.iterator());
-        removeClearedReferences(allReferences.iterator());
+        removeClearedReferences(idleReferences);
+        removeClearedReferences(allReferences);
         while (refQueue.poll() != null) { // NOPMD
         }
     }
 
     /**
-     * Clears cleared references from iterator's collection
-     * @param iterator iterator over idle/allReferences
+     * Clears cleared references from the collection.
+     *
+     * @param collection collection of idle/allReferences
      */
-    private void removeClearedReferences(final Iterator<PooledSoftReference<T>> iterator) {
-        PooledSoftReference<T> ref;
-        while (iterator.hasNext()) {
-            ref = iterator.next();
-            if (ref.getReference() == null || ref.getReference().isEnqueued()) {
-                iterator.remove();
-            }
-        }
+    private void removeClearedReferences(final Collection<PooledSoftReference<T>> collection) {
+        collection.removeIf(ref -> ref.getReference() == null || ref.getReference().isEnqueued());
     }
 
     /**
