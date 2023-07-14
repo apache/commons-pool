@@ -614,7 +614,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      */
     public void clear(final K key, final boolean reuseCapacity) {
         // Return immediately if there is no pool under this key.
-        if (poolMap.get(key) == null) {
+        if (!poolMap.containsKey(key)) {
             return;
         }
         final ObjectDeque<T> objectDeque = register(key);
