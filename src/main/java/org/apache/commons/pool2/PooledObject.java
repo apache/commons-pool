@@ -33,6 +33,8 @@ import java.util.Deque;
  */
 public interface PooledObject<T> extends Comparable<PooledObject<T>> {
 
+    ReentrantLock lock = new ReentrantLock();
+
     /**
      * Tests whether the given PooledObject is null <em>or</em> contains a null.
      *

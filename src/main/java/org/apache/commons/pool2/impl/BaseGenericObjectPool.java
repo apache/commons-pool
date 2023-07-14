@@ -34,6 +34,7 @@ import java.util.TimerTask;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -358,7 +359,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     final Object closeLock = new Object();
     volatile boolean closed;
 
-    final Object evictionLock = new Object();
+    final ReentrantLock  evictionLock = new ReentrantLock ();
     private Evictor evictor; // @GuardedBy("evictionLock")
     EvictionIterator evictionIterator; // @GuardedBy("evictionLock")
 
@@ -1808,7 +1809,8 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      * @param delay time in milliseconds before start and between eviction runs
      */
     final void startEvictor(final Duration delay) {
-        synchronized (evictionLock) {
+        try {
+            evictionLock.lock();
             final boolean isPositiverDelay = PoolImplUtils.isPositive(delay);
             if (evictor == null) { // Starting evictor for the first time or after a cancel
                 if (isPositiverDelay) { // Starting new evictor
@@ -1826,6 +1828,8 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
             } else { // Stopping evictor
                 EvictionTimer.cancel(evictor, evictorShutdownTimeoutDuration, false);
             }
+        } finally {
+            evictionLock.unlock();
         }
     }
 

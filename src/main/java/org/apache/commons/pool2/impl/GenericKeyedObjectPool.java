@@ -984,7 +984,8 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
             PooledObject<T> underTest = null;
             final EvictionPolicy<T> evictionPolicy = getEvictionPolicy();
 
-            synchronized (evictionLock) {
+            try {
+                evictionLock.lock();
                 final EvictionConfig evictionConfig = new EvictionConfig(
                         getMinEvictableIdleDuration(),
                         getSoftMinEvictableIdleDuration(),
@@ -1106,6 +1107,8 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
                         // states are used
                     }
                 }
+            } finally {
+                evictionLock.unlock();
             }
         }
         final AbandonedConfig ac = this.abandonedConfig;
