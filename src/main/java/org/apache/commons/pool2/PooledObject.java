@@ -54,7 +54,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     /**
      * Orders instances based on idle time - i.e. the length of time since the
      * instance was returned to the pool. Used by the GKOP idle object evictor.
-     *<p>
+     * <p>
      * Note: This class has a natural ordering that is inconsistent with
      *       equals if distinct objects have the same identity hash code.
      * </p>
@@ -78,7 +78,6 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      *
      * @param idleQueue The queue of idle objects to which the object should be
      *                  returned.
-     *
      * @return  Currently not used.
      */
     boolean endEvictionTest(Deque<PooledObject<T>> idleQueue);
@@ -278,6 +277,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
 
     /**
      * Gets the state of this object.
+     *
      * @return state
      */
     PooledObjectState getState();
