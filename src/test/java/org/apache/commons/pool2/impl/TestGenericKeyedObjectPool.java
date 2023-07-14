@@ -2444,7 +2444,7 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
      */
     @Test
     @Timeout(value = 1000, unit = TimeUnit.MILLISECONDS)
-    public void testNPEOnFactoryNull() throws InterruptedException {
+    public void testNPEOnFactoryNull() {
         // @formatter:off
         final DisconnectingWaiterFactory<String> factory = new DisconnectingWaiterFactory<>(
             () -> null,  // Override default to always return null from makeObject
