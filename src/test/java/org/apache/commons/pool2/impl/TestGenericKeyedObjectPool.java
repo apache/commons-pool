@@ -2459,24 +2459,9 @@ public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
             pool.setMinIdlePerKey(1);
             // Disconnect the factory - will always return null in this state
             factory.disconnect();
-            try {
-                pool.borrowObject(key);
-                fail("Expecting NullPointerException");
-            } catch (final NullPointerException ex) {
-                // expected
-            }
-            try {
-                pool.addObject(key);
-                fail("Expecting NullPointerException");
-            } catch (final NullPointerException ex2) {
-                // expected
-            }
-            try {
-                pool.ensureMinIdle();
-                fail("Expecting NullPointerException");
-            } catch (final NullPointerException ex3) {
-                // expected
-            }
+            assertThrows(NullPointerException.class, () -> pool.borrowObject(key));
+            assertThrows(NullPointerException.class, () -> pool.addObject(key));
+            assertThrows(NullPointerException.class, pool::ensureMinIdle);
         }
     }
 
