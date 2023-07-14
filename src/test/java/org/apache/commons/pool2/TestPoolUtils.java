@@ -17,6 +17,7 @@
 
 package org.apache.commons.pool2;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -337,27 +338,12 @@ public class TestPoolUtils {
 
     @Test
     public void testCheckRethrow() {
-        try {
-            PoolUtils.checkRethrow(new Exception());
-        } catch (final Throwable t) {
-            fail("PoolUtils.checkRethrow(Throwable) must rethrow only ThreadDeath and VirtualMachineError.");
-        }
-        try {
-            PoolUtils.checkRethrow(new ThreadDeath());
-            fail("PoolUtils.checkRethrow(Throwable) must rethrow ThreadDeath.");
-        } catch (final ThreadDeath td) {
-            // expected
-        } catch (final Throwable t) {
-            fail("PoolUtils.checkRethrow(Throwable) must rethrow only ThreadDeath and VirtualMachineError.");
-        }
-        try {
-            PoolUtils.checkRethrow(new InternalError()); // InternalError extends VirtualMachineError
-            fail("PoolUtils.checkRethrow(Throwable) must rethrow VirtualMachineError.");
-        } catch (final VirtualMachineError td) {
-            // expected
-        } catch (final Throwable t) {
-            fail("PoolUtils.checkRethrow(Throwable) must rethrow only ThreadDeath and VirtualMachineError.");
-        }
+        assertDoesNotThrow(() -> PoolUtils.checkRethrow(new Exception()),
+                "PoolUtils.checkRethrow(Throwable) must rethrow only ThreadDeath and VirtualMachineError.");
+        assertThrows(ThreadDeath.class, () -> PoolUtils.checkRethrow(new ThreadDeath()),
+                "PoolUtils.checkRethrow(Throwable) must rethrow only ThreadDeath and VirtualMachineError.");
+        assertThrows(VirtualMachineError.class, () -> PoolUtils.checkRethrow(new InternalError()),
+                "PoolUtils.checkRethrow(Throwable) must rethrow only ThreadDeath and VirtualMachineError.");
     }
 
     @Test
