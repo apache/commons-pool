@@ -37,7 +37,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-public abstract class BaseTestProxiedObjectPool {
+public abstract class AbstractTestProxiedObjectPool {
 
     protected interface TestObject {
         String getData();

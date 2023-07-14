@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Abstract test case for {@link ObjectPool} implementations.
  */
-public abstract class TestKeyedObjectPool {
+public abstract class AbstractTestKeyedObjectPool {
 
     protected static class FailingKeyedPooledObjectFactory implements KeyedPooledObjectFactory<Object, Object, PrivateException> {
         private final List<MethodCall> methodCalls = new ArrayList<>();
@@ -590,7 +590,7 @@ public abstract class TestKeyedObjectPool {
         // fails again for the new one.
         expectedMethods.add(new MethodCall("makeObject", KEY).returned(ONE));
         expectedMethods.add(new MethodCall("activateObject", KEY, ONE));
-        TestObjectPool.removeDestroyObjectCall(factory.getMethodCalls()); // The exact timing of destroyObject is flexible here.
+        AbstractTestObjectPool.removeDestroyObjectCall(factory.getMethodCalls()); // The exact timing of destroyObject is flexible here.
         assertEquals(expectedMethods, factory.getMethodCalls());
 
         // when validateObject fails in borrowObject, a new object should be borrowed/created
@@ -609,7 +609,7 @@ public abstract class TestKeyedObjectPool {
         expectedMethods.add(new MethodCall("makeObject", KEY).returned(ONE));
         expectedMethods.add(new MethodCall("activateObject", KEY, ONE));
         expectedMethods.add(new MethodCall("validateObject", KEY, ONE));
-        TestObjectPool.removeDestroyObjectCall(factory.getMethodCalls());
+        AbstractTestObjectPool.removeDestroyObjectCall(factory.getMethodCalls());
         assertEquals(expectedMethods, factory.getMethodCalls());
         pool.close();
     }
@@ -690,7 +690,7 @@ public abstract class TestKeyedObjectPool {
         factory.setDestroyObjectFail(true);
         assertThrows(PrivateException.class, () -> pool.invalidateObject(KEY, obj2), "Expecting destroy exception to propagate");
         Thread.sleep(250); // could be defered
-        TestObjectPool.removeDestroyObjectCall(factory.getMethodCalls());
+        AbstractTestObjectPool.removeDestroyObjectCall(factory.getMethodCalls());
         assertEquals(expectedMethods, factory.getMethodCalls());
         pool.close();
     }
@@ -732,7 +732,7 @@ public abstract class TestKeyedObjectPool {
         factory.setPassivateObjectFail(true);
         pool.returnObject(KEY, obj);
         expectedMethods.add(new MethodCall("passivateObject", KEY, obj));
-        TestObjectPool.removeDestroyObjectCall(factory.getMethodCalls()); // The exact timing of destroyObject is flexible here.
+        AbstractTestObjectPool.removeDestroyObjectCall(factory.getMethodCalls()); // The exact timing of destroyObject is flexible here.
         assertEquals(expectedMethods, factory.getMethodCalls());
         assertEquals(1, pool.getNumIdle(KEY));   // Not added
         assertEquals(1, pool.getNumActive(KEY)); // But not active

@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Abstract test case for {@link ObjectPool} implementations.
  */
-public abstract class TestObjectPool {
+public abstract class AbstractTestObjectPool {
 
     private static void clear(final MethodCallPoolableObjectFactory factory, final List<MethodCall> expectedMethods) {
         factory.getMethodCalls().clear();

@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
 
 
 
-public abstract class BaseTestProxiedKeyedObjectPool {
+public abstract class AbstractTestProxiedKeyedObjectPool {
 
     private static class TestKeyedObjectFactory extends BaseKeyedPooledObjectFactory<String, TestObject, RuntimeException> {
 

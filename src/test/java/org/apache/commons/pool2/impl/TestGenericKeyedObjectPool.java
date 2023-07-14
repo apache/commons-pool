@@ -60,7 +60,7 @@ import org.apache.commons.pool2.KeyedObjectPool;
 import org.apache.commons.pool2.KeyedPooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.TestException;
-import org.apache.commons.pool2.TestKeyedObjectPool;
+import org.apache.commons.pool2.AbstractTestKeyedObjectPool;
 import org.apache.commons.pool2.VisitTracker;
 import org.apache.commons.pool2.VisitTrackerFactory;
 import org.apache.commons.pool2.Waiter;
@@ -74,7 +74,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 
 /**
  */
-public class TestGenericKeyedObjectPool extends TestKeyedObjectPool {
+public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     private static class DaemonThreadFactory implements ThreadFactory {
         @Override

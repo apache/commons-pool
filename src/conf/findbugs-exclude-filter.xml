@@ -99,8 +99,8 @@
   <Match>
     <!-- Generating a new object is a deliberate choice -->
     <Or>
-      <Class name="org.apache.commons.pool2.TestKeyedObjectPool" />
-      <Class name="org.apache.commons.pool2.TestObjectPool" />
+      <Class name="org.apache.commons.pool2.AbstractTestKeyedObjectPool" />
+      <Class name="org.apache.commons.pool2.AbstractTestObjectPool" />
     </Or>
     <Bug pattern="DM_NUMBER_CTOR" />
   </Match>

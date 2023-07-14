@@ -17,7 +17,7 @@
 package org.apache.commons.pool2.proxy;
 
 public class TestProxiedKeyedObjectPoolWithJdkProxy
-        extends BaseTestProxiedKeyedObjectPool {
+        extends AbstractTestProxiedKeyedObjectPool {
 
     @Override
     protected ProxySource<TestObject> getproxySource() {

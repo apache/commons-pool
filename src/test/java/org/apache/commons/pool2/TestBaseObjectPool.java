@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  */
-public class TestBaseObjectPool extends TestObjectPool {
+public class TestBaseObjectPool extends AbstractTestObjectPool {
 
     private static class TestObjectPool extends BaseObjectPool<Object, RuntimeException> {
 

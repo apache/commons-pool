@@ -17,7 +17,7 @@
 package org.apache.commons.pool2.proxy;
 
 public class TestProxiedObjectPoolWithCglibProxy extends
-        BaseTestProxiedObjectPool {
+        AbstractTestProxiedObjectPool {
 
     @Override
     protected ProxySource<TestObject> getproxySource() {
