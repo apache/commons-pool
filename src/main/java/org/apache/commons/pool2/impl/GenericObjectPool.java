@@ -953,8 +953,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
             if (isAbandonedConfig()) {
                 return;
             }
-            throw new IllegalStateException(
-                    "Invalidated object not currently part of this pool");
+            throw new IllegalStateException("Invalidated object not currently part of this pool");
         }
         synchronized (p) {
             if (p.getState() != PooledObjectState.INVALID) {
