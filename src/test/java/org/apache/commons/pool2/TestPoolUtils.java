@@ -241,9 +241,7 @@ public class TestPoolUtils {
                 final Map<String, TimerTask> tasks = PoolUtils.checkMinIdle(pool, keys, 1, CHECK_PERIOD);
 
                 Thread.sleep(CHECK_SLEEP_PERIOD); // will check CHECK_COUNT more times.
-                for (final TimerTask task : tasks.values()) {
-                    task.cancel();
-                }
+                tasks.values().forEach(TimerTask::cancel);
 
                 final List<String> expectedMethods = new ArrayList<>();
                 for (int i = 0; i < CHECK_COUNT * keys.size(); i++) {
