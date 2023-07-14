@@ -19,6 +19,7 @@ package org.apache.commons.pool2.impl;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -218,40 +219,16 @@ public class TestSoftRefOutOfMemory {
      */
     @Test
     public void testOutOfMemoryError() throws Exception {
-        pool = new SoftReferenceObjectPool<>(
-                new OomeFactory(OomeTrigger.CREATE));
-
-        try {
-            pool.borrowObject();
-            fail("Expected out of memory.");
-        }
-        catch (final OutOfMemoryError ex) {
-            // expected
-        }
+        pool = new SoftReferenceObjectPool<>(new OomeFactory(OomeTrigger.CREATE));
+        assertThrows(OutOfMemoryError.class, pool::borrowObject);
         pool.close();
 
-        pool = new SoftReferenceObjectPool<>(
-                new OomeFactory(OomeTrigger.VALIDATE));
-
-        try {
-            pool.borrowObject();
-            fail("Expected out of memory.");
-        }
-        catch (final OutOfMemoryError ex) {
-            // expected
-        }
+        pool = new SoftReferenceObjectPool<>(new OomeFactory(OomeTrigger.VALIDATE));
+        assertThrows(OutOfMemoryError.class, pool::borrowObject);
         pool.close();
 
-        pool = new SoftReferenceObjectPool<>(
-                new OomeFactory(OomeTrigger.DESTROY));
-
-        try {
-            pool.borrowObject();
-            fail("Expected out of memory.");
-        }
-        catch (final OutOfMemoryError ex) {
-            // expected
-        }
+        pool = new SoftReferenceObjectPool<>(new OomeFactory(OomeTrigger.DESTROY));
+        assertThrows(OutOfMemoryError.class, pool::borrowObject);
         pool.close();
     }
 
