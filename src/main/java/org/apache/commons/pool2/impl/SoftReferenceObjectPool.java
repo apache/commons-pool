@@ -22,6 +22,7 @@ import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.pool2.BaseObjectPool;
@@ -44,7 +45,7 @@ import org.apache.commons.pool2.PooledObjectFactory;
  */
 public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectPool<T, E> {
 
-    /** Factory to source pooled objects */
+    /** Factory to source pooled objects. */
     private final PooledObjectFactory<T, E> factory;
 
     /**
@@ -65,20 +66,18 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
     private long createCount; // @GuardedBy("this")
 
     /** Idle references - waiting to be borrowed */
-    private final LinkedBlockingDeque<PooledSoftReference<T>> idleReferences =
-        new LinkedBlockingDeque<>();
+    private final LinkedBlockingDeque<PooledSoftReference<T>> idleReferences = new LinkedBlockingDeque<>();
 
     /** All references - checked out or waiting to be borrowed. */
-    private final ArrayList<PooledSoftReference<T>> allReferences =
-        new ArrayList<>();
+    private final ArrayList<PooledSoftReference<T>> allReferences = new ArrayList<>();
 
     /**
      * Constructs a {@code SoftReferenceObjectPool} with the specified factory.
      *
-     * @param factory object factory to use.
+     * @param factory non-null object factory to use.
      */
     public SoftReferenceObjectPool(final PooledObjectFactory<T, E> factory) {
-        this.factory = factory;
+        this.factory = Objects.requireNonNull(factory, "factory");
     }
 
     /**
@@ -107,15 +106,10 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
     @Override
     public synchronized void addObject() throws E {
         assertOpen();
-        if (factory == null) {
-            throw new IllegalStateException(
-                    "Cannot add objects without a factory.");
-        }
         final T obj = factory.makeObject().getObject();
         createCount++;
         // Create and register with the queue
-        final PooledSoftReference<T> ref = new PooledSoftReference<>(
-                new SoftReference<>(obj, refQueue));
+        final PooledSoftReference<T> ref = new PooledSoftReference<>(new SoftReference<>(obj, refQueue));
         allReferences.add(ref);
 
         boolean success = true;
@@ -184,9 +178,6 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
         PooledSoftReference<T> ref = null;
         while (null == obj) {
             if (idleReferences.isEmpty()) {
-                if (null == factory) {
-                    throw new NoSuchElementException();
-                }
                 newlyCreated = true;
                 obj = factory.makeObject().getObject();
                 createCount++;
@@ -202,7 +193,7 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
                 ref.getReference().clear();
                 ref.setReference(new SoftReference<>(obj));
             }
-            if (null != factory && null != obj) {
+            if (null != obj) {
                 try {
                     factory.activateObject(ref);
                     if (!factory.validateObject(ref)) {
@@ -234,17 +225,15 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
      */
     @Override
     public synchronized void clear() {
-        if (null != factory) {
-            idleReferences.forEach(ref -> {
-                try {
-                    if (null != ref.getObject()) {
-                        factory.destroyObject(ref);
-                    }
-                } catch (final Exception ignored) {
-                    // ignored, keep destroying the rest
+        idleReferences.forEach(pooledSoftRef -> {
+            try {
+                if (null != pooledSoftRef.getObject()) {
+                    factory.destroyObject(pooledSoftRef);
                 }
-            });
-        }
+            } catch (final Exception ignored) {
+                // ignored, keep destroying the rest
+            }
+        });
         idleReferences.clear();
         pruneClearedReferences();
     }
@@ -335,12 +324,9 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
     public synchronized void invalidateObject(final T obj) throws E {
         final PooledSoftReference<T> ref = findReference(obj);
         if (ref == null) {
-            throw new IllegalStateException(
-                "Object to invalidate is not currently part of this pool");
+            throw new IllegalStateException("Object to invalidate is not currently part of this pool");
         }
-        if (factory != null) {
-            destroy(ref);
-        }
+        destroy(ref);
         numActive--;
         notifyAll(); // numActive has changed
     }
@@ -397,18 +383,15 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
         boolean success = !isClosed();
         final PooledSoftReference<T> ref = findReference(obj);
         if (ref == null) {
-            throw new IllegalStateException(
-                "Returned object not currently part of this pool");
+            throw new IllegalStateException("Returned object not currently part of this pool");
         }
-        if (factory != null) {
-            if (!factory.validateObject(ref)) {
+        if (!factory.validateObject(ref)) {
+            success = false;
+        } else {
+            try {
+                factory.passivateObject(ref);
+            } catch (final Exception e) {
                 success = false;
-            } else {
-                try {
-                    factory.passivateObject(ref);
-                } catch (final Exception e) {
-                    success = false;
-                }
             }
         }
 
@@ -422,7 +405,7 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
         }
         notifyAll(); // numActive has changed
 
-        if (shouldDestroy && factory != null) {
+        if (shouldDestroy) {
             try {
                 destroy(ref);
             } catch (final Exception ignored) {
