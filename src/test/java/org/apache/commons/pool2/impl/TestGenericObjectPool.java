@@ -2596,31 +2596,31 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             DisconnectingWaiterFactory.DEFAULT_DISCONNECTED_LIFECYCLE_ACTION,
             DisconnectingWaiterFactory.DEFAULT_DISCONNECTED_VALIDATION_ACTION
         );
-        final GenericObjectPool<Waiter, IllegalStateException> pool = new GenericObjectPool<>(factory);
-        pool.setTestOnBorrow(true);
-        pool.setMaxTotal(-1);
-        pool.setMinIdle(1);
-        // Disconnect the factory - will always return null in this state
-        factory.disconnect();
-        try {
-            pool.borrowObject();
-            fail("Expecting NullPointerException");
-        } catch (final NullPointerException ex) {
-            // expected
+        try (GenericObjectPool<Waiter, IllegalStateException> pool = new GenericObjectPool<>(factory)) {
+            pool.setTestOnBorrow(true);
+            pool.setMaxTotal(-1);
+            pool.setMinIdle(1);
+            // Disconnect the factory - will always return null in this state
+            factory.disconnect();
+            try {
+                pool.borrowObject();
+                fail("Expecting NullPointerException");
+            } catch (final NullPointerException ex) {
+                // expected
+            }
+            try {
+                pool.addObject();
+                fail("Expecting NullPointerException");
+            } catch (final NullPointerException ex2) {
+                // expected
+            }
+            try {
+                pool.ensureMinIdle();
+                fail("Expecting NullPointerException");
+            } catch (final NullPointerException ex3) {
+                // expected
+            }
         }
-        try {
-            pool.addObject();
-            fail("Expecting NullPointerException");
-        } catch (final NullPointerException ex2) {
-            // expected
-        }
-        try {
-            pool.ensureMinIdle();
-            fail("Expecting NullPointerException");
-        } catch (final NullPointerException ex3) {
-            // expected
-        }
-        pool.close();
     }
 
     @Test
