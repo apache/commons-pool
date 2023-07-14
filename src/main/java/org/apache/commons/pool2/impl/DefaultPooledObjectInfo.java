@@ -95,7 +95,8 @@ public class DefaultPooledObjectInfo implements DefaultPooledObjectInfoMBean {
 
     @Override
     public String getPooledObjectType() {
-        return pooledObject.getObject().getClass().getName();
+        final Object object = pooledObject.getObject();
+        return object != null ? object.getClass().getName() : null;
     }
 
     private String getTimeMillisFormatted(final long millis) {
