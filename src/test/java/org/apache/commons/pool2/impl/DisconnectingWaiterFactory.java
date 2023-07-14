@@ -141,9 +141,8 @@ public class DisconnectingWaiterFactory<K> extends WaiterFactory<K> {
     private boolean validate(final PooledObject<Waiter> obj) {
         if (connected.get()) {
             return super.validateObject(obj);
-        } else {
-            return disconnectedValidationAction.test(obj);
         }
+        return disconnectedValidationAction.test(obj);
     }
 
     @Override
@@ -157,18 +156,18 @@ public class DisconnectingWaiterFactory<K> extends WaiterFactory<K> {
     }
 
     private void activate(final PooledObject<Waiter> obj) {
-        if (!connected.get()) {
-            disconnectedLifcycleAction.accept(obj);
-        } else {
+        if (connected.get()) {
             super.activateObject(obj);
+        } else {
+            disconnectedLifcycleAction.accept(obj);
         }
     }
 
     private void passivate(final PooledObject<Waiter> obj) {
-        if (!connected.get()) {
-            disconnectedLifcycleAction.accept(obj);
-        } else {
+        if (connected.get()) {
             super.passivateObject(obj);
+        } else {
+            disconnectedLifcycleAction.accept(obj);
         }
     }
 
@@ -203,11 +202,10 @@ public class DisconnectingWaiterFactory<K> extends WaiterFactory<K> {
     }
 
     private PooledObject<Waiter> make() {
-        if (!connected.get()) {
-            return disconnectedCreateAction.get();
-        } else {
+        if (connected.get()) {
             return super.makeObject();
         }
+        return disconnectedCreateAction.get();
     }
 
     /**
