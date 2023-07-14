@@ -203,21 +203,32 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      * objects under management using maps keyed on the objects. This wrapper
      * class ensures that objects can work as hash keys.
      *
-     * @param <T> type of objects in the pool
+     * @param <T> type of objects in the pool.
      */
     static class IdentityWrapper<T> {
+
         /** Wrapped object */
         private final T instance;
 
         /**
+         * Constructs a wrapper for the object in the {@link PooledObject}.
+         *
+         * @param <T> type of objects in the {@link PooledObject}.
+         * @param pooledObject contains the object to wrap.
+         * @return a new instance wrapping the object in the {@link PooledObject}.
+         */
+        static <T> IdentityWrapper<T> on(final PooledObject<T> pooledObject) {
+            return new IdentityWrapper<>(pooledObject.getObject());
+        }
+        /**
          * Constructs a wrapper for an instance.
          *
-         * @param instance object to wrap
+         * @param instance object to wrap.
          */
         public IdentityWrapper(final T instance) {
             this.instance = instance;
         }
-
+        
         @Override
         @SuppressWarnings("rawtypes")
         public boolean equals(final Object other) {
