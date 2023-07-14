@@ -20,6 +20,7 @@ import java.io.PrintWriter;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Deque;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Defines the wrapper that is used to track the additional information, such as
