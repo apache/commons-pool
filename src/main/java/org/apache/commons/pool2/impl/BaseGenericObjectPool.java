@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimerTask;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -385,6 +386,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     private final String creationStackTrace;
     private final AtomicLong borrowedCount = new AtomicLong();
     private final AtomicLong returnedCount = new AtomicLong();
+    final AtomicInteger maxConcurrentConnections = new AtomicInteger();
     final AtomicLong createdCount = new AtomicLong();
     final AtomicLong destroyedCount = new AtomicLong();
     final AtomicLong destroyedByEvictorCount = new AtomicLong();
@@ -1062,11 +1064,11 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
                         "destroyedByEvictorCount=%,d, evictorShutdownTimeoutDuration=%s, fairness=%s, idleTimes=%s, lifo=%s, maxBorrowWaitDuration=%s, " +
                         "maxTotal=%s, maxWaitDuration=%s, minEvictableIdleDuration=%s, numTestsPerEvictionRun=%s, returnedCount=%s, " +
                         "softMinEvictableIdleDuration=%s, testOnBorrow=%s, testOnCreate=%s, testOnReturn=%s, testWhileIdle=%s, " +
-                        "durationBetweenEvictionRuns=%s, waitTimes=%s",
+                        "durationBetweenEvictionRuns=%s, waitTimes=%s, maxConcurrentConnections=%s",
                 activeTimes.getCurrentValues(), blockWhenExhausted, borrowedCount.get(), closed, createdCount.get(), destroyedByBorrowValidationCount.get(),
                 destroyedByEvictorCount.get(), evictorShutdownTimeoutDuration, fairness, idleTimes.getCurrentValues(), lifo, maxBorrowWaitDuration.get(),
                 maxTotal, maxWaitDuration, minEvictableIdleDuration, numTestsPerEvictionRun, returnedCount, softMinEvictableIdleDuration, testOnBorrow,
-                testOnCreate, testOnReturn, testWhileIdle, durationBetweenEvictionRuns, waitTimes.getCurrentValues());
+                testOnCreate, testOnReturn, testWhileIdle, durationBetweenEvictionRuns, waitTimes.getCurrentValues(), maxConcurrentConnections.get());
     }
 
     /**
@@ -1937,6 +1939,8 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
         builder.append(maxBorrowWaitDuration);
         builder.append(", swallowedExceptionListener=");
         builder.append(swallowedExceptionListener);
+        builder.append(", maxConcurrentConnections=");
+        builder.append(maxConcurrentConnections);
     }
 
     /**
@@ -1947,6 +1951,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      */
     final void updateStatsBorrow(final PooledObject<T> p, final Duration waitDuration) {
         borrowedCount.incrementAndGet();
+        maxConcurrentConnections.incrementAndGet();
         idleTimes.add(p.getIdleDuration());
         waitTimes.add(waitDuration);
 
@@ -1972,6 +1977,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     final void updateStatsReturn(final Duration activeTime) {
         returnedCount.incrementAndGet();
         activeTimes.add(activeTime);
+        maxConcurrentConnections.decrementAndGet();
     }
 
 

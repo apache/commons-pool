@@ -1190,6 +1190,8 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
         builder.append(idleObjects);
         builder.append(", abandonedConfig=");
         builder.append(abandonedConfig);
+        builder.append(", maxConcurrentConnections=");
+        builder.append(maxConcurrentConnections);
     }
 
     @Override
