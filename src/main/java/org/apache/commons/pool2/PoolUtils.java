@@ -110,7 +110,6 @@ public final class PoolUtils {
      *
      * @param <K> object pool key type
      * @param <V> object pool value type
-     * @param <E> exception thrown by this pool
      */
     private static class ErodingKeyedObjectPool<K, V> implements KeyedObjectPool<K, V> {
 
@@ -471,7 +470,6 @@ public final class PoolUtils {
      *
      * @param <K> object pool key type
      * @param <V> object pool value type
-     * @param <E> exception thrown by this pool
      */
     private static final class ErodingPerKeyKeyedObjectPool<K, V> extends ErodingKeyedObjectPool<K, V> {
 
@@ -522,7 +520,6 @@ public final class PoolUtils {
      *
      * @param <K> object pool key type
      * @param <V> object pool value type
-     * @param <E> exception thrown by this pool
      */
     private static final class KeyedObjectPoolMinIdleTimerTask<K, V> extends TimerTask {
 
@@ -681,7 +678,6 @@ public final class PoolUtils {
      *
      * @param <K> object pool key type
      * @param <V> object pool value type
-     * @param <E> exception thrown by this pool
      */
     static final class SynchronizedKeyedObjectPool<K, V> implements KeyedObjectPool<K, V> {
 
@@ -910,7 +906,6 @@ public final class PoolUtils {
      *
      * @param <K> pooled object factory key type
      * @param <V> pooled object factory value type
-     * @param <E> pooled object factory exception type
      */
     private static final class SynchronizedKeyedPooledObjectFactory<K, V> implements KeyedPooledObjectFactory<K, V> {
 
@@ -1200,7 +1195,6 @@ public final class PoolUtils {
      * </p>
      *
      * @param <T> pooled object factory type
-     * @param <E> exception type
      */
     private static final class SynchronizedPooledObjectFactory<T> implements
             PooledObjectFactory<T> {
@@ -1755,7 +1749,6 @@ public final class PoolUtils {
      *            synchronized KeyedPooledObjectFactory.
      * @param <K> the type of the pool key
      * @param <V> the type of pool entries
-     * @param <E> the type of pool exceptions
      * @return a synchronized view of the specified KeyedPooledObjectFactory.
      */
     public static <K, V> KeyedPooledObjectFactory<K, V> synchronizedKeyedPooledFactory(
@@ -1809,7 +1802,6 @@ public final class PoolUtils {
      * </p>
      *
      * @param <T> the type of objects in the pool
-     * @param <E> the type of exceptions thrown by the pool
      * @param pool
      *            the ObjectPool to be "wrapped" in a synchronized ObjectPool.
      * @throws IllegalArgumentException
@@ -1843,7 +1835,6 @@ public final class PoolUtils {
      *            the PooledObjectFactory to be "wrapped" in a synchronized
      *            PooledObjectFactory.
      * @param <T> the type of objects in the pool
-     * @param <E> the type of exceptions thrown by the pool
      * @return a synchronized view of the specified PooledObjectFactory.
      */
     public static <T> PooledObjectFactory<T> synchronizedPooledFactory(final PooledObjectFactory<T> factory) {
