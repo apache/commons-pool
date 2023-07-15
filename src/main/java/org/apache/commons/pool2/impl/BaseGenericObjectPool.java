@@ -1816,7 +1816,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      * <p>This method needs to be final, since it is called from a constructor.
      * See POOL-195.</p>
      *
-     * @param delay time in milliseconds before start and between eviction runs
+     * @param delay duration before start and between eviction runs.
      */
     final void startEvictor(final Duration delay) {
         synchronized (evictionLock) {
