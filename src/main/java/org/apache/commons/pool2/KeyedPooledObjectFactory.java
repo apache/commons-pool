@@ -71,11 +71,10 @@ package org.apache.commons.pool2;
  *
  * @param <K> The type of keys managed by this factory.
  * @param <V> Type of element managed by this factory.
- * @param <E> Type of exception thrown by this factory.
  *
  * @since 2.0
  */
-public interface KeyedPooledObjectFactory<K, V, E extends Exception> {
+public interface KeyedPooledObjectFactory<K, V> {
 
     /**
      * Reinitializes an instance to be returned by the pool.
@@ -83,12 +82,12 @@ public interface KeyedPooledObjectFactory<K, V, E extends Exception> {
      * @param key the key used when selecting the object
      * @param p a {@code PooledObject} wrapping the instance to be activated
      *
-     * @throws E if there is a problem activating {@code obj},
+     * @throws Exception if there is a problem activating {@code obj},
      *    this exception may be swallowed by the pool.
      *
      * @see #destroyObject
      */
-    void activateObject(K key, PooledObject<V> p) throws E;
+    void activateObject(K key, PooledObject<V> p) throws Exception;
 
     /**
      * Destroys an instance no longer needed by the pool.
@@ -105,13 +104,13 @@ public interface KeyedPooledObjectFactory<K, V, E extends Exception> {
      * @param key the key used when selecting the instance
      * @param p a {@code PooledObject} wrapping the instance to be destroyed
      *
-     * @throws E should be avoided as it may be swallowed by
+     * @throws Exception should be avoided as it may be swallowed by
      *    the pool implementation.
      *
      * @see #validateObject
      * @see KeyedObjectPool#invalidateObject
      */
-    void destroyObject(K key, PooledObject<V> p) throws E;
+    void destroyObject(K key, PooledObject<V> p) throws Exception;
 
     /**
      * Destroys an instance no longer needed by the pool, using the provided {@link DestroyMode}.
@@ -120,7 +119,7 @@ public interface KeyedPooledObjectFactory<K, V, E extends Exception> {
      * @param p a {@code PooledObject} wrapping the instance to be destroyed
      * @param destroyMode DestroyMode providing context to the factory
      *
-     * @throws E should be avoided as it may be swallowed by
+     * @throws Exception should be avoided as it may be swallowed by
      *    the pool implementation.
      *
      * @see #validateObject
@@ -129,7 +128,7 @@ public interface KeyedPooledObjectFactory<K, V, E extends Exception> {
      * @see DestroyMode
      * @since 2.9.0
      */
-    default void destroyObject(final K key, final PooledObject<V> p, final DestroyMode destroyMode) throws E {
+    default void destroyObject(final K key, final PooledObject<V> p, final DestroyMode destroyMode) throws Exception {
         destroyObject(key, p);
     }
 
@@ -142,10 +141,10 @@ public interface KeyedPooledObjectFactory<K, V, E extends Exception> {
      * @return a {@code PooledObject} wrapping an instance that can
      * be served by the pool.
      *
-     * @throws E if there is a problem creating a new instance,
+     * @throws Exception if there is a problem creating a new instance,
      *    this will be propagated to the code requesting an object.
      */
-    PooledObject<V> makeObject(K key) throws E;
+    PooledObject<V> makeObject(K key) throws Exception;
 
     /**
      * Uninitializes an instance to be returned to the idle object pool.
@@ -153,12 +152,12 @@ public interface KeyedPooledObjectFactory<K, V, E extends Exception> {
      * @param key the key used when selecting the object
      * @param p a {@code PooledObject} wrapping the instance to be passivated
      *
-     * @throws E if there is a problem passivating {@code obj},
+     * @throws Exception if there is a problem passivating {@code obj},
      *    this exception may be swallowed by the pool.
      *
      * @see #destroyObject
      */
-    void passivateObject(K key, PooledObject<V> p) throws E;
+    void passivateObject(K key, PooledObject<V> p) throws Exception;
 
     /**
      * Ensures that the instance is safe to be returned by the pool.

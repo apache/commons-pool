@@ -61,7 +61,7 @@ import java.util.NoSuchElementException;
  *
  * @param <K> The type of keys maintained by this pool.
  * @param <V> Type of element pooled in this pool.
- * @param <E> Type of exception thrown by this pool.
+ * 
  *
  * @see KeyedPooledObjectFactory
  * @see ObjectPool
@@ -69,7 +69,7 @@ import java.util.NoSuchElementException;
  *
  * @since 2.0
  */
-public interface KeyedObjectPool<K, V, E extends Exception> extends Closeable {
+public interface KeyedObjectPool<K, V> extends Closeable {
 
     /**
      * Creates an object using the {@link KeyedPooledObjectFactory factory} or
@@ -79,14 +79,14 @@ public interface KeyedObjectPool<K, V, E extends Exception> extends Closeable {
      *
      * @param key the key a new instance should be added to
      *
-     * @throws E
+     * @throws Exception
      *              when {@link KeyedPooledObjectFactory#makeObject} fails.
      * @throws IllegalStateException
      *              after {@link #close} has been called on this pool.
      * @throws UnsupportedOperationException
      *              when this pool cannot add new idle objects.
      */
-    void addObject(K key) throws E, IllegalStateException, UnsupportedOperationException;
+    void addObject(K key) throws Exception;
 
     /**
      * Calls {@link KeyedObjectPool#addObject(Object)} with each
@@ -98,14 +98,14 @@ public interface KeyedObjectPool<K, V, E extends Exception> extends Closeable {
      *            {@link Collection} of keys to add objects for.
      * @param count
      *            the number of idle objects to add for each {@code key}.
-     * @throws E
+     * @throws Exception
      *             when {@link KeyedObjectPool#addObject(Object)} fails.
      * @throws IllegalArgumentException
      *             when {@code keyedPool}, {@code keys}, or any value
      *             in {@code keys} is {@code null}.
      * @see #addObjects(Object, int)
      */
-    default void addObjects(final Collection<K> keys, final int count) throws E, IllegalArgumentException {
+    default void addObjects(final Collection<K> keys, final int count) throws Exception {
         if (keys == null) {
             throw new IllegalArgumentException(PoolUtils.MSG_NULL_KEYS);
         }
@@ -122,13 +122,13 @@ public interface KeyedObjectPool<K, V, E extends Exception> extends Closeable {
      *            the key to add objects for.
      * @param count
      *            the number of idle objects to add for {@code key}.
-     * @throws E
+     * @throws Exception
      *             when {@link KeyedObjectPool#addObject(Object)} fails.
      * @throws IllegalArgumentException
      *             when {@code key} is {@code null}.
      * @since 2.8.0
      */
-    default void addObjects(final K key, final int count) throws E, IllegalArgumentException {
+    default void addObjects(final K key, final int count) throws Exception {
         if (key == null) {
             throw new IllegalArgumentException(PoolUtils.MSG_NULL_KEY);
         }
@@ -166,14 +166,14 @@ public interface KeyedObjectPool<K, V, E extends Exception> extends Closeable {
      *
      * @throws IllegalStateException
      *              after {@link #close close} has been called on this pool
-     * @throws E
+     * @throws Exception
      *              when {@link KeyedPooledObjectFactory#makeObject
      *              makeObject} throws an exception
      * @throws NoSuchElementException
      *              when the pool is exhausted and cannot or will not return
      *              another instance
      */
-    V borrowObject(K key) throws E, NoSuchElementException, IllegalStateException;
+    V borrowObject(K key) throws Exception;
 
     /**
      * Clears the pool, removing all pooled instances (optional operation).
@@ -181,9 +181,9 @@ public interface KeyedObjectPool<K, V, E extends Exception> extends Closeable {
      * @throws UnsupportedOperationException when this implementation doesn't
      *                                       support the operation
      *
-     * @throws E if the pool cannot be cleared
+     * @throws Exception if the pool cannot be cleared
      */
-    void clear() throws E, UnsupportedOperationException;
+    void clear() throws Exception;
 
     /**
      * Clears the specified pool, removing all pooled instances corresponding to
@@ -194,9 +194,9 @@ public interface KeyedObjectPool<K, V, E extends Exception> extends Closeable {
      * @throws UnsupportedOperationException when this implementation doesn't
      *                                       support the operation
      *
-     * @throws E if the key cannot be cleared
+     * @throws Exception if the key cannot be cleared
      */
-    void clear(K key) throws E, UnsupportedOperationException;
+    void clear(K key) throws Exception;
 
     /**
      * Closes this pool, and free any resources associated with it.
@@ -277,9 +277,9 @@ public interface KeyedObjectPool<K, V, E extends Exception> extends Closeable {
      * @param key the key used to obtain the object
      * @param obj a {@link #borrowObject borrowed} instance to be returned.
      *
-     * @throws E if the instance cannot be invalidated
+     * @throws Exception if the instance cannot be invalidated
      */
-    void invalidateObject(K key, V obj) throws E;
+    void invalidateObject(K key, V obj) throws Exception;
 
     /**
      * Invalidates an object from the pool, using the provided
@@ -300,10 +300,10 @@ public interface KeyedObjectPool<K, V, E extends Exception> extends Closeable {
      * @param obj a {@link #borrowObject borrowed} instance to be returned.
      * @param destroyMode destroy activation context provided to the factory
      *
-     * @throws E if the instance cannot be invalidated
+     * @throws Exception if the instance cannot be invalidated
      * @since 2.9.0
      */
-    default void invalidateObject(final K key, final V obj, final DestroyMode destroyMode) throws E {
+    default void invalidateObject(final K key, final V obj, final DestroyMode destroyMode) throws Exception {
         invalidateObject(key, obj);
     }
 
@@ -324,7 +324,7 @@ public interface KeyedObjectPool<K, V, E extends Exception> extends Closeable {
      *              to return an object that was never borrowed from the pool
      *              will trigger this exception.
      *
-     * @throws E if an instance cannot be returned to the pool
+     * @throws Exception if an instance cannot be returned to the pool
      */
-    void returnObject(K key, V obj) throws E;
+    void returnObject(K key, V obj) throws Exception;
 }

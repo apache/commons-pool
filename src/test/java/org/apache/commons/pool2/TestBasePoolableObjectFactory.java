@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
  */
 public class TestBasePoolableObjectFactory {
 
-    private static class TestFactory extends BasePooledObjectFactory<AtomicInteger, RuntimeException> {
+    private static class TestFactory extends BasePooledObjectFactory<AtomicInteger> {
         @Override
         public AtomicInteger create() {
             return new AtomicInteger(0);
@@ -46,8 +46,8 @@ public class TestBasePoolableObjectFactory {
     }
 
     @Test
-    public void testDefaultMethods() {
-        final PooledObjectFactory<AtomicInteger, RuntimeException> factory = new TestFactory();
+    public void testDefaultMethods() throws Exception {
+        final PooledObjectFactory<AtomicInteger> factory = new TestFactory();
 
         factory.activateObject(null); // a no-op
         factory.passivateObject(null); // a no-op
@@ -63,8 +63,8 @@ public class TestBasePoolableObjectFactory {
      * @throws RuntimeException May occur in some failure modes
      */
     @Test
-    public void testDestroyModes() {
-        final PooledObjectFactory<AtomicInteger, RuntimeException> factory = new TestFactory();
+    public void testDestroyModes() throws Exception {
+        final PooledObjectFactory<AtomicInteger> factory = new TestFactory();
         final PooledObject<AtomicInteger> pooledObj = factory.makeObject();
         final AtomicInteger obj = pooledObj.getObject();
         factory.destroyObject(pooledObj);

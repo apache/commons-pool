@@ -41,7 +41,7 @@ import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
  * negatively since you need to run it for a while.
  */
 public final class ObjectPoolIssue326 {
-    private static class ObjectFactory extends BaseKeyedPooledObjectFactory<Integer, Object, RuntimeException> {
+    private static class ObjectFactory extends BaseKeyedPooledObjectFactory<Integer, Object> {
         @Override
         public Object create(final Integer s) {
             return new TestObject();
@@ -54,10 +54,10 @@ public final class ObjectPoolIssue326 {
     }
 
     private static class Task<E extends Exception> implements Callable<Object> {
-        private final GenericKeyedObjectPool<Integer, Object, E> m_pool;
+        private final GenericKeyedObjectPool<Integer, Object> m_pool;
         private final int m_key;
 
-        Task(final GenericKeyedObjectPool<Integer, Object, E> pool, final int count) {
+        Task(final GenericKeyedObjectPool<Integer, Object> pool, final int count) {
             m_pool = pool;
             m_key = count % 20;
         }
@@ -71,7 +71,7 @@ public final class ObjectPoolIssue326 {
         }
 
         @Override
-        public Object call() throws E {
+        public Object call() throws Exception {
             try {
                 final Object value;
                 value = m_pool.borrowObject(m_key);
@@ -101,7 +101,7 @@ public final class ObjectPoolIssue326 {
         }
     }
 
-    private <E extends Exception> List<Task<E>> createTasks(final GenericKeyedObjectPool<Integer, Object, E> pool) {
+    private <E extends Exception> List<Task<E>> createTasks(final GenericKeyedObjectPool<Integer, Object> pool) {
         final List<Task<E>> tasks = new ArrayList<>();
         for (int i = 0; i < 250; i++) {
             tasks.add(new Task<>(pool, i));
@@ -132,7 +132,7 @@ public final class ObjectPoolIssue326 {
         poolConfig.setJmxNameBase(null);
         poolConfig.setJmxNamePrefix(null);
 
-        final GenericKeyedObjectPool<Integer, Object, RuntimeException> pool = new GenericKeyedObjectPool<>(new ObjectFactory(), poolConfig);
+        final GenericKeyedObjectPool<Integer, Object> pool = new GenericKeyedObjectPool<>(new ObjectFactory(), poolConfig);
 
         // number of threads to reproduce is finicky. this count seems to be best for my
         // 4 core box.

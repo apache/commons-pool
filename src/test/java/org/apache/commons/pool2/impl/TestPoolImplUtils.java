@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 public class TestPoolImplUtils {
 
     @SuppressWarnings("unused")
-    private abstract static class FactoryAB<A, B> extends BasePooledObjectFactory<B, RuntimeException> {
+    private abstract static class FactoryAB<A, B> extends BasePooledObjectFactory<B> {
         // empty by design
     }
 
@@ -53,7 +53,7 @@ public class TestPoolImplUtils {
 
     private static class NotSimpleFactory extends FactoryF<Integer> {
         @Override
-        public Long create() {
+        public Long create() throws Exception {
             return null;
         }
 
@@ -63,7 +63,7 @@ public class TestPoolImplUtils {
         }
     }
 
-    private static class SimpleFactory extends BasePooledObjectFactory<String, RuntimeException> {
+    private static class SimpleFactory extends BasePooledObjectFactory<String> {
         @Override
         public String create() {
             return null;

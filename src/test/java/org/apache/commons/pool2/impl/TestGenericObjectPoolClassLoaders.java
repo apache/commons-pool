@@ -47,7 +47,7 @@ public class TestGenericObjectPoolClassLoaders {
     }
 
     private static class CustomClassLoaderObjectFactory extends
-            BasePooledObjectFactory<URL, IllegalStateException> {
+            BasePooledObjectFactory<URL> {
         private final int n;
 
         CustomClassLoaderObjectFactory(final int n) {
@@ -81,7 +81,7 @@ public class TestGenericObjectPoolClassLoaders {
         try (final CustomClassLoader cl1 = new CustomClassLoader(1)) {
             Thread.currentThread().setContextClassLoader(cl1);
             final CustomClassLoaderObjectFactory factory1 = new CustomClassLoaderObjectFactory(1);
-            try (final GenericObjectPool<URL, IllegalStateException> pool1 = new GenericObjectPool<>(factory1)) {
+            try (final GenericObjectPool<URL> pool1 = new GenericObjectPool<>(factory1)) {
                 pool1.setMinIdle(1);
                 pool1.setTimeBetweenEvictionRuns(Duration.ofMillis(100));
                 int counter = 0;
@@ -94,7 +94,7 @@ public class TestGenericObjectPoolClassLoaders {
                 try (final CustomClassLoader cl2 = new CustomClassLoader(2)) {
                     Thread.currentThread().setContextClassLoader(cl2);
                     final CustomClassLoaderObjectFactory factory2 = new CustomClassLoaderObjectFactory(2);
-                    try (final GenericObjectPool<URL, IllegalStateException> pool2 = new GenericObjectPool<>(factory2)) {
+                    try (final GenericObjectPool<URL> pool2 = new GenericObjectPool<>(factory2)) {
                         pool2.setMinIdle(1);
 
                         pool2.addObject();

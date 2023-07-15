@@ -44,7 +44,7 @@ public abstract class AbstractTestProxiedObjectPool {
         void setData(String data);
     }
     private static class TestObjectFactory extends
-            BasePooledObjectFactory<TestObject, RuntimeException> {
+            BasePooledObjectFactory<TestObject> {
 
         @Override
         public TestObject create() {
@@ -75,7 +75,7 @@ public abstract class AbstractTestProxiedObjectPool {
     private static final Duration ABANDONED_TIMEOUT_SECS = Duration.ofSeconds(3);
 
 
-    private ObjectPool<TestObject, RuntimeException> pool;
+    private ObjectPool<TestObject> pool;
 
     private StringWriter log;
 
@@ -98,17 +98,17 @@ public abstract class AbstractTestProxiedObjectPool {
         final GenericObjectPoolConfig<TestObject> config = new GenericObjectPoolConfig<>();
         config.setMaxTotal(3);
 
-        final PooledObjectFactory<TestObject, RuntimeException> factory = new TestObjectFactory();
+        final PooledObjectFactory<TestObject> factory = new TestObjectFactory();
 
         @SuppressWarnings("resource")
-        final ObjectPool<TestObject, RuntimeException> innerPool = new GenericObjectPool<>(factory, config, abandonedConfig);
+        final ObjectPool<TestObject> innerPool = new GenericObjectPool<>(factory, config, abandonedConfig);
 
         pool = new ProxiedObjectPool<>(innerPool, getproxySource());
     }
 
 
     @Test
-    public void testAccessAfterInvalidate() {
+    public void testAccessAfterInvalidate() throws Exception {
         final TestObject obj = pool.borrowObject();
         assertNotNull(obj);
 
@@ -127,7 +127,7 @@ public abstract class AbstractTestProxiedObjectPool {
 
 
     @Test
-    public void testAccessAfterReturn() {
+    public void testAccessAfterReturn() throws Exception {
         final TestObject obj = pool.borrowObject();
         assertNotNull(obj);
 
@@ -145,7 +145,7 @@ public abstract class AbstractTestProxiedObjectPool {
 
 
     @Test
-    public void testBorrowObject() {
+    public void testBorrowObject() throws Exception {
         final TestObject obj = pool.borrowObject();
         assertNotNull(obj);
 
@@ -157,7 +157,7 @@ public abstract class AbstractTestProxiedObjectPool {
     }
 
     @Test
-    public void testPassThroughMethods01() {
+    public void testPassThroughMethods01() throws Exception {
         assertEquals(0, pool.getNumActive());
         assertEquals(0, pool.getNumIdle());
 
@@ -183,7 +183,7 @@ public abstract class AbstractTestProxiedObjectPool {
 
 
     @Test
-    public void testUsageTracking() throws InterruptedException {
+    public void testUsageTracking() throws Exception {
         final TestObject obj = pool.borrowObject();
         assertNotNull(obj);
 

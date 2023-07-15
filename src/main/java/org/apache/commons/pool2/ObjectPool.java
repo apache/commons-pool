@@ -50,7 +50,7 @@ import java.util.NoSuchElementException;
  * </p>
  *
  * @param <T> Type of element pooled in this pool.
- * @param <E> Type of exception thrown by this pool.
+ * 
  *
  * @see PooledObjectFactory
  * @see KeyedObjectPool
@@ -58,7 +58,7 @@ import java.util.NoSuchElementException;
  *
  * @since 2.0
  */
-public interface ObjectPool<T, E extends Exception> extends Closeable {
+public interface ObjectPool<T> extends Closeable {
 
     /**
      * Creates an object using the {@link PooledObjectFactory factory} or other
@@ -66,14 +66,14 @@ public interface ObjectPool<T, E extends Exception> extends Closeable {
      * the idle object pool. {@code addObject} is useful for "pre-loading"
      * a pool with idle objects. (Optional operation).
      *
-     * @throws E
+     * @throws Exception
      *              when {@link PooledObjectFactory#makeObject} fails.
      * @throws IllegalStateException
      *              after {@link #close} has been called on this pool.
      * @throws UnsupportedOperationException
      *              when this pool cannot add new idle objects.
      */
-    void addObject() throws E, IllegalStateException, UnsupportedOperationException;
+    void addObject() throws Exception;
 
     /**
      * Calls {@link ObjectPool#addObject()} {@code count}
@@ -81,10 +81,10 @@ public interface ObjectPool<T, E extends Exception> extends Closeable {
      *
      * @param count
      *            the number of idle objects to add.
-     * @throws E See {@link ObjectPool#addObject()}.
+     * @throws Exception See {@link ObjectPool#addObject()}.
      * @since 2.8.0
      */
-    default void addObjects(final int count) throws E {
+    default void addObjects(final int count) throws Exception {
         for (int i = 0; i < count; i++) {
             addObject();
         }
@@ -114,14 +114,14 @@ public interface ObjectPool<T, E extends Exception> extends Closeable {
      *
      * @throws IllegalStateException
      *              after {@link #close close} has been called on this pool.
-     * @throws E
+     * @throws Exception
      *              when {@link PooledObjectFactory#makeObject} throws an
      *              exception.
      * @throws NoSuchElementException
      *              when the pool is exhausted and cannot or will not return
      *              another instance.
      */
-    T borrowObject() throws E, NoSuchElementException, IllegalStateException;
+    T borrowObject() throws Exception;
 
     /**
      * Clears any objects sitting idle in the pool, releasing any associated
@@ -131,9 +131,9 @@ public interface ObjectPool<T, E extends Exception> extends Closeable {
      * @throws UnsupportedOperationException
      *              if this implementation does not support the operation
      *
-     * @throws E if the pool cannot be cleared
+     * @throws Exception if the pool cannot be cleared
      */
-    void clear() throws E, UnsupportedOperationException;
+    void clear() throws Exception;
 
     /**
      * Closes this pool, and free any resources associated with it.
@@ -178,9 +178,9 @@ public interface ObjectPool<T, E extends Exception> extends Closeable {
      *
      * @param obj a {@link #borrowObject borrowed} instance to be disposed.
      *
-     * @throws E if the instance cannot be invalidated
+     * @throws Exception if the instance cannot be invalidated
      */
-    void invalidateObject(T obj) throws E;
+    void invalidateObject(T obj) throws Exception;
 
     /**
      * Invalidates an object from the pool, using the provided
@@ -197,10 +197,10 @@ public interface ObjectPool<T, E extends Exception> extends Closeable {
      *
      * @param obj a {@link #borrowObject borrowed} instance to be disposed.
      * @param destroyMode destroy activation context provided to the factory
-     * @throws E if the instance cannot be invalidated
+     * @throws Exception if the instance cannot be invalidated
      * @since 2.9.0
      */
-    default void invalidateObject(final T obj, final DestroyMode destroyMode) throws E {
+    default void invalidateObject(final T obj, final DestroyMode destroyMode) throws Exception {
         invalidateObject(obj);
     }
 
@@ -218,8 +218,8 @@ public interface ObjectPool<T, E extends Exception> extends Closeable {
      *              to return an object that was never borrowed from the pool
      *              will trigger this exception.
      *
-     * @throws E if an instance cannot be returned to the pool
+     * @throws Exception if an instance cannot be returned to the pool
      */
-    void returnObject(T obj) throws E;
+    void returnObject(T obj) throws Exception;
 
 }

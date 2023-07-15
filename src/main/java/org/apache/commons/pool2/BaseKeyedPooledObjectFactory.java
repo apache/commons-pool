@@ -31,11 +31,10 @@ import java.util.Objects;
  *
  * @param <K> The type of keys managed by this factory.
  * @param <V> Type of element managed by this factory.
- * @param <E> Type of exception thrown by this factory.
  *
  * @since 2.0
  */
-public abstract class BaseKeyedPooledObjectFactory<K, V, E extends Exception> extends BaseObject implements KeyedPooledObjectFactory<K, V, E> {
+public abstract class BaseKeyedPooledObjectFactory<K, V> extends BaseObject implements KeyedPooledObjectFactory<K, V> {
 
     /**
      * Reinitializes an instance to be returned by the pool.
@@ -47,7 +46,7 @@ public abstract class BaseKeyedPooledObjectFactory<K, V, E extends Exception> ex
      * @param p a {@code PooledObject} wrapping the instance to be activated
      */
     @Override
-    public void activateObject(final K key, final PooledObject<V> p) throws E {
+    public void activateObject(final K key, final PooledObject<V> p) throws Exception {
         // The default implementation is a no-op.
     }
 
@@ -57,10 +56,10 @@ public abstract class BaseKeyedPooledObjectFactory<K, V, E extends Exception> ex
      * @param key the key used when constructing the object
      * @return an instance that can be served by the pool
      *
-     * @throws E if there is a problem creating a new instance,
+     * @throws Exception if there is a problem creating a new instance,
      *    this will be propagated to the code requesting an object.
      */
-    public abstract V create(K key) throws E;
+    public abstract V create(K key) throws Exception;
 
     /**
      * Destroys an instance no longer needed by the pool.
@@ -72,12 +71,12 @@ public abstract class BaseKeyedPooledObjectFactory<K, V, E extends Exception> ex
      * @param p a {@code PooledObject} wrapping the instance to be destroyed
      */
     @Override
-    public void destroyObject(final K key, final PooledObject<V> p) throws E {
+    public void destroyObject(final K key, final PooledObject<V> p) throws Exception {
         // The default implementation is a no-op.
     }
 
     @Override
-    public PooledObject<V> makeObject(final K key) throws E {
+    public PooledObject<V> makeObject(final K key) throws Exception {
         return wrap(
                 Objects.requireNonNull(create(key), () -> String.format("BaseKeyedPooledObjectFactory(%s).create(key=%s) = null", getClass().getName(), key)));
     }
@@ -92,7 +91,7 @@ public abstract class BaseKeyedPooledObjectFactory<K, V, E extends Exception> ex
      * @param p a {@code PooledObject} wrapping the instance to be passivated
      */
     @Override
-    public void passivateObject(final K key, final PooledObject<V> p) throws E {
+    public void passivateObject(final K key, final PooledObject<V> p) throws Exception {
         // The default implementation is a no-op.
     }
 
@@ -117,8 +116,8 @@ public abstract class BaseKeyedPooledObjectFactory<K, V, E extends Exception> ex
      *
      * @param value the instance to wrap, should not be null.
      * @return The provided instance, wrapped by a {@link PooledObject}
-     * @throws E if there is a problem wrapping an instance,
+     * @throws Exception if there is a problem wrapping an instance,
      *    this will be propagated to the code requesting an object.
      */
-    public abstract PooledObject<V> wrap(V value) throws E;
+    public abstract PooledObject<V> wrap(V value) throws Exception;
 }

@@ -55,13 +55,12 @@ import org.apache.commons.pool2.SwallowedExceptionListener;
  * reduce code duplication between the two pool implementations.
  *
  * @param <T> Type of element pooled in this pool.
- * @param <E> Type of exception thrown in this pool.
  *
  * This class is intended to be thread-safe.
  *
  * @since 2.0
  */
-public abstract class BaseGenericObjectPool<T, E extends Exception> extends BaseObject implements AutoCloseable {
+public abstract class BaseGenericObjectPool<T> extends BaseObject implements AutoCloseable {
 
     /**
      * The idle object eviction iterator. Holds a reference to the idle objects.
@@ -129,7 +128,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
             scheduledFuture.cancel(false);
         }
 
-        BaseGenericObjectPool<T, E> owner() {
+        BaseGenericObjectPool<T> owner() {
             return BaseGenericObjectPool.this;
         }
 
@@ -447,18 +446,6 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     }
 
     /**
-     * Casts the given throwable to {@code E}.
-     *
-     * @param throwable the throwable.
-     * @return the input.
-     * @since 2.12.0
-     */
-    @SuppressWarnings("unchecked")
-    protected E cast(final Throwable throwable) {
-        return (E) throwable;
-    }
-
-    /**
      * Closes the pool, destroys the remaining idle objects and, if registered
      * in JMX, deregisters it.
      */
@@ -489,9 +476,9 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     /**
      * Tries to ensure that the configured minimum number of idle instances are
      * available in the pool.
-     * @throws E if an error occurs creating idle instances
+     * @throws Exception if an error occurs creating idle instances
      */
-    abstract void ensureMinIdle() throws E;
+    abstract void ensureMinIdle() throws Exception;
 
     /**
      * Perform {@code numTests} idle object eviction tests, evicting
@@ -501,9 +488,9 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      * have been idle for more than {@code minEvicableIdleTimeMillis}
      * are removed.
      *
-     * @throws E when there is a problem evicting idle objects.
+     * @throws Exception when there is a problem evicting idle objects.
      */
-    public abstract void evict() throws E;
+    public abstract void evict() throws Exception;
 
     /**
      * Gets whether to block when the {@code borrowObject()} method is
@@ -1943,9 +1930,6 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
         Duration currentMaxDuration;
         do {
             currentMaxDuration = maxBorrowWaitDuration.get();
-//            if (currentMaxDuration >= waitDuration) {
-//                break;
-//            }
             if (currentMaxDuration.compareTo(waitDuration) >= 0) {
                 break;
             }

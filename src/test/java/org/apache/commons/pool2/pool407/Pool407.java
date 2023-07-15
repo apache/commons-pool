@@ -25,9 +25,9 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 /**
  * Tests POOL-407.
  */
-public final class Pool407 extends GenericObjectPool<Pool407Fixture, RuntimeException> {
+public final class Pool407 extends GenericObjectPool<Pool407Fixture> {
 
-    public Pool407(final BasePooledObjectFactory<Pool407Fixture, RuntimeException> factory, final Duration poolConfigMaxWait) {
+    public Pool407(final BasePooledObjectFactory<Pool407Fixture> factory, final Duration poolConfigMaxWait) {
         super(factory, new Pool407Config(poolConfigMaxWait));
     }
 }

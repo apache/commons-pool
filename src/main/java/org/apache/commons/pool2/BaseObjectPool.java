@@ -25,11 +25,11 @@ package org.apache.commons.pool2;
  * </p>
  *
  * @param <T> Type of element pooled in this pool.
- * @param <E> Type of exception thrown by this pool.
+ * 
  *
  * @since 2.0
  */
-public abstract class BaseObjectPool<T, E extends Exception> extends BaseObject implements ObjectPool<T, E> {
+public abstract class BaseObjectPool<T> extends BaseObject implements ObjectPool<T> {
 
     private volatile boolean closed;
 
@@ -41,7 +41,7 @@ public abstract class BaseObjectPool<T, E extends Exception> extends BaseObject 
      *          method
      */
     @Override
-    public void addObject() throws E, UnsupportedOperationException {
+    public void addObject() throws Exception {
         throw new UnsupportedOperationException();
     }
 
@@ -60,7 +60,7 @@ public abstract class BaseObjectPool<T, E extends Exception> extends BaseObject 
     }
 
     @Override
-    public abstract T borrowObject() throws E;
+    public abstract T borrowObject() throws Exception;
 
     /**
      * Not supported in this base implementation.
@@ -69,7 +69,7 @@ public abstract class BaseObjectPool<T, E extends Exception> extends BaseObject 
      *          method
      */
     @Override
-    public void clear() throws E, UnsupportedOperationException {
+    public void clear() throws Exception {
         throw new UnsupportedOperationException();
     }
 
@@ -106,7 +106,7 @@ public abstract class BaseObjectPool<T, E extends Exception> extends BaseObject 
     }
 
     @Override
-    public abstract void invalidateObject(T obj) throws E;
+    public abstract void invalidateObject(T obj) throws Exception;
 
     /**
      * Has this pool instance been closed.
@@ -118,7 +118,7 @@ public abstract class BaseObjectPool<T, E extends Exception> extends BaseObject 
     }
 
     @Override
-    public abstract void returnObject(T obj) throws E;
+    public abstract void returnObject(T obj) throws Exception;
 
     @Override
     protected void toStringAppendFields(final StringBuilder builder) {

@@ -56,7 +56,7 @@ public class KeyedPool407Test extends AbstractPool407Test {
 
     private static final String KEY = "key";
 
-    protected void assertShutdown(final ExecutorService executor, final Duration poolConfigMaxWait, final AbstractKeyedPool407Factory factory) throws InterruptedException {
+    protected void assertShutdown(final ExecutorService executor, final Duration poolConfigMaxWait, final AbstractKeyedPool407Factory factory) throws Exception {
         // Old note: This never finishes when the factory makes nulls because two threads are stuck forever
         // If a factory always returns a null object or a null poolable object, then we will wait forever.
         // This would also be true is object validation always fails.
@@ -71,7 +71,7 @@ public class KeyedPool407Test extends AbstractPool407Test {
     }
 
 
-    private void test(final AbstractKeyedPool407Factory factory, final int poolSize, final Duration poolConfigMaxWait) throws InterruptedException {
+    private void test(final AbstractKeyedPool407Factory factory, final int poolSize, final Duration poolConfigMaxWait) throws Exception {
         final ExecutorService executor = Executors.newFixedThreadPool(poolSize);
         try (final KeyedPool407 pool = new KeyedPool407(factory, poolConfigMaxWait)) {
             // Start 'poolSize' threads that try to borrow a Pool407Fixture with the same key
@@ -83,37 +83,37 @@ public class KeyedPool407Test extends AbstractPool407Test {
     }
 
     @Test
-    public void testNormalFactoryNonNullFixtureWaitMax() throws InterruptedException {
+    public void testNormalFactoryNonNullFixtureWaitMax() throws Exception {
         test(new KeyedPool407NormalFactory(new KeyedPool407Fixture()), Pool407Constants.POOL_SIZE, Pool407Constants.WAIT_FOREVER);
     }
 
     @Disabled
     @Test
-    public void testNormalFactoryNullFixtureWaitMax() throws InterruptedException {
+    public void testNormalFactoryNullFixtureWaitMax() throws Exception {
         test(new KeyedPool407NormalFactory(null), Pool407Constants.POOL_SIZE, Pool407Constants.WAIT_FOREVER);
     }
 
     @Disabled
     @Test
-    public void testNullObjectFactoryWaitMax() throws InterruptedException {
+    public void testNullObjectFactoryWaitMax() throws Exception {
         test(new KeyedPool407NullObjectFactory(), Pool407Constants.POOL_SIZE, Pool407Constants.WAIT_FOREVER);
     }
 
     @Disabled
     @Test
-    public void testNullObjectFactoryWaitShort() throws InterruptedException {
+    public void testNullObjectFactoryWaitShort() throws Exception {
         test(new KeyedPool407NullObjectFactory(), Pool407Constants.POOL_SIZE, Pool407Constants.WAIT_SHORT);
     }
 
     @Disabled
     @Test
-    public void testNullPoolableFactoryWaitMax() throws InterruptedException {
+    public void testNullPoolableFactoryWaitMax() throws Exception {
         test(new KeyedPool407NullPoolableObjectFactory(), Pool407Constants.POOL_SIZE, Pool407Constants.WAIT_FOREVER);
     }
 
     @Disabled
     @Test
-    public void testNullPoolableFactoryWaitShort() throws InterruptedException {
+    public void testNullPoolableFactoryWaitShort() throws Exception {
         test(new KeyedPool407NullPoolableObjectFactory(), Pool407Constants.POOL_SIZE, Pool407Constants.WAIT_SHORT);
     }
 }

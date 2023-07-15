@@ -16,8 +16,6 @@
  */
 package org.apache.commons.pool2.proxy;
 
-import java.util.NoSuchElementException;
-
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.UsageTracking;
 
@@ -28,13 +26,12 @@ import org.apache.commons.pool2.UsageTracking;
  * object to the pool.
  *
  * @param <T> type of the pooled object
- * @param <E> type of the exception
  *
  * @since 2.0
  */
-public class ProxiedObjectPool<T, E extends Exception> implements ObjectPool<T, E> {
+public class ProxiedObjectPool<T> implements ObjectPool<T> {
 
-    private final ObjectPool<T, E> pool;
+    private final ObjectPool<T> pool;
     private final ProxySource<T> proxySource;
 
 
@@ -44,20 +41,20 @@ public class ProxiedObjectPool<T, E extends Exception> implements ObjectPool<T, 
      * @param pool  The object pool to wrap
      * @param proxySource The source of the proxy objects
      */
-    public ProxiedObjectPool(final ObjectPool<T, E> pool, final ProxySource<T> proxySource) {
+    public ProxiedObjectPool(final ObjectPool<T> pool, final ProxySource<T> proxySource) {
         this.pool = pool;
         this.proxySource = proxySource;
     }
 
     @Override
-    public void addObject() throws E, IllegalStateException, UnsupportedOperationException {
+    public void addObject() throws Exception {
         pool.addObject();
     }
 
 
     @SuppressWarnings("unchecked")
     @Override
-    public T borrowObject() throws E, NoSuchElementException, IllegalStateException {
+    public T borrowObject() throws Exception {
         UsageTracking<T> usageTracking = null;
         if (pool instanceof UsageTracking) {
             usageTracking = (UsageTracking<T>) pool;
@@ -67,7 +64,7 @@ public class ProxiedObjectPool<T, E extends Exception> implements ObjectPool<T, 
 
 
     @Override
-    public void clear() throws E, UnsupportedOperationException {
+    public void clear() throws Exception {
         pool.clear();
     }
 
@@ -91,13 +88,13 @@ public class ProxiedObjectPool<T, E extends Exception> implements ObjectPool<T, 
 
 
     @Override
-    public void invalidateObject(final T proxy) throws E {
+    public void invalidateObject(final T proxy) throws Exception {
         pool.invalidateObject(proxySource.resolveProxy(proxy));
     }
 
 
     @Override
-    public void returnObject(final T proxy) throws E {
+    public void returnObject(final T proxy) throws Exception {
         pool.returnObject(proxySource.resolveProxy(proxy));
     }
 

@@ -37,15 +37,13 @@ import org.apache.commons.pool2.PooledObjectFactory;
  *
  * @param <T>
  *            Type of element pooled in this pool.
- * @param <E>
- *            Type of exception thrown by this pool.
  *
  * @since 2.0
  */
-public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectPool<T, E> {
+public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
 
     /** Factory to source pooled objects */
-    private final PooledObjectFactory<T, E> factory;
+    private final PooledObjectFactory<T> factory;
 
     /**
      * Queue of broken references that might be able to be removed from
@@ -77,7 +75,7 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
      *
      * @param factory object factory to use.
      */
-    public SoftReferenceObjectPool(final PooledObjectFactory<T, E> factory) {
+    public SoftReferenceObjectPool(final PooledObjectFactory<T> factory) {
         this.factory = factory;
     }
 
@@ -100,12 +98,12 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
      *
      * @throws IllegalStateException
      *             if invoked on a {@link #close() closed} pool
-     * @throws E
+     * @throws Exception
      *             when the {@link #getFactory() factory} has a problem creating
      *             or passivating an object.
      */
     @Override
-    public synchronized void addObject() throws E {
+    public synchronized void addObject() throws Exception {
         assertOpen();
         if (factory == null) {
             throw new IllegalStateException(
@@ -171,13 +169,13 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
      *             if a valid object cannot be provided
      * @throws IllegalStateException
      *             if invoked on a {@link #close() closed} pool
-     * @throws E
+     * @throws Exception
      *             if an exception occurs creating a new instance
      * @return a valid, activated object instance
      */
     @SuppressWarnings("null") // ref cannot be null
     @Override
-    public synchronized T borrowObject() throws E {
+    public synchronized T borrowObject() throws Exception {
         assertOpen();
         T obj = null;
         boolean newlyCreated = false;
@@ -270,9 +268,9 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
      *
      * @param toDestroy PooledSoftReference to destroy
      *
-     * @throws E If an error occurs while trying to destroy the object
+     * @throws Exception If an error occurs while trying to destroy the object
      */
-    private void destroy(final PooledSoftReference<T> toDestroy) throws E {
+    private void destroy(final PooledSoftReference<T> toDestroy) throws Exception {
         toDestroy.invalidate();
         idleReferences.remove(toDestroy);
         allReferences.remove(toDestroy);
@@ -302,7 +300,7 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
      *
      * @return the factory
      */
-    public synchronized PooledObjectFactory<T, E> getFactory() {
+    public synchronized PooledObjectFactory<T> getFactory() {
         return factory;
     }
 
@@ -332,7 +330,7 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
      * {@inheritDoc}
      */
     @Override
-    public synchronized void invalidateObject(final T obj) throws E {
+    public synchronized void invalidateObject(final T obj) throws Exception {
         final PooledSoftReference<T> ref = findReference(obj);
         if (ref == null) {
             throw new IllegalStateException(
@@ -393,7 +391,7 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
      *            if obj is not currently part of this pool
      */
     @Override
-    public synchronized void returnObject(final T obj) throws E {
+    public synchronized void returnObject(final T obj) throws Exception {
         boolean success = !isClosed();
         final PooledSoftReference<T> ref = findReference(obj);
         if (ref == null) {

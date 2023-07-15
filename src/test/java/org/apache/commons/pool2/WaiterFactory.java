@@ -31,7 +31,7 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
  *
  * @param <K> The type of keys managed by this factory.
  */
-public class WaiterFactory<K> implements PooledObjectFactory<Waiter, IllegalStateException>, KeyedPooledObjectFactory<K, Waiter, RuntimeException> {
+public class WaiterFactory<K> implements PooledObjectFactory<Waiter>, KeyedPooledObjectFactory<K, Waiter> {
 
     /** Integer value 0. */
     private static final Integer ZERO = Integer.valueOf(0);

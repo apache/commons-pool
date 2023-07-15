@@ -35,7 +35,7 @@ public class PoolTest {
     private static class Foo {
     }
 
-    private static class PooledFooFactory implements PooledObjectFactory<Foo, RuntimeException> {
+    private static class PooledFooFactory implements PooledObjectFactory<Foo> {
         private static final long VALIDATION_WAIT_IN_MILLIS = 1000;
 
         @Override
@@ -71,11 +71,11 @@ public class PoolTest {
     private static final long EVICTION_PERIOD_IN_MILLIS = 100;
 
     @Test
-    public void testPool() {
+    public void testPool() throws Exception {
         final GenericObjectPoolConfig<Foo> poolConfig = new GenericObjectPoolConfig<>();
         poolConfig.setTestWhileIdle(true /* testWhileIdle */);
         final PooledFooFactory pooledFooFactory = new PooledFooFactory();
-        try (GenericObjectPool<Foo, RuntimeException> pool = new GenericObjectPool<>(pooledFooFactory, poolConfig)) {
+        try (GenericObjectPool<Foo> pool = new GenericObjectPool<>(pooledFooFactory, poolConfig)) {
             pool.setTimeBetweenEvictionRunsMillis(EVICTION_PERIOD_IN_MILLIS);
             assertEquals(EVICTION_PERIOD_IN_MILLIS, pool.getDurationBetweenEvictionRuns().toMillis());
             assertEquals(EVICTION_PERIOD_IN_MILLIS, pool.getTimeBetweenEvictionRuns().toMillis());

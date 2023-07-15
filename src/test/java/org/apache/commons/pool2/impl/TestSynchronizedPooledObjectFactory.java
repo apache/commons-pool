@@ -34,13 +34,13 @@ import org.apache.commons.pool2.PooledObjectFactory;
  * library.
  * </p>
  */
-final class TestSynchronizedPooledObjectFactory<T, E extends Exception> implements PooledObjectFactory<T, E> {
+final class TestSynchronizedPooledObjectFactory<T> implements PooledObjectFactory<T> {
 
 	/** Synchronization lock */
 	private final WriteLock writeLock = new ReentrantReadWriteLock().writeLock();
 
 	/** Wrapped factory */
-	private final PooledObjectFactory<T, E> factory;
+	private final PooledObjectFactory<T> factory;
 
 	/**
 	 * Constructs a SynchronizedPoolableObjectFactory wrapping the given factory.
@@ -50,7 +50,7 @@ final class TestSynchronizedPooledObjectFactory<T, E extends Exception> implemen
 	 * @throws IllegalArgumentException
 	 *             if the factory is null
 	 */
-	TestSynchronizedPooledObjectFactory(final PooledObjectFactory<T, E> factory) throws IllegalArgumentException {
+	TestSynchronizedPooledObjectFactory(final PooledObjectFactory<T> factory) throws IllegalArgumentException {
 		if (factory == null) {
 			throw new IllegalArgumentException("factory must not be null.");
 		}
@@ -61,7 +61,7 @@ final class TestSynchronizedPooledObjectFactory<T, E extends Exception> implemen
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void activateObject(final PooledObject<T> p) throws E {
+	public void activateObject(final PooledObject<T> p) throws Exception {
 		writeLock.lock();
 		try {
 			factory.activateObject(p);
@@ -74,7 +74,7 @@ final class TestSynchronizedPooledObjectFactory<T, E extends Exception> implemen
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void destroyObject(final PooledObject<T> p) throws E {
+	public void destroyObject(final PooledObject<T> p) throws Exception {
 		writeLock.lock();
 		try {
 			factory.destroyObject(p);
@@ -87,7 +87,7 @@ final class TestSynchronizedPooledObjectFactory<T, E extends Exception> implemen
 	 * {@inheritDoc}
 	 */
 	@Override
-	public PooledObject<T> makeObject() throws E {
+	public PooledObject<T> makeObject() throws Exception {
 		writeLock.lock();
 		try {
 			return factory.makeObject();
@@ -100,7 +100,7 @@ final class TestSynchronizedPooledObjectFactory<T, E extends Exception> implemen
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void passivateObject(final PooledObject<T> p) throws E {
+	public void passivateObject(final PooledObject<T> p) throws Exception {
 		writeLock.lock();
 		try {
 			factory.passivateObject(p);

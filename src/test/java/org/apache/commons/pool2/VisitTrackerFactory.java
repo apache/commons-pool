@@ -25,7 +25,7 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
  * @param <K> The VisitTracker key type.
  */
 public class VisitTrackerFactory<K>
-        implements PooledObjectFactory<VisitTracker<K>, RuntimeException>, KeyedPooledObjectFactory<K, VisitTracker<K>, RuntimeException> {
+        implements PooledObjectFactory<VisitTracker<K>>, KeyedPooledObjectFactory<K, VisitTracker<K>> {
 
     private int nextId;
 

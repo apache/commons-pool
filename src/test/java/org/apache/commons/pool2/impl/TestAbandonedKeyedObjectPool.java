@@ -78,7 +78,7 @@ public class TestAbandonedKeyedObjectPool {
         }
     }
 
-    private static class SimpleFactory implements KeyedPooledObjectFactory<Integer, PooledTestObject, InterruptedException> {
+    private static class SimpleFactory implements KeyedPooledObjectFactory<Integer, PooledTestObject> {
 
         private final long destroyLatencyMillis;
         private final long validateLatencyMillis;
@@ -132,7 +132,7 @@ public class TestAbandonedKeyedObjectPool {
         }
     }
 
-    private GenericKeyedObjectPool<Integer, PooledTestObject, InterruptedException> pool;
+    private GenericKeyedObjectPool<Integer, PooledTestObject> pool;
 
     private AbandonedConfig abandonedConfig;
 
@@ -193,7 +193,7 @@ public class TestAbandonedKeyedObjectPool {
      * @throws InterruptedException May occur in some failure modes
      */
     @Test
-    public void testAbandonedInvalidate() throws InterruptedException {
+    public void testAbandonedInvalidate() throws Exception {
         abandonedConfig = new AbandonedConfig();
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
         abandonedConfig.setRemoveAbandonedTimeout(Duration.ofMillis(2000));

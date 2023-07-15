@@ -29,7 +29,7 @@ import org.apache.commons.pool2.Waiter;
  * of factory methods is configurable.
  */
 public class AtomicIntegerFactory
-    extends BasePooledObjectFactory<AtomicInteger, RuntimeException> {
+    extends BasePooledObjectFactory<AtomicInteger> {
 
     private long activateLatency;
     private long passivateLatency;

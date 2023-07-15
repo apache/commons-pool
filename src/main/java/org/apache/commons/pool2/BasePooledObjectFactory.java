@@ -26,14 +26,13 @@ import java.util.Objects;
  * This class is immutable, and therefore thread-safe
  *
  * @param <T> Type of element managed in this factory.
- * @param <E> Type of exception thrown in this factory.
  *
  * @see PooledObjectFactory
  * @see BaseKeyedPooledObjectFactory
  *
  * @since 2.0
  */
-public abstract class BasePooledObjectFactory<T, E extends Exception> extends BaseObject implements PooledObjectFactory<T, E> {
+public abstract class BasePooledObjectFactory<T> extends BaseObject implements PooledObjectFactory<T> {
 
     /**
      *  No-op.
@@ -41,7 +40,7 @@ public abstract class BasePooledObjectFactory<T, E extends Exception> extends Ba
      *  @param p ignored
      */
     @Override
-    public void activateObject(final PooledObject<T> p) throws E {
+    public void activateObject(final PooledObject<T> p) throws Exception {
         // The default implementation is a no-op.
     }
 
@@ -52,10 +51,10 @@ public abstract class BasePooledObjectFactory<T, E extends Exception> extends Ba
      *
      * @return an instance to be served by the pool, not null.
      *
-     * @throws E if there is a problem creating a new instance,
+     * @throws Exception if there is a problem creating a new instance,
      *    this will be propagated to the code requesting an object.
      */
-    public abstract T create() throws E;
+    public abstract T create() throws Exception;
 
     /**
      *  No-op.
@@ -63,12 +62,12 @@ public abstract class BasePooledObjectFactory<T, E extends Exception> extends Ba
      *  @param p ignored
      */
     @Override
-    public void destroyObject(final PooledObject<T> p) throws E  {
+    public void destroyObject(final PooledObject<T> p) throws Exception  {
         // The default implementation is a no-op.
     }
 
     @Override
-    public PooledObject<T> makeObject() throws E {
+    public PooledObject<T> makeObject() throws Exception {
         return wrap(Objects.requireNonNull(create(), () -> String.format("BasePooledObjectFactory(%s).create() = null", getClass().getName())));
     }
 
@@ -78,7 +77,7 @@ public abstract class BasePooledObjectFactory<T, E extends Exception> extends Ba
      * @param p ignored
      */
     @Override
-    public void passivateObject(final PooledObject<T> p) throws E {
+    public void passivateObject(final PooledObject<T> p) throws Exception {
         // The default implementation is a no-op.
     }
 

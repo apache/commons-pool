@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
 
 public abstract class AbstractTestProxiedKeyedObjectPool {
 
-    private static class TestKeyedObjectFactory extends BaseKeyedPooledObjectFactory<String, TestObject, RuntimeException> {
+    private static class TestKeyedObjectFactory extends BaseKeyedPooledObjectFactory<String, TestObject> {
 
         @Override
         public TestObject create(final String key) {
@@ -80,7 +80,7 @@ public abstract class AbstractTestProxiedKeyedObjectPool {
 
     private static final Duration ABANDONED_TIMEOUT_SECS = Duration.ofSeconds(3);
 
-    private KeyedObjectPool<String, TestObject, RuntimeException> pool;
+    private KeyedObjectPool<String, TestObject> pool;
 
     private StringWriter log;
 
@@ -103,17 +103,17 @@ public abstract class AbstractTestProxiedKeyedObjectPool {
         final GenericKeyedObjectPoolConfig<TestObject> config = new GenericKeyedObjectPoolConfig<>();
         config.setMaxTotal(3);
 
-        final KeyedPooledObjectFactory<String, TestObject, RuntimeException> factory = new TestKeyedObjectFactory();
+        final KeyedPooledObjectFactory<String, TestObject> factory = new TestKeyedObjectFactory();
 
         @SuppressWarnings("resource")
-        final KeyedObjectPool<String, TestObject, RuntimeException> innerPool = new GenericKeyedObjectPool<>(factory, config, abandonedConfig);
+        final KeyedObjectPool<String, TestObject> innerPool = new GenericKeyedObjectPool<>(factory, config, abandonedConfig);
 
         pool = new ProxiedKeyedObjectPool<>(innerPool, getproxySource());
     }
 
 
     @Test
-    public void testAccessAfterInvalidate() {
+    public void testAccessAfterInvalidate() throws Exception {
         final TestObject obj = pool.borrowObject(KEY1);
         assertNotNull(obj);
 
@@ -132,7 +132,7 @@ public abstract class AbstractTestProxiedKeyedObjectPool {
 
 
     @Test
-    public void testAccessAfterReturn() {
+    public void testAccessAfterReturn() throws Exception {
         final TestObject obj = pool.borrowObject(KEY1);
         assertNotNull(obj);
 
@@ -148,7 +148,7 @@ public abstract class AbstractTestProxiedKeyedObjectPool {
     }
 
     @Test
-    public void testBorrowObject() {
+    public void testBorrowObject() throws Exception {
         final TestObject obj = pool.borrowObject(KEY1);
         assertNotNull(obj);
 
@@ -161,7 +161,7 @@ public abstract class AbstractTestProxiedKeyedObjectPool {
 
 
     @Test
-    public void testPassThroughMethods01() {
+    public void testPassThroughMethods01() throws Exception {
         assertEquals(0, pool.getNumActive());
         assertEquals(0, pool.getNumIdle());
 
@@ -185,7 +185,7 @@ public abstract class AbstractTestProxiedKeyedObjectPool {
     }
 
     @Test
-    public void testUsageTracking() throws InterruptedException {
+    public void testUsageTracking() throws Exception {
         final TestObject obj = pool.borrowObject(KEY1);
         assertNotNull(obj);
 

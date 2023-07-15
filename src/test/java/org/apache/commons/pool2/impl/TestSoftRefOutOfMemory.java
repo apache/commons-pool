@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 /**
  */
 public class TestSoftRefOutOfMemory {
-    public static class LargePoolableObjectFactory extends BasePooledObjectFactory<String, RuntimeException> {
+    public static class LargePoolableObjectFactory extends BasePooledObjectFactory<String> {
         private final String buffer;
         private int counter;
 
@@ -56,7 +56,7 @@ public class TestSoftRefOutOfMemory {
         }
     }
 
-    private static class OomeFactory extends BasePooledObjectFactory<String, RuntimeException> {
+    private static class OomeFactory extends BasePooledObjectFactory<String> {
 
         private final OomeTrigger trigger;
 
@@ -78,7 +78,7 @@ public class TestSoftRefOutOfMemory {
         }
 
         @Override
-        public void destroyObject(final PooledObject<String> p) {
+        public void destroyObject(final PooledObject<String> p) throws Exception {
             if (trigger.equals(OomeTrigger.DESTROY)) {
                 throw new OutOfMemoryError();
             }
@@ -105,7 +105,7 @@ public class TestSoftRefOutOfMemory {
         DESTROY
     }
 
-    public static class SmallPoolableObjectFactory extends BasePooledObjectFactory<String, RuntimeException> {
+    public static class SmallPoolableObjectFactory extends BasePooledObjectFactory<String> {
         private int counter;
 
         @Override
@@ -124,7 +124,7 @@ public class TestSoftRefOutOfMemory {
         }
     }
 
-    private SoftReferenceObjectPool<String, RuntimeException> pool;
+    private SoftReferenceObjectPool<String> pool;
 
     @AfterEach
     public void tearDown() {

@@ -38,7 +38,7 @@ public class TestEvictionTimer {
     @Test
     public void testStartStopEvictionTimer() throws Exception {
 
-        try (final GenericObjectPool<String, RuntimeException> pool = new GenericObjectPool<>(new BasePooledObjectFactory<String, RuntimeException>() {
+        try (final GenericObjectPool<String> pool = new GenericObjectPool<>(new BasePooledObjectFactory<String>() {
 
             @Override
             public String create() {
@@ -52,7 +52,7 @@ public class TestEvictionTimer {
         })) {
 
             // Start evictor #1
-            final BaseGenericObjectPool<String, RuntimeException>.Evictor evictor1 = pool.new Evictor();
+            final BaseGenericObjectPool<String>.Evictor evictor1 = pool.new Evictor();
             EvictionTimer.schedule(evictor1, TestConstants.ONE_MINUTE_DURATION, TestConstants.ONE_MINUTE_DURATION);
 
             // Assert that eviction objects are correctly allocated
@@ -70,7 +70,7 @@ public class TestEvictionTimer {
             assertEquals(1, EvictionTimer.getNumTasks());
 
             // Start evictor #2
-            final BaseGenericObjectPool<String, RuntimeException>.Evictor evictor2 = pool.new Evictor();
+            final BaseGenericObjectPool<String>.Evictor evictor2 = pool.new Evictor();
             EvictionTimer.schedule(evictor2, TestConstants.ONE_MINUTE_DURATION, TestConstants.ONE_MINUTE_DURATION);
 
             // Assert that eviction objects are correctly allocated

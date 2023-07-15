@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
  */
 public class TestBaseObjectPool extends AbstractTestObjectPool {
 
-    private static class TestObjectPool extends BaseObjectPool<Object, RuntimeException> {
+    private static class TestObjectPool extends BaseObjectPool<Object> {
 
         @Override
         public Object borrowObject() {
@@ -43,7 +43,7 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
         }
     }
 
-    private ObjectPool<String, RuntimeException> pool;
+    private ObjectPool<String> pool;
 
     /**
      * @param n Ignored by this implemented. Used by sub-classes.
@@ -76,7 +76,7 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
      *
      * @return A newly created empty pool
      */
-    protected <E extends Exception> ObjectPool<String, E> makeEmptyPool(final int minCapacity) {
+    protected <E extends Exception> ObjectPool<String> makeEmptyPool(final int minCapacity) {
         if (this.getClass() != TestBaseObjectPool.class) {
             fail("Subclasses of TestBaseObjectPool must reimplement this method.");
         }
@@ -84,7 +84,7 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
     }
 
     @Override
-    protected <E extends Exception> ObjectPool<Object, E> makeEmptyPool(final PooledObjectFactory<Object, E> factory) {
+    protected <E extends Exception> ObjectPool<Object> makeEmptyPool(final PooledObjectFactory<Object> factory) {
         if (this.getClass() != TestBaseObjectPool.class) {
             fail("Subclasses of TestBaseObjectPool must reimplement this method.");
         }
@@ -92,7 +92,7 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
     }
 
     @Test
-    public void testBaseAddObject() {
+    public void testBaseAddObject() throws Exception {
         try {
             pool = makeEmptyPool(3);
         } catch (final UnsupportedOperationException e) {
@@ -119,7 +119,7 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
     }
 
     @Test
-    public void testBaseBorrow() {
+    public void testBaseBorrow() throws Exception {
         try {
             pool = makeEmptyPool(3);
         } catch (final UnsupportedOperationException e) {
@@ -132,7 +132,7 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
     }
 
     @Test
-    public void testBaseBorrowReturn() {
+    public void testBaseBorrowReturn() throws Exception {
         try {
             pool = makeEmptyPool(3);
         } catch (final UnsupportedOperationException e) {
@@ -171,7 +171,7 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
     }
 
     @Test
-    public void testBaseClear() {
+    public void testBaseClear() throws Exception {
         try {
             pool = makeEmptyPool(3);
         } catch (final UnsupportedOperationException e) {
@@ -196,7 +196,7 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
     }
 
     @Test
-    public void testBaseClosePool() {
+    public void testBaseClosePool() throws Exception{
         try {
             pool = makeEmptyPool(3);
         } catch (final UnsupportedOperationException e) {
@@ -210,7 +210,7 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
     }
 
     @Test
-    public void testBaseInvalidateObject() {
+    public void testBaseInvalidateObject() throws Exception {
         try {
             pool = makeEmptyPool(3);
         } catch (final UnsupportedOperationException e) {
@@ -232,7 +232,7 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
     }
 
     @Test
-    public void testBaseNumActiveNumIdle() {
+    public void testBaseNumActiveNumIdle() throws Exception {
         try {
             pool = makeEmptyPool(3);
         } catch (final UnsupportedOperationException e) {
@@ -258,7 +258,7 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
     @Test
     public void testClose() {
         @SuppressWarnings("resource")
-        final ObjectPool<Object, RuntimeException> pool = new TestObjectPool();
+        final ObjectPool<Object> pool = new TestObjectPool();
 
         pool.close();
         pool.close(); // should not error as of Pool 2.0.
@@ -269,7 +269,7 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
         if (!getClass().equals(TestBaseObjectPool.class)) {
             return; // skip redundant tests
         }
-        try (final ObjectPool<Object,RuntimeException> pool = new TestObjectPool()) {
+        try (final ObjectPool<Object> pool = new TestObjectPool()) {
 
             assertTrue( pool.getNumIdle() < 0,"Negative expected.");
             assertTrue( pool.getNumActive() < 0,"Negative expected.");

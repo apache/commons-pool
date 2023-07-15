@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
  */
 public class TestBaseKeyedPooledObjectFactory {
 
-    private static class TestFactory extends BaseKeyedPooledObjectFactory<Object, Object, RuntimeException> {
+    private static class TestFactory extends BaseKeyedPooledObjectFactory<Object, Object> {
         @Override
         public Object create(final Object key) {
             return null;
@@ -37,8 +37,8 @@ public class TestBaseKeyedPooledObjectFactory {
     }
 
     @Test
-    public void testDefaultMethods() {
-        final KeyedPooledObjectFactory<Object, Object, RuntimeException> factory = new TestFactory();
+    public void testDefaultMethods() throws Exception {
+        final KeyedPooledObjectFactory<Object, Object> factory = new TestFactory();
 
         factory.activateObject("key",null); // a no-op
         factory.passivateObject("key",null); // a no-op

@@ -23,7 +23,7 @@ import org.apache.commons.pool2.PooledObject;
 /**
  * Tests POOL-407.
  */
-public abstract class AbstractPool407Factory extends BasePooledObjectFactory<Pool407Fixture, RuntimeException> {
+public abstract class AbstractPool407Factory extends BasePooledObjectFactory<Pool407Fixture> {
 
     /**
      * Tests whether the subclass relies on the Pool's implementation of makeObject(). If the subclass returns false, then it implements makeObject(), in which

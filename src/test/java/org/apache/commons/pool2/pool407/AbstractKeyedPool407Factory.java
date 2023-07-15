@@ -23,7 +23,7 @@ import org.apache.commons.pool2.PooledObject;
 /**
  * Tests POOL-407.
  */
-public abstract class AbstractKeyedPool407Factory extends BaseKeyedPooledObjectFactory<String, KeyedPool407Fixture, RuntimeException> {
+public abstract class AbstractKeyedPool407Factory extends BaseKeyedPooledObjectFactory<String, KeyedPool407Fixture> {
 
     abstract boolean isDefaultMakeObject();
 

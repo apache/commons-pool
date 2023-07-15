@@ -158,7 +158,7 @@ public class TestAbandonedObjectPool {
         }
     }
 
-    private static class SimpleFactory implements PooledObjectFactory<PooledTestObject, InterruptedException> {
+    private static class SimpleFactory implements PooledObjectFactory<PooledTestObject> {
 
         private final long destroyLatency;
         private final long validateLatency;
@@ -212,7 +212,7 @@ public class TestAbandonedObjectPool {
         }
     }
 
-    private GenericObjectPool<PooledTestObject, InterruptedException> pool;
+    private GenericObjectPool<PooledTestObject> pool;
 
     private AbandonedConfig abandonedConfig;
 

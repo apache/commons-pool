@@ -25,7 +25,7 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
 /**
  * Sleepy ObjectFactory (everything takes a while longer)
  */
-public class SleepingObjectFactory implements PooledObjectFactory<Integer, RuntimeException> {
+public class SleepingObjectFactory implements PooledObjectFactory<Integer> {
 
     private int counter;
     private boolean debug;

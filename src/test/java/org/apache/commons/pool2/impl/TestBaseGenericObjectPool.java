@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Timeout;
  */
 public class TestBaseGenericObjectPool {
 
-    BaseGenericObjectPool<String, TestException> pool;
+    BaseGenericObjectPool<String> pool;
     SimpleFactory factory;
 
     @BeforeEach
@@ -93,7 +93,7 @@ public class TestBaseGenericObjectPool {
     public void testEvictionTimerMultiplePools() throws InterruptedException {
         final AtomicIntegerFactory factory = new AtomicIntegerFactory();
         factory.setValidateLatency(50);
-        try (final GenericObjectPool<AtomicInteger, RuntimeException> evictingPool = new GenericObjectPool<>(factory)) {
+        try (final GenericObjectPool<AtomicInteger> evictingPool = new GenericObjectPool<>(factory)) {
             evictingPool.setTimeBetweenEvictionRuns(Duration.ofMillis(100));
             evictingPool.setNumTestsPerEvictionRun(5);
             evictingPool.setTestWhileIdle(true);
@@ -107,7 +107,7 @@ public class TestBaseGenericObjectPool {
             }
 
             for (int i = 0; i < 1000; i++) {
-                try (final GenericObjectPool<AtomicInteger, RuntimeException> nonEvictingPool = new GenericObjectPool<>(factory)) {
+                try (final GenericObjectPool<AtomicInteger> nonEvictingPool = new GenericObjectPool<>(factory)) {
                     // empty
                 }
             }
@@ -127,7 +127,7 @@ public class TestBaseGenericObjectPool {
     public void testJMXRegistrationLatency() {
         final int numPools = 1000;
         final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-        final ArrayList<GenericObjectPool<Waiter, IllegalStateException>> pools = new ArrayList<>();
+        final ArrayList<GenericObjectPool<Waiter>> pools = new ArrayList<>();
         try {
             // final long startTime = System.currentTimeMillis();
             for (int i = 0; i < numPools; i++) {
