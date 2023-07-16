@@ -22,6 +22,7 @@ import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.pool2.BaseObjectPool;
@@ -292,7 +293,7 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
      */
     private PooledSoftReference<T> findReference(final T obj) {
         final Optional<PooledSoftReference<T>> first = allReferences.stream()
-                .filter(reference -> reference.getObject() != null && reference.getObject().equals(obj)).findFirst();
+                .filter(reference -> Objects.equals(reference.getObject(), obj)).findFirst();
         return first.orElse(null);
     }
 
