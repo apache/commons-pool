@@ -281,7 +281,7 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
      */
     private PooledSoftReference<T> findReference(final T obj) {
         final Optional<PooledSoftReference<T>> first = allReferences.stream()
-                .filter(reference -> reference.getObject() != null && reference.getObject().equals(obj)).findFirst();
+                .filter(reference -> Objects.equals(reference.getObject(), obj)).findFirst();
         return first.orElse(null);
     }
 
