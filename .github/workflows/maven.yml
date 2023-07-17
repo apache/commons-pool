@@ -15,8 +15,12 @@
 
 name: Java CI
 
-on: [push, pull_request]
-
+on:
+  push:
+    branches: [ master, POOL_2_X ]
+  pull_request:
+    branches: [ master, POOL_2_X ]
+      
 permissions:
   contents: read
 
