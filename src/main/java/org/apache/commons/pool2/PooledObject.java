@@ -34,6 +34,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public interface PooledObject<T> extends Comparable<PooledObject<T>> {
 
+    /** Synchronization lock */
     ReentrantLock lock = new ReentrantLock();
 
     /**

@@ -476,12 +476,15 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
         final Instant timeout = Instant.now().minus(abandonedConfig.getRemoveAbandonedTimeoutDuration());
         final ArrayList<PooledObject<T>> remove = new ArrayList<>();
         allObjects.values().forEach(pooledObject -> {
-            synchronized (pooledObject) {
+            try {
+                pooledObject.lock.lock();
                 if (pooledObject.getState() == PooledObjectState.ALLOCATED &&
                         pooledObject.getLastUsedInstant().compareTo(timeout) <= 0) {
                     pooledObject.markAbandoned();
                     remove.add(pooledObject);
                 }
+            } finally {
+                pooledObject.lock.unlock();
             }
         });
         return remove;
@@ -1268,11 +1271,14 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      * @param pooledObject instance to return to the keyed pool
      */
     protected void markReturningState(final PooledObject<T> pooledObject) {
-        synchronized (pooledObject) {
+        try {
+            pooledObject.lock.lock();
             if (pooledObject.getState() != PooledObjectState.ALLOCATED) {
                 throw new IllegalStateException("Object has already been returned to this pool or is invalid");
             }
             pooledObject.markReturning(); // Keep from being marked abandoned
+        } finally {
+            pooledObject.lock.unlock();
         }
     }
 

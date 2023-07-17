@@ -885,7 +885,8 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
 
         try {
             boolean isIdle;
-            synchronized (toDestroy) {
+            try {
+                toDestroy.lock.lock();
                 // Check idle state directly
                 isIdle = toDestroy.getState().equals(PooledObjectState.IDLE);
                 // If idle, not under eviction test, or always is true, remove instance,
@@ -893,6 +894,8 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
                 if (isIdle || always) {
                     isIdle = objectDeque.getIdleObjects().remove(toDestroy);
                 }
+            } finally {
+                toDestroy.lock.unlock();
             }
             if (isIdle || always) {
                 objectDeque.getAllObjects().remove(new IdentityWrapper<>(toDestroy.getObject()));
@@ -1343,11 +1346,14 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
         if (p == null) {
             throw new IllegalStateException(appendStats("Object not currently part of this pool"));
         }
-        synchronized (p) {
+        try {
+            p.lock.lock();
             if (p.getState() != PooledObjectState.INVALID) {
                 destroy(key, p, true, destroyMode);
                 reuseCapacity();
             }
+        } finally {
+            p.lock.unlock();
         }
     }
 
