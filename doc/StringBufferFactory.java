@@ -21,9 +21,9 @@
  * It is not intended to be included in a source release.
  */
 
-import org.apache.commons.pool2.BasePooledObjectFactory;
-import org.apache.commons.pool2.PooledObject;
-import org.apache.commons.pool2.impl.DefaultPooledObject;
+import org.apache.commons.pool3.BasePooledObjectFactory;
+import org.apache.commons.pool3.PooledObject;
+import org.apache.commons.pool3.impl.DefaultPooledObject;
 
 /**
  * Example PooledObjectFactory for pooled StringBuffers.

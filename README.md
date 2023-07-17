@@ -68,8 +68,8 @@ Alternatively, you can pull it from  the central Maven repositories:
 ```xml
 <dependency>
   <groupId>org.apache.commons</groupId>
-  <artifactId>commons-pool2</artifactId>
-  <version>2.12.0</version>
+  <artifactId>commons-pool3</artifactId>
+  <version>3.0.0</version>
 </dependency>
 ```
 

@@ -27,8 +27,8 @@
     <version>58</version>
   </parent>
 
-  <artifactId>commons-pool2</artifactId>
-  <version>2.12.0-SNAPSHOT</version>
+  <artifactId>commons-pool3</artifactId>
+  <version>3.0.0-SNAPSHOT</version>
   <name>Apache Commons Pool</name>
 
   <inceptionYear>2001</inceptionYear>
@@ -185,10 +185,10 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <commons.componentid>pool</commons.componentid>
-    <commons.module.name>org.apache.commons.pool2</commons.module.name>
+    <commons.module.name>org.apache.commons.pool3</commons.module.name>
     <commons.rc.version>RC1</commons.rc.version>
     <!-- Java 8 -->
-    <commons.release.version>2.12.0</commons.release.version>
+    <commons.release.version>3.0.0</commons.release.version>
     <commons.release.desc>(Java 8)</commons.release.desc>
     <!-- Java 7 -->
     <commons.release.2.version>2.6.2</commons.release.2.version>
@@ -205,7 +205,7 @@
     <commons.releaseManagerName>Gary Gregory</commons.releaseManagerName>    
     <commons.releaseManagerKey>86fdc7e2a11262cb</commons.releaseManagerKey>
     
-    <japicmp.skip>false</japicmp.skip>
+    <japicmp.skip>true</japicmp.skip>
     <spotbugs.skip>false</spotbugs.skip>
   </properties> 
 

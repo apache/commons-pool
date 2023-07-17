@@ -45,7 +45,9 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Pool Release Notes</title>
   </properties>
   <body>
-  <release version="2.12.0" date="2023-06-24" description="This is a feature and maintenance release (Java 8).">
+  <release version="3.0.0" date="2023-MM-DD" description="This is a feature and maintenance release (Java 8).">
+  </release> 
+  <release version="2.12.0" date="2023-MM-DD" description="This is a feature and maintenance release (Java 8).">
     <!-- FIX -->
     <action dev="psteitz" type="fix" issue="POOL-401">
       Ensure that capacity freed by invalidateObject is available to all keyed pools.
@@ -472,10 +474,10 @@ The <action> type attribute can be add,update,fix,remove.
       Move validation for newly created objects into create(). Fixes #23.
     </action>
     <action dev="ggregory" type="add" issue="POOL-370" due-to="Mark Thomas, Gary Gregory">
-      Add org.apache.commons.pool2.PooledObject#getBorrowedCount().
+      Add org.apache.commons.pool3.PooledObject#getBorrowedCount().
     </action>
     <action dev="ggregory" type="add" issue="POOL-371" due-to="Matt Sicker, Gary Gregory">
-      Add org.apache.commons.pool2.PooledObject#setRequireFullStackTrace(boolean).
+      Add org.apache.commons.pool3.PooledObject#setRequireFullStackTrace(boolean).
     </action>
     <action dev="ggregory" type="fix" issue="POOL-352" due-to=" Volker Kleinschmidt">
       CallStackUtils mishandles security manager check part 1.
@@ -483,7 +485,7 @@ The <action> type attribute can be add,update,fix,remove.
   </release>
   <release version="2.6.2" date="2019-03-05" description="This is a maintenance release (Java 7).">
     <action dev="ggregory" issue="POOL-362" type="fix">
-       Always null out org.apache.commons.pool2.impl.BaseGenericObjectPool.evictionIterator to match org.apache.commons.pool2.impl.BaseGenericObjectPool.evictor.
+       Always null out org.apache.commons.pool3.impl.BaseGenericObjectPool.evictionIterator to match org.apache.commons.pool3.impl.BaseGenericObjectPool.evictor.
     </action>
     <action dev="ggregory" issue="POOL-363" type="fix" due-to="Josh Landin">
        Evictor Thread prevents Spring Context shutdown in standalone app.
@@ -544,7 +546,7 @@ The <action> type attribute can be add,update,fix,remove.
       GenericObjectPool constructor may throw an exception under OSGi.
     </action>
     <action dev="ggregory" issue="POOL-324" type="fix" due-to="Jay Xu, Gary Gregory">
-      org.apache.commons.pool2.impl.GenericObjectPool.getFactoryType() throws java.lang.ClassCastException.
+      org.apache.commons.pool3.impl.GenericObjectPool.getFactoryType() throws java.lang.ClassCastException.
     </action>
     <action dev="ggregory" issue="POOL-344" type="fix" due-to="Yulin Wang">
       Delete repeated call startEvictor.
@@ -564,7 +566,7 @@ The <action> type attribute can be add,update,fix,remove.
       Update optional dependency asm-util from 5.2 to 6.0.
     </action>
     <action dev="ggregory" issue="POOL-334" type="update">
-      org.apache.commons.pool2.impl.ThrowableCallStack.Snapshot is missing serialVersionUID.
+      org.apache.commons.pool3.impl.ThrowableCallStack.Snapshot is missing serialVersionUID.
     </action>
     <action dev="mattsicker" issue="POOL-335" type="add">
       Make abandoned logging stack trace requirements configurable. This also reverts
