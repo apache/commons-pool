@@ -150,8 +150,6 @@ public interface GenericObjectPoolMXBean {
      */
     long getMeanBorrowWaitTimeMillis();
 
-    // Getters for monitoring attributes
-
     /**
      * See {@link GenericObjectPool#getMeanIdleTimeMillis()}.
      *
@@ -235,8 +233,6 @@ public interface GenericObjectPoolMXBean {
      * @return See {@link GenericObjectPool#getTestOnBorrow()}.
      */
     boolean getTestOnBorrow();
-
-    // Getters for abandoned object removal configuration
 
     /**
      * See {@link GenericObjectPool#getTestOnCreate()}.
