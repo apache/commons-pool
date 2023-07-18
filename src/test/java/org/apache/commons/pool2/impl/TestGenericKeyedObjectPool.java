@@ -1407,7 +1407,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
             assertEquals(Boolean.valueOf(BaseObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE),
                     Boolean.valueOf(objPool.getTestWhileIdle()));
             //
-            assertEquals(BaseObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS,
+            assertEquals(BaseObjectPoolConfig.DEFAULT_DURATION_BETWEEN_EVICTION_RUNS,
                     objPool.getDurationBetweenEvictionRuns());
             assertEquals(BaseObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
                     objPool.getTimeBetweenEvictionRunsMillis());

@@ -1352,7 +1352,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                     Boolean.valueOf(dummyPool.getTestOnReturn()));
             assertEquals(Boolean.valueOf(BaseObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE),
                     Boolean.valueOf(dummyPool.getTestWhileIdle()));
-            assertEquals(BaseObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS,
+            assertEquals(BaseObjectPoolConfig.DEFAULT_DURATION_BETWEEN_EVICTION_RUNS,
                     dummyPool.getDurationBetweenEvictionRuns());
             assertEquals(BaseObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
                     dummyPool.getTimeBetweenEvictionRunsMillis());

@@ -117,6 +117,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="add">
       Add BaseGenericObjectPool methods that return Duration and deprecate equivalents that return milliseconds as long.
     </action>
+    <action dev="ggregory" type="add">
+      Add BaseObjectPoolConfig.DEFAULT_DURATION_BETWEEN_EVICTION_RUNS and deprecate BaseObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS.
+    </action>
     <!-- UPDATE -->
     <action dev="kinow" type="update" due-to="Dependabot, Gary Gregory">
       Bump actions/cache from 2.1.6 to 3.0.10 #117, #138, #158, #174, #178.
