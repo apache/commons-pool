@@ -1426,6 +1426,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         config.setMinIdlePerKey(minIdle);
         config.setMaxTotal(maxTotal);
         config.setMaxWait(maxWaitDuration);
+        config.setMinEvictableIdleDuration(Duration.ofMillis(minEvictableIdleTimeMillis));
         config.setMinEvictableIdleTime(Duration.ofMillis(minEvictableIdleTimeMillis));
         config.setNumTestsPerEvictionRun(numTestsPerEvictionRun);
         config.setTestOnBorrow(testOnBorrow);
@@ -1463,7 +1464,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
     public void testContructorEvictionConfig() throws Exception {
         final GenericKeyedObjectPoolConfig<String> config = new GenericKeyedObjectPoolConfig<>();
         config.setTimeBetweenEvictionRuns(Duration.ofMillis(500));
-        config.setMinEvictableIdleTime(Duration.ofMillis(50));
+        config.setMinEvictableIdleDuration(Duration.ofMillis(50));
         config.setNumTestsPerEvictionRun(5);
         try (final GenericKeyedObjectPool<String, String> p = new GenericKeyedObjectPool<>(simpleFactory, config)) {
             for (int i = 0; i < 5; i++) {
@@ -1501,7 +1502,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         gkoPool.setMaxTotalPerKey(500);
         gkoPool.setNumTestsPerEvictionRun(100);
         gkoPool.setMinEvictableIdleTime(Duration.ofMillis(250));
-        gkoPool.setTimeBetweenEvictionRuns(Duration.ofMillis(500));
+        gkoPool.setDurationBetweenEvictionRuns(Duration.ofMillis(500));
 
         final String[] active = new String[500];
         for(int i=0;i<500;i++) {

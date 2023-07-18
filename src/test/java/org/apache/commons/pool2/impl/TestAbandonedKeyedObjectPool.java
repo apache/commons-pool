@@ -205,7 +205,7 @@ public class TestAbandonedKeyedObjectPool {
         final int n = 10;
         pool.setMaxTotal(n);
         pool.setBlockWhenExhausted(false);
-        pool.setTimeBetweenEvictionRuns(Duration.ofMillis(250));
+        pool.setDurationBetweenEvictionRuns(Duration.ofMillis(250));
         PooledTestObject pooledObj = null;
         final Integer key = 0;
         for (int i = 0; i < 5; i++) {

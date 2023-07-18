@@ -118,7 +118,9 @@ public final class ObjectPoolIssue326 {
         poolConfig.setLifo(true);
         poolConfig.setFairness(true);
         poolConfig.setMaxWait(Duration.ofSeconds(30));
+        poolConfig.setMinEvictableIdleDuration(Duration.ofMillis(-1));
         poolConfig.setMinEvictableIdleTime(Duration.ofMillis(-1));
+        poolConfig.setSoftMinEvictableIdleDuration(Duration.ofMillis(-1));
         poolConfig.setSoftMinEvictableIdleTime(Duration.ofMillis(-1));
         poolConfig.setNumTestsPerEvictionRun(1);
         poolConfig.setTestOnCreate(false);

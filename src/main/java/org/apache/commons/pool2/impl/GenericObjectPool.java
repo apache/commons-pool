@@ -858,7 +858,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      *
      * @see #setMinIdle(int)
      * @see #setMaxIdle(int)
-     * @see #setTimeBetweenEvictionRuns(Duration)
+     * @see #setDurationBetweenEvictionRuns(Duration)
      */
     @Override
     public int getMinIdle() {

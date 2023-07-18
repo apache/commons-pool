@@ -648,6 +648,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
     private void checkEvict(final boolean lifo) throws Exception {
         // yea this is hairy but it tests all the code paths in GOP.evict()
+        genericObjectPool.setSoftMinEvictableIdleDuration(Duration.ofMillis(10));
         genericObjectPool.setSoftMinEvictableIdle(Duration.ofMillis(10));
         genericObjectPool.setSoftMinEvictableIdleTime(Duration.ofMillis(10));
         genericObjectPool.setMinIdle(2);
@@ -978,7 +979,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         final GenericObjectPoolConfig<String> config = new GenericObjectPoolConfig<>();
         config.setJmxEnabled(false);
         GenericObjectPool<String> abandoned = new GenericObjectPool<>(simpleFactory, config);
-        abandoned.setTimeBetweenEvictionRuns(Duration.ofMillis(100)); // Starts evictor
+        abandoned.setDurationBetweenEvictionRuns(Duration.ofMillis(100)); // Starts evictor
         assertEquals(abandoned.getRemoveAbandonedTimeout(), abandoned.getRemoveAbandonedTimeoutDuration().getSeconds());
 
         // This is ugly, but forces GC to hit the pool
@@ -1687,6 +1688,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             timePool.setMaxIdle(5);
             timePool.setMaxTotal(5);
             timePool.setNumTestsPerEvictionRun(5);
+            timePool.setMinEvictableIdleDuration(Duration.ofSeconds(3));
             timePool.setMinEvictableIdle(Duration.ofSeconds(3));
             timePool.setMinEvictableIdleTime(Duration.ofSeconds(3));
             timePool.setSoftMinEvictableIdleTime(TestConstants.ONE_SECOND_DURATION);
@@ -2703,7 +2705,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         expected.setMaxTotal(2);
         expected.setMaxIdle(3);
         expected.setMaxWait(Duration.ofMillis(5));
-        expected.setMinEvictableIdleTime(Duration.ofMillis(7L));
+        expected.setMinEvictableIdleDuration(Duration.ofMillis(7L));
         expected.setNumTestsPerEvictionRun(9);
         expected.setTestOnCreate(true);
         expected.setTestOnBorrow(true);

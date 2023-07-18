@@ -286,7 +286,7 @@ public class TestAbandonedObjectPool {
         final int n = 10;
         pool.setMaxTotal(n);
         pool.setBlockWhenExhausted(false);
-        pool.setTimeBetweenEvictionRuns(Duration.ofMillis(500));
+        pool.setDurationBetweenEvictionRuns(Duration.ofMillis(500));
         PooledTestObject obj = null;
         for (int i = 0; i < 5; i++) {
             obj = pool.borrowObject();

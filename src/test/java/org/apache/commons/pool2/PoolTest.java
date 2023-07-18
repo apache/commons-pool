@@ -79,7 +79,7 @@ public class PoolTest {
             pool.setTimeBetweenEvictionRunsMillis(EVICTION_PERIOD_IN_MILLIS);
             assertEquals(EVICTION_PERIOD_IN_MILLIS, pool.getDurationBetweenEvictionRuns().toMillis());
             assertEquals(EVICTION_PERIOD_IN_MILLIS, pool.getTimeBetweenEvictionRuns().toMillis());
-            pool.setTimeBetweenEvictionRuns(Duration.ofMillis(EVICTION_PERIOD_IN_MILLIS));
+            pool.setDurationBetweenEvictionRuns(Duration.ofMillis(EVICTION_PERIOD_IN_MILLIS));
             assertEquals(EVICTION_PERIOD_IN_MILLIS, pool.getTimeBetweenEvictionRuns().toMillis());
             pool.addObject();
             try {

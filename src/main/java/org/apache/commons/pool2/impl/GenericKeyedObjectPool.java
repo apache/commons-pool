@@ -1678,7 +1678,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      *
      * @see #getMinIdlePerKey()
      * @see #getMaxIdlePerKey()
-     * @see #setTimeBetweenEvictionRuns(Duration)
+     * @see #setDurationBetweenEvictionRuns(Duration)
      */
     public void setMinIdlePerKey(final int minIdlePerKey) {
         this.minIdlePerKey = minIdlePerKey;

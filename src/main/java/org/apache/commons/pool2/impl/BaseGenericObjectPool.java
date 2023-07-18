@@ -867,7 +867,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
     /**
      * Gets the minimum amount of time an object may sit idle in the pool
      * before it is eligible for eviction by the idle object evictor (if any -
-     * see {@link #setTimeBetweenEvictionRuns(Duration)}). When non-positive,
+     * see {@link #setDurationBetweenEvictionRuns(Duration)}). When non-positive,
      * no objects will be evicted from the pool due to idle time alone.
      *
      * @return minimum amount of time an object may sit idle in the pool before
@@ -884,7 +884,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
     /**
      * Gets the minimum amount of time an object may sit idle in the pool
      * before it is eligible for eviction by the idle object evictor (if any -
-     * see {@link #setTimeBetweenEvictionRuns(Duration)}). When non-positive,
+     * see {@link #setDurationBetweenEvictionRuns(Duration)}). When non-positive,
      * no objects will be evicted from the pool due to idle time alone.
      *
      * @return minimum amount of time an object may sit idle in the pool before
@@ -1017,7 +1017,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
     /**
      * Gets the minimum amount of time an object may sit idle in the pool
      * before it is eligible for eviction by the idle object evictor (if any -
-     * see {@link #setTimeBetweenEvictionRuns(Duration)}),
+     * see {@link #setDurationBetweenEvictionRuns(Duration)}),
      * with the extra condition that at least {@code minIdle} object
      * instances remain in the pool. This setting is overridden by
      * {@link #getMinEvictableIdleTime} (that is, if
@@ -1027,7 +1027,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      * @return minimum amount of time an object may sit idle in the pool before
      *         it is eligible for eviction if minIdle instances are available
      *
-     * @see #setSoftMinEvictableIdle(Duration)
+     * @see #setSoftMinEvictableIdleDuration(Duration)
      * @since 2.11.0
      */
     public final Duration getSoftMinEvictableIdleDuration() {
@@ -1037,7 +1037,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
     /**
      * Gets the minimum amount of time an object may sit idle in the pool
      * before it is eligible for eviction by the idle object evictor (if any -
-     * see {@link #setTimeBetweenEvictionRuns(Duration)}),
+     * see {@link #setDurationBetweenEvictionRuns(Duration)}),
      * with the extra condition that at least {@code minIdle} object
      * instances remain in the pool. This setting is overridden by
      * {@link #getMinEvictableIdleTime} (that is, if
@@ -1047,7 +1047,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      * @return minimum amount of time an object may sit idle in the pool before
      *         it is eligible for eviction if minIdle instances are available
      *
-     * @see #setSoftMinEvictableIdle(Duration)
+     * @see #setSoftMinEvictableIdleDuration(Duration)
      * @since 2.10.0
      * @deprecated Use {@link #getSoftMinEvictableIdleDuration}.
      */
@@ -1175,7 +1175,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
     /**
      * Gets whether objects sitting idle in the pool will be validated by the
      * idle object evictor (if any - see
-     * {@link #setTimeBetweenEvictionRuns(Duration)}). Validation is performed
+     * {@link #setDurationBetweenEvictionRuns(Duration)}). Validation is performed
      * by the {@code validateObject()} method of the factory associated
      * with the pool. If the object fails to validate, it will be removed from
      * the pool and destroyed.
@@ -1369,9 +1369,9 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
         setTestOnReturn(config.getTestOnReturn());
         setTestWhileIdle(config.getTestWhileIdle());
         setNumTestsPerEvictionRun(config.getNumTestsPerEvictionRun());
-        setMinEvictableIdle(config.getMinEvictableIdleDuration());
-        setTimeBetweenEvictionRuns(config.getDurationBetweenEvictionRuns());
-        setSoftMinEvictableIdle(config.getSoftMinEvictableIdleDuration());
+        setMinEvictableIdleDuration(config.getMinEvictableIdleDuration());
+        setDurationBetweenEvictionRuns(config.getDurationBetweenEvictionRuns());
+        setSoftMinEvictableIdleDuration(config.getSoftMinEvictableIdleDuration());
         final EvictionPolicy<T> policy = config.getEvictionPolicy();
         if (policy == null) {
             // Use the class name (pre-2.6.0 compatible)
@@ -1381,6 +1381,24 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
             setEvictionPolicy(policy);
         }
         setEvictorShutdownTimeout(config.getEvictorShutdownTimeoutDuration());
+    }
+
+    /**
+     * Sets the number of milliseconds to sleep between runs of the idle object evictor thread.
+     * <ul>
+     * <li>When positive, the idle object evictor thread starts.</li>
+     * <li>When non-positive, no idle object evictor thread runs.</li>
+     * </ul>
+     *
+     * @param timeBetweenEvictionRuns
+     *            duration to sleep between evictor runs
+     *
+     * @see #getDurationBetweenEvictionRuns()
+     * @since 2.12.0
+     */
+    public final void setDurationBetweenEvictionRuns(final Duration timeBetweenEvictionRuns) {
+        this.durationBetweenEvictionRuns = PoolImplUtils.nonNull(timeBetweenEvictionRuns, BaseObjectPoolConfig.DEFAULT_DURATION_BETWEEN_EVICTION_RUNS);
+        startEvictor(this.durationBetweenEvictionRuns);
     }
 
     /**
@@ -1585,7 +1603,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
     /**
      * Sets the minimum amount of time an object may sit idle in the pool
      * before it is eligible for eviction by the idle object evictor (if any -
-     * see {@link #setTimeBetweenEvictionRuns(Duration)}). When non-positive,
+     * see {@link #setDurationBetweenEvictionRuns(Duration)}). When non-positive,
      * no objects will be evicted from the pool due to idle time alone.
      *
      * @param minEvictableIdleTime
@@ -1595,7 +1613,9 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      * @see #getMinEvictableIdleTime
      * @see #setTimeBetweenEvictionRuns
      * @since 2.11.0
+     * @deprecated Use {@link #setMinEvictableIdleDuration(Duration)}.
      */
+    @Deprecated
     public final void setMinEvictableIdle(final Duration minEvictableIdleTime) {
         this.minEvictableIdleDuration = PoolImplUtils.nonNull(minEvictableIdleTime, BaseObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_DURATION);
     }
@@ -1603,7 +1623,25 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
     /**
      * Sets the minimum amount of time an object may sit idle in the pool
      * before it is eligible for eviction by the idle object evictor (if any -
-     * see {@link #setTimeBetweenEvictionRuns(Duration)}). When non-positive,
+     * see {@link #setDurationBetweenEvictionRuns(Duration)}). When non-positive,
+     * no objects will be evicted from the pool due to idle time alone.
+     *
+     * @param minEvictableIdleTime
+     *            minimum amount of time an object may sit idle in the pool
+     *            before it is eligible for eviction
+     *
+     * @see #getMinEvictableIdleTime
+     * @see #setTimeBetweenEvictionRuns
+     * @since 2.12.0
+     */
+    public final void setMinEvictableIdleDuration(final Duration minEvictableIdleTime) {
+        this.minEvictableIdleDuration = PoolImplUtils.nonNull(minEvictableIdleTime, BaseObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_DURATION);
+    }
+
+    /**
+     * Sets the minimum amount of time an object may sit idle in the pool
+     * before it is eligible for eviction by the idle object evictor (if any -
+     * see {@link #setDurationBetweenEvictionRuns(Duration)}). When non-positive,
      * no objects will be evicted from the pool due to idle time alone.
      *
      * @param minEvictableIdleTime
@@ -1613,7 +1651,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      * @see #getMinEvictableIdleTime
      * @see #setTimeBetweenEvictionRuns
      * @since 2.10.0
-     * @deprecated Use {@link #setMinEvictableIdle(Duration)}.
+     * @deprecated Use {@link #setMinEvictableIdleDuration(Duration)}.
      */
     @Deprecated
     public final void setMinEvictableIdleTime(final Duration minEvictableIdleTime) {
@@ -1662,7 +1700,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
     /**
      * Sets the minimum amount of time an object may sit idle in the pool
      * before it is eligible for eviction by the idle object evictor (if any -
-     * see {@link #setTimeBetweenEvictionRuns(Duration)}),
+     * see {@link #setDurationBetweenEvictionRuns(Duration)}),
      * with the extra condition that at least {@code minIdle} object
      * instances remain in the pool. This setting is overridden by
      * {@link #getMinEvictableIdleTime} (that is, if
@@ -1676,7 +1714,9 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      *
      * @see #getSoftMinEvictableIdleTimeMillis
      * @since 2.11.0
+     * @deprecated Use {@link #setSoftMinEvictableIdleDuration(Duration)}.
      */
+    @Deprecated
     public final void setSoftMinEvictableIdle(final Duration softMinEvictableIdleTime) {
         this.softMinEvictableIdleDuration = PoolImplUtils.nonNull(softMinEvictableIdleTime, BaseObjectPoolConfig.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_DURATION);
     }
@@ -1684,7 +1724,29 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
     /**
      * Sets the minimum amount of time an object may sit idle in the pool
      * before it is eligible for eviction by the idle object evictor (if any -
-     * see {@link #setTimeBetweenEvictionRuns(Duration)}),
+     * see {@link #setDurationBetweenEvictionRuns(Duration)}),
+     * with the extra condition that at least {@code minIdle} object
+     * instances remain in the pool. This setting is overridden by
+     * {@link #getMinEvictableIdleTime} (that is, if
+     * {@link #getMinEvictableIdleTime} is positive, then
+     * {@link #getSoftMinEvictableIdleTime} is ignored).
+     *
+     * @param softMinEvictableIdleTime
+     *            minimum amount of time an object may sit idle in the pool
+     *            before it is eligible for eviction if minIdle instances are
+     *            available
+     *
+     * @see #getSoftMinEvictableIdleTimeMillis
+     * @since 2.12.0
+     */
+    public final void setSoftMinEvictableIdleDuration(final Duration softMinEvictableIdleTime) {
+        this.softMinEvictableIdleDuration = PoolImplUtils.nonNull(softMinEvictableIdleTime, BaseObjectPoolConfig.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_DURATION);
+    }
+
+    /**
+     * Sets the minimum amount of time an object may sit idle in the pool
+     * before it is eligible for eviction by the idle object evictor (if any -
+     * see {@link #setDurationBetweenEvictionRuns(Duration)}),
      * with the extra condition that at least {@code minIdle} object
      * instances remain in the pool. This setting is overridden by
      * {@link #getMinEvictableIdleTime} (that is, if
@@ -1698,7 +1760,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      *
      * @see #getSoftMinEvictableIdleTimeMillis
      * @since 2.10.0
-     * @deprecated Use {@link #setSoftMinEvictableIdle(Duration)}.
+     * @deprecated Use {@link #setSoftMinEvictableIdleDuration(Duration)}.
      */
     @Deprecated
     public final void setSoftMinEvictableIdleTime(final Duration softMinEvictableIdleTime) {
@@ -1721,7 +1783,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      *            available
      *
      * @see #getSoftMinEvictableIdleTimeMillis
-     * @deprecated Use {@link #setSoftMinEvictableIdle(Duration)}.
+     * @deprecated Use {@link #setSoftMinEvictableIdleDuration(Duration)}.
      */
     @Deprecated
     public final void setSoftMinEvictableIdleTimeMillis(final long softMinEvictableIdleTimeMillis) {
@@ -1797,7 +1859,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
     /**
      * Sets whether objects sitting idle in the pool will be validated by the
      * idle object evictor (if any - see
-     * {@link #setTimeBetweenEvictionRuns(Duration)}). Validation is performed
+     * {@link #setDurationBetweenEvictionRuns(Duration)}). Validation is performed
      * by the {@code validateObject()} method of the factory associated
      * with the pool. If the object fails to validate, it will be removed from
      * the pool and destroyed.  Note that setting this property has no effect
@@ -1826,7 +1888,9 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      *
      * @see #getDurationBetweenEvictionRuns()
      * @since 2.10.0
+     * @deprecated Use {@link #setDurationBetweenEvictionRuns(Duration)}.
      */
+    @Deprecated
     public final void setTimeBetweenEvictionRuns(final Duration timeBetweenEvictionRuns) {
         this.durationBetweenEvictionRuns = PoolImplUtils.nonNull(timeBetweenEvictionRuns, BaseObjectPoolConfig.DEFAULT_DURATION_BETWEEN_EVICTION_RUNS);
         startEvictor(this.durationBetweenEvictionRuns);
@@ -1843,7 +1907,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      *            number of milliseconds to sleep between evictor runs
      *
      * @see #getDurationBetweenEvictionRuns()
-     * @deprecated Use {@link #setTimeBetweenEvictionRuns(Duration)}.
+     * @deprecated Use {@link #setDurationBetweenEvictionRuns(Duration)}.
      */
     @Deprecated
     public final void setTimeBetweenEvictionRunsMillis(final long timeBetweenEvictionRunsMillis) {

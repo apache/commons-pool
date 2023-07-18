@@ -110,7 +110,8 @@ public class TestGenericObjectPoolFactoryCreateFailure {
         config.setTestWhileIdle(false);
         config.setTimeBetweenEvictionRuns(NEG_ONE_DURATION);
         config.setMinEvictableIdleTime(NEG_ONE_DURATION);
-        config.setSoftMinEvictableIdleTime(NEG_ONE_DURATION);
+        config.setMinEvictableIdleDuration(NEG_ONE_DURATION);
+        config.setSoftMinEvictableIdleDuration(NEG_ONE_DURATION);
 
         config.setMaxWait(NEG_ONE_DURATION);
         try (GenericObjectPool<Object> pool = new GenericObjectPool<>(factory, config)) {
