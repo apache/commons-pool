@@ -53,11 +53,11 @@ import org.apache.commons.pool2.SwallowedExceptionListener;
  * Base class that provides common functionality for {@link GenericObjectPool}
  * and {@link GenericKeyedObjectPool}. The primary reason this class exists is
  * reduce code duplication between the two pool implementations.
+ * <p>
+ * This class is intended to be thread-safe.
+ * </p>
  *
  * @param <T> Type of element pooled in this pool.
- *
- * This class is intended to be thread-safe.
- *
  * @since 2.0
  */
 public abstract class BaseGenericObjectPool<T> extends BaseObject implements AutoCloseable {
@@ -696,8 +696,21 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
 
     /**
      * Gets the maximum time a thread has waited to borrow objects from the pool.
+     *
      * @return maximum wait time in milliseconds since the pool was created
+     * @since 2.12.0
      */
+    public final Duration getMaxBorrowWaitDuration() {
+        return maxBorrowWaitDuration.get();
+    }
+
+    /**
+     * Gets the maximum time a thread has waited to borrow objects from the pool.
+     *
+     * @return maximum wait time in milliseconds since the pool was created
+     * @deprecated Use {@link #getMaxBorrowWaitDuration()}.
+     */
+    @Deprecated
     public final long getMaxBorrowWaitTimeMillis() {
         return maxBorrowWaitDuration.get().toMillis();
     }
@@ -710,7 +723,6 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      *
      * @return the cap on the total number of object instances managed by the
      *         pool.
-     *
      * @see #setMaxTotal
      */
     public final int getMaxTotal() {
@@ -758,8 +770,23 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      * Gets the mean time objects are active for based on the last {@link
      * #MEAN_TIMING_STATS_CACHE_SIZE} objects returned to the pool.
      * @return mean time an object has been checked out from the pool among
-     * recently returned objects
+     * recently returned objects.
+     *
+     * @since 2.12.0
      */
+    public final Duration getMeanActiveDuration() {
+        return Duration.ofMillis(activeTimes.getMean());
+    }
+
+    /**
+     * Gets the mean time objects are active for based on the last {@link
+     * #MEAN_TIMING_STATS_CACHE_SIZE} objects returned to the pool.
+     * @return mean time an object has been checked out from the pool among
+     * recently returned objects.
+     *
+     * @deprecated Use {@link #getMeanActiveDuration()}.
+     */
+    @Deprecated
     public final long getMeanActiveTimeMillis() {
         return activeTimes.getMean();
     }
@@ -767,9 +794,24 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
     /**
      * Gets the mean time threads wait to borrow an object based on the last {@link
      * #MEAN_TIMING_STATS_CACHE_SIZE} objects borrowed from the pool.
+     *
      * @return mean time in milliseconds that a recently served thread has had
-     * to wait to borrow an object from the pool
+     * to wait to borrow an object from the pool.
+     * @since 2.12.0
      */
+    public final Duration getMeanBorrowWaitDuration() {
+        return Duration.ofMillis(waitTimes.getMean());
+    }
+
+    /**
+     * Gets the mean time threads wait to borrow an object based on the last {@link
+     * #MEAN_TIMING_STATS_CACHE_SIZE} objects borrowed from the pool.
+     *
+     * @return mean time in milliseconds that a recently served thread has had
+     * to wait to borrow an object from the pool.
+     * @deprecated Use {@link #getMeanBorrowWaitDuration()}.
+     */
+    @Deprecated
     public final long getMeanBorrowWaitTimeMillis() {
         return waitTimes.getMean();
     }
@@ -777,9 +819,24 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
     /**
      * Gets the mean time objects are idle for based on the last {@link
      * #MEAN_TIMING_STATS_CACHE_SIZE} objects borrowed from the pool.
+     *
      * @return mean time an object has been idle in the pool among recently
-     * borrowed objects
+     * borrowed objects.
+     * @since 2.12.0
      */
+    public final Duration getMeanIdleDuration() {
+        return Duration.ofMillis(idleTimes.getMean());
+    }
+
+    /**
+     * Gets the mean time objects are idle for based on the last {@link
+     * #MEAN_TIMING_STATS_CACHE_SIZE} objects borrowed from the pool.
+     *
+     * @return mean time an object has been idle in the pool among recently
+     * borrowed objects.
+     * @deprecated Use {@link #getMeanIdleDuration()}.
+     */
+    @Deprecated
     public final long getMeanIdleTimeMillis() {
         return idleTimes.getMean();
     }
