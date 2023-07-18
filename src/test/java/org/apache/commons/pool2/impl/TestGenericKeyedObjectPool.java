@@ -994,102 +994,6 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
     }
 
     /**
-     * Tests POOL-411, or least tries to reproduce the NPE, but does not.
-     *
-     * @throws TestException a test failure.
-     */
-    @Test
-    public void testConcurrentBorrowAndClear() throws Exception {
-        final int threadCount = 64;
-        final int taskCount = 64;
-        final int addCount = 1;
-        final int borrowCycles = 1024;
-        final int clearCycles = 1024;
-        final boolean useYield = true;
-
-        testConcurrentBorrowAndClear(threadCount, taskCount, addCount, borrowCycles, clearCycles, useYield);
-    }
-
-    /**
-     * See https://issues.apache.org/jira/browse/POOL-411?focusedCommentId=17741156&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-17741156
-     *
-     * @throws TestException a test failure.
-     */
-    @Test
-    public void testConcurrentBorrowAndClear_JiraComment17741156() throws Exception {
-        final int threadCount = 2;
-        final int taskCount = 2;
-        final int addCount = 1;
-        final int borrowCycles = 5_000;
-        final int clearCycles = 5_000;
-        final boolean useYield = false;
-
-        testConcurrentBorrowAndClear(threadCount, taskCount, addCount, borrowCycles, clearCycles, useYield);
-    }
-
-    /**
-     * Tests POOL-411, or least tries to reproduce the NPE, but does not.
-     *
-     * @throws Exception a test failure.
-     */
-    private void testConcurrentBorrowAndClear(final int threadCount, final int taskCount, final int addCount, final int borrowCycles, final int clearCycles,
-            final boolean useYield) throws Exception {
-        final GenericKeyedObjectPoolConfig<String> config = new GenericKeyedObjectPoolConfig<>();
-        final int maxTotalPerKey = borrowCycles + 1;
-        config.setMaxTotalPerKey(threadCount);
-        config.setMaxIdlePerKey(threadCount);
-        config.setMaxTotal(maxTotalPerKey * threadCount);
-        config.setBlockWhenExhausted(false); // pool exhausted indicates a bug in the test
-
-        gkoPool = new GenericKeyedObjectPool<>(simpleFactory, config);
-        final String key = "0";
-        gkoPool.addObjects(Arrays.asList(key), threadCount);
-        // all objects in the pool are now idle.
-
-        final ExecutorService threadPool = Executors.newFixedThreadPool(threadCount);
-        final List<Future<?>> futures = new ArrayList<>();
-        try {
-            for (int t = 0; t < taskCount; t++) {
-                futures.add(threadPool.submit(() -> {
-                    for (int i = 0; i < clearCycles; i++) {
-                        if (useYield) {
-                            Thread.yield();
-                        }
-                        gkoPool.clear(key, true);
-                        try {
-                            gkoPool.addObjects(Arrays.asList(key), addCount);
-                        } catch (Exception e) {
-                            fail(e);
-                        }
-                    }
-                }));
-                futures.add(threadPool.submit(() -> {
-                    try {
-                        for (int i = 0; i < borrowCycles; i++) {
-                            if (useYield) {
-                                Thread.yield();
-                            }
-                            final String pooled = gkoPool.borrowObject(key);
-                            gkoPool.returnObject(key, pooled);
-                        }
-                    } catch (Exception e) {
-                        fail(e);
-                    }
-                }));
-            }
-            futures.forEach(f -> {
-                try {
-                    f.get();
-                } catch (InterruptedException | ExecutionException e) {
-                    fail(e);
-                }
-            });
-        } finally {
-            threadPool.shutdownNow();
-        }
-    }
-
-    /**
      * POOL-192
      * Verify that clear(key) does not leak capacity.
      *
@@ -1154,7 +1058,6 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
             waiterPool.returnObject("1", waiter); // Will throw IllegalStateException if dead
         }
     }
-
 
     /**
        * POOL-391 Verify that when clear(key) is called with reuseCapacity true,
@@ -1299,6 +1202,103 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
             assertTrue(pool.getMeanBorrowWaitTimeMillis() < 200);
             assertTrue(pool.getMeanBorrowWaitTimeMillis() > 20);
         }
+    }
+
+
+    /**
+     * Tests POOL-411, or least tries to reproduce the NPE, but does not.
+     *
+     * @throws TestException a test failure.
+     */
+    @Test
+    public void testConcurrentBorrowAndClear() throws Exception {
+        final int threadCount = 64;
+        final int taskCount = 64;
+        final int addCount = 1;
+        final int borrowCycles = 1024;
+        final int clearCycles = 1024;
+        final boolean useYield = true;
+
+        testConcurrentBorrowAndClear(threadCount, taskCount, addCount, borrowCycles, clearCycles, useYield);
+    }
+
+    /**
+     * Tests POOL-411, or least tries to reproduce the NPE, but does not.
+     *
+     * @throws Exception a test failure.
+     */
+    private void testConcurrentBorrowAndClear(final int threadCount, final int taskCount, final int addCount, final int borrowCycles, final int clearCycles,
+            final boolean useYield) throws Exception {
+        final GenericKeyedObjectPoolConfig<String> config = new GenericKeyedObjectPoolConfig<>();
+        final int maxTotalPerKey = borrowCycles + 1;
+        config.setMaxTotalPerKey(threadCount);
+        config.setMaxIdlePerKey(threadCount);
+        config.setMaxTotal(maxTotalPerKey * threadCount);
+        config.setBlockWhenExhausted(false); // pool exhausted indicates a bug in the test
+
+        gkoPool = new GenericKeyedObjectPool<>(simpleFactory, config);
+        final String key = "0";
+        gkoPool.addObjects(Arrays.asList(key), threadCount);
+        // all objects in the pool are now idle.
+
+        final ExecutorService threadPool = Executors.newFixedThreadPool(threadCount);
+        final List<Future<?>> futures = new ArrayList<>();
+        try {
+            for (int t = 0; t < taskCount; t++) {
+                futures.add(threadPool.submit(() -> {
+                    for (int i = 0; i < clearCycles; i++) {
+                        if (useYield) {
+                            Thread.yield();
+                        }
+                        gkoPool.clear(key, true);
+                        try {
+                            gkoPool.addObjects(Arrays.asList(key), addCount);
+                        } catch (Exception e) {
+                            fail(e);
+                        }
+                    }
+                }));
+                futures.add(threadPool.submit(() -> {
+                    try {
+                        for (int i = 0; i < borrowCycles; i++) {
+                            if (useYield) {
+                                Thread.yield();
+                            }
+                            final String pooled = gkoPool.borrowObject(key);
+                            gkoPool.returnObject(key, pooled);
+                        }
+                    } catch (Exception e) {
+                        fail(e);
+                    }
+                }));
+            }
+            futures.forEach(f -> {
+                try {
+                    f.get();
+                } catch (InterruptedException | ExecutionException e) {
+                    fail(e);
+                }
+            });
+        } finally {
+            threadPool.shutdownNow();
+        }
+    }
+
+    /**
+     * See https://issues.apache.org/jira/browse/POOL-411?focusedCommentId=17741156&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-17741156
+     *
+     * @throws TestException a test failure.
+     */
+    @Test
+    public void testConcurrentBorrowAndClear_JiraComment17741156() throws Exception {
+        final int threadCount = 2;
+        final int taskCount = 2;
+        final int addCount = 1;
+        final int borrowCycles = 5_000;
+        final int clearCycles = 5_000;
+        final boolean useYield = false;
+
+        testConcurrentBorrowAndClear(threadCount, taskCount, addCount, borrowCycles, clearCycles, useYield);
     }
 
     /**
