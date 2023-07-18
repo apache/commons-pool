@@ -251,20 +251,20 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      */
     private static class StatsStore {
 
-        private static final int NULL = -1;
+        private static final int NONE = -1;
         private final AtomicLong[] values;
         private final int size;
         private int index;
 
         /**
-         * Constructs a StatsStore with the given cache size.
+         * Constructs a new instance with the given cache size.
          *
          * @param size number of values to maintain in the cache.
          */
         StatsStore(final int size) {
             this.size = size;
-            values = new AtomicLong[size];
-            Arrays.setAll(values, i -> new AtomicLong(NULL));
+            this.values = new AtomicLong[size];
+            Arrays.setAll(values, i -> new AtomicLong(NONE));
         }
 
         void add(final Duration value) {
@@ -286,15 +286,6 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
         }
 
         /**
-         * Gets the current values as a List.
-         *
-         * @return the current values as a List.
-         */
-        synchronized List<AtomicLong> getCurrentValues() {
-            return Arrays.stream(values, 0, index).collect(Collectors.toList());
-        }
-
-        /**
          * Gets the mean of the cached values.
          *
          * @return the mean of the cache, truncated to long
@@ -304,7 +295,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
             int counter = 0;
             for (int i = 0; i < size; i++) {
                 final long value = values[i].get();
-                if (value != NULL) {
+                if (value != NONE) {
                     counter++;
                     result = result * ((counter - 1) / (double) counter) + value / (double) counter;
                 }
@@ -312,12 +303,30 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
             return (long) result;
         }
 
+        /**
+         * Gets the mean Duration of the cached values.
+         *
+         * @return the mean Duration of the cache, truncated to long milliseconds of a Duration.
+         */
+        Duration getMeanDuration() {
+            return Duration.ofMillis(getMean());
+        }
+
+        /**
+         * Gets the current values as a List.
+         *
+         * @return the current values as a List.
+         */
+        synchronized List<AtomicLong> getValues() {
+            return Arrays.stream(values, 0, index).collect(Collectors.toList());
+        }
+
         @Override
         public String toString() {
             final StringBuilder builder = new StringBuilder();
             builder.append("StatsStore [");
             // Only append what's been filled in.
-            builder.append(getCurrentValues());
+            builder.append(getValues());
             builder.append("], size=");
             builder.append(size);
             builder.append(", index=");
@@ -775,7 +784,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      * @since 2.12.0
      */
     public final Duration getMeanActiveDuration() {
-        return Duration.ofMillis(activeTimes.getMean());
+        return activeTimes.getMeanDuration();
     }
 
     /**
@@ -800,7 +809,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      * @since 2.12.0
      */
     public final Duration getMeanBorrowWaitDuration() {
-        return Duration.ofMillis(waitTimes.getMean());
+        return waitTimes.getMeanDuration();
     }
 
     /**
@@ -825,7 +834,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      * @since 2.12.0
      */
     public final Duration getMeanIdleDuration() {
-        return Duration.ofMillis(idleTimes.getMean());
+        return idleTimes.getMeanDuration();
     }
 
     /**
@@ -1096,10 +1105,10 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
                         "maxTotal=%s, maxWaitDuration=%s, minEvictableIdleDuration=%s, numTestsPerEvictionRun=%s, returnedCount=%s, " +
                         "softMinEvictableIdleDuration=%s, testOnBorrow=%s, testOnCreate=%s, testOnReturn=%s, testWhileIdle=%s, " +
                         "durationBetweenEvictionRuns=%s, waitTimes=%s",
-                activeTimes.getCurrentValues(), blockWhenExhausted, borrowedCount.get(), closed, createdCount.get(), destroyedByBorrowValidationCount.get(),
-                destroyedByEvictorCount.get(), evictorShutdownTimeoutDuration, fairness, idleTimes.getCurrentValues(), lifo, maxBorrowWaitDuration.get(),
+                activeTimes.getValues(), blockWhenExhausted, borrowedCount.get(), closed, createdCount.get(), destroyedByBorrowValidationCount.get(),
+                destroyedByEvictorCount.get(), evictorShutdownTimeoutDuration, fairness, idleTimes.getValues(), lifo, maxBorrowWaitDuration.get(),
                 maxTotal, maxWaitDuration, minEvictableIdleDuration, numTestsPerEvictionRun, returnedCount, softMinEvictableIdleDuration, testOnBorrow,
-                testOnCreate, testOnReturn, testWhileIdle, durationBetweenEvictionRuns, waitTimes.getCurrentValues());
+                testOnCreate, testOnReturn, testWhileIdle, durationBetweenEvictionRuns, waitTimes.getValues());
     }
 
     /**
