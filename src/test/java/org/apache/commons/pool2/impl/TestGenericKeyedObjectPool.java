@@ -644,9 +644,9 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
             for (int i = 0; i < 8; i++) {
                 final VisitTracker<Integer> tracker = intPool.borrowObject(KEY_ZERO);
                 if (tracker.getId() >= 4) {
-                    assertEquals( 0, tracker.getValidateCount(),"Unexpected instance visited " + tracker.getId());
+                    assertEquals(0, tracker.getValidateCount(), "Unexpected instance visited " + tracker.getId());
                 } else {
-                    assertEquals( 1,
+                    assertEquals(1,
                             tracker.getValidateCount(),"Instance " + tracker.getId() + " visited wrong number of times.");
                 }
             }
@@ -682,11 +682,9 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
             for (int i = 0; i < 8; i++) {
                 final VisitTracker<Integer> tracker = intPool.borrowObject(KEY_ONE);
                 if (lifo && tracker.getId() > 1 || !lifo && tracker.getId() > 2) {
-                    assertEquals( 1,
-                            tracker.getValidateCount(),"Instance " + tracker.getId() + " visited wrong number of times.");
+                    assertEquals(1, tracker.getValidateCount(), "Instance " + tracker.getId() + " visited wrong number of times.");
                 } else {
-                    assertEquals( 2,
-                            tracker.getValidateCount(),"Instance " + tracker.getId() + " visited wrong number of times.");
+                    assertEquals(2, tracker.getValidateCount(), "Instance " + tracker.getId() + " visited wrong number of times.");
                 }
             }
         }
@@ -894,7 +892,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
             msg.append('\n');
             mbs.unregisterMBean(name);
         }
-        assertEquals( 0, registeredPoolCount, msg.toString());
+        assertEquals(0, registeredPoolCount, msg.toString());
     }
 
     @Test
@@ -1505,11 +1503,11 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         gkoPool.setDurationBetweenEvictionRuns(Duration.ofMillis(500));
 
         final String[] active = new String[500];
-        for(int i=0;i<500;i++) {
+        for (int i = 0; i < 500; i++) {
             active[i] = gkoPool.borrowObject("");
         }
-        for(int i=0;i<500;i++) {
-            gkoPool.returnObject("",active[i]);
+        for (int i = 0; i < 500; i++) {
+            gkoPool.returnObject("", active[i]);
         }
 
         Waiter.sleepQuietly(1000L);
@@ -1517,33 +1515,33 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         Waiter.sleepQuietly(600L);
         assertTrue(gkoPool.getNumIdle("") < 400, "Should be less than 400 idle, found " + gkoPool.getNumIdle(""));
         Waiter.sleepQuietly(600L);
-        assertTrue(gkoPool.getNumIdle("") < 300,"Should be less than 300 idle, found " + gkoPool.getNumIdle(""));
+        assertTrue(gkoPool.getNumIdle("") < 300, "Should be less than 300 idle, found " + gkoPool.getNumIdle(""));
         Waiter.sleepQuietly(600L);
         assertTrue(gkoPool.getNumIdle("") < 200, "Should be less than 200 idle, found " + gkoPool.getNumIdle(""));
         Waiter.sleepQuietly(600L);
-        assertTrue(gkoPool.getNumIdle("") < 100 , "Should be less than 100 idle, found " + gkoPool.getNumIdle(""));
+        assertTrue(gkoPool.getNumIdle("") < 100, "Should be less than 100 idle, found " + gkoPool.getNumIdle(""));
         Waiter.sleepQuietly(600L);
-        assertEquals(0,gkoPool.getNumIdle(""),"Should be zero idle, found " + gkoPool.getNumIdle(""));
+        assertEquals(0, gkoPool.getNumIdle(""), "Should be zero idle, found " + gkoPool.getNumIdle(""));
 
-        for(int i=0;i<500;i++) {
+        for (int i = 0; i < 500; i++) {
             active[i] = gkoPool.borrowObject("");
         }
-        for(int i=0;i<500;i++) {
-            gkoPool.returnObject("",active[i]);
+        for (int i = 0; i < 500; i++) {
+            gkoPool.returnObject("", active[i]);
         }
 
         Waiter.sleepQuietly(1000L);
-        assertTrue(gkoPool.getNumIdle("") < 500,"Should be less than 500 idle, found " + gkoPool.getNumIdle(""));
+        assertTrue(gkoPool.getNumIdle("") < 500, "Should be less than 500 idle, found " + gkoPool.getNumIdle(""));
         Waiter.sleepQuietly(600L);
-        assertTrue(gkoPool.getNumIdle("") < 400,"Should be less than 400 idle, found " + gkoPool.getNumIdle(""));
+        assertTrue(gkoPool.getNumIdle("") < 400, "Should be less than 400 idle, found " + gkoPool.getNumIdle(""));
         Waiter.sleepQuietly(600L);
-        assertTrue(gkoPool.getNumIdle("") < 300,"Should be less than 300 idle, found " + gkoPool.getNumIdle(""));
+        assertTrue(gkoPool.getNumIdle("") < 300, "Should be less than 300 idle, found " + gkoPool.getNumIdle(""));
         Waiter.sleepQuietly(600L);
-        assertTrue(gkoPool.getNumIdle("") < 200,"Should be less than 200 idle, found " + gkoPool.getNumIdle(""));
+        assertTrue(gkoPool.getNumIdle("") < 200, "Should be less than 200 idle, found " + gkoPool.getNumIdle(""));
         Waiter.sleepQuietly(600L);
-        assertTrue(gkoPool.getNumIdle("") < 100,"Should be less than 100 idle, found " + gkoPool.getNumIdle(""));
+        assertTrue(gkoPool.getNumIdle("") < 100, "Should be less than 100 idle, found " + gkoPool.getNumIdle(""));
         Waiter.sleepQuietly(600L);
-        assertEquals(0,gkoPool.getNumIdle(""),"Should be zero idle, found " + gkoPool.getNumIdle(""));
+        assertEquals(0, gkoPool.getNumIdle(""), "Should be zero idle, found " + gkoPool.getNumIdle(""));
     }
 
     @Test
@@ -1734,7 +1732,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         final String obj = gkoPool.borrowObject("one");
         simpleFactory.setThrowExceptionOnPassivate(true);
         gkoPool.returnObject("one", obj);
-        assertEquals(0,gkoPool.getNumIdle());
+        assertEquals(0, gkoPool.getNumIdle());
         gkoPool.close();
     }
 
@@ -1746,14 +1744,14 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         gkoPool.addObject(key); // "key0"
         gkoPool.addObject(key); // "key1"
         gkoPool.addObject(key); // "key2"
-        assertEquals( "key0", gkoPool.borrowObject(key),"Oldest");
-        assertEquals( "key1", gkoPool.borrowObject(key),"Middle");
-        assertEquals( "key2", gkoPool.borrowObject(key),"Youngest");
+        assertEquals("key0", gkoPool.borrowObject(key), "Oldest");
+        assertEquals("key1", gkoPool.borrowObject(key), "Middle");
+        assertEquals("key2", gkoPool.borrowObject(key), "Youngest");
         final String s = gkoPool.borrowObject(key);
-        assertEquals( "key3", s,"new-3");
+        assertEquals("key3", s, "new-3");
         gkoPool.returnObject(key, s);
-        assertEquals( s, gkoPool.borrowObject(key),"returned");
-        assertEquals( "key4", gkoPool.borrowObject(key),"new-4");
+        assertEquals(s, gkoPool.borrowObject(key), "returned");
+        assertEquals("key4", gkoPool.borrowObject(key), "new-4");
     }
 
     @Test
@@ -1913,14 +1911,14 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         gkoPool.addObject(key); // "key0"
         gkoPool.addObject(key); // "key1"
         gkoPool.addObject(key); // "key2"
-        assertEquals( "key2", gkoPool.borrowObject(key),"Youngest");
-        assertEquals( "key1", gkoPool.borrowObject(key),"Middle");
-        assertEquals( "key0", gkoPool.borrowObject(key),"Oldest");
+        assertEquals("key2", gkoPool.borrowObject(key), "Youngest");
+        assertEquals("key1", gkoPool.borrowObject(key), "Middle");
+        assertEquals("key0", gkoPool.borrowObject(key), "Oldest");
         final String s = gkoPool.borrowObject(key);
-        assertEquals( "key3", s,"new-3");
+        assertEquals("key3", s, "new-3");
         gkoPool.returnObject(key, s);
-        assertEquals( s, gkoPool.borrowObject(key),"returned");
-        assertEquals( "key4", gkoPool.borrowObject(key),"new-4");
+        assertEquals(s, gkoPool.borrowObject(key), "returned");
+        assertEquals("key4", gkoPool.borrowObject(key), "new-4");
     }
 
     /**
@@ -1995,26 +1993,26 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         gkoPool.setMaxTotalPerKey(100);
         gkoPool.setMaxIdlePerKey(8);
         final String[] active = new String[100];
-        for(int i=0;i<100;i++) {
+        for (int i = 0; i < 100; i++) {
             active[i] = gkoPool.borrowObject("");
         }
-        assertEquals(100,gkoPool.getNumActive(""));
-        assertEquals(0,gkoPool.getNumIdle(""));
-        for(int i=0;i<100;i++) {
-            gkoPool.returnObject("",active[i]);
-            assertEquals(99 - i,gkoPool.getNumActive(""));
-            assertEquals(i < 8 ? i+1 : 8,gkoPool.getNumIdle(""));
+        assertEquals(100, gkoPool.getNumActive(""));
+        assertEquals(0, gkoPool.getNumIdle(""));
+        for (int i = 0; i < 100; i++) {
+            gkoPool.returnObject("", active[i]);
+            assertEquals(99 - i, gkoPool.getNumActive(""));
+            assertEquals(i < 8 ? i + 1 : 8, gkoPool.getNumIdle(""));
         }
 
-        for(int i=0;i<100;i++) {
+        for (int i = 0; i < 100; i++) {
             active[i] = gkoPool.borrowObject("a");
         }
-        assertEquals(100,gkoPool.getNumActive("a"));
-        assertEquals(0,gkoPool.getNumIdle("a"));
-        for(int i=0;i<100;i++) {
-            gkoPool.returnObject("a",active[i]);
-            assertEquals(99 - i,gkoPool.getNumActive("a"));
-            assertEquals(i < 8 ? i+1 : 8,gkoPool.getNumIdle("a"));
+        assertEquals(100, gkoPool.getNumActive("a"));
+        assertEquals(0, gkoPool.getNumIdle("a"));
+        for (int i = 0; i < 100; i++) {
+            gkoPool.returnObject("a", active[i]);
+            assertEquals(99 - i, gkoPool.getNumActive("a"));
+            assertEquals(i < 8 ? i + 1 : 8, gkoPool.getNumIdle("a"));
         }
 
         // total number of idle instances is twice maxIdle
@@ -2262,7 +2260,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
                         );
             }
         }
-        assertEquals(wtt.length/2,failed,"Expected half the threads to fail");
+        assertEquals(wtt.length / 2, failed, "Expected half the threads to fail");
     }
 
     @Test
@@ -2436,8 +2434,8 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         gkoPool.setMaxTotalPerKey(-1);
         gkoPool.setBlockWhenExhausted(false);
         final String obj = gkoPool.borrowObject("");
-        assertEquals("0",obj);
-        gkoPool.returnObject("",obj);
+        assertEquals("0", obj);
+        gkoPool.returnObject("", obj);
     }
 
     /**
@@ -2469,52 +2467,52 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
     public void testNumActiveNumIdle2() throws Exception {
-        assertEquals(0,gkoPool.getNumActive());
-        assertEquals(0,gkoPool.getNumIdle());
-        assertEquals(0,gkoPool.getNumActive("A"));
-        assertEquals(0,gkoPool.getNumIdle("A"));
-        assertEquals(0,gkoPool.getNumActive("B"));
-        assertEquals(0,gkoPool.getNumIdle("B"));
+        assertEquals(0, gkoPool.getNumActive());
+        assertEquals(0, gkoPool.getNumIdle());
+        assertEquals(0, gkoPool.getNumActive("A"));
+        assertEquals(0, gkoPool.getNumIdle("A"));
+        assertEquals(0, gkoPool.getNumActive("B"));
+        assertEquals(0, gkoPool.getNumIdle("B"));
 
         final String objA0 = gkoPool.borrowObject("A");
         final String objB0 = gkoPool.borrowObject("B");
 
-        assertEquals(2,gkoPool.getNumActive());
-        assertEquals(0,gkoPool.getNumIdle());
-        assertEquals(1,gkoPool.getNumActive("A"));
-        assertEquals(0,gkoPool.getNumIdle("A"));
-        assertEquals(1,gkoPool.getNumActive("B"));
-        assertEquals(0,gkoPool.getNumIdle("B"));
+        assertEquals(2, gkoPool.getNumActive());
+        assertEquals(0, gkoPool.getNumIdle());
+        assertEquals(1, gkoPool.getNumActive("A"));
+        assertEquals(0, gkoPool.getNumIdle("A"));
+        assertEquals(1, gkoPool.getNumActive("B"));
+        assertEquals(0, gkoPool.getNumIdle("B"));
 
         final String objA1 = gkoPool.borrowObject("A");
         final String objB1 = gkoPool.borrowObject("B");
 
-        assertEquals(4,gkoPool.getNumActive());
-        assertEquals(0,gkoPool.getNumIdle());
-        assertEquals(2,gkoPool.getNumActive("A"));
-        assertEquals(0,gkoPool.getNumIdle("A"));
-        assertEquals(2,gkoPool.getNumActive("B"));
-        assertEquals(0,gkoPool.getNumIdle("B"));
+        assertEquals(4, gkoPool.getNumActive());
+        assertEquals(0, gkoPool.getNumIdle());
+        assertEquals(2, gkoPool.getNumActive("A"));
+        assertEquals(0, gkoPool.getNumIdle("A"));
+        assertEquals(2, gkoPool.getNumActive("B"));
+        assertEquals(0, gkoPool.getNumIdle("B"));
 
-        gkoPool.returnObject("A",objA0);
-        gkoPool.returnObject("B",objB0);
+        gkoPool.returnObject("A", objA0);
+        gkoPool.returnObject("B", objB0);
 
-        assertEquals(2,gkoPool.getNumActive());
-        assertEquals(2,gkoPool.getNumIdle());
-        assertEquals(1,gkoPool.getNumActive("A"));
-        assertEquals(1,gkoPool.getNumIdle("A"));
-        assertEquals(1,gkoPool.getNumActive("B"));
-        assertEquals(1,gkoPool.getNumIdle("B"));
+        assertEquals(2, gkoPool.getNumActive());
+        assertEquals(2, gkoPool.getNumIdle());
+        assertEquals(1, gkoPool.getNumActive("A"));
+        assertEquals(1, gkoPool.getNumIdle("A"));
+        assertEquals(1, gkoPool.getNumActive("B"));
+        assertEquals(1, gkoPool.getNumIdle("B"));
 
-        gkoPool.returnObject("A",objA1);
-        gkoPool.returnObject("B",objB1);
+        gkoPool.returnObject("A", objA1);
+        gkoPool.returnObject("B", objB1);
 
-        assertEquals(0,gkoPool.getNumActive());
-        assertEquals(4,gkoPool.getNumIdle());
-        assertEquals(0,gkoPool.getNumActive("A"));
-        assertEquals(2,gkoPool.getNumIdle("A"));
-        assertEquals(0,gkoPool.getNumActive("B"));
-        assertEquals(2,gkoPool.getNumIdle("B"));
+        assertEquals(0, gkoPool.getNumActive());
+        assertEquals(4, gkoPool.getNumIdle());
+        assertEquals(0, gkoPool.getNumActive("A"));
+        assertEquals(2, gkoPool.getNumIdle("A"));
+        assertEquals(0, gkoPool.getNumActive("B"));
+        assertEquals(2, gkoPool.getNumIdle("B"));
     }
 
     @Test

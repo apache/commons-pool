@@ -264,7 +264,7 @@ public class TestAbandonedObjectPool {
             msg.append('\n');
             mbs.unregisterMBean(name);
         }
-        assertEquals( 0, registeredPoolCount,msg.toString());
+        assertEquals(0, registeredPoolCount, msg.toString());
     }
 
     /**

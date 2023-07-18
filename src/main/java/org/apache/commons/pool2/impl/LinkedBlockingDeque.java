@@ -983,7 +983,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
         lock.lockInterruptibly();
         try {
             E x;
-            while ( (x = unlinkLast()) == null) {
+            while ((x = unlinkLast()) == null) {
                 if (nanos <= 0) {
                     return null;
                 }
@@ -1320,7 +1320,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
         lock.lock();
         try {
             E x;
-            while ( (x = unlinkFirst()) == null) {
+            while ((x = unlinkFirst()) == null) {
                 notEmpty.await();
             }
             return x;
@@ -1340,7 +1340,7 @@ class LinkedBlockingDeque<E> extends AbstractQueue<E>
         lock.lock();
         try {
             E x;
-            while ( (x = unlinkLast()) == null) {
+            while ((x = unlinkLast()) == null) {
                 notEmpty.await();
             }
             return x;

@@ -183,7 +183,7 @@ public class TestAbandonedKeyedObjectPool {
             msg.append('\n');
             mbs.unregisterMBean(name);
         }
-        assertEquals(0, registeredPoolCount,msg.toString());
+        assertEquals(0, registeredPoolCount, msg.toString());
     }
 
     /**
@@ -361,7 +361,7 @@ public class TestAbandonedKeyedObjectPool {
         // validation takes a second, evictor runs every 500 ms
         final PooledTestObject obj = pool.borrowObject(0);
         Thread.sleep(50);       // abandon obj
-        pool.returnObject(0,obj); // evictor will run during validation
+        pool.returnObject(0, obj); // evictor will run during validation
         final PooledTestObject obj2 = pool.borrowObject(0);
         assertEquals(obj, obj2);          // should get original back
         assertFalse(obj2.isDestroyed());  // and not destroyed

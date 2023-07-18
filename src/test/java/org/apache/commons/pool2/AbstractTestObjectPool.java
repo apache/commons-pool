@@ -89,24 +89,24 @@ public abstract class AbstractTestObjectPool {
 
         // The following should not throw exceptions just because the pool is closed.
         if (pool.getNumIdle() >= 0) {
-            assertEquals( 0, pool.getNumIdle(),"A closed pool shouldn't have any idle objects.");
+            assertEquals(0, pool.getNumIdle(), "A closed pool shouldn't have any idle objects.");
         }
         if (pool.getNumActive() >= 0) {
-            assertEquals( 2, pool.getNumActive(),"A closed pool should still keep count of active objects.");
+            assertEquals(2, pool.getNumActive(), "A closed pool should still keep count of active objects.");
         }
         pool.returnObject(o1);
         if (pool.getNumIdle() >= 0) {
-            assertEquals( 0, pool.getNumIdle(),"returnObject should not add items back into the idle object pool for a closed pool.");
+            assertEquals(0, pool.getNumIdle(), "returnObject should not add items back into the idle object pool for a closed pool.");
         }
         if (pool.getNumActive() >= 0) {
-            assertEquals( 1, pool.getNumActive(),"A closed pool should still keep count of active objects.");
+            assertEquals(1, pool.getNumActive(), "A closed pool should still keep count of active objects.");
         }
         pool.invalidateObject(o2);
         if (pool.getNumIdle() >= 0) {
-            assertEquals( 0, pool.getNumIdle(),"invalidateObject must not add items back into the idle object pool.");
+            assertEquals(0, pool.getNumIdle(), "invalidateObject must not add items back into the idle object pool.");
         }
         if (pool.getNumActive() >= 0) {
-            assertEquals( 0, pool.getNumActive(),"A closed pool should still keep count of active objects.");
+            assertEquals(0, pool.getNumActive(), "A closed pool should still keep count of active objects.");
         }
         pool.clear();
         pool.close();
