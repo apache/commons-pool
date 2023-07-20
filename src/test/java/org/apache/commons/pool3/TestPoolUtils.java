@@ -30,16 +30,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TimerTask;
 
 import org.apache.commons.pool3.impl.DefaultPooledObject;
 import org.apache.commons.pool3.impl.GenericKeyedObjectPool;
 import org.apache.commons.pool3.impl.GenericObjectPool;
-import org.apache.commons.pool3.impl.TestGenericKeyedObjectPool;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 
@@ -612,81 +609,6 @@ public class TestPoolUtils {
     @Test
     public void testJavaBeanInstantiation() {
         assertNotNull(new PoolUtils());
-    }
-
-    @SuppressWarnings("deprecation")
-    @Test
-    public void testPrefillKeyedObjectPool() throws Exception {
-        assertThrows(IllegalArgumentException.class, () -> PoolUtils.prefill(null, new Object(), 1),
-                "PoolUtils.prefill(KeyedObjectPool,Object,int) must not accept null pool.");
-
-        try (final KeyedObjectPool<Object, String, TestException> pool = new GenericKeyedObjectPool<>(new TestGenericKeyedObjectPool.SimpleFactory<>())) {
-            assertThrows(IllegalArgumentException.class, () -> PoolUtils.prefill(pool, (Object) null, 1),
-                    "PoolUtils.prefill(KeyedObjectPool,Object,int) must not accept null key.");
-        }
-
-        final List<String> calledMethods = new ArrayList<>();
-        try (@SuppressWarnings("unchecked")
-        final KeyedObjectPool<Object, Object, RuntimeException> pool = createProxy(KeyedObjectPool.class, calledMethods)) {
-
-            PoolUtils.prefill(pool, new Object(), 0);
-            final List<String> expectedMethods = new ArrayList<>();
-            expectedMethods.add("addObjects");
-            assertEquals(expectedMethods, calledMethods);
-
-            calledMethods.clear();
-            PoolUtils.prefill(pool, new Object(), 3);
-            assertEquals(expectedMethods, calledMethods);
-        }
-    }
-
-    @SuppressWarnings("deprecation")
-    @Test
-    public void testPrefillKeyedObjectPoolCollection() {
-        try (@SuppressWarnings("unchecked")
-        final KeyedObjectPool<String, String, RuntimeException> pool = createProxy(KeyedObjectPool.class, (List<String>) null)) {
-            assertThrows(IllegalArgumentException.class, () -> PoolUtils.prefill(pool, (Collection<String>) null, 1),
-                    "PoolUtils.prefill(KeyedObjectPool,Collection,int) must not accept null keys.");
-        }
-
-        final List<String> calledMethods = new ArrayList<>();
-        try (@SuppressWarnings("unchecked")
-            final KeyedObjectPool<String, Object, RuntimeException> pool = createProxy(KeyedObjectPool.class, calledMethods)) {
-
-            final Set<String> keys = new HashSet<>();
-            PoolUtils.prefill(pool, keys, 0);
-            final List<String> expectedMethods = new ArrayList<>();
-            expectedMethods.add("addObjects");
-            assertEquals(expectedMethods, calledMethods);
-
-            calledMethods.clear();
-            keys.add("one");
-            keys.add("two");
-            keys.add("three");
-            final int count = 3;
-            PoolUtils.prefill(pool, keys, count);
-            assertEquals(expectedMethods, calledMethods);
-        }
-    }
-
-    @SuppressWarnings("deprecation")
-    @Test
-    public void testPrefillObjectPool() {
-        assertThrows(IllegalArgumentException.class, () -> PoolUtils.prefill(null, 1), "PoolUtils.prefill(ObjectPool,int) must not allow null pool.");
-
-        final List<String> calledMethods = new ArrayList<>();
-        try (@SuppressWarnings("unchecked")
-        final ObjectPool<Object, RuntimeException> pool = createProxy(ObjectPool.class, calledMethods)) {
-
-            PoolUtils.prefill(pool, 0);
-            final List<String> expectedMethods = new ArrayList<>();
-            expectedMethods.add("addObjects");
-            assertEquals(expectedMethods, calledMethods);
-
-            calledMethods.clear();
-            PoolUtils.prefill(pool, 3);
-            assertEquals(expectedMethods, calledMethods);
-        }
     }
 
     @Test

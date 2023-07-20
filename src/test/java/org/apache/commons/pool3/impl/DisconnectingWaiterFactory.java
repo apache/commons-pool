@@ -29,17 +29,6 @@ import org.apache.commons.pool3.Waiter;
 import org.apache.commons.pool3.WaiterFactory;
 
 public class DisconnectingWaiterFactory<K> extends WaiterFactory<K> {
-    /**
-     * 
-     * A WaiterFactory that simulates a resource required by factory methods going
-     * down (and coming back).
-     * <p>
-     * When connected, this factory behaves like a normal WaiterFactory.
-     * When disconnected, factory methods are determined by functional parameters.
-     * </p>
-     */
-    private final AtomicBoolean connected = new AtomicBoolean(true);
-
     private static final Duration DEFAULT_TIME_BETWEEN_CONNECTION_CHECKS = Duration.ofMillis(100);
 
     private static final Duration DEFAULT_MAX_WAIT = Duration.ofSeconds(10);
@@ -68,6 +57,37 @@ public class DisconnectingWaiterFactory<K> extends WaiterFactory<K> {
      */
     protected static final Predicate<PooledObject<Waiter>> DEFAULT_DISCONNECTED_VALIDATION_ACTION = w -> false;
 
+    /**
+     * Blocks until connected or maxWait is exceeded.
+     * 
+     * @throws TimeoutException if maxWait is exceeded.
+     */
+    private static void waitForConnection(final AtomicBoolean connected,
+            final Duration timeBetweenConnectionChecks, final Duration maxWait) {
+        final Instant start = Instant.now();
+        while (!connected.get()) {
+            try {
+                Thread.sleep(timeBetweenConnectionChecks.toMillis());
+            } catch (final InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (Duration.between(start, Instant.now()).compareTo(maxWait) > 0) {
+                throw new IllegalStateException(new TimeoutException("Timed out waiting for connection"));
+            }
+        }
+    }
+
+    /**
+     * 
+     * A WaiterFactory that simulates a resource required by factory methods going
+     * down (and coming back).
+     * <p>
+     * When connected, this factory behaves like a normal WaiterFactory.
+     * When disconnected, factory methods are determined by functional parameters.
+     * </p>
+     */
+    private final AtomicBoolean connected = new AtomicBoolean(true);
+
     /** Time between reconnection checks */
     final Duration timeBetweenConnectionChecks;
 
@@ -88,6 +108,11 @@ public class DisconnectingWaiterFactory<K> extends WaiterFactory<K> {
 
     /** Function to perform for validate when invoked in disconnected mode */
     final Predicate<PooledObject<Waiter>> disconnectedValidationAction;
+
+    public DisconnectingWaiterFactory() {
+        this(DEFAULT_DISCONNECTED_CREATE_ACTION, DEFAULT_DISCONNECTED_LIFECYCLE_ACTION,
+                DEFAULT_DISCONNECTED_VALIDATION_ACTION);
+    }
 
     public DisconnectingWaiterFactory(final long activateLatency, final long destroyLatency,
             final long makeLatency, final long passivateLatency, final long validateLatency,
@@ -133,34 +158,57 @@ public class DisconnectingWaiterFactory<K> extends WaiterFactory<K> {
         this.disconnectedValidationAction = disconnectedValidationAction;
     }
 
-    public DisconnectingWaiterFactory() {
-        this(DEFAULT_DISCONNECTED_CREATE_ACTION, DEFAULT_DISCONNECTED_LIFECYCLE_ACTION,
-                DEFAULT_DISCONNECTED_VALIDATION_ACTION);
-    }
-
-    private boolean validate(final PooledObject<Waiter> obj) {
-        if (connected.get()) {
-            return super.validateObject(obj);
-        }
-        return disconnectedValidationAction.test(obj);
-    }
-
-    @Override
-    public boolean validateObject(final K key, final PooledObject<Waiter> obj) {
-        return validate(obj);
-    }
-
-    @Override
-    public boolean validateObject(final PooledObject<Waiter> obj) {
-        return validate(obj);
-    }
-
     private void activate(final PooledObject<Waiter> obj) {
         if (connected.get()) {
             super.activateObject(obj);
         } else {
             disconnectedLifcycleAction.accept(obj);
         }
+    }
+
+    @Override
+    public void activateObject(final K key, final PooledObject<Waiter> obj) {
+        activate(obj);
+    }
+
+    @Override
+    public void activateObject(final PooledObject<Waiter> obj) {
+        activate(obj);
+    }
+
+    /**
+     * Reconnect the factory.
+     */
+    public void connect() {
+        connected.set(true);
+    }
+    /*
+     * TODO: add builder to clean up constructors and make maxWait,
+     * timeBetweenConnectionChecks configurable.
+     */
+
+    /**
+     * Disconnect the factory.
+     */
+    public void disconnect() {
+        connected.set(false);
+    }
+
+    private PooledObject<Waiter> make() {
+        if (connected.get()) {
+            return super.makeObject();
+        }
+        return disconnectedCreateAction.get();
+    }
+
+    @Override
+    public PooledObject<Waiter> makeObject() {
+        return make();
+    }
+
+    @Override
+    public PooledObject<Waiter> makeObject(final K key) {
+        return make();
     }
 
     private void passivate(final PooledObject<Waiter> obj) {
@@ -181,69 +229,21 @@ public class DisconnectingWaiterFactory<K> extends WaiterFactory<K> {
         passivate(obj);
     }
 
-    @Override
-    public void activateObject(final K key, final PooledObject<Waiter> obj) {
-        activate(obj);
-    }
-
-    @Override
-    public void activateObject(final PooledObject<Waiter> obj) {
-        activate(obj);
-    }
-
-    @Override
-    public PooledObject<Waiter> makeObject(final K key) {
-        return make();
-    }
-
-    @Override
-    public PooledObject<Waiter> makeObject() {
-        return make();
-    }
-
-    private PooledObject<Waiter> make() {
+    private boolean validate(final PooledObject<Waiter> obj) {
         if (connected.get()) {
-            return super.makeObject();
+            return super.validateObject(obj);
         }
-        return disconnectedCreateAction.get();
+        return disconnectedValidationAction.test(obj);
     }
 
-    /**
-     * Blocks until connected or maxWait is exceeded.
-     * 
-     * @throws TimeoutException if maxWait is exceeded.
-     */
-    private static void waitForConnection(final AtomicBoolean connected,
-            final Duration timeBetweenConnectionChecks, final Duration maxWait) {
-        final Instant start = Instant.now();
-        while (!connected.get()) {
-            try {
-                Thread.sleep(timeBetweenConnectionChecks.toMillis());
-            } catch (final InterruptedException e) {
-                e.printStackTrace();
-            }
-            if (Duration.between(start, Instant.now()).compareTo(maxWait) > 0) {
-                throw new IllegalStateException(new TimeoutException("Timed out waiting for connection"));
-            }
-        }
+    @Override
+    public boolean validateObject(final K key, final PooledObject<Waiter> obj) {
+        return validate(obj);
     }
 
-    /**
-     * Disconnect the factory.
-     */
-    public void disconnect() {
-        connected.set(false);
+    @Override
+    public boolean validateObject(final PooledObject<Waiter> obj) {
+        return validate(obj);
     }
-
-    /**
-     * Reconnect the factory.
-     */
-    public void connect() {
-        connected.set(true);
-    }
-    /*
-     * TODO: add builder to clean up constructors and make maxWait,
-     * timeBetweenConnectionChecks configurable.
-     */
 
 }

@@ -1185,8 +1185,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * </p>
      *
      * @return minimum size of the each keyed pool
-     *
-     * @see #setTimeBetweenEvictionRunsMillis
+     * @see #setDurationBetweenEvictionRuns(Duration)
      */
     @Override
     public int getMinIdlePerKey() {
@@ -1679,7 +1678,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      *
      * @see #getMinIdlePerKey()
      * @see #getMaxIdlePerKey()
-     * @see #setTimeBetweenEvictionRuns(Duration)
+     * @see #setDurationBetweenEvictionRuns(Duration)
      */
     public void setMinIdlePerKey(final int minIdlePerKey) {
         this.minIdlePerKey = minIdlePerKey;

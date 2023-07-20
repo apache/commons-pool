@@ -51,18 +51,18 @@ public class TestDefaultPooledObject {
         final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 3);
         final Runnable allocateAndDeallocateTask = () -> {
             for (int i1 = 0; i1 < 10000; i1++) {
-                if (dpo.getIdleDuration().isNegative() || dpo.getIdleTime().isNegative()) {
+                if (dpo.getIdleDuration().isNegative()) {
                     negativeIdleTimeReturned.set(true);
                     break;
                 }
-                if (dpo.getIdleDuration().isNegative() || dpo.getIdleTime().isNegative()) {
+                if (dpo.getIdleDuration().isNegative()) {
                     negativeIdleTimeReturned.set(true);
                     break;
                 }
             }
             dpo.allocate();
             for (int i2 = 0; i2 < 10000; i2++) {
-                if (dpo.getIdleDuration().isNegative() || dpo.getIdleTime().isNegative()) {
+                if (dpo.getIdleDuration().isNegative()) {
                     negativeIdleTimeReturned.set(true);
                     break;
                 }
@@ -71,7 +71,7 @@ public class TestDefaultPooledObject {
         };
         final Runnable getIdleTimeTask = () -> {
             for (int i = 0; i < 10000; i++) {
-                if (dpo.getIdleDuration().isNegative() || dpo.getIdleTime().isNegative()) {
+                if (dpo.getIdleDuration().isNegative()) {
                     negativeIdleTimeReturned.set(true);
                     break;
                 }
@@ -105,10 +105,7 @@ public class TestDefaultPooledObject {
         assertThat(Duration.ZERO, lessThanOrEqualTo(Duration.ZERO.plusNanos(1))); // sanity check
         assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getIdleDuration()));
         // Deprecated
-        assertThat(dpo.getActiveDuration().toMillis(), lessThanOrEqualTo(dpo.getActiveTimeMillis()));
-        assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getActiveTime()));
-        assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getIdleTime()));
-        assertThat(dpo.getActiveDuration().toMillis(), lessThanOrEqualTo(dpo.getIdleTimeMillis()));
+        assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getActiveDuration()));
     }
 
     @Test
@@ -122,13 +119,8 @@ public class TestDefaultPooledObject {
         assertEquals(dpo.getCreateInstant(), dpo.getLastReturnInstant());
         assertEquals(dpo.getCreateInstant(), dpo.getLastUsedInstant());
 
-        // Instant vs. long (deprecated)
-        assertEquals(dpo.getCreateInstant().toEpochMilli(), dpo.getCreateTime());
+        assertEquals(dpo.getCreateInstant(), dpo.getCreateInstant());
 
-        // long vs. long (deprecated)
-        assertEquals(dpo.getCreateTime(), dpo.getLastBorrowTime());
-        assertEquals(dpo.getCreateTime(), dpo.getLastReturnTime());
-        assertEquals(dpo.getCreateTime(), dpo.getLastUsedTime());
     }
 
     @Test
@@ -156,10 +148,5 @@ public class TestDefaultPooledObject {
         assertFalse(dpo.getIdleDuration().isZero());
         // We use greaterThanOrEqualTo instead of equal because "now" many be different when each argument is evaluated.
         assertThat(dpo.getIdleDuration(), lessThanOrEqualTo(dpo.getActiveDuration()));
-        // Deprecated
-        // assertThat(dpo.getIdleDuration().toMillis(), lessThanOrEqualTo(dpo.getIdleTimeMillis()));
-        // assertThat(dpo.getIdleDuration(), lessThanOrEqualTo(dpo.getIdleTime()));
-        assertThat(dpo.getIdleDuration(), lessThanOrEqualTo(dpo.getActiveTime()));
-        assertThat(dpo.getIdleDuration().toMillis(), lessThanOrEqualTo(dpo.getActiveTimeMillis()));
     }
 }

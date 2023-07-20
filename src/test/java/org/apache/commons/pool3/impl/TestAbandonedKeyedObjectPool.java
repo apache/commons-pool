@@ -147,11 +147,6 @@ public class TestAbandonedKeyedObjectPool {
         // One second Duration.
         abandonedConfig.setRemoveAbandonedTimeout(TestConstants.ONE_SECOND_DURATION);
         assertEquals(TestConstants.ONE_SECOND_DURATION, abandonedConfig.getRemoveAbandonedTimeoutDuration());
-        assertEquals(1, abandonedConfig.getRemoveAbandonedTimeout());
-        // One second int (not millis).
-        abandonedConfig.setRemoveAbandonedTimeout(1);
-        assertEquals(TestConstants.ONE_SECOND_DURATION, abandonedConfig.getRemoveAbandonedTimeoutDuration());
-        assertEquals(1, abandonedConfig.getRemoveAbandonedTimeout());
 
         pool = new GenericKeyedObjectPool<>(
                new SimpleFactory(),
@@ -205,7 +200,7 @@ public class TestAbandonedKeyedObjectPool {
         final int n = 10;
         pool.setMaxTotal(n);
         pool.setBlockWhenExhausted(false);
-        pool.setTimeBetweenEvictionRuns(Duration.ofMillis(250));
+        pool.setDurationBetweenEvictionRuns(Duration.ofMillis(250));
         PooledTestObject pooledObj = null;
         final Integer key = 0;
         for (int i = 0; i < 5; i++) {
@@ -317,7 +312,7 @@ public class TestAbandonedKeyedObjectPool {
              // validate takes 1 second
              new SimpleFactory(0, 0),
              new GenericKeyedObjectPoolConfig<>(), abandonedConfig);
-        pool.setTimeBetweenEvictionRuns(Duration.ofMillis(50));
+        pool.setDurationBetweenEvictionRuns(Duration.ofMillis(50));
         // Borrow an object, wait long enough for it to be abandoned
         final PooledTestObject obj = pool.borrowObject(0);
         Thread.sleep(100);
@@ -354,7 +349,7 @@ public class TestAbandonedKeyedObjectPool {
         final int n = 10;
         pool.setMaxTotal(n);
         pool.setBlockWhenExhausted(false);
-        pool.setTimeBetweenEvictionRuns(Duration.ofMillis(500));
+        pool.setDurationBetweenEvictionRuns(Duration.ofMillis(500));
         pool.setTestOnReturn(true);
         // Borrow an object, wait long enough for it to be abandoned
         // then arrange for evictor to run while it is being returned
@@ -380,7 +375,7 @@ public class TestAbandonedKeyedObjectPool {
         final PrintWriter pw = new PrintWriter(bos);
         abandonedConfig.setLogWriter(pw);
         pool.setAbandonedConfig(abandonedConfig);
-        pool.setTimeBetweenEvictionRuns(Duration.ofMillis(100));
+        pool.setDurationBetweenEvictionRuns(Duration.ofMillis(100));
         final PooledTestObject o1 = pool.borrowObject(0);
         Thread.sleep(2000);
         assertTrue(o1.isDestroyed());
@@ -401,7 +396,7 @@ public class TestAbandonedKeyedObjectPool {
     public void testWhenExhaustedBlock() throws Exception {
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
         pool.setAbandonedConfig(abandonedConfig);
-        pool.setTimeBetweenEvictionRuns(Duration.ofMillis(500));
+        pool.setDurationBetweenEvictionRuns(Duration.ofMillis(500));
 
         pool.setMaxTotal(1);
 

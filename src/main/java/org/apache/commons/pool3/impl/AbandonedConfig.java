@@ -177,23 +177,6 @@ public class AbandonedConfig {
     }
 
     /**
-     * <p>Timeout in seconds before an abandoned object can be removed.</p>
-     *
-     * <p>The time of most recent use of an object is the maximum (latest) of
-     * {@link TrackedUse#getLastUsedInstant()} (if this class of the object implements
-     * TrackedUse) and the time when the object was borrowed from the pool.</p>
-     *
-     * <p>The default value is 300 seconds.</p>
-     *
-     * @return the abandoned object timeout in seconds.
-     * @deprecated Use {@link #getRemoveAbandonedTimeoutDuration()}.
-     */
-    @Deprecated
-    public int getRemoveAbandonedTimeout() {
-        return (int) this.removeAbandonedTimeoutDuration.getSeconds();
-    }
-
-    /**
      * <p>Timeout before an abandoned object can be removed.</p>
      *
      * <p>The time of most recent use of an object is the maximum (latest) of
@@ -296,24 +279,6 @@ public class AbandonedConfig {
      */
     public void setRemoveAbandonedTimeout(final Duration removeAbandonedTimeout) {
         this.removeAbandonedTimeoutDuration = PoolImplUtils.nonNull(removeAbandonedTimeout, DEFAULT_REMOVE_ABANDONED_TIMEOUT_DURATION);
-    }
-
-    /**
-     * Sets the timeout in seconds before an abandoned object can be
-     * removed.
-     *
-     * <p>Setting this property has no effect if
-     * {@link #getRemoveAbandonedOnBorrow() removeAbandonedOnBorrow} and
-     * {@link #getRemoveAbandonedOnMaintenance() removeAbandonedOnMaintenance}
-     * are both false.</p>
-     *
-     * @param removeAbandonedTimeoutSeconds new abandoned timeout in seconds
-     * @see #getRemoveAbandonedTimeoutDuration()
-     * @deprecated Use {@link #setRemoveAbandonedTimeout(Duration)}.
-     */
-    @Deprecated
-    public void setRemoveAbandonedTimeout(final int removeAbandonedTimeoutSeconds) {
-        setRemoveAbandonedTimeout(Duration.ofSeconds(removeAbandonedTimeoutSeconds));
     }
 
     /**

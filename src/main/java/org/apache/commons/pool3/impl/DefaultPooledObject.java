@@ -136,11 +136,6 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
         return false;
     }
 
-    @Override
-    public long getActiveTimeMillis() {
-        return getActiveDuration().toMillis();
-    }
-
     /**
      * Gets the number of times this object has been borrowed.
      * @return The number of times this object has been borrowed.
@@ -157,11 +152,6 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
     }
 
     @Override
-    public long getCreateTime() {
-        return createInstant.toEpochMilli();
-    }
-
-    @Override
     public Duration getIdleDuration() {
         // elapsed may be negative if:
         // - another thread updates lastReturnInstant during the calculation window
@@ -171,23 +161,8 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
     }
 
     @Override
-    public Duration getIdleTime() {
-        return getIdleDuration();
-    }
-
-    @Override
-    public long getIdleTimeMillis() {
-        return getIdleDuration().toMillis();
-    }
-
-    @Override
     public Instant getLastBorrowInstant() {
         return lastBorrowInstant;
-    }
-
-    @Override
-    public long getLastBorrowTime() {
-        return lastBorrowInstant.toEpochMilli();
     }
 
     @Override
@@ -195,17 +170,12 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
         return lastReturnInstant;
     }
 
-    @Override
-    public long getLastReturnTime() {
-        return lastReturnInstant.toEpochMilli();
-    }
-
     /**
      * Gets an estimate of the last time this object was used.  If the class
      * of the pooled object implements {@link TrackedUse}, what is returned is
      * the maximum of {@link TrackedUse#getLastUsedInstant()} and
-     * {@link #getLastBorrowTime()}; otherwise this method gives the same
-     * value as {@link #getLastBorrowTime()}.
+     * {@link #getLastBorrowInstant()}; otherwise this method gives the same
+     * value as {@link #getLastBorrowInstant()}.
      *
      * @return the last Instant this object was used.
      */
@@ -215,20 +185,6 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
             return PoolImplUtils.max(((TrackedUse) object).getLastUsedInstant(), lastUseInstant);
         }
         return lastUseInstant;
-    }
-
-    /**
-     * Gets an estimate of the last time this object was used.  If the class
-     * of the pooled object implements {@link TrackedUse}, what is returned is
-     * the maximum of {@link TrackedUse#getLastUsedInstant()} and
-     * {@link #getLastBorrowTime()}; otherwise this method gives the same
-     * value as {@link #getLastBorrowTime()}.
-     *
-     * @return the last time this object was used
-     */
-    @Override
-    public long getLastUsedTime() {
-        return getLastUsedInstant().toEpochMilli();
     }
 
     @Override

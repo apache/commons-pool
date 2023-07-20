@@ -28,8 +28,8 @@ public class TestTrackedUse {
     class DefaultTrackedUse implements TrackedUse {
 
         @Override
-        public long getLastUsed() {
-            return 1;
+        public Instant getLastUsedInstant() {
+            return Instant.ofEpochMilli(1);
         }
 
     }

@@ -45,20 +45,6 @@ public final class CallStackUtils {
     }
 
     /**
-     * Constructs a new {@link CallStack} using the fastest allowed strategy.
-     *
-     * @param messageFormat message (or format) to print first in stack traces
-     * @param useTimestamp  if true, interpret message as a SimpleDateFormat and print the created timestamp; otherwise,
-     *                      print message format literally
-     * @return a new CallStack
-     * @deprecated use {@link #newCallStack(String, boolean, boolean)}
-     */
-    @Deprecated
-    public static CallStack newCallStack(final String messageFormat, final boolean useTimestamp) {
-        return newCallStack(messageFormat, useTimestamp, false);
-    }
-
-    /**
      * Constructs a new {@link CallStack} using the fasted allowed strategy.
      *
      * @param messageFormat         message (or format) to print first in stack traces

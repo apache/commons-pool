@@ -104,30 +104,6 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     }
 
     /**
-     * Gets the amount of time this object last spent in the active state (it may still be active in which case
-     * subsequent calls will return an increased value).
-     *
-     * @return The duration last spent in the active state.
-     * @since 2.10.0
-     * @deprecated Use {@link #getActiveDuration()}.
-     */
-    @Deprecated
-    default Duration getActiveTime() {
-        return getActiveDuration();
-    }
-
-    /**
-     * Gets the amount of time in milliseconds this object last spent in the
-     * active state (it may still be active in which case subsequent calls will
-     * return an increased value).
-     *
-     * @return The time in milliseconds last spent in the active state.
-     * @deprecated Use {@link #getActiveTime()} which offers the best precision.
-     */
-    @Deprecated
-    long getActiveTimeMillis();
-
-    /**
      * Gets the number of times this object has been borrowed.
      *
      * @return -1 by default for implementations prior to release 2.7.0.
@@ -143,19 +119,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      * @return The creation time for the wrapped object.
      * @since 2.11.0
      */
-    default Instant getCreateInstant() {
-        return Instant.ofEpochMilli(getCreateTime());
-    }
-
-    /**
-     * Gets the time (using the same basis as
-     * {@link java.time.Clock#instant()}) that this object was created.
-     *
-     * @return The creation time for the wrapped object.
-     * @deprecated Use {@link #getCreateInstant()} which offers the best precision.
-     */
-    @Deprecated
-    long getCreateTime();
+    Instant getCreateInstant();
 
     /**
      * Gets the duration since this object was created (using {@link Instant#now()}).
@@ -175,34 +139,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      * @return The amount of time in last spent in the idle state.
      * @since 2.11.0
      */
-    default Duration getIdleDuration() {
-        return Duration.ofMillis(getIdleTimeMillis());
-    }
-
-    /**
-     * Gets the amount of time that this object last spend in the
-     * idle state (it may still be idle in which case subsequent calls will
-     * return an increased value).
-     *
-     * @return The amount of time in last spent in the idle state.
-     * @since 2.10.0
-     * @deprecated Use {@link #getIdleDuration()}.
-     */
-    @Deprecated
-    default Duration getIdleTime() {
-        return Duration.ofMillis(getIdleTimeMillis());
-    }
-
-    /**
-     * Gets the amount of time in milliseconds that this object last spend in the
-     * idle state (it may still be idle in which case subsequent calls will
-     * return an increased value).
-     *
-     * @return The time in milliseconds last spent in the idle state.
-     * @deprecated Use {@link #getIdleTime()} which offers the best precision.
-     */
-    @Deprecated
-    long getIdleTimeMillis();
+    Duration getIdleDuration();
 
     /**
      * Gets the time the wrapped object was last borrowed.
@@ -210,18 +147,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      * @return The time the object was last borrowed.
      * @since 2.11.0
      */
-    default Instant getLastBorrowInstant() {
-        return Instant.ofEpochMilli(getLastBorrowTime());
-    }
-
-    /**
-     * Gets the time the wrapped object was last borrowed.
-     *
-     * @return The time the object was last borrowed.
-     * @deprecated Use {@link #getLastBorrowInstant()} which offers the best precision.
-     */
-    @Deprecated
-    long getLastBorrowTime();
+    Instant getLastBorrowInstant();
 
     /**
      * Gets the time the wrapped object was last borrowed.
@@ -229,43 +155,17 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      * @return The time the object was last borrowed.
      * @since 2.11.0
      */
-    default Instant getLastReturnInstant() {
-        return Instant.ofEpochMilli(getLastReturnTime());
-    }
-
-    /**
-     * Gets the time the wrapped object was last returned.
-     *
-     * @return The time the object was last returned.
-     * @deprecated Use {@link #getLastReturnInstant()} which offers the best precision.
-     */
-    @Deprecated
-    long getLastReturnTime();
+    Instant getLastReturnInstant();
 
     /**
      * Gets an estimate of the last time this object was used. If the class of the pooled object implements
      * {@link TrackedUse}, what is returned is the maximum of {@link TrackedUse#getLastUsedInstant()} and
-     * {@link #getLastBorrowTime()}; otherwise this method gives the same value as {@link #getLastBorrowTime()}.
+     * {@link #getLastBorrowInstant()}; otherwise this method gives the same value as {@link #getLastBorrowInstant()}.
      *
      * @return the last time this object was used
      * @since 2.11.0
      */
-    default Instant getLastUsedInstant() {
-        return Instant.ofEpochMilli(getLastUsedTime());
-    }
-
-    /**
-     * Gets an estimate of the last time this object was used.  If the class
-     * of the pooled object implements {@link TrackedUse}, what is returned is
-     * the maximum of {@link TrackedUse#getLastUsedInstant()} and
-     * {@link #getLastBorrowTime()}; otherwise this method gives the same
-     * value as {@link #getLastBorrowTime()}.
-     *
-     * @return the last time this object was used.
-     * @deprecated Use {@link #getLastUsedInstant()} which offers the best precision.
-     */
-    @Deprecated
-    long getLastUsedTime();
+    Instant getLastUsedInstant();
 
     /**
      * Gets the underlying object that is wrapped by this instance of

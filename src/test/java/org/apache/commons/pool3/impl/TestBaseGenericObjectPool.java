@@ -94,10 +94,10 @@ public class TestBaseGenericObjectPool {
         final AtomicIntegerFactory factory = new AtomicIntegerFactory();
         factory.setValidateLatency(50);
         try (final GenericObjectPool<AtomicInteger, RuntimeException> evictingPool = new GenericObjectPool<>(factory)) {
-            evictingPool.setTimeBetweenEvictionRuns(Duration.ofMillis(100));
+            evictingPool.setDurationBetweenEvictionRuns(Duration.ofMillis(100));
             evictingPool.setNumTestsPerEvictionRun(5);
             evictingPool.setTestWhileIdle(true);
-            evictingPool.setMinEvictableIdleTime(Duration.ofMillis(50));
+            evictingPool.setMinEvictableIdleDuration(Duration.ofMillis(50));
             for (int i = 0; i < 10; i++) {
                 try {
                     evictingPool.addObject();

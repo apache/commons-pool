@@ -74,17 +74,6 @@ class PooledTestObject implements TrackedUse {
     }
 
     @Override
-    public long getLastUsed() {
-        if (abandoned) {
-            // Abandoned object sweep will occur no matter what the value of removeAbandonedTimeout,
-            // because this indicates that this object was last used decades ago
-            return 1;
-        }
-        // Abandoned object sweep won't clean up this object
-        return 0;
-    }
-
-    @Override
     public Instant getLastUsedInstant() {
         if (abandoned) {
             // Abandoned object sweep will occur no matter what the value of removeAbandonedTimeout,
@@ -228,11 +217,6 @@ public class TestAbandonedObjectPool {
         // One second Duration.
         abandonedConfig.setRemoveAbandonedTimeout(TestConstants.ONE_SECOND_DURATION);
         assertEquals(TestConstants.ONE_SECOND_DURATION, abandonedConfig.getRemoveAbandonedTimeoutDuration());
-        assertEquals(1, abandonedConfig.getRemoveAbandonedTimeout()); // in seconds.
-        // One second int (not millis).
-        abandonedConfig.setRemoveAbandonedTimeout(1);
-        assertEquals(TestConstants.ONE_SECOND_DURATION, abandonedConfig.getRemoveAbandonedTimeoutDuration());
-        assertEquals(1, abandonedConfig.getRemoveAbandonedTimeout()); // in seconds.
 
         pool = new GenericObjectPool<>(
                new SimpleFactory(),
@@ -286,7 +270,7 @@ public class TestAbandonedObjectPool {
         final int n = 10;
         pool.setMaxTotal(n);
         pool.setBlockWhenExhausted(false);
-        pool.setTimeBetweenEvictionRuns(Duration.ofMillis(500));
+        pool.setDurationBetweenEvictionRuns(Duration.ofMillis(500));
         PooledTestObject obj = null;
         for (int i = 0; i < 5; i++) {
             obj = pool.borrowObject();
@@ -391,7 +375,7 @@ public class TestAbandonedObjectPool {
              // validate takes 1 second
              new SimpleFactory(0, 0),
              new GenericObjectPoolConfig<>(), abandonedConfig);
-        pool.setTimeBetweenEvictionRuns(Duration.ofMillis(50));
+        pool.setDurationBetweenEvictionRuns(Duration.ofMillis(50));
         // Borrow an object, wait long enough for it to be abandoned
         final PooledTestObject obj = pool.borrowObject();
         Thread.sleep(100);
@@ -428,7 +412,7 @@ public class TestAbandonedObjectPool {
         final int n = 10;
         pool.setMaxTotal(n);
         pool.setBlockWhenExhausted(false);
-        pool.setTimeBetweenEvictionRuns(Duration.ofMillis(500));
+        pool.setDurationBetweenEvictionRuns(Duration.ofMillis(500));
         pool.setTestOnReturn(true);
         // Borrow an object, wait long enough for it to be abandoned
         // then arrange for evictor to run while it is being returned
@@ -454,7 +438,7 @@ public class TestAbandonedObjectPool {
         final PrintWriter pw = new PrintWriter(bos);
         abandonedConfig.setLogWriter(pw);
         pool.setAbandonedConfig(abandonedConfig);
-        pool.setTimeBetweenEvictionRuns(Duration.ofMillis(100));
+        pool.setDurationBetweenEvictionRuns(Duration.ofMillis(100));
         final PooledTestObject o1 = pool.borrowObject();
         Thread.sleep(2000);
         assertTrue(o1.isDestroyed());
@@ -475,7 +459,7 @@ public class TestAbandonedObjectPool {
     public void testWhenExhaustedBlock() throws Exception {
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
         pool.setAbandonedConfig(abandonedConfig);
-        pool.setTimeBetweenEvictionRuns(Duration.ofMillis(500));
+        pool.setDurationBetweenEvictionRuns(Duration.ofMillis(500));
 
         pool.setMaxTotal(1);
 

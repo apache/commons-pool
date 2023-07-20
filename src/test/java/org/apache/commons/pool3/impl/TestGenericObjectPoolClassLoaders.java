@@ -83,7 +83,7 @@ public class TestGenericObjectPoolClassLoaders {
             final CustomClassLoaderObjectFactory factory1 = new CustomClassLoaderObjectFactory(1);
             try (final GenericObjectPool<URL, IllegalStateException> pool1 = new GenericObjectPool<>(factory1)) {
                 pool1.setMinIdle(1);
-                pool1.setTimeBetweenEvictionRuns(Duration.ofMillis(100));
+                pool1.setDurationBetweenEvictionRuns(Duration.ofMillis(100));
                 int counter = 0;
                 while (counter < 50 && pool1.getNumIdle() != 1) {
                     Thread.sleep(100);
@@ -101,7 +101,7 @@ public class TestGenericObjectPoolClassLoaders {
                         assertEquals(1, pool2.getNumIdle(), "Wrong number of idle objects in pool2");
                         pool2.clear();
 
-                        pool2.setTimeBetweenEvictionRuns(Duration.ofMillis(100));
+                        pool2.setDurationBetweenEvictionRuns(Duration.ofMillis(100));
 
                         counter = 0;
                         while (counter < 50 && pool2.getNumIdle() != 1) {

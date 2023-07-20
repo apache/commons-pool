@@ -69,6 +69,8 @@ public class PoolTest {
     private static final CharSequence COMMONS_POOL_EVICTIONS_TIMER_THREAD_NAME = "commons-pool-EvictionTimer";
 
     private static final long EVICTION_PERIOD_IN_MILLIS = 100;
+    
+    private static final Duration EVICTION_DURATION = Duration.ofMillis(100);
 
     @Test
     public void testPool() {
@@ -76,11 +78,11 @@ public class PoolTest {
         poolConfig.setTestWhileIdle(true /* testWhileIdle */);
         final PooledFooFactory pooledFooFactory = new PooledFooFactory();
         try (GenericObjectPool<Foo, RuntimeException> pool = new GenericObjectPool<>(pooledFooFactory, poolConfig)) {
-            pool.setTimeBetweenEvictionRunsMillis(EVICTION_PERIOD_IN_MILLIS);
+            pool.setDurationBetweenEvictionRuns(EVICTION_DURATION);
             assertEquals(EVICTION_PERIOD_IN_MILLIS, pool.getDurationBetweenEvictionRuns().toMillis());
-            assertEquals(EVICTION_PERIOD_IN_MILLIS, pool.getTimeBetweenEvictionRuns().toMillis());
-            pool.setTimeBetweenEvictionRuns(Duration.ofMillis(EVICTION_PERIOD_IN_MILLIS));
-            assertEquals(EVICTION_PERIOD_IN_MILLIS, pool.getTimeBetweenEvictionRuns().toMillis());
+            assertEquals(EVICTION_PERIOD_IN_MILLIS, pool.getDurationBetweenEvictionRuns().toMillis());
+            pool.setDurationBetweenEvictionRuns(Duration.ofMillis(EVICTION_PERIOD_IN_MILLIS));
+            assertEquals(EVICTION_PERIOD_IN_MILLIS, pool.getDurationBetweenEvictionRuns().toMillis());
             pool.addObject();
             try {
                 Thread.sleep(EVICTION_PERIOD_IN_MILLIS);

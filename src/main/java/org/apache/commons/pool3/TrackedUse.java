@@ -28,15 +28,6 @@ import java.time.Instant;
 public interface TrackedUse {
 
     /**
-     * Gets the last time this object was used in milliseconds.
-     *
-     * @return the last time this object was used in milliseconds.
-     * @deprecated Use {@link #getLastUsedInstant()} which offers the best precision.
-     */
-    @Deprecated
-    long getLastUsed();
-
-    /**
      * Gets the last Instant this object was used.
      * <p>
      * Starting with Java 9, the JRE {@code SystemClock} precision is increased usually down to microseconds, or tenth
@@ -46,7 +37,5 @@ public interface TrackedUse {
      * @return the last Instant this object was used.
      * @since 2.11.0
      */
-    default Instant getLastUsedInstant() {
-        return Instant.ofEpochMilli(getLastUsed());
-    }
+    Instant getLastUsedInstant();
 }
