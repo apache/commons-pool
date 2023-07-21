@@ -182,8 +182,9 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <commons.compiler.release>17</commons.compiler.release>
     <commons.componentid>pool</commons.componentid>
     <commons.module.name>org.apache.commons.pool3</commons.module.name>
     <commons.rc.version>RC1</commons.rc.version>
@@ -207,6 +208,7 @@
     
     <japicmp.skip>true</japicmp.skip>
     <spotbugs.skip>false</spotbugs.skip>
+    <animal.sniffer.skip>true</animal.sniffer.skip>
   </properties> 
 
   <build>

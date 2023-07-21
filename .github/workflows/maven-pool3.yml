@@ -15,8 +15,12 @@
 
 name: Java CI
 
-on: [push, pull_request]
-
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+      
 permissions:
   contents: read
 
@@ -27,10 +31,10 @@ jobs:
     continue-on-error: ${{ matrix.experimental }}
     strategy:
       matrix:
-        java: [ 8, 11, 17 ]
+        java: [ 17, 20 ]
         experimental: [false]
 #        include:
-#          - java: 18-ea
+#          - java: 21-ea
 #            experimental: true
         
     steps:
