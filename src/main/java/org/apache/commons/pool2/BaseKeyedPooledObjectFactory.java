@@ -116,8 +116,6 @@ public abstract class BaseKeyedPooledObjectFactory<K, V> extends BaseObject impl
      *
      * @param value the instance to wrap, should not be null.
      * @return The provided instance, wrapped by a {@link PooledObject}
-     * @throws Exception if there is a problem wrapping an instance,
-     *    this will be propagated to the code requesting an object.
      */
-    public abstract PooledObject<V> wrap(V value) throws Exception;
+    public abstract PooledObject<V> wrap(V value);
 }
