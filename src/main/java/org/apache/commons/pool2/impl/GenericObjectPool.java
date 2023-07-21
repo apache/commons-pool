@@ -310,12 +310,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             }
             if (blockWhenExhausted) {
                 if (PooledObject.isNull(p)) {
-                    try {
-                        p = borrowMaxWaitDuration.isNegative() ? idleObjects.takeFirst() : idleObjects.pollFirst(borrowMaxWaitDuration);
-                    } catch (final InterruptedException e) {
-                        // Don't surface exception type of internal locking mechanism.
-                        throw e;
-                    }
+                    p = borrowMaxWaitDuration.isNegative() ? idleObjects.takeFirst() : idleObjects.pollFirst(borrowMaxWaitDuration);
                 }
                 if (PooledObject.isNull(p)) {
                     throw new NoSuchElementException(appendStats(
