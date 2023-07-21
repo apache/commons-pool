@@ -776,11 +776,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
                         // bring the pool to capacity. Those calls might also
                         // fail so wait until they complete and then re-test if
                         // the pool is at capacity or not.
-                        try {
-                            objectDeque.makeObjectCountLock.wait();
-                        } catch (final InterruptedException e) {
-                            throw e;
-                        }
+                        objectDeque.makeObjectCountLock.wait();
                     }
                 } else {
                     // The pool is not at capacity. Create a new object.
