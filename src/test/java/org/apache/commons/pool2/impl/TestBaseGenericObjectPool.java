@@ -28,7 +28,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
-import org.apache.commons.pool2.TestException;
 import org.apache.commons.pool2.Waiter;
 import org.apache.commons.pool2.WaiterFactory;
 import org.apache.commons.pool2.impl.TestGenericObjectPool.SimpleFactory;

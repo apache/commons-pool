@@ -59,7 +59,6 @@ import org.apache.commons.pool2.DestroyMode;
 import org.apache.commons.pool2.KeyedObjectPool;
 import org.apache.commons.pool2.KeyedPooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
-import org.apache.commons.pool2.TestException;
 import org.apache.commons.pool2.AbstractTestKeyedObjectPool;
 import org.apache.commons.pool2.VisitTracker;
 import org.apache.commons.pool2.VisitTrackerFactory;
@@ -190,20 +189,20 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         }
 
         @Override
-        public void activateObject(final K key, final PooledObject<String> obj) throws TestException {
+        public void activateObject(final K key, final PooledObject<String> obj) throws Exception {
             if (exceptionOnActivate && !(validateCounter++ % 2 == 0 ? evenValid : oddValid)) {
-                throw new TestException();
+                throw new Exception();
             }
         }
 
         @Override
-        public void destroyObject(final K key, final PooledObject<String> obj) throws TestException {
+        public void destroyObject(final K key, final PooledObject<String> obj) throws Exception {
             doWait(destroyLatency);
             synchronized(this) {
                 activeCount--;
             }
             if (exceptionOnDestroy) {
-                throw new TestException();
+                throw new Exception();
             }
         }
 
@@ -212,9 +211,9 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         }
 
         @Override
-        public PooledObject<String> makeObject(final K key) throws TestException {
+        public PooledObject<String> makeObject(final K key) throws Exception {
             if (exceptionOnCreate) {
-                throw new TestException();
+                throw new Exception();
             }
             doWait(makeLatency);
             String out = null;
@@ -230,9 +229,9 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         }
 
         @Override
-        public void passivateObject(final K key, final PooledObject<String> obj) throws TestException {
+        public void passivateObject(final K key, final PooledObject<String> obj) throws Exception {
             if (exceptionOnPassivate) {
-                throw new TestException();
+                throw new Exception();
             }
         }
 

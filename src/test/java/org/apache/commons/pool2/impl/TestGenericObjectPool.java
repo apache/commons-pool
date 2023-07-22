@@ -58,7 +58,6 @@ import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.SwallowedExceptionListener;
 import org.apache.commons.pool2.TestBaseObjectPool;
-import org.apache.commons.pool2.TestException;
 import org.apache.commons.pool2.VisitTracker;
 import org.apache.commons.pool2.VisitTrackerFactory;
 import org.apache.commons.pool2.Waiter;
@@ -282,7 +281,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
 
         @Override
-        public void activateObject(final PooledObject<String> obj) throws TestException {
+        public void activateObject(final PooledObject<String> obj) throws Exception {
             final boolean hurl;
             final boolean evenTest;
             final boolean oddTest;
@@ -294,12 +293,12 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 counter = activationCounter++;
             }
             if (hurl && !(counter % 2 == 0 ? evenTest : oddTest)) {
-                throw new TestException();
+                throw new Exception();
             }
         }
 
         @Override
-        public void destroyObject(final PooledObject<String> obj) throws TestException {
+        public void destroyObject(final PooledObject<String> obj) throws Exception {
             final long waitLatency;
             final boolean hurl;
             synchronized (this) {
@@ -313,7 +312,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                 activeCount--;
             }
             if (hurl) {
-                throw new TestException();
+                throw new Exception();
             }
         }
 
@@ -355,13 +354,13 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
 
         @Override
-        public void passivateObject(final PooledObject<String> obj) throws TestException {
+        public void passivateObject(final PooledObject<String> obj) throws Exception {
             final boolean hurl;
             synchronized (this) {
                 hurl = exceptionOnPassivate;
             }
             if (hurl) {
-                throw new TestException();
+                throw new Exception();
             }
         }
 
@@ -563,7 +562,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
      * Very simple test thread that just tries to borrow an object from
      * the provided pool returns it after a wait
      */
-    static class WaitingTestThread<E extends Exception> extends Thread {
+    static class WaitingTestThread extends Thread {
         private final GenericObjectPool<String> pool;
         private final long pause;
         private Throwable thrown;
@@ -974,7 +973,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
      */
     @SuppressWarnings("deprecation")
     @Test
-    public void testAbandonedPool() throws TestException, InterruptedException {
+    public void testAbandonedPool() throws Exception {
         final GenericObjectPoolConfig<String> config = new GenericObjectPoolConfig<>();
         config.setJmxEnabled(false);
         GenericObjectPool<String> abandoned = new GenericObjectPool<>(simpleFactory, config);
@@ -1428,7 +1427,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             createFailFactoryPool.setMaxTotal(1);
 
             // Try and borrow the first object from the pool
-            final WaitingTestThread<InterruptedException> thread1 = new WaitingTestThread<>(createFailFactoryPool, 0);
+            final WaitingTestThread thread1 = new WaitingTestThread(createFailFactoryPool, 0);
             thread1.start();
 
             // Wait for thread to reach semaphore
@@ -1437,7 +1436,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             }
 
             // Try and borrow the second object from the pool
-            final WaitingTestThread<InterruptedException> thread2 = new WaitingTestThread<>(createFailFactoryPool, 0);
+            final WaitingTestThread thread2 = new WaitingTestThread(createFailFactoryPool, 0);
             thread2.start();
             // Pool will not call factory since maximum number of object creations
             // are already queued.
@@ -1854,7 +1853,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             createFailFactoryPool.setMaxTotal(1);
 
             // Try and borrow the first object from the pool
-            final WaitingTestThread<InterruptedException> thread1 = new WaitingTestThread<>(createFailFactoryPool, 0);
+            final WaitingTestThread thread1 = new WaitingTestThread(createFailFactoryPool, 0);
             thread1.start();
 
             // Wait for thread to reach semaphore
@@ -1863,7 +1862,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             }
 
             // Try and borrow the second object from the pool
-            final WaitingTestThread<InterruptedException> thread2 = new WaitingTestThread<>(createFailFactoryPool, 0);
+            final WaitingTestThread thread2 = new WaitingTestThread(createFailFactoryPool, 0);
             thread2.start();
             // Pool will not call factory since maximum number of object creations
             // are already queued.
@@ -1980,12 +1979,12 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             pool.setMaxTotal(2);
             pool.setMaxWaitMillis(500);
             // Borrow an instance and hold if for 5 seconds
-            final WaitingTestThread<TestException> thread1 = new WaitingTestThread<>(pool, 5000);
+            final WaitingTestThread thread1 = new WaitingTestThread(pool, 5000);
             thread1.start();
             // Borrow another instance
             final String obj = pool.borrowObject();
             // Launch another thread - will block, but fail in 500 ms
-            final WaitingTestThread<TestException> thread2 = new WaitingTestThread<>(pool, 100);
+            final WaitingTestThread thread2 = new WaitingTestThread(pool, 100);
             thread2.start();
             // Invalidate the object borrowed by this thread - should allow thread2 to create
             Thread.sleep(20);
@@ -2101,7 +2100,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         genericObjectPool.setTestOnBorrow(true);
         simpleFactory.setValid(true);
         // Borrow and return an instance, with a short wait
-        final WaitingTestThread<TestException> thread1 = new WaitingTestThread<>(genericObjectPool, 200);
+        final WaitingTestThread thread1 = new WaitingTestThread(genericObjectPool, 200);
         thread1.start();
         Thread.sleep(50); // wait for validation to succeed
         // Slow down validation and borrow an instance
@@ -2340,16 +2339,16 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         genericObjectPool.setMaxWaitMillis(maxWait);
         genericObjectPool.setMaxTotal(threads);
         // Create enough threads so half the threads will have to wait
-        final WaitingTestThread<TestException>[] wtt = new WaitingTestThread[threads * 2];
+        final WaitingTestThread[] wtt = new WaitingTestThread[threads * 2];
         for (int i = 0; i < wtt.length; i++) {
-            wtt[i] = new WaitingTestThread<>(genericObjectPool, holdTime);
+            wtt[i] = new WaitingTestThread(genericObjectPool, holdTime);
         }
         final long originMillis = System.currentTimeMillis() - 1000;
-        for (final WaitingTestThread<TestException> element : wtt) {
+        for (final WaitingTestThread element : wtt) {
             element.start();
         }
         int failed = 0;
-        for (final WaitingTestThread<TestException> element : wtt) {
+        for (final WaitingTestThread element : wtt) {
             element.join();
             if (element.thrown != null){
                 failed++;
@@ -2363,7 +2362,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                     " Threads: " + wtt.length +
                     " Failed: " + failed
                     );
-            for (final WaitingTestThread<TestException> wt : wtt) {
+            for (final WaitingTestThread wt : wtt) {
                 System.out.println(
                         "PreBorrow: " + (wt.preBorrowMillis - originMillis) +
                         " PostBorrow: " + (wt.postBorrowMillis != 0 ? wt.postBorrowMillis - originMillis : -1) +
@@ -2576,7 +2575,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         // Make validation fail - this will cause create() to return null
         simpleFactory.setValid(false);
         // Create a take waiter
-        final WaitingTestThread<TestException> wtt = new WaitingTestThread<>(genericObjectPool, 200);
+        final WaitingTestThread wtt = new WaitingTestThread(genericObjectPool, 200);
         wtt.start();
         // Give wtt time to start
         Thread.sleep(200);
@@ -2650,7 +2649,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             createSlowObjectFactoryPool.setMaxWaitMillis(maxWaitMillis);
 
             // thread1 tries creating a slow object to make pool full.
-            final WaitingTestThread<InterruptedException> thread1 = new WaitingTestThread<>(createSlowObjectFactoryPool, 0);
+            final WaitingTestThread thread1 = new WaitingTestThread(createSlowObjectFactoryPool, 0);
             thread1.start();
 
             // Wait for thread1's reaching to create().
@@ -2958,10 +2957,10 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             pool.setTestOnReturn(true);
             pool.setTestOnBorrow(false);
             // Borrow an instance and hold if for 5 seconds
-            final WaitingTestThread<TestException> thread1 = new WaitingTestThread<>(pool, 5000);
+            final WaitingTestThread thread1 = new WaitingTestThread(pool, 5000);
             thread1.start();
             // Borrow another instance and return it after 500 ms (validation will fail)
-            final WaitingTestThread<TestException> thread2 = new WaitingTestThread<>(pool, 500);
+            final WaitingTestThread thread2 = new WaitingTestThread(pool, 500);
             thread2.start();
             Thread.sleep(50);
             // Try to borrow an object
@@ -3026,7 +3025,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertNotNull(obj1);
 
         // Create a separate thread to try and borrow another object
-        final WaitingTestThread<TestException> wtt = new WaitingTestThread<>(genericObjectPool, 200);
+        final WaitingTestThread wtt = new WaitingTestThread(genericObjectPool, 200);
         wtt.start();
         // Give wtt time to start
         Thread.sleep(200);
@@ -3053,7 +3052,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertNotNull(obj1);
 
         // Create a separate thread to try and borrow another object
-        final WaitingTestThread<TestException> wtt = new WaitingTestThread<>(genericObjectPool, 200000);
+        final WaitingTestThread wtt = new WaitingTestThread(genericObjectPool, 200000);
         wtt.start();
         // Give wtt time to start
         Thread.sleep(200);
