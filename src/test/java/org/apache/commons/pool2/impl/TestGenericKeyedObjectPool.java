@@ -54,12 +54,12 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.pool2.AbstractTestKeyedObjectPool;
 import org.apache.commons.pool2.BaseKeyedPooledObjectFactory;
 import org.apache.commons.pool2.DestroyMode;
 import org.apache.commons.pool2.KeyedObjectPool;
 import org.apache.commons.pool2.KeyedPooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
-import org.apache.commons.pool2.AbstractTestKeyedObjectPool;
 import org.apache.commons.pool2.VisitTracker;
 import org.apache.commons.pool2.VisitTrackerFactory;
 import org.apache.commons.pool2.Waiter;
@@ -2756,6 +2756,74 @@ public void testValidateOnCreateFailure() throws Exception {
         assertEquals("KEY0", o2);
 
         assertEquals(1, simpleFactory.validateCounter);
+    }
+
+    @Test
+    public void testWaiterCounts() throws Exception {
+        final String[] keys = {"one", "two", "three"};
+        final String[] objects = new String[keys.length];
+        gkoPool.setMaxTotalPerKey(1);
+        gkoPool.setBlockWhenExhausted(true);
+        // Empty pool - waiter counts should be 0
+        assertTrue(gkoPool.getNumWaitersByKey().isEmpty());
+        assertEquals(0, gkoPool.getNumWaiters());
+
+        // Exhaust the pool
+        for (int i = 0; i < keys.length; i++) {
+            objects[i] = gkoPool.borrowObject(keys[i]);
+        }
+
+        // Start 1 waiter for "one", 2 for "two", 3 for "three"
+        // Configure them to hold borrowed object for 100ms
+        final WaitingTestThread[] waiters = new WaitingTestThread[6];
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < i + 1; j++) {
+                waiters[i + j] = new WaitingTestThread(gkoPool, keys[i], 100);
+                waiters[i + j].start();
+            }
+        }
+        Thread.sleep(10);
+
+        // Check waiter counts
+        assertEquals(6, gkoPool.getNumWaiters());
+        for (int i = 0; i < 3; i++) {
+            assertEquals(i + 1, gkoPool.getNumWaitersByKey().get(keys[i]).intValue());
+        }
+
+        // Return objects to the pool
+        for (int i = 0; i < 3; i++) {
+            gkoPool.returnObject(keys[i], objects[i]);
+        }
+        // One waiter for each key should get served, holding for 50ms
+        Thread.sleep(10);
+
+        // Recheck counts - should be 0 for "one", 1 for "two", 2 for "three
+        assertEquals(3, gkoPool.getNumWaiters());
+        for (int i = 0; i < 3; i++) {
+            assertEquals(i, gkoPool.getNumWaitersByKey().get(keys[i]).intValue());
+        }
+
+        // Eventually, all get served
+        for (int i = 0; i < 5; i++) {
+            waiters[i].join();
+        }
+
+        // Should be no waiters now, one idle instance under each key
+        assertEquals(0, gkoPool.getNumWaiters());
+        for (int i = 0; i < 3; i++) {
+            assertEquals(0, gkoPool.getNumWaitersByKey().get(keys[i]).intValue());
+        }
+        assertEquals(3, gkoPool.getNumIdle());
+        for (String key : keys) {
+            assertEquals(1, gkoPool.getNumIdle(key));
+        }
+
+        // Clear the pool - should clear the map
+        gkoPool.clear();
+        assertTrue(gkoPool.getNumWaitersByKey().isEmpty());
+        assertEquals(0, gkoPool.getNumWaiters());
+
+        gkoPool.close();
     }
 
     /**
