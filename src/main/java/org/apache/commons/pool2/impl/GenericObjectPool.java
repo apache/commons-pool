@@ -541,12 +541,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                         // bring the pool to capacity. Those calls might also
                         // fail so wait until they complete and then re-test if
                         // the pool is at capacity or not.
-                        try {
-                            wait(makeObjectCountLock, localMaxWaitDuration);
-                        } catch (final InterruptedException e) {
-                            // Don't surface exception type of internal locking mechanism.
-                            throw e;
-                        }
+                        wait(makeObjectCountLock, localMaxWaitDuration);
                     }
                 } else {
                     // The pool is not at capacity. Create a new object.
