@@ -17,7 +17,10 @@
 
 package org.apache.commons.pool3;
 
+import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.apache.commons.lang3.ThreadUtils;
 
 /**
  * <p>Object created by {@link WaiterFactory}. Maintains active / valid state,
@@ -28,14 +31,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class Waiter {
     private static final AtomicInteger instanceCount = new AtomicInteger();
-    /** TODO Reuse Apache Commons Lang ThreadUtils */
+
     public static void sleepQuietly(final long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (final InterruptedException e) {
-            // be quiet
-        }
+        ThreadUtils.sleepQuietly(Duration.ofMillis(millis));
     }
+
     private boolean active;
     private boolean valid;
     private long latency;
