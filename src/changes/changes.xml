@@ -182,6 +182,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="update" due-to="Gary Gregory, Dependabot">
       Bump Apache Commons BCEL 6.5.0 to 6.7.0 #194.
     </action>
+    <action type="update" dev="ggregory" due-to="Gary Gregory">
+      Bump commons-lang3 from 3.12.0 to 3.13.0.
+    </action>
   </release>
   <release version="2.11.1" date="2021-08-18" description="This is a maintenance release (Java 8).">
     <!-- FIX -->

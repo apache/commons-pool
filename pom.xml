@@ -165,7 +165,7 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.12.0</version>
+      <version>3.13.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -286,53 +286,60 @@
               </excludes>
             </configuration>
           </plugin>
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <configuration>
+              <descriptors>
+                <descriptor>src/assembly/bin.xml</descriptor>
+                <descriptor>src/assembly/src-tar-gz.xml</descriptor>
+                <descriptor>src/assembly/src-zip.xml</descriptor>
+              </descriptors>
+              <tarLongFileMode>gnu</tarLongFileMode>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-scm-publish-plugin</artifactId>
+            <configuration>
+              <ignorePathsToDelete>
+                <ignorePathToDelete>api-*</ignorePathToDelete>
+              </ignorePathsToDelete>
+            </configuration>
+          </plugin>
         <plugin>
-          <artifactId>maven-assembly-plugin</artifactId>
+          <groupId>com.github.siom79.japicmp</groupId>
+          <artifactId>japicmp-maven-plugin</artifactId>
           <configuration>
-            <descriptors>
-              <descriptor>src/assembly/bin.xml</descriptor>
-              <descriptor>src/assembly/src-tar-gz.xml</descriptor>
-              <descriptor>src/assembly/src-zip.xml</descriptor>
-            </descriptors>
-            <tarLongFileMode>gnu</tarLongFileMode>
+            <parameter>
+              <overrideCompatibilityChangeParameters>
+                <overrideCompatibilityChangeParameter>
+                  <compatibilityChange>METHOD_NEW_DEFAULT</compatibilityChange>
+                  <binaryCompatible>true</binaryCompatible>
+                  <sourceCompatible>true</sourceCompatible>
+                  <semanticVersionLevel>PATCH</semanticVersionLevel>
+                </overrideCompatibilityChangeParameter>
+              </overrideCompatibilityChangeParameters>
+            </parameter>
           </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-scm-publish-plugin</artifactId>
+          <artifactId>maven-jar-plugin</artifactId>
           <configuration>
-            <ignorePathsToDelete>
-              <ignorePathToDelete>api-*</ignorePathToDelete>
-            </ignorePathsToDelete>
+            <archive>
+              <manifestEntries>
+                <Automatic-Module-Name>${commons.module.name}</Automatic-Module-Name>
+              </manifestEntries>
+            </archive>
           </configuration>
         </plugin>
-      <plugin>
-        <groupId>com.github.siom79.japicmp</groupId>
-        <artifactId>japicmp-maven-plugin</artifactId>
-        <configuration>
-          <parameter>
-            <overrideCompatibilityChangeParameters>
-              <overrideCompatibilityChangeParameter>
-                <compatibilityChange>METHOD_NEW_DEFAULT</compatibilityChange>
-                <binaryCompatible>true</binaryCompatible>
-                <sourceCompatible>true</sourceCompatible>
-                <semanticVersionLevel>PATCH</semanticVersionLevel>
-              </overrideCompatibilityChangeParameter>
-            </overrideCompatibilityChangeParameters>
-          </parameter>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-          <archive>
-            <manifestEntries>
-              <Automatic-Module-Name>${commons.module.name}</Automatic-Module-Name>
-            </manifestEntries>
-          </archive>
-        </configuration>
-      </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <configuration>
+            <sourcepath>src/main/java</sourcepath>
+		  </configuration>
+        </plugin>
       </plugins>
     </build>
 
