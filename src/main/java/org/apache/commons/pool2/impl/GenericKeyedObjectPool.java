@@ -838,14 +838,24 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         Lock lock = keyLock.readLock();
         try {
             lock.lock();
-            final ObjectDeque<T> objectDeque = poolMap.get(k);
-            if (objectDeque != null) {
+            ObjectDeque<T> objectDeque = poolMap.get(k);
+            if (objectDeque == null) {
+                throw new IllegalStateException("Attempt to de-register a key for a non-existent pool");
+            }
+            final long numInterested = objectDeque.getNumInterested().decrementAndGet();
+            if (numInterested < 0) {
+                throw new IllegalStateException("numInterested count for key " + k + " is less than zero");
+            }
+            if (numInterested == 0 && objectDeque.getCreateCount().get() == 0) {
                 // Potential to remove key
                 // Upgrade to write lock
                 lock.unlock();
                 lock = keyLock.writeLock();
                 lock.lock();
-                if (objectDeque.getNumInterested().decrementAndGet() == 0 && objectDeque.getCreateCount().get() == 0) {
+                // Pool may have changed since we released the read lock
+                // numInterested decrement could lead to removal while waiting for write lock
+                objectDeque = poolMap.get(k);
+                if (null != objectDeque && objectDeque.getNumInterested().get() == 0 && objectDeque.getCreateCount().get() == 0) {
                     // NOTE: Keys must always be removed from both poolMap and
                     // poolKeyList at the same time while protected by
                     // keyLock.writeLock()
@@ -1403,10 +1413,14 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
                     deque.getNumInterested().incrementAndGet();
                     // NOTE: Keys must always be added to both poolMap and
                     //       poolKeyList at the same time while protected by
+                    //       the write lock
                     poolKeyList.add(k);
                     return deque;
                 });
                 if (!allocated.get()) {
+                    // Another thread could have beaten us to creating the deque, while we were
+                    // waiting for the write lock, so re-get it from the map.
+                    objectDeque = poolMap.get(k);
                     objectDeque.getNumInterested().incrementAndGet();
                 }
             } else {
