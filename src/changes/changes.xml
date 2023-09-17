@@ -58,10 +58,7 @@ The <action> type attribute can be add,update,fix,remove.
     </action>
     <action dev="ggregory" type="fix" due-to="Arturo Bernal">
       Simplify test assertion with similar call but simpler. #131.
-    </action>       
-    <action dev="ggregory" type="fix" due-to="Gary Gregory" issue="POOL-269">
-      Use generic exceptions instead of java.lang.Exception.
-    </action>       
+    </action>
     <action dev="ggregory" type="fix" due-to="Gary Gregory" issue="POOL-405">
       NullPointerException GenericKeyedObjectPool.invalidateObject(GenericKeyedObjectPool.java:1343).
     </action>
