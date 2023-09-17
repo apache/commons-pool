@@ -63,7 +63,7 @@ The <action> type attribute can be add,update,fix,remove.
       NullPointerException GenericKeyedObjectPool.invalidateObject(GenericKeyedObjectPool.java:1343).
     </action>
     <action dev="ggregory" type="fix" due-to="Zhenyu Luo, Gary Gregory" issue="POOL-408">
-      A typo of KeyedPooledObjectFactory on the site and Javadoc.
+      Fix a typo related to KeyedPooledObjectFactory on the site and Javadoc.
     </action>
     <action dev="ggregory" type="fix" due-to="Gary Gregory">
       Fail-fast on null input for DefaultPooledObjectInfo.DefaultPooledObjectInfo(PooledObject) with a NullPointerException.
@@ -75,13 +75,13 @@ The <action> type attribute can be add,update,fix,remove.
       Null-guard in GenericObjectPool.use(T) like other call sites of GenericObjectPool.getPooledObject(T).
     </action>
     <action dev="ggregory" type="fix" issue="POOL-411" due-to="Richard Eckart de Castilho, Gary Gregory">
-      NPE when deregistering key at end of borrow.
+      Guard against NPE when deregistering a key at the end of borrow.
     </action>
     <action dev="ggregory" type="fix" due-to="Gary Gregory">
-      Make private class GenericKeyedObjectPool.ObjectDeque class static.
+      Make private GenericKeyedObjectPool.ObjectDeque class static.
     </action>
     <action dev="ggregory" type="fix" due-to="Gary Gregory">
-      Make private class BaseGenericObjectPool.StatsStore class static.      
+      Make private BaseGenericObjectPool.StatsStore class static.
     </action>
     <action type="fix" dev="ggregory" due-to="step-security-bot, Gary Gregory">
       [StepSecurity] ci: Harden GitHub Actions #225.
@@ -109,7 +109,7 @@ The <action> type attribute can be add,update,fix,remove.
       Add BaseGenericObjectPool.Evictor.toString().
     </action>
     <action dev="ggregory" type="add">
-      BaseGenericObjectPool now implements AutoCloseable.
+      Make BaseGenericObjectPool implement AutoCloseable.
     </action>
     <action dev="ggregory" type="add">
       Add BaseGenericObjectPool methods that return Duration and deprecate equivalents that return milliseconds as long.
