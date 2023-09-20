@@ -54,7 +54,7 @@ import org.apache.commons.pool2.SwallowedExceptionListener;
  * and {@link GenericKeyedObjectPool}. The primary reason this class exists is
  * reduce code duplication between the two pool implementations.
  * <p>
- * This class is intended to be thread-safe.
+ * Concrete implementations of this class are expected to be thread-safe.
  * </p>
  *
  * @param <T> Type of element pooled in this pool.
@@ -1387,7 +1387,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      * Sets the number of milliseconds to sleep between runs of the idle object evictor thread.
      * <ul>
      * <li>When positive, the idle object evictor thread starts.</li>
-     * <li>When non-positive, no idle object evictor thread runs.</li>
+     * <li>When null or non-positive, no idle object evictor thread runs.</li>
      * </ul>
      *
      * @param timeBetweenEvictionRuns

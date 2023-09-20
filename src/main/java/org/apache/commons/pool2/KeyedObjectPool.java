@@ -214,6 +214,10 @@ public interface KeyedObjectPool<K, V> extends Closeable {
 
     /**
      * Gets a copy of the pool key list.
+     * <p>
+     * Note: The default implementation returns an empty list.
+     * Implementations should override this method.
+     * </p>
      *
      * @return a copy of the pool key list.
      * @since 2.12.0
