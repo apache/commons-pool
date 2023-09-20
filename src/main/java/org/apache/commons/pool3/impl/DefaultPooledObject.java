@@ -21,6 +21,7 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Deque;
+import java.util.Objects;
 
 import org.apache.commons.pool3.PooledObject;
 import org.apache.commons.pool3.PooledObjectState;
@@ -280,7 +281,7 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
     public String toString() {
         final StringBuilder result = new StringBuilder();
         result.append("Object: ");
-        result.append(object.toString());
+        result.append(Objects.toString(object));
         result.append(", State: ");
         synchronized (this) {
             result.append(state.toString());
