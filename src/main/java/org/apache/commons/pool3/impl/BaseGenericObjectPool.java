@@ -430,8 +430,11 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
         }
 
         // Populate the creation stack trace
-        this.creationStackTrace = getStackTrace(new Exception());
-
+        if (config.getFillStackTraceOnCreation()) {
+            this.creationStackTrace = getStackTrace(new Exception());
+        } else {
+            this.creationStackTrace = "<EMPTY>";
+        }
         // save the current TCCL (if any) to be used later by the evictor Thread
         final ClassLoader cl = Thread.currentThread().getContextClassLoader();
         if (cl == null) {

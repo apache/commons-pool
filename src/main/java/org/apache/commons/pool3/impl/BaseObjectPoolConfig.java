@@ -159,6 +159,8 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      */
     public static final String DEFAULT_JMX_NAME_BASE = null;
 
+    public static final boolean DEFAULT_FILL_STACKTRACE_ON_CREATION = true;
+
     /**
      * The default value for the {@code evictionPolicyClassName} configuration
      * attribute.
@@ -203,6 +205,8 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     private String jmxNamePrefix = DEFAULT_JMX_NAME_PREFIX;
 
     private String jmxNameBase = DEFAULT_JMX_NAME_BASE;
+
+    private Boolean fillStackTraceOnCreation = DEFAULT_FILL_STACKTRACE_ON_CREATION;
 
 
     /**
@@ -326,6 +330,10 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      */
     public String getJmxNamePrefix() {
         return jmxNamePrefix;
+    }
+
+    public Boolean getFillStackTraceOnCreation() {
+        return fillStackTraceOnCreation;
     }
 
     /**
