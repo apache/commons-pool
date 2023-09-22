@@ -5,4 +5,5 @@ site-content
 /.settings/
 /bin/
 .idea/
+.vscode/
 *.iml
