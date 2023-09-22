@@ -28,17 +28,16 @@
 # $Revision$ $Date$
 # -----------------------------------------------------------------------------
 # Set script variables
-version=2.4.3
+version=2.12.0
 repo_path=~/.m2/repository/org/apache/commons/commons-pool2/${version}
-release_path=~/pool-rc  #checkout of https://dist.apache.org/repos/dist/dev/commons/pool
+release_path=~/pool  #checkout of https://dist.apache.org/repos/dist/dev/commons/pool
 #
 # Delete any locally installed artifacts from previous runs
 rm -rf ${repo_path}
 echo "Cleaned maven repo."
 #
-# Generate site and release artifacts, deploy locally and upload to Nexus
-mvn clean site
-mvn deploy -Prelease
+# Generate release artifacts, deploy locally and upload to Nexus
+mvn deploy -Prelease -Duser.name=${USERNAME}
 #
 # Copy the zips/tarballs and release notes to the local svn pub path
 cp ${repo_path}/*bin.zip* ${release_path}/binaries
