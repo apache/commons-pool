@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -19,12 +19,28 @@
 # Shell script to update download page and release notes prior
 # to preparing a commons pool release candidate.
 #
-# Note: RELEASE-NOTES.txt may need a little reformatting prior
-# to checkin.  Both RELEASE-NOTES.txt and the generated download
-# page need to be checked in after review.
-#
-# $Revision$ $Date$
+# Notes:
+# 1. RELEASE-NOTES.txt may need a little reformatting prior to commit
+# 2. Both RELEASE-NOTES.txt and the generated download
+#    page need to be checked in after review.
 # ----------------------------------------------------------------------------
-version=2.4.3
+# Update release notes
+version=2.12.0
+# Pop off any previously generated current release content first.
+first_line=`head -1 RELEASE-NOTES.txt`
+target="Apache Commons Pool $version RELEASE NOTES"
+if [[ $first_line =~ $target ]]
+then
+    echo "Removing previously generated content for $version from RELEASE-NOTES.txt"
+    sed -i '1,/------------------------------------------------/d' RELEASE-NOTES.txt
+fi
+# Make a copy of previous release notes to prepend the new release notes to
+cp RELEASE-NOTES.txt RELEASE-NOTES.txt.orig
+# Generate new release notes - only generates new content and replaces RELEASE-NOTES.txt with new content
 mvn changes:announcement-generate -Prelease-notes -Dchanges.version=${version}
-mvn commons:download-page -Dcommons.componentid=pool -Dcommons.release.version=${version}
+# Put Humpty back together again
+cat RELEASE-NOTES.txt RELEASE-NOTES.txt.orig > RELEASE-NOTES.txt.new
+mv RELEASE-NOTES.txt.new RELEASE-NOTES.txt
+rm RELEASE-NOTES.txt.orig
+# Generate the download page
+mvn commons-build:download-page -Dcommons.componentid=pool -Dcommons.release.version=${version}
