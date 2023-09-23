@@ -126,6 +126,11 @@
       <id>mattsicker</id>
       <organization>The Apache Software Foundation</organization>
     </developer>
+    <developer>
+      <name>Phil Steitz</name>
+      <id>psteitz</id>
+      <organization>The Apache Software Foundation</organization>
+    </developer>
   </developers>
   <contributors>
     <contributor>
@@ -202,8 +207,8 @@
     <!-- Commons Release Plugin -->
     <commons.bc.version>2.11.1</commons.bc.version>
     <commons.release.isDistModule>true</commons.release.isDistModule>
-    <commons.releaseManagerName>Gary Gregory</commons.releaseManagerName>    
-    <commons.releaseManagerKey>86fdc7e2a11262cb</commons.releaseManagerKey>
+    <commons.releaseManagerName>Phil Steitz</commons.releaseManagerName>
+    <commons.releaseManagerKey>4E2DDD47E19863BB87211544CD3038FEF07D567E</commons.releaseManagerKey>
     
     <japicmp.skip>false</japicmp.skip>
     <spotbugs.skip>false</spotbugs.skip>
