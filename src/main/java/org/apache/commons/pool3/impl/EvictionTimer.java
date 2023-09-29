@@ -75,9 +75,11 @@ class EvictionTimer {
         @Override
         public void run() {
             synchronized (EvictionTimer.class) {
-                Iterator<Entry<WeakReference<BaseGenericObjectPool<?, ?>.Evictor>, WeakRunner<BaseGenericObjectPool<?, ?>.Evictor>>> taskMapIterator = TASK_MAP.entrySet().iterator();
+                Iterator<Entry<WeakReference<BaseGenericObjectPool<?, ?>.Evictor>, WeakRunner<BaseGenericObjectPool<?, ?>.Evictor>>> taskMapIterator =
+                        TASK_MAP.entrySet().iterator();
                 while (taskMapIterator.hasNext()) {
-                    final Entry<WeakReference<BaseGenericObjectPool<?, ?>.Evictor>, WeakRunner<BaseGenericObjectPool<?, ?>.Evictor>> entry = taskMapIterator.next();
+                    final Entry<WeakReference<BaseGenericObjectPool<?, ?>.Evictor>, WeakRunner<BaseGenericObjectPool<?, ?>.Evictor>> entry =
+                            taskMapIterator.next();
                     if (entry.getKey().get() == null) {
                         executor.remove(entry.getValue());
                         taskMapIterator.remove();
