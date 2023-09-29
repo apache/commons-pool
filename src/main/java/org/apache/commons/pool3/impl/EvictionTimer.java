@@ -21,6 +21,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -74,11 +75,12 @@ class EvictionTimer {
         @Override
         public void run() {
             synchronized (EvictionTimer.class) {
-                for (final Entry<WeakReference<BaseGenericObjectPool<?, ?>.Evictor>, WeakRunner<BaseGenericObjectPool<?, ?>.Evictor>> entry : TASK_MAP
-                        .entrySet()) {
+                Iterator<Entry<WeakReference<BaseGenericObjectPool<?, ?>.Evictor>, WeakRunner<BaseGenericObjectPool<?, ?>.Evictor>>> taskMapIterator = TASK_MAP.entrySet().iterator();
+                while (taskMapIterator.hasNext()) {
+                    final Entry<WeakReference<BaseGenericObjectPool<?, ?>.Evictor>, WeakRunner<BaseGenericObjectPool<?, ?>.Evictor>> entry = taskMapIterator.next();
                     if (entry.getKey().get() == null) {
                         executor.remove(entry.getValue());
-                        TASK_MAP.remove(entry.getKey());
+                        taskMapIterator.remove();
                     }
                 }
                 if (TASK_MAP.isEmpty() && executor != null) {
@@ -114,8 +116,10 @@ class EvictionTimer {
             if (task != null) {
                 task.run();
             } else {
-                executor.remove(this);
-                TASK_MAP.remove(ref);
+                synchronized (EvictionTimer.class) {
+                    executor.remove(this);
+                    TASK_MAP.remove(ref);
+                }
             }
         }
     }
