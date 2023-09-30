@@ -24,38 +24,41 @@
 #     https://dist.apache.org/repos/dist/release/commons/pool
 # 2) RELEASE-NOTES.txt for the new release is in top level of rc_path
 #
-# NOTE: This script does not do any of the following:
-# 0) Commit the local changes to actually publish the artifacts
-# 1) Cleanup old versions in dist
-#
-# $Revision$ $Date$
+# NOTE: This script does not commit the local changes to actually publish
+# the artifacts.
+# 
 # -----------------------------------------------------------------------------
 # Set script variables
-version=2.4.3        # version being released
-last_version=2.4.2   # previous version, will be replaced in README.html
-rc_path=~/pool-rc  # checkout of https://dist.apache.org/repos/dist/dev/commons/pool
-release_path=~/pool-release #https://dist.apache.org/repos/dist/release/commons/pool
+version=2.12.0        # version being released
+last_version=2.11.1   # previous version, will be replaced in README.html
+rc_name=2.12.0-RC5    # subdirectory of /dist/dev/commons/pool containing final RC
+rc_path=${HOME}/pool-tag/commons-pool/target/commons-release-plugin/scm/${rc_name}  # checkout of https://dist.apache.org/repos/dist/dev/commons/pool
+release_path=${HOME}/pool #checkout of https://dist.apache.org/repos/dist/release/commons/pool
 #
 # Move release notes
 cp $rc_path/RELEASE-NOTES.txt $release_path
-svn rm $rc_path/RELEASE-NOTES.txt
 #
 # Update README.html
-sed -i "" "s/$last_version/$version/g" $release_path/README.html
-# OSX  ^^ required suffix
-#
-cp $release_path/README.html $release_path/source
-cp $release_path/README.html $release_path/binaries
-# ^^^^^^^^^^ Maybe we can toss these? ^^^^^^^
+# sed -i "" "s/$last_version/$version/g" $release_path/README.html
+#   OSX  ^^ required suffix
+sed -i "s/$last_version/$version/g" $release_path/README.html
 #
 # Move release artifacts
-svn mv $rc_path/source/* $release_path/source
-svn mv $rc_path/binaries/* $release_path/binaries
+svn mv $rc_path/source/*${version}* $release_path/source
+svn mv $rc_path/binaries/*${version}* $release_path/binaries
 #
+# Drop artifacts from the last release
+cd $release_path/source
+for file in *${last_version}*; do svn rm $file; done
+cd $release_path/binaries
+for file in *${last_version}*; do svn rm $file; done
+#
+# Drop RC directory
+svn rm $rc_path
+
 echo "Local svn changes complete."
 echo "Inspect the files in $release_path and commit to publish the release."
-echo "Also remember to commit $rc_path to drop RC artifacts and svn rm"
-echo "obsolete artifacts from $release_path."
+echo "Also make sure that the rc_name directory in the /dist/dev checkout has been removed."
 
 
 
