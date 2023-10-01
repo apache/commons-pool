@@ -191,7 +191,7 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <commons.componentid>pool</commons.componentid>
     <commons.module.name>org.apache.commons.pool2</commons.module.name>
-    <commons.rc.version>RC5</commons.rc.version>
+    <commons.rc.version>RC1</commons.rc.version>
     <!-- Java 8 -->
     <commons.release.version>2.12.0</commons.release.version>
     <commons.release.desc>(Java 8)</commons.release.desc>
@@ -205,7 +205,7 @@
     <commons.osgi.import>net.sf.cglib.proxy;resolution:=optional,*</commons.osgi.import>
 
     <!-- Commons Release Plugin -->
-    <commons.bc.version>2.11.1</commons.bc.version>
+    <commons.bc.version>2.12.0</commons.bc.version>
     <commons.release.isDistModule>true</commons.release.isDistModule>
     <commons.releaseManagerName>Phil Steitz</commons.releaseManagerName>
     <commons.releaseManagerKey>4E2DDD47E19863BB87211544CD3038FEF07D567E</commons.releaseManagerKey>
