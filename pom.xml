@@ -207,8 +207,6 @@
     <!-- Commons Release Plugin -->
     <commons.bc.version>2.12.0</commons.bc.version>
     <commons.release.isDistModule>true</commons.release.isDistModule>
-    <commons.releaseManagerName>Phil Steitz</commons.releaseManagerName>
-    <commons.releaseManagerKey>4E2DDD47E19863BB87211544CD3038FEF07D567E</commons.releaseManagerKey>
     
     <japicmp.skip>false</japicmp.skip>
     <spotbugs.skip>false</spotbugs.skip>
