@@ -25,7 +25,6 @@ package org.apache.commons.pool2;
  * </p>
  *
  * @param <T> Type of element pooled in this pool.
- * 
  *
  * @since 2.0
  */

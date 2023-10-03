@@ -327,7 +327,7 @@ public final class PoolUtils {
      * may be invalidated instead of being added to idle capacity.
      *
      * @param <T> type of objects in the pool
-     * 
+     *
      */
     private static class ErodingObjectPool<T> implements ObjectPool<T> {
 
@@ -598,7 +598,7 @@ public final class PoolUtils {
      * as the pool's minIdle setting.
      *
      * @param <T> type of objects in the pool
-     * 
+     *
      */
     private static final class ObjectPoolMinIdleTimerTask<T> extends TimerTask {
 
@@ -1023,7 +1023,7 @@ public final class PoolUtils {
      * </p>
      *
      * @param <T> type of objects in the pool
-     * 
+     *
      */
     private static final class SynchronizedObjectPool<T> implements ObjectPool<T> {
 
@@ -1337,7 +1337,7 @@ public final class PoolUtils {
      *            keyedPool, see {@link Timer#schedule(TimerTask, long, long)}.
      * @param <K> the type of the pool key
      * @param <V> the type of pool entries
-     * 
+     *
      * @return a {@link Map} of key and {@link TimerTask} pairs that will
      *         periodically check the pools idle object count.
      * @throws IllegalArgumentException
@@ -1382,7 +1382,7 @@ public final class PoolUtils {
      *            keyedPool, see {@link Timer#schedule(TimerTask, long, long)}.
      * @param <K> the type of the pool key
      * @param <V> the type of pool entries
-     * 
+     *
      * @return the {@link TimerTask} that will periodically check the pools idle
      *         object count.
      * @throws IllegalArgumentException
@@ -1423,7 +1423,7 @@ public final class PoolUtils {
      *            the frequency in milliseconds to check the number of idle objects in a pool,
      *            see {@link Timer#schedule(TimerTask, long, long)}.
      * @param <T> the type of objects in the pool
-     * 
+     *
      * @return the {@link TimerTask} that will periodically check the pools idle
      *         object count.
      * @throws IllegalArgumentException
@@ -1480,7 +1480,7 @@ public final class PoolUtils {
      *            count when possible.
      * @param <K> the type of the pool key
      * @param <V> the type of pool entries
-     * 
+     *
      * @throws IllegalArgumentException
      *             when {@code keyedPool} is {@code null}.
      * @return a pool that adaptively decreases its size when idle objects are
@@ -1515,7 +1515,7 @@ public final class PoolUtils {
      *            shrinks less aggressively.
      * @param <K> the type of the pool key
      * @param <V> the type of pool entries
-     * 
+     *
      * @throws IllegalArgumentException
      *             when {@code keyedPool} is {@code null} or when {@code factor}
      *             is not positive.
@@ -1558,7 +1558,7 @@ public final class PoolUtils {
      *            when true, each key is treated independently.
      * @param <K> the type of the pool key
      * @param <V> the type of pool entries
-     * 
+     *
      * @throws IllegalArgumentException
      *             when {@code keyedPool} is {@code null} or when {@code factor}
      *             is not positive.
@@ -1593,7 +1593,7 @@ public final class PoolUtils {
      *            the ObjectPool to be decorated so it shrinks its idle count
      *            when possible.
      * @param <T> the type of objects in the pool
-     * 
+     *
      * @throws IllegalArgumentException
      *             when {@code pool} is {@code null}.
      * @return a pool that adaptively decreases its size when idle objects are
@@ -1626,7 +1626,7 @@ public final class PoolUtils {
      *            shrinks more aggressively. If 1 &lt; factor then the pool
      *            shrinks less aggressively.
      * @param <T> the type of objects in the pool
-     * 
+     *
      * @throws IllegalArgumentException
      *             when {@code pool} is {@code null} or when {@code factor} is
      *             not positive.
@@ -1667,7 +1667,7 @@ public final class PoolUtils {
      *            the number of idle objects to add for each {@code key}.
      * @param <K> the type of the pool key
      * @param <V> the type of pool entries
-     * 
+     *
      * @throws Exception
      *             when {@link KeyedObjectPool#addObject(Object)} fails.
      * @throws IllegalArgumentException
@@ -1698,7 +1698,7 @@ public final class PoolUtils {
      *            the number of idle objects to add for {@code key}.
      * @param <K> the type of the pool key
      * @param <V> the type of pool entries
-     * 
+     *
      * @throws Exception
      *             when {@link KeyedObjectPool#addObject(Object)} fails.
      * @throws IllegalArgumentException
@@ -1724,7 +1724,7 @@ public final class PoolUtils {
      * @param count
      *            the number of idle objects to add.
      * @param <T> the type of objects in the pool
-     * 
+     *
      * @throws Exception
      *             when {@link ObjectPool#addObject()} fails.
      * @throws IllegalArgumentException
@@ -1773,7 +1773,7 @@ public final class PoolUtils {
      *            KeyedObjectPool.
      * @param <K> the type of the pool key
      * @param <V> the type of pool entries
-     * 
+     *
      * @return a synchronized view of the specified KeyedObjectPool.
      */
     public static <K, V> KeyedObjectPool<K, V> synchronizedPool(final KeyedObjectPool<K, V> keyedPool) {
