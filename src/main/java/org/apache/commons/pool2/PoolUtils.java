@@ -19,7 +19,6 @@ package org.apache.commons.pool2;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -1354,10 +1353,8 @@ public final class PoolUtils {
         if (keys == null) {
             throw new IllegalArgumentException(MSG_NULL_KEYS);
         }
-      final Map<K, TimerTask> tasks = new HashMap<>(keys.size());
-        final Iterator<K> iter = keys.iterator();
-        while (iter.hasNext()) {
-            final K key = iter.next();
+        final Map<K, TimerTask> tasks = new HashMap<>(keys.size());
+        for (K key : keys) {
             final TimerTask task = checkMinIdle(keyedPool, key, minIdle, periodMillis);
             tasks.put(key, task);
         }
