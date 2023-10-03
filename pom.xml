@@ -203,9 +203,6 @@
     <!-- Commons Release Plugin -->
     <commons.bc.version>2.11.1</commons.bc.version>
     <commons.release.isDistModule>true</commons.release.isDistModule>
-    <commons.releaseManagerName>Gary Gregory</commons.releaseManagerName>    
-    <commons.releaseManagerKey>86fdc7e2a11262cb</commons.releaseManagerKey>
-    
     <japicmp.skip>true</japicmp.skip>
     <spotbugs.skip>false</spotbugs.skip>
     <animal.sniffer.skip>true</animal.sniffer.skip>
