@@ -57,6 +57,9 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="update">
       Bump commons-parent from 58 to 62.
     </action>
+    <action dev="ggregory" type="update">
+      Bump org.ow2.asm:asm-util from 9.5 to 9.6 #252.
+    </action>
   </release> 
   <release version="2.12.0" date="2023-MM-DD" description="This is a feature and maintenance release (Java 8).">
     <!-- FIX -->
