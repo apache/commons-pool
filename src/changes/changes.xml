@@ -46,6 +46,12 @@ The <action> type attribute can be add,update,fix,remove.
   </properties>
   <body>
   <release version="2.12.1" date="202Y-MM-DD" description="This is a feature and maintenance release (Java 8).">
+    <!-- FIX -->
+    <!-- ADD -->
+    <!-- UPDATE -->
+    <action dev="ggregory" type="update">
+      Bump commons-parent from 62 to 64.
+    </action>
   </release>
   <release version="2.12.0" date="2023-09-30" description="This is a feature and maintenance release (Java 8).">
     <!-- FIX -->
