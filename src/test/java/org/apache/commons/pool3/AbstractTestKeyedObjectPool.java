@@ -160,7 +160,7 @@ public abstract class AbstractTestKeyedObjectPool {
         }
     }
 
-    private static class TestFactory extends BaseKeyedPooledObjectFactory<Object, Object, RuntimeException> {
+    private static final class TestFactory extends BaseKeyedPooledObjectFactory<Object, Object, RuntimeException> {
         @Override
         public Object create(final Object key) {
             return new Object();

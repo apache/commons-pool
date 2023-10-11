@@ -56,7 +56,7 @@ public class TestSoftRefOutOfMemory {
         }
     }
 
-    private static class OomeFactory extends BasePooledObjectFactory<String, RuntimeException> {
+    private static final class OomeFactory extends BasePooledObjectFactory<String, RuntimeException> {
 
         private final OomeTrigger trigger;
 

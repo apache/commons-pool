@@ -26,7 +26,7 @@ import org.apache.commons.pool3.TestBaseObjectPool;
  */
 public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
 
-    private static class SimpleFactory extends BasePooledObjectFactory<String, RuntimeException> {
+    private static final class SimpleFactory extends BasePooledObjectFactory<String, RuntimeException> {
 
         int counter;
 

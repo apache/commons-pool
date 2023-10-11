@@ -332,7 +332,7 @@ public final class PoolUtils {
      * @param <T> type of objects in the pool
      * @param <E> type of exceptions from the pool
      */
-    private static class ErodingObjectPool<T, E extends Exception> implements ObjectPool<T, E> {
+    private static final class ErodingObjectPool<T, E extends Exception> implements ObjectPool<T, E> {
 
         /** Underlying object pool */
         private final ObjectPool<T, E> pool;

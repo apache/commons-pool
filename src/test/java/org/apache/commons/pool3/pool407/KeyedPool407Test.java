@@ -34,7 +34,7 @@ public class KeyedPool407Test extends AbstractPool407Test {
     /**
      * Borrows from a pool and then immediately returns to that a pool.
      */
-    private static class KeyedPool407RoundtripRunnable implements Runnable {
+    private static final class KeyedPool407RoundtripRunnable implements Runnable {
         private final KeyedPool407 pool;
 
         public KeyedPool407RoundtripRunnable(final KeyedPool407 pool) {

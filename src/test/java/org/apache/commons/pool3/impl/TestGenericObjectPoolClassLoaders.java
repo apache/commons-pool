@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 
 public class TestGenericObjectPoolClassLoaders {
 
-    private static class CustomClassLoader extends URLClassLoader {
+    private static final class CustomClassLoader extends URLClassLoader {
         private final int n;
 
         CustomClassLoader(final int n) {
@@ -46,7 +46,7 @@ public class TestGenericObjectPoolClassLoaders {
         }
     }
 
-    private static class CustomClassLoaderObjectFactory extends
+    private static final class CustomClassLoaderObjectFactory extends
             BasePooledObjectFactory<URL, IllegalStateException> {
         private final int n;
 

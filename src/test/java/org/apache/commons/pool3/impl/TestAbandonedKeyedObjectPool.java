@@ -78,7 +78,7 @@ public class TestAbandonedKeyedObjectPool {
         }
     }
 
-    private static class SimpleFactory implements KeyedPooledObjectFactory<Integer, PooledTestObject, InterruptedException> {
+    private static final class SimpleFactory implements KeyedPooledObjectFactory<Integer, PooledTestObject, InterruptedException> {
 
         private final long destroyLatencyMillis;
         private final long validateLatencyMillis;

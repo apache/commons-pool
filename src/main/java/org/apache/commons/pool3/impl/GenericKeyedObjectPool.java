@@ -98,7 +98,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      *
      * @param <S> type of objects in the pool
      */
-    private static class ObjectDeque<S> {
+    private static final class ObjectDeque<S> {
 
         private final LinkedBlockingDeque<PooledObject<S>> idleObjects;
 

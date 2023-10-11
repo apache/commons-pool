@@ -262,7 +262,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      * Maintains a cache of values for a single metric and reports
      * statistics on the cached values.
      */
-    private static class StatsStore {
+    private static final class StatsStore {
 
         private static final int NULL = -1;
         private final AtomicLong[] values;
