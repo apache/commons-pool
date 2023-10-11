@@ -188,12 +188,15 @@
     <commons.componentid>pool</commons.componentid>
     <commons.module.name>org.apache.commons.pool3</commons.module.name>
     <commons.rc.version>RC1</commons.rc.version>
-    <!-- Java 8 -->
+    <!-- Java 17 -->
     <commons.release.version>3.0.0</commons.release.version>
-    <commons.release.desc>(Java 8)</commons.release.desc>
+    <commons.release.desc>(Java 17)</commons.release.desc>
+    <!-- Java 8 -->
+    <commons.release.2.version>2.12.0</commons.release.2.version>
+    <commons.release.2.desc>(Java 8)</commons.release.2.desc>
     <!-- Java 7 -->
-    <commons.release.2.version>2.6.2</commons.release.2.version>
-    <commons.release.2.desc>(Java 7)</commons.release.2.desc>
+    <commons.release.3.version>2.6.2</commons.release.3.version>
+    <commons.release.3.desc>(Java 7)</commons.release.3.desc>
 
     <commons.jira.id>POOL</commons.jira.id>
     <commons.jira.pid>12310488</commons.jira.pid>
