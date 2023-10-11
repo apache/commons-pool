@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
 
 public abstract class AbstractTestProxiedKeyedObjectPool {
 
-    private static class TestKeyedObjectFactory extends BaseKeyedPooledObjectFactory<String, TestObject> {
+    private static final class TestKeyedObjectFactory extends BaseKeyedPooledObjectFactory<String, TestObject> {
 
         @Override
         public TestObject create(final String key) {
@@ -58,7 +58,7 @@ public abstract class AbstractTestProxiedKeyedObjectPool {
         void setData(String data);
     }
 
-    private static class TestObjectImpl implements TestObject {
+    private static final class TestObjectImpl implements TestObject {
 
         private String data;
 

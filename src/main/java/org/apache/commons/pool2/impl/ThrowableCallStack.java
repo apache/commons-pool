@@ -33,7 +33,7 @@ public class ThrowableCallStack implements CallStack {
     /**
      * A snapshot of a throwable.
      */
-    private static class Snapshot extends Throwable {
+    private static final class Snapshot extends Throwable {
         private static final long serialVersionUID = 1L;
         private final long timestampMillis = System.currentTimeMillis();
     }

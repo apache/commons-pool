@@ -328,7 +328,7 @@ public final class PoolUtils {
      * @param <T> type of objects in the pool
      *
      */
-    private static class ErodingObjectPool<T> implements ObjectPool<T> {
+    private static final class ErodingObjectPool<T> implements ObjectPool<T> {
 
         /** Underlying object pool */
         private final ObjectPool<T> pool;

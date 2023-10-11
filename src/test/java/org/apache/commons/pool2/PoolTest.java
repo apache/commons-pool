@@ -31,10 +31,10 @@ import org.junit.jupiter.api.Test;
 
 public class PoolTest {
 
-    private static class Foo {
+    private static final class Foo {
     }
 
-    private static class PooledFooFactory implements PooledObjectFactory<Foo> {
+    private static final class PooledFooFactory implements PooledObjectFactory<Foo> {
         private static final long VALIDATION_WAIT_IN_MILLIS = 1000;
 
         @Override

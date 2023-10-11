@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
  */
 public class TestBasePoolableObjectFactory {
 
-    private static class TestFactory extends BasePooledObjectFactory<AtomicInteger> {
+    private static final class TestFactory extends BasePooledObjectFactory<AtomicInteger> {
         @Override
         public AtomicInteger create() {
             return new AtomicInteger(0);

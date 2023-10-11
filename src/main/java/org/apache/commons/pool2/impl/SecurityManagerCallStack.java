@@ -40,7 +40,7 @@ public class SecurityManagerCallStack implements CallStack {
     /**
      * A custom security manager.
      */
-    private static class PrivateSecurityManager extends SecurityManager {
+    private static final class PrivateSecurityManager extends SecurityManager {
 
         /**
          * Gets the class stack.
@@ -56,7 +56,7 @@ public class SecurityManagerCallStack implements CallStack {
     /**
      * A snapshot of a class stack.
      */
-    private static class Snapshot {
+    private static final class Snapshot {
         private final long timestampMillis = System.currentTimeMillis();
         private final List<WeakReference<Class<?>>> stack;
 

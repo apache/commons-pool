@@ -94,7 +94,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
     }
 
-    private static class CreateErrorFactory extends BasePooledObjectFactory<String> {
+    private static final class CreateErrorFactory extends BasePooledObjectFactory<String> {
 
         private final Semaphore semaphore = new Semaphore(0);
 
@@ -118,7 +118,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
     }
 
-    private static class CreateFailFactory extends BasePooledObjectFactory<String> {
+    private static final class CreateFailFactory extends BasePooledObjectFactory<String> {
 
         private final Semaphore semaphore = new Semaphore(0);
 
@@ -154,7 +154,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
     }
 
-    private static class EvictionThread<T> extends Thread {
+    private static final class EvictionThread<T> extends Thread {
 
         private final GenericObjectPool<T> pool;
 
@@ -217,7 +217,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
     }
 
-    private static class InvalidFactory
+    private static final class InvalidFactory
             extends BasePooledObjectFactory<Object> {
 
         @Override

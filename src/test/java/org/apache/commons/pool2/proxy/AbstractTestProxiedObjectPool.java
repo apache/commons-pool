@@ -43,7 +43,7 @@ public abstract class AbstractTestProxiedObjectPool {
         String getData();
         void setData(String data);
     }
-    private static class TestObjectFactory extends
+    private static final class TestObjectFactory extends
             BasePooledObjectFactory<TestObject> {
 
         @Override
@@ -56,7 +56,7 @@ public abstract class AbstractTestProxiedObjectPool {
         }
     }
 
-    private static class TestObjectImpl implements TestObject {
+    private static final class TestObjectImpl implements TestObject {
 
         private String data;
 

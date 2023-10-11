@@ -24,7 +24,7 @@ import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectFactory;
 
 /**
- * Copies PoolUtil's private static class SynchronizedPooledObjectFactory.
+ * Copies PoolUtil's private static final class SynchronizedPooledObjectFactory.
  *
  * A fully synchronized PooledObjectFactory that wraps a PooledObjectFactory and
  * synchronizes access to the wrapped factory methods.

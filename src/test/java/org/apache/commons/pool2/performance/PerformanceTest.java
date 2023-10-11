@@ -91,7 +91,7 @@ public class PerformanceTest {
         }
     }
     }
-    private static class TaskStats {
+    private static final class TaskStats {
         public int waiting;
         public int complete;
         public long totalBorrowNanos;

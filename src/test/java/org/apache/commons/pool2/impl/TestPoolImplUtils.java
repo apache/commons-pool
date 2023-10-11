@@ -51,7 +51,7 @@ public class TestPoolImplUtils {
         // empty by design
     }
 
-    private static class NotSimpleFactory extends FactoryF<Integer> {
+    private static final class NotSimpleFactory extends FactoryF<Integer> {
         @Override
         public Long create() throws Exception {
             return null;
@@ -63,7 +63,7 @@ public class TestPoolImplUtils {
         }
     }
 
-    private static class SimpleFactory extends BasePooledObjectFactory<String> {
+    private static final class SimpleFactory extends BasePooledObjectFactory<String> {
         @Override
         public String create() {
             return null;

@@ -249,7 +249,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      * Maintains a cache of values for a single metric and reports
      * statistics on the cached values.
      */
-    private static class StatsStore {
+    private static final class StatsStore {
 
         private static final int NONE = -1;
         private final AtomicLong[] values;

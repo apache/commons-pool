@@ -158,7 +158,7 @@ public class TestAbandonedObjectPool {
         }
     }
 
-    private static class SimpleFactory implements PooledObjectFactory<PooledTestObject> {
+    private static final class SimpleFactory implements PooledObjectFactory<PooledTestObject> {
 
         private final long destroyLatency;
         private final long validateLatency;

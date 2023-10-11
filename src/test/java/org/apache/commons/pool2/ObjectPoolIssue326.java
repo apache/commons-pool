@@ -41,7 +41,7 @@ import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
  * negatively since you need to run it for a while.
  */
 public final class ObjectPoolIssue326 {
-    private static class ObjectFactory extends BaseKeyedPooledObjectFactory<Integer, Object> {
+    private static final class ObjectFactory extends BaseKeyedPooledObjectFactory<Integer, Object> {
         @Override
         public Object create(final Integer s) {
             return new TestObject();
@@ -53,7 +53,7 @@ public final class ObjectPoolIssue326 {
         }
     }
 
-    private static class Task<E extends Exception> implements Callable<Object> {
+    private static final class Task<E extends Exception> implements Callable<Object> {
         private final GenericKeyedObjectPool<Integer, Object> m_pool;
         private final int m_key;
 
@@ -90,7 +90,7 @@ public final class ObjectPoolIssue326 {
         }
     }
 
-    private static class TestObject {
+    private static final class TestObject {
     }
 
     public static void main(final String[] args) {

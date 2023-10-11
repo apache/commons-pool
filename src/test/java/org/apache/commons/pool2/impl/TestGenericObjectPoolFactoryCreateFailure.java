@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Timeout;
  */
 public class TestGenericObjectPoolFactoryCreateFailure {
 
-    private static class SingleObjectFactory extends BasePooledObjectFactory<Object> {
+    private static final class SingleObjectFactory extends BasePooledObjectFactory<Object> {
         private final AtomicBoolean created = new AtomicBoolean();
 
         @Override
@@ -57,7 +57,7 @@ public class TestGenericObjectPoolFactoryCreateFailure {
         }
     }
 
-    private static class WinnerRunnable implements Runnable {
+    private static final class WinnerRunnable implements Runnable {
         private final CountDownLatch barrier;
         private final AtomicBoolean failed;
         private final GenericObjectPool<Object> pool;

@@ -75,7 +75,7 @@ import org.junit.jupiter.params.provider.EnumSource;
  */
 public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
-    private static class DaemonThreadFactory implements ThreadFactory {
+    private static final class DaemonThreadFactory implements ThreadFactory {
         @Override
         public Thread newThread(final Runnable r) {
             final Thread t = new Thread(r);
@@ -84,7 +84,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         }
     }
 
-    private static class DummyFactory extends BaseKeyedPooledObjectFactory<Object, Object> {
+    private static final class DummyFactory extends BaseKeyedPooledObjectFactory<Object, Object> {
         @Override
         public Object create(final Object key) {
             return null;
@@ -146,7 +146,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         }
     }
 
-    private static class ObjectFactory
+    private static final class ObjectFactory
         extends BaseKeyedPooledObjectFactory<Integer, Object> {
 
         @Override
@@ -293,7 +293,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         }
     }
 
-    private static class SimplePerKeyFactory extends BaseKeyedPooledObjectFactory<Object, Object> {
+    private static final class SimplePerKeyFactory extends BaseKeyedPooledObjectFactory<Object, Object> {
         final ConcurrentHashMap<Object, AtomicInteger> map = new ConcurrentHashMap<>();
 
         @Override
@@ -334,7 +334,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
     /**
      * DefaultEvictionPolicy modified to add latency
      */
-    private static class SlowEvictionPolicy<T> extends DefaultEvictionPolicy<T> {
+    private static final class SlowEvictionPolicy<T> extends DefaultEvictionPolicy<T> {
         private final long delay;
 
         /**
