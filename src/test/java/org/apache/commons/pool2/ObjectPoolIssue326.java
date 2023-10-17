@@ -54,12 +54,12 @@ public final class ObjectPoolIssue326 {
     }
 
     private static final class Task<E extends Exception> implements Callable<Object> {
-        private final GenericKeyedObjectPool<Integer, Object> m_pool;
-        private final int m_key;
+        private final GenericKeyedObjectPool<Integer, Object> pool;
+        private final int key;
 
         Task(final GenericKeyedObjectPool<Integer, Object> pool, final int count) {
-            m_pool = pool;
-            m_key = count % 20;
+            this.pool = pool;
+            this.key = count % 20;
         }
 
         private void busyWait(final long timeMillis) {
@@ -74,12 +74,12 @@ public final class ObjectPoolIssue326 {
         public Object call() throws Exception {
             try {
                 final Object value;
-                value = m_pool.borrowObject(m_key);
+                value = pool.borrowObject(key);
                 // don't make this too long or it won't reproduce, and don't make it zero or it
                 // won't reproduce
                 // constant low value also doesn't reproduce
                 busyWait(System.currentTimeMillis() % 4);
-                m_pool.returnObject(m_key, value);
+                pool.returnObject(key, value);
                 return "success";
             } catch (final NoSuchElementException e) {
                 // ignore, we've exhausted the pool
