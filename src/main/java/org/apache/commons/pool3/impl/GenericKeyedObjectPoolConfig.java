@@ -132,7 +132,7 @@ public class GenericKeyedObjectPoolConfig<T> extends BaseObjectPoolConfig<T> {
     }
 
     /**
-     * Set the value for the {@code maxIdlePerKey} configuration attribute for
+     * Sets the value for the {@code maxIdlePerKey} configuration attribute for
      * pools created with this configuration instance.
      *
      * @param maxIdlePerKey The new setting of {@code maxIdlePerKey}
@@ -145,7 +145,7 @@ public class GenericKeyedObjectPoolConfig<T> extends BaseObjectPoolConfig<T> {
     }
 
     /**
-     * Set the value for the {@code maxTotal} configuration attribute for
+     * Sets the value for the {@code maxTotal} configuration attribute for
      * pools created with this configuration instance.
      *
      * @param maxTotal The new setting of {@code maxTotal}
@@ -158,7 +158,7 @@ public class GenericKeyedObjectPoolConfig<T> extends BaseObjectPoolConfig<T> {
     }
 
     /**
-     * Set the value for the {@code maxTotalPerKey} configuration attribute for
+     * Sets the value for the {@code maxTotalPerKey} configuration attribute for
      * pools created with this configuration instance.
      *
      * @param maxTotalPerKey The new setting of {@code maxTotalPerKey}
@@ -171,7 +171,7 @@ public class GenericKeyedObjectPoolConfig<T> extends BaseObjectPoolConfig<T> {
     }
 
     /**
-     * Set the value for the {@code minIdlePerKey} configuration attribute for
+     * Sets the value for the {@code minIdlePerKey} configuration attribute for
      * pools created with this configuration instance.
      *
      * @param minIdlePerKey The new setting of {@code minIdlePerKey}
