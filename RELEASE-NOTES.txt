@@ -20,7 +20,7 @@ NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPool
       be able to upgrade to a new minor or patch release without requiring code
       changes.
 
-This is a feature and maintenance release (Java 8).
+This is a feature and maintenance release (Java 8 or above).
 
 Changes in version 2.12.0 include:
 
@@ -107,7 +107,7 @@ NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPool
       be able to upgrade to a new minor or patch release without requiring code
       changes.
 
-This is a maintenance release (Java 8).
+This is a maintenance release (Java 8 or above).
 
 Changes in version 2.11.1 include:
 
@@ -169,7 +169,7 @@ NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPool
       be able to upgrade to a new minor or patch release without requiring code
       changes.
 
-This is a feature release (Java 8).
+This is a feature release (Java 8 or above).
 
 Changes in version 2.11.0 include:
 
@@ -256,7 +256,7 @@ NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPool
       be able to upgrade to a new minor or patch release without requiring code
       changes.
 
-This is a MMMM release (Java 8).
+This is a MMMM release (Java 8 or above).
 
 Changes in version 2.10.0 include:
 
@@ -327,7 +327,7 @@ NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPool
       be able to upgrade to a new minor or patch release without requiring code
       changes.
 
-This is a minor release (Java 8).
+This is a minor release (Java 8 or above).
 
 Changes in version 2.9.0 include:
 
@@ -367,7 +367,7 @@ NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPool
       be able to upgrade to a new minor or patch release without requiring code
       changes.
 
-This is a maintenance release (Java 8).
+This is a maintenance release (Java 8 or above).
 
 Changes in version 2.8.1 include:
 
@@ -420,7 +420,7 @@ NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPool
       be able to upgrade to a new minor or patch release without requiring code
       changes.
 
-This is a maintenance release (Java 8).
+This is a maintenance release (Java 8 or above).
 
 Changes in version 2.8.0 include:
 
@@ -472,7 +472,7 @@ NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPool
       be able to upgrade to a new minor or patch release without requiring code
       changes.
 
-This is a feature release (Java 8).
+This is a feature release (Java 8 or above).
 
 Changes in version 2.7.0 include:
 
