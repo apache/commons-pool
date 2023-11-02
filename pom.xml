@@ -197,7 +197,7 @@
     <commons.release.desc>(Java 8 or above)</commons.release.desc>
     <!-- Java 7 -->
     <commons.release.2.version>2.6.2</commons.release.2.version>
-    <commons.release.2.desc>(Java 7)</commons.release.2.desc>
+    <commons.release.2.desc>(Java 7 or above)</commons.release.2.desc>
 
     <commons.jira.id>POOL</commons.jira.id>
     <commons.jira.pid>12310488</commons.jira.pid>
