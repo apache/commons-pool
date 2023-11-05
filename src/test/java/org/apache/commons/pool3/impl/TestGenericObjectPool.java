@@ -73,7 +73,7 @@ import org.junit.jupiter.api.Timeout;
  */
 public class TestGenericObjectPool extends TestBaseObjectPool {
 
-    private class ConcurrentBorrowAndEvictThread extends Thread {
+    private final class ConcurrentBorrowAndEvictThread extends Thread {
         private final boolean borrow;
         public String obj;
 
