@@ -65,7 +65,7 @@ import java.util.concurrent.locks.Condition;
  *
  * @since 2.0
  */
-class LinkedBlockingDeque<E> extends AbstractQueue<E>
+final class LinkedBlockingDeque<E> extends AbstractQueue<E>
         implements Deque<E>, Serializable {
 
     /*

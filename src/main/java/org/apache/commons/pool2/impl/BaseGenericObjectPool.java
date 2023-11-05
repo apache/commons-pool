@@ -65,7 +65,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
     /**
      * The idle object eviction iterator. Holds a reference to the idle objects.
      */
-    class EvictionIterator implements Iterator<PooledObject<T>> {
+    final class EvictionIterator implements Iterator<PooledObject<T>> {
 
         private final Deque<PooledObject<T>> idleObjects;
         private final Iterator<PooledObject<T>> idleObjectIterator;
@@ -117,7 +117,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      *
      * @see GenericKeyedObjectPool#setTimeBetweenEvictionRunsMillis
      */
-    class Evictor implements Runnable {
+    final class Evictor implements Runnable {
 
         private ScheduledFuture<?> scheduledFuture;
 

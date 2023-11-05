@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 
 public class TestTrackedUse {
 
-    class DefaultTrackedUse implements TrackedUse {
+    final class DefaultTrackedUse implements TrackedUse {
 
         @Override
         public long getLastUsed() {

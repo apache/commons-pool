@@ -1659,7 +1659,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
     public void testEvictionSoftMinIdle() throws Exception {
-        class TimeTest extends BasePooledObjectFactory<TimeTest> {
+        final class TimeTest extends BasePooledObjectFactory<TimeTest> {
             private final long createTimeMillis;
 
             public TimeTest() {
