@@ -28,7 +28,7 @@ import org.apache.commons.pool3.UsageTracking;
  *
  * @since 2.0
  */
-class JdkProxyHandler<T> extends BaseProxyHandler<T>
+final class JdkProxyHandler<T> extends BaseProxyHandler<T>
         implements InvocationHandler {
 
     /**

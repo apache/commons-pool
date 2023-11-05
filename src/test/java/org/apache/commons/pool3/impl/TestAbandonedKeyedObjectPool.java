@@ -46,7 +46,7 @@ import org.junit.jupiter.api.Test;
  */
 public class TestAbandonedKeyedObjectPool {
 
-    class ConcurrentBorrower extends Thread {
+    final class ConcurrentBorrower extends Thread {
         private final ArrayList<PooledTestObject> borrowed;
 
         public ConcurrentBorrower(final ArrayList<PooledTestObject> borrowed) {
@@ -62,7 +62,7 @@ public class TestAbandonedKeyedObjectPool {
             }
         }
     }
-    class ConcurrentReturner extends Thread {
+    final class ConcurrentReturner extends Thread {
         private final PooledTestObject returned;
         public ConcurrentReturner(final PooledTestObject obj) {
             returned = obj;

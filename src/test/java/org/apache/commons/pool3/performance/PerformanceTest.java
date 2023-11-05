@@ -33,7 +33,7 @@ import org.apache.commons.pool3.impl.GenericObjectPool;
  */
 public class PerformanceTest {
 
-    class PerfTask implements Callable<TaskStats> {
+    final class PerfTask implements Callable<TaskStats> {
         final TaskStats taskStats = new TaskStats();
         long borrowTimeNanos;
         long returnTimeNanos;

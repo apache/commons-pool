@@ -44,7 +44,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class PooledTestObject implements TrackedUse {
+final class PooledTestObject implements TrackedUse {
     private static final AtomicInteger ATOMIC_HASH = new AtomicInteger();
     private static final Instant INSTANT_0 = Instant.ofEpochMilli(0);
     private static final Instant INSTANT_1 = Instant.ofEpochMilli(1);
@@ -115,7 +115,7 @@ class PooledTestObject implements TrackedUse {
  */
 public class TestAbandonedObjectPool {
 
-    class ConcurrentBorrower extends Thread {
+    final class ConcurrentBorrower extends Thread {
         private final ArrayList<PooledTestObject> borrowed;
 
         public ConcurrentBorrower(final ArrayList<PooledTestObject> borrowed) {
@@ -131,7 +131,7 @@ public class TestAbandonedObjectPool {
             }
         }
     }
-    class ConcurrentReturner extends Thread {
+    final class ConcurrentReturner extends Thread {
         private final PooledTestObject returned;
         public ConcurrentReturner(final PooledTestObject obj) {
             returned = obj;

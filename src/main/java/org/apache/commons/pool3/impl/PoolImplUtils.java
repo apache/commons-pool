@@ -32,7 +32,7 @@ import org.apache.commons.pool3.PooledObjectFactory;
  *
  * @since 2.0
  */
-class PoolImplUtils {
+final class PoolImplUtils {
 
     /**
      * Identifies the concrete type of object that an object factory creates.

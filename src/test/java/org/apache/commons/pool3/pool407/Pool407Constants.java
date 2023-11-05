@@ -24,7 +24,7 @@ import org.apache.commons.pool3.impl.BaseObjectPoolConfig;
 /**
  * Tests POOL-407.
  */
-class Pool407Constants {
+final class Pool407Constants {
 
     static final int AWAIT_TERMINATION_SECONDS = 10;
     static final boolean BLOCK_WHEN_EXHAUSTED = true;

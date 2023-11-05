@@ -30,7 +30,7 @@ import net.sf.cglib.proxy.MethodProxy;
  *
  * @since 2.0
  */
-class CglibProxyHandler<T> extends BaseProxyHandler<T>
+final class CglibProxyHandler<T> extends BaseProxyHandler<T>
         implements MethodInterceptor {
 
 
