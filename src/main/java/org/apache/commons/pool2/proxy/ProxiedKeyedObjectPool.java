@@ -37,7 +37,6 @@ public class ProxiedKeyedObjectPool<K, V> implements KeyedObjectPool<K, V> {
     private final KeyedObjectPool<K, V> pool;
     private final ProxySource<V> proxySource;
 
-
     /**
      * Constructs a new proxied object pool.
      *
@@ -49,7 +48,6 @@ public class ProxiedKeyedObjectPool<K, V> implements KeyedObjectPool<K, V> {
         this.pool = pool;
         this.proxySource = proxySource;
     }
-
 
     @Override
     public void addObject(final K key) throws Exception {

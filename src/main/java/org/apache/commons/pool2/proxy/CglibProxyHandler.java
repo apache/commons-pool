@@ -33,7 +33,6 @@ import net.sf.cglib.proxy.MethodProxy;
 final class CglibProxyHandler<T> extends BaseProxyHandler<T>
         implements MethodInterceptor {
 
-
     /**
      * Constructs a CGLib proxy instance.
      *

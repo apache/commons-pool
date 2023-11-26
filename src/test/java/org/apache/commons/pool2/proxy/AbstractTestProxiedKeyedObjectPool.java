@@ -36,8 +36,6 @@ import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-
-
 public abstract class AbstractTestProxiedKeyedObjectPool {
 
     private static final class TestKeyedObjectFactory extends BaseKeyedPooledObjectFactory<String, TestObject> {
@@ -75,7 +73,6 @@ public abstract class AbstractTestProxiedKeyedObjectPool {
 
     private static final String KEY1 = "key1";
 
-
     private static final String DATA1 = "data1";
 
     private static final Duration ABANDONED_TIMEOUT_SECS = Duration.ofSeconds(3);
@@ -84,9 +81,7 @@ public abstract class AbstractTestProxiedKeyedObjectPool {
 
     private StringWriter log;
 
-
     protected abstract ProxySource<TestObject> getproxySource();
-
 
     @BeforeEach
     public void setUp() {
@@ -111,7 +106,6 @@ public abstract class AbstractTestProxiedKeyedObjectPool {
         pool = new ProxiedKeyedObjectPool<>(innerPool, getproxySource());
     }
 
-
     @Test
     public void testAccessAfterInvalidate() throws Exception {
         final TestObject obj = pool.borrowObject(KEY1);
@@ -129,7 +123,6 @@ public abstract class AbstractTestProxiedKeyedObjectPool {
                 obj::getData);
 
     }
-
 
     @Test
     public void testAccessAfterReturn() throws Exception {
@@ -159,7 +152,6 @@ public abstract class AbstractTestProxiedKeyedObjectPool {
         pool.returnObject(KEY1, obj);
     }
 
-
     @Test
     public void testPassThroughMethods01() throws Exception {
         assertEquals(0, pool.getNumActive());
@@ -175,7 +167,6 @@ public abstract class AbstractTestProxiedKeyedObjectPool {
         assertEquals(0, pool.getNumActive());
         assertEquals(0, pool.getNumIdle());
     }
-
 
     @Test
     public void testPassThroughMethods02() {

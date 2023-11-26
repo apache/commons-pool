@@ -48,7 +48,6 @@ public class GenericObjectPoolConfig<T> extends BaseObjectPoolConfig<T> {
      */
     public static final int DEFAULT_MIN_IDLE = 0;
 
-
     private int maxTotal = DEFAULT_MAX_TOTAL;
 
     private int maxIdle = DEFAULT_MAX_IDLE;
@@ -78,7 +77,6 @@ public class GenericObjectPoolConfig<T> extends BaseObjectPoolConfig<T> {
         return maxIdle;
     }
 
-
     /**
      * Gets the value for the {@code maxTotal} configuration attribute
      * for pools created with this configuration instance.
@@ -104,7 +102,6 @@ public class GenericObjectPoolConfig<T> extends BaseObjectPoolConfig<T> {
     public int getMinIdle() {
         return minIdle;
     }
-
 
     /**
      * Sets the value for the {@code maxIdle} configuration attribute for

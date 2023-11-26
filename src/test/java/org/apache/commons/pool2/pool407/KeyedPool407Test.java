@@ -70,7 +70,6 @@ public class KeyedPool407Test extends AbstractPool407Test {
         assertShutdown(termination, poolConfigMaxWait, obj, pooledObject);
     }
 
-
     private void test(final AbstractKeyedPool407Factory factory, final int poolSize, final Duration poolConfigMaxWait) throws Exception {
         final ExecutorService executor = Executors.newFixedThreadPool(poolSize);
         try (final KeyedPool407 pool = new KeyedPool407(factory, poolConfigMaxWait)) {

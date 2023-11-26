@@ -34,7 +34,6 @@ public class ProxiedObjectPool<T> implements ObjectPool<T> {
     private final ObjectPool<T> pool;
     private final ProxySource<T> proxySource;
 
-
     /**
      * Constructs a new proxied object pool.
      *
@@ -51,7 +50,6 @@ public class ProxiedObjectPool<T> implements ObjectPool<T> {
         pool.addObject();
     }
 
-
     @SuppressWarnings("unchecked")
     @Override
     public T borrowObject() throws Exception {
@@ -62,36 +60,30 @@ public class ProxiedObjectPool<T> implements ObjectPool<T> {
         return proxySource.createProxy(pool.borrowObject(), usageTracking);
     }
 
-
     @Override
     public void clear() throws Exception {
         pool.clear();
     }
-
 
     @Override
     public void close() {
         pool.close();
     }
 
-
     @Override
     public int getNumActive() {
         return pool.getNumActive();
     }
-
 
     @Override
     public int getNumIdle() {
         return pool.getNumIdle();
     }
 
-
     @Override
     public void invalidateObject(final T proxy) throws Exception {
         pool.invalidateObject(proxySource.resolveProxy(proxy));
     }
-
 
     @Override
     public void returnObject(final T proxy) throws Exception {

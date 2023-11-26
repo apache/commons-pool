@@ -61,7 +61,6 @@ public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
         return (ObjectPool<String>) new SoftReferenceObjectPool<>(new SimpleFactory());
     }
 
-
     @Override
     protected <E extends Exception> ObjectPool<Object> makeEmptyPool(final PooledObjectFactory<Object> factory) {
         return new SoftReferenceObjectPool<>(factory);

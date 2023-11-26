@@ -33,7 +33,6 @@ class BaseProxyHandler<T> {
     private volatile T pooledObject;
     private final UsageTracking<T> usageTracking;
 
-
     /**
      * Constructs a new wrapper for the given pooled object.
      *
@@ -47,7 +46,6 @@ class BaseProxyHandler<T> {
         this.usageTracking = usageTracking;
     }
 
-
     /**
      * Disable the proxy wrapper. Called when the object has been returned to
      * the pool. Further use of the wrapper should result in an
@@ -60,7 +58,6 @@ class BaseProxyHandler<T> {
         pooledObject = null;
         return result;
     }
-
 
     /**
      * Invoke the given method on the wrapped object.
@@ -79,7 +76,6 @@ class BaseProxyHandler<T> {
         return method.invoke(object, args);
     }
 
-
     /**
      * Gets the wrapped, pooled object.
      *
@@ -88,7 +84,6 @@ class BaseProxyHandler<T> {
     T getPooledObject() {
         return pooledObject;
     }
-
 
     /**
      * @since 2.4.3
@@ -104,7 +99,6 @@ class BaseProxyHandler<T> {
         builder.append("]");
         return builder.toString();
     }
-
 
     /**
      * Check that the proxy is still valid (i.e. that {@link #disableProxy()}

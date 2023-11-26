@@ -16,7 +16,6 @@
  */
 package org.apache.commons.pool2;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -198,7 +197,6 @@ public abstract class AbstractTestObjectPool {
         expectedMethods.add(new MethodCall("makeObject"));
         assertEquals(expectedMethods, factory.getMethodCalls());
 
-
         // when activateObject fails in borrowObject, a new object should be borrowed/created
         reset(pool, factory, expectedMethods);
         pool.addObject();
@@ -272,7 +270,6 @@ public abstract class AbstractTestObjectPool {
         // Test correct behavior code paths
         pool.addObjects(5);
         pool.close();
-
 
         // Test exception handling close should swallow failures
         try {

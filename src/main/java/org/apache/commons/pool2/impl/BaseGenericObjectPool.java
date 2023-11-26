@@ -2077,5 +2077,4 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
         activeTimes.add(activeTime);
     }
 
-
 }

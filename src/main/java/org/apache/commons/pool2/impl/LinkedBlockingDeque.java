@@ -327,7 +327,6 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
         this(Integer.MAX_VALUE, fairness);
     }
 
-
     // Basic linking and unlinking operations, called only while holding lock
 
     /**

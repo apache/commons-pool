@@ -27,7 +27,6 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-
 /**
  * Provides a shared idle object eviction timer for all pools.
  * <p>
@@ -119,7 +118,6 @@ final class EvictionTimer {
             }
         }
     }
-
 
     /** Executor instance */
     private static ScheduledThreadPoolExecutor executor; //@GuardedBy("EvictionTimer.class")

@@ -17,7 +17,6 @@
 
 package org.apache.commons.pool2.impl;
 
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -989,7 +988,6 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
     }
 
-
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
     public void testAddObject() throws Exception {
@@ -1222,7 +1220,6 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
         genericObjectPool.close();
     }
-
 
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
@@ -2083,7 +2080,6 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             fail("Borrower timed out waiting for an instance");
         }
     }
-
 
     /**
      * Test the following scenario:
