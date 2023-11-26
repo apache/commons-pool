@@ -296,5 +296,4 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
         usedBy.fillInStackTrace();
     }
 
-
 }

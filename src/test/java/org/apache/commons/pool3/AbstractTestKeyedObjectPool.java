@@ -577,7 +577,6 @@ public abstract class AbstractTestKeyedObjectPool {
         expectedMethods.add(new MethodCall("makeObject", KEY));
         assertEquals(expectedMethods, factory.getMethodCalls());
 
-
         // when activateObject fails in borrowObject, a new object should be borrowed/created
         reset(pool, factory, expectedMethods);
         pool.addObject(KEY);
@@ -636,7 +635,6 @@ public abstract class AbstractTestKeyedObjectPool {
         pool.clear();
         pool.close();
     }
-
 
     @Test
     public void testKPOFCloseUsages() {

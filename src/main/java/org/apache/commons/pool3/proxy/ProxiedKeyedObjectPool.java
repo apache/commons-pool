@@ -39,7 +39,6 @@ public class ProxiedKeyedObjectPool<K, V, E extends Exception> implements KeyedO
     private final KeyedObjectPool<K, V, E> pool;
     private final ProxySource<V> proxySource;
 
-
     /**
      * Constructs a new proxied object pool.
      *
@@ -51,7 +50,6 @@ public class ProxiedKeyedObjectPool<K, V, E extends Exception> implements KeyedO
         this.pool = pool;
         this.proxySource = proxySource;
     }
-
 
     @Override
     public void addObject(final K key) throws E, IllegalStateException,

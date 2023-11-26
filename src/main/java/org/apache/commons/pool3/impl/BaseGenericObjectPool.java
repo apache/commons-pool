@@ -1772,5 +1772,4 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
         activeTimes.add(activeTime);
     }
 
-
 }

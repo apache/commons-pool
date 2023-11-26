@@ -74,14 +74,12 @@ public class AtomicIntegerFactory
         this.createLatency = createLatency;
     }
 
-
     /**
      * @param destroyLatency the destroyLatency to set
      */
     public void setDestroyLatency(final long destroyLatency) {
         this.destroyLatency = destroyLatency;
     }
-
 
     /**
      * @param passivateLatency the passivateLatency to set
@@ -90,7 +88,6 @@ public class AtomicIntegerFactory
         this.passivateLatency = passivateLatency;
     }
 
-
     /**
      * @param validateLatency the validateLatency to set
      */
@@ -98,13 +95,11 @@ public class AtomicIntegerFactory
         this.validateLatency = validateLatency;
     }
 
-
     @Override
     public boolean validateObject(final PooledObject<AtomicInteger> instance) {
         Waiter.sleepQuietly(validateLatency);
         return instance.getObject().intValue() == 1;
     }
-
 
     @Override
     public PooledObject<AtomicInteger> wrap(final AtomicInteger integer) {

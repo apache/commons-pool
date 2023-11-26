@@ -36,7 +36,6 @@ import org.apache.commons.pool3.impl.GenericObjectPoolConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-
 public abstract class AbstractTestProxiedObjectPool {
 
     protected interface TestObject {
@@ -74,14 +73,11 @@ public abstract class AbstractTestProxiedObjectPool {
 
     private static final Duration ABANDONED_TIMEOUT_SECS = Duration.ofSeconds(3);
 
-
     private ObjectPool<TestObject, RuntimeException> pool;
 
     private StringWriter log;
 
-
     protected abstract ProxySource<TestObject> getproxySource();
-
 
     @BeforeEach
     public void setUp() {
@@ -106,7 +102,6 @@ public abstract class AbstractTestProxiedObjectPool {
         pool = new ProxiedObjectPool<>(innerPool, getproxySource());
     }
 
-
     @Test
     public void testAccessAfterInvalidate() {
         final TestObject obj = pool.borrowObject();
@@ -125,7 +120,6 @@ public abstract class AbstractTestProxiedObjectPool {
 
     }
 
-
     @Test
     public void testAccessAfterReturn() {
         final TestObject obj = pool.borrowObject();
@@ -142,7 +136,6 @@ public abstract class AbstractTestProxiedObjectPool {
         assertThrows(IllegalStateException.class,
                 obj::getData);
     }
-
 
     @Test
     public void testBorrowObject() {
@@ -172,7 +165,6 @@ public abstract class AbstractTestProxiedObjectPool {
         assertEquals(0, pool.getNumIdle());
     }
 
-
     @Test
     public void testPassThroughMethods02() {
         pool.close();
@@ -180,7 +172,6 @@ public abstract class AbstractTestProxiedObjectPool {
         assertThrows(IllegalStateException.class,
                 () -> pool.addObject());
     }
-
 
     @Test
     public void testUsageTracking() throws InterruptedException {

@@ -201,7 +201,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
     private volatile int minIdlePerKey =
             GenericKeyedObjectPoolConfig.DEFAULT_MIN_IDLE_PER_KEY;
 
-
     private volatile int maxTotalPerKey =
             GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL_PER_KEY;
 
@@ -236,7 +235,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
     private final AtomicInteger numTotal = new AtomicInteger(0);
 
     private Iterator<K> evictionKeyIterator; // @GuardedBy("evictionLock")
-
 
     private K evictionKey; // @GuardedBy("evictionLock")
 
@@ -681,7 +679,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
         }
     }
 
-
     /**
      * Closes the keyed object pool. Once the pool is closed,
      * {@link #borrowObject(Object)} will fail with IllegalStateException, but
@@ -720,7 +717,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
             clear();
         }
     }
-
 
     /**
      * Creates a new pooled object or null.
@@ -912,7 +908,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
             deregister(key);
         }
     }
-
 
     @Override
     void ensureMinIdle() throws E {
@@ -1113,7 +1108,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
             removeAbandoned(ac);
         }
     }
-
 
     /**
      * Gets a reference to the factory used to create, destroy and validate

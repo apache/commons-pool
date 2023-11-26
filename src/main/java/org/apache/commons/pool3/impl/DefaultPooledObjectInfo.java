@@ -65,7 +65,6 @@ public class DefaultPooledObjectInfo implements DefaultPooledObjectInfoMBean {
         return pooledObject.getLastBorrowInstant().toEpochMilli();
     }
 
-
     @Override
     public String getLastBorrowTimeFormatted() {
         return getTimeMillisFormatted(getLastBorrowTime());

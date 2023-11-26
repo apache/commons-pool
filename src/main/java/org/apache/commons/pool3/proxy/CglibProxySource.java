@@ -54,7 +54,6 @@ public class CglibProxySource<T> implements ProxySource<T> {
         return (T) enhancer.create();
     }
 
-
     @Override
     public T resolveProxy(final T proxy) {
         @SuppressWarnings("unchecked")

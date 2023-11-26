@@ -61,7 +61,6 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
     /** Total number of instances that have been destroyed */
     private long destroyCount; // @GuardedBy("this")
 
-
     /** Total number of instances that have been created */
     private long createCount; // @GuardedBy("this")
 

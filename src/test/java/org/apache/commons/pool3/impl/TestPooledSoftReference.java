@@ -16,14 +16,12 @@
  */
 package org.apache.commons.pool3.impl;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.lang.ref.SoftReference;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 
 /**
  * Tests for PooledSoftReference.

@@ -17,7 +17,6 @@
 
 package org.apache.commons.pool3.impl;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -800,7 +799,6 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         return String.valueOf(key) + String.valueOf(n);
     }
 
-
     @Override
     protected boolean isFifo() {
         return false;
@@ -1199,7 +1197,6 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
             assertTrue(pool.getMeanBorrowWaitTimeMillis() > 20);
         }
     }
-
 
     /**
      * Tests POOL-411, or least tries to reproduce the NPE, but does not.
@@ -1643,7 +1640,6 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         assertEquals(0, gkoPool.getNumActive());
         assertEquals(0, gkoPool.getNumIdle());
     }
-
 
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
@@ -2122,7 +2118,6 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         assertThrows(NoSuchElementException.class, () -> gkoPool.borrowObject(""));
     }
 
-
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
     public void testMaxTotalPerKeyZero() {
@@ -2131,7 +2126,6 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
         assertThrows(NoSuchElementException.class, () -> gkoPool.borrowObject("a"));
     }
-
 
     /**
      * Verifies that if a borrow of a new key is blocked because maxTotal has
@@ -2346,7 +2340,6 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         gkoPool.setDurationBetweenEvictionRuns(Duration.ofMillis(100));
         gkoPool.setTestWhileIdle(true);
 
-
         //Generate a random key
         final String key = "A";
 
@@ -2500,7 +2493,6 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
                     () ->  pool.returnObject("Foo", "Bar"));
         }
     }
-
 
     @Test
     public void testReturnObjectWithBlockWhenExhausted() throws Exception {
@@ -2754,5 +2746,4 @@ public void testValidateOnCreateFailure() throws Exception {
     }
 
 }
-
 

@@ -204,7 +204,6 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
 
     private String jmxNameBase = DEFAULT_JMX_NAME_BASE;
 
-
     /**
      * Gets the value for the {@code blockWhenExhausted} configuration attribute
      * for pools created with this configuration instance.
