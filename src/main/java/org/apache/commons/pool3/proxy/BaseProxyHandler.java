@@ -42,7 +42,8 @@ class BaseProxyHandler<T> {
      * @param usageTracking                   The instance, if any (usually the object pool) to
      *                                        be provided with usage tracking information for this
      *                                        wrapped object
-     * @param unwrapInvocationTargetException True to make the proxy throw {@link InvocationTargetException#getTargetException()} instead of {@link InvocationTargetException}
+     * @param unwrapInvocationTargetException True to make the proxy throw {@link InvocationTargetException#getTargetException()}
+     *                                        instead of {@link InvocationTargetException}
      */
     BaseProxyHandler(final T pooledObject, final UsageTracking<T> usageTracking, boolean unwrapInvocationTargetException) {
         this.pooledObject = pooledObject;

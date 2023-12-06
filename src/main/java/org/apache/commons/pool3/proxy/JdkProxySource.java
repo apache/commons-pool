@@ -40,7 +40,8 @@ public class JdkProxySource<T> implements ProxySource<T> {
      *
      * @param classLoader The class loader with which to create the proxy
      * @param interfaces  The interfaces to proxy
-     * @param unwrapInvocationTargetException True to make the proxy throw {@link InvocationTargetException#getTargetException()} instead of {@link InvocationTargetException}
+     * @param unwrapInvocationTargetException True to make the proxy throw {@link InvocationTargetException#getTargetException()}
+     *                                        instead of {@link InvocationTargetException}
      */
     public JdkProxySource(final ClassLoader classLoader, final Class<?>[] interfaces, boolean unwrapInvocationTargetException) {
         this.classLoader = classLoader;
