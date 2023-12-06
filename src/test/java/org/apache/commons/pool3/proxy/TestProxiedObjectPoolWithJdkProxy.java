@@ -20,8 +20,8 @@ public class TestProxiedObjectPoolWithJdkProxy
         extends AbstractTestProxiedObjectPool {
 
     @Override
-    protected ProxySource<TestObject> getproxySource() {
+    protected ProxySource<TestObject> getproxySource(boolean unwrapInvocationTargetException) {
         return new JdkProxySource<>(this.getClass().getClassLoader(),
-                new Class<?>[] { TestObject.class });
+                new Class<?>[] { TestObject.class }, unwrapInvocationTargetException);
     }
 }

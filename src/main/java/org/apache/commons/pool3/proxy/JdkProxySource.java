@@ -16,6 +16,7 @@
  */
 package org.apache.commons.pool3.proxy;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 
@@ -32,6 +33,21 @@ public class JdkProxySource<T> implements ProxySource<T> {
 
     private final ClassLoader classLoader;
     private final Class<?>[] interfaces;
+    private final boolean unwrapInvocationTargetException;
+
+    /**
+     * Constructs a new proxy source for the given interfaces.
+     *
+     * @param classLoader The class loader with which to create the proxy
+     * @param interfaces  The interfaces to proxy
+     * @param unwrapInvocationTargetException True to make the proxy throw {@link InvocationTargetException#getTargetException()} instead of {@link InvocationTargetException}
+     */
+    public JdkProxySource(final ClassLoader classLoader, final Class<?>[] interfaces, boolean unwrapInvocationTargetException) {
+        this.classLoader = classLoader;
+        // Defensive copy
+        this.interfaces = Arrays.copyOf(interfaces, interfaces.length);
+        this.unwrapInvocationTargetException = unwrapInvocationTargetException;
+    }
 
     /**
      * Constructs a new proxy source for the given interfaces.
@@ -40,16 +56,14 @@ public class JdkProxySource<T> implements ProxySource<T> {
      * @param interfaces  The interfaces to proxy
      */
     public JdkProxySource(final ClassLoader classLoader, final Class<?>[] interfaces) {
-        this.classLoader = classLoader;
-        // Defensive copy
-        this.interfaces = Arrays.copyOf(interfaces, interfaces.length);
+        this(classLoader, interfaces, false);
     }
 
     @SuppressWarnings("unchecked") // Cast to T on return.
     @Override
     public T createProxy(final T pooledObject, final UsageTracking<T> usageTracking) {
         return (T) Proxy.newProxyInstance(classLoader, interfaces,
-                new JdkProxyHandler<>(pooledObject, usageTracking));
+                new JdkProxyHandler<>(pooledObject, usageTracking, unwrapInvocationTargetException));
     }
 
     @SuppressWarnings("unchecked")

@@ -17,6 +17,7 @@
 package org.apache.commons.pool3.proxy;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.apache.commons.pool3.UsageTracking;
@@ -34,13 +35,14 @@ final class JdkProxyHandler<T> extends BaseProxyHandler<T>
     /**
      * Constructs a Java reflection proxy instance.
      *
-     * @param pooledObject  The object to wrap
-     * @param usageTracking The instance, if any (usually the object pool) to
-     *                      be provided with usage tracking information for this
-     *                      wrapped object
+     * @param pooledObject                    The object to wrap
+     * @param usageTracking                   The instance, if any (usually the object pool) to
+     *                                        be provided with usage tracking information for this
+     *                                        wrapped object
+     * @param unwrapInvocationTargetException True to make the proxy throw {@link InvocationTargetException#getTargetException()} instead of {@link InvocationTargetException}
      */
-    JdkProxyHandler(final T pooledObject, final UsageTracking<T> usageTracking) {
-        super(pooledObject, usageTracking);
+    JdkProxyHandler(final T pooledObject, final UsageTracking<T> usageTracking, boolean unwrapInvocationTargetException) {
+        super(pooledObject, usageTracking, unwrapInvocationTargetException);
     }
 
     @Override
