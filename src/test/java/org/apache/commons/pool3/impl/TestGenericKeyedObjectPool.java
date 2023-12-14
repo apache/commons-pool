@@ -359,17 +359,17 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
         /** GKOP to hit */
         private final KeyedObjectPool<String, T, E> pool;
-        /** number of borrow/return iterations */
+        /** Number of borrow/return iterations */
         private final int iter;
-        /** delay before borrow */
+        /** Delay before borrow */
         private final int startDelay;
-        /** delay before return */
+        /** Delay before return */
         private final int holdTime;
-        /** whether or not delays are random (with max = configured values) */
+        /** Whether or not delays are random (with max = configured values) */
         private final boolean randomDelay;
-        /** expected object */
+        /** Expected object */
         private final T expectedObject;
-        /** key used in borrow / return sequence - null means random */
+        /** Key used in borrow / return sequence - null means random */
         private final String key;
 
         private volatile boolean complete;
@@ -497,10 +497,10 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
     // mvn test -DargLine="-DTestGenericKeyedObjectPool.display.thread.details=true"
     // @see https://issues.apache.org/jira/browse/SUREFIRE-121
 
-    /** setUp(): {@code new GenericKeyedObjectPool<String,String>(factory)} */
+    /** SetUp(): {@code new GenericKeyedObjectPool<String,String>(factory)} */
     private GenericKeyedObjectPool<String, String, TestException> gkoPool;
 
-    /** setUp(): {@code new SimpleFactory<String>()} */
+    /** SetUp(): {@code new SimpleFactory<String>()} */
     private SimpleFactory<String> simpleFactory;
 
     private void checkEvictionOrder(final boolean lifo) throws InterruptedException, TestException {
