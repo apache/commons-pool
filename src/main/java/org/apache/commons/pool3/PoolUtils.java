@@ -1040,7 +1040,7 @@ public final class PoolUtils {
          */
         private final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
-        /** the underlying object pool */
+        /** The underlying object pool */
         private final ObjectPool<T, E> pool;
 
         /**
