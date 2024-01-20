@@ -211,7 +211,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * is thrown. If there is no factory set (factory == null), an {@code IllegalStateException}
      * is thrown.
      * </p>
-     *
      */
     @Override
     public void addObject() throws Exception {

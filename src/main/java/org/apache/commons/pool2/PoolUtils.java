@@ -326,7 +326,6 @@ public final class PoolUtils {
      * may be invalidated instead of being added to idle capacity.
      *
      * @param <T> type of objects in the pool
-     *
      */
     private static final class ErodingObjectPool<T> implements ObjectPool<T> {
 
@@ -597,7 +596,6 @@ public final class PoolUtils {
      * as the pool's minIdle setting.
      *
      * @param <T> type of objects in the pool
-     *
      */
     private static final class ObjectPoolMinIdleTimerTask<T> extends TimerTask {
 
@@ -1022,7 +1020,6 @@ public final class PoolUtils {
      * </p>
      *
      * @param <T> type of objects in the pool
-     *
      */
     private static final class SynchronizedObjectPool<T> implements ObjectPool<T> {
 
