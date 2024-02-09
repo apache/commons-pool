@@ -47,7 +47,7 @@ public class TestDefaultPooledObject {
     @Test
     public void testGetIdleTimeMillis() throws Exception {
         final DefaultPooledObject<Object> dpo = new DefaultPooledObject<>(new Object());
-        final AtomicBoolean negativeIdleTimeReturned = new AtomicBoolean(false);
+        final AtomicBoolean negativeIdleTimeReturned = new AtomicBoolean();
         final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 3);
         final Runnable allocateAndDeallocateTask = () -> {
             for (int i1 = 0; i1 < 10000; i1++) {

@@ -2057,7 +2057,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         pool.setTestOnReturn(true);
         pool.setMaxTotal(1);
         final Waiter w = pool.borrowObject();
-        final AtomicBoolean failed = new AtomicBoolean(false);
+        final AtomicBoolean failed = new AtomicBoolean();
         final Thread t = new Thread(() -> {
             try {
                 pool.borrowObject();
