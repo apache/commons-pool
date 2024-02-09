@@ -2008,7 +2008,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             DisconnectingWaiterFactory.DEFAULT_DISCONNECTED_LIFECYCLE_ACTION,
             (obj) -> false // all instances fail validation
         );
-        final AtomicBoolean failed = new AtomicBoolean(false);
+        final AtomicBoolean failed = new AtomicBoolean();
         try (GenericObjectPool<Waiter, IllegalStateException> pool = new GenericObjectPool<>(factory)) {
             pool.setMaxWait(Duration.ofMillis(100));
             pool.setTestOnReturn(true);
