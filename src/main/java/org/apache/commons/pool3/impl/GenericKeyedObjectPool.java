@@ -106,7 +106,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
          * Number of instances created - number destroyed.
          * Invariant: createCount <= maxTotalPerKey
          */
-        private final AtomicInteger createCount = new AtomicInteger(0);
+        private final AtomicInteger createCount = new AtomicInteger();
 
         private long makeObjectCount;
         private final Object makeObjectCountLock = new Object();
@@ -232,7 +232,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * {@link #maxTotal} but there will never be more than {@link #maxTotal}
      * created at any one time.
      */
-    private final AtomicInteger numTotal = new AtomicInteger(0);
+    private final AtomicInteger numTotal = new AtomicInteger();
 
     private Iterator<K> evictionKeyIterator; // @GuardedBy("evictionLock")
 

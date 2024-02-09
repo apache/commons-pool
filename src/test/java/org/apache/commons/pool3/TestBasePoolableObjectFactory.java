@@ -31,7 +31,7 @@ public class TestBasePoolableObjectFactory {
     private static final class TestFactory extends BasePooledObjectFactory<AtomicInteger, RuntimeException> {
         @Override
         public AtomicInteger create() {
-            return new AtomicInteger(0);
+            return new AtomicInteger();
         }
         @Override
         public void destroyObject(final PooledObject<AtomicInteger> p, final DestroyMode destroyMode){

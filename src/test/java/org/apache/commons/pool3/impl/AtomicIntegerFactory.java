@@ -46,7 +46,7 @@ public class AtomicIntegerFactory
     @Override
     public AtomicInteger create() {
         Waiter.sleepQuietly(createLatency);
-        return new AtomicInteger(0);
+        return new AtomicInteger();
     }
 
     @Override

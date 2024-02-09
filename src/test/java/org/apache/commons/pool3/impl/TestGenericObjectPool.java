@@ -444,7 +444,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
     public static class TestEvictionPolicy<T> implements EvictionPolicy<T> {
 
-        private final AtomicInteger callCount = new AtomicInteger(0);
+        private final AtomicInteger callCount = new AtomicInteger();
 
         @Override
         public boolean evict(final EvictionConfig config, final PooledObject<T> underTest,
