@@ -229,7 +229,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
         public IdentityWrapper(final T instance) {
             this.instance = instance;
         }
-        
+
         @Override
         @SuppressWarnings("rawtypes")
         public boolean equals(final Object other) {

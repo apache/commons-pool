@@ -1355,7 +1355,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      */
     @Override
     public Map<String, List<DefaultPooledObjectInfo>> listAllObjects() {
-        return poolMap.entrySet().stream().collect(Collectors.toMap(e -> e.getKey().toString(), 
+        return poolMap.entrySet().stream().collect(Collectors.toMap(e -> e.getKey().toString(),
                 e -> e.getValue().getAllObjects().values().stream().map(DefaultPooledObjectInfo::new).collect(Collectors.toList())));
     }
 
@@ -1398,7 +1398,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
                 lock.unlock();
                 lock = keyLock.writeLock();
                 lock.lock();
-                final AtomicBoolean allocated = new AtomicBoolean(); 
+                final AtomicBoolean allocated = new AtomicBoolean();
                 objectDeque = poolMap.computeIfAbsent(k, key -> {
                     allocated.set(true);
                     final ObjectDeque<T> deque = new ObjectDeque<>(fairness);

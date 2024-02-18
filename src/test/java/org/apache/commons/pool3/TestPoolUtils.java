@@ -181,7 +181,7 @@ public class TestPoolUtils {
             assertEquals(2, kop.getNumIdle());
         }
         int makeObjectCount = 0;
-        for (String methodName : calledMethods) {
+        for (final String methodName : calledMethods) {
             if ("makeObject".equals(methodName)) {
                 makeObjectCount++;
             }
@@ -292,7 +292,7 @@ public class TestPoolUtils {
             assertEquals(2, op.getNumIdle());
         }
         int makeObjectCount = 0;
-        for (String methodName : calledMethods) {
+        for (final String methodName : calledMethods) {
             if ("makeObject".equals(methodName)) {
                 makeObjectCount++;
             }
