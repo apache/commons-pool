@@ -50,7 +50,7 @@ import java.util.NoSuchElementException;
  * </p>
  *
  * @param <T> Type of element pooled in this pool.
- * 
+ *
  *
  * @see PooledObjectFactory
  * @see KeyedObjectPool

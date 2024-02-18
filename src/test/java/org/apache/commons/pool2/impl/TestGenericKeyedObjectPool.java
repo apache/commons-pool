@@ -297,7 +297,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
         @Override
         public Object create(final Object key) {
-            int counter = map.computeIfAbsent(key, k -> new AtomicInteger(-1)).incrementAndGet();
+            final int counter = map.computeIfAbsent(key, k -> new AtomicInteger(-1)).incrementAndGet();
             return String.valueOf(key) + String.valueOf(counter);
         }
 
@@ -1247,7 +1247,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
                         gkoPool.clear(key, true);
                         try {
                             gkoPool.addObjects(Arrays.asList(key), addCount);
-                        } catch (Exception e) {
+                        } catch (final Exception e) {
                             fail(e);
                         }
                     }
@@ -1261,7 +1261,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
                             final String pooled = gkoPool.borrowObject(key);
                             gkoPool.returnObject(key, pooled);
                         }
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         fail(e);
                     }
                 }));
@@ -2806,7 +2806,7 @@ public void testValidateOnCreateFailure() throws Exception {
             assertEquals(0, gkoPool.getNumWaitersByKey().get(keys[i]).intValue());
         }
         assertEquals(3, gkoPool.getNumIdle());
-        for (String key : keys) {
+        for (final String key : keys) {
             assertEquals(1, gkoPool.getNumIdle(key));
         }
 

@@ -191,7 +191,7 @@ public abstract class AbstractTestKeyedObjectPool {
      * Return what we expect to be the n<sup>th</sup>
      * object (zero indexed) created by the pool
      * for the given key.
-     * 
+     *
      * @param key Key for the object to be obtained
      * @param n   index of the object to be obtained
      *
@@ -209,7 +209,7 @@ public abstract class AbstractTestKeyedObjectPool {
      * idle and active objects, or
      * throw {@link IllegalArgumentException}
      * if such a pool cannot be created.
-     * 
+     *
      * @param minCapacity Minimum capacity of the pool to create
      *
      * @return the newly created keyed object pool

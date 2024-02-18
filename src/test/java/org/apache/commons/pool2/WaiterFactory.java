@@ -188,7 +188,7 @@ public class WaiterFactory<K> implements PooledObjectFactory<Waiter>, KeyedPoole
         if (activeCounts.isEmpty()) {
             return;
         }
-        for (K key : activeCounts.keySet()) {
+        for (final K key : activeCounts.keySet()) {
             activeCounts.put(key, ZERO);
         }
     }
