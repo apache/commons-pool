@@ -127,7 +127,6 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
                 borrowedBy.clear();
                 return true;
             }
-    
             return false;
         } finally {
             unlock();
@@ -147,7 +146,6 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
                 state = PooledObjectState.IDLE;
                 idleQueue.offerFirst(this);
             }
-    
             return false;
         } finally {
             unlock();
