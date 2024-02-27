@@ -22,6 +22,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Deque;
 import java.util.Objects;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.pool3.PooledObject;
 import org.apache.commons.pool3.PooledObjectState;
@@ -44,6 +45,7 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
     private PooledObjectState state = PooledObjectState.IDLE; // @GuardedBy("this") to ensure transitions are valid
     private final Clock systemClock = Clock.systemUTC();
     private final Instant createInstant = now();
+    private final ReentrantLock lock = new ReentrantLock();
 
     private volatile Instant lastBorrowInstant = createInstant;
     private volatile Instant lastUseInstant = createInstant;
@@ -69,24 +71,29 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
      * @return {@code true} if the original state was {@link PooledObjectState#IDLE IDLE}
      */
     @Override
-    public synchronized boolean allocate() {
-        if (state == PooledObjectState.IDLE) {
-            state = PooledObjectState.ALLOCATED;
-            lastBorrowInstant = now();
-            lastUseInstant = lastBorrowInstant;
-            borrowedCount++;
-            if (logAbandoned) {
-                borrowedBy.fillInStackTrace();
+    public boolean allocate() {
+        lock();
+        try {
+            if (state == PooledObjectState.IDLE) {
+                state = PooledObjectState.ALLOCATED;
+                lastBorrowInstant = now();
+                lastUseInstant = lastBorrowInstant;
+                borrowedCount++;
+                if (logAbandoned) {
+                    borrowedBy.fillInStackTrace();
+                }
+                return true;
             }
-            return true;
+            if (state == PooledObjectState.EVICTION) {
+                // TODO Allocate anyway and ignore eviction test
+                state = PooledObjectState.EVICTION_RETURN_TO_HEAD;
+            }
+            // TODO if validating and testOnBorrow == true then pre-allocate for
+            // performance
+            return false;
+        } finally {
+            unlock();
         }
-        if (state == PooledObjectState.EVICTION) {
-            // TODO Allocate anyway and ignore eviction test
-            state = PooledObjectState.EVICTION_RETURN_TO_HEAD;
-        }
-        // TODO if validating and testOnBorrow == true then pre-allocate for
-        // performance
-        return false;
     }
 
     @Override
@@ -111,30 +118,40 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
      *         or {@link PooledObjectState#RETURNING RETURNING}.
      */
     @Override
-    public synchronized boolean deallocate() {
-        if (state == PooledObjectState.ALLOCATED || state == PooledObjectState.RETURNING) {
-            state = PooledObjectState.IDLE;
-            lastReturnInstant = now();
-            borrowedBy.clear();
-            return true;
+    public boolean deallocate() {
+        lock();
+        try {
+            if (state == PooledObjectState.ALLOCATED || state == PooledObjectState.RETURNING) {
+                state = PooledObjectState.IDLE;
+                lastReturnInstant = now();
+                borrowedBy.clear();
+                return true;
+            }
+    
+            return false;
+        } finally {
+            unlock();
         }
-
-        return false;
     }
 
     @Override
-    public synchronized boolean endEvictionTest(
+    public boolean endEvictionTest(
             final Deque<PooledObject<T>> idleQueue) {
-        if (state == PooledObjectState.EVICTION) {
-            state = PooledObjectState.IDLE;
-            return true;
+        lock();
+        try {
+            if (state == PooledObjectState.EVICTION) {
+                state = PooledObjectState.IDLE;
+                return true;
+            }
+            if (state == PooledObjectState.EVICTION_RETURN_TO_HEAD) {
+                state = PooledObjectState.IDLE;
+                idleQueue.offerFirst(this);
+            }
+    
+            return false;
+        } finally {
+            unlock();
         }
-        if (state == PooledObjectState.EVICTION_RETURN_TO_HEAD) {
-            state = PooledObjectState.IDLE;
-            idleQueue.offerFirst(this);
-        }
-
-        return false;
     }
 
     /**
@@ -198,32 +215,52 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
      * @return state
      */
     @Override
-    public synchronized PooledObjectState getState() {
-        return state;
+    public PooledObjectState getState() {
+        lock();
+        try {
+            return state;
+        } finally {
+            unlock();
+        }
     }
 
     /**
      * Sets the state to {@link PooledObjectState#INVALID INVALID}.
      */
     @Override
-    public synchronized void invalidate() {
-        state = PooledObjectState.INVALID;
+    public void invalidate() {
+        lock();
+        try {
+            state = PooledObjectState.INVALID;
+        } finally {
+            unlock();
+        }
     }
 
     /**
      * Marks the pooled object as {@link PooledObjectState#ABANDONED ABANDONED}.
      */
     @Override
-    public synchronized void markAbandoned() {
-        state = PooledObjectState.ABANDONED;
+    public void markAbandoned() {
+        lock();
+        try {
+            state = PooledObjectState.ABANDONED;
+        } finally {
+            unlock();
+        }
     }
 
     /**
      * Marks the pooled object as {@link PooledObjectState#RETURNING RETURNING}.
      */
     @Override
-    public synchronized void markReturning() {
-        state = PooledObjectState.RETURNING;
+    public void markReturning() {
+        lock();
+        try {
+            state = PooledObjectState.RETURNING;
+        } finally {
+            unlock();
+        }
     }
 
     /**
@@ -269,12 +306,17 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
     }
 
     @Override
-    public synchronized boolean startEvictionTest() {
-        if (state == PooledObjectState.IDLE) {
-            state = PooledObjectState.EVICTION;
-            return true;
+    public boolean startEvictionTest() {
+        lock();
+        try {
+            if (state == PooledObjectState.IDLE) {
+                state = PooledObjectState.EVICTION;
+                return true;
+            }
+            return false;
+        } finally {
+            unlock();
         }
-        return false;
     }
 
     @Override
@@ -283,8 +325,11 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
         result.append("Object: ");
         result.append(Objects.toString(object));
         result.append(", State: ");
-        synchronized (this) {
+        lock();
+        try {
             result.append(state.toString());
+        } finally {
+            unlock();
         }
         return result.toString();
         // TODO add other attributes
@@ -294,6 +339,14 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
     public void use() {
         lastUseInstant = now();
         usedBy.fillInStackTrace();
+    }
+
+    public void lock() {
+        lock.lock();
+    }
+
+    public void unlock() {
+        lock.unlock();
     }
 
 }

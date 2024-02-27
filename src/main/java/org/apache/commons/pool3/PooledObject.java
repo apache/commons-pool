@@ -20,7 +20,6 @@ import java.io.PrintWriter;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Deque;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Defines the wrapper that is used to track the additional information, such as
@@ -33,9 +32,6 @@ import java.util.concurrent.locks.ReentrantLock;
  * @since 2.0
  */
 public interface PooledObject<T> extends Comparable<PooledObject<T>> {
-
-    /** Synchronization lock */
-    ReentrantLock lock = new ReentrantLock();
 
     /**
      * Tests whether the given PooledObject is null <em>or</em> contains a null.
@@ -259,4 +255,19 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      */
     void use();
 
+    /**
+     * Acquires a lock on this PooledObject.
+     */
+    @SuppressWarnings("no-ops")
+    default void lock() {
+
+    }
+
+    /**
+     * Release a lock on this PooledObject.
+     */
+    @SuppressWarnings("no-ops")
+    default void unlock() {
+
+    }
 }

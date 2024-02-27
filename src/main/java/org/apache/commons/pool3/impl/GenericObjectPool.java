@@ -959,12 +959,12 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
             throw new IllegalStateException("Invalidated object not currently part of this pool");
         }
         try {
-            p.lock.lock();
+            p.lock();
             if (p.getState() != PooledObjectState.INVALID) {
                 destroy(p, destroyMode);
             }
         } finally {
-            p.lock.unlock();
+            p.unlock();
         }
         ensureIdle(1, false);
     }
