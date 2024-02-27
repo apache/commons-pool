@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
-import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.apache.commons.pool3.impl.GenericObjectPool;
 
 /**
  * Instantiates and uses a ReaderUtil. The GenericObjectPool supplied to the constructor will have

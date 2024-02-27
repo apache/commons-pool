@@ -26,6 +26,7 @@
         <menu name="Pool">
             <item name="Overview"            href="/index.html"/>
             <item name="Javadoc"             href="/apidocs/index.html"/>
+            <item name="Javadoc 3.x Archive" href="https://javadoc.io/doc/org.apache.commons/commons-pool3/latest/index.html"/>
             <item name="Javadoc 2.x Archive" href="https://javadoc.io/doc/org.apache.commons/commons-pool2/latest/index.html"/>
             <item name="Javadoc 1.x Archive" href="https://javadoc.io/doc/commons-pool/commons-pool/latest/index.html"/>
             <item name="Examples"            href="/examples.html"/>

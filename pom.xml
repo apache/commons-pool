@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
    Licensed to the Apache Software Foundation (ASF) under one or more
    contributor license agreements.  See the NOTICE file distributed with
@@ -24,11 +24,11 @@
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
-    <version>58</version>
+    <version>66</version>
   </parent>
 
-  <artifactId>commons-pool2</artifactId>
-  <version>2.12.0-SNAPSHOT</version>
+  <artifactId>commons-pool3</artifactId>
+  <version>3.0.0-SNAPSHOT</version>
   <name>Apache Commons Pool</name>
 
   <inceptionYear>2001</inceptionYear>
@@ -147,7 +147,7 @@
     <dependency>
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm-util</artifactId>
-      <version>9.5</version>
+      <version>9.6</version>
       <optional>true</optional>
     </dependency>
     <!-- testing -->
@@ -165,7 +165,7 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.12.0</version>
+      <version>3.14.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -182,17 +182,22 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <project.build.outputTimestamp>2024-02-01T03:27:02Z</project.build.outputTimestamp>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <commons.compiler.release>17</commons.compiler.release>
     <commons.componentid>pool</commons.componentid>
-    <commons.module.name>org.apache.commons.pool2</commons.module.name>
+    <commons.module.name>org.apache.commons.pool3</commons.module.name>
     <commons.rc.version>RC1</commons.rc.version>
+    <!-- Java 17 -->
+    <commons.release.version>3.0.0</commons.release.version>
+    <commons.release.desc>(Java 17)</commons.release.desc>
     <!-- Java 8 -->
-    <commons.release.version>2.12.0</commons.release.version>
-    <commons.release.desc>(Java 8)</commons.release.desc>
+    <commons.release.2.version>2.12.0</commons.release.2.version>
+    <commons.release.2.desc>(Java 8 or above)</commons.release.2.desc>
     <!-- Java 7 -->
-    <commons.release.2.version>2.6.2</commons.release.2.version>
-    <commons.release.2.desc>(Java 7)</commons.release.2.desc>
+    <commons.release.3.version>2.6.2</commons.release.3.version>
+    <commons.release.3.desc>(Java 7 or above)</commons.release.3.desc>
 
     <commons.jira.id>POOL</commons.jira.id>
     <commons.jira.pid>12310488</commons.jira.pid>
@@ -202,11 +207,9 @@
     <!-- Commons Release Plugin -->
     <commons.bc.version>2.11.1</commons.bc.version>
     <commons.release.isDistModule>true</commons.release.isDistModule>
-    <commons.releaseManagerName>Gary Gregory</commons.releaseManagerName>    
-    <commons.releaseManagerKey>86fdc7e2a11262cb</commons.releaseManagerKey>
-    
-    <japicmp.skip>false</japicmp.skip>
+    <japicmp.skip>true</japicmp.skip>
     <spotbugs.skip>false</spotbugs.skip>
+    <animal.sniffer.skip>true</animal.sniffer.skip>
   </properties> 
 
   <build>
@@ -232,7 +235,7 @@
               <dependency>
                 <groupId>org.apache.bcel</groupId>
                 <artifactId>bcel</artifactId>
-                <version>6.7.0</version>
+                <version>6.8.2</version>
               </dependency>
             </dependencies>
           </plugin>
@@ -284,53 +287,60 @@
               </excludes>
             </configuration>
           </plugin>
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <configuration>
+              <descriptors>
+                <descriptor>src/assembly/bin.xml</descriptor>
+                <descriptor>src/assembly/src-tar-gz.xml</descriptor>
+                <descriptor>src/assembly/src-zip.xml</descriptor>
+              </descriptors>
+              <tarLongFileMode>gnu</tarLongFileMode>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-scm-publish-plugin</artifactId>
+            <configuration>
+              <ignorePathsToDelete>
+                <ignorePathToDelete>api-*</ignorePathToDelete>
+              </ignorePathsToDelete>
+            </configuration>
+          </plugin>
         <plugin>
-          <artifactId>maven-assembly-plugin</artifactId>
+          <groupId>com.github.siom79.japicmp</groupId>
+          <artifactId>japicmp-maven-plugin</artifactId>
           <configuration>
-            <descriptors>
-              <descriptor>src/assembly/bin.xml</descriptor>
-              <descriptor>src/assembly/src-tar-gz.xml</descriptor>
-              <descriptor>src/assembly/src-zip.xml</descriptor>
-            </descriptors>
-            <tarLongFileMode>gnu</tarLongFileMode>
+            <parameter>
+              <overrideCompatibilityChangeParameters>
+                <overrideCompatibilityChangeParameter>
+                  <compatibilityChange>METHOD_NEW_DEFAULT</compatibilityChange>
+                  <binaryCompatible>true</binaryCompatible>
+                  <sourceCompatible>true</sourceCompatible>
+                  <semanticVersionLevel>PATCH</semanticVersionLevel>
+                </overrideCompatibilityChangeParameter>
+              </overrideCompatibilityChangeParameters>
+            </parameter>
           </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-scm-publish-plugin</artifactId>
+          <artifactId>maven-jar-plugin</artifactId>
           <configuration>
-            <ignorePathsToDelete>
-              <ignorePathToDelete>api-*</ignorePathToDelete>
-            </ignorePathsToDelete>
+            <archive>
+              <manifestEntries>
+                <Automatic-Module-Name>${commons.module.name}</Automatic-Module-Name>
+              </manifestEntries>
+            </archive>
           </configuration>
         </plugin>
-      <plugin>
-        <groupId>com.github.siom79.japicmp</groupId>
-        <artifactId>japicmp-maven-plugin</artifactId>
-        <configuration>
-          <parameter>
-            <overrideCompatibilityChangeParameters>
-              <overrideCompatibilityChangeParameter>
-                <compatibilityChange>METHOD_NEW_DEFAULT</compatibilityChange>
-                <binaryCompatible>true</binaryCompatible>
-                <sourceCompatible>true</sourceCompatible>
-                <semanticVersionLevel>PATCH</semanticVersionLevel>
-              </overrideCompatibilityChangeParameter>
-            </overrideCompatibilityChangeParameters>
-          </parameter>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-          <archive>
-            <manifestEntries>
-              <Automatic-Module-Name>${commons.module.name}</Automatic-Module-Name>
-            </manifestEntries>
-          </archive>
-        </configuration>
-      </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <configuration>
+            <sourcepath>src/main/java</sourcepath>
+		  </configuration>
+        </plugin>
       </plugins>
     </build>
 
@@ -408,16 +418,6 @@
   </reporting>
 
   <profiles>
-    <profile>
-      <id>java9</id>
-      <activation>
-        <jdk>9</jdk>
-      </activation>
-      <properties>
-        <!-- coverall version 4.3.0 does not work with java 9, see https://github.com/trautonen/coveralls-maven-plugin/issues/112 -->
-        <coveralls.skip>true</coveralls.skip>
-      </properties>
-    </profile>
     <profile>
       <id>java16</id>
       <!-- For testing with CGLIB on Java 16 and up. -->

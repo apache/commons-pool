@@ -24,7 +24,7 @@
 import java.io.IOException;
 import java.io.Reader;
 
-import org.apache.commons.pool2.ObjectPool;
+import org.apache.commons.pool3.ObjectPool;
 
 /**
  * Maintains a pool of StringBuffers used to dump contents of Readers.

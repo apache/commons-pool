@@ -19,7 +19,6 @@
    <properties>
       <title>Overview</title>
       <author email="dev@commons.apache.org">Apache Commons Documentation Team</author>
-      <revision>$Id$</revision>
    </properties>
 
    <body>
@@ -33,6 +32,7 @@
           instance tracking and pool monitoring.
          </p>
          <ul>
+          <li>Version 3.0.0 and up requires Java 8 or above.</li>
           <li>Version 2.7.x and up requires Java 8 or above.</li>
           <li>Version 2.6.x requires Java 7 or above.</li>
           <li>Version 2.5.x requires Java 7 or above.</li>
@@ -50,7 +50,7 @@
       <section name="Features">
         <p>
             The 
-            <a href="./apidocs/org/apache/commons/pool2/package-summary.html">org.apache.commons.pool2</a> 
+            <a href="./apidocs/org/apache/commons/pool2/package-summary.html">org.apache.commons.pool3</a> 
             package defines a handful of pooling interfaces and some base classes 
             that may be useful when creating new pool implementations.
         </p>
@@ -112,7 +112,7 @@ public interface KeyedPooledObjectFactory&lt;K,V&gt; {
         </subsection>
         <p>
             The 
-            <a href="./apidocs/org/apache/commons/pool2/impl/package-summary.html">org.apache.commons.pool2.impl</a> 
+            <a href="./apidocs/org/apache/commons/pool2/impl/package-summary.html">org.apache.commons.pool3.impl</a> 
             package provides some <i>Pool</i> implementations.
         </p>
         <subsection name="GenericObjectPool">
@@ -156,7 +156,7 @@ public interface KeyedPooledObjectFactory&lt;K,V&gt; {
           The migration from Apache Commons Pool 1.x to 2.x will require some
           code changes. The most significant changes are the changes in package
           name from <code>org.apache.commons.pool</code> to
-          <code>org.apache.commons.pool2</code> and the change in the implementation
+          <code>org.apache.commons.pool3</code> and the change in the implementation
           classes to use <code>PooledObjectFactory</code>s, as described above.
         </p>
         <p>

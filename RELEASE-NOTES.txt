@@ -23,7 +23,7 @@ NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPool
       be able to upgrade to a new minor or patch release without requiring code
       changes.
 
-This is a feature and maintenance release (Java 8).
+This is a feature and maintenance release (Java 8 or above).
 
 Changes in version 2.12.0 include:
 
@@ -106,7 +106,7 @@ NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPool
       be able to upgrade to a new minor or patch release without requiring code
       changes.
 
-This is a maintenance release (Java 8).
+This is a maintenance release (Java 8 or above).
 
 Changes in version 2.11.1 include:
 
@@ -168,7 +168,7 @@ NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPool
       be able to upgrade to a new minor or patch release without requiring code
       changes.
 
-This is a feature release (Java 8).
+This is a feature release (Java 8 or above).
 
 Changes in version 2.11.0 include:
 
@@ -255,7 +255,7 @@ NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPool
       be able to upgrade to a new minor or patch release without requiring code
       changes.
 
-This is a MMMM release (Java 8).
+This is a MMMM release (Java 8 or above).
 
 Changes in version 2.10.0 include:
 
@@ -326,7 +326,7 @@ NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPool
       be able to upgrade to a new minor or patch release without requiring code
       changes.
 
-This is a minor release (Java 8).
+This is a minor release (Java 8 or above).
 
 Changes in version 2.9.0 include:
 
@@ -366,7 +366,7 @@ NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPool
       be able to upgrade to a new minor or patch release without requiring code
       changes.
 
-This is a maintenance release (Java 8).
+This is a maintenance release (Java 8 or above).
 
 Changes in version 2.8.1 include:
 
@@ -419,7 +419,7 @@ NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPool
       be able to upgrade to a new minor or patch release without requiring code
       changes.
 
-This is a maintenance release (Java 8).
+This is a maintenance release (Java 8 or above).
 
 Changes in version 2.8.0 include:
 
@@ -429,7 +429,7 @@ o POOL-379:  Deprecate PoolUtils.prefill(KeyedObjectPool, K, int) in favor of Ke
 o POOL-380:  Deprecate PoolUtils.prefill(KeyedObjectPool, Collection, int) in favor of KeyedObjectPool.addObjects(Collection, int). Thanks to Gary Gregory.
 
 Fixed Bugs:
-o POOL-374:  org.apache.commons.pool2.impl.GenericKeyedObjectPool.returnObject(K, T) should throw IllegalStateException instead of NullPointerException when a key is not found in the pool map. Thanks to Gary Gregory, Phil Steitz.
+o POOL-374:  org.apache.commons.pool3.impl.GenericKeyedObjectPool.returnObject(K, T) should throw IllegalStateException instead of NullPointerException when a key is not found in the pool map. Thanks to Gary Gregory, Phil Steitz.
 o POOL-376:  Fixed regression from original fix for POOL-356 which could result in NPE when destroying objects. Thanks to Sazzadul Hoque, Phil Steitz.
 o POOL-326:  Eliminated NPE / ISE exceptions due to keyed pools being prematurely removed. Thanks to Phil Steitz.
 o            Close BufferedOutputStream in test before calling toString on underlying BufferedOutputStream #26. Thanks to emopers.
@@ -471,13 +471,13 @@ NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPool
       be able to upgrade to a new minor or patch release without requiring code
       changes.
 
-This is a feature release (Java 8).
+This is a feature release (Java 8 or above).
 
 Changes in version 2.7.0 include:
 
 New features:
-o POOL-370:  Add org.apache.commons.pool2.PooledObject#getBorrowedCount(). Thanks to Mark Thomas, Gary Gregory.
-o POOL-371:  Add org.apache.commons.pool2.PooledObject#setRequireFullStackTrace(boolean). Thanks to Matt Sicker, Gary Gregory.
+o POOL-370:  Add org.apache.commons.pool3.PooledObject#getBorrowedCount(). Thanks to Mark Thomas, Gary Gregory.
+o POOL-371:  Add org.apache.commons.pool3.PooledObject#setRequireFullStackTrace(boolean). Thanks to Matt Sicker, Gary Gregory.
 
 Fixed Bugs:
 o POOL-361:  Move validation for newly created objects into create(). Fixes #23. Thanks to Pablo, Phil Steitz, Bruno P. Kinoshita.
@@ -523,7 +523,7 @@ This is a maintenance release.
 Changes in version 2.6.2 include:
 
 Fixed Bugs:
-o POOL-362:  Always null out org.apache.commons.pool2.impl.BaseGenericObjectPool.evictionIterator to match org.apache.commons.pool2.impl.BaseGenericObjectPool.evictor.
+o POOL-362:  Always null out org.apache.commons.pool3.impl.BaseGenericObjectPool.evictionIterator to match org.apache.commons.pool3.impl.BaseGenericObjectPool.evictor.
 o POOL-363:  Evictor Thread prevents Spring Context shutdown in standalone app. Thanks to Josh Landin.
 o POOL-348:  The commons-pool-evictor-thread should run as a Deamon. Thanks to Josh Landin.
 
@@ -616,7 +616,7 @@ Changes in version 2.6.0 include:
 Fixed Bugs:
 o POOL-337:  Ensure cancelled eviction tasks are removed from scheduler. Thanks to Reinald Verheij.
 o POOL-338:  GenericObjectPool constructor may throw an exception under OSGi. Thanks to Michael C, Gary Gregory.
-o POOL-324:  org.apache.commons.pool2.impl.GenericObjectPool.getFactoryType() throws java.lang.ClassCastException. Thanks to Jay Xu, Gary Gregory.
+o POOL-324:  org.apache.commons.pool3.impl.GenericObjectPool.getFactoryType() throws java.lang.ClassCastException. Thanks to Jay Xu, Gary Gregory.
 o POOL-344:  Delete repeated call startEvictor. Thanks to Yulin Wang.
 
 Changes:
@@ -672,7 +672,7 @@ o POOL-335:  Make abandoned logging stack trace requirements configurable. This 
 Changes:
 o POOL-331:  Update from Java 6 to 7.
 o POOL-333:  Update optional dependency asm-util from 5.2 to 6.0.
-o POOL-334:  org.apache.commons.pool2.impl.ThrowableCallStack.Snapshot is missing serialVersionUID.
+o POOL-334:  org.apache.commons.pool3.impl.ThrowableCallStack.Snapshot is missing serialVersionUID.
 
 
 For complete information on Apache Commons Pool, including instructions on how to submit bug reports,

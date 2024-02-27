@@ -28,14 +28,14 @@
 
   <Match>
     <!-- Class implements the generics based interface and does so correctly -->
-    <Class name="org.apache.commons.pool2.PooledObject" />
+    <Class name="org.apache.commons.pool3.PooledObject" />
     <Bug pattern="CO_ABSTRACT_SELF" />
   </Match>
   <Match>
     <!-- Swallowing exception is deliberate design choice -->
     <Or>
-      <Class name="org.apache.commons.pool2.PoolUtils$ErodingObjectPool" />
-      <Class name="org.apache.commons.pool2.PoolUtils$ErodingKeyedObjectPool" />
+      <Class name="org.apache.commons.pool3.PoolUtils$ErodingObjectPool" />
+      <Class name="org.apache.commons.pool3.PoolUtils$ErodingKeyedObjectPool" />
     </Or>
     <Or>
       <Method name="invalidateObject" />
@@ -45,39 +45,39 @@
   </Match>
   <Match>
     <!-- Exception is thrown and need to be caught -->
-    <Class name="org.apache.commons.pool2.PoolUtils$KeyedObjectPoolMinIdleTimerTask" />
+    <Class name="org.apache.commons.pool3.PoolUtils$KeyedObjectPoolMinIdleTimerTask" />
     <Method name="run" />
     <Bug code="REC" />
   </Match>
   <Match>
     <!-- compareTo() method carries the appropriate warning -->
-    <Class name="org.apache.commons.pool2.impl.DefaultPooledObject" />
+    <Class name="org.apache.commons.pool3.impl.DefaultPooledObject" />
     <Bug pattern="EQ_COMPARETO_USE_OBJECT_EQUALS " />
   </Match>
   <Match>
     <!-- Update is inside sync block. Volatile is to ensure other threads    -->
     <!-- can read new value.                                                 -->
-    <Class name="org.apache.commons.pool2.impl.DefaultPooledObject" />
+    <Class name="org.apache.commons.pool3.impl.DefaultPooledObject" />
     <Method name="allocate" />
     <Bug pattern="VO_VOLATILE_INCREMENT" />
   </Match>
   <Match>
     <!-- Ignoring the exception is deliberate since an earlier exception is  -->
     <!-- more important.                                                     -->
-    <Class name="org.apache.commons.pool2.impl.GenericKeyedObjectPool" />
+    <Class name="org.apache.commons.pool3.impl.GenericKeyedObjectPool" />
     <Method name="borrowObject" />
     <Bug code="DE" />
   </Match>
   <Match>
     <!-- Ignoring the exception is deliberate since an earlier exception is  -->
     <!-- more important.                                                     -->
-    <Class name="org.apache.commons.pool2.impl.GenericObjectPool" />
+    <Class name="org.apache.commons.pool3.impl.GenericObjectPool" />
     <Method name="borrowObject" />
     <Bug code="DE" />
   </Match>
   <Match>
     <!-- TODO, Is this a real issue? -->
-    <Class name="org.apache.commons.pool2.impl.SoftReferenceObjectPool" />
+    <Class name="org.apache.commons.pool3.impl.SoftReferenceObjectPool" />
     <Or>
       <Field name="createCount" />
       <Field name="numActive" />
@@ -89,9 +89,9 @@
   <Match>
     <!-- Generating a new object is a deliberate choice -->
     <Or>
-      <Class name="org.apache.commons.pool2.MethodCallPoolableObjectFactory" />
-      <Class name="org.apache.commons.pool2.TestKeyedObjectPool$FailingKeyedPooledObjectFactory" />
-      <Class name="org.apache.commons.pool2.performance.SleepingObjectFactory" />
+      <Class name="org.apache.commons.pool3.MethodCallPoolableObjectFactory" />
+      <Class name="org.apache.commons.pool3.TestKeyedObjectPool$FailingKeyedPooledObjectFactory" />
+      <Class name="org.apache.commons.pool3.performance.SleepingObjectFactory" />
     </Or>
     <Method name="makeObject" />
     <Bug pattern="DM_NUMBER_CTOR" />
@@ -99,24 +99,24 @@
   <Match>
     <!-- Generating a new object is a deliberate choice -->
     <Or>
-      <Class name="org.apache.commons.pool2.TestKeyedObjectPool" />
-      <Class name="org.apache.commons.pool2.TestObjectPool" />
+      <Class name="org.apache.commons.pool3.AbstractTestKeyedObjectPool" />
+      <Class name="org.apache.commons.pool3.AbstractTestObjectPool" />
     </Or>
     <Bug pattern="DM_NUMBER_CTOR" />
   </Match>
   <Match>
     <!-- Use of no-arg constructor is intentional -->
-    <Class name="org.apache.commons.pool2.TestPoolUtils" />
+    <Class name="org.apache.commons.pool3.TestPoolUtils" />
     <Method name="testJavaBeanInstantiation" />
     <Bug pattern="ISC_INSTANTIATE_STATIC_CLASS" />
   </Match>
   <Match>
     <!-- Exceptions are deliberately ignored -->
     <Or>
-      <Class name="org.apache.commons.pool2.impl.TestAbandonedObjectPool$ConcurrentBorrower" />
-      <Class name="org.apache.commons.pool2.impl.TestAbandonedObjectPool$ConcurrentReturner" />
-      <Class name="org.apache.commons.pool2.impl.TestGenericKeyedObjectPool$SimpleTestThread" />
-      <Class name="org.apache.commons.pool2.impl.TestGenericObjectPool$EvictionThread" />
+      <Class name="org.apache.commons.pool3.impl.TestAbandonedObjectPool$ConcurrentBorrower" />
+      <Class name="org.apache.commons.pool3.impl.TestAbandonedObjectPool$ConcurrentReturner" />
+      <Class name="org.apache.commons.pool3.impl.TestGenericKeyedObjectPool$SimpleTestThread" />
+      <Class name="org.apache.commons.pool3.impl.TestGenericObjectPool$EvictionThread" />
     </Or>
     <Method name="run" />
     <Bug pattern="DE_MIGHT_IGNORE" />
@@ -124,79 +124,79 @@
   <Match>
     <!-- Using equals is deliberate. The objects are being tested to see if  -->
     <!-- they are the same object                                            -->
-    <Class name="org.apache.commons.pool2.impl.TestGenericKeyedObjectPool" />
+    <Class name="org.apache.commons.pool3.impl.TestGenericKeyedObjectPool" />
     <Method name="testMaxTotalLRU" />
     <Bug pattern="ES_COMPARING_STRINGS_WITH_EQ" />
   </Match>
   <Match>
     <!-- Exception is ignored as earlier exception is more important -->
-    <Class name="org.apache.commons.pool2.impl.TestGenericObjectPool" />
+    <Class name="org.apache.commons.pool3.impl.TestGenericObjectPool" />
     <Method name="testMaxTotalUnderLoad" />
     <Bug pattern="DE_MIGHT_IGNORE" />
   </Match>
   <Match>
     <!-- Direct use of GC is deliberate and necessary -->
-    <Class name="org.apache.commons.pool2.impl.TestSoftRefOutOfMemory" />
+    <Class name="org.apache.commons.pool3.impl.TestSoftRefOutOfMemory" />
     <Method name="tearDown" />
     <Bug pattern="DM_GC" />
   </Match>
   <Match>
     <!-- Use of new String() is deliberate -->
-    <Class name="org.apache.commons.pool2.impl.TestSoftRefOutOfMemory$OomeFactory" />
+    <Class name="org.apache.commons.pool3.impl.TestSoftRefOutOfMemory$OomeFactory" />
     <Method name="create" />
     <Bug pattern="DM_STRING_VOID_CTOR" />
   </Match>
   <Match>
     <!-- Use of new String() is deliberate -->
-    <Class name="org.apache.commons.pool2.impl.TestSoftRefOutOfMemory$SmallPoolableObjectFactory" />
+    <Class name="org.apache.commons.pool3.impl.TestSoftRefOutOfMemory$SmallPoolableObjectFactory" />
     <Method name="create" />
     <Bug pattern="DM_STRING_CTOR" />
   </Match>
   <Match>
     <!-- Increment (only write) is in synchronized method, unprotected read in getter is OK -->
-    <Class name="org.apache.commons.pool2.impl.DefaultPooledObject" />
+    <Class name="org.apache.commons.pool3.impl.DefaultPooledObject" />
     <Method name="allocate" />
     <Bug pattern="VO_VOLATILE_INCREMENT" />
   </Match>
   <Match>
     <!-- Only used internally in hashmap to compare keys known to be of the same type -->
-    <Class name="org.apache.commons.pool2.impl.BaseGenericObjectPool$IdentityWrapper" />
+    <Class name="org.apache.commons.pool3.impl.BaseGenericObjectPool$IdentityWrapper" />
     <Method name="equals" />
     <Bug pattern="BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS" />
   </Match>
   <Match>
     <!-- Only used internally in hashmap to compare keys that can't be null -->
-    <Class name="org.apache.commons.pool2.impl.BaseGenericObjectPool$IdentityWrapper" />
+    <Class name="org.apache.commons.pool3.impl.BaseGenericObjectPool$IdentityWrapper" />
     <Method name="equals" />
     <Bug pattern="NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT" />
   </Match>
   <Match>
     <!-- Code needs to use get to ensure latest queue is retrieved -->
-    <Class name="org.apache.commons.pool2.impl.GenericKeyedObjectPool" />
+    <Class name="org.apache.commons.pool3.impl.GenericKeyedObjectPool" />
     <Method name="clearOldest" />
     <Bug pattern="WMI_WRONG_MAP_ITERATOR" />
   </Match>
   <Match>
     <!-- Code needs to use get to ensure latest queue is retrieved -->
-    <Class name="org.apache.commons.pool2.impl.GenericKeyedObjectPool" />
+    <Class name="org.apache.commons.pool3.impl.GenericKeyedObjectPool" />
     <Method name="getNumWaitersByKey" />
     <Bug pattern="WMI_WRONG_MAP_ITERATOR" />
   </Match>
   <Match>
     <!-- Code needs to use get to ensure latest queue is retrieved -->
-    <Class name="org.apache.commons.pool2.impl.GenericKeyedObjectPool" />
+    <Class name="org.apache.commons.pool3.impl.GenericKeyedObjectPool" />
     <Method name="hasBorrowWaiters" />
     <Bug pattern="WMI_WRONG_MAP_ITERATOR" />
   </Match>
   <Match>
     <!-- Code needs to use get to ensure latest queue is retrieved -->
-    <Class name="org.apache.commons.pool2.impl.GenericKeyedObjectPool" />
+    <Class name="org.apache.commons.pool3.impl.GenericKeyedObjectPool" />
     <Method name="listAllObjects" />
     <Bug pattern="WMI_WRONG_MAP_ITERATOR" />
   </Match>
   <Match>
     <!-- Code needs to use get to ensure latest queue is retrieved -->
-    <Class name="org.apache.commons.pool2.impl.GenericKeyedObjectPool" />
+    <Class name="org.apache.commons.pool3.impl.GenericKeyedObjectPool" />
     <Method name="reuseCapacity" />
     <Bug pattern="WMI_WRONG_MAP_ITERATOR" />
   </Match>
@@ -205,5 +205,9 @@
   </Match>
   <Match>
     <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <!-- TODO ? -->
+    <Bug pattern="CT_CONSTRUCTOR_THROW" />
   </Match>
 </FindBugsFilter>

@@ -19,7 +19,6 @@
    <properties>
       <title>Examples</title>
       <author email="dev@commons.apache.org">Apache Commons Documentation Team</author>
-      <revision>$Id$</revision>
    </properties>
 
    <body>
@@ -76,7 +75,7 @@ public class ReaderUtil {
 <source>
 import java.io.IOException;
 import java.io.Reader;
-import org.apache.commons.pool2.ObjectPool;
+import org.apache.commons.pool3.ObjectPool;
 
 public class ReaderUtil {
     
@@ -140,9 +139,9 @@ public class ReaderUtil {
         <code>StringBuffer</code>s as used above.
        </p>
 <source>
-import org.apache.commons.pool2.BasePooledObjectFactory;
-import org.apache.commons.pool2.PooledObject;
-import org.apache.commons.pool2.impl.DefaultPooledObject;
+import org.apache.commons.pool3.BasePooledObjectFactory;
+import org.apache.commons.pool3.PooledObject;
+import org.apache.commons.pool3.impl.DefaultPooledObject;
 
 public class StringBufferFactory
     extends BasePooledObjectFactory&lt;StringBuffer&gt; {

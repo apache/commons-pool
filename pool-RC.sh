@@ -25,8 +25,6 @@
 #    svn pub/sub dev checkout.
 # 2) Nexus repo from previous RC has been dropped.
 #
-# $Revision$ $Date$
-# -----------------------------------------------------------------------------
 # Set script variables
 version=2.4.3
 repo_path=~/.m2/repository/org/apache/commons/commons-pool2/${version}

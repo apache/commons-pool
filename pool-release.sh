@@ -28,7 +28,6 @@
 # 0) Commit the local changes to actually publish the artifacts
 # 1) Cleanup old versions in dist
 #
-# $Revision$ $Date$
 # -----------------------------------------------------------------------------
 # Set script variables
 version=2.4.3        # version being released

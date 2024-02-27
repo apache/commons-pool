@@ -45,7 +45,25 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Pool Release Notes</title>
   </properties>
   <body>
-  <release version="2.12.0" date="2023-06-24" description="This is a feature and maintenance release (Java 8).">
+  <release version="3.0.0" date="2023-MM-DD" description="This is a feature and maintenance release (Java 8 or above).">
+    <!-- REMOVE -->
+    <action dev="ggregory" type="remove">
+      Deprecations from version 2.x have been removed.
+    </action>
+    <!-- UPDATE -->
+    <action dev="ggregory" type="update">
+      Bump Java from 8 to 17.
+    </action>
+    <action dev="ggregory" type="update">
+      Bump commons-parent from 58 to 66.
+    </action>
+    <action dev="ggregory" type="update">
+      Bump org.ow2.asm:asm-util from 9.5 to 9.6 #252.
+    </action>
+    <action type="update" dev="ggregory" due-to="Gary Gregory">Bump commons-lang3 from 3.13.0 to 3.14.0.</action>
+    <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.apache.bcel:bcel from 6.7.0 to 6.8.2 #263.</action>
+  </release> 
+  <release version="2.12.0" date="2023-MM-DD" description="This is a feature and maintenance release (Java 8 or above).">
     <!-- FIX -->
     <action dev="psteitz" type="fix" issue="POOL-401">
       Ensure that capacity freed by invalidateObject is available to all keyed pools.
@@ -88,6 +106,12 @@ The <action> type attribute can be add,update,fix,remove.
     </action>
     <action type="fix" dev="ggregory" due-to="step-security-bot, Gary Gregory">
       [StepSecurity] ci: Harden GitHub Actions #225.
+    </action>
+    <action type="fix" dev="ggregory" due-to="Gary Gregory">
+      Fix possible NPE in DefaultPooledObjectInfo.getPooledObjectToString().
+    </action>
+    <action type="fix" dev="ggregory" due-to="Gary Gregory">
+      Fix possible NPE in DefaultPooledObjectInfo.getPooledObjectType().
     </action>
     <!-- ADD -->
     <action dev="ggregory" type="add" due-to="Gary Gregory">
@@ -163,8 +187,11 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="update" due-to="Gary Gregory, Dependabot">
       Bump Apache Commons BCEL 6.5.0 to 6.7.0 #194.
     </action>
+    <action type="update" dev="ggregory" due-to="Gary Gregory">
+      Bump commons-lang3 from 3.12.0 to 3.13.0.
+    </action>
   </release>
-  <release version="2.11.1" date="2021-08-18" description="This is a maintenance release (Java 8).">
+  <release version="2.11.1" date="2021-08-18" description="This is a maintenance release (Java 8 or above).">
     <!-- FIX -->
     <action dev="ggregory" type="fix" due-to="Gary Gregory">
       Getting a PooledObject's active duration returns a negative duration when the object is borrowed but not returned. Affects:
@@ -205,7 +232,7 @@ The <action> type attribute can be add,update,fix,remove.
       Bump spotbugs from 4.2.3 to 4.3.0 and ignore new medium warnings EI_EXPOSE_REP and EI_EXPOSE_REP2.
     </action>
   </release>
-  <release version="2.11.0" date="2021-08-08" description="This is a feature release (Java 8).">
+  <release version="2.11.0" date="2021-08-08" description="This is a feature release (Java 8 or above).">
     <!-- FIX -->
     <action dev="ggregory" type="fix" due-to="Gary Gregory">
       Fix "[WARNING] Old version of checkstyle detected. Consider updating to >= v8.30." Update Checktyle to 8.44.
@@ -284,7 +311,7 @@ The <action> type attribute can be add,update,fix,remove.
       Bump checkstyle from 8.44 to 8.45 #92.
     </action>
   </release>
-  <release version="2.10.0" date="2021-05-28" description="This is a feature release (Java 8).">
+  <release version="2.10.0" date="2021-05-28" description="This is a feature release (Java 8 or above).">
     <!-- ADD -->
     <action dev="ggregory" type="add" due-to="Gary Gregory">
       Add and use java.time.Duration APIs timeouts instead of using ints for seconds.
@@ -359,7 +386,7 @@ The <action> type attribute can be add,update,fix,remove.
       Bump animal-sniffer-maven-plugin from 1.19 to 1.20.
     </action>
   </release>
-  <release version="2.9.0" date="2020-09-25" description="This is a minor release (Java 8).">
+  <release version="2.9.0" date="2020-09-25" description="This is a minor release (Java 8 or above).">
     <action issue="POOL-387" dev="ggregory" type="update" due-to=" Phil Steitz">
       Object factory destroy method should carry information on activation context.
     </action>
@@ -376,7 +403,7 @@ The <action> type attribute can be add,update,fix,remove.
       Update optional asm-util from 8.0.1 to 9.0 #44.
     </action>
   </release>
-  <release version="2.8.1" date="2020-07-27" description="This is a maintenance release (Java 8).">
+  <release version="2.8.1" date="2020-07-27" description="This is a maintenance release (Java 8 or above).">
     <action dev="ggregory" issue="POOL-386" type="fix" due-to="Phil Steitz, Mark Thomas">
       Refactored EvictionTimer usage tracking to fix POOL-386 and handle abandoned pools. #32.
     </action>
@@ -414,7 +441,7 @@ The <action> type attribute can be add,update,fix,remove.
       Update animal-sniffer-maven-plugin from 1.16 to 1.19.
     </action>
   </release>
-  <release version="2.8.0" date="2019-12-05" description="This is a maintenance release (Java 8).">
+  <release version="2.8.0" date="2019-12-05" description="This is a maintenance release (Java 8 or above).">
     <action dev="ggregory" issue="POOL-374" type="fix" due-to="Gary Gregory, Phil Steitz">
        GenericKeyedObjectPool.returnObject(K, T) should throw IllegalStateException instead of NullPointerException when a key is not found in the pool map.
     </action>
@@ -449,7 +476,7 @@ The <action> type attribute can be add,update,fix,remove.
       [Javadoc] Add missing @throws comment in SoftReferenceObjectPool. #28.
     </action>
   </release>
-  <release version="2.7.0" date="2019-07-25" description="This is a feature release (Java 8).">
+  <release version="2.7.0" date="2019-07-25" description="This is a feature release (Java 8 or above).">
     <action dev="ggregory" issue="POOL-364" type="update" due-to="Gary Gregory">
        Update from Java 7 to Java 8.
     </action>
@@ -466,18 +493,18 @@ The <action> type attribute can be add,update,fix,remove.
       Move validation for newly created objects into create(). Fixes #23.
     </action>
     <action dev="ggregory" type="add" issue="POOL-370" due-to="Mark Thomas, Gary Gregory">
-      Add org.apache.commons.pool2.PooledObject#getBorrowedCount().
+      Add org.apache.commons.pool3.PooledObject#getBorrowedCount().
     </action>
     <action dev="ggregory" type="add" issue="POOL-371" due-to="Matt Sicker, Gary Gregory">
-      Add org.apache.commons.pool2.PooledObject#setRequireFullStackTrace(boolean).
+      Add org.apache.commons.pool3.PooledObject#setRequireFullStackTrace(boolean).
     </action>
     <action dev="ggregory" type="fix" issue="POOL-352" due-to=" Volker Kleinschmidt">
       CallStackUtils mishandles security manager check part 1.
     </action>
   </release>
-  <release version="2.6.2" date="2019-03-05" description="This is a maintenance release (Java 7).">
+  <release version="2.6.2" date="2019-03-05" description="This is a maintenance release (Java 7 or above).">
     <action dev="ggregory" issue="POOL-362" type="fix">
-       Always null out org.apache.commons.pool2.impl.BaseGenericObjectPool.evictionIterator to match org.apache.commons.pool2.impl.BaseGenericObjectPool.evictor.
+       Always null out org.apache.commons.pool3.impl.BaseGenericObjectPool.evictionIterator to match org.apache.commons.pool3.impl.BaseGenericObjectPool.evictor.
     </action>
     <action dev="ggregory" issue="POOL-363" type="fix" due-to="Josh Landin">
        Evictor Thread prevents Spring Context shutdown in standalone app.
@@ -486,7 +513,7 @@ The <action> type attribute can be add,update,fix,remove.
        The commons-pool-evictor-thread should run as a Deamon.
     </action>
   </release>
-  <release version="2.6.1" date="2019-02-08" description="This is a maintenance release (Java 7).">
+  <release version="2.6.1" date="2019-02-08" description="This is a maintenance release (Java 7 or above).">
     <action dev="struberg" issue="POOL-340" type="fix" due-to="Pavel Kolesov">
       Correct validateObject with concurrent borrowObject
     </action>
@@ -518,7 +545,7 @@ The <action> type attribute can be add,update,fix,remove.
       CallStackUtils mishandles security manager check (partial fix.)
     </action>
   </release>  
-  <release version="2.6.0" date="2018-07-06" description="This is a maintenance release (Java 7).">
+  <release version="2.6.0" date="2018-07-06" description="This is a maintenance release (Java 7 or above).">
     <action dev="ggregory" issue="POOL-336" type="update" due-to="Wolfgang Glas">
       GenericObjectPool's borrowObject lock if create() fails with Error.
     </action>
@@ -538,13 +565,13 @@ The <action> type attribute can be add,update,fix,remove.
       GenericObjectPool constructor may throw an exception under OSGi.
     </action>
     <action dev="ggregory" issue="POOL-324" type="fix" due-to="Jay Xu, Gary Gregory">
-      org.apache.commons.pool2.impl.GenericObjectPool.getFactoryType() throws java.lang.ClassCastException.
+      org.apache.commons.pool3.impl.GenericObjectPool.getFactoryType() throws java.lang.ClassCastException.
     </action>
     <action dev="ggregory" issue="POOL-344" type="fix" due-to="Yulin Wang">
       Delete repeated call startEvictor.
     </action>
   </release>
-  <release version="2.5.0" date="2017-12-16" description="This is a minor release (Java 7).">
+  <release version="2.5.0" date="2017-12-16" description="This is a minor release (Java 7 or above).">
     <action dev="ggregory" issue="POOL-331" type="update">
       Update from Java 6 to 7.
     </action>
@@ -558,7 +585,7 @@ The <action> type attribute can be add,update,fix,remove.
       Update optional dependency asm-util from 5.2 to 6.0.
     </action>
     <action dev="ggregory" issue="POOL-334" type="update">
-      org.apache.commons.pool2.impl.ThrowableCallStack.Snapshot is missing serialVersionUID.
+      org.apache.commons.pool3.impl.ThrowableCallStack.Snapshot is missing serialVersionUID.
     </action>
     <action dev="mattsicker" issue="POOL-335" type="add">
       Make abandoned logging stack trace requirements configurable. This also reverts
@@ -569,7 +596,7 @@ The <action> type attribute can be add,update,fix,remove.
       the default behavior introduced by POOL-320.
     </action>
   </release>
-  <release version="2.4.3" date="2017-10-24" description="This is a patch release, including bug fixes only (Java 6).">
+  <release version="2.4.3" date="2017-10-24" description="This is a patch release, including bug fixes only (Java 6 or above).">
     <action dev="ggregory" issue="POOL-328" type="fix" due-to="Lorenzo Solano Martinez">
       Documentation with repeated words (sources, tests, and examples).
     </action>
@@ -622,7 +649,7 @@ The <action> type attribute can be add,update,fix,remove.
       Update optional OW2 ASM from 5.0.4 to 5.2.
     </action>
   </release>
-  <release version="2.4.2" date="2015-08-01" description="This is a patch release, including bug fixes only (Java 6).">
+  <release version="2.4.2" date="2015-08-01" description="This is a patch release, including bug fixes only (Java 6 or above).">
     <action dev="psteitz" issue="POOL-298" type="fix">
       Changed default jmxNameBase in BaseObjectPoolConfig to the correct (null)
       default.
@@ -632,7 +659,7 @@ The <action> type attribute can be add,update,fix,remove.
     </action>
   </release>
   <release version="2.4.1" date="2015-05-30" description=
- "This is a patch release (Java 6), replacing a defective binary jar in version 2.4. Other
+ "This is a patch release (Java 6 or above), replacing a defective binary jar in version 2.4. Other
 than the build configuration, the source distribution for version 2.4.1 is identical
 to version 2.4.">
     <action dev="psteitz" issue="POOL-297" type="fix">
@@ -640,7 +667,7 @@ to version 2.4.">
     </action>
   </release>
   <release version="2.4" date="2015-05-27" description=
- "This is a maintenance release that includes bug fixes and minor enhancements (Java 6).">
+ "This is a maintenance release that includes bug fixes and minor enhancements (Java 6 or above).">
     <action dev="psteitz" type="fix" issue="POOL-287" due-to="Caleb Spare and Thomas Neidhart">
       Fixed capacity leak when an object is offered from a GenericKeyedObjectPool while it is
       being validated by the evictor. 
@@ -675,7 +702,7 @@ to version 2.4.">
     </action>
   </release>
   <release version="2.3" date="2014-12-30" description=
-"This is a maintenance release that includes bug fixes and minor enhancements (Java 6).">  
+"This is a maintenance release that includes bug fixes and minor enhancements (Java 6 or above).">  
     <action dev="psteitz" type="fix" issue="POOL-279" due-to="Jacopo Cappellato">
       Eliminated possibility that DefaultPoolObject#getIdleTimeMillis() could
       return a negative value. Use by pool implementations would not hit this
@@ -746,7 +773,7 @@ to version 2.4.">
     </action>
   </release>
   <release version="2.2" date="2014-02-24" description=
-"This is a maintenance release (Java 6) that adds a new testOnCreate configuration option
+"This is a maintenance release (Java 6 or above) that adds a new testOnCreate configuration option
 and fixes a small number of bugs.">
     <action issue="POOL-248" dev="markt" type="fix" due-to="Warren Chen">
       Ensure that if an attempt is made to return an object multiple times that
@@ -764,7 +791,7 @@ and fixes a small number of bugs.">
     </action>
   </release>
    <release version="2.1" date="2013-12-30" description=
-"This is a maintenance release (Java 6) that includes a small number of new features as well as 
+"This is a maintenance release (Java 6 or above) that includes a small number of new features as well as 
 including bugfixes and test case improvements.">
     <action issue="POOL-243" dev="psteitz" type="fix" due-to="Michal Sabo">
       Added missing create counter decrement in GenericKeyedObjectPool create method on factory
@@ -800,7 +827,7 @@ including bugfixes and test case improvements.">
     </action>
   </release>
   <release version="2.0" date="2013-11-11" description=
-"This is a major new release (Java 6) that provides significant performance improvements
+"This is a major new release (Java 6 or above) that provides significant performance improvements
 in high concurrency environments. Pools now provide a mechanism for tracking
 objects that have been borrowed from the pool but not returned. There have been
 numerous API changes to support these and other new features as well as to
@@ -928,7 +955,7 @@ JDK level 1.6 or above.">
       is prevented after they have been returned to the pool.  
     </action>
   </release>
-  <release version="1.6" date="2012-01-07" description="Adds generics (Java 5).">
+  <release version="1.6" date="2012-01-07" description="Adds generics (Java 5 or above).">
     <action dev="ggregory" type="add" issue="POOL-208">
       Support Java 1.5 Generics in version 1.x.
     </action>
