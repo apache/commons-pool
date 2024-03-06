@@ -55,7 +55,7 @@ The <action> type attribute can be add,update,fix,remove.
       Bump Java from 8 to 17.
     </action>
     <action dev="ggregory" type="update">
-      Bump commons-parent from 58 to 66.
+      Bump commons-parent from 58 to 67.
     </action>
     <action dev="ggregory" type="update">
       Bump org.ow2.asm:asm-util from 9.5 to 9.6 #252.
