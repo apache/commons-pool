@@ -117,7 +117,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
      */
     private final AtomicLong createCount = new AtomicLong();
 
-    private long makeObjectCount;
+    private volatile long makeObjectCount;
 
     private final Object makeObjectCountLock = new Object();
 
