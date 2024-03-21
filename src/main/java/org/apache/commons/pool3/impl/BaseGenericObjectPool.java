@@ -497,8 +497,8 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
         final Instant timeout = Instant.now().minus(abandonedConfig.getRemoveAbandonedTimeoutDuration());
         final ArrayList<PooledObject<T>> remove = new ArrayList<>();
         allObjects.values().forEach(pooledObject -> {
+            pooledObject.lock();
             try {
-                pooledObject.lock();
                 if (pooledObject.getState() == PooledObjectState.ALLOCATED &&
                         pooledObject.getLastUsedInstant().compareTo(timeout) <= 0) {
                     pooledObject.markAbandoned();
@@ -1219,8 +1219,8 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      * @param pooledObject instance to return to the keyed pool
      */
     protected void markReturningState(final PooledObject<T> pooledObject) {
+        pooledObject.lock();
         try {
-            pooledObject.lock();
             if (pooledObject.getState() != PooledObjectState.ALLOCATED) {
                 throw new IllegalStateException("Object has already been returned to this pool or is invalid");
             }
@@ -1624,8 +1624,8 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      * @param delay duration before start and between eviction runs.
      */
     final void startEvictor(final Duration delay) {
+        evictionLock.lock();
         try {
-            evictionLock.lock();
             final boolean isPositiverDelay = PoolImplUtils.isPositive(delay);
             if (evictor == null) { // Starting evictor for the first time or after a cancel
                 if (isPositiverDelay) { // Starting new evictor

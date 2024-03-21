@@ -881,8 +881,8 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
 
         try {
             boolean isIdle;
+            toDestroy.lock();
             try {
-                toDestroy.lock();
                 // Check idle state directly
                 isIdle = toDestroy.getState().equals(PooledObjectState.IDLE);
                 // If idle, not under eviction test, or always is true, remove instance,
@@ -982,8 +982,8 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
             PooledObject<T> underTest = null;
             final EvictionPolicy<T> evictionPolicy = getEvictionPolicy();
 
+            evictionLock.lock();
             try {
-                evictionLock.lock();
                 final EvictionConfig evictionConfig = new EvictionConfig(
                         getMinEvictableIdleDuration(),
                         getSoftMinEvictableIdleDuration(),
@@ -1339,8 +1339,8 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
         if (p == null) {
             throw new IllegalStateException(appendStats("Object not currently part of this pool"));
         }
+        p.lock();
         try {
-            p.lock();
             if (p.getState() != PooledObjectState.INVALID) {
                 destroy(key, p, true, destroyMode);
                 reuseCapacity();

@@ -689,8 +689,8 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
             PooledObject<T> underTest = null;
             final EvictionPolicy<T> evictionPolicy = getEvictionPolicy();
 
+            evictionLock.lock();
             try {
-                evictionLock.lock();
                 final EvictionConfig evictionConfig = new EvictionConfig(
                         getMinEvictableIdleDuration(),
                         getSoftMinEvictableIdleDuration(),
@@ -958,8 +958,8 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
             }
             throw new IllegalStateException("Invalidated object not currently part of this pool");
         }
+        p.lock();
         try {
-            p.lock();
             if (p.getState() != PooledObjectState.INVALID) {
                 destroy(p, destroyMode);
             }
