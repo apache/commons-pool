@@ -385,7 +385,7 @@ public class TestAbandonedKeyedObjectPool {
         Thread.sleep(2000);
         assertTrue(o1.isDestroyed());
         bos.flush();
-        assertTrue(baos.toString().indexOf("Pooled object") >= 0);
+        assertTrue(baos.toString().contains("Pooled object"));
     }
 
     /**
