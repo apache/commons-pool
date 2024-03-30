@@ -26,6 +26,7 @@ import java.util.Objects;
  * Holds method names, parameters, and return values for tracing method calls.
  */
 public class MethodCall {
+    public static final int HASH_CODE_MULTIPLIER = 29;
     private final String name;
     private final List<Object> params;
     private Object returned;
@@ -90,8 +91,8 @@ public class MethodCall {
     public int hashCode() {
         int result;
         result = name != null ? name.hashCode() : 0;
-        result = 29 * result + (params != null ? params.hashCode() : 0);
-        return 29 * result + (returned != null ? returned.hashCode() : 0);
+        result = HASH_CODE_MULTIPLIER * result + (params != null ? params.hashCode() : 0);
+        return HASH_CODE_MULTIPLIER * result + (returned != null ? returned.hashCode() : 0);
     }
 
     public MethodCall returned(final Object obj) {

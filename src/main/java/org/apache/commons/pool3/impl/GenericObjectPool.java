@@ -286,8 +286,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
         assertOpen();
 
         final AbandonedConfig ac = this.abandonedConfig;
-        if (ac != null && ac.getRemoveAbandonedOnBorrow() && getNumIdle() < 2 &&
-                getNumActive() > getMaxTotal() - 3) {
+        if (shouldRemoveAbandonedObjects(ac)) {
             removeAbandoned(ac);
         }
 
@@ -378,6 +377,22 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
 
         return p.getObject();
     }
+
+
+    /**
+     * Returns true if the pool should remove abandoned objects.
+     * @param ac The abandoned object config
+     * @return whether an abandoned object should be removed
+     */
+    private boolean shouldRemoveAbandonedObjects(AbandonedConfig ac) {
+        boolean isConfigValid = ac != null;
+        boolean shouldRemoveAbandonedOnBorrow = isConfigValid && ac.getRemoveAbandonedOnBorrow();
+        boolean isPoolUnderMinimumIdle = getNumIdle() < 2;
+        boolean isPoolOverlyActive = getNumActive() > getMaxTotal() - 3;
+
+        return isConfigValid && shouldRemoveAbandonedOnBorrow && isPoolUnderMinimumIdle && isPoolOverlyActive;
+    }
+
 
     /**
      * Borrows an object from the pool using the specific waiting time which only
@@ -1049,36 +1064,8 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
 
         final Duration activeTime = p.getActiveDuration();
 
-        if (getTestOnReturn() && !factory.validateObject(p)) {
-            try {
-                destroy(p, DestroyMode.NORMAL);
-            } catch (final Exception e) {
-                swallowException(e);
-            }
-            try {
-                ensureIdle(1, false);
-            } catch (final Exception e) {
-                swallowException(e);
-            }
-            updateStatsReturn(activeTime);
-            return;
-        }
-
-        try {
-            factory.passivateObject(p);
-        } catch (final Exception e1) {
-            swallowException(e1);
-            try {
-                destroy(p, DestroyMode.NORMAL);
-            } catch (final Exception e) {
-                swallowException(e);
-            }
-            try {
-                ensureIdle(1, false);
-            } catch (final Exception e) {
-                swallowException(e);
-            }
-            updateStatsReturn(activeTime);
+        if (!validateAndDestroyInvalidReturnedObject(p) ||
+                !passivateAndHandleExceptions(p)) {
             return;
         }
 
@@ -1089,16 +1076,8 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
 
         final int maxIdleSave = getMaxIdle();
         if (isClosed() || maxIdleSave > -1 && maxIdleSave <= idleObjects.size()) {
-            try {
-                destroy(p, DestroyMode.NORMAL);
-            } catch (final Exception e) {
-                swallowException(e);
-            }
-            try {
-                ensureIdle(1, false);
-            } catch (final Exception e) {
-                swallowException(e);
-            }
+            destroyAndSwallowExceptions(p);
+            ensureIdleAndSwallowExceptions(1, false);
         } else {
             if (getLifo()) {
                 idleObjects.addFirst(p);
@@ -1113,6 +1092,64 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
             }
         }
         updateStatsReturn(activeTime);
+    }
+
+    /**
+     * Validates the given pooled object and swallows any exception.
+     * @param p the pooled object to validate
+     * @return true if the object is valid, false otherwise
+     */
+    private boolean validateAndDestroyInvalidReturnedObject(PooledObject<T> p) {
+        final Duration activeTime = p.getActiveDuration();
+        if (getTestOnReturn() && !factory.validateObject(p)) {
+            destroyAndSwallowExceptions(p);
+            ensureIdleAndSwallowExceptions(1, false);
+            updateStatsReturn(activeTime);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Passivates the given pooled object and swallows any exception.
+     * @param p the pooled object to passivate
+     */
+    private boolean passivateAndHandleExceptions(PooledObject<T> p) {
+        try {
+            factory.passivateObject(p);
+            return true;
+        } catch (final Exception e) {
+            swallowException(e);
+            destroyAndSwallowExceptions(p);
+            ensureIdleAndSwallowExceptions(1, false);
+            updateStatsReturn(p.getActiveDuration());
+            return false;
+        }
+    }
+
+    /**
+     * Destroys the given pooled object and swallows any exception.
+     * @param p the pooled object to destroy
+     */
+    private void destroyAndSwallowExceptions(PooledObject<T> p) {
+        try {
+            destroy(p, DestroyMode.NORMAL);
+        } catch (final Exception e) {
+            swallowException(e);
+        }
+    }
+
+    /**
+     * Ensures that {@link #getMinIdle()} idle instances are available in the pool otherwise swallow exception.
+     * @param count the number of idle instances to ensure
+     * @param always whether to swallow exception
+     */
+    private void ensureIdleAndSwallowExceptions(int count, boolean always) {
+        try {
+            ensureIdle(count, always);
+        } catch (final Exception e) {
+            swallowException(e);
+        }
     }
 
     /**

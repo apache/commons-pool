@@ -497,14 +497,25 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
         final ArrayList<PooledObject<T>> remove = new ArrayList<>();
         allObjects.values().forEach(pooledObject -> {
             synchronized (pooledObject) {
-                if (pooledObject.getState() == PooledObjectState.ALLOCATED &&
-                        pooledObject.getLastUsedInstant().compareTo(timeout) <= 0) {
+                if (shouldRemovePooledObject(pooledObject, timeout)) {
                     pooledObject.markAbandoned();
                     remove.add(pooledObject);
                 }
             }
         });
         return remove;
+    }
+
+    /**
+     * Determines whether the given pooled object should be removed.
+     * @param pooledObject The pooled object.
+     * @param timeout The pool's timeout.
+     * @return whether the given pooled object should be removed
+     */
+    private boolean shouldRemovePooledObject(final PooledObject<T> pooledObject, final Instant timeout) {
+        boolean isAllocated = pooledObject.getState() == PooledObjectState.ALLOCATED;
+        boolean isTimedOut = pooledObject.getLastUsedInstant().compareTo(timeout) <= 0;
+        return isAllocated && isTimedOut;
     }
 
     /**
