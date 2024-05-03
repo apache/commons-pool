@@ -59,7 +59,7 @@ The <action> type attribute can be add,update,fix,remove.
     </action>
     <action dev="ggregory" type="update">Bump org.ow2.asm:asm-util from 9.5 to 9.7 #252, #294.</action>
     <action type="update" dev="ggregory" due-to="Gary Gregory">Bump commons-lang3 from 3.13.0 to 3.14.0.</action>
-    <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.apache.bcel:bcel from 6.7.0 to 6.8.2 #263.</action>
+    <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.apache.bcel:bcel from 6.7.0 to 6.9.0 #263, #306.</action>
   </release> 
   <release version="2.12.0" date="2023-MM-DD" description="This is a feature and maintenance release (Java 8 or above).">
     <!-- FIX -->
