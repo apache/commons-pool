@@ -494,7 +494,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * Drains no more than the specified number of elements from the queue to the
      * specified collection.
      *
-     * @param c           collection to add the elements to
+     * @param collection collection to add the elements to
      * @param maxElements maximum number of elements to remove from the queue
      *
      * @return number of elements added to the collection
@@ -506,16 +506,16 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * @throws NullPointerException if c is null
      * @throws IllegalArgumentException if c is this instance
      */
-    public int drainTo(final Collection<? super E> c, final int maxElements) {
-        Objects.requireNonNull(c, "c");
-        if (c == this) {
+    public int drainTo(final Collection<? super E> collection, final int maxElements) {
+        Objects.requireNonNull(collection, "c");
+        if (collection == this) {
             throw new IllegalArgumentException();
         }
         lock.lock();
         try {
             final int n = Math.min(maxElements, count);
             for (int i = 0; i < n; i++) {
-                c.add(first.item);   // In this order, in case add() throws.
+                collection.add(first.item); // In this order, in case add() throws.
                 unlinkFirst();
             }
             return n;
