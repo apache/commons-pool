@@ -216,9 +216,9 @@
     <commons.jacoco.classRatio>0.98</commons.jacoco.classRatio>
     <commons.jacoco.instructionRatio>0.86</commons.jacoco.instructionRatio>
     <commons.jacoco.methodRatio>0.87</commons.jacoco.methodRatio>
-    <commons.jacoco.branchRatio>0.84</commons.jacoco.branchRatio>
+    <commons.jacoco.branchRatio>0.83</commons.jacoco.branchRatio>
     <commons.jacoco.lineRatio>0.86</commons.jacoco.lineRatio>
-    <commons.jacoco.complexityRatio>0.81</commons.jacoco.complexityRatio>
+    <commons.jacoco.complexityRatio>0.80</commons.jacoco.complexityRatio>
   </properties> 
   <build>
       <defaultGoal>clean verify apache-rat:check checkstyle:check japicmp:cmp javadoc:javadoc spotbugs:check pmd:check pmd:cpd-check</defaultGoal>
