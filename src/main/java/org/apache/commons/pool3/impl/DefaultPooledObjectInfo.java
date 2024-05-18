@@ -24,8 +24,7 @@ import java.util.Objects;
 import org.apache.commons.pool3.PooledObject;
 
 /**
- * Implementation of object that is used to provide information on pooled
- * objects via JMX.
+ * Implements providing information on pooled objects via JMX.
  *
  * @since 2.0
  */
