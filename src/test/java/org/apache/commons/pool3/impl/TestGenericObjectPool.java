@@ -2006,7 +2006,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         final DisconnectingWaiterFactory<String> factory = new DisconnectingWaiterFactory<>(
             DisconnectingWaiterFactory.DEFAULT_DISCONNECTED_CREATE_ACTION,
             DisconnectingWaiterFactory.DEFAULT_DISCONNECTED_LIFECYCLE_ACTION,
-            (obj) -> false // all instances fail validation
+            obj -> false // all instances fail validation
         );
         final AtomicBoolean failed = new AtomicBoolean();
         try (GenericObjectPool<Waiter, IllegalStateException> pool = new GenericObjectPool<>(factory)) {

@@ -24,7 +24,7 @@
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
-    <version>66</version>
+    <version>69</version>
   </parent>
 
   <artifactId>commons-pool3</artifactId>
@@ -147,7 +147,7 @@
     <dependency>
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm-util</artifactId>
-      <version>9.6</version>
+      <version>9.7</version>
       <optional>true</optional>
     </dependency>
     <!-- testing -->
@@ -210,8 +210,16 @@
     <japicmp.skip>true</japicmp.skip>
     <spotbugs.skip>false</spotbugs.skip>
     <animal.sniffer.skip>true</animal.sniffer.skip>
+    <surefire.argline></surefire.argline>
+    <!-- JaCoCo: Don't make code coverage worse than: -->
+    <commons.jacoco.haltOnFailure>true</commons.jacoco.haltOnFailure>
+    <commons.jacoco.classRatio>0.98</commons.jacoco.classRatio>
+    <commons.jacoco.instructionRatio>0.86</commons.jacoco.instructionRatio>
+    <commons.jacoco.methodRatio>0.87</commons.jacoco.methodRatio>
+    <commons.jacoco.branchRatio>0.83</commons.jacoco.branchRatio>
+    <commons.jacoco.lineRatio>0.86</commons.jacoco.lineRatio>
+    <commons.jacoco.complexityRatio>0.80</commons.jacoco.complexityRatio>
   </properties> 
-
   <build>
       <defaultGoal>clean verify apache-rat:check checkstyle:check japicmp:cmp javadoc:javadoc spotbugs:check pmd:check pmd:cpd-check</defaultGoal>
       <pluginManagement>
@@ -235,7 +243,7 @@
               <dependency>
                 <groupId>org.apache.bcel</groupId>
                 <artifactId>bcel</artifactId>
-                <version>6.8.1</version>
+                <version>6.9.0</version>
               </dependency>
             </dependencies>
           </plugin>
@@ -275,7 +283,8 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
-             <!-- Don't allow test to run for more than 30 minutes -->
+              <argLine>${argLine} ${surefire.argline}</argLine>
+              <!-- Don't allow test to run for more than 30 minutes -->
               <forkedProcessTimeoutInSeconds>1800</forkedProcessTimeoutInSeconds>
               <includes>
                 <include>**/Test*.java</include>
@@ -424,20 +433,12 @@
       <activation>
         <jdk>[16,)</jdk>
       </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <argLine>
-                --illegal-access=permit
-                --add-opens java.base/java.lang=ALL-UNNAMED                     
-              </argLine>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
+      <properties>
+        <surefire.argline>
+          --illegal-access=permit
+          --add-opens java.base/java.lang=ALL-UNNAMED                     
+        </surefire.argline>
+      </properties>
     </profile>
   </profiles>
 

@@ -68,7 +68,7 @@ public class PoolTest {
     private static final CharSequence COMMONS_POOL_EVICTIONS_TIMER_THREAD_NAME = "commons-pool-EvictionTimer";
 
     private static final long EVICTION_PERIOD_IN_MILLIS = 100;
-    
+
     private static final Duration EVICTION_DURATION = Duration.ofMillis(100);
 
     @Test

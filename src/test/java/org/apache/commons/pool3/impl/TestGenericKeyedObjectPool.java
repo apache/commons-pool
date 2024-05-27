@@ -298,7 +298,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
         @Override
         public Object create(final Object key) {
-            int counter = map.computeIfAbsent(key, k -> new AtomicInteger(-1)).incrementAndGet();
+            final int counter = map.computeIfAbsent(key, k -> new AtomicInteger(-1)).incrementAndGet();
             return String.valueOf(key) + String.valueOf(counter);
         }
 
@@ -1260,7 +1260,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
                             final String pooled = gkoPool.borrowObject(key);
                             gkoPool.returnObject(key, pooled);
                         }
-                    } catch (TestException e) {
+                    } catch (final TestException e) {
                         fail(e);
                     }
                 }));
