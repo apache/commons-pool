@@ -433,6 +433,7 @@ public class TestAbandonedObjectPool {
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
         abandonedConfig.setLogAbandoned(true);
         abandonedConfig.setRemoveAbandonedTimeout(TestConstants.ONE_SECOND_DURATION);
+        abandonedConfig.setUseUsageTracking(true);
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         final BufferedOutputStream bos = new BufferedOutputStream(baos);
         final PrintWriter pw = new PrintWriter(bos);
@@ -440,10 +441,13 @@ public class TestAbandonedObjectPool {
         pool.setAbandonedConfig(abandonedConfig);
         pool.setDurationBetweenEvictionRuns(Duration.ofMillis(100));
         final PooledTestObject o1 = pool.borrowObject();
+        pool.use(o1);
         Thread.sleep(2000);
         assertTrue(o1.isDestroyed());
         bos.flush();
-        assertTrue(baos.toString().indexOf("Pooled object") >= 0);
+        final String traceString = baos.toString();
+        assertTrue(traceString.indexOf("Pooled object") >= 0);
+        assertTrue(traceString.indexOf("The last code to use this object was:") >= 0);
     }
 
     /**
