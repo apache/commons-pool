@@ -220,8 +220,6 @@ public class TestResilientPooledObjectFactory {
                 try {
                     final String s = pool.borrowObject();
                 } catch (Exception e) {
-                } finally {
-                    System.out.println("Borrower done");
                 }
             }
         }.start();
@@ -269,6 +267,45 @@ public class TestResilientPooledObjectFactory {
         assertTrue(rf.isUp());
         // Adder should be stopped
         assertFalse(rf.isAdderRunning());
+    }
+
+    @Test
+    public void testIsMonitorRunning() throws Exception {
+        FailingFactory ff = new FailingFactory();
+        // Make the factory fail with exception immmmediately on make
+        ff.setSilentFail(true);
+        ResilientPooledObjectFactory<String, Exception> rf = new ResilientPooledObjectFactory<String, Exception>(ff,
+                5, Duration.ofMillis(200), Duration.ofMinutes(10), Duration.ofMillis(20));
+        GenericObjectPool<String, Exception> pool = new GenericObjectPool<>(rf);
+        rf.setPool(pool);
+        rf.startMonitor();
+        assertTrue(rf.isMonitorRunning());
+        rf.stopMonitor();
+        assertFalse(rf.isMonitorRunning());
+        rf.startMonitor();
+        pool.close();
+        // Wait for monitor to run so it can kill itself
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+        }
+        assertFalse(rf.isMonitorRunning());
+    }
+
+    @Test
+    public void testConstructorWithDefaults() {
+        FailingFactory ff = new FailingFactory();
+        ResilientPooledObjectFactory<String, Exception> rf = new ResilientPooledObjectFactory<String, Exception>(ff);
+        assertFalse(rf.isMonitorRunning());
+        assertFalse(rf.isAdderRunning());
+        assertEquals(ResilientPooledObjectFactory.getDefaultLogSize(), rf.getLogSize());
+        assertEquals(ResilientPooledObjectFactory.getDefaultTimeBetweenChecks(), rf.getTimeBetweenChecks());
+        assertEquals(ResilientPooledObjectFactory.getDefaultDelay(), rf.getDelay());
+        assertEquals(ResilientPooledObjectFactory.getDefaultLookBack(), rf.getLookBack());
+        assertEquals(0, rf.getMakeObjectLog().size());
+        rf.setLogSize(5);
+        assertEquals(5, rf.getLogSize());
+        rf.setTimeBetweenChecks(Duration.ofMillis(200));
     }
 
     /**

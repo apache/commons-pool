@@ -123,6 +123,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
             return obj;
         } catch (Throwable t) {
             makeEvent.setSuccess(false);
+            makeEvent.setException(t);
             exceptionCounts.put(t.getClass(), exceptionCounts.getOrDefault(t, 0) + 1);
             throw t;
         } finally {
@@ -273,23 +274,12 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
                     try {
                         Thread.sleep(delay.toMillis());
                     } catch (InterruptedException e) {
-                        // Ignore
-                    } catch (Throwable e) {
                         killed = true;
-                        running = false;
-                        throw (e);
                     }
                 }
             }
             killed = true;
             running = false;
-        }
-
-        public void start() {
-            if (killed) {
-                killed = false;
-            }
-            run();
         }
 
         public boolean isRunning() {
@@ -309,7 +299,6 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
         private Instant endTime;
         private boolean success;
         private Throwable exception;
-        private String message;
 
         /**
          * Constructor set statTime to now.
@@ -348,15 +337,6 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
         public Instant getStartTime() {
             return startTime;
         }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
-        }
-
     }
 
     class Monitor extends Thread {
@@ -370,10 +350,59 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
                     monitoring = false;
                 } catch (Throwable e) {
                     monitoring = false;
-                    throw (e);
+                    throw e;
                 }
             }
             monitoring = false;
         }
     }
+
+    public static int getDefaultLogSize() {
+        return DEFAULT_LOG_SIZE;
+    }
+
+    public static Duration getDefaultDelay() {
+        return DEFAULT_DELAY;
+    }
+
+    public static Duration getDefaultLookBack() {
+        return DEFAULT_LOOK_BACK;
+    }
+
+    public static Duration getDefaultTimeBetweenChecks() {
+        return DEFAULT_TIME_BETWEEN_CHECKS;
+    }
+
+    public int getLogSize() {
+        return logSize;
+    }
+
+    public Duration getLookBack() {
+        return lookBack;
+    }
+
+    public ConcurrentLinkedQueue<MakeEvent> getMakeObjectLog() {
+        return makeObjectLog;
+    }
+
+    public Instant getDownStart() {
+        return downStart;
+    }
+
+    public Instant getUpStart() {
+        return upStart;
+    }
+
+    public ConcurrentHashMap<Class, Integer> getExceptionCounts() {
+        return exceptionCounts;
+    }
+
+    public Duration getDelay() {
+        return delay;
+    }
+
+    public Duration getTimeBetweenChecks() {
+        return timeBetweenChecks;
+    }
+
 }
