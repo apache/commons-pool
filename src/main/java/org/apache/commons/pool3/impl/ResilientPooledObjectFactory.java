@@ -18,6 +18,8 @@ package org.apache.commons.pool3.impl;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -59,13 +61,15 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
     private ConcurrentHashMap<Class, Integer> exceptionCounts = new ConcurrentHashMap<>();
     /** Whether or not the factory is "up" */
     private boolean up = true;
+    /**
+     * @return the factory wrapped by this resilient factory
+     */
     /** Whether or not the monitor thread is running */
     private boolean monitoring = false;
     /** Time to wait between object creations by the adder thread */
     private final Duration delay;
     /** Time between monitor checks */
     private Duration timeBetweenChecks = Duration.ofSeconds(10);
-
     /** Adder thread */
     private Adder adder = null;
 
@@ -103,10 +107,20 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
         this.pool = pool;
     }
 
+    /**
+     * Set the time between monitor checks.
+     *
+     * @param timeBetweenChecks
+     */
     public void setTimeBetweenChecks(Duration timeBetweenChecks) {
         this.timeBetweenChecks = timeBetweenChecks;
     }
 
+    /**
+     * Set the makeObject log size.
+     *
+     * @param logSize the number of makeObject events to keep in the log
+     */
     public void setLogSize(int logSize) {
         this.logSize = logSize;
     }
@@ -223,16 +237,27 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
         return monitoring;
     }
 
+    /**
+     * Start the monitor thread with the given time between checks.
+     *
+     * @param timeBetweenChecks time between checks
+     */
     public void startMonitor(Duration timeBetweenChecks) {
         this.timeBetweenChecks = timeBetweenChecks;
         startMonitor();
     }
 
+    /**
+     * Start the monitor thread with the currently configured time between checks.
+     */
     public void startMonitor() {
         monitoring = true;
         new Monitor().start();
     }
 
+    /**
+     * Stop the monitor thread.
+     */
     public void stopMonitor() {
         monitoring = false;
     }
@@ -314,31 +339,56 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
             return endTime;
         }
 
+        /**
+         * Mark completion of makeObject call.
+         */
         public void end() {
             this.endTime = Instant.now();
         }
 
+        /**
+         * @return true if the makeObject call succeeded
+         */
         public boolean isSuccess() {
             return success;
         }
 
+        /**
+         * Set the success status of the makeObject call.
+         *
+         * @param success
+         */
         public void setSuccess(boolean success) {
             this.success = success;
         }
 
+        /**
+         * @return the exception thrown by the makeObject call
+         */
         public Throwable getException() {
             return exception;
         }
 
+        /**
+         * Set the exception thrown by the makeObject call.
+         *
+         * @param exception
+         */
         public void setException(Throwable exception) {
             this.exception = exception;
         }
 
+        /**
+         * @return the start time of the makeObject call
+         */
         public Instant getStartTime() {
             return startTime;
         }
     }
 
+    /**
+     * Monitor thread that runs checks to examine the makeObject log and pool state.
+     */
     class Monitor extends Thread {
         @Override
         public void run() {
@@ -357,50 +407,80 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
         }
     }
 
+    /**
+     * @return the default makeObject log size
+     */
     public static int getDefaultLogSize() {
         return DEFAULT_LOG_SIZE;
     }
 
+    /**
+     * @return the default time between makeObject calls by the adder thread
+     */
     public static Duration getDefaultDelay() {
         return DEFAULT_DELAY;
     }
 
+    /**
+     * @return the default look back
+     */
     public static Duration getDefaultLookBack() {
         return DEFAULT_LOOK_BACK;
     }
 
+    /**
+     * @return the default time between monitor checks
+     */
     public static Duration getDefaultTimeBetweenChecks() {
         return DEFAULT_TIME_BETWEEN_CHECKS;
     }
 
+    /**
+     * @return the size of the makeObject log
+     */
     public int getLogSize() {
         return logSize;
     }
 
+    /**
+     * @return the look back duration
+     */
     public Duration getLookBack() {
         return lookBack;
     }
 
-    public ConcurrentLinkedQueue<MakeEvent> getMakeObjectLog() {
-        return makeObjectLog;
+    /**
+     * @return a copy of the makeObject log
+     */
+    public List<MakeEvent> getMakeObjectLog() {
+        ArrayList<MakeEvent> makeObjectLog = new ArrayList<MakeEvent>();
+        return new ArrayList<MakeEvent>(makeObjectLog.stream().toList());
     }
 
+    /**
+     * @return the start time of the last factory outage
+     */
     public Instant getDownStart() {
         return downStart;
     }
 
+    /**
+     * @return the time of the last factory outage recovery
+     */
     public Instant getUpStart() {
         return upStart;
     }
 
-    public ConcurrentHashMap<Class, Integer> getExceptionCounts() {
-        return exceptionCounts;
-    }
-
+    /**
+     * @return the time to wait between object creations by the adder thread
+     */
     public Duration getDelay() {
         return delay;
     }
 
+    /**
+     * @return the time between monitor checks
+     */
     public Duration getTimeBetweenChecks() {
         return timeBetweenChecks;
     }
