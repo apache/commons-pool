@@ -1363,7 +1363,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * Registers a key for pool control and ensures that
      * {@link #getMinIdlePerKey()} idle instances are created.
      *
-     * @param key - The key to register for pool control.
+     * @param key   The key to register for pool control.
      *
      * @throws E If the associated factory throws an exception
      */
