@@ -227,7 +227,7 @@ final class PoolImplUtils {
      * @return a Duration.
      */
     static Duration toDuration(final long amount, final TimeUnit timeUnit) {
-        return Duration.of(amount, PoolImplUtils.toChronoUnit(timeUnit));
+        return Duration.of(amount, toChronoUnit(timeUnit));
     }
 
 }

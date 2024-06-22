@@ -338,7 +338,8 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
         // Remove wrappers for enqueued references from idle and allReferences lists
         removeClearedReferences(idleReferences);
         removeClearedReferences(allReferences);
-        while (refQueue.poll() != null) { // NOPMD
+        while (refQueue.poll() != null) {
+            // loop until null
         }
     }
 

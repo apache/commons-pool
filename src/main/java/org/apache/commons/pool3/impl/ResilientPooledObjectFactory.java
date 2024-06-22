@@ -297,7 +297,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
                 } finally {
                     // Wait for delay
                     try {
-                        Thread.sleep(delay.toMillis());
+                        sleep(delay.toMillis());
                     } catch (InterruptedException e) {
                         killed = true;
                     }
@@ -395,7 +395,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
             while (monitoring && !pool.isClosed()) {
                 runChecks();
                 try {
-                    Thread.sleep(timeBetweenChecks.toMillis());
+                    sleep(timeBetweenChecks.toMillis());
                 } catch (InterruptedException e) {
                     monitoring = false;
                 } catch (Throwable e) {
