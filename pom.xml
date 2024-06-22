@@ -24,7 +24,7 @@
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
-    <version>69</version>
+    <version>71</version>
   </parent>
 
   <artifactId>commons-pool3</artifactId>
@@ -261,6 +261,15 @@
             <artifactId>spotbugs-maven-plugin</artifactId>
             <configuration>
               <excludeFilterFile>${basedir}/src/conf/findbugs-exclude-filter.xml</excludeFilterFile>
+            </configuration>
+          </plugin>
+          <plugin>
+            <artifactId>maven-pmd-plugin</artifactId>
+            <configuration>
+              <targetJdk>${maven.compiler.target}</targetJdk>
+              <rulesets>
+                <ruleset>${basedir}/src/conf/pmd-ruleset.xml</ruleset>
+              </rulesets>
             </configuration>
           </plugin>
         </plugins>
