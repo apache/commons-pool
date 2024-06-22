@@ -24,7 +24,7 @@
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
-    <version>66</version>
+    <version>71</version>
   </parent>
 
   <artifactId>commons-pool2</artifactId>
@@ -264,6 +264,15 @@
               <excludeFilterFile>${basedir}/src/conf/findbugs-exclude-filter.xml</excludeFilterFile>
             </configuration>
           </plugin>
+          <plugin>
+            <artifactId>maven-pmd-plugin</artifactId>
+            <configuration>
+              <targetJdk>${maven.compiler.target}</targetJdk>
+              <rulesets>
+                <ruleset>${basedir}/src/conf/pmd-ruleset.xml</ruleset>
+              </rulesets>
+            </configuration>
+          </plugin>
         </plugins>
       </pluginManagement>
       <plugins>
@@ -346,7 +355,6 @@
       </plugin>
       </plugins>
     </build>
-
     <reporting>
       <plugins>
         <plugin>
@@ -407,6 +415,9 @@
           <artifactId>maven-pmd-plugin</artifactId>
           <configuration>
             <targetJdk>${maven.compiler.target}</targetJdk>
+            <rulesets>
+              <ruleset>${basedir}/src/conf/pmd-ruleset.xml</ruleset>
+            </rulesets>
           </configuration>
           <reportSets>
             <reportSet>
