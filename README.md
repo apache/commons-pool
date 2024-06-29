@@ -47,6 +47,7 @@ Apache Commons Pool
 [![Coverage Status](https://codecov.io/gh/apache/commons-pool/branch/master/graph/badge.svg)](https://app.codecov.io/gh/apache/commons-pool)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-pool2/badge.svg?gav=true)](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-pool2/?gav=true)
 [![Javadocs](https://javadoc.io/badge/org.apache.commons/commons-pool2/2.12.0.svg)](https://javadoc.io/doc/org.apache.commons/commons-pool2/2.12.0)
+[![CodeQL](https://github.com/apache/commons-pool/workflows/CodeQL/badge.svg)](https://github.com/apache/commons-pool/actions/workflows/codeql-analysis.yml?query=workflow%3ACodeQL)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/apache/commons-pool/badge)](https://api.securityscorecards.dev/projects/github.com/apache/commons-pool)
 
 The Apache Commons Object Pooling Library.
