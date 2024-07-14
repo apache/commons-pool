@@ -354,7 +354,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
     }
 
     static class TestThread<T> implements Runnable {
-        private final java.util.Random random = new java.util.Random();
+        private final Random random = new Random();
 
         /** GKOP to hit */
         private final KeyedObjectPool<String, T> pool;
