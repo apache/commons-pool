@@ -463,7 +463,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     static class TestThread<T, E extends Exception> implements Runnable {
 
         /** Source of random delay times */
-        private final java.util.Random random;
+        private final Random random;
 
         /** Pool to borrow from */
         private final ObjectPool<T, E> pool;
