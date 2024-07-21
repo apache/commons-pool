@@ -203,7 +203,7 @@ public abstract class AbstractTestKeyedObjectPool {
 
     /**
      * Creates an {@link KeyedObjectPool} instance
-     * that can contain at least <i>minCapacity</i>
+     * that can contain at least <em>minCapacity</em>
      * idle and active objects, or
      * throw {@link IllegalArgumentException}
      * if such a pool cannot be created.

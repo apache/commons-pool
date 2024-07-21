@@ -49,7 +49,7 @@ import java.util.NoSuchElementException;
  *     }
  * }</pre>
  * <p>
- * {@link KeyedObjectPool} implementations <i>may</i> choose to store at most
+ * {@link KeyedObjectPool} implementations <em>may</em> choose to store at most
  * one instance per key value, or may choose to maintain a pool of instances
  * for each key (essentially creating a {@link java.util.Map Map} of
  * {@link ObjectPool pools}).
