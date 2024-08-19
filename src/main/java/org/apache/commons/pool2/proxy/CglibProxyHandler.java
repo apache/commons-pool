@@ -24,7 +24,10 @@ import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 
 /**
+ * cglib is unmaintained and does not work well (or possibly at all?) in newer JDKs, particularly JDK17+; see https://github.com/cglib/cglib
+ * <p>
  * CGLib implementation of the proxy handler.
+ * </p>
  *
  * @param <T> type of the wrapped pooled object
  *
