@@ -28,5 +28,8 @@
  * <code>net.sf.cglib.proxy</code> based proxies. The latter, requires the
  * additional of the optional Code Generation Library (GCLib).
  * </p>
+ * <p>
+ * cglib is unmaintained and does not work well (or possibly at all?) in newer JDKs, particularly JDK17+; see https://github.com/cglib/cglib
+ * </p>
  */
 package org.apache.commons.pool2.proxy;
