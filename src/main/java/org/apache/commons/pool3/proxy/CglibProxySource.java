@@ -22,8 +22,10 @@ import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.Factory;
 
 /**
+ * cglib is unmaintained and does not work well (or possibly at all?) in newer JDKs, particularly JDK17+; see https://github.com/cglib/cglib
+ * <p>
  * Provides proxy objects using CGLib.
- *
+ * </p>
  * @param <T> type of the pooled object to be proxied
  *
  * @since 2.0
