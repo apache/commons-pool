@@ -24,7 +24,7 @@
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
-    <version>72</version>
+    <version>73</version>
   </parent>
 
   <artifactId>commons-pool2</artifactId>
