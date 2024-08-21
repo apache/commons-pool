@@ -21,7 +21,7 @@
  * The <code>org.apache.commons.pool3.proxy</code> package defines a
  * object pool that wraps all objects returned to clients. This allows it
  * to disable those proxies when the objects are returned thereby enabling
- * the continued use of those objects by clients to be detected..
+ * the continued use of those objects by clients to be detected.
  * </p>
  * <p>
  * Support is provided for <code>java.lang.reflect.Proxy</code> and for
