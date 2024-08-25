@@ -45,14 +45,15 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Pool Release Notes</title>
   </properties>
   <body>
-  <release version="2.12.1" date="202Y-MM-DD" description="This is a feature and maintenance release (Java 8 or above).">
+  <release version="2.12.1" date="YYYY-MM-DD" description="This is a feature and maintenance release (Java 8 or above).">
     <!-- FIX -->
     <!-- ADD -->
     <!-- UPDATE -->
     <action type="update" dev="ggregory">Bump org.apache.commons:commons-parent from 62 to 73.</action>
-    <action type="update" dev="ggregory">Bump org.ow2.asm:asm-util from 9.5 to 9.6.</action>
-    <action type="update" dev="ggregory" due-to="Gary Gregory">Bump commons-lang3 from 3.13.0 to 3.14.0.</action>
-    <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.bcel:bcel from 6.7.0 to 6.8.2.</action>
+    <action type="update" dev="ggregory">Bump org.ow2.asm:asm-util from 9.5 to 9.7.</action>
+    <action type="update" dev="ggregory" due-to="Gary Gregory">[test] Bump commons-lang3 from 3.13.0 to 3.16.0.</action>
+    <action type="update" dev="ggregory" due-to="Gary Gregory">[site] Bump org.apache.bcel:bcel from 6.7.0 to 6.8.2.</action>
+    <action type="update" dev="ggregory" due-to="Gary Gregory">[test] Bump org.hamcrest:hamcrest-library from 2.2 to 3.0.</action>
   </release>
   <release version="2.12.0" date="2023-09-30" description="This is a feature and maintenance release (Java 8 or above).">
     <!-- FIX -->
