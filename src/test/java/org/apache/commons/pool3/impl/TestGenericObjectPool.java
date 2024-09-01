@@ -21,6 +21,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -64,7 +65,6 @@ import org.apache.commons.pool3.Waiter;
 import org.apache.commons.pool3.WaiterFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -1156,7 +1156,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
         // Failure expected
         assertNotNull(ex);
-        assertTrue(ex instanceof NoSuchElementException);
+        assertInstanceOf(NoSuchElementException.class, ex);
         assertNull(obj);
 
         // Configure factory to create valid objects so subsequent borrows work
