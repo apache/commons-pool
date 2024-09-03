@@ -642,11 +642,9 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         // build sorted map of idle objects
         final TreeMap<PooledObject<T>, K> map = new TreeMap<>();
 
-        poolMap.forEach((key, value) -> {
-            // Each item into the map using the PooledObject object as the
-            // key. It then gets sorted based on the idle time
-            value.getIdleObjects().forEach(p -> map.put(p, key));
-        });
+        // Each item into the map using the PooledObject object as the
+        // key. It then gets sorted based on the idle time
+        poolMap.forEach((key, value) -> value.getIdleObjects().forEach(p -> map.put(p, key)));
 
         // Now iterate created map and kill the first 15% plus one to account
         // for zero
@@ -655,9 +653,9 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
 
         while (iter.hasNext() && itemsToRemove > 0) {
             final Entry<PooledObject<T>, K> entry = iter.next();
-            // kind of backwards on naming.  In the map, each key is the
+            // kind of backwards on naming. In the map, each key is the
             // PooledObject because it has the ordering with the timestamp
-            // value.  Each value that the key references is the key of the
+            // value. Each value that the key references is the key of the
             // list it belongs to.
             final K key = entry.getValue();
             final PooledObject<T> p = entry.getKey();
