@@ -1352,8 +1352,7 @@ public final class PoolUtils {
         }
         final Map<K, TimerTask> tasks = new HashMap<>(keys.size());
         for (final K key : keys) {
-            final TimerTask task = checkMinIdle(keyedPool, key, minIdle, periodMillis);
-            tasks.put(key, task);
+            tasks.put(key, checkMinIdle(keyedPool, key, minIdle, periodMillis));
         }
         return tasks;
     }
