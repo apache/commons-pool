@@ -312,6 +312,13 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
             if (blockWhenExhausted) {
                 if (PooledObject.isNull(p)) {
                     try {
+                        if (borrowMaxWaitDuration.isNegative() && allObjects.isEmpty()) {
+                            // If there is a single threaded caller, and we don't have any object it will cause
+                            // deadlock as no other thread is going to return any object. In a multithreaded scenario
+                            // some other thread could eventually have create() succeed and unblock the current thread
+                            // but even there if create fails for sustained period it can deadlock all threads
+                            throw new NoSuchElementException(appendStats("Pool exhausted"));
+                        }
                         p = borrowMaxWaitDuration.isNegative() ? idleObjects.takeFirst() : idleObjects.pollFirst(borrowMaxWaitDuration);
                     } catch (final InterruptedException e) {
                         // Don't surface exception type of internal locking mechanism.

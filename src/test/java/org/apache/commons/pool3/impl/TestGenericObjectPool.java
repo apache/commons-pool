@@ -3009,6 +3009,20 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     /**
+     * Even if block when exhausted is set, the pool should fail to borrow when there is not a single borrowed object
+     *
+     * @throws Exception May occur in some failure modes
+     */
+    @Test
+    @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS)
+    public void testWhenNoObjectDoesNotBlock() throws Exception {
+        genericObjectPool.setMaxTotal(0);
+        genericObjectPool.setBlockWhenExhausted(true);
+        assertThrows(NoSuchElementException.class, () -> genericObjectPool.borrowObject());
+        genericObjectPool.close();
+    }
+
+    /**
      * POOL-189
      *
      * @throws Exception May occur in some failure modes
