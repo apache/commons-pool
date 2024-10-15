@@ -879,7 +879,8 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
 
         try {
             boolean isIdle;
-            synchronized (toDestroy) {
+            toDestroy.lock();
+            try {
                 // Check idle state directly
                 isIdle = toDestroy.getState().equals(PooledObjectState.IDLE);
                 // If idle, not under eviction test, or always is true, remove instance,
@@ -887,6 +888,8 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
                 if (isIdle || always) {
                     isIdle = objectDeque.getIdleObjects().remove(toDestroy);
                 }
+            } finally {
+                toDestroy.unlock();
             }
             if (isIdle || always) {
                 objectDeque.getAllObjects().remove(IdentityWrapper.on(toDestroy));
@@ -977,7 +980,8 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
             PooledObject<T> underTest = null;
             final EvictionPolicy<T> evictionPolicy = getEvictionPolicy();
 
-            synchronized (evictionLock) {
+            evictionLock.lock();
+            try {
                 final EvictionConfig evictionConfig = new EvictionConfig(
                         getMinEvictableIdleDuration(),
                         getSoftMinEvictableIdleDuration(),
@@ -1099,6 +1103,8 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
                         // states are used
                     }
                 }
+            } finally {
+                evictionLock.unlock();
             }
         }
         final AbandonedConfig ac = this.abandonedConfig;
@@ -1331,11 +1337,14 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
         if (p == null) {
             throw new IllegalStateException(appendStats("Object not currently part of this pool"));
         }
-        synchronized (p) {
+        p.lock();
+        try {
             if (p.getState() != PooledObjectState.INVALID) {
                 destroy(key, p, true, destroyMode);
                 reuseCapacity();
             }
+        } finally {
+            p.unlock();
         }
     }
 
