@@ -23,6 +23,8 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import org.apache.commons.pool2.DestroyMode;
@@ -118,7 +120,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
 
     private long makeObjectCount;
 
-    private final Object makeObjectCountLock = new Object();
+    private final ReentrantLock makeObjectCountLock = new ReentrantLock();
+    private final Condition makeObjectCountLockCondition = makeObjectCountLock.newCondition();
 
     private final LinkedBlockingDeque<PooledObject<T>> idleObjects;
 
@@ -524,7 +527,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         //          call the factory
         Boolean create = null;
         while (create == null) {
-            synchronized (makeObjectCountLock) {
+            makeObjectCountLock.lock();
+            try {
                 final long newCreateCount = createCount.incrementAndGet();
                 if (newCreateCount > localMaxTotal) {
                     // The pool is currently at capacity or in the process of
@@ -540,13 +544,15 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                         // bring the pool to capacity. Those calls might also
                         // fail so wait until they complete and then re-test if
                         // the pool is at capacity or not.
-                        wait(makeObjectCountLock, localMaxWaitDuration);
+                        makeObjectCountLockCondition.awaitNanos(localMaxWaitDuration.toNanos());
                     }
                 } else {
                     // The pool is not at capacity. Create a new object.
                     makeObjectCount++;
                     create = Boolean.TRUE;
                 }
+            } finally {
+                makeObjectCountLock.unlock();
             }
 
             // Do not block more if maxWaitTimeMillis is set.
@@ -575,9 +581,12 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             createCount.decrementAndGet();
             throw e;
         } finally {
-            synchronized (makeObjectCountLock) {
+            makeObjectCountLock.lock();
+            try {
                 makeObjectCount--;
-                makeObjectCountLock.notifyAll();
+                makeObjectCountLockCondition.signalAll();
+            } finally {
+                makeObjectCountLock.unlock();
             }
         }
 
