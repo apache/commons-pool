@@ -16,6 +16,8 @@
  */
 package org.apache.commons.pool3.proxy;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.apache.commons.pool3.UsageTracking;
 
 import net.sf.cglib.proxy.Enhancer;
@@ -33,6 +35,19 @@ import net.sf.cglib.proxy.Factory;
 public class CglibProxySource<T> implements ProxySource<T> {
 
     private final Class<? extends T> superclass;
+    private final boolean unwrapInvocationTargetException;
+
+    /**
+     * Constructs a new proxy source for the given class.
+     *
+     * @param superclass                      The class to proxy
+     * @param unwrapInvocationTargetException True to make the proxy throw {@link InvocationTargetException#getTargetException()}
+     *                                        instead of {@link InvocationTargetException}
+     */
+    public CglibProxySource(final Class<? extends T> superclass, boolean unwrapInvocationTargetException) {
+        this.superclass = superclass;
+        this.unwrapInvocationTargetException = unwrapInvocationTargetException;
+    }
 
     /**
      * Constructs a new proxy source for the given class.
@@ -40,7 +55,7 @@ public class CglibProxySource<T> implements ProxySource<T> {
      * @param superclass The class to proxy
      */
     public CglibProxySource(final Class<? extends T> superclass) {
-        this.superclass = superclass;
+        this(superclass, false);
     }
 
     @SuppressWarnings("unchecked") // Case to T on return
@@ -50,7 +65,7 @@ public class CglibProxySource<T> implements ProxySource<T> {
         enhancer.setSuperclass(superclass);
 
         final CglibProxyHandler<T> proxyInterceptor =
-                new CglibProxyHandler<>(pooledObject, usageTracking);
+                new CglibProxyHandler<>(pooledObject, usageTracking, unwrapInvocationTargetException);
         enhancer.setCallback(proxyInterceptor);
 
         return (T) enhancer.create();
