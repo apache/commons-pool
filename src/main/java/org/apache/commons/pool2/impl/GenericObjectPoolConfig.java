@@ -31,19 +31,22 @@ package org.apache.commons.pool2.impl;
 public class GenericObjectPoolConfig<T> extends BaseObjectPoolConfig<T> {
 
     /**
-     * The default value for the {@code maxTotal} configuration attribute.
+     * The default value for the {@code maxTotal} configuration attribute: {@value}.
+     *
      * @see GenericObjectPool#getMaxTotal()
      */
     public static final int DEFAULT_MAX_TOTAL = 8;
 
     /**
-     * The default value for the {@code maxIdle} configuration attribute.
+     * The default value for the {@code maxIdle} configuration attribute: {@value}.
+     *
      * @see GenericObjectPool#getMaxIdle()
      */
     public static final int DEFAULT_MAX_IDLE = 8;
 
     /**
-     * The default value for the {@code minIdle} configuration attribute.
+     * The default value for the {@code minIdle} configuration attribute: {@value}.
+     *
      * @see GenericObjectPool#getMinIdle()
      */
     public static final int DEFAULT_MIN_IDLE = 0;
