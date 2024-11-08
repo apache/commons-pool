@@ -47,6 +47,7 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
   <release version="2.12.1" date="YYYY-MM-DD" description="This is a feature and maintenance release (Java 8 or above).">
     <!-- FIX -->
+    <action type="fix" dev="ggregory" due-to="Gary Gregory">Use java.time.Instant precision in org.apache.commons.pool2.impl.ThrowableCallStack.Snapshot throwable message.</action> 
     <!-- ADD -->
     <!-- UPDATE -->
     <action type="update" dev="ggregory">Bump org.apache.commons:commons-parent from 62 to 73.</action>
