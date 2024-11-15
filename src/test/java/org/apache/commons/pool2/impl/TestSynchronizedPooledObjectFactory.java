@@ -29,7 +29,7 @@ import org.apache.commons.pool2.PooledObjectFactory;
  * A fully synchronized PooledObjectFactory that wraps a PooledObjectFactory and
  * synchronizes access to the wrapped factory methods.
  * <p>
- * <b>Note:</b> This should not be used on pool implementations that already
+ * <strong>Note:</strong> This should not be used on pool implementations that already
  * provide proper synchronization such as the pools provided in the Commons Pool
  * library.
  * </p>
