@@ -1941,8 +1941,8 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
             assertFalse(thread1.isAlive());
             assertFalse(thread2.isAlive());
 
-            assertTrue(thread1.thrown instanceof UnsupportedCharsetException);
-            assertTrue(thread2.thrown instanceof UnsupportedCharsetException);
+            assertTrue(thread1.thrown instanceof UnsupportedCharsetException, () -> Objects.toString(thread1.thrown));
+            assertTrue(thread2.thrown instanceof UnsupportedCharsetException, () -> Objects.toString(thread2.thrown));
         }
     }
 

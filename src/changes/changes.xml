@@ -68,6 +68,7 @@ The <action> type attribute can be add,update,fix,remove.
     <!-- FIX -->
     <action type="fix" dev="ggregory" due-to="Gary Gregory">Use java.time.Instant precision in org.apache.commons.pool2.impl.ThrowableCallStack.Snapshot throwable message.</action> 
     <action type="fix" dev="ggregory" due-to="Gary Gregory">GenericObjectPool.borrowObject(Duration) doesn't obey its borrowMaxWait Duration argument when the argument is different from GenericObjectPool.getMaxWaitDuration().</action>
+    <action type="fix" issue="POOL-418" dev="ggregory" due-to="Gary Gregory">The maximum wait time for GenericObjectPool.borrowObject(*) may exceed expectations due to a spurious thread wakeup.</action>
     <!-- ADD -->
     <!-- UPDATE -->
     <action type="update" dev="ggregory">Bump org.apache.commons:commons-parent from 62 to 73.</action>
