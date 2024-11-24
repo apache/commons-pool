@@ -561,7 +561,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
                 }
             }
 
-            // Do not block more if maxWaitTimeMillis is set.
+            // Do not block more if localMaxWaitDuration is set.
             if (create == null && localMaxWaitDuration.compareTo(Duration.ZERO) > 0 &&
                     Duration.between(localStartInstant, Instant.now()).compareTo(localMaxWaitDuration) >= 0) {
                 create = Boolean.FALSE;
