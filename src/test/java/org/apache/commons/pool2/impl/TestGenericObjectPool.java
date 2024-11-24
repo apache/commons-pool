@@ -47,7 +47,6 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
@@ -2637,25 +2636,38 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
     @Test/* maxWaitMillis x2 + padding */
     @Timeout(value = 1200, unit = TimeUnit.MILLISECONDS)
-    public void testReturnBorrowObjectWithingMaxWaitMillis() throws Exception {
-        final long maxWaitMillis = 500;
-
-        try (final GenericObjectPool<String> createSlowObjectFactoryPool = new GenericObjectPool<>(
-                createSlowObjectFactory(60000))) {
+    public void testReturnBorrowObjectWithingMaxWaitDuration() throws Exception {
+        final Duration maxWaitDuration = Duration.ofMillis(500);
+        try (final GenericObjectPool<String> createSlowObjectFactoryPool = new GenericObjectPool<>(createSlowObjectFactory(60_000))) {
             createSlowObjectFactoryPool.setMaxTotal(1);
-            createSlowObjectFactoryPool.setMaxWaitMillis(maxWaitMillis);
-
+            createSlowObjectFactoryPool.setMaxWait(maxWaitDuration);
             // thread1 tries creating a slow object to make pool full.
             final WaitingTestThread thread1 = new WaitingTestThread(createSlowObjectFactoryPool, 0);
             thread1.start();
-
             // Wait for thread1's reaching to create().
             Thread.sleep(100);
+            // another one tries borrowObject. It should return within maxWaitMillis.
+            assertThrows(NoSuchElementException.class, () -> createSlowObjectFactoryPool.borrowObject(maxWaitDuration),
+                    "borrowObject must fail due to timeout by maxWaitMillis");
+            assertTrue(thread1.isAlive());
+        }
+    }
 
+    @Test/* maxWaitMillis x2 + padding */
+    @Timeout(value = 1200, unit = TimeUnit.MILLISECONDS)
+    public void testReturnBorrowObjectWithingMaxWaitMillis() throws Exception {
+        final long maxWaitMillis = 500;
+        try (final GenericObjectPool<String> createSlowObjectFactoryPool = new GenericObjectPool<>(createSlowObjectFactory(60_000))) {
+            createSlowObjectFactoryPool.setMaxTotal(1);
+            createSlowObjectFactoryPool.setMaxWaitMillis(maxWaitMillis);
+            // thread1 tries creating a slow object to make pool full.
+            final WaitingTestThread thread1 = new WaitingTestThread(createSlowObjectFactoryPool, 0);
+            thread1.start();
+            // Wait for thread1's reaching to create().
+            Thread.sleep(100);
             // another one tries borrowObject. It should return within maxWaitMillis.
             assertThrows(NoSuchElementException.class, () -> createSlowObjectFactoryPool.borrowObject(maxWaitMillis),
                     "borrowObject must fail due to timeout by maxWaitMillis");
-
             assertTrue(thread1.isAlive());
         }
     }
