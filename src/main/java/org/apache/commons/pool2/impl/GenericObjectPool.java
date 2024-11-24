@@ -87,7 +87,9 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         "org.apache.commons.pool2:type=GenericObjectPool,name=";
 
     private static void wait(final Object obj, final Duration duration) throws InterruptedException {
-        obj.wait(duration.toMillis(), duration.getNano() % 1_000_000);
+        if (!duration.isNegative()) {
+            obj.wait(duration.toMillis(), duration.getNano() % 1_000_000);
+        }
     }
 
     private volatile String factoryType;
@@ -506,15 +508,14 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * @throws Exception if the object factory's {@code makeObject} fails
      */
     private PooledObject<T> create(final Duration maxWaitDuration) throws Exception {
+        final Instant startInstant = Instant.now();
+        Duration remainingWaitDuration = maxWaitDuration.isNegative() ? Duration.ZERO : maxWaitDuration;
         int localMaxTotal = getMaxTotal();
         // This simplifies the code later in this method
         if (localMaxTotal < 0) {
             localMaxTotal = Integer.MAX_VALUE;
         }
-
         final Instant localStartInstant = Instant.now();
-        final Duration localMaxWaitDuration = maxWaitDuration.isNegative() ? Duration.ZERO : maxWaitDuration;
-
         // Flag that indicates if create should:
         // - TRUE:  call the factory to create an object
         // - FALSE: return null
@@ -522,6 +523,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         //          call the factory
         Boolean create = null;
         while (create == null) {
+            // remainingWaitDuration handles spurious wakeup from wait().
+            remainingWaitDuration = remainingWaitDuration.minus(durationSince(startInstant));
             synchronized (makeObjectCountLock) {
                 final long newCreateCount = createCount.incrementAndGet();
                 if (newCreateCount > localMaxTotal) {
@@ -538,7 +541,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                         // bring the pool to capacity. Those calls might also
                         // fail so wait until they complete and then re-test if
                         // the pool is at capacity or not.
-                        wait(makeObjectCountLock, localMaxWaitDuration);
+                        wait(makeObjectCountLock, remainingWaitDuration);
                     }
                 } else {
                     // The pool is not at capacity. Create a new object.
@@ -546,10 +549,9 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                     create = Boolean.TRUE;
                 }
             }
-
-            // Do not block more if localMaxWaitDuration > 0.
-            if (create == null && localMaxWaitDuration.compareTo(Duration.ZERO) > 0 &&
-                    durationSince(localStartInstant).compareTo(localMaxWaitDuration) >= 0) {
+            // Do not block more if remainingWaitDuration > 0.
+            if (create == null && remainingWaitDuration.compareTo(Duration.ZERO) > 0 &&
+                    durationSince(localStartInstant).compareTo(remainingWaitDuration) >= 0) {
                 create = Boolean.FALSE;
             }
         }
