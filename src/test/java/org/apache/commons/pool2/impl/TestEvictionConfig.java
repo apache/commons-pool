@@ -17,6 +17,7 @@
 package org.apache.commons.pool2.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.time.Duration;
 
@@ -30,7 +31,6 @@ public class TestEvictionConfig {
     @Test
     public void testConstructor1s() {
         final EvictionConfig config = new EvictionConfig(Duration.ofMillis(1), Duration.ofMillis(1), 1);
-
         assertEquals(1, config.getIdleEvictDuration().toMillis());
         assertEquals(1, config.getIdleEvictTime());
         assertEquals(1, config.getIdleEvictTimeDuration().toMillis());
@@ -38,12 +38,13 @@ public class TestEvictionConfig {
         assertEquals(1, config.getIdleSoftEvictTime());
         assertEquals(1, config.getIdleSoftEvictTimeDuration().toMillis());
         assertEquals(1, config.getMinIdle());
+        // toString() should never throw
+        assertFalse(config.toString().isEmpty());
     }
 
     @Test
     public void testConstructorZerosDurations() {
         final EvictionConfig config = new EvictionConfig(Duration.ZERO, Duration.ZERO, 0);
-
         assertEquals(Long.MAX_VALUE, config.getIdleEvictDuration().toMillis());
         assertEquals(Long.MAX_VALUE, config.getIdleEvictTime());
         assertEquals(Long.MAX_VALUE, config.getIdleEvictTimeDuration().toMillis());
@@ -51,13 +52,14 @@ public class TestEvictionConfig {
         assertEquals(Long.MAX_VALUE, config.getIdleSoftEvictTime());
         assertEquals(Long.MAX_VALUE, config.getIdleSoftEvictTimeDuration().toMillis());
         assertEquals(0, config.getMinIdle());
+        // toString() should never throw
+        assertFalse(config.toString().isEmpty());
     }
 
     @Test
     public void testConstructorZerosMillis() {
         @SuppressWarnings("deprecation")
         final EvictionConfig config = new EvictionConfig(0, 0, 0);
-
         assertEquals(Long.MAX_VALUE, config.getIdleEvictDuration().toMillis());
         assertEquals(Long.MAX_VALUE, config.getIdleEvictTime());
         assertEquals(Long.MAX_VALUE, config.getIdleEvictTimeDuration().toMillis());
@@ -65,6 +67,8 @@ public class TestEvictionConfig {
         assertEquals(Long.MAX_VALUE, config.getIdleSoftEvictTime());
         assertEquals(Long.MAX_VALUE, config.getIdleSoftEvictTimeDuration().toMillis());
         assertEquals(0, config.getMinIdle());
+        // toString() should never throw
+        assertFalse(config.toString().isEmpty());
     }
 
 }
