@@ -93,6 +93,12 @@ public class TestGenericObjectPoolConfig {
     }
 
     @Test
+    void testSetSoftMinEvictableIdleTime() {
+        config.setSoftMinEvictableIdleTime(Duration.ofSeconds(10));
+        assertEquals(Duration.ofSeconds(10), config.getSoftMinEvictableIdleTime());
+    }
+
+    @Test
     void testSetSoftMinEvictableIdleTimeMillis() {
         config.setSoftMinEvictableIdleTimeMillis(10_0000);
         assertEquals(10_0000, config.getSoftMinEvictableIdleTimeMillis());
