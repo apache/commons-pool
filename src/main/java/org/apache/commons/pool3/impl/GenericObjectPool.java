@@ -220,7 +220,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
         if (factory == null) {
             throw new IllegalStateException("Cannot add objects without a factory.");
         }
-        addIdleObject(create());
+        addIdleObject(create(getMaxWaitDuration()));
     }
 
     /**
@@ -274,7 +274,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
      * available instances in request arrival order.
      * </p>
      *
-     * @param borrowMaxWaitDuration The time to wait for an object
+     * @param maxWaitDuration The time to wait for an object
      *                            to become available
      *
      * @return object instance from the pool
@@ -282,29 +282,26 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
      * @throws E if an object instance cannot be returned due to an error
      * @since 2.10.0
      */
-    public T borrowObject(final Duration borrowMaxWaitDuration) throws E {
+    public T borrowObject(final Duration maxWaitDuration) throws E {
         assertOpen();
-
+        final Instant startInstant = Instant.now();
+        final boolean negativeDuration = maxWaitDuration.isNegative();
+        Duration remainingWaitDuration = maxWaitDuration;
         final AbandonedConfig ac = this.abandonedConfig;
-        if (ac != null && ac.getRemoveAbandonedOnBorrow() && getNumIdle() < 2 &&
-                getNumActive() > getMaxTotal() - 3) {
+        if (ac != null && ac.getRemoveAbandonedOnBorrow() && getNumIdle() < 2 && getNumActive() > getMaxTotal() - 3) {
             removeAbandoned(ac);
         }
-
         PooledObject<T> p = null;
-
         // Get local copy of current config so it is consistent for entire
         // method execution
         final boolean blockWhenExhausted = getBlockWhenExhausted();
-
         boolean create;
-        final Instant waitTime = Instant.now();
-
         while (p == null) {
+            remainingWaitDuration = remainingWaitDuration.minus(durationSince(startInstant));
             create = false;
             p = idleObjects.pollFirst();
             if (p == null) {
-                p = create();
+                p = create(remainingWaitDuration);
                 if (!PooledObject.isNull(p)) {
                     create = true;
                 }
@@ -312,7 +309,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
             if (blockWhenExhausted) {
                 if (PooledObject.isNull(p)) {
                     try {
-                        p = borrowMaxWaitDuration.isNegative() ? idleObjects.takeFirst() : idleObjects.pollFirst(borrowMaxWaitDuration);
+                        p = negativeDuration ? idleObjects.takeFirst() : idleObjects.pollFirst(maxWaitDuration);
                     } catch (final InterruptedException e) {
                         // Don't surface exception type of internal locking mechanism.
                         throw cast(e);
@@ -320,7 +317,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
                 }
                 if (PooledObject.isNull(p)) {
                     throw new NoSuchElementException(appendStats(
-                            "Timeout waiting for idle object, borrowMaxWaitDuration=" + borrowMaxWaitDuration));
+                            "Timeout waiting for idle object, borrowMaxWaitDuration=" + remainingWaitDuration));
                 }
             } else if (PooledObject.isNull(p)) {
                 throw new NoSuchElementException(appendStats("Pool exhausted"));
@@ -328,7 +325,6 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
             if (!p.allocate()) {
                 p = null;
             }
-
             if (!PooledObject.isNull(p)) {
                 try {
                     factory.activateObject(p);
@@ -373,9 +369,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
                 }
             }
         }
-
-        updateStatsBorrow(p, Duration.between(waitTime, Instant.now()));
-
+        updateStatsBorrow(p, durationSince(startInstant));
         return p.getObject();
     }
 
@@ -510,10 +504,11 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
      * If the factory makeObject returns null, this method throws a NullPointerException.
      * </p>
      *
+     * @param maxWaitDuration The time to wait for an object to become available.
      * @return The new wrapped pooled object or null.
      * @throws E if the object factory's {@code makeObject} fails
      */
-    private PooledObject<T> create() throws E {
+    private PooledObject<T> create(final Duration maxWaitDuration) throws E {
         int localMaxTotal = getMaxTotal();
         // This simplifies the code later in this method
         if (localMaxTotal < 0) {
@@ -521,8 +516,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
         }
 
         final Instant localStartInstant = Instant.now();
-        final Duration maxWaitDurationRaw = getMaxWaitDuration();
-        final Duration localMaxWaitDuration = maxWaitDurationRaw.isNegative() ? Duration.ZERO : maxWaitDurationRaw;
+        final Duration localMaxWaitDuration = maxWaitDuration.isNegative() ? Duration.ZERO : maxWaitDuration;
 
         // Flag that indicates if create should:
         // - TRUE:  call the factory to create an object
@@ -561,9 +555,9 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
                 }
             }
 
-            // Do not block more if localMaxWaitDuration is set.
+            // Do not block more if localMaxWaitDuration > 0.
             if (create == null && localMaxWaitDuration.compareTo(Duration.ZERO) > 0 &&
-                    Duration.between(localStartInstant, Instant.now()).compareTo(localMaxWaitDuration) >= 0) {
+                    durationSince(localStartInstant).compareTo(localMaxWaitDuration) >= 0) {
                 create = Boolean.FALSE;
             }
         }
@@ -600,8 +594,12 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
         }
 
         createdCount.incrementAndGet();
-        allObjects.put(IdentityWrapper.on(p), p);
+        allObjects.put(new IdentityWrapper<>(p.getObject()), p);
         return p;
+    }
+
+    private Duration durationSince(final Instant startInstant) {
+        return Duration.between(startInstant, Instant.now());
     }
 
     /**
@@ -648,7 +646,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
         }
 
         while (idleObjects.size() < idleCount) {
-            final PooledObject<T> p = create();
+            final PooledObject<T> p = create(getMaxWaitDuration());
             if (PooledObject.isNull(p)) {
                 // Can't create objects, no reason to think another call to
                 // create will work. Give up.
