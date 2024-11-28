@@ -74,9 +74,7 @@ import org.apache.commons.pool2.UsageTracking;
  * </p>
  *
  * @see GenericKeyedObjectPool
- *
  * @param <T> Type of element pooled in this pool.
- *
  * @since 2.0
  */
 public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
@@ -187,7 +185,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * is null, this is a no-op (no exception, but no impact on the pool).
      *
      * @param p The object to make idle
-     *
      * @throws Exception If the factory fails to passivate the object
      */
     private void addIdleObject(final PooledObject<T> p) throws Exception {
@@ -276,7 +273,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      *
      * @param borrowMaxWaitDuration The time to wait for an object
      *                            to become available
-     *
      * @return object instance from the pool
      * @throws NoSuchElementException if an instance cannot be returned
      * @throws Exception if an object instance cannot be returned due to an error
@@ -414,11 +410,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      *
      * @param borrowMaxWaitMillis The time to wait in milliseconds for an object
      *                            to become available
-     *
      * @return object instance from the pool
-     *
      * @throws NoSuchElementException if an instance cannot be returned
-     *
      * @throws Exception if an object instance cannot be returned due to an
      *                   error
      */
@@ -597,7 +590,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      *
      * @param toDestroy The wrapped pooled object to destroy
      * @param destroyMode DestroyMode context provided to the factory
-     *
      * @throws Exception If the factory fails to destroy the pooled object
      *                   cleanly
      */
@@ -824,7 +816,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      *
      * @return the maximum number of "idle" instances that can be held in the
      *         pool or a negative value if there is no limit
-     *
      * @see #setMaxIdle
      */
     @Override
@@ -844,7 +835,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * </p>
      *
      * @return The minimum number of objects.
-     *
      * @see #setMinIdle(int)
      * @see #setMaxIdle(int)
      * @see #setDurationBetweenEvictionRuns(Duration)
@@ -1107,7 +1097,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * Sets the base pool configuration.
      *
      * @param conf the new configuration to use. This is used by value.
-     *
      * @see GenericObjectPoolConfig
      */
     public void setConfig(final GenericObjectPoolConfig<T> conf) {
@@ -1130,7 +1119,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      *            The cap on the number of "idle" instances in the pool. Use a
      *            negative value to indicate an unlimited number of idle
      *            instances
-     *
      * @see #getMaxIdle
      */
     public void setMaxIdle(final int maxIdle) {
@@ -1150,7 +1138,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      *
      * @param minIdle
      *            The minimum number of objects.
-     *
      * @see #getMinIdle()
      * @see #getMaxIdle()
      * @see #getDurationBetweenEvictionRuns()
