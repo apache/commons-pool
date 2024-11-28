@@ -83,11 +83,9 @@ import org.apache.commons.pool3.UsageTracking;
  * </p>
  *
  * @see GenericObjectPool
- *
  * @param <K> The type of keys maintained by this pool.
  * @param <T> Type of element pooled in this pool.
  * @param <E> Type of exception thrown in this pool.
- *
  * @since 2.0
  */
 public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGenericObjectPool<T, E>
@@ -298,7 +296,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      *
      * @param key The key to associate with the idle object
      * @param p The wrapped object to add.
-     *
      * @throws E If the associated factory fails to passivate the object
      */
     private void addIdleObject(final K key, final PooledObject<T> p) throws E {
@@ -328,7 +325,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * </p>
      *
      * @param key the key a new instance should be added to
-     *
      * @throws E when {@link KeyedPooledObjectFactory#makeObject}
      *                   fails.
      */
@@ -409,7 +405,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      *                            to become available
      *
      * @return object instance from the keyed pool
-     *
      * @throws NoSuchElementException if a keyed object instance cannot be
      *                                returned because the pool is exhausted.
      *
@@ -523,7 +518,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * on the maximum number of objects either per key or totally.
      *
      * @param objectDeque   The set of objects to check
-     *
      * @return The number of new objects to create
      */
     private int calculateDeficit(final ObjectDeque<T> objectDeque) {
@@ -720,9 +714,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * Creates a new pooled object or null.
      *
      * @param key Key associated with new pooled object.
-     *
      * @return The new, wrapped pooled object. May return null.
-     *
      * @throws E If the objection creation fails.
      */
     private PooledObject<T> create(final K key) throws E {
@@ -869,7 +861,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * @param always Should the object be destroyed even if it is not currently
      *               in the set of idle objects for the given key
      * @param destroyMode DestroyMode context provided to the factory
-     *
      * @return {@code true} if the object was destroyed, otherwise {@code false}
      * @throws E If the object destruction failed
      */
@@ -932,7 +923,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * </p>
      *
      * @param key The key to check for idle objects
-     *
      * @throws E If a new object is required and cannot be created
      */
     private void ensureMinIdle(final K key) throws E {
@@ -1155,7 +1145,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * is said to be exhausted. A negative value indicates no limit.
      *
      * @return the limit on the number of active instances per key
-     *
      * @see #setMaxTotalPerKey
      */
     @Override
@@ -1296,7 +1285,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      *
      * @param key pool key
      * @param obj instance to invalidate
-     *
      * @throws E             if an exception occurs destroying the
      *                               object
      * @throws IllegalStateException if obj does not belong to the pool
@@ -1317,7 +1305,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * @param key pool key
      * @param obj instance to invalidate
      * @param destroyMode DestroyMode context provided to factory
-     *
      * @throws E             if an exception occurs destroying the
      *                               object
      * @throws IllegalStateException if obj does not belong to the pool
@@ -1362,7 +1349,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * {@link #getMinIdlePerKey()} idle instances are created.
      *
      * @param key   The key to register for pool control.
-     *
      * @throws E If the associated factory throws an exception
      */
     public void preparePool(final K key) throws E {
@@ -1380,7 +1366,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * </p>
      *
      * @param k The key to register
-     *
      * @return The objects currently associated with the given key. If this
      *         method returns without throwing an exception then it will never
      *         return null.
@@ -1463,7 +1448,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      *
      * @param key pool key
      * @param obj instance to return to the keyed pool
-     *
      * @throws IllegalStateException if an object is returned to the pool that
      *                               was not borrowed from it or if an object is
      *                               returned to the pool multiple times
@@ -1609,7 +1593,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * Sets the configuration.
      *
      * @param conf the new configuration to use. This is used by value.
-     *
      * @see GenericKeyedObjectPoolConfig
      */
     public void setConfig(final GenericKeyedObjectPoolConfig<T> conf) {
@@ -1646,7 +1629,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * is said to be exhausted. A negative value indicates no limit.
      *
      * @param maxTotalPerKey the limit on the number of active instances per key
-     *
      * @see #getMaxTotalPerKey
      */
     public void setMaxTotalPerKey(final int maxTotalPerKey) {
@@ -1667,7 +1649,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * </p>
      *
      * @param minIdlePerKey The minimum size of the each keyed pool
-     *
      * @see #getMinIdlePerKey()
      * @see #getMaxIdlePerKey()
      * @see #setDurationBetweenEvictionRuns(Duration)

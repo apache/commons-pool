@@ -26,7 +26,6 @@ package org.apache.commons.pool3;
  *
  * @param <T> Type of element pooled in this pool.
  * @param <E> Type of exception thrown by this pool.
- *
  * @since 2.0
  */
 public abstract class BaseObjectPool<T, E extends Exception> extends BaseObject implements ObjectPool<T, E> {
@@ -50,7 +49,6 @@ public abstract class BaseObjectPool<T, E extends Exception> extends BaseObject 
      * closed.
      *
      * @throws IllegalStateException when this pool has been closed.
-     *
      * @see #isClosed()
      */
     protected final void assertOpen() throws IllegalStateException {

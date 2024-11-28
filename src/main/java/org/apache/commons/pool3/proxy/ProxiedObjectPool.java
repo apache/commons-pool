@@ -29,7 +29,6 @@ import org.apache.commons.pool3.UsageTracking;
  *
  * @param <T> type of the pooled object
  * @param <E> type of the exception
- *
  * @since 2.0
  */
 public class ProxiedObjectPool<T, E extends Exception> implements ObjectPool<T, E> {

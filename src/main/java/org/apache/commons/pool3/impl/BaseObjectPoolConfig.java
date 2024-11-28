@@ -94,7 +94,6 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      * The default value for the {@code testOnCreate} configuration attribute.
      * @see GenericObjectPool#getTestOnCreate()
      * @see GenericKeyedObjectPool#getTestOnCreate()
-     *
      * @since 2.2
      */
     public static final boolean DEFAULT_TEST_ON_CREATE = false;
@@ -424,7 +423,6 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      *
      * @see GenericObjectPool#getTestOnCreate()
      * @see GenericKeyedObjectPool#getTestOnCreate()
-     *
      * @since 2.2
      */
     public boolean getTestOnCreate() {
@@ -682,7 +680,6 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      *
      * @see GenericObjectPool#getTestOnCreate()
      * @see GenericKeyedObjectPool#getTestOnCreate()
-     *
      * @since 2.2
      */
     public void setTestOnCreate(final boolean testOnCreate) {

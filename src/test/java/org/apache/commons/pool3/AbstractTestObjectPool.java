@@ -61,9 +61,7 @@ public abstract class AbstractTestObjectPool {
      *
      * @param <E> The exception type throws by the pool
      * @param factory The factory to be used by the object pool
-     *
      * @return the newly created empty pool
-     *
      * @throws UnsupportedOperationException if the pool being tested does not
      *                                       follow pool contracts.
      */

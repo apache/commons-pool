@@ -29,7 +29,6 @@ import java.util.Map;
  * </p>
  *
  * @param <K> The type of keys maintained by the pool.
- *
  * @since 2.0
  */
 public interface GenericKeyedObjectPoolMXBean<K> {

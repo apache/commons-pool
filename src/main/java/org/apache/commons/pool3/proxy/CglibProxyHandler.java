@@ -29,7 +29,6 @@ import net.sf.cglib.proxy.MethodProxy;
  * CGLib implementation of the proxy handler.
  * </p>
  * @param <T> type of the wrapped pooled object
- *
  * @since 2.0
  */
 final class CglibProxyHandler<T> extends BaseProxyHandler<T>

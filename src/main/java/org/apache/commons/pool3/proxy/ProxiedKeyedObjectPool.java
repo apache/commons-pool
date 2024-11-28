@@ -31,7 +31,6 @@ import org.apache.commons.pool3.UsageTracking;
  * @param <K> type of the key
  * @param <V> type of the pooled object
  * @param <E> type of exception thrown by this pool
- *
  * @since 2.0
  */
 public class ProxiedKeyedObjectPool<K, V, E extends Exception> implements KeyedObjectPool<K, V, E> {

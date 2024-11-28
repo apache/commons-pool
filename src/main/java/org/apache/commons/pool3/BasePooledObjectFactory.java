@@ -27,10 +27,8 @@ import java.util.Objects;
  *
  * @param <T> Type of element managed in this factory.
  * @param <E> Type of exception thrown in this factory.
- *
  * @see PooledObjectFactory
  * @see BaseKeyedPooledObjectFactory
- *
  * @since 2.0
  */
 public abstract class BasePooledObjectFactory<T, E extends Exception> extends BaseObject implements PooledObjectFactory<T, E> {
@@ -51,7 +49,6 @@ public abstract class BasePooledObjectFactory<T, E extends Exception> extends Ba
      * invocation.</p>
      *
      * @return an instance to be served by the pool, not null.
-     *
      * @throws E if there is a problem creating a new instance,
      *    this will be propagated to the code requesting an object.
      */
@@ -86,7 +83,6 @@ public abstract class BasePooledObjectFactory<T, E extends Exception> extends Ba
      * Always returns {@code true}.
      *
      * @param p ignored
-     *
      * @return {@code true}
      */
     @Override
@@ -99,7 +95,6 @@ public abstract class BasePooledObjectFactory<T, E extends Exception> extends Ba
      * {@link PooledObject}.
      *
      * @param obj the instance to wrap, should not be null.
-     *
      * @return The provided instance, wrapped by a {@link PooledObject}
      */
     public abstract PooledObject<T> wrap(T obj);

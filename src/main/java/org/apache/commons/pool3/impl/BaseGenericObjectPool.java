@@ -604,7 +604,6 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      * will be run.
      *
      * @return duration to sleep between evictor runs
-     *
      * @see #setDurationBetweenEvictionRuns(Duration)
      * @since 2.11.0
      */
@@ -628,7 +627,6 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      * used by this pool.
      *
      * @return  The fully qualified class name of the {@link EvictionPolicy}
-     *
      * @see #setEvictionPolicyClassName(String)
      */
     public final String getEvictionPolicyClassName() {
@@ -889,7 +887,6 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      * tested per run.
      *
      * @return max number of objects to examine during each evictor run
-     *
      * @see #setNumTestsPerEvictionRun
      * @see #setDurationBetweenEvictionRuns(Duration)
      */
@@ -1060,7 +1057,6 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      *         being returned from the {@code borrowObject()} method
      *
      * @see #setTestOnCreate
-     *
      * @since 2.2
      */
     public final boolean getTestOnCreate() {
@@ -1092,7 +1088,6 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      * the pool and destroyed.
      *
      * @return {@code true} if objects will be validated by the evictor
-     *
      * @see #setTestWhileIdle
      * @see #setDurationBetweenEvictionRuns(Duration)
      */
@@ -1106,7 +1101,6 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      * will be run.
      *
      * @return number of milliseconds to sleep between evictor runs
-     *
      * @see #setDurationBetweenEvictionRuns(Duration)
      * @deprecated Use {@link #getDurationBetweenEvictionRuns()}.
      */
@@ -1227,7 +1221,6 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      * Sets the abandoned object removal configuration.
      *
      * @param abandonedConfig the new configuration to use. This is used by value.
-     *
      * @see AbandonedConfig
      * @since 2.11.0
      */
@@ -1562,7 +1555,6 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      *                      {@code borrowObject()} method
      *
      * @see #getTestOnCreate
-     *
      * @since 2.2
      */
     public final void setTestOnCreate(final boolean testOnCreate) {

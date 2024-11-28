@@ -173,7 +173,6 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
          * iterator.
          *
          * @param n given node
-         *
          * @return next node
          */
         abstract Node<E> nextNode(Node<E> n);
@@ -475,9 +474,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * Drains the queue to the specified collection.
      *
      * @param c The collection to add the elements to
-     *
      * @return number of elements added to the collection
-     *
      * @throws UnsupportedOperationException if the add operation is not
      *         supported by the specified collection
      * @throws ClassCastException if the class of the elements held by this
@@ -496,7 +493,6 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      *
      * @param collection collection to add the elements to
      * @param maxElements maximum number of elements to remove from the queue
-     *
      * @return number of elements added to the collection
      * @throws UnsupportedOperationException if the add operation is not
      *         supported by the specified collection
@@ -627,7 +623,6 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * Links provided element as first element, or returns false if full.
      *
      * @param e The element to link as the first element.
-     *
      * @return {@code true} if successful, otherwise {@code false}
      */
     private boolean linkFirst(final E e) {
@@ -652,7 +647,6 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * Links provided element as last element, or returns false if full.
      *
      * @param e The element to link as the last element.
-     *
      * @return {@code true} if successful, otherwise {@code false}
      */
     private boolean linkLast(final E e) {
@@ -689,9 +683,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      *
      * @param e         element to link
      * @param timeout   length of time to wait
-     *
      * @return {@code true} if successful, otherwise {@code false}
-     *
      * @throws NullPointerException if e is null
      * @throws InterruptedException if the thread is interrupted whilst waiting
      *         for space
@@ -709,9 +701,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * @param e         element to link
      * @param timeout   length of time to wait
      * @param unit      units that timeout is expressed in
-     *
      * @return {@code true} if successful, otherwise {@code false}
-     *
      * @throws NullPointerException if e is null
      * @throws InterruptedException if the thread is interrupted whilst waiting
      *         for space
@@ -740,9 +730,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      *
      * @param e         element to link
      * @param timeout   length of time to wait
-     *
      * @return {@code true} if successful, otherwise {@code false}
-     *
      * @throws NullPointerException if e is null
      * @throws InterruptedException if the thread is interrupted whilst waiting
      *         for space
@@ -771,9 +759,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * @param e         element to link
      * @param timeout   length of time to wait
      * @param unit      units that timeout is expressed in
-     *
      * @return {@code true} if successful, otherwise {@code false}
-     *
      * @throws NullPointerException if e is null
      * @throws InterruptedException if the thread is interrupted whilst waiting
      *         for space
@@ -802,9 +788,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      *
      * @param e         element to link
      * @param timeout   length of time to wait
-     *
      * @return {@code true} if successful, otherwise {@code false}
-     *
      * @throws NullPointerException if e is null
      * @throws InterruptedException if the thread is interrupted whist waiting
      *         for space
@@ -833,9 +817,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * @param e         element to link
      * @param timeout   length of time to wait
      * @param unit      units that timeout is expressed in
-     *
      * @return {@code true} if successful, otherwise {@code false}
-     *
      * @throws NullPointerException if e is null
      * @throws InterruptedException if the thread is interrupted whist waiting
      *         for space
@@ -883,7 +865,6 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * <p>This method is equivalent to {@link #pollFirst(long, TimeUnit)}.
      *
      * @param timeout   length of time to wait
-     *
      * @return the unlinked element
      * @throws InterruptedException if the current thread is interrupted
      */
@@ -899,7 +880,6 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      *
      * @param timeout   length of time to wait
      * @param unit      units that timeout is expressed in
-     *
      * @return the unlinked element
      * @throws InterruptedException if the current thread is interrupted
      */
@@ -922,7 +902,6 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * to do so if the queue is empty.
      *
      * @param timeout   length of time to wait
-     *
      * @return the unlinked element
      * @throws InterruptedException if the current thread is interrupted
      */
@@ -949,7 +928,6 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      *
      * @param timeout   length of time to wait
      * @param unit      units that timeout is expressed in
-     *
      * @return the unlinked element
      * @throws InterruptedException if the current thread is interrupted
      */
@@ -972,7 +950,6 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * to do so if the queue is empty.
      *
      * @param timeout   length of time to wait
-     *
      * @return the unlinked element
      * @throws InterruptedException if the current thread is interrupted
      */
@@ -1000,7 +977,6 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      *
      * @param timeout   length of time to wait
      * @param unit      units that timeout is expressed in
-     *
      * @return the unlinked element
      * @throws InterruptedException if the current thread is interrupted
      */
@@ -1034,7 +1010,6 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * </p>
      *
      * @param e element to link
-     *
      * @throws NullPointerException if e is null
      * @throws InterruptedException if the thread is interrupted whilst waiting
      *         for space
@@ -1048,7 +1023,6 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * is space to do so if the queue is full.
      *
      * @param e element to link
-     *
      * @throws NullPointerException if e is null
      * @throws InterruptedException if the thread is interrupted whilst waiting
      *         for space
@@ -1070,7 +1044,6 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * is space to do so if the queue is full.
      *
      * @param e element to link
-     *
      * @throws NullPointerException if e is null
      * @throws InterruptedException if the thread is interrupted whilst waiting
      *         for space

@@ -66,9 +66,7 @@ package org.apache.commons.pool3;
  *
  * @param <T> Type of element managed in this factory.
  * @param <E> Type of exception thrown in this factory.
- *
  * @see ObjectPool
- *
  * @since 2.0
  */
 public interface PooledObjectFactory<T, E extends Exception> {
@@ -77,7 +75,6 @@ public interface PooledObjectFactory<T, E extends Exception> {
    * Reinitializes an instance to be returned by the pool.
    *
    * @param p a {@code PooledObject} wrapping the instance to be activated
-   *
    * @throws E if there is a problem activating {@code obj},
    *    this exception may be swallowed by the pool.
    *
@@ -99,7 +96,6 @@ public interface PooledObjectFactory<T, E extends Exception> {
    * </p>
    *
    * @param p a {@code PooledObject} wrapping the instance to be destroyed
-   *
    * @throws E should be avoided as it may be swallowed by
    *    the pool implementation.
    *
@@ -114,7 +110,6 @@ public interface PooledObjectFactory<T, E extends Exception> {
    *
    * @param p a {@code PooledObject} wrapping the instance to be destroyed
    * @param destroyMode DestroyMode providing context to the factory
-   *
    * @throws E should be avoided as it may be swallowed by
    *    the pool implementation.
    *
@@ -133,7 +128,6 @@ public interface PooledObjectFactory<T, E extends Exception> {
    * {@link PooledObject} to be managed by the pool.
    *
    * @return a {@code PooledObject} wrapping an instance that can be served by the pool, not null.
-   *
    * @throws E if there is a problem creating a new instance,
    *    this will be propagated to the code requesting an object.
    */
@@ -143,7 +137,6 @@ public interface PooledObjectFactory<T, E extends Exception> {
    * Uninitializes an instance to be returned to the idle object pool.
    *
    * @param p a {@code PooledObject} wrapping the instance to be passivated
-   *
    * @throws E if there is a problem passivating {@code obj},
    *    this exception may be swallowed by the pool.
    *
@@ -155,7 +148,6 @@ public interface PooledObjectFactory<T, E extends Exception> {
    * Ensures that the instance is safe to be returned by the pool.
    *
    * @param p a {@code PooledObject} wrapping the instance to be validated
-   *
    * @return {@code false} if {@code obj} is not valid and should
    *         be dropped from the pool, {@code true} otherwise.
    */

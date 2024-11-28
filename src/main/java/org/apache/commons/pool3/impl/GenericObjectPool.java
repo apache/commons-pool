@@ -74,10 +74,8 @@ import org.apache.commons.pool3.UsageTracking;
  * </p>
  *
  * @see GenericKeyedObjectPool
- *
  * @param <T> Type of element pooled in this pool.
  * @param <E> Type of exception thrown in this pool.
- *
  * @since 2.0
  */
 public class GenericObjectPool<T, E extends Exception> extends BaseGenericObjectPool<T, E>
@@ -188,7 +186,6 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
      * is null, this is a no-op (no exception, but no impact on the pool).
      *
      * @param p The object to make idle
-     *
      * @throws E If the factory fails to passivate the object
      */
     private void addIdleObject(final PooledObject<T> p) throws E {
@@ -419,9 +416,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
      *                            to become available
      *
      * @return object instance from the pool
-     *
      * @throws NoSuchElementException if an instance cannot be returned
-     *
      * @throws E if an object instance cannot be returned due to an
      *                   error
      */
@@ -609,7 +604,6 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
      *
      * @param toDestroy The wrapped pooled object to destroy
      * @param destroyMode DestroyMode context provided to the factory
-     *
      * @throws E If the factory fails to destroy the pooled object
      *                   cleanly
      */
@@ -856,7 +850,6 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
      * </p>
      *
      * @return The minimum number of objects.
-     *
      * @see #setMinIdle(int)
      * @see #setMaxIdle(int)
      * @see #setDurationBetweenEvictionRuns(Duration)
@@ -1119,7 +1112,6 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
      * Sets the base pool configuration.
      *
      * @param conf the new configuration to use. This is used by value.
-     *
      * @see GenericObjectPoolConfig
      */
     public void setConfig(final GenericObjectPoolConfig<T> conf) {

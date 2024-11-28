@@ -192,7 +192,6 @@ public abstract class AbstractTestKeyedObjectPool {
      * for the given key.
      * @param key Key for the object to be obtained
      * @param n   index of the object to be obtained
-     *
      * @return the requested object
      */
     protected abstract Object getNthObject(Object key, int n);
@@ -208,7 +207,6 @@ public abstract class AbstractTestKeyedObjectPool {
      * throw {@link IllegalArgumentException}
      * if such a pool cannot be created.
      * @param minCapacity Minimum capacity of the pool to create
-     *
      * @return the newly created keyed object pool
      */
     protected abstract <E extends Exception> KeyedObjectPool<Object, Object, E> makeEmptyPool(int minCapacity);

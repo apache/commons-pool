@@ -51,11 +51,9 @@ import java.util.NoSuchElementException;
  *
  * @param <T> Type of element pooled in this pool.
  * @param <E> Type of exception thrown by this pool.
- *
  * @see PooledObjectFactory
  * @see KeyedObjectPool
  * @see BaseObjectPool
- *
  * @since 2.0
  */
 public interface ObjectPool<T, E extends Exception> extends Closeable {
@@ -111,7 +109,6 @@ public interface ObjectPool<T, E extends Exception> extends Closeable {
      * </p>
      *
      * @return an instance from this pool.
-     *
      * @throws IllegalStateException
      *              after {@link #close close} has been called on this pool.
      * @throws E
@@ -177,7 +174,6 @@ public interface ObjectPool<T, E extends Exception> extends Closeable {
      * </p>
      *
      * @param obj a {@link #borrowObject borrowed} instance to be disposed.
-     *
      * @throws E if the instance cannot be invalidated
      */
     void invalidateObject(T obj) throws E;
@@ -210,7 +206,6 @@ public interface ObjectPool<T, E extends Exception> extends Closeable {
      * a related method as defined in an implementation or sub-interface.
      *
      * @param obj a {@link #borrowObject borrowed} instance to be returned.
-     *
      * @throws IllegalStateException
      *              if an attempt is made to return an object to the pool that
      *              is in any state other than allocated (i.e. borrowed).
