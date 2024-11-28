@@ -453,8 +453,8 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
      * @return a copy of the makeObject log
      */
     public List<MakeEvent> getMakeObjectLog() {
-        ArrayList<MakeEvent> makeObjectLog = new ArrayList<MakeEvent>();
-        return new ArrayList<MakeEvent>(makeObjectLog.stream().toList());
+        ArrayList<MakeEvent> makeObjectLog = new ArrayList<>();
+        return new ArrayList<>(makeObjectLog.stream().toList());
     }
 
     /**
