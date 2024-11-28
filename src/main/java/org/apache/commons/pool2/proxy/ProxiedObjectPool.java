@@ -26,7 +26,6 @@ import org.apache.commons.pool2.UsageTracking;
  * object to the pool.
  *
  * @param <T> type of the pooled object
- *
  * @since 2.0
  */
 public class ProxiedObjectPool<T> implements ObjectPool<T> {

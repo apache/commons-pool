@@ -25,7 +25,6 @@ import org.apache.commons.pool2.UsageTracking;
  * Provides proxy objects using Java reflection.
  *
  * @param <T> type of the pooled object to be proxied
- *
  * @since 2.0
  */
 public class JdkProxySource<T> implements ProxySource<T> {

@@ -28,7 +28,6 @@ import net.sf.cglib.proxy.Factory;
  * </p>
  *
  * @param <T> type of the pooled object to be proxied
- *
  * @since 2.0
  */
 public class CglibProxySource<T> implements ProxySource<T> {

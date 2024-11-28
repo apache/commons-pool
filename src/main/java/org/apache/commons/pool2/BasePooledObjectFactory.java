@@ -26,10 +26,8 @@ import java.util.Objects;
  * This class is immutable, and therefore thread-safe
  *
  * @param <T> Type of element managed in this factory.
- *
  * @see PooledObjectFactory
  * @see BaseKeyedPooledObjectFactory
- *
  * @since 2.0
  */
 public abstract class BasePooledObjectFactory<T> extends BaseObject implements PooledObjectFactory<T> {
@@ -50,7 +48,6 @@ public abstract class BasePooledObjectFactory<T> extends BaseObject implements P
      * invocation.</p>
      *
      * @return an instance to be served by the pool, not null.
-     *
      * @throws Exception if there is a problem creating a new instance,
      *    this will be propagated to the code requesting an object.
      */
@@ -85,7 +82,6 @@ public abstract class BasePooledObjectFactory<T> extends BaseObject implements P
      * Always returns {@code true}.
      *
      * @param p ignored
-     *
      * @return {@code true}
      */
     @Override
@@ -98,7 +94,6 @@ public abstract class BasePooledObjectFactory<T> extends BaseObject implements P
      * {@link PooledObject}.
      *
      * @param obj the instance to wrap, should not be null.
-     *
      * @return The provided instance, wrapped by a {@link PooledObject}
      */
     public abstract PooledObject<T> wrap(T obj);

@@ -29,7 +29,6 @@ import org.apache.commons.pool2.UsageTracking;
  *
  * @param <K> type of the key
  * @param <V> type of the pooled object
- *
  * @since 2.0
  */
 public class ProxiedKeyedObjectPool<K, V> implements KeyedObjectPool<K, V> {

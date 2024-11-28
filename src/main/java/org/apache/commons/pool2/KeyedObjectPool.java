@@ -66,7 +66,6 @@ import java.util.NoSuchElementException;
  * @see KeyedPooledObjectFactory
  * @see ObjectPool
  * @see org.apache.commons.pool2.impl.GenericKeyedObjectPool GenericKeyedObjectPool
- *
  * @since 2.0
  */
 public interface KeyedObjectPool<K, V> extends Closeable {
@@ -78,7 +77,6 @@ public interface KeyedObjectPool<K, V> extends Closeable {
      * "pre-loading" a pool with idle objects (Optional operation).
      *
      * @param key the key a new instance should be added to
-     *
      * @throws Exception
      *              when {@link KeyedPooledObjectFactory#makeObject} fails.
      * @throws IllegalStateException
@@ -161,7 +159,6 @@ public interface KeyedObjectPool<K, V> extends Closeable {
      * </p>
      *
      * @param key the key used to obtain the object
-     *
      * @return an instance from this pool.
      *
      * @throws IllegalStateException
@@ -190,7 +187,6 @@ public interface KeyedObjectPool<K, V> extends Closeable {
      * the given {@code key} (optional operation).
      *
      * @param key the key to clear
-     *
      * @throws UnsupportedOperationException when this implementation doesn't
      *                                       support the operation
      *
@@ -280,7 +276,6 @@ public interface KeyedObjectPool<K, V> extends Closeable {
      *
      * @param key the key used to obtain the object
      * @param obj a {@link #borrowObject borrowed} instance to be returned.
-     *
      * @throws Exception if the instance cannot be invalidated
      */
     void invalidateObject(K key, V obj) throws Exception;
@@ -303,7 +298,6 @@ public interface KeyedObjectPool<K, V> extends Closeable {
      * @param key the key used to obtain the object
      * @param obj a {@link #borrowObject borrowed} instance to be returned.
      * @param destroyMode destroy activation context provided to the factory
-     *
      * @throws Exception if the instance cannot be invalidated
      * @since 2.9.0
      */
@@ -320,7 +314,6 @@ public interface KeyedObjectPool<K, V> extends Closeable {
      *
      * @param key the key used to obtain the object
      * @param obj a {@link #borrowObject borrowed} instance to be returned.
-     *
      * @throws IllegalStateException
      *              if an attempt is made to return an object to the pool that
      *              is in any state other than allocated (i.e. borrowed).

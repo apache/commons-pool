@@ -159,7 +159,6 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      *
      * @see GenericObjectPool#getTestOnCreate()
      * @see GenericKeyedObjectPool#getTestOnCreate()
-     *
      * @since 2.2
      */
     public static final boolean DEFAULT_TEST_ON_CREATE = false;
@@ -420,7 +419,6 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      * Gets the value for the {@code lifo} configuration attribute for pools created with this configuration instance.
      *
      * @return The current setting of {@code lifo} for this configuration instance
-     *
      * @see GenericObjectPool#getLifo()
      * @see GenericKeyedObjectPool#getLifo()
      */

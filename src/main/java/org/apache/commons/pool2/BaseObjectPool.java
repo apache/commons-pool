@@ -25,7 +25,6 @@ package org.apache.commons.pool2;
  * </p>
  *
  * @param <T> Type of element pooled in this pool.
- *
  * @since 2.0
  */
 public abstract class BaseObjectPool<T> extends BaseObject implements ObjectPool<T> {
@@ -49,7 +48,6 @@ public abstract class BaseObjectPool<T> extends BaseObject implements ObjectPool
      * closed.
      *
      * @throws IllegalStateException when this pool has been closed.
-     *
      * @see #isClosed()
      */
     protected final void assertOpen() throws IllegalStateException {

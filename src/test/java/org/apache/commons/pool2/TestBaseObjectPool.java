@@ -47,7 +47,6 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
 
     /**
      * @param n Ignored by this implemented. Used by sub-classes.
-     *
      * @return the Nth object (zero indexed)
      */
     protected Object getNthObject(final int n) {
@@ -73,7 +72,6 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
 
     /**
      * @param minCapacity Ignored by this implemented. Used by sub-classes.
-     *
      * @return A newly created empty pool
      */
     protected <E extends Exception> ObjectPool<String> makeEmptyPool(final int minCapacity) {
