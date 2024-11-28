@@ -673,7 +673,7 @@ public final class PoolUtils {
      * A synchronized (thread-safe) KeyedObjectPool backed by the specified
      * KeyedObjectPool.
      * <p>
-     * <b>Note:</b> This should not be used on pool implementations that already
+     * <strong>Note:</strong> This should not be used on pool implementations that already
      * provide proper synchronization such as the pools provided in the Commons
      * Pool library. Wrapping a pool that {@link #wait() waits} for poolable
      * objects to be returned before allowing another one to be borrowed with
@@ -905,7 +905,7 @@ public final class PoolUtils {
      * KeyedPooledObjectFactory and synchronizes access to the wrapped factory
      * methods.
      * <p>
-     * <b>Note:</b> This should not be used on pool implementations that already
+     * <strong>Note:</strong> This should not be used on pool implementations that already
      * provide proper synchronization such as the pools provided in the Commons
      * Pool library.
      * </p>
@@ -1021,7 +1021,7 @@ public final class PoolUtils {
      * A synchronized (thread-safe) ObjectPool backed by the specified
      * ObjectPool.
      * <p>
-     * <b>Note:</b> This should not be used on pool implementations that already
+     * <strong>Note:</strong> This should not be used on pool implementations that already
      * provide proper synchronization such as the pools provided in the Commons
      * Pool library. Wrapping a pool that {@link #wait() waits} for poolable
      * objects to be returned before allowing another one to be borrowed with
@@ -1196,7 +1196,7 @@ public final class PoolUtils {
      * PooledObjectFactory and synchronizes access to the wrapped factory
      * methods.
      * <p>
-     * <b>Note:</b> This should not be used on pool implementations that already
+     * <strong>Note:</strong> This should not be used on pool implementations that already
      * provide proper synchronization such as the pools provided in the Commons
      * Pool library.
      * </p>
@@ -1676,7 +1676,7 @@ public final class PoolUtils {
      * Returns a synchronized (thread-safe) KeyedObjectPool backed by the
      * specified KeyedObjectPool.
      * <p>
-     * <b>Note:</b> This should not be used on pool implementations that already
+     * <strong>Note:</strong> This should not be used on pool implementations that already
      * provide proper synchronization such as the pools provided in the Commons
      * Pool library. Wrapping a pool that {@link #wait() waits} for poolable
      * objects to be returned before allowing another one to be borrowed with
@@ -1709,7 +1709,7 @@ public final class PoolUtils {
      * Returns a synchronized (thread-safe) ObjectPool backed by the specified
      * ObjectPool.
      * <p>
-     * <b>Note:</b> This should not be used on pool implementations that already
+     * <strong>Note:</strong> This should not be used on pool implementations that already
      * provide proper synchronization such as the pools provided in the Commons
      * Pool library. Wrapping a pool that {@link #wait() waits} for poolable
      * objects to be returned before allowing another one to be borrowed with

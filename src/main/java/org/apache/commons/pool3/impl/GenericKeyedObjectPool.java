@@ -209,7 +209,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
     private final boolean fairness;
 
     /*
-     * My hash of sub-pools (ObjectQueue). The list of keys <b>must</b> be kept
+     * My hash of sub-pools (ObjectQueue). The list of keys <strong>must</strong> be kept
      * in step with {@link #poolKeyList} using {@link #keyLock} to ensure any
      * changes to the list of current keys is made in a thread-safe manner.
      */
@@ -218,7 +218,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
 
     /*
      * List of pool keys - used to control eviction order. The list of keys
-     * <b>must</b> be kept in step with {@link #poolMap} using {@link #keyLock}
+     * <strong>must</strong> be kept in step with {@link #poolMap} using {@link #keyLock}
      * to ensure any changes to the list of current keys is made in a
      * thread-safe manner.
      */
