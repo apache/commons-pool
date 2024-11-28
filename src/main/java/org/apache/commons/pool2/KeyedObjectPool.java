@@ -160,7 +160,6 @@ public interface KeyedObjectPool<K, V> extends Closeable {
      *
      * @param key the key used to obtain the object
      * @return an instance from this pool.
-     *
      * @throws IllegalStateException
      *              after {@link #close close} has been called on this pool
      * @throws Exception

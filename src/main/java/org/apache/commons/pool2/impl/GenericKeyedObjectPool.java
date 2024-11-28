@@ -710,7 +710,6 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      *
      * @param key Key associated with new pooled object.
      * @return The new, wrapped pooled object. May return null.
-     *
      * @throws Exception If the objection creation fails.
      */
     private PooledObject<T> create(final K key) throws Exception {

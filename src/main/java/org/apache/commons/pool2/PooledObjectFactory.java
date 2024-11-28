@@ -66,7 +66,6 @@ package org.apache.commons.pool2;
  *
  * @param <T> Type of element managed in this factory.
  * @see ObjectPool
- *
  * @since 2.0
  */
 public interface PooledObjectFactory<T> {
