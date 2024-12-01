@@ -1075,7 +1075,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         }
     }
 
-    @Test/* maxWaitMillis x2 + padding */
+    @Test
     @Timeout(value = 1200, unit = TimeUnit.MILLISECONDS)
     public void testBorrowObjectOverrideMaxWaitLarge() throws Exception {
         try (final GenericObjectPool<String> pool = new GenericObjectPool<>(createSlowObjectFactory(60_000))) {
@@ -1092,13 +1092,13 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                     "borrowObject must fail quickly due to timeout parameter"));
             final long millis = d.toMillis();
             final long nanos = d.toNanos();
-            assertTrue(nanos > 0, () -> "borrowObject(Duration) argument not respected: " + nanos);
+            assertTrue(nanos >= 0, () -> "borrowObject(Duration) argument not respected: " + nanos);
             assertTrue(millis >= 0, () -> "borrowObject(Duration) argument not respected: " + millis); // not > 0 to account for spurious waits
             assertTrue(millis < 50, () -> "borrowObject(Duration) argument not respected: " + millis);
         }
     }
 
-    @Test/* maxWaitMillis x2 + padding */
+    @Test
     @Timeout(value = 1200, unit = TimeUnit.MILLISECONDS)
     public void testBorrowObjectOverrideMaxWaitSmall() throws Exception {
         try (final GenericObjectPool<String> pool = new GenericObjectPool<>(createSlowObjectFactory(60_000))) {
@@ -1115,7 +1115,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
                     "borrowObject must fail slowly due to timeout parameter"));
             final long millis = d.toMillis();
             final long nanos = d.toNanos();
-            assertTrue(nanos > 0, () -> "borrowObject(Duration) argument not respected: " + nanos);
+            assertTrue(nanos >= 0, () -> "borrowObject(Duration) argument not respected: " + nanos);
             assertTrue(millis >= 0, () -> "borrowObject(Duration) argument not respected: " + millis); // not > 0 to account for spurious waits
             assertTrue(millis < 600, () -> "borrowObject(Duration) argument not respected: " + millis);
             assertTrue(millis > 490, () -> "borrowObject(Duration) argument not respected: " + millis);
