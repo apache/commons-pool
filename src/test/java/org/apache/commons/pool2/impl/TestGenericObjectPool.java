@@ -50,6 +50,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
+import org.apache.commons.lang3.ThreadUtils;
 import org.apache.commons.lang3.time.DurationUtils;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.ObjectPool;
@@ -856,11 +857,11 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         };
     }
 
-    private BasePooledObjectFactory<String> createSlowObjectFactory(final long elapsedTimeMillis) {
+    private BasePooledObjectFactory<String> createSlowObjectFactory(final Duration sleepDuration) {
         return new BasePooledObjectFactory<String>() {
             @Override
             public String create() throws InterruptedException {
-                Thread.sleep(elapsedTimeMillis);
+                ThreadUtils.sleep(sleepDuration);
                 return "created";
             }
 
@@ -1078,7 +1079,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Test
     @Timeout(value = 1200, unit = TimeUnit.MILLISECONDS)
     public void testBorrowObjectOverrideMaxWaitLarge() throws Exception {
-        try (final GenericObjectPool<String> pool = new GenericObjectPool<>(createSlowObjectFactory(60_000))) {
+        try (final GenericObjectPool<String> pool = new GenericObjectPool<>(createSlowObjectFactory(Duration.ofSeconds(60)))) {
             pool.setMaxTotal(1);
             pool.setMaxWait(Duration.ofMillis(1_000)); // large
             pool.setBlockWhenExhausted(false);
@@ -1101,7 +1102,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Test
     @Timeout(value = 1200, unit = TimeUnit.MILLISECONDS)
     public void testBorrowObjectOverrideMaxWaitSmall() throws Exception {
-        try (final GenericObjectPool<String> pool = new GenericObjectPool<>(createSlowObjectFactory(60_000))) {
+        try (final GenericObjectPool<String> pool = new GenericObjectPool<>(createSlowObjectFactory(Duration.ofSeconds(60)))) {
             pool.setMaxTotal(1);
             pool.setMaxWait(Duration.ofMillis(1)); // small
             pool.setBlockWhenExhausted(false);
@@ -2686,7 +2687,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Timeout(value = 1200, unit = TimeUnit.MILLISECONDS)
     public void testReturnBorrowObjectWithingMaxWaitDuration() throws Exception {
         final Duration maxWaitDuration = Duration.ofMillis(500);
-        try (final GenericObjectPool<String> createSlowObjectFactoryPool = new GenericObjectPool<>(createSlowObjectFactory(60_000))) {
+        try (final GenericObjectPool<String> createSlowObjectFactoryPool = new GenericObjectPool<>(createSlowObjectFactory(Duration.ofSeconds(60)))) {
             createSlowObjectFactoryPool.setMaxTotal(1);
             createSlowObjectFactoryPool.setMaxWait(maxWaitDuration);
             // thread1 tries creating a slow object to make pool full.
@@ -2705,7 +2706,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     @Timeout(value = 1200, unit = TimeUnit.MILLISECONDS)
     public void testReturnBorrowObjectWithingMaxWaitMillis() throws Exception {
         final long maxWaitMillis = 500;
-        try (final GenericObjectPool<String> createSlowObjectFactoryPool = new GenericObjectPool<>(createSlowObjectFactory(60_000))) {
+        try (final GenericObjectPool<String> createSlowObjectFactoryPool = new GenericObjectPool<>(createSlowObjectFactory(Duration.ofSeconds(60)))) {
             createSlowObjectFactoryPool.setMaxTotal(1);
             createSlowObjectFactoryPool.setMaxWaitMillis(maxWaitMillis);
             // thread1 tries creating a slow object to make pool full.
