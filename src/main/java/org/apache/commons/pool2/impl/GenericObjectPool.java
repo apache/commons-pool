@@ -271,8 +271,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * available instances in request arrival order.
      * </p>
      *
-     * @param borrowMaxWaitDuration The time to wait for an object
-     *                            to become available
+     * @param borrowMaxWaitDuration The time to wait for an object to become available, not null.
      * @return object instance from the pool
      * @throws NoSuchElementException if an instance cannot be returned
      * @throws Exception if an object instance cannot be returned due to an error
