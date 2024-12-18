@@ -58,9 +58,7 @@ public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
 
     @Override
     protected <T, E extends Exception> ObjectPool<T, E> makeEmptyPool(final int cap) {
-
-        final PooledObjectFactory<String, RuntimeException> factory = new SimpleFactory();
-        return (ObjectPool<T, E>)makeEmptyPool(factory);
+        return (ObjectPool<T, E>)makeEmptyPool(new SimpleFactory());
     }
 
     @Override
