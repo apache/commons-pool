@@ -293,17 +293,17 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         }
     }
 
-  private static final class SimplePerKeyFactory<K, V, E extends Exception> extends BaseKeyedPooledObjectFactory<K, V, E> {
+  private static final class SimplePerKeyFactory<K, E extends Exception> extends BaseKeyedPooledObjectFactory<K, String, E> {
         final ConcurrentHashMap<K, AtomicInteger> map = new ConcurrentHashMap<>();
 
         @Override
-        public V create(final K key) {
+        public String create(final K key) {
             final int counter = map.computeIfAbsent(key, k -> new AtomicInteger(-1)).incrementAndGet();
-            return (V)(key + String.valueOf(counter));
+            return key + "" + counter;
         }
 
         @Override
-        public PooledObject<V> wrap(final V value) {
+        public PooledObject<String> wrap(final String value) {
             return new DefaultPooledObject<>(value);
         }
     }
@@ -809,13 +809,14 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         return true;
     }
 
-  @Override
-  protected <K, V, E extends Exception> KeyedObjectPool<K, V, E> makeEmptyPool(final int minCapacity) {
-        final KeyedPooledObjectFactory<K, V, E> perKeyFactory = new SimplePerKeyFactory<>();
-        final GenericKeyedObjectPool<K, V, E> perKeyPool = new GenericKeyedObjectPool<>(perKeyFactory);
+    @SuppressWarnings("unchecked")
+    @Override
+    protected <K, V, E extends Exception> KeyedObjectPool<K, V, E> makeEmptyPool(final int minCapacity) {
+        final KeyedPooledObjectFactory<K, String, E> perKeyFactory = new SimplePerKeyFactory<>();
+        final GenericKeyedObjectPool<K, String, E> perKeyPool = new GenericKeyedObjectPool<>(perKeyFactory);
         perKeyPool.setMaxTotalPerKey(minCapacity);
         perKeyPool.setMaxIdlePerKey(minCapacity);
-        return perKeyPool;
+        return (KeyedObjectPool<K, V, E>) perKeyPool;
     }
 
     @Override
