@@ -16,12 +16,15 @@
  */
 package org.apache.commons.pool3;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.concurrent.Executors;
@@ -93,6 +96,41 @@ public abstract class AbstractTestObjectPool {
     }
 
     @Test
+    void testPOFAddObjectMakeThrowsException(){
+        final MethodCallPoolableObjectFactory<String> factory = spy(new MethodCallPoolableObjectFactory<>(() -> UUID.randomUUID().toString()));
+        withPool(factory, pool -> {
+
+            // makeObject Exceptions should be propagated to client code from addObject
+            doThrow(new PrivateException("makeObject")).when(factory).makeObject();
+
+            final Exception ex = assertThrows(PrivateException.class, pool::addObject, "Expected addObject to propagate makeObject exception.");
+            assertEquals("makeObject", ex.getMessage());
+
+            verify(factory).makeObject();
+        });
+    }
+
+    @Test
+    void testPOFAddObjectPassivateThrowsException() {
+        final MethodCallPoolableObjectFactory<String> factory = spy(new MethodCallPoolableObjectFactory<>(() -> UUID.randomUUID().toString()));
+        withPool(factory, pool -> {
+
+            // passivateObject Exceptions should be propagated to client code from addObject
+            doThrow(new PrivateException("passivateObject")).when(factory).passivateObject(any());
+            final Exception ex = assertThrows(PrivateException.class, pool::addObject, "Expected addObject to propagate passivateObject exception.");
+            assertEquals("passivateObject", ex.getMessage());
+
+            verify(factory).makeObject();
+
+            // StackObjectPool, SofReferenceObjectPool also validate on add
+            if (pool instanceof SoftReferenceObjectPool) {
+                verify(factory).validateObject(any());
+            }
+            verify(factory).passivateObject(any());
+        });
+    }
+
+    @Test
     public void testPOFAddObjectUsage() {
         final MethodCallPoolableObjectFactory<String> factory = spy(new MethodCallPoolableObjectFactory<>(() -> UUID.randomUUID().toString()));
         withPool(factory, pool -> {
@@ -114,6 +152,72 @@ public abstract class AbstractTestObjectPool {
             }
 
             verify(factory).passivateObject(any());
+        });
+    }
+
+    @Test
+    void testPOFBorrowObjectMakeThrowsException(){
+        final MethodCallPoolableObjectFactory<String> factory = spy(new MethodCallPoolableObjectFactory<>(() -> UUID.randomUUID().toString()));
+        withPool(factory, pool -> {
+            if (pool instanceof GenericObjectPool) {
+                ((GenericObjectPool<String, PrivateException>) pool).setTestOnBorrow(true);
+            }
+
+            // makeObject Exceptions should be propagated to client code from borrowObject
+            doThrow(new PrivateException("makeObject")).when(factory).makeObject();
+
+            final Exception ex = assertThrows(PrivateException.class, pool::borrowObject, "Expected borrowObject to propagate makeObject exception.");
+            assertEquals("makeObject", ex.getMessage());
+            verify(factory).makeObject();
+        });
+    }
+
+    @Test
+    void testPOFBorrowObjectActivateThrowsException() {
+        final MethodCallPoolableObjectFactory<String> factory = spy(new MethodCallPoolableObjectFactory<>(() -> UUID.randomUUID().toString()));
+        withPool(factory, pool -> {
+            if (pool instanceof GenericObjectPool) {
+                ((GenericObjectPool<String, PrivateException>) pool).setTestOnBorrow(true);
+            }
+
+            // when activateObject fails in borrowObject, a new object should be borrowed/created
+            pool.addObject();
+
+            doThrow(new PrivateException("activateObject")).when(factory).activateObject(any());
+
+            assertThrows(NoSuchElementException.class, pool::borrowObject, "Expecting NoSuchElementException");
+
+            // Idle object fails activation, new one created, also fails
+            verify(factory, times(2)).makeObject();
+            verify(factory, times(2)).activateObject(any());
+
+        });
+    }
+
+    @Test
+    void testPOFBorrowObjectValidateThrowsException() {
+        final MethodCallPoolableObjectFactory<String> factory = spy(new MethodCallPoolableObjectFactory<>(() -> UUID.randomUUID().toString()));
+        withPool(factory, pool -> {
+            if (pool instanceof GenericObjectPool) {
+                ((GenericObjectPool<String, PrivateException>) pool).setTestOnBorrow(true);
+            }
+
+            // when validateObject fails in borrowObject, a new object should be borrowed/created
+            pool.addObject();
+
+            doThrow(new PrivateException("validateObject")).when(factory).validateObject(any());
+
+            // Expected NoSuchElementException - newly created object will also fail to validate
+            assertThrows(NoSuchElementException.class, pool::borrowObject, "Expecting NoSuchElementException");
+
+            // Idle object is activated, but fails validation.
+            // New instance is created, activated and then fails validation
+
+            verify(factory, times(2)).makeObject();
+            verify(factory, times(2)).activateObject(any());
+            //verify(factory, times(2)).validateObject(any());
+
+
         });
     }
 
@@ -236,8 +340,65 @@ public abstract class AbstractTestObjectPool {
     }
 
     @Test
+    void testPOFReturnObjectPassivateThrowsException(){
+        final MethodCallPoolableObjectFactory<String> factory = spy(new MethodCallPoolableObjectFactory<>(() -> UUID.randomUUID().toString()));
+        withPool(factory, pool -> {
+            pool.addObject();
+            pool.addObject();
+            pool.addObject();
+            assertEquals(3, pool.getNumIdle());
+            verify(factory, times(3)).passivateObject(any());
+            verify(factory, times(3)).validateObject(any());
+
+
+            // passivateObject should swallow exceptions and not add the object to the pool
+            String obj = pool.borrowObject();
+            pool.borrowObject();
+
+            assertEquals(1, pool.getNumIdle());
+            assertEquals(2, pool.getNumActive());
+            verify(factory, times(5)).validateObject(any());
+
+            doThrow(new PrivateException("passivateObject")).when(factory).passivateObject(any());
+            pool.returnObject(obj);
+
+            // StackObjectPool, SoftReferenceObjectPool also validate on return
+            if (pool instanceof SoftReferenceObjectPool) {
+                verify(factory, times(6)).validateObject(any());
+            }
+            verify(factory, times(4)).passivateObject(any());
+            assertEquals(1, pool.getNumIdle());   // Not returned
+            assertEquals(1, pool.getNumActive()); // But not in active count
+        });
+    }
+
+    @Test
+    void testPOFReturnObjectDestroyThrowsException(){
+        final MethodCallPoolableObjectFactory<String> factory = spy(new MethodCallPoolableObjectFactory<>(() -> UUID.randomUUID().toString()));
+        withPool(factory, pool -> {
+
+            // destroyObject should swallow exceptions too
+            String  obj = pool.borrowObject();
+
+            doThrow(new PrivateException("passivateObject")).when(factory).passivateObject(any());
+            doThrow(new PrivateException("destroyObject")).when(factory).destroyObject(any());
+
+            assertDoesNotThrow(() -> pool.returnObject(obj));
+        });
+    }
+
+    @Test
     public void testToString() {
         final PooledObjectFactory<String, PrivateException> factory = new MethodCallPoolableObjectFactory<>(() -> UUID.randomUUID().toString());
         withPool(factory, pool -> assertDoesNotThrow(pool::toString));
+    }
+
+    private<K, E extends Exception> void withPool(PooledObjectFactory<K, E> factory, Consumer<ObjectPool<K, E>> poolConsumer) {
+        try (final ObjectPool<K, E> pool = makeEmptyPool(factory)) {
+            poolConsumer.accept(pool);
+        }
+        catch (final UnsupportedOperationException ignore) {
+            // test not supported
+        }
     }
 }

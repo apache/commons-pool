@@ -22,6 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.function.Consumer;
+
 import org.junit.jupiter.api.Test;
 
 /**
@@ -170,17 +172,14 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
     }
 
     @Test
-    public void testBaseClosePool() {
-        try {
-            pool = makeEmptyPool(3);
-        } catch (final UnsupportedOperationException e) {
-            return; // skip this test if unsupported
-        }
-        final String obj = pool.borrowObject();
-        pool.returnObject(obj);
+    void testBaseClosePool() {
+        withPool(3, pool -> {
+            final String obj = pool.borrowObject();
+            pool.returnObject(obj);
 
-        pool.close();
-        assertThrows(IllegalStateException.class, pool::borrowObject);
+            pool.close();
+            assertThrows(IllegalStateException.class, pool::borrowObject);
+        });
     }
 
     @Test
@@ -242,6 +241,14 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
 
             assertThrows(UnsupportedOperationException.class, pool::clear);
             assertThrows(UnsupportedOperationException.class, pool::addObject);
+        }
+    }
+
+    private void withPool(int minCapacity, Consumer<ObjectPool<String, RuntimeException>> poolConsumer) {
+        try (final ObjectPool<String, RuntimeException> pool = makeEmptyPool(minCapacity)) {
+            poolConsumer.accept(pool);
+        } catch (final UnsupportedOperationException ignore) {
+            // test not supported
         }
     }
 }
