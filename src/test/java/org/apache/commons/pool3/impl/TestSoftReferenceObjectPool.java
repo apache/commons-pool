@@ -26,17 +26,17 @@ import org.apache.commons.pool3.TestBaseObjectPool;
  */
 public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
 
-    private static final class SimpleFactory <T, E extends Exception> extends BasePooledObjectFactory<T, E> {
+    private static final class SimpleFactory extends BasePooledObjectFactory<String, RuntimeException> {
 
         int counter;
 
         @Override
-        public T create() {
-            return (T)String.valueOf(counter++);
+        public String create() {
+            return String.valueOf(counter++);
         }
 
         @Override
-        public PooledObject<T> wrap(final T value) {
+        public PooledObject<String> wrap(final String value) {
             return new DefaultPooledObject<>(value);
         }
     }
@@ -59,8 +59,8 @@ public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
     @Override
     protected <T, E extends Exception> ObjectPool<T, E> makeEmptyPool(final int cap) {
 
-        final PooledObjectFactory<T, E> factory = new SimpleFactory<>();
-        return makeEmptyPool(factory);
+        final PooledObjectFactory<String, RuntimeException> factory = new SimpleFactory();
+        return (ObjectPool<T, E>)makeEmptyPool(factory);
     }
 
     @Override
