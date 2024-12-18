@@ -19,6 +19,7 @@ package org.apache.commons.pool3;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.apache.commons.pool3.impl.DefaultPooledObject;
 
@@ -27,37 +28,37 @@ import org.apache.commons.pool3.impl.DefaultPooledObject;
  *
  * @see MethodCall
  */
-public class MethodCallPoolableObjectFactory implements PooledObjectFactory<Object, PrivateException> {
-    private final List<MethodCall> methodCalls = new ArrayList<>();
-    private int count;
+public class MethodCallPoolableObjectFactory <K> implements PooledObjectFactory<K, PrivateException> {
+    private final List<MethodCall<K, K>> methodCalls = new ArrayList<>();
     private boolean valid = true;
     private boolean makeObjectFail;
     private boolean activateObjectFail;
     private boolean validateObjectFail;
     private boolean passivateObjectFail;
     private boolean destroyObjectFail;
+    private final Supplier<K> supplier;
+
+    public MethodCallPoolableObjectFactory(final Supplier<K> supplier) {
+        this.supplier = supplier;
+    }
 
     @Override
-    public void activateObject(final PooledObject<Object> obj) {
-        methodCalls.add(new MethodCall("activateObject", obj.getObject()));
+    public void activateObject(final PooledObject<K> obj) {
+        methodCalls.add(new MethodCall<>("activateObject", obj.getObject()));
         if (activateObjectFail) {
             throw new PrivateException("activateObject");
         }
     }
 
     @Override
-    public void destroyObject(final PooledObject<Object> obj) {
-        methodCalls.add(new MethodCall("destroyObject", obj.getObject()));
+    public void destroyObject(final PooledObject<K> obj) {
+        methodCalls.add(new MethodCall<>("destroyObject", obj.getObject()));
         if (destroyObjectFail) {
             throw new PrivateException("destroyObject");
         }
     }
 
-    public int getCurrentCount() {
-        return count;
-    }
-
-    public List<MethodCall> getMethodCalls() {
+    public List<MethodCall<K, K>> getMethodCalls() {
         return methodCalls;
     }
 
@@ -86,29 +87,27 @@ public class MethodCallPoolableObjectFactory implements PooledObjectFactory<Obje
     }
 
     @Override
-    public PooledObject<Object> makeObject() {
-        final MethodCall call = new MethodCall("makeObject");
+    public PooledObject<K> makeObject() {
+        final MethodCall<K, K> call = new MethodCall<>("makeObject");
         methodCalls.add(call);
-        final int originalCount = this.count++;
         if (makeObjectFail) {
             throw new PrivateException("makeObject");
         }
         // Generate new object, don't use cache via Integer.valueOf(...)
-        final Integer obj = Integer.valueOf(originalCount);
+        final K obj = supplier.get();
         call.setReturned(obj);
         return new DefaultPooledObject<>(obj);
     }
 
     @Override
-    public void passivateObject(final PooledObject<Object> obj) {
-        methodCalls.add(new MethodCall("passivateObject", obj.getObject()));
+    public void passivateObject(final PooledObject<K> obj) {
+        methodCalls.add(new MethodCall<>("passivateObject", obj.getObject()));
         if (passivateObjectFail) {
             throw new PrivateException("passivateObject");
         }
     }
 
     public void reset() {
-        count = 0;
         getMethodCalls().clear();
         setMakeObjectFail(false);
         setActivateObjectFail(false);
@@ -120,10 +119,6 @@ public class MethodCallPoolableObjectFactory implements PooledObjectFactory<Obje
 
     public void setActivateObjectFail(final boolean activateObjectFail) {
         this.activateObjectFail = activateObjectFail;
-    }
-
-    public void setCurrentCount(final int count) {
-        this.count = count;
     }
 
     public void setDestroyObjectFail(final boolean destroyObjectFail) {
@@ -147,14 +142,14 @@ public class MethodCallPoolableObjectFactory implements PooledObjectFactory<Obje
     }
 
     @Override
-    public boolean validateObject(final PooledObject<Object> obj) {
-        final MethodCall call = new MethodCall("validateObject", obj.getObject());
+    public boolean validateObject(final PooledObject<K> obj) {
+        final MethodCall<K, K> call = new MethodCall<>("validateObject", obj.getObject());
         methodCalls.add(call);
         if (validateObjectFail) {
             throw new PrivateException("validateObject");
         }
         final boolean r = valid;
-        call.returned(Boolean.valueOf(r));
+        call.returned(obj.getObject());
         return r;
     }
 }

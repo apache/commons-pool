@@ -26,23 +26,23 @@ import org.apache.commons.pool3.TestBaseObjectPool;
  */
 public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
 
-    private static final class SimpleFactory extends BasePooledObjectFactory<String, RuntimeException> {
+    private static final class SimpleFactory <T, E extends Exception> extends BasePooledObjectFactory<T, E> {
 
         int counter;
 
         @Override
-        public String create() {
-            return String.valueOf(counter++);
+        public T create() {
+            return (T)String.valueOf(counter++);
         }
 
         @Override
-        public PooledObject<String> wrap(final String value) {
+        public PooledObject<T> wrap(final T value) {
             return new DefaultPooledObject<>(value);
         }
     }
 
     @Override
-    protected Object getNthObject(final int n) {
+    protected String getNthObject(final int n) {
         return String.valueOf(n);
     }
 
@@ -57,12 +57,14 @@ public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
     }
 
     @Override
-    protected <E extends Exception> ObjectPool<String, E> makeEmptyPool(final int cap) {
-        return (ObjectPool<String, E>) new SoftReferenceObjectPool<>(new SimpleFactory());
+    protected <T, E extends Exception> ObjectPool<T, E> makeEmptyPool(final int cap) {
+
+        final PooledObjectFactory<T, E> factory = new SimpleFactory<>();
+        return makeEmptyPool(factory);
     }
 
     @Override
-    protected <E extends Exception> ObjectPool<Object, E> makeEmptyPool(final PooledObjectFactory<Object, E> factory) {
+    protected <T, E extends Exception> ObjectPool<T, E> makeEmptyPool(final PooledObjectFactory<T, E> factory) {
         return new SoftReferenceObjectPool<>(factory);
     }
 }

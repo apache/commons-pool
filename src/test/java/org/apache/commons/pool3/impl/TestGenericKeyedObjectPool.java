@@ -84,13 +84,13 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         }
     }
 
-    private static final class DummyFactory extends BaseKeyedPooledObjectFactory<Object, Object, RuntimeException> {
+    private static final class DummyFactory<K, V> extends BaseKeyedPooledObjectFactory<K, V, RuntimeException> {
         @Override
-        public Object create(final Object key) {
+        public V create(final K key) {
             return null;
         }
         @Override
-        public PooledObject<Object> wrap(final Object value) {
+        public PooledObject<V> wrap(final V value) {
             return new DefaultPooledObject<>(value);
         }
     }
@@ -293,17 +293,17 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         }
     }
 
-    private static final class SimplePerKeyFactory extends BaseKeyedPooledObjectFactory<Object, Object, RuntimeException> {
-        final ConcurrentHashMap<Object, AtomicInteger> map = new ConcurrentHashMap<>();
+  private static final class SimplePerKeyFactory<K, V, E extends Exception> extends BaseKeyedPooledObjectFactory<K, V, E> {
+        final ConcurrentHashMap<K, AtomicInteger> map = new ConcurrentHashMap<>();
 
         @Override
-        public Object create(final Object key) {
+        public V create(final K key) {
             final int counter = map.computeIfAbsent(key, k -> new AtomicInteger(-1)).incrementAndGet();
-            return String.valueOf(key) + String.valueOf(counter);
+            return (V)(key + String.valueOf(counter));
         }
 
         @Override
-        public PooledObject<Object> wrap(final Object value) {
+        public PooledObject<V> wrap(final V value) {
             return new DefaultPooledObject<>(value);
         }
     }
@@ -809,24 +809,23 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         return true;
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    protected <E extends Exception> KeyedObjectPool<Object, Object, E> makeEmptyPool(final int minCapacity) {
-        final KeyedPooledObjectFactory<Object, Object, RuntimeException> perKeyFactory = new SimplePerKeyFactory();
-        final GenericKeyedObjectPool<Object, Object, RuntimeException> perKeyPool = new GenericKeyedObjectPool<>(perKeyFactory);
+  @Override
+  protected <K, V, E extends Exception> KeyedObjectPool<K, V, E> makeEmptyPool(final int minCapacity) {
+        final KeyedPooledObjectFactory<K, V, E> perKeyFactory = new SimplePerKeyFactory<>();
+        final GenericKeyedObjectPool<K, V, E> perKeyPool = new GenericKeyedObjectPool<>(perKeyFactory);
         perKeyPool.setMaxTotalPerKey(minCapacity);
         perKeyPool.setMaxIdlePerKey(minCapacity);
-        return (KeyedObjectPool<Object, Object, E>) perKeyPool;
+        return perKeyPool;
     }
 
     @Override
-    protected <E extends Exception> KeyedObjectPool<Object, Object, E> makeEmptyPool(final KeyedPooledObjectFactory<Object, Object, E> fac) {
+    protected <K, V, E extends Exception> KeyedObjectPool<K, V, E> makeEmptyPool(final KeyedPooledObjectFactory<K, V, E> fac) {
         return new GenericKeyedObjectPool<>(fac);
     }
 
     @Override
-    protected Object makeKey(final int n) {
-        return String.valueOf(n);
+    protected <K> K makeKey(final K n) {
+        return n;
     }
 
     /**
@@ -867,7 +866,6 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     @AfterEach
     public void tearDownJmx() throws Exception {
-        super.tearDown();
         final ObjectName jmxName = gkoPool.getJmxName();
         final String poolName = Objects.toString(jmxName, null);
         gkoPool.clear();
@@ -1376,7 +1374,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         final long timeBetweenEvictionRunsMillis = 8;
         final boolean blockWhenExhausted = false;
         final boolean lifo = false;
-        final KeyedPooledObjectFactory<Object, Object, RuntimeException> dummyFactory = new DummyFactory();
+        final KeyedPooledObjectFactory<Object, Object, RuntimeException> dummyFactory = new DummyFactory<>();
 
         try (GenericKeyedObjectPool<Object, Object, RuntimeException> objPool = new GenericKeyedObjectPool<>(dummyFactory)) {
             assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL_PER_KEY, objPool.getMaxTotalPerKey());

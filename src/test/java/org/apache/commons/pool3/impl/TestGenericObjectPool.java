@@ -891,7 +891,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     @Override
-    protected <E extends Exception> ObjectPool<Object, E> makeEmptyPool(final PooledObjectFactory<Object, E> fac) {
+    protected <T, E extends Exception> ObjectPool<T, E> makeEmptyPool(final PooledObjectFactory<T, E> fac) {
         return new GenericObjectPool<>(fac);
     }
 
@@ -2963,11 +2963,9 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         genericObjectPool.borrowObject();
     }
 
-    /**
-     * Tests POOL-361
-     */
-    @Test
-    public void testValidateOnCreate() throws Exception {
+  /** Tests POOL-361 */
+  @Test
+  void testValidateOnCreate() throws Exception {
         genericObjectPool.setTestOnCreate(true);
         genericObjectPool.addObject();
         assertEquals(1, simpleFactory.validateCounter);

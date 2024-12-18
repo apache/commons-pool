@@ -25,32 +25,28 @@ import java.util.Objects;
 /**
  * Holds method names, parameters, and return values for tracing method calls.
  */
-public class MethodCall {
+public class MethodCall<K, V> {
     private final String name;
-    private final List<Object> params;
-    private Object returned;
+    private final List<K> params;
+    private V returned;
 
     public MethodCall(final String name) {
-        this(name, null);
+        this(name, Collections.emptyList());
     }
 
-    public MethodCall(final String name, final List<Object> params) {
+    public MethodCall(final String name, final List<K> params) {
         if (name == null) {
             throw new IllegalArgumentException("name must not be null.");
         }
         this.name = name;
-        if (params != null) {
-            this.params = params;
-        } else {
-            this.params = Collections.emptyList();
-        }
+        this.params = Objects.requireNonNullElse(params, Collections.emptyList());
     }
 
-    public MethodCall(final String name, final Object param) {
+    public MethodCall(final String name, final K param) {
         this(name, Collections.singletonList(param));
     }
 
-    public MethodCall(final String name, final Object param1, final Object param2) {
+    public MethodCall(final String name, final K param1, final K param2) {
         this(name, Arrays.asList(param1, param2));
     }
 
@@ -63,7 +59,7 @@ public class MethodCall {
             return false;
         }
 
-        final MethodCall that = (MethodCall)o;
+        final MethodCall<?, ?> that = (MethodCall<?, ?>)o;
 
         if (!Objects.equals(name, that.name)) {
             return false;
@@ -78,7 +74,7 @@ public class MethodCall {
         return name;
     }
 
-    public List<Object> getParams() {
+    public List<K> getParams() {
         return params;
     }
 
@@ -94,12 +90,12 @@ public class MethodCall {
         return 29 * result + (returned != null ? returned.hashCode() : 0);
     }
 
-    public MethodCall returned(final Object obj) {
+    public MethodCall<K, V> returned(final V obj) {
         setReturned(obj);
         return this;
     }
 
-    public void setReturned(final Object returned) {
+    public void setReturned(final V returned) {
         this.returned = returned;
     }
 
