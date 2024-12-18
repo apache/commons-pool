@@ -56,6 +56,7 @@ public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
         return false;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected <T, E extends Exception> ObjectPool<T, E> makeEmptyPool(final int cap) {
         return (ObjectPool<T, E>) new SoftReferenceObjectPool<>(new SimpleFactory());
