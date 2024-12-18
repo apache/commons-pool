@@ -16,10 +16,13 @@
  */
 package org.apache.commons.pool3;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+
+import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
@@ -27,76 +30,65 @@ import org.junit.jupiter.api.Test;
  */
 public class TestBaseObjectPool extends AbstractTestObjectPool {
 
-    private static final class TestObjectPool extends BaseObjectPool<Object, RuntimeException> {
+    private static final class TestObjectPool <T> extends BaseObjectPool<T, RuntimeException> {
 
         @Override
-        public Object borrowObject() {
+        public T borrowObject() {
             return null;
         }
 
         @Override
-        public void invalidateObject(final Object obj) {
+        public void invalidateObject(final T obj) {
+            // do nothing
         }
 
         @Override
-        public void returnObject(final Object obj) {
+        public void returnObject(final T obj) {
+            // do nothing
         }
     }
-
-    private ObjectPool<String, RuntimeException> pool;
 
     /**
      * @param n Ignored by this implemented. Used by sub-classes.
      * @return the Nth object (zero indexed)
      */
     protected Object getNthObject(final int n) {
-        if (this.getClass() != TestBaseObjectPool.class) {
-            fail("Subclasses of TestBaseObjectPool must reimplement this method.");
-        }
+        assertSame(this.getClass(), TestBaseObjectPool.class,
+            "Subclasses of TestBaseObjectPool must reimplement this method.");
         throw new UnsupportedOperationException("BaseObjectPool isn't a complete implementation.");
     }
 
     protected boolean isFifo() {
-        if (this.getClass() != TestBaseObjectPool.class) {
-            fail("Subclasses of TestBaseObjectPool must reimplement this method.");
-        }
+
+        assertSame(this.getClass(), TestBaseObjectPool.class,
+            "Subclasses of TestBaseObjectPool must reimplement this method.");
         return false;
     }
 
     protected boolean isLifo() {
-        if (this.getClass() != TestBaseObjectPool.class) {
-            fail("Subclasses of TestBaseObjectPool must reimplement this method.");
-        }
-        return false;
+        return isFifo();
     }
 
     /**
      * @param minCapacity Ignored by this implemented. Used by sub-classes.
      * @return A newly created empty pool
      */
-    protected <E extends Exception> ObjectPool<String, E> makeEmptyPool(final int minCapacity) {
-        if (this.getClass() != TestBaseObjectPool.class) {
-            fail("Subclasses of TestBaseObjectPool must reimplement this method.");
-        }
+    protected <T, E extends Exception> ObjectPool<T, E> makeEmptyPool(final int minCapacity) {
+        assertSame(this.getClass(), TestBaseObjectPool.class,
+            "Subclasses of TestBaseObjectPool must reimplement this method.");
         throw new UnsupportedOperationException("BaseObjectPool isn't a complete implementation.");
     }
 
     @Override
-    protected <E extends Exception> ObjectPool<Object, E> makeEmptyPool(final PooledObjectFactory<Object, E> factory) {
-        if (this.getClass() != TestBaseObjectPool.class) {
-            fail("Subclasses of TestBaseObjectPool must reimplement this method.");
-        }
+    protected <T, E extends Exception> ObjectPool<T, E> makeEmptyPool(final PooledObjectFactory<T, E> factory) {
+        assertSame(this.getClass(), TestBaseObjectPool.class,
+            "Subclasses of TestBaseObjectPool must reimplement this method.");
         throw new UnsupportedOperationException("BaseObjectPool isn't a complete implementation.");
     }
 
     @Test
-    public void testBaseAddObject() {
-        try {
-            pool = makeEmptyPool(3);
-        } catch (final UnsupportedOperationException e) {
-            return; // skip this test if unsupported
-        }
-        try {
+    void testBaseAddObject() {
+        withPool(3, pool -> {
             assertEquals(0, pool.getNumIdle());
             assertEquals(0, pool.getNumActive());
             pool.addObject();
@@ -109,171 +101,154 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
             pool.returnObject(obj);
             assertEquals(1, pool.getNumIdle());
             assertEquals(0, pool.getNumActive());
-        } catch (final UnsupportedOperationException e) {
-            return; // skip this test if one of those calls is unsupported
-        } finally {
+        });
+    }
+
+    @Test
+    void testBaseBorrow() {
+        withPool(3, pool -> {
+            assertEquals(getNthObject(0), pool.borrowObject());
+            assertEquals(getNthObject(1), pool.borrowObject());
+            assertEquals(getNthObject(2), pool.borrowObject());
+        });
+
+    }
+
+    @Test
+    void testBaseBorrowReturn() {
+        withPool(3, pool -> {
+            String obj0 = pool.borrowObject();
+            assertEquals(getNthObject(0), obj0);
+            String obj1 = pool.borrowObject();
+            assertEquals(getNthObject(1), obj1);
+            String obj2 = pool.borrowObject();
+            assertEquals(getNthObject(2), obj2);
+            pool.returnObject(obj2);
+            obj2 = pool.borrowObject();
+            assertEquals(getNthObject(2), obj2);
+            pool.returnObject(obj1);
+            obj1 = pool.borrowObject();
+            assertEquals(getNthObject(1), obj1);
+            pool.returnObject(obj0);
+            pool.returnObject(obj2);
+            obj2 = pool.borrowObject();
+            if (isLifo()) {
+                assertEquals(getNthObject(2),obj2);
+            }
+            if (isFifo()) {
+                assertEquals(getNthObject(0),obj2);
+            }
+
+            obj0 = pool.borrowObject();
+            if (isLifo()) {
+                assertEquals(getNthObject(0),obj0);
+            }
+            if (isFifo()) {
+                assertEquals(getNthObject(2),obj0);
+            }
+        });
+
+    }
+
+    @Test
+    void testBaseClear() {
+        withPool(3, pool -> {
+            assertEquals(0, pool.getNumActive());
+            assertEquals(0, pool.getNumIdle());
+            final String obj0 = pool.borrowObject();
+            final String obj1 = pool.borrowObject();
+            assertEquals(2, pool.getNumActive());
+            assertEquals(0, pool.getNumIdle());
+            pool.returnObject(obj1);
+            pool.returnObject(obj0);
+            assertEquals(0, pool.getNumActive());
+            assertEquals(2, pool.getNumIdle());
+            pool.clear();
+            assertEquals(0, pool.getNumActive());
+            assertEquals(0, pool.getNumIdle());
+            final Object obj2 = pool.borrowObject();
+            assertEquals(getNthObject(2), obj2);
+        });
+    }
+
+    @Test
+    void testBaseClosePool() {
+        withPool(3, pool -> {
+            final String obj = pool.borrowObject();
+            pool.returnObject(obj);
+
             pool.close();
-        }
+            assertThrows(IllegalStateException.class, pool::borrowObject);
+        });
     }
 
     @Test
-    public void testBaseBorrow() {
-        try {
-            pool = makeEmptyPool(3);
-        } catch (final UnsupportedOperationException e) {
-            return; // skip this test if unsupported
-        }
-        assertEquals(getNthObject(0), pool.borrowObject());
-        assertEquals(getNthObject(1), pool.borrowObject());
-        assertEquals(getNthObject(2), pool.borrowObject());
+    void testBaseInvalidateObject() {
+        withPool(3, pool -> {
+            assertEquals(0, pool.getNumActive());
+            assertEquals(0, pool.getNumIdle());
+            final String obj0 = pool.borrowObject();
+            final String obj1 = pool.borrowObject();
+            assertEquals(2, pool.getNumActive());
+            assertEquals(0, pool.getNumIdle());
+            pool.invalidateObject(obj0);
+            assertEquals(1, pool.getNumActive());
+            assertEquals(0, pool.getNumIdle());
+            pool.invalidateObject(obj1);
+            assertEquals(0, pool.getNumActive());
+            assertEquals(0, pool.getNumIdle());
+        });
+
+    }
+
+    @Test
+    void testBaseNumActiveNumIdle() {
+
+        withPool(3, pool -> {
+            assertEquals(0, pool.getNumActive());
+            assertEquals(0, pool.getNumIdle());
+            final String obj0 = pool.borrowObject();
+            assertEquals(1, pool.getNumActive());
+            assertEquals(0, pool.getNumIdle());
+            final String obj1 = pool.borrowObject();
+            assertEquals(2, pool.getNumActive());
+            assertEquals(0, pool.getNumIdle());
+            pool.returnObject(obj1);
+            assertEquals(1, pool.getNumActive());
+            assertEquals(1, pool.getNumIdle());
+            pool.returnObject(obj0);
+            assertEquals(0, pool.getNumActive());
+            assertEquals(2, pool.getNumIdle());
+        });
+    }
+
+    @Test
+    void testClose() {
+        final ObjectPool<String, RuntimeException> pool = new TestObjectPool<>();
         pool.close();
+        assertDoesNotThrow(pool::close); // should not error as of Pool 2.0.
     }
 
     @Test
-    public void testBaseBorrowReturn() {
-        try {
-            pool = makeEmptyPool(3);
-        } catch (final UnsupportedOperationException e) {
-            return; // skip this test if unsupported
-        }
-        String obj0 = pool.borrowObject();
-        assertEquals(getNthObject(0), obj0);
-        String obj1 = pool.borrowObject();
-        assertEquals(getNthObject(1), obj1);
-        String obj2 = pool.borrowObject();
-        assertEquals(getNthObject(2), obj2);
-        pool.returnObject(obj2);
-        obj2 = pool.borrowObject();
-        assertEquals(getNthObject(2), obj2);
-        pool.returnObject(obj1);
-        obj1 = pool.borrowObject();
-        assertEquals(getNthObject(1), obj1);
-        pool.returnObject(obj0);
-        pool.returnObject(obj2);
-        obj2 = pool.borrowObject();
-        if (isLifo()) {
-            assertEquals(getNthObject(2),obj2);
-        }
-        if (isFifo()) {
-            assertEquals(getNthObject(0),obj2);
-        }
-
-        obj0 = pool.borrowObject();
-        if (isLifo()) {
-            assertEquals(getNthObject(0),obj0);
-        }
-        if (isFifo()) {
-            assertEquals(getNthObject(2),obj0);
-        }
-        pool.close();
-    }
-
-    @Test
-    public void testBaseClear() {
-        try {
-            pool = makeEmptyPool(3);
-        } catch (final UnsupportedOperationException e) {
-            return; // skip this test if unsupported
-        }
-        assertEquals(0, pool.getNumActive());
-        assertEquals(0, pool.getNumIdle());
-        final String obj0 = pool.borrowObject();
-        final String obj1 = pool.borrowObject();
-        assertEquals(2, pool.getNumActive());
-        assertEquals(0, pool.getNumIdle());
-        pool.returnObject(obj1);
-        pool.returnObject(obj0);
-        assertEquals(0, pool.getNumActive());
-        assertEquals(2, pool.getNumIdle());
-        pool.clear();
-        assertEquals(0, pool.getNumActive());
-        assertEquals(0, pool.getNumIdle());
-        final Object obj2 = pool.borrowObject();
-        assertEquals(getNthObject(2), obj2);
-        pool.close();
-    }
-
-    @Test
-    public void testBaseClosePool() {
-        try {
-            pool = makeEmptyPool(3);
-        } catch (final UnsupportedOperationException e) {
-            return; // skip this test if unsupported
-        }
-        final String obj = pool.borrowObject();
-        pool.returnObject(obj);
-
-        pool.close();
-        assertThrows(IllegalStateException.class, pool::borrowObject);
-    }
-
-    @Test
-    public void testBaseInvalidateObject() {
-        try {
-            pool = makeEmptyPool(3);
-        } catch (final UnsupportedOperationException e) {
-            return; // skip this test if unsupported
-        }
-        assertEquals(0, pool.getNumActive());
-        assertEquals(0, pool.getNumIdle());
-        final String obj0 = pool.borrowObject();
-        final String obj1 = pool.borrowObject();
-        assertEquals(2, pool.getNumActive());
-        assertEquals(0, pool.getNumIdle());
-        pool.invalidateObject(obj0);
-        assertEquals(1, pool.getNumActive());
-        assertEquals(0, pool.getNumIdle());
-        pool.invalidateObject(obj1);
-        assertEquals(0, pool.getNumActive());
-        assertEquals(0, pool.getNumIdle());
-        pool.close();
-    }
-
-    @Test
-    public void testBaseNumActiveNumIdle() {
-        try {
-            pool = makeEmptyPool(3);
-        } catch (final UnsupportedOperationException e) {
-            return; // skip this test if unsupported
-        }
-        assertEquals(0, pool.getNumActive());
-        assertEquals(0, pool.getNumIdle());
-        final String obj0 = pool.borrowObject();
-        assertEquals(1, pool.getNumActive());
-        assertEquals(0, pool.getNumIdle());
-        final String obj1 = pool.borrowObject();
-        assertEquals(2, pool.getNumActive());
-        assertEquals(0, pool.getNumIdle());
-        pool.returnObject(obj1);
-        assertEquals(1, pool.getNumActive());
-        assertEquals(1, pool.getNumIdle());
-        pool.returnObject(obj0);
-        assertEquals(0, pool.getNumActive());
-        assertEquals(2, pool.getNumIdle());
-        pool.close();
-    }
-
-    @Test
-    public void testClose() {
-        @SuppressWarnings("resource")
-        final ObjectPool<Object, RuntimeException> pool = new TestObjectPool();
-
-        pool.close();
-        pool.close(); // should not error as of Pool 2.0.
-    }
-
-    @Test
-    public void testUnsupportedOperations() {
+    void testUnsupportedOperations() {
         if (!getClass().equals(TestBaseObjectPool.class)) {
             return; // skip redundant tests
         }
-        try (final ObjectPool<Object,RuntimeException> pool = new TestObjectPool()) {
+        try (final ObjectPool<String,RuntimeException> pool = new TestObjectPool<>()) {
 
             assertTrue( pool.getNumIdle() < 0,"Negative expected.");
             assertTrue( pool.getNumActive() < 0,"Negative expected.");
 
             assertThrows(UnsupportedOperationException.class, pool::clear);
             assertThrows(UnsupportedOperationException.class, pool::addObject);
+        }
+    }
+
+    private void withPool(int minCapacity, Consumer<ObjectPool<String, RuntimeException>> poolConsumer) {
+        try (final ObjectPool<String, RuntimeException> pool = makeEmptyPool(minCapacity)) {
+            poolConsumer.accept(pool);
+        } catch (final UnsupportedOperationException ignore) {
+            // test not supported
         }
     }
 }
