@@ -2963,9 +2963,9 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         genericObjectPool.borrowObject();
     }
 
-  /** Tests POOL-361 */
-  @Test
-  void testValidateOnCreate() throws Exception {
+      /** Tests POOL-361 */
+    @Test
+    void testValidateOnCreate() throws Exception {
         genericObjectPool.setTestOnCreate(true);
         genericObjectPool.addObject();
         assertEquals(1, simpleFactory.validateCounter);
