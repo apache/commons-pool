@@ -42,7 +42,7 @@ public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
     }
 
     @Override
-    protected Object getNthObject(final int n) {
+    protected String getNthObject(final int n) {
         return String.valueOf(n);
     }
 
@@ -56,13 +56,14 @@ public class TestSoftReferenceObjectPool extends TestBaseObjectPool {
         return false;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    protected <E extends Exception> ObjectPool<String, E> makeEmptyPool(final int cap) {
-        return (ObjectPool<String, E>) new SoftReferenceObjectPool<>(new SimpleFactory());
+    protected <T, E extends Exception> ObjectPool<T, E> makeEmptyPool(final int cap) {
+        return (ObjectPool<T, E>) new SoftReferenceObjectPool<>(new SimpleFactory());
     }
 
     @Override
-    protected <E extends Exception> ObjectPool<Object, E> makeEmptyPool(final PooledObjectFactory<Object, E> factory) {
+    protected <T, E extends Exception> ObjectPool<T, E> makeEmptyPool(final PooledObjectFactory<T, E> factory) {
         return new SoftReferenceObjectPool<>(factory);
     }
 }
