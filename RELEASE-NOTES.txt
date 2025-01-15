@@ -1,4 +1,5 @@
-              Apache Commons Pool 2.12.0 RELEASE NOTES
+Apache Commons Pool 2.12.0 RELEASE NOTES
+----------------------------------------
 
 The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.12.0.
 
