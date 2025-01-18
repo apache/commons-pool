@@ -38,6 +38,7 @@ import org.apache.commons.pool3.PooledObjectFactory;
  * @param <E> Type of exception that the factory may throw
  */
 public class ResilientPooledObjectFactory<T, E extends Exception> implements PooledObjectFactory<T, E> {
+
     private static final int DEFAULT_LOG_SIZE = 10;
     private static final Duration DEFAULT_DELAY = Duration.ofSeconds(1);
     private static final Duration DEFAULT_LOOK_BACK = Duration.ofMinutes(5);
@@ -65,13 +66,13 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
      * @return the factory wrapped by this resilient factory
      */
     /** Whether or not the monitor thread is running */
-    private boolean monitoring = false;
+    private boolean monitoring;
     /** Time to wait between object creations by the adder thread */
     private final Duration delay;
     /** Time between monitor checks */
     private Duration timeBetweenChecks = Duration.ofSeconds(10);
     /** Adder thread */
-    private Adder adder = null;
+    private Adder adder;
 
     /**
      * Construct a ResilientPooledObjectFactory from a factory with specified
