@@ -58,7 +58,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
     private Instant upStart;
     /** Exception counts */
     @SuppressWarnings("rawtypes")
-    private ConcurrentHashMap<Class, Integer> exceptionCounts = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Class, Integer> exceptionCounts = new ConcurrentHashMap<>();
     /** Whether or not the factory is "up" */
     private boolean up = true;
     /**
@@ -84,8 +84,8 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
      * @param lookBack          length of time over which metrics are kept
      * @param timeBetweenChecks time between checks by the monitor thread
      */
-    public ResilientPooledObjectFactory(PooledObjectFactory<T, E> factory,
-            int logSize, Duration delay, Duration lookBack, Duration timeBetweenChecks) {
+    public ResilientPooledObjectFactory(final PooledObjectFactory<T, E> factory,
+            final int logSize, final Duration delay, final Duration lookBack, final Duration timeBetweenChecks) {
         this.logSize = logSize;
         this.factory = factory;
         this.delay = delay;
@@ -99,20 +99,25 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
      *
      * @param factory PooledObjectFactory to wrap
      */
-    public ResilientPooledObjectFactory(PooledObjectFactory<T, E> factory) {
+    public ResilientPooledObjectFactory(final PooledObjectFactory<T, E> factory) {
         this(factory, DEFAULT_LOG_SIZE, DEFAULT_DELAY, DEFAULT_LOOK_BACK, DEFAULT_TIME_BETWEEN_CHECKS);
     }
 
-    public void setPool(GenericObjectPool<T, E> pool) {
+    /**
+     * Sets the underlying pool. For tests.
+     *
+     * @param pool the underlying pool.
+     */
+    void setPool(final GenericObjectPool<T, E> pool) {
         this.pool = pool;
     }
 
     /**
      * Set the time between monitor checks.
      *
-     * @param timeBetweenChecks
+     * @param timeBetweenChecks The time between monitor checks.
      */
-    public void setTimeBetweenChecks(Duration timeBetweenChecks) {
+    public void setTimeBetweenChecks(final Duration timeBetweenChecks) {
         this.timeBetweenChecks = timeBetweenChecks;
     }
 
@@ -121,7 +126,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
      *
      * @param logSize the number of makeObject events to keep in the log
      */
-    public void setLogSize(int logSize) {
+    public void setLogSize(final int logSize) {
         this.logSize = logSize;
     }
 
@@ -132,10 +137,10 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
     public PooledObject<T> makeObject() throws E {
         final MakeEvent makeEvent = new MakeEvent();
         try {
-            PooledObject<T> obj = factory.makeObject();
+            final PooledObject<T> obj = factory.makeObject();
             makeEvent.setSuccess(!PooledObject.isNull(obj));
             return obj;
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
             makeEvent.setSuccess(false);
             makeEvent.setException(t);
             exceptionCounts.put(t.getClass(), exceptionCounts.getOrDefault(t, 0) + 1);
@@ -149,22 +154,22 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
     // Delegate all other methods to the wrapped factory.
 
     @Override
-    public void destroyObject(PooledObject<T> p) throws E {
+    public void destroyObject(final PooledObject<T> p) throws E {
         factory.destroyObject(p);
     }
 
     @Override
-    public boolean validateObject(PooledObject<T> p) {
+    public boolean validateObject(final PooledObject<T> p) {
         return factory.validateObject(p);
     }
 
     @Override
-    public void activateObject(PooledObject<T> p) throws E {
+    public void activateObject(final PooledObject<T> p) throws E {
         factory.activateObject(p);
     }
 
     @Override
-    public void passivateObject(PooledObject<T> p) throws E {
+    public void passivateObject(final PooledObject<T> p) throws E {
         factory.passivateObject(p);
     }
 
@@ -195,7 +200,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
         while (makeObjectLog.size() > logSize) {
             makeObjectLog.poll();
         }
-        for (MakeEvent makeEvent : makeObjectLog) {
+        for (final MakeEvent makeEvent : makeObjectLog) {
             if (!makeEvent.isSuccess()) {
                 upOverLog = false;
                 downStart = Instant.now();
@@ -242,7 +247,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
      *
      * @param timeBetweenChecks time between checks
      */
-    public void startMonitor(Duration timeBetweenChecks) {
+    public void startMonitor(final Duration timeBetweenChecks) {
         this.timeBetweenChecks = timeBetweenChecks;
         startMonitor();
     }
@@ -277,7 +282,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
     class Adder extends Thread {
         private boolean killed = false;
         private boolean running = false;
-        private int MAX_FAILURES = 5;
+        private final int MAX_FAILURES = 5;
         private int failures = 0;
 
         @Override
@@ -289,7 +294,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
                     if (pool.getNumWaiters() == 0 || pool.getNumActive() + pool.getNumIdle() == pool.getMaxTotal()) {
                         kill();
                     }
-                } catch (Throwable e) {
+                } catch (final Throwable e) {
                     failures++;
                     if (failures > MAX_FAILURES) {
                         kill();
@@ -298,7 +303,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
                     // Wait for delay
                     try {
                         sleep(delay.toMillis());
-                    } catch (InterruptedException e) {
+                    } catch (final InterruptedException e) {
                         killed = true;
                     }
                 }
@@ -358,7 +363,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
          *
          * @param success
          */
-        public void setSuccess(boolean success) {
+        public void setSuccess(final boolean success) {
             this.success = success;
         }
 
@@ -374,7 +379,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
          *
          * @param exception
          */
-        public void setException(Throwable exception) {
+        public void setException(final Throwable exception) {
             this.exception = exception;
         }
 
@@ -396,9 +401,9 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
                 runChecks();
                 try {
                     sleep(timeBetweenChecks.toMillis());
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
                     monitoring = false;
-                } catch (Throwable e) {
+                } catch (final Throwable e) {
                     monitoring = false;
                     throw e;
                 }
@@ -453,7 +458,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
      * @return a copy of the makeObject log
      */
     public List<MakeEvent> getMakeObjectLog() {
-        ArrayList<MakeEvent> makeObjectLog = new ArrayList<>();
+        final ArrayList<MakeEvent> makeObjectLog = new ArrayList<>();
         return new ArrayList<>(makeObjectLog.stream().toList());
     }
 
