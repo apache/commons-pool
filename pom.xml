@@ -20,32 +20,25 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
     <version>79</version>
   </parent>
-
   <artifactId>commons-pool3</artifactId>
   <version>3.0.0-SNAPSHOT</version>
   <name>Apache Commons Pool</name>
-
   <inceptionYear>2001</inceptionYear>
   <description>The Apache Commons Object Pooling Library.</description>
-
   <url>https://commons.apache.org/proper/commons-pool/</url>
-
   <issueManagement>
     <system>jira</system>
     <url>https://issues.apache.org/jira/browse/POOL</url>
   </issueManagement>
-
   <ciManagement>
     <system>GitHub</system>
     <url>https://github.com/apache/commons-pool/actions</url>
   </ciManagement>
-
   <scm>
     <connection>scm:git:https://gitbox.apache.org/repos/asf/commons-pool.git</connection>
     <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/commons-pool.git</developerConnection>
@@ -83,7 +76,6 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
   <distributionManagement>
     <!-- Cannot define in parent ATM, see COMMONSSITE-26 -->
     <site>
@@ -92,7 +84,6 @@
       <url>scm:svn:https://svn.apache.org/repos/infra/websites/production/commons/content/proper/commons-pool/</url>
     </site>
   </distributionManagement>
-  
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -113,12 +104,10 @@
     <!-- Java 7 -->
     <commons.release.3.version>2.6.2</commons.release.3.version>
     <commons.release.3.desc>(Java 7 or above)</commons.release.3.desc>
-
     <commons.jira.id>POOL</commons.jira.id>
     <commons.jira.pid>12310488</commons.jira.pid>
     <commons.scmPubCheckoutDirectory>site-content</commons.scmPubCheckoutDirectory>
     <commons.osgi.import>net.sf.cglib.proxy;resolution:=optional,*</commons.osgi.import>
-
     <!-- Commons Release Plugin -->
     <commons.bc.version>2.11.1</commons.bc.version>
     <commons.release.isDistModule>true</commons.release.isDistModule>
@@ -276,7 +265,6 @@
         </plugin>
       </plugins>
     </build>
-
     <reporting>
       <plugins>
         <plugin>
@@ -349,7 +337,6 @@
         </plugin>
     </plugins>
   </reporting>
-
   <profiles>
     <profile>
       <id>java16</id>
