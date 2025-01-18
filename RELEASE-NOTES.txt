@@ -1,4 +1,5 @@
-              Apache Commons Pool 2.12.0 RELEASE NOTES
+Apache Commons Pool 2.12.0 RELEASE NOTES
+----------------------------------------
 
 The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.12.0.
 
@@ -12,6 +13,9 @@ Version 2.6.x requires Java 7 or above.
 Version 2.5.x requires Java 7 or above.
 Version 2.0 requires 6 or above. 
 
+No client code changes are required to migrate from versions 2.0-2.3 to version 2.4.3.
+Users of version 1.x should consult the migration guide on the Commons Pool web site.
+
 NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPoolMXBean
       and GenericKeyedObjectPoolMXBean) exist only to define the attributes and methods
       that will be made available via JMX. They must not be implemented by clients as
@@ -19,4 +23,760 @@ NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPool
       Commons Pool. Clients that implement any of these interfaces may not, therefore,
       be able to upgrade to a new minor or patch release without requiring code
       changes.
+
+This is a feature and maintenance release (Java 8 or above).
+
+Changes in version 2.12.0 include:
+
+New features:
+o            Add PooledObject.getFullDuration(). Thanks to Gary Gregory.
+o            Add GenericKeyedObjectPool.getKeys(). Thanks to Vamsi Pavan Kumar Sanka, Phil Steitz, Gary Gregory.
+o            Add KeyedObjectPool.getKeys(). Thanks to Gary Gregory.
+o            Add github/codeql-action.
+o            Add BaseGenericObjectPool.Evictor.toString().
+o            BaseGenericObjectPool now implements AutoCloseable.
+
+Fixed Bugs:
+o POOL-401:  Ensure that capacity freed by invalidateObject is available to all keyed pools.
+o POOL-391:  Ensure capacity freed by clear is made available to GKOP borrowers. Thanks to Codievilky August.
+o POOL-402:  Check blockWhenExhausted in hasBorrowWaiters #116. Thanks to Cp-John, Phil Steitz, Bruno P. Kinoshita, Gary Gregory.
+o            Simplify test assertion with similar call but simpler. #131. Thanks to Arturo Bernal.
+o POOL-269:  Use generic exceptions instead of java.lang.Exception. Thanks to Gary Gregory.
+o POOL-405:  NullPointerException GenericKeyedObjectPool.invalidateObject(GenericKeyedObjectPool.java:1343). Thanks to Gary Gregory.
+o POOL-408:  A typo of KeyedPooledObjectFactory on the site and Javadoc. Thanks to Zhenyu Luo, Gary Gregory.
+o            Fail-fast on null input for DefaultPooledObjectInfo.DefaultPooledObjectInfo(PooledObject) with a NullPointerException. Thanks to Gary Gregory.
+o POOL-393:  Improve BaseGenericObjectPool's JMX Register performance when creating many pools. Thanks to Shichao Yuan, Phil Steitz, Niall Pemberton.
+o            Null-guard in GenericObjectPool.use(T) like other call sites of GenericObjectPool.getPooledObject(T). Thanks to Réda Housni Alaoui, Gary Gregory.
+o POOL-411:  NPE when deregistering key at end of borrow. Thanks to Richard Eckart de Castilho, Gary Gregory.
+o            Make private class GenericKeyedObjectPool.ObjectDeque class static. Thanks to Gary Gregory.
+o            Make private class BaseGenericObjectPool.StatsStore class static. Thanks to Gary Gregory.
+o            [StepSecurity] ci: Harden GitHub Actions #225. Thanks to step-security-bot, Gary Gregory.
+
+Changes:
+o            Bump actions/cache from 2.1.6 to 3.0.10 #117, #138, #158, #174, #178. Thanks to Dependabot, Gary Gregory.
+o            Bump actions/checkout from 2.3.4 to 3.0.2 #109, #112, #134. Thanks to Dependabot, Gary Gregory.
+o            Bump actions/setup-java from 2 to 3.5.1. Thanks to Gary Gregory.
+o            Bump spotbugs from 4.3.0 to 4.7.3 #94, #99, #106, #114, #122, #129, #137, #155, #168, #187. Thanks to Dependabot.
+o            Bump spotbugs-maven-plugin from 4.3.0 to 4.7.3.0 #102, #110, #119, #125, #128, #139, #149, #157, #161, #169, #180, #190. Thanks to Dependabot.
+o            Bump junit-bom from 5.8.0-M1 to 5.9.1 #96, #100, #103, #120, #160, #172. Thanks to Dependabot.
+o            Bump checkstyle from 8.45.1 to 9.3 #97, #104, #111, #121, #126, #132. Thanks to Dependabot.
+o            Bump maven-checkstyle-plugin from 3.1.2 to 3.2.0 #166. Thanks to Dependabot.
+o            Bump maven-pmd-plugin from 3.14.0 to 3.19.0 #101, #153, #170. Thanks to Dependabot, Gary Gregory.
+o            Bump pmd from 6.44.0 to 6.52.0. Thanks to Gary Gregory.
+o            Bump biz.aQute.bndlib from 5.3.0 to 6.4.1 #105, #118, #135, #151, #154, #191, #223. Thanks to Dependabot.
+o            Bump maven-bundle-plugin from 5.1.3 to 5.1.8 #127, #146, #148, #159, #164. Thanks to Dependabot.
+o            Bump maven-surefire-plugin from 3.0.0-M7 to 3.0.0-M6 #142, #152. Thanks to Dependabot.
+o            Bump asm-util from 9.2 to 9.5 #141, #179, #220. Thanks to Dependabot.
+o            Bump commons-parent from 52 to 58 #173, #195, #204, #222. Thanks to Gary Gregory, Dependabot.
+o            Bump japicmp-maven-plugin from 0.15.3 to 0.16.0. Thanks to Gary Gregory.
+o            Bump animal-sniffer-maven-plugin 1.20 to 1.21. Thanks to Gary Gregory.
+o            Bump Apache Commons BCEL 6.5.0 to 6.7.0 #194. Thanks to Gary Gregory, Dependabot.
+
+
+For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Commons Pool website:
+
+https://commons.apache.org/proper/commons-pool/
+
+Download page: https://commons.apache.org/proper/commons-pool/download_pool.cgi
+
+-----------------------------------------------------------------------------------------------
+
+              Apache Commons Pool 2.11.1 RELEASE NOTES
+
+The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.11.1.
+
+Apache Commons Pool provides an object-pooling API and a number of object pool implementations.
+Version 2 contains a completely re-written pooling implementation compared to the 1.x series.
+In addition to performance and scalability improvements, version 2 includes robust instance
+tracking and pool monitoring. 
+
+Version 2.7.x and up requires Java 8 or above.
+Version 2.6.x requires Java 7 or above.
+Version 2.5.x requires Java 7 or above.
+Version 2.0 requires 6 or above. 
+
+No client code changes are required to migrate from versions 2.0-2.3 to version 2.4.3.
+Users of version 1.x should consult the migration guide on the Commons Pool web site.
+
+NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPoolMXBean
+      and GenericKeyedObjectPoolMXBean) exist only to define the attributes and methods
+      that will be made available via JMX. They must not be implemented by clients as
+      they are subject to change between major, minor and patch version releases of
+      Commons Pool. Clients that implement any of these interfaces may not, therefore,
+      be able to upgrade to a new minor or patch release without requiring code
+      changes.
+
+This is a maintenance release (Java 8 or above).
+
+Changes in version 2.11.1 include:
+
+
+Fixed Bugs:
+o            Getting a PooledObject's active duration returns a negative duration when the object is borrowed but not returned. Affects:
+             - PooledObject.getActiveDuration()
+             - PooledObject.getActiveTime()
+             - PooledObject.getActiveTimeMillis() Thanks to Gary Gregory.
+o            The default implementation of TrackedUse.getLastUsedInstant() uses seconds instead of milliseconds. 
+             This interface is not implemented within Apache Commons Pool but affects Apache Commons DBCP. Thanks to Gary Gregory.
+o            DefaultPooledObject.getIdleTime() drops nanoseconds on Java 9 and greater. Thanks to Gary Gregory.
+o            Fix field label in BaseGenericObjectPool toString() builder: From timeBetweenEvictionRunsMillis to durationBetweenEvictionRuns. Thanks to Gary Gregory.
+o            Fix field label in BaseObjectPoolConfig toString() builder: From maxWaitMillis to maxWaitDuration. Thanks to Gary Gregory.
+o            Fix field label in NoSuchElementException message for GenericObjectPool.borrowObject(Duration): From borrowMaxWaitMillis to borrowMaxWaitDuration. Thanks to Gary Gregory.
+o            Reimplement DefaultPooledObject.getIdleDuration() using Duration computation. Thanks to Gary Gregory.
+o            Reimplement BaseGenericObjectPool.maxBorrowWait as a Duration instead of a long. Thanks to Gary Gregory.
+o            Minors Changes #89. Thanks to Arturo Bernal.
+
+Changes:
+o            Bump checkstyle from 8.45 to 8.45.1 #93. Thanks to Dependabot.
+o            Bump spotbugs from 4.2.3 to 4.3.0 and ignore new medium warnings EI_EXPOSE_REP and EI_EXPOSE_REP2. Thanks to Dependabot.
+
+
+For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Commons Pool website:
+
+https://commons.apache.org/proper/commons-pool/
+
+Download page: https://commons.apache.org/proper/commons-pool/download_pool.cgi
+
+-----------------------------------------------------------------------------------------------
+
+              Apache Commons Pool 2.11.0 RELEASE NOTES
+
+The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.11.0.
+
+Apache Commons Pool provides an object-pooling API and a number of object pool implementations.
+Version 2 contains a completely re-written pooling implementation compared to the 1.x series.
+In addition to performance and scalability improvements, version 2 includes robust instance
+tracking and pool monitoring. 
+
+Version 2.10.x requires Java 8 or above.
+Version 2.9.x requires Java 8 or above.
+Version 2.8.x requires Java 8 or above.
+Version 2.7.x requires Java 8 or above.
+Version 2.6.x requires Java 7 or above.
+Version 2.5.x requires Java 7 or above.
+Version 2.0 requires 6 or above. 
+
+No client code changes are required to migrate from versions 2.0-2.3 to version 2.4.3.
+Users of version 1.x should consult the migration guide on the Commons Pool web site.
+
+NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPoolMXBean
+      and GenericKeyedObjectPoolMXBean) exist only to define the attributes and methods
+      that will be made available via JMX. They must not be implemented by clients as
+      they are subject to change between major, minor and patch version releases of
+      Commons Pool. Clients that implement any of these interfaces may not, therefore,
+      be able to upgrade to a new minor or patch release without requiring code
+      changes.
+
+This is a feature release (Java 8 or above).
+
+Changes in version 2.11.0 include:
+
+New features:
+o            Track timestamps with Instants instead of longs. 
+             There is currently no increased precision on Java 8, but starting with Java 9, the JRE SystemClock precision is increased usually down to microseconds, or tenth of microseconds, depending on the OS, Hardware, and JVM implementation.
+             Add and use: 
+             - DefaultPooledObject.getCreateInstant()
+             - DefaultPooledObject.getLastUsedInstant()
+             - PooledObject.getCreateInstant()
+             - PooledObject.getLastBorrowInstant()
+             - PooledObject.getLastReturnInstant()
+             - PooledObject.getLastUsedInstant()
+             - TrackedUse#getLastUsedInstant() Thanks to Gary Gregory.
+o            Add BaseObjectPoolConfig.setEvictorShutdownTimeoutDuration(Duration), deprecate setEvictorShutdownTimeoutMillis(Duration). Thanks to Gary Gregory.
+o            Add BaseGenericObjectPool.{get|set}MaxWaitDuration(Duration) and deprecate {get|set}MaxWaitMillis(long). Thanks to Gary Gregory.
+o            Add BaseObjectPoolConfig.{get|set}MaxWaitDuration(Duration) and deprecate {get|set}MaxWaitMillis(long). Thanks to Gary Gregory.
+o            Add and use Duration APIs instead of ints or longs.
+             - Add and use Duration APIs in BaseGenericObjectPool: getDurationBetweenEvictionRuns(), getEvictorShutdownTimeoutDuration(), getMinEvictableIdleDuration(), getSoftMinEvictableIdleDuration(), setMaxWait(Duration), setMinEvictableIdle(Duration), setSoftMinEvictableIdle(Duration).
+             - Add and use Duration APIs in BaseObjectPoolConfig: getDurationBetweenEvictionRuns(), getEvictorShutdownTimeoutDuration(),getMinEvictableIdleDuration(), getSoftMinEvictableIdleDuration().
+             - Add and use Duration APIs in EvictionConfig: getIdleEvictDuration(), getIdleSoftEvictDuration().
+             - Add and use Duration APIs in PooledObject: getIdleDuration(), getActiveDuration().
+             - No need to initialize instance variables to their default values.
+             - Update Javadocs.
+             - Update toString() implementations with duration labels. Thanks to Gary Gregory.
+o POOL-396:  Handle validation exceptions during eviction. #85. Thanks to Jeremy Kong, Phil Steitz.
+o POOL-395:  Improve exception thrown in GenericObjectPool.borrowObject when pool is exhausted. Added BaseGenericObjectPool.setMessagesStatistics(boolean). Thanks to Gary Gregory, Arash Nikoo.
+o            Add and use AbandonedConfig.copy(AbandonedConfig) to fix CPD code duplication issues in GenericKeyedObjectPool and GenericObjectPool. Thanks to Gary Gregory.
+o            Pull up AbandonedConfig and related methods from GenericKeyedObjectPool and GenericObjectPool to BaseGenericObjectPool (fix for CPD issues).
+             - BaseGenericObjectPool.getLogAbandoned()
+             - BaseGenericObjectPool.getRemoveAbandonedOnBorrow()
+             - BaseGenericObjectPool.getRemoveAbandonedOnMaintenance()
+             - BaseGenericObjectPool.getRemoveAbandonedTimeout()
+             - BaseGenericObjectPool.getRemoveAbandonedTimeoutDuration()
+             - BaseGenericObjectPool.isAbandonedConfig()
+             - BaseGenericObjectPool.setAbandonedConfig(AbandonedConfig) Thanks to Gary Gregory.
+
+Fixed Bugs:
+o            Fix "[WARNING] Old version of checkstyle detected. Consider updating to >= v8.30." Update Checktyle to 8.44. Thanks to Gary Gregory.
+o            Make Duration setters use their respective default values when null. Thanks to Gary Gregory.
+o            Call swallowException(Exception) instead of printing exceptions to the console in GenericKeyedObjectPool.removeAbandoned(AbandonedConfig) and GenericObjectPool.removeAbandoned(AbandonedConfig). Thanks to Gary Gregory.
+o            Fix Javadoc link reference #91. Thanks to Arturo Bernal.
+o            No need to initialize to default values. #90. Thanks to Arturo Bernal.
+o            Bump org.ow2.asm:asm-util from 9.1 to 9.2. Thanks to Gary Gregory.
+o            Bump com.github.spotbugs:spotbugs from 4.2.3 to 4.3.0. Thanks to Gary Gregory.
+o            Bump checkstyle from 8.44 to 8.45 #92. Thanks to Dependabot.
+
+
+
+For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Commons Pool website:
+
+https://commons.apache.org/proper/commons-pool/
+
+Download page: https://commons.apache.org/proper/commons-pool/download_pool.cgi
+
+-----------------------------------------------------------------------------------------------
+
+              Apache Commons Pool 2.10.0 RELEASE NOTES
+
+The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.10.0.
+
+Apache Commons Pool provides an object-pooling API and a number of object pool implementations.
+Version 2 contains a completely re-written pooling implementation compared to the 1.x series.
+In addition to performance and scalability improvements, version 2 includes robust instance
+tracking and pool monitoring. 
+
+Version 2.10.x requires Java 8 or above.
+Version 2.9.x requires Java 8 or above.
+Version 2.8.x requires Java 8 or above.
+Version 2.7.x requires Java 8 or above.
+Version 2.6.x requires Java 7 or above.
+Version 2.5.x requires Java 7 or above.
+Version 2.0 requires 6 or above. 
+
+No client code changes are required to migrate from versions 2.0-2.3 to version 2.4.3.
+Users of version 1.x should consult the migration guide on the Commons Pool web site.
+
+NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPoolMXBean
+      and GenericKeyedObjectPoolMXBean) exist only to define the attributes and methods
+      that will be made available via JMX. They must not be implemented by clients as
+      they are subject to change between major, minor and patch version releases of
+      Commons Pool. Clients that implement any of these interfaces may not, therefore,
+      be able to upgrade to a new minor or patch release without requiring code
+      changes.
+
+This is a MMMM release (Java 8 or above).
+
+Changes in version 2.10.0 include:
+
+New features:
+o            Add and use java.time.Duration APIs timeouts instead of using ints for seconds.
+             See the site and its API comparison report for a list of the new Duration-based APIs. Thanks to Gary Gregory.
+o            Implement AbandonedConfig for GenericKeyedObjectPool #67. Thanks to JSurf, Gary Gregory, Phil Steitz.
+
+Fixed Bugs:
+o            Simplify Assertions in tests #77. Thanks to Arturo Bernal.
+o            Replace C-style array declaration with Java style #80. Thanks to Arturo Bernal.
+o            Use Objects.equals(); Use Anonymous type; Use method reference instead Lambda; Replace Loop with Collection.removeIf(). #81. Thanks to Arturo Bernal.
+o            Use diamond operator. #82. Thanks to Arturo Bernal.
+o            Code clean ups. #83. Thanks to Arturo Bernal.
+
+Changes:
+o            Bump spotbugs-maven-plugin from 4.0.4 to 4.2.1 #48, #53, #59, #62. Thanks to Dependabot.
+o            Bump actions/setup-java from v1.4.2 to v2, #47. Thanks to Dependabot, Gary Gregory.
+o            Bump junit from 4.13 to 4.13.1 #50. Thanks to Dependabot.
+o            Bump biz.aQute.bndlib from 5.1.2 to 5.3.0, #51, #66. Thanks to Dependabot.
+o POOL-389:  Migrate to JUnit 5 #57. Thanks to Arturo Bernal.
+o POOL-389:  Minor Improvements #58, #60. Thanks to Arturo Bernal.
+o            Bump actions/checkout from v2.3.3 to v2.3.4 #54. Thanks to Dependabot.
+o            Bump maven-pmd-plugin from 3.13.0 to 3.14.0 #55. Thanks to Dependabot.
+o            Update commons.japicmp.version 0.14.3 -> 0.15.3. Thanks to Gary Gregory.
+o            Bump actions/cache from v2 to v2.1.6 #65, #75, #84. Thanks to Dependabot, Gary Gregory.
+o            Bump maven-checkstyle-plugin from 3.1.1 to 3.1.2 #61. Thanks to Dependabot.
+o            Bump asm-util from 9.0 to 9.1 #64. Thanks to Dependabot.
+o            Bump spotbugs from 4.2.1 to 4.2.3 #68, #73, #74. Thanks to Dependabot.
+o            Bump junit-bom from 5.7.1 to 5.8.0-M1 #76. Thanks to Dependabot, Gary Gregory.
+o            Bump maven-bundle-plugin from 5.1.1 to 5.1.2 #70. Thanks to Dependabot.
+o            Bump animal-sniffer-maven-plugin from 1.19 to 1.20. Thanks to Dependabot.
+
+
+For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Commons Pool website:
+
+https://commons.apache.org/proper/commons-pool/
+
+Download page: https://commons.apache.org/proper/commons-pool/download_pool.cgi
+
+-----------------------------------------------------------------------------------------------
+
+              Apache Commons Pool 2.9.0 RELEASE NOTES
+
+The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.9.0.
+
+Apache Commons Pool provides an object-pooling API and a number of object pool implementations.
+Version 2 contains a completely re-written pooling implementation compared to the 1.x series.
+In addition to performance and scalability improvements, version 2 includes robust instance
+tracking and pool monitoring. 
+
+Version 2.9.x requires Java 8 or above.
+Version 2.8.x requires Java 8 or above.
+Version 2.7.x requires Java 8 or above.
+Version 2.6.x requires Java 7 or above.
+Version 2.5.x requires Java 7 or above.
+Version 2.0 requires 6 or above. 
+
+No client code changes are required to migrate from versions 2.0-2.3 to version 2.4.3.
+Users of version 1.x should consult the migration guide on the Commons Pool web site.
+
+NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPoolMXBean
+      and GenericKeyedObjectPoolMXBean) exist only to define the attributes and methods
+      that will be made available via JMX. They must not be implemented by clients as
+      they are subject to change between major, minor and patch version releases of
+      Commons Pool. Clients that implement any of these interfaces may not, therefore,
+      be able to upgrade to a new minor or patch release without requiring code
+      changes.
+
+This is a minor release (Java 8 or above).
+
+Changes in version 2.9.0 include:
+
+Changes:
+o POOL-387:  Object factory destroy method should carry information on activation context. Thanks to Phil Steitz.
+o            Update spotbugs from 4.0.6 to 4.1.3, #37, #41, #46. Thanks to Dependabot.
+o            Update actions/checkout from v2.3.1 to v2.3.3 #56, #45. Thanks to Dependabot.
+o            Update actions/setup-java from v1.4.0 to v1.4.2 #42. Thanks to Dependabot.
+o            Update optional asm-util from 8.0.1 to 9.0 #44. Thanks to Dependabot.
+
+For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Commons Pool website:
+
+https://commons.apache.org/proper/commons-pool/
+
+Download page: https://commons.apache.org/proper/commons-pool/download_pool.cgi
+
+-----------------------------------------------------------------------------------------------
+
+              Apache Commons Pool 2.8.1 RELEASE NOTES
+
+The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.8.1.
+
+Apache Commons Pool provides an object-pooling API and a number of object pool implementations.
+Version 2 contains a completely re-written pooling implementation compared to the 1.x series.
+In addition to performance and scalability improvements, version 2 includes robust instance
+tracking and pool monitoring. Version 2 requires JDK level 1.6 or above. 
+
+No client code changes are required to migrate from versions 2.0-2.3 to version 2.4.3.
+Users of version 1.x should consult the migration guide on the Commons Pool web site.
+
+NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPoolMXBean
+      and GenericKeyedObjectPoolMXBean) exist only to define the attributes and methods
+      that will be made available via JMX. They must not be implemented by clients as
+      they are subject to change between major, minor and patch version releases of
+      Commons Pool. Clients that implement any of these interfaces may not, therefore,
+      be able to upgrade to a new minor or patch release without requiring code
+      changes.
+
+This is a maintenance release (Java 8 or above).
+
+Changes in version 2.8.1 include:
+
+New features:
+o POOL-385:  Added Automatic-Module-Name to support JPMS #31. Thanks to scholzi100.
+
+Fixed Bugs:
+o POOL-386:  Refactored EvictionTimer usage tracking to fix POOL-386 and handle abandoned pools. #32. Thanks to Phil Steitz, Mark Thomas.
+o            [Javadoc] Add missing @throws comment in PoolUtils. #27. Thanks to Prodigysov, Gary Gregory.
+
+Changes:
+o POOL-384:  Update optional library org.ow2.asm:asm-util from 7.2 to 8.0.1. Thanks to Gary Gregory.
+o            Update site reports from org.apache.bcel:bcel 6.4.1 to 6.5.0. Thanks to Gary Gregory.
+o            Update site reports from maven-pmd-plugin 3.12.0 to 3.13.0. Thanks to Gary Gregory.
+o            Update build from biz.aQute.bnd:biz.aQute.bndlib 5.1.0 -> 5.1.2. Thanks to Gary Gregory.
+o            Update actions/checkout from v1 to v2.3.1 #33. Thanks to Dependabot.
+o            Update commons-parent from 50 to 51 #36. Thanks to Dependabot.
+o            Update Checkstyle plugin from 3.0.0 to 3.1.1. Thanks to Gary Gregory.
+o            Update JApiCmp from 0.14.1 to 0.14.3. Thanks to Gary Gregory.
+o            Update animal-sniffer-maven-plugin from 1.16 to 1.19. Thanks to Gary Gregory.
+
+
+For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Commons Pool website:
+
+https://commons.apache.org/proper/commons-pool/
+
+Download page: https://commons.apache.org/proper/commons-pool/download_pool.cgi
+
+-----------------------------------------------------------------------------------------------
+
+              Apache Commons Pool 2.8.0 RELEASE NOTES
+              05 December 2019
+
+The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.8.0.
+
+Apache Commons Pool provides an object-pooling API and a number of object pool implementations.
+Version 2 contains a completely re-written pooling implementation compared to the 1.x series.
+In addition to performance and scalability improvements, version 2 includes robust instance
+tracking and pool monitoring. Version 2 requires JDK level 1.6 or above. 
+
+No client code changes are required to migrate from versions 2.0-2.3 to version 2.4.3.
+Users of version 1.x should consult the migration guide on the Commons Pool web site.
+
+NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPoolMXBean
+      and GenericKeyedObjectPoolMXBean) exist only to define the attributes and methods
+      that will be made available via JMX. They must not be implemented by clients as
+      they are subject to change between major, minor and patch version releases of
+      Commons Pool. Clients that implement any of these interfaces may not, therefore,
+      be able to upgrade to a new minor or patch release without requiring code
+      changes.
+
+This is a maintenance release (Java 8 or above).
+
+Changes in version 2.8.0 include:
+
+New features:
+o POOL-378:  Deprecate PoolUtils.prefill(ObjectPool, int) in favor of ObjectPool.addObjects(int). Thanks to Gary Gregory.
+o POOL-379:  Deprecate PoolUtils.prefill(KeyedObjectPool, K, int) in favor of KeyedObjectPool.addObjects(K, int). Thanks to Gary Gregory.
+o POOL-380:  Deprecate PoolUtils.prefill(KeyedObjectPool, Collection, int) in favor of KeyedObjectPool.addObjects(Collection, int). Thanks to Gary Gregory.
+
+Fixed Bugs:
+o POOL-374:  org.apache.commons.pool3.impl.GenericKeyedObjectPool.returnObject(K, T) should throw IllegalStateException instead of NullPointerException when a key is not found in the pool map. Thanks to Gary Gregory, Phil Steitz.
+o POOL-376:  Fixed regression from original fix for POOL-356 which could result in NPE when destroying objects. Thanks to Sazzadul Hoque, Phil Steitz.
+o POOL-326:  Eliminated NPE / ISE exceptions due to keyed pools being prematurely removed. Thanks to Phil Steitz.
+o            Close BufferedOutputStream in test before calling toString on underlying BufferedOutputStream #26. Thanks to emopers.
+o            [Javadoc] Add missing @throws comment in SoftReferenceObjectPool. #28. Thanks to Prodigysov.
+
+Changes:
+o POOL-375:  Update optional library cglib from 3.2.12 to 3.3.0. Thanks to Gary Gregory.
+o            Update site build from Apache Commons BCEL 6.3.1 to 6.4.1. Thanks to Gary Gregory.
+o POOL-377:  Update optional library org.ow2.asm:asm-util from 7.1 to 7.2. Thanks to Gary Gregory.
+
+
+For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Commons Pool website:
+
+https://commons.apache.org/proper/commons-pool/
+
+Download page: https://commons.apache.org/proper/commons-pool/download_pool.cgi
+
+-----------------------------------------------------------------------------------------------
+
+              Apache Commons Pool 2.7.0 RELEASE NOTES
+              23 July 2019
+
+The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.7.0.
+
+Apache Commons Pool provides an object-pooling API and a number of object pool implementations.
+Version 2 contains a completely re-written pooling implementation compared to the 1.x series.
+In addition to performance and scalability improvements, version 2 includes robust instance
+tracking and pool monitoring. Version 2 requires JDK level 1.6 or above. 
+
+No client code changes are required to migrate from versions 2.0-2.3 to version 2.4.3.
+Users of version 1.x should consult the migration guide on the Commons Pool web site.
+
+NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPoolMXBean
+      and GenericKeyedObjectPoolMXBean) exist only to define the attributes and methods
+      that will be made available via JMX. They must not be implemented by clients as
+      they are subject to change between major, minor and patch version releases of
+      Commons Pool. Clients that implement any of these interfaces may not, therefore,
+      be able to upgrade to a new minor or patch release without requiring code
+      changes.
+
+This is a feature release (Java 8 or above).
+
+Changes in version 2.7.0 include:
+
+New features:
+o POOL-370:  Add org.apache.commons.pool3.PooledObject#getBorrowedCount(). Thanks to Mark Thomas, Gary Gregory.
+o POOL-371:  Add org.apache.commons.pool3.PooledObject#setRequireFullStackTrace(boolean). Thanks to Matt Sicker, Gary Gregory.
+
+Fixed Bugs:
+o POOL-361:  Move validation for newly created objects into create(). Fixes #23. Thanks to Pablo, Phil Steitz, Bruno P. Kinoshita.
+
+Changes:
+o POOL-364:  Update from Java 7 to Java 8. Thanks to Gary Gregory.
+o POOL-365:  Update ASM from 7.0 to 7.1 Thanks to Gary Gregory.
+o POOL-366:  Update optional library cglib from 3.2.10 to 3.2.12. Thanks to Gary Gregory.
+o POOL-367:  Fix typo in package private method name stopEvitor() -> stopEvictor() #22. Thanks to Per Lundberg.
+
+
+For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Commons Pool website:
+
+https://commons.apache.org/proper/commons-pool/
+
+Download page: https://commons.apache.org/proper/commons-pool/download_pool.cgi
+
+-----------------------------------------------------------------------------------------------
+
+              Apache Commons Pool 2.6.2 RELEASE NOTES
+
+The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.6.2.
+
+Apache Commons Pool provides an object-pooling API and a number of object pool implementations.
+Version 2 contains a completely re-written pooling implementation compared to the 1.x series.
+In addition to performance and scalability improvements, version 2 includes robust instance
+tracking and pool monitoring. Version 2 requires JDK level 1.6 or above. 
+
+No client code changes are required to migrate from versions 2.0-2.3 to version 2.4.3.
+Users of version 1.x should consult the migration guide on the Commons Pool web site.
+
+NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPoolMXBean
+      and GenericKeyedObjectPoolMXBean) exist only to define the attributes and methods
+      that will be made available via JMX. They must not be implemented by clients as
+      they are subject to change between major, minor and patch version releases of
+      Commons Pool. Clients that implement any of these interfaces may not, therefore,
+      be able to upgrade to a new minor or patch release without requiring code
+      changes.
+
+This is a maintenance release.
+
+Changes in version 2.6.2 include:
+
+Fixed Bugs:
+o POOL-362:  Always null out org.apache.commons.pool3.impl.BaseGenericObjectPool.evictionIterator to match org.apache.commons.pool3.impl.BaseGenericObjectPool.evictor.
+o POOL-363:  Evictor Thread prevents Spring Context shutdown in standalone app. Thanks to Josh Landin.
+o POOL-348:  The commons-pool-evictor-thread should run as a Deamon. Thanks to Josh Landin.
+
+For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Commons Pool website:
+
+https://commons.apache.org/proper/commons-pool/
+
+Download page: https://commons.apache.org/proper/commons-pool/download_pool.cgi
+
+-----------------------------------------------------------------------------------------------
+
+              Apache Commons Pool 2.6.1 RELEASE NOTES
+
+The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.6.1.
+
+Apache Commons Pool provides an object-pooling API and a number of object pool implementations.
+Version 2 contains a completely re-written pooling implementation compared to the 1.x series.
+In addition to performance and scalability improvements, version 2 includes robust instance
+tracking and pool monitoring. Version 2 requires JDK level 1.6 or above. 
+
+No client code changes are required to migrate from versions 2.0-2.3 to version 2.4.3.
+Users of version 1.x should consult the migration guide on the Commons Pool web site.
+
+NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPoolMXBean
+      and GenericKeyedObjectPoolMXBean) exist only to define the attributes and methods
+      that will be made available via JMX. They must not be implemented by clients as
+      they are subject to change between major, minor and patch version releases of
+      Commons Pool. Clients that implement any of these interfaces may not, therefore,
+      be able to upgrade to a new minor or patch release without requiring code
+      changes.
+
+This is a maintenance release.
+
+Changes in version 2.6.1 include:
+
+
+Fixed Bugs:
+o POOL-340:  Correct validateObject with concurrent borrowObject Thanks to Pavel Kolesov.
+o POOL-356:  Fix deadlock on massive concurrent requests
+o POOL-347:  Method borrowObject waits for maxWaitMillis over in pool full. Thanks to Shunsuke Nakamura.
+o POOL-359:  NullPointerException closing multiple GenericObjectPools. Thanks to Michael Wintermeyer, Gary Gregory.
+o POOL-326:  Threading issue, NullPointerException and IllegalStateException in GenericKeyedObjectPool. Thanks to Chris Allison, Phil Steitz.
+o POOL-352:  CallStackUtils mishandles security manager check (partial fix.) Thanks to Volker Kleinschmidt, Gary Gregory.
+
+Changes:
+o POOL-345:  Update optional library cglib from 3.2.6 to 3.2.9.
+o POOL-346:  Move common configuration setter to BaseGenericObjectPool #9. Thanks to Michael Chen.
+o POOL-349:  Update optional library asm-util from 6.2 to 7.0.
+o POOL-360:  Update optional library cglib from 3.2.9 to 3.2.10.
+
+
+For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Commons Pool website:
+
+https://commons.apache.org/proper/commons-pool/
+
+Download page: https://commons.apache.org/proper/commons-pool/download_pool.cgi
+
+-----------------------------------------------------------------------------------------------
+
+              Apache Commons Pool 2.6.0 RELEASE NOTES
+
+The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.6.0.
+
+Apache Commons Pool provides an object-pooling API and a number of object pool implementations.
+Version 2 contains a completely re-written pooling implementation compared to the 1.x series.
+In addition to performance and scalability improvements, version 2 includes robust instance
+tracking and pool monitoring.
+
+- Version 2.6.0 requires Java 7 or above.
+- Version 2.5.0 requires Java 7 or above.
+- Version 2.0 requires 6 or above.
+
+No client code changes are required to migrate from versions 2.0-2.3 to version 2.4.3.
+Users of version 1.x should consult the migration guide on the Commons Pool web site.
+
+NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPoolMXBean
+      and GenericKeyedObjectPoolMXBean) exist only to define the attributes and methods
+      that will be made available via JMX. They must not be implemented by clients as
+      they are subject to change between major, minor and patch version releases of
+      Commons Pool. Clients that implement any of these interfaces may not, therefore,
+      be able to upgrade to a new minor or patch release without requiring code
+      changes.
+
+This is a maintenance release.
+
+Changes in version 2.6.0 include:
+
+Fixed Bugs:
+o POOL-337:  Ensure cancelled eviction tasks are removed from scheduler. Thanks to Reinald Verheij.
+o POOL-338:  GenericObjectPool constructor may throw an exception under OSGi. Thanks to Michael C, Gary Gregory.
+o POOL-324:  org.apache.commons.pool3.impl.GenericObjectPool.getFactoryType() throws java.lang.ClassCastException. Thanks to Jay Xu, Gary Gregory.
+o POOL-344:  Delete repeated call startEvictor. Thanks to Yulin Wang.
+
+Changes:
+o POOL-336:  GenericObjectPool's borrowObject lock if create() fails with Error. Thanks to Wolfgang Glas.
+o POOL-339:  Update optional library cglib from 3.2.5 to 3.2.6.
+o POOL-341:  Update optional library asm-util from 6.0 to 6.1.1.
+o POOL-342:  Update optional library asm-util from 6.1.1 to 6.2.
+
+Note that Clirr reports one warning:
+"Value of field DEFAULT_EVICTION_POLICY_CLASS_NAME is no longer a compile-time constant."
+The value is initialized as "public static final String DEFAULT_EVICTION_POLICY_CLASS_NAME = DefaultEvictionPolicy.class.getName();"
+The value should not change from one run to the next.
+
+For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Commons Pool website:
+
+https://commons.apache.org/proper/commons-pool/
+
+Download page: https://commons.apache.org/proper/commons-pool/download_pool.cgi
+
+-----------------------------------------------------------------------------------------------
+
+              Apache Commons Pool 2.5.0 RELEASE NOTES
+
+The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.5.0.
+
+Apache Commons Pool provides an object-pooling API and a number of object pool implementations.
+Version 2 contains a completely re-written pooling implementation compared to the 1.x series.
+In addition to performance and scalability improvements, version 2 includes robust instance
+tracking and pool monitoring. Version 2 requires JDK level 1.6 or above. 
+
+No client code changes are required to migrate from versions 2.0-2.3 to version 2.4.3.
+Users of version 1.x should consult the migration guide on the Commons Pool web site.
+
+NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPoolMXBean
+      and GenericKeyedObjectPoolMXBean) exist only to define the attributes and methods
+      that will be made available via JMX. They must not be implemented by clients as
+      they are subject to change between major, minor and patch version releases of
+      Commons Pool. Clients that implement any of these interfaces may not, therefore,
+      be able to upgrade to a new minor or patch release without requiring code
+      changes.
+
+This is a patch release, including bug fixes only.
+
+Changes in version 2.5.0 include:
+
+New features:
+o POOL-332:  ObjectPool and KeyedObject pool should extend Closeable.
+o POOL-335:  Make abandoned logging stack trace requirements configurable. This also reverts
+             the default behavior introduced by POOL-320.
+
+
+Changes:
+o POOL-331:  Update from Java 6 to 7.
+o POOL-333:  Update optional dependency asm-util from 5.2 to 6.0.
+o POOL-334:  org.apache.commons.pool3.impl.ThrowableCallStack.Snapshot is missing serialVersionUID.
+
+
+For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Commons Pool website:
+
+https://commons.apache.org/proper/commons-pool/
+
+-----------------------------------------------------------------------------------------------
+
+              Apache Commons Pool 2.4.3 RELEASE NOTES
+
+The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.4.3.
+
+Apache Commons Pool provides an object-pooling API and a number of object pool implementations.
+Version 2 contains a completely re-written pooling implementation compared to the 1.x series.
+In addition to performance and scalability improvements, version 2 includes robust instance
+tracking and pool monitoring. Version 2 requires JDK level 1.6 or above. 
+
+No client code changes are required to migrate from versions 2.0-2.3 to version 2.4.3.
+Users of version 1.x should consult the migration guide on the Commons Pool web site.
+
+NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPoolMXBean
+      and GenericKeyedObjectPoolMXBean) exist only to define the attributes and methods
+      that will be made available via JMX. They must not be implemented by clients as
+      they are subject to change between major, minor and patch version releases of
+      Commons Pool. Clients that implement any of these interfaces may not, therefore,
+      be able to upgrade to a new minor or patch release without requiring code
+      changes.
+
+Changes in version 2.4.3 include:
+
+New features:
+o POOL-320:  Use more efficient stack walking mechanisms for usage tracking when possible.
+
+Fixed Bugs:
+o POOL-328:  Documentation with repeated words (sources, tests, and examples). Thanks to Lorenzo Solano Martinez.
+o POOL-317:  Correction of default value of softMinEvictableIdleTimeMillis in BaseObjectPoolConfig. Thanks to KeiichiFujino.
+o POOL-309:  Fix misspellings from "destory" to "destroy". Thanks to jolestar, Roopam Patekar.
+o POOL-306:  Ensure BaseGenericObjectPool.IdentityWrapper#equals() follows the expected
+             contract for equals(). Thanks to Adrian Crum.
+o POOL-303:  Ensure that threads do not block indefinitely if more than maxTotal
+             threads try to borrow an object at the same time and the factory fails to
+             create any objects.
+o POOL-310:  Ensure that threads using GKOP do not block indefinitely if more than
+             maxTotal threads try to borrow objects with different keys at the same
+             time and the factory destroys objects on return. Thanks to Ivan Iliev.
+o            Ensure that any class name used for evictionPolicyClassName represents a
+             class that implements EvictionPolicy.
+o POOL-315:  Add a configurable delay (default 10 seconds) to wait when shutting down
+             an Evictor to allow the associated thread time to complete and current
+             evictions and to terminate. Thanks to KeiichiFujino.
+o            Ensure that a call to GKOP preparePool() takes account of other threads
+             that might create objects concurrently, particularly the Evictor.
+
+Changes:
+o POOL-280:  Small refactoring of borrowObject() to reduce code duplication. Thanks to Jacopo Cappellato.
+o POOL-307:  Replace inefficient use of keySet with entrySet in GKOP. Thanks to Anthony Whitford.
+o POOL-322:  Update optional cglib library from 3.1 to 3.2.5.
+o POOL-323:  Update optional OW2 ASM from 5.0.4 to 5.2.
+
+
+For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Commons Pool website:
+
+https://commons.apache.org/proper/commons-pool/
+
+-----------------------------------------------------------------------------------------------
+
+              Apache Commons Pool 2.4.2 RELEASE NOTES
+
+The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.4.2.
+
+Apache Commons Pool provides an object-pooling API and a number of object pool implementations.
+Version 2 contains a completely re-written pooling implementation compared to the 1.x series.
+In addition to performance and scalability improvements, version 2 includes robust instance
+tracking and pool monitoring. Version 2 requires JDK level 1.6 or above. 
+
+No client code changes are required to migrate from versions 2.0-2.3 to version 2.4.2.
+Users of version 1.x should consult the migration guide on the Commons Pool web site.
+
+NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPoolMXBean
+      and GenericKeyedObjectPoolMXBean) exist only to define the attributes and methods
+      that will be made available via JMX. They must not be implemented by clients as
+      they are subject to change between major, minor and patch version releases of
+      Commons Pool. Clients that implement any of these interfaces may not, therefore,
+      be able to upgrade to a new minor or patch release without requiring code
+      changes.
+
+This is a patch release, including bug fixes only.
+
+Changes in version 2.4.2 include:
+
+
+Fixed Bugs:
+o POOL-298:  Changed default jmxNameBase in BaseObjectPoolConfig to the correct (null)
+             default.
+o POOL-300:  Added PrintWriter flush to DefaultPooledObject's printStackTrace method.
+
+
+
+For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Commons Pool website:
+
+https://commons.apache.org/proper/commons-pool/
+
 
