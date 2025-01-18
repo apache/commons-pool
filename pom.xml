@@ -51,92 +51,6 @@
     <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/commons-pool.git</developerConnection>
     <url>https://gitbox.apache.org/repos/asf?p=commons-pool.git</url>
   </scm>
-
-  <developers>
-    <developer>
-      <name>Morgan Delagrange</name>
-      <id>morgand</id>
-      <email></email>
-      <organization></organization>
-    </developer>
-    <developer>
-      <name>Geir Magnusson</name>
-      <id>geirm</id>
-      <email></email>
-      <organization></organization>
-    </developer>
-    <developer>
-      <name>Craig McClanahan</name>
-      <id>craigmcc</id>
-      <email></email>
-      <organization></organization>
-    </developer>
-    <developer>
-      <name>Rodney Waldhoff</name>
-      <id>rwaldhoff</id>
-      <email></email>
-      <organization></organization>
-    </developer>
-    <developer>
-      <name>David Weinrich</name>
-      <id>dweinr1</id>
-      <email></email>
-      <organization></organization>
-    </developer>
-    <developer>
-      <name>Dirk Verbeeck</name>
-      <id>dirkv</id>
-      <email></email>
-      <organization></organization>
-    </developer>
-    <developer>
-      <name>Robert Burrell Donkin</name>
-      <id>rdonkin</id>
-      <email></email>
-      <organization>The Apache Software Foundation</organization>
-    </developer>
-    <developer>
-      <name>Sandy McArthur</name>
-      <id>sandymac</id>
-      <email></email>
-      <organization>The Apache Software Foundation</organization>
-    </developer>
-    <developer>
-      <name>Simone Tripodi</name>
-      <id>simonetripodi</id>
-      <organization>The Apache Software Foundation</organization>
-    </developer>
-    <developer>
-      <id>ggregory</id>
-      <name>Gary Gregory</name>
-      <email>ggregory at apache.org</email>
-      <url>https://www.garygregory.com</url>
-      <organization>The Apache Software Foundation</organization>
-      <organizationUrl>https://www.apache.org/</organizationUrl>      
-      <roles>
-        <role>PMC Member</role>
-      </roles>
-      <timezone>America/New_York</timezone>
-      <properties>
-        <picUrl>https://people.apache.org/~ggregory/img/garydgregory80.png</picUrl>
-      </properties>
-    </developer>
-    <developer>
-      <name>Matt Sicker</name>
-      <id>mattsicker</id>
-      <organization>The Apache Software Foundation</organization>
-    </developer>
-  </developers>
-  <contributors>
-    <contributor>
-      <name>Todd Carmichael</name>
-      <email>toddc@concur.com</email>
-    </contributor>
-    <contributor>
-      <name>Arturo Bernal</name>
-    </contributor>
-  </contributors>
-
   <dependencies>
     <dependency>
       <groupId>cglib</groupId>
@@ -451,5 +365,88 @@
       </properties>
     </profile>
   </profiles>
-
+  <developers>
+    <developer>
+      <name>Morgan Delagrange</name>
+      <id>morgand</id>
+      <email></email>
+      <organization></organization>
+    </developer>
+    <developer>
+      <name>Geir Magnusson</name>
+      <id>geirm</id>
+      <email></email>
+      <organization></organization>
+    </developer>
+    <developer>
+      <name>Craig McClanahan</name>
+      <id>craigmcc</id>
+      <email></email>
+      <organization></organization>
+    </developer>
+    <developer>
+      <name>Rodney Waldhoff</name>
+      <id>rwaldhoff</id>
+      <email></email>
+      <organization></organization>
+    </developer>
+    <developer>
+      <name>David Weinrich</name>
+      <id>dweinr1</id>
+      <email></email>
+      <organization></organization>
+    </developer>
+    <developer>
+      <name>Dirk Verbeeck</name>
+      <id>dirkv</id>
+      <email></email>
+      <organization></organization>
+    </developer>
+    <developer>
+      <name>Robert Burrell Donkin</name>
+      <id>rdonkin</id>
+      <email></email>
+      <organization>The Apache Software Foundation</organization>
+    </developer>
+    <developer>
+      <name>Sandy McArthur</name>
+      <id>sandymac</id>
+      <email></email>
+      <organization>The Apache Software Foundation</organization>
+    </developer>
+    <developer>
+      <name>Simone Tripodi</name>
+      <id>simonetripodi</id>
+      <organization>The Apache Software Foundation</organization>
+    </developer>
+    <developer>
+      <id>ggregory</id>
+      <name>Gary Gregory</name>
+      <email>ggregory at apache.org</email>
+      <url>https://www.garygregory.com</url>
+      <organization>The Apache Software Foundation</organization>
+      <organizationUrl>https://www.apache.org/</organizationUrl>      
+      <roles>
+        <role>PMC Member</role>
+      </roles>
+      <timezone>America/New_York</timezone>
+      <properties>
+        <picUrl>https://people.apache.org/~ggregory/img/garydgregory80.png</picUrl>
+      </properties>
+    </developer>
+    <developer>
+      <name>Matt Sicker</name>
+      <id>mattsicker</id>
+      <organization>The Apache Software Foundation</organization>
+    </developer>
+  </developers>
+  <contributors>
+    <contributor>
+      <name>Todd Carmichael</name>
+      <email>toddc@concur.com</email>
+    </contributor>
+    <contributor>
+      <name>Arturo Bernal</name>
+    </contributor>
+  </contributors>
 </project>
