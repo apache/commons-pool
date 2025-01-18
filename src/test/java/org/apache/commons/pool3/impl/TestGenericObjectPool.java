@@ -17,8 +17,6 @@
 
 package org.apache.commons.pool3.impl;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -1134,9 +1132,9 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         final Instant lastReturnInstant1 = po.getLastReturnInstant();
         final Instant lastUsedInstant1 = po.getLastUsedInstant();
 
-        assertThat(po.getCreateInstant(), lessThanOrEqualTo(lastBorrowInstant1));
-        assertThat(po.getCreateInstant(), lessThanOrEqualTo(lastReturnInstant1));
-        assertThat(po.getCreateInstant(), lessThanOrEqualTo(lastUsedInstant1));
+        assertTrue(po.getCreateInstant().compareTo(lastBorrowInstant1) <= 0);
+        assertTrue(po.getCreateInstant().compareTo(lastReturnInstant1) <= 0);
+        assertTrue(po.getCreateInstant().compareTo(lastUsedInstant1) <= 0);
 
         // Sleep MUST be "long enough" to detect that more than 0 milliseconds have
         // elapsed.
@@ -1147,32 +1145,30 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertFalse(po.getActiveDuration().isZero());
         // We use greaterThanOrEqualTo instead of equal because "now" many be different
         // when each argument is evaluated.
-        assertThat(1L, lessThanOrEqualTo(2L)); // sanity check
-        assertThat(Duration.ZERO, lessThanOrEqualTo(Duration.ZERO.plusNanos(1))); // sanity check
-        assertThat(po.getActiveDuration(), lessThanOrEqualTo(po.getIdleDuration()));
-        // Deprecated
-        assertThat(po.getActiveDuration(), lessThanOrEqualTo(po.getActiveDuration()));
+        assertTrue(Duration.ZERO.compareTo(Duration.ZERO.plusNanos(1)) <= 0); // sanity check
+        assertTrue(po.getActiveDuration().compareTo(po.getIdleDuration()) <= 0);
+        assertTrue(po.getActiveDuration().compareTo(po.getActiveDuration()) <= 0);
         //
         // TODO How to compare ID with AD since other tests may have touched the PO?
-        assertThat(po.getActiveDuration(), lessThanOrEqualTo(po.getIdleDuration()));
+        assertTrue(po.getActiveDuration().compareTo(po.getIdleDuration()) <= 0);
         //
-        assertThat(po.getCreateInstant(), lessThanOrEqualTo(po.getLastBorrowInstant()));
-        assertThat(po.getCreateInstant(), lessThanOrEqualTo(po.getLastReturnInstant()));
-        assertThat(po.getCreateInstant(), lessThanOrEqualTo(po.getLastUsedInstant()));
+        assertTrue(po.getCreateInstant().compareTo(po.getLastBorrowInstant()) <= 0);
+        assertTrue(po.getCreateInstant().compareTo(po.getLastReturnInstant()) <= 0);
+        assertTrue(po.getCreateInstant().compareTo(po.getLastUsedInstant()) <= 0);
 
-        assertThat(lastBorrowInstant1, lessThanOrEqualTo(po.getLastBorrowInstant()));
-        assertThat(lastReturnInstant1, lessThanOrEqualTo(po.getLastReturnInstant()));
-        assertThat(lastUsedInstant1, lessThanOrEqualTo(po.getLastUsedInstant()));
+        assertTrue(lastBorrowInstant1.compareTo(po.getLastBorrowInstant()) <= 0);
+        assertTrue(lastReturnInstant1.compareTo(po.getLastReturnInstant()) <= 0);
+        assertTrue(lastUsedInstant1.compareTo(po.getLastUsedInstant()) <= 0);
 
         genericObjectPool.returnObject(object);
 
         assertFalse(po.getActiveDuration().isNegative());
         assertFalse(po.getActiveDuration().isZero());
-        assertThat(po.getActiveDuration(), lessThanOrEqualTo(po.getActiveDuration()));
+        assertTrue(po.getActiveDuration().compareTo(po.getActiveDuration()) <= 0);
 
-        assertThat(lastBorrowInstant1, lessThanOrEqualTo(po.getLastBorrowInstant()));
-        assertThat(lastReturnInstant1, lessThanOrEqualTo(po.getLastReturnInstant()));
-        assertThat(lastUsedInstant1, lessThanOrEqualTo(po.getLastUsedInstant()));
+        assertTrue(lastBorrowInstant1.compareTo(po.getLastBorrowInstant()) <= 0);
+        assertTrue(lastReturnInstant1.compareTo(po.getLastReturnInstant()) <= 0);
+        assertTrue(lastUsedInstant1.compareTo(po.getLastUsedInstant()) <= 0);
     }
 
     /**
