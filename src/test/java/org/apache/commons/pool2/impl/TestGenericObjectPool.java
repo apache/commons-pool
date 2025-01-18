@@ -17,8 +17,6 @@
 
 package org.apache.commons.pool2.impl;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -47,6 +45,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
@@ -1137,12 +1136,13 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         final Instant lastReturnInstant1 = po.getLastReturnInstant();
         final Instant lastUsedInstant1 = po.getLastUsedInstant();
 
-        assertThat(po.getCreateInstant(), lessThanOrEqualTo(lastBorrowInstant1));
-        assertThat(po.getCreateInstant(), lessThanOrEqualTo(lastReturnInstant1));
-        assertThat(po.getCreateInstant(), lessThanOrEqualTo(lastUsedInstant1));
-        assertThat(po.getCreateTime(), lessThanOrEqualTo(lastBorrowInstant1.toEpochMilli()));
-        assertThat(po.getCreateTime(), lessThanOrEqualTo(lastReturnInstant1.toEpochMilli()));
-        assertThat(po.getCreateTime(), lessThanOrEqualTo(lastUsedInstant1.toEpochMilli()));
+        assertTrue(po.getCreateInstant().compareTo(lastBorrowInstant1) <= 0);
+        assertTrue(po.getCreateInstant().compareTo(lastReturnInstant1) <= 0);
+        assertTrue(po.getCreateInstant().compareTo(lastUsedInstant1) <= 0);
+        // Deprecated
+        assertTrue(po.getCreateTime() <= lastBorrowInstant1.toEpochMilli());
+        assertTrue(po.getCreateTime() <= lastReturnInstant1.toEpochMilli());
+        assertTrue(po.getCreateTime() <= lastUsedInstant1.toEpochMilli());
 
         // Sleep MUST be "long enough" to detect that more than 0 milliseconds have elapsed.
         // Need an API in Java 8 to get the clock granularity.
@@ -1151,35 +1151,34 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         assertFalse(po.getActiveDuration().isNegative());
         assertFalse(po.getActiveDuration().isZero());
         // We use greaterThanOrEqualTo instead of equal because "now" many be different when each argument is evaluated.
-        assertThat(1L, lessThanOrEqualTo(2L)); // sanity check
-        assertThat(Duration.ZERO, lessThanOrEqualTo(Duration.ZERO.plusNanos(1))); // sanity check
-        assertThat(po.getActiveDuration(), lessThanOrEqualTo(po.getIdleDuration()));
+        assertTrue(Duration.ZERO.compareTo(Duration.ZERO.plusNanos(1)) <= 0); // sanity check
+        assertTrue(po.getActiveDuration().compareTo(po.getIdleDuration()) <= 0);
         // Deprecated
-        assertThat(po.getActiveDuration().toMillis(), lessThanOrEqualTo(po.getActiveTimeMillis()));
-        assertThat(po.getActiveDuration(), lessThanOrEqualTo(po.getActiveTime()));
+        assertTrue(po.getActiveDuration().toMillis() <= po.getActiveTimeMillis());
+        assertTrue(po.getActiveDuration().compareTo(po.getIdleDuration()) <= 0);
         //
         // TODO How to compare ID with AD since other tests may have touched the PO?
-        assertThat(po.getActiveDuration(), lessThanOrEqualTo(po.getIdleTime()));
-        assertThat(po.getActiveDuration().toMillis(), lessThanOrEqualTo(po.getIdleTimeMillis()));
+        assertTrue(po.getActiveDuration().compareTo(po.getIdleTime()) <= 0);
+        assertTrue(po.getActiveDuration().toMillis() <= po.getIdleTimeMillis());
         //
-        assertThat(po.getCreateInstant(), lessThanOrEqualTo(po.getLastBorrowInstant()));
-        assertThat(po.getCreateInstant(), lessThanOrEqualTo(po.getLastReturnInstant()));
-        assertThat(po.getCreateInstant(), lessThanOrEqualTo(po.getLastUsedInstant()));
+        assertTrue(po.getCreateInstant().compareTo(po.getLastBorrowInstant()) <= 0);
+        assertTrue(po.getCreateInstant().compareTo(po.getLastReturnInstant()) <= 0);
+        assertTrue(po.getCreateInstant().compareTo(po.getLastUsedInstant()) <= 0);
 
-        assertThat(lastBorrowInstant1, lessThanOrEqualTo(po.getLastBorrowInstant()));
-        assertThat(lastReturnInstant1, lessThanOrEqualTo(po.getLastReturnInstant()));
-        assertThat(lastUsedInstant1, lessThanOrEqualTo(po.getLastUsedInstant()));
+        assertTrue(lastBorrowInstant1.compareTo(po.getLastBorrowInstant()) <= 0);
+        assertTrue(lastReturnInstant1.compareTo(po.getLastReturnInstant()) <= 0);
+        assertTrue(lastUsedInstant1.compareTo(po.getLastUsedInstant()) <= 0);
 
         genericObjectPool.returnObject(object);
 
         assertFalse(po.getActiveDuration().isNegative());
         assertFalse(po.getActiveDuration().isZero());
-        assertThat(po.getActiveDuration().toMillis(), lessThanOrEqualTo(po.getActiveTimeMillis()));
-        assertThat(po.getActiveDuration(), lessThanOrEqualTo(po.getActiveTime()));
+        assertTrue(po.getActiveDuration().toMillis() <= po.getActiveTimeMillis());
+        assertTrue(po.getActiveDuration().compareTo(po.getActiveTime()) <= 0);
 
-        assertThat(lastBorrowInstant1, lessThanOrEqualTo(po.getLastBorrowInstant()));
-        assertThat(lastReturnInstant1, lessThanOrEqualTo(po.getLastReturnInstant()));
-        assertThat(lastUsedInstant1, lessThanOrEqualTo(po.getLastUsedInstant()));
+        assertTrue(lastBorrowInstant1.compareTo(po.getLastBorrowInstant()) <= 0);
+        assertTrue(lastReturnInstant1.compareTo(po.getLastReturnInstant()) <= 0);
+        assertTrue(lastUsedInstant1.compareTo(po.getLastUsedInstant()) <= 0);
     }
 
     /**

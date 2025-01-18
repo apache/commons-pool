@@ -16,12 +16,10 @@
  */
 package org.apache.commons.pool2.impl;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.lessThan;
-import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -101,14 +99,13 @@ public class TestDefaultPooledObject {
         assertFalse(dpo.getActiveDuration().isNegative());
         assertFalse(dpo.getActiveDuration().isZero());
         // We use greaterThanOrEqualTo instead of equal because "now" many be different when each argument is evaluated.
-        assertThat(1L, lessThanOrEqualTo(2L)); // sanity check
-        assertThat(Duration.ZERO, lessThanOrEqualTo(Duration.ZERO.plusNanos(1))); // sanity check
-        assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getIdleDuration()));
+        assertTrue(Duration.ZERO.compareTo(Duration.ZERO.plusNanos(1)) <= 0);
+        assertTrue(dpo.getActiveDuration().compareTo(dpo.getIdleDuration()) <= 0);
         // Deprecated
-        assertThat(dpo.getActiveDuration().toMillis(), lessThanOrEqualTo(dpo.getActiveTimeMillis()));
-        assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getActiveTime()));
-        assertThat(dpo.getActiveDuration(), lessThanOrEqualTo(dpo.getIdleTime()));
-        assertThat(dpo.getActiveDuration().toMillis(), lessThanOrEqualTo(dpo.getIdleTimeMillis()));
+        assertTrue(dpo.getActiveDuration().toMillis() <= dpo.getActiveTimeMillis());
+        assertTrue(dpo.getActiveDuration().compareTo(dpo.getActiveTime()) <= 0);
+        assertTrue(dpo.getActiveDuration().compareTo(dpo.getIdleTime()) <= 0);
+        assertTrue(dpo.getActiveDuration().toMillis() <= dpo.getIdleTimeMillis());
     }
 
     @Test
@@ -141,7 +138,7 @@ public class TestDefaultPooledObject {
         final Duration duration2 = dpo.getFullDuration();
         assertNotNull(duration2);
         assertFalse(duration2.isNegative());
-        assertThat(duration1, lessThan(duration2));
+        assertTrue(duration1.compareTo(duration2) < 0);
     }
 
     @Test
@@ -155,11 +152,11 @@ public class TestDefaultPooledObject {
         assertFalse(dpo.getIdleDuration().isNegative());
         assertFalse(dpo.getIdleDuration().isZero());
         // We use greaterThanOrEqualTo instead of equal because "now" many be different when each argument is evaluated.
-        assertThat(dpo.getIdleDuration(), lessThanOrEqualTo(dpo.getActiveDuration()));
+        assertTrue(dpo.getIdleDuration().compareTo(dpo.getActiveDuration()) <= 0);
         // Deprecated
         // assertThat(dpo.getIdleDuration().toMillis(), lessThanOrEqualTo(dpo.getIdleTimeMillis()));
         // assertThat(dpo.getIdleDuration(), lessThanOrEqualTo(dpo.getIdleTime()));
-        assertThat(dpo.getIdleDuration(), lessThanOrEqualTo(dpo.getActiveTime()));
-        assertThat(dpo.getIdleDuration().toMillis(), lessThanOrEqualTo(dpo.getActiveTimeMillis()));
+        assertTrue(dpo.getIdleDuration().compareTo(dpo.getActiveTime()) <= 0);
+        assertTrue(dpo.getIdleDuration().toMillis() <= dpo.getActiveTimeMillis());
     }
 }
