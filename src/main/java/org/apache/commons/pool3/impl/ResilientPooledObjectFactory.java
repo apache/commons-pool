@@ -283,9 +283,9 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
 
         private static final int MAX_FAILURES = 5;
 
-        private boolean killed = false;
-        private boolean running = false;
-        private int failures = 0;
+        private boolean killed;
+        private boolean running;
+        private int failures;
 
         @Override
         public void run() {
