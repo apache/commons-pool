@@ -280,9 +280,11 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
      * </ul>
      */
     class Adder extends Thread {
+
+        private static final int MAX_FAILURES = 5;
+
         private boolean killed = false;
         private boolean running = false;
-        private final int MAX_FAILURES = 5;
         private int failures = 0;
 
         @Override
