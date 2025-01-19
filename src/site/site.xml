@@ -26,18 +26,20 @@
     <menu name="Commons Pool">
       <!-- Start: For all components. -->
       <item name="About" href="index.html" />
-      <item name="Asking Questions" href="/mail-lists.html" />
-      <item name="Release History" href="/changes.html" />
-      <item name="Issue Tracking" href="/issue-management.html" />
+      <item name="Asking Questions" href="mail-lists.html" />
+      <item name="Release History" href="changes.html" />
+      <item name="Issue Tracking" href="issue-management.html" />
       <item name="Dependency Management" href="/dependency-info.html" />
       <item name="Javadoc" href="apidocs/index.html" />
-      <item name="Javadoc Archive" href="https://javadoc.io/doc/org.apache.commons/commons-pool2/" />
-      <item name="Sources" href="/scm.html" />
+      <item name="Javadoc Archive 2.x" href="https://javadoc.io/doc/org.apache.commons/commons-pool2/" />
+      <item name="Javadoc Archive 1.x" href="https://javadoc.io/doc/commons-pool/commons-pool/" />
+      <item name="Sources" href="scm.html" />
       <item name="Security" href="security.html" />
       <item name="License" href="https://www.apache.org/licenses/LICENSE-2.0" />
       <item name="Code of Conduct" href="https://www.apache.org/foundation/policies/conduct.html" />
       <item name="Download" href="https://commons.apache.org/proper/commons-pool/download_bcel.cgi" />
       <!-- End: For all components. -->
+      <item name="Examples" href="examples.html" />
     </menu>
   </body>
 </site>
