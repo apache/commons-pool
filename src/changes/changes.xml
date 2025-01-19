@@ -55,7 +55,7 @@ The <action> type attribute can be add,update,fix,remove.
     <!-- UPDATE -->
     <action type="update" dev="ggregory">Bump org.apache.commons:commons-parent from 62 to 73.</action>
     <action type="update" dev="ggregory">Bump org.ow2.asm:asm-util from 9.5 to 9.7.</action>
-    <action type="update" dev="ggregory" due-to="Gary Gregory">[test] Bump commons-lang3 from 3.13.0 to 3.16.0.</action>
+    <action type="update" dev="ggregory" due-to="Gary Gregory">[test] Bump commons-lang3 from 3.13.0 to 3.17.0.</action>
     <action type="update" dev="ggregory" due-to="Gary Gregory">[site] Bump org.apache.bcel:bcel from 6.7.0 to 6.8.2.</action>
     <action type="update" dev="ggregory" due-to="Gary Gregory">[test] Bump org.hamcrest:hamcrest-library from 2.2 to 3.0.</action>
   </release>
