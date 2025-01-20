@@ -105,6 +105,7 @@
     <!-- Commons Release Plugin -->
     <commons.bc.version>2.11.1</commons.bc.version>
     <commons.release.isDistModule>true</commons.release.isDistModule>
+    <!-- TODO Remove japicmp.skip after 3.0.0 release -->
     <japicmp.skip>true</japicmp.skip>
     <spotbugs.skip>false</spotbugs.skip>
     <animal.sniffer.skip>true</animal.sniffer.skip>
