@@ -1,3 +1,53 @@
+Apache Commons Pool 2.12.1 Release Notes
+----------------------------------------
+
+The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.12.1.
+
+Apache Commons Pool provides an object-pooling API and a number of object pool implementations.
+Version 2 contains a completely re-written pooling implementation compared to the 1.x series.
+In addition to performance and scalability improvements, version 2 includes robust instance
+tracking and pool monitoring. 
+
+Version 2.7.x and up requires Java 8 or above.
+Version 2.6.x requires Java 7 or above.
+Version 2.5.x requires Java 7 or above.
+Version 2.0 requires 6 or above. 
+
+NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPoolMXBean
+      and GenericKeyedObjectPoolMXBean) exist only to define the attributes and methods
+      that will be made available via JMX. They must not be implemented by clients as
+      they are subject to change between major, minor and patch version releases of
+      Commons Pool. Clients that implement any of these interfaces may not, therefore,
+      be able to upgrade to a new minor or patch release without requiring code
+      changes.
+
+${d}
+
+Changes in version 2.12.1 include:
+
+
+Fixed Bugs:
+o            Use java.time.Instant precision in org.apache.commons.pool2.impl.ThrowableCallStack.Snapshot throwable message. Thanks to Gary Gregory.
+o            GenericObjectPool.borrowObject(Duration) doesn't obey its borrowMaxWait Duration argument when the argument is different from GenericObjectPool.getMaxWaitDuration(). Thanks to Gary Gregory.
+o POOL-418:  The maximum wait time for GenericObjectPool.borrowObject(*) may exceed expectations due to a spurious thread wakeup. Thanks to Gary Gregory.
+o            Javadoc is missing its Overview page. Thanks to Gary Gregory.
+o            Migrate site generation templates to https://maven.apache.org/xsd/xdoc-2.0.xsd. Thanks to Gary Gregory.
+
+Changes:
+o            Bump org.apache.commons:commons-parent from 62 to 79. Thanks to Gary Gregory.
+o            [test] Bump commons-lang3 from 3.13.0 to 3.17.0. Thanks to Gary Gregory.
+o            [site] Pickup org.apache.bcel:bcel version from parent POM. Thanks to Gary Gregory.
+o            [test] Bump org.ow2.asm:asm-util from 9.5 to 9.7.1. Thanks to Gary Gregory.
+
+
+For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Commons Pool website:
+
+https://commons.apache.org/proper/commons-pool/
+
+Download page: https://commons.apache.org/proper/commons-pool/download_pool.cgi
+
+-----------------------------------------------------------------------------------------------
               Apache Commons Pool 2.12.0 RELEASE NOTES
 
 The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.12.0.
