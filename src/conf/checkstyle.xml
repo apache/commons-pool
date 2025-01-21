@@ -71,7 +71,7 @@
       <property name="ordered" value="true"/>
       <property name="separated" value="true"/>
     </module>
-
+    <module name="TypecastParenPad" />
   </module>
   
   <!-- Require package Javadoc -->
