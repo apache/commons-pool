@@ -25,7 +25,6 @@
     <fileSets>
         <fileSet>
             <includes>
-                <include>build.xml</include>
                 <include>checkstyle.xml</include>
                 <include>LICENSE.txt</include>
                 <include>license-header.txt</include>
@@ -34,7 +33,6 @@
                 <include>README.txt</include>
                 <include>RELEASE-NOTES.txt</include>
                 <include>findbugs-exclude-filter.xml</include>
-                <include>build.properties.sample</include>
             </includes>
             <lineEnding>crlf</lineEnding>
         </fileSet>
