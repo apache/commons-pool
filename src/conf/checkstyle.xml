@@ -71,6 +71,7 @@
       <property name="ordered" value="true"/>
       <property name="separated" value="true"/>
     </module>
+    <module name="ParenPad" />
     <module name="TypecastParenPad" />
   </module>
   

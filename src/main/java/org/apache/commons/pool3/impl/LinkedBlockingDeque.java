@@ -953,13 +953,12 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * @return the unlinked element
      * @throws InterruptedException if the current thread is interrupted
      */
-    public E pollLast(final Duration timeout)
-        throws InterruptedException {
+    public E pollLast(final Duration timeout) throws InterruptedException {
         long nanos = timeout.toNanos();
         lock.lockInterruptibly();
         try {
             E x;
-            while ( (x = unlinkLast()) == null) {
+            while ((x = unlinkLast()) == null) {
                 if (nanos <= 0) {
                     return null;
                 }
@@ -1292,7 +1291,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
         lock.lock();
         try {
             E x;
-            while ( (x = unlinkFirst()) == null) {
+            while ((x = unlinkFirst()) == null) {
                 notEmpty.await();
             }
             return x;
@@ -1312,7 +1311,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
         lock.lock();
         try {
             E x;
-            while ( (x = unlinkLast()) == null) {
+            while ((x = unlinkLast()) == null) {
                 notEmpty.await();
             }
             return x;
