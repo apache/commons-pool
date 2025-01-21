@@ -14,7 +14,8 @@
 ## KIND, either express or implied.  See the License for the
 ## specific language governing permissions and limitations
 ## under the License.
-              ${project.name} ${version} RELEASE NOTES
+${project.name} ${version} Release Notes
+----------------------------------------
 
 The ${developmentTeam} is pleased to announce the release of ${project.name} ${version}.
 
@@ -41,7 +42,7 @@ NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPool
 ##
 ## Hack to get line breaks to work in release description. For this to work, each line break in the
 ## release description attribute in changes.xml needs to be preceded by a single space.
-#set( $desc = $release.description )
+#set( $desc = $commons.release.desc )
 #set( $desc2 = $desc.replace($esc.newline, "  ") )
 #set( $d = $desc2.replace("  ",$esc.newline) )
 ${d}

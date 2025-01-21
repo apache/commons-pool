@@ -15,11 +15,12 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<document>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
    <properties>
       <title>Examples</title>
       <author email="dev@commons.apache.org">Apache Commons Documentation Team</author>
-      <revision>$Id$</revision>
    </properties>
 
    <body>
@@ -44,16 +45,16 @@ public class ReaderUtil {
     public String readToString(Reader in) throws IOException { 
         StringBuffer buf = new StringBuffer(); 
         try { 
-            for(int c = in.read(); c != -1; c = in.read()) { 
+            for (int c = in.read(); c != -1; c = in.read()) { 
                 buf.append((char)c); 
             } 
             return buf.toString(); 
-        } catch(IOException e) { 
+        } catch (IOException e) { 
             throw e; 
         } finally { 
             try { 
                 in.close(); 
-            } catch(Exception e) { 
+            } catch (Exception e) { 
                 // ignored 
             } 
         } 

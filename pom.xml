@@ -20,38 +20,30 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
     <version>79</version>
   </parent>
-
   <artifactId>commons-pool2</artifactId>
   <version>2.12.1-SNAPSHOT</version>
   <name>Apache Commons Pool</name>
-
   <inceptionYear>2001</inceptionYear>
   <description>The Apache Commons Object Pooling Library.</description>
-
   <url>https://commons.apache.org/proper/commons-pool/</url>
-
   <issueManagement>
     <system>jira</system>
     <url>https://issues.apache.org/jira/browse/POOL</url>
   </issueManagement>
-
   <ciManagement>
     <system>GitHub</system>
     <url>https://github.com/apache/commons-pool/actions</url>
   </ciManagement>
-
   <scm>
     <connection>scm:git:https://gitbox.apache.org/repos/asf/commons-pool.git</connection>
     <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/commons-pool.git</developerConnection>
     <url>https://gitbox.apache.org/repos/asf?p=commons-pool.git</url>
   </scm>
-
   <dependencies>
     <dependency>
       <groupId>cglib</groupId>
@@ -62,7 +54,7 @@
     <dependency>
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm-util</artifactId>
-      <version>9.7</version>
+      <version>9.7.1</version>
       <optional>true</optional>
     </dependency>
     <!-- testing -->
@@ -74,11 +66,10 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.16.0</version>
+      <version>3.17.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
-
   <distributionManagement>
     <!-- Cannot define in parent ATM, see COMMONSSITE-26 -->
     <site>
@@ -87,7 +78,6 @@
       <url>scm:svn:https://svn.apache.org/repos/infra/websites/production/commons/content/proper/commons-pool/</url>
     </site>
   </distributionManagement>
-  
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -95,26 +85,26 @@
     <project.build.outputTimestamp>2024-02-01T03:27:02Z</project.build.outputTimestamp>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
+    <commons.main.branch>POOL_2_X</commons.main.branch>
+    <commons.release.branch>release-2.x</commons.release.branch>
     <commons.componentid>pool</commons.componentid>
     <commons.module.name>org.apache.commons.pool2</commons.module.name>
     <commons.rc.version>RC1</commons.rc.version>
+    
     <!-- Java 8 -->
     <commons.release.version>2.12.1</commons.release.version>
-    <commons.release.version>2.12.2</commons.release.version>
+    <commons.release.next>2.12.2</commons.release.next>
     <commons.release.desc>(Java 8 or above)</commons.release.desc>
     <!-- Java 7 -->
     <commons.release.2.version>2.6.2</commons.release.2.version>
     <commons.release.2.desc>(Java 7 or above)</commons.release.2.desc>
-
     <commons.jira.id>POOL</commons.jira.id>
     <commons.jira.pid>12310488</commons.jira.pid>
     <commons.scmPubCheckoutDirectory>site-content</commons.scmPubCheckoutDirectory>
     <commons.osgi.import>net.sf.cglib.proxy;resolution:=optional,*</commons.osgi.import>
-
     <!-- Commons Release Plugin -->
     <commons.bc.version>2.12.0</commons.bc.version>
     <commons.release.isDistModule>true</commons.release.isDistModule>
-    
     <japicmp.skip>false</japicmp.skip>
     <spotbugs.skip>false</spotbugs.skip>
     <surefire.argline></surefire.argline>
@@ -322,7 +312,6 @@
         </plugin>
     </plugins>
   </reporting>
-
   <profiles>
     <profile>
       <id>java16</id>
