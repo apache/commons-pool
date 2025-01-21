@@ -25,14 +25,12 @@
     <fileSets>
         <fileSet>
             <includes>
-                <include>checkstyle.xml</include>
                 <include>LICENSE.txt</include>
                 <include>license-header.txt</include>
                 <include>NOTICE.txt</include>
                 <include>pom.xml</include>
                 <include>README.txt</include>
                 <include>RELEASE-NOTES.txt</include>
-                <include>findbugs-exclude-filter.xml</include>
             </includes>
             <lineEnding>crlf</lineEnding>
         </fileSet>
