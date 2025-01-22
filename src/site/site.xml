@@ -37,7 +37,7 @@
       <item name="Security" href="security.html" />
       <item name="License" href="https://www.apache.org/licenses/LICENSE-2.0" />
       <item name="Code of Conduct" href="https://www.apache.org/foundation/policies/conduct.html" />
-      <item name="Download" href="https://commons.apache.org/proper/commons-pool/download_bcel.cgi" />
+      <item name="Download" href="https://commons.apache.org/proper/commons-pool/download_pool.cgi" />
       <!-- End: For all components. -->
       <item name="Examples" href="examples.html" />
     </menu>
