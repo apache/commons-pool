@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
- Licensed to the Apache Software Foundation (ASF) under one or more
+Licensed to the Apache Software Foundation (ASF) under one or more
  contributor license agreements.  See the NOTICE file distributed with
  this work for additional information regarding copyright ownership.
  The ASF licenses this file to You under the Apache License, Version 2.0
@@ -14,33 +15,32 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<assembly
+  xmlns="http://maven.apache.org/ASSEMBLY/2.2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.2.0 https://maven.apache.org/xsd/assembly-2.2.0.xsd">
-  <id>bin</id>
+  <id>src</id>
   <formats>
     <format>tar.gz</format>
     <format>zip</format>
   </formats>
-  <includeSiteDirectory>false</includeSiteDirectory>
+  <baseDirectory>${artifactId}-${version}-src</baseDirectory>
   <fileSets>
     <fileSet>
       <includes>
+        <include>BUILDING.txt</include>
+        <include>CODE_OF_CONDUCT.md</include>
+        <include>CONTRIBUTING.md</include>
         <include>LICENSE.txt</include>
         <include>NOTICE.txt</include>
+        <include>pom.xml</include>
+        <include>README.md</include>
         <include>RELEASE-NOTES.txt</include>
+        <include>SECURITY.md</include>
       </includes>
     </fileSet>
     <fileSet>
-      <directory>target</directory>
-      <outputDirectory></outputDirectory>
-      <includes>
-        <include>*.jar</include>
-      </includes>
-      <fileMode>644</fileMode>
-    </fileSet>
-    <fileSet>
-      <directory>target/site/apidocs</directory>
-      <outputDirectory>apidocs</outputDirectory>
+      <directory>src</directory>
     </fileSet>
   </fileSets>
 </assembly>
