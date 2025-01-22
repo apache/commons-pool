@@ -102,8 +102,8 @@
     <commons.jira.pid>12310488</commons.jira.pid>
     <commons.scmPubCheckoutDirectory>site-content</commons.scmPubCheckoutDirectory>
     <commons.osgi.import>net.sf.cglib.proxy;resolution:=optional,*</commons.osgi.import>
-    <!-- Commons Release Plugin -->
-    <commons.bc.version>2.11.1</commons.bc.version>
+    <!-- Commons Release Plugin; TODO reset after 3.0.0 release -->
+    <commons.bc.version>3.0.0-SNAPSHOT</commons.bc.version>
     <commons.release.isDistModule>true</commons.release.isDistModule>
     <!-- TODO Remove japicmp.skip after 3.0.0 release -->
     <japicmp.skip>true</japicmp.skip>
