@@ -1362,7 +1362,7 @@ public final class PoolUtils {
         if (keys == null) {
             throw new IllegalArgumentException(MSG_NULL_KEYS);
         }
-        return keys.stream().collect(Collectors.toMap(Function.identity(),
+        return keys.stream().collect(Collectors..<K, K, TimerTask, Map<K, TimerTask>>toMap(Function.identity(),
                 k -> checkMinIdle(keyedPool, k, minIdle, periodMillis), (k, v) -> v));
     }
 
