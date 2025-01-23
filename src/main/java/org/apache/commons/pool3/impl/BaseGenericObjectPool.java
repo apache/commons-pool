@@ -34,6 +34,7 @@ import java.util.TimerTask;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -379,7 +380,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     final Object closeLock = new Object();
     volatile boolean closed;
 
-    final Object evictionLock = new Object();
+    final ReentrantLock  evictionLock = new ReentrantLock ();
     private Evictor evictor; // @GuardedBy("evictionLock")
     EvictionIterator evictionIterator; // @GuardedBy("evictionLock")
 
@@ -496,12 +497,15 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
         final Instant timeout = Instant.now().minus(abandonedConfig.getRemoveAbandonedTimeoutDuration());
         final ArrayList<PooledObject<T>> remove = new ArrayList<>();
         allObjects.values().forEach(pooledObject -> {
-            synchronized (pooledObject) {
+            pooledObject.lock();
+            try {
                 if (pooledObject.getState() == PooledObjectState.ALLOCATED &&
                         pooledObject.getLastUsedInstant().compareTo(timeout) <= 0) {
                     pooledObject.markAbandoned();
                     remove.add(pooledObject);
                 }
+            } finally {
+                pooledObject.unlock();
             }
         });
         return remove;
@@ -1209,11 +1213,14 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      * @param pooledObject instance to return to the keyed pool
      */
     protected void markReturningState(final PooledObject<T> pooledObject) {
-        synchronized (pooledObject) {
+        pooledObject.lock();
+        try {
             if (pooledObject.getState() != PooledObjectState.ALLOCATED) {
                 throw new IllegalStateException("Object has already been returned to this pool or is invalid");
             }
             pooledObject.markReturning(); // Keep from being marked abandoned
+        } finally {
+            pooledObject.unlock();
         }
     }
 
@@ -1609,7 +1616,8 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      * @param delay duration before start and between eviction runs.
      */
     final void startEvictor(final Duration delay) {
-        synchronized (evictionLock) {
+        evictionLock.lock();
+        try {
             final boolean isPositiverDelay = PoolImplUtils.isPositive(delay);
             if (evictor == null) { // Starting evictor for the first time or after a cancel
                 if (isPositiverDelay) { // Starting new evictor
@@ -1627,6 +1635,8 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
             } else { // Stopping evictor
                 EvictionTimer.cancel(evictor, evictorShutdownTimeoutDuration, false);
             }
+        } finally {
+            evictionLock.unlock();
         }
     }
 
