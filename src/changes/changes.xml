@@ -45,7 +45,12 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Pool Release Notes</title>
   </properties>
   <body>
-  <release version="2.12.1" date="2025-01-19" description="This is a feature and maintenance release (Java 8 or above).">
+  <release version="2.12.2" date="YYYY-MM-DD" description="This is a feature and maintenance release. Java 8 or later is required.">
+    <!-- FIX -->
+    <!-- ADD -->
+    <!-- UPDATE -->
+  </release>
+  <release version="2.12.1" date="2025-01-19" description="This is a feature and maintenance release. Java 8 or later is required.">
     <!-- FIX -->
     <action type="fix" dev="ggregory" due-to="Gary Gregory">Use java.time.Instant precision in org.apache.commons.pool2.impl.ThrowableCallStack.Snapshot throwable message.</action> 
     <action type="fix" dev="ggregory" due-to="Gary Gregory">GenericObjectPool.borrowObject(Duration) doesn't obey its borrowMaxWait Duration argument when the argument is different from GenericObjectPool.getMaxWaitDuration().</action>
@@ -59,7 +64,7 @@ The <action> type attribute can be add,update,fix,remove.
     <action type="update" dev="ggregory" due-to="Gary Gregory">[site] Pickup org.apache.bcel:bcel version from parent POM.</action>
     <action type="update" dev="ggregory" due-to="Gary Gregory">[test] Bump org.ow2.asm:asm-util from 9.5 to 9.7.1.</action>
   </release>
-  <release version="2.12.0" date="2023-09-30" description="This is a feature and maintenance release (Java 8 or above).">
+  <release version="2.12.0" date="2023-09-30" description="This is a feature and maintenance release. Java 8 or later is required.">
     <!-- FIX -->
     <action dev="psteitz" type="fix" issue="POOL-401">
       Ensure that capacity freed by invalidateObject is available to all keyed pools.
