@@ -33,6 +33,13 @@ import java.util.Objects;
 public abstract class BasePooledObjectFactory<T> extends BaseObject implements PooledObjectFactory<T> {
 
     /**
+     * Constructs a new instance.
+     */
+    public BasePooledObjectFactory() {
+        // empty
+    }
+
+    /**
      *  No-op.
      *
      *  @param p ignored

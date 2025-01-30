@@ -32,6 +32,13 @@ public abstract class BaseObjectPool<T> extends BaseObject implements ObjectPool
     private volatile boolean closed;
 
     /**
+     * Constructs a new instance.
+     */
+    public BaseObjectPool() {
+        // empty
+    }
+
+    /**
      * Not supported in this base implementation. Subclasses should override
      * this behavior.
      *

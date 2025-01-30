@@ -363,10 +363,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         return p.getObject();
     }
 
-    private Duration durationSince(final Instant startInstant) {
-        return Duration.between(startInstant, Instant.now());
-    }
-
     /**
      * Borrows an object from the pool using the specific waiting time which only
      * applies if {@link #getBlockWhenExhausted()} is true.
@@ -602,6 +598,10 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             destroyedCount.incrementAndGet();
             createCount.decrementAndGet();
         }
+    }
+
+    private Duration durationSince(final Instant startInstant) {
+        return Duration.between(startInstant, Instant.now());
     }
 
     /**
