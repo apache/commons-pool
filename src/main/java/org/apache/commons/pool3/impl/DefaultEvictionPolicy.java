@@ -42,6 +42,13 @@ import org.apache.commons.pool3.PooledObject;
  */
 public class DefaultEvictionPolicy<T> implements EvictionPolicy<T> {
 
+    /**
+     * Constructs a new instance.
+     */
+    public DefaultEvictionPolicy() {
+        // empty
+    }
+
     @Override
     public boolean evict(final EvictionConfig config, final PooledObject<T> underTest, final int idleCount) {
         // @formatter:off

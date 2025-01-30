@@ -23,6 +23,13 @@ package org.apache.commons.pool3;
  */
 public abstract class BaseObject {
 
+    /**
+     * Constructs a new instance.
+     */
+    public BaseObject() {
+        // empty
+    }
+
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();

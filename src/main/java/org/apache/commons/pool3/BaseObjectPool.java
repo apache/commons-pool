@@ -33,6 +33,13 @@ public abstract class BaseObjectPool<T, E extends Exception> extends BaseObject 
     private volatile boolean closed;
 
     /**
+     * Constructs a new instance.
+     */
+    public BaseObjectPool() {
+        // empty
+    }
+
+    /**
      * Not supported in this base implementation. Subclasses should override
      * this behavior.
      *

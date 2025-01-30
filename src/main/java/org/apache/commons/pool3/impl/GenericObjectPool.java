@@ -593,10 +593,6 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
         return p;
     }
 
-    private Duration durationSince(final Instant startInstant) {
-        return Duration.between(startInstant, Instant.now());
-    }
-
     /**
      * Destroys a wrapped pooled object.
      *
@@ -615,6 +611,10 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
             destroyedCount.incrementAndGet();
             createCount.decrementAndGet();
         }
+    }
+
+    private Duration durationSince(final Instant startInstant) {
+        return Duration.between(startInstant, Instant.now());
     }
 
     /**

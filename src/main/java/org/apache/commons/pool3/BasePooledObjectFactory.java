@@ -34,6 +34,13 @@ import java.util.Objects;
 public abstract class BasePooledObjectFactory<T, E extends Exception> extends BaseObject implements PooledObjectFactory<T, E> {
 
     /**
+     * Constructs a new instance.
+     */
+    public BasePooledObjectFactory() {
+        // empty
+    }
+
+    /**
      *  No-op.
      *
      *  @param p ignored

@@ -36,6 +36,13 @@ import java.util.Objects;
 public abstract class BaseKeyedPooledObjectFactory<K, V, E extends Exception> extends BaseObject implements KeyedPooledObjectFactory<K, V, E> {
 
     /**
+     * Constructs a new instance.
+     */
+    public BaseKeyedPooledObjectFactory() {
+        // empty
+    }
+
+    /**
      * Reinitializes an instance to be returned by the pool.
      * <p>
      * The default implementation is a no-op.
