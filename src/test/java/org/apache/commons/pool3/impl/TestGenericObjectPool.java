@@ -69,6 +69,7 @@ import org.apache.commons.pool3.Waiter;
 import org.apache.commons.pool3.WaiterFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -3173,18 +3174,19 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
      * Test for POOL-419.
      * https://issues.apache.org/jira/browse/POOL-419
      */
-    @Test
+    @RepeatedTest(10)
+    @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
     void testPool419() throws Exception{
 
         ExecutorService executor = Executors.newFixedThreadPool(100);
 
         final GenericObjectPoolConfig<Object> config = new GenericObjectPoolConfig<>();
 
-        final int maxConnections = 10000;
+        final int maxConnections = 100000;
 
         config.setMaxTotal(maxConnections);
         config.setMaxIdle(maxConnections);
-        config.setMinIdle(1);
+        config.setMinIdle(maxConnections);
 
         final BasePooledObjectFactory<Object, RuntimeException> pof = createPooledObjectFactory();
 
