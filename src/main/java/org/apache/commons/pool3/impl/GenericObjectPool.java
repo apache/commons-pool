@@ -1091,6 +1091,12 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
                 swallowException(e);
             }
         } else {
+
+            if (!p.deallocate()) {
+                throw new IllegalStateException(
+                    "Object has already been returned to this pool or is invalid");
+            }
+
             if (getLifo()) {
                 idleObjects.addFirst(p);
             } else {
