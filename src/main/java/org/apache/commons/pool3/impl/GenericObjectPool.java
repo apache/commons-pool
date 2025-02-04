@@ -1092,16 +1092,20 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
             }
         } else {
 
-            if (!p.deallocate()) {
-                throw new IllegalStateException(
-                    "Object has already been returned to this pool or is invalid");
+            synchronized (p) {
+                if(p.getState() == PooledObjectState.INVALID) {
+                    throw new IllegalStateException("Object has already been returned to this pool or is invalid");
+                }
+
+                if(p.getState() != PooledObjectState.INVALID){
+                    if (getLifo()) {
+                        idleObjects.addFirst(p);
+                    } else {
+                        idleObjects.addLast(p);
+                    }
+                }
             }
 
-            if (getLifo()) {
-                idleObjects.addFirst(p);
-            } else {
-                idleObjects.addLast(p);
-            }
             if (isClosed()) {
                 // Pool closed while object was being added to idle objects.
                 // Make sure the returned object is destroyed rather than left
