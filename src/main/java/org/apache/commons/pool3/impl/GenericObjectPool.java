@@ -1097,12 +1097,10 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
                     throw new IllegalStateException("Object has already been returned to this pool or is invalid");
                 }
 
-                if(p.getState() != PooledObjectState.INVALID){
-                    if (getLifo()) {
-                        idleObjects.addFirst(p);
-                    } else {
-                        idleObjects.addLast(p);
-                    }
+                if (getLifo()) {
+                    idleObjects.addFirst(p);
+                } else {
+                    idleObjects.addLast(p);
                 }
             }
 
