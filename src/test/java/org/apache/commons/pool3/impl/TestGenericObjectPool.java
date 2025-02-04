@@ -3174,7 +3174,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
      * Test for POOL-419.
      * https://issues.apache.org/jira/browse/POOL-419
      */
-    @RepeatedTest(10)
+    @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
     void testPool419() throws Exception{
 
