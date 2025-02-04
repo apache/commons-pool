@@ -3197,7 +3197,7 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
             List<Object> poolObjects = new ArrayList<>();
 
-            List<FutureTask<Boolean>> tasks = new ArrayList<>();
+            List<Runnable> tasks = new ArrayList<>();
 
             for (int i = 0; i < maxConnections; i++) {
                 poolObjects.add(connectionPool.borrowObject());
@@ -3205,17 +3205,23 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
             for(Object poolObject : poolObjects) {
 
-                tasks.add(new FutureTask<>(() -> {
-                    startLatch.await();
-                    connectionPool.invalidateObject(poolObject);
-                    return true;
-                }));
+                tasks.add(() -> {
+                    try {
+                        startLatch.await();
+                        connectionPool.invalidateObject(poolObject);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt(); // Restore interrupt status
+                    }
+                });
 
-                tasks.add(new FutureTask<>(() -> {
-                    startLatch.await();
-                    connectionPool.returnObject(poolObject);
-                    return true;
-                }));
+                tasks.add(() -> {
+                    try {
+                        startLatch.await();
+                        connectionPool.returnObject(poolObject);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt(); // Restore interrupt status
+                    }
+                });
             }
 
             tasks.forEach(executor::submit);
