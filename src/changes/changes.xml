@@ -52,6 +52,7 @@ The <action> type attribute can be add,update,fix,remove.
       The remaining duration was incorrectly calculated and the method did not end up waiting long enough.
       Recompute the remaining duration an additional time when we block when exhausted.
     </action>
+    <action type="fix" dev="ggregory" due-to="Wei Guo, Gary Gregory">Fix site link from the About page to the Download page, see also #387.</action>
     <!-- ADD -->
     <!-- UPDATE -->
     <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.commons:commons-parent from 79 to 81.</action>
