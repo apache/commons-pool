@@ -48,7 +48,10 @@ The <action> type attribute can be add,update,fix,remove.
   <release version="2.12.2" date="YYYY-MM-DD" description="This is a feature and maintenance release. Java 8 or later is required.">
     <!-- FIX -->
     <action type="fix" dev="ggregory" due-to="Gary Gregory">Remove -nouses directive from maven-bundle-plugin. OSGi package imports now state 'uses' definitions for package imports, this doesn't affect JPMS (from org.apache.commons:commons-parent:80).</action>
-    <action type="fix" issue="POOL-418" dev="ggregory" due-to="Gary Gregory">The maximum wait time for GenericObjectPool.borrowObject(*) may exceed expectations due to a spurious thread wakeup.</action>
+    <action type="fix" issue="POOL-418" dev="ggregory" due-to="Gary Gregory">The maximum wait time for GenericObjectPool.borrowObject(*) may exceed expectations due to a spurious thread wakeup.
+      The remaining duration was incorrectly calculated and the method did not end up waiting long enough.
+      Recompute the remaining duration an additional time when we block when exhausted.
+    </action>
     <!-- ADD -->
     <!-- UPDATE -->
     <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.commons:commons-parent from 79 to 81.</action>
