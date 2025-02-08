@@ -246,8 +246,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * <p>
      * If there are no idle instances available in the pool, behavior depends on
      * the {@link #getMaxTotal() maxTotal}, (if applicable)
-     * {@link #getBlockWhenExhausted()} and the value passed in to the
-     * {@code borrowMaxWaitMillis} parameter. If the number of instances
+     * {@link #getBlockWhenExhausted()} and the value passed in the
+     * {@code maxWaitDuration} parameter. If the number of instances
      * checked out from the pool is less than {@code maxTotal,} a new
      * instance is created, activated and (if applicable) validated and returned
      * to the caller. If validation fails, a {@code NoSuchElementException}
@@ -261,7 +261,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * {@code NoSuchElementException} (if
      * {@link #getBlockWhenExhausted()} is false). The length of time that this
      * method will block when {@link #getBlockWhenExhausted()} is true is
-     * determined by the value passed in to the {@code borrowMaxWaitMillis}
+     * determined by the value passed in to the {@code maxWaitDuration}
      * parameter.
      * </p>
      * <p>
@@ -271,17 +271,17 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * available instances in request arrival order.
      * </p>
      *
-     * @param borrowMaxWaitDuration The time to wait for an object to become available, not null.
+     * @param maxWaitDuration The time to wait for an object to become available, not null.
      * @return object instance from the pool
      * @throws NoSuchElementException if an instance cannot be returned
      * @throws Exception if an object instance cannot be returned due to an error
      * @since 2.10.0
      */
-    public T borrowObject(final Duration borrowMaxWaitDuration) throws Exception {
+    public T borrowObject(final Duration maxWaitDuration) throws Exception {
         assertOpen();
         final Instant startInstant = Instant.now();
-        final boolean negativeDuration = borrowMaxWaitDuration.isNegative();
-        Duration remainingWaitDuration = borrowMaxWaitDuration;
+        final boolean negativeDuration = maxWaitDuration.isNegative();
+        Duration remainingWaitDuration = maxWaitDuration;
         final AbandonedConfig ac = this.abandonedConfig;
         if (ac != null && ac.getRemoveAbandonedOnBorrow() && getNumIdle() < 2 && getNumActive() > getMaxTotal() - 3) {
             removeAbandoned(ac);
@@ -292,7 +292,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         final boolean blockWhenExhausted = getBlockWhenExhausted();
         boolean create;
         while (p == null) {
-            remainingWaitDuration = remainingWaitDuration.minus(durationSince(startInstant));
+            remainingWaitDuration = maxWaitDuration.minus(durationSince(startInstant));
             create = false;
             p = idleObjects.pollFirst();
             if (p == null) {
@@ -303,11 +303,11 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             }
             if (blockWhenExhausted) {
                 if (PooledObject.isNull(p)) {
+                    remainingWaitDuration = maxWaitDuration.minus(durationSince(startInstant));
                     p = negativeDuration ? idleObjects.takeFirst() : idleObjects.pollFirst(remainingWaitDuration);
                 }
                 if (PooledObject.isNull(p)) {
-                    throw new NoSuchElementException(appendStats(
-                            "Timeout waiting for idle object, borrowMaxWaitDuration=" + remainingWaitDuration));
+                    throw new NoSuchElementException(appendStats("Timeout waiting for idle object, maxWaitDuration=" + remainingWaitDuration));
                 }
             } else if (PooledObject.isNull(p)) {
                 throw new NoSuchElementException(appendStats("Pool exhausted"));
@@ -379,7 +379,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * If there are no idle instances available in the pool, behavior depends on
      * the {@link #getMaxTotal() maxTotal}, (if applicable)
      * {@link #getBlockWhenExhausted()} and the value passed in to the
-     * {@code borrowMaxWaitMillis} parameter. If the number of instances
+     * {@code maxWaitMillis} parameter. If the number of instances
      * checked out from the pool is less than {@code maxTotal,} a new
      * instance is created, activated and (if applicable) validated and returned
      * to the caller. If validation fails, a {@code NoSuchElementException}
@@ -393,7 +393,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * {@code NoSuchElementException} (if
      * {@link #getBlockWhenExhausted()} is false). The length of time that this
      * method will block when {@link #getBlockWhenExhausted()} is true is
-     * determined by the value passed in to the {@code borrowMaxWaitMillis}
+     * determined by the value passed in to the {@code maxWaitMillis}
      * parameter.
      * </p>
      * <p>
@@ -403,15 +403,15 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * available instances in request arrival order.
      * </p>
      *
-     * @param borrowMaxWaitMillis The time to wait in milliseconds for an object
+     * @param maxWaitMillis The time to wait in milliseconds for an object
      *                            to become available
      * @return object instance from the pool
      * @throws NoSuchElementException if an instance cannot be returned
      * @throws Exception if an object instance cannot be returned due to an
      *                   error
      */
-    public T borrowObject(final long borrowMaxWaitMillis) throws Exception {
-        return borrowObject(Duration.ofMillis(borrowMaxWaitMillis));
+    public T borrowObject(final long maxWaitMillis) throws Exception {
+        return borrowObject(Duration.ofMillis(maxWaitMillis));
     }
 
     /**
@@ -512,7 +512,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         Boolean create = null;
         while (create == null) {
             // remainingWaitDuration handles spurious wakeup from wait().
-            remainingWaitDuration = remainingWaitDuration.minus(durationSince(startInstant));
+            remainingWaitDuration = maxWaitDuration.minus(durationSince(startInstant));
             synchronized (makeObjectCountLock) {
                 final long newCreateCount = createCount.incrementAndGet();
                 if (newCreateCount > localMaxTotal) {
