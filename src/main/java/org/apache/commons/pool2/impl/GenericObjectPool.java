@@ -326,8 +326,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                     }
                     p = null;
                     if (create) {
-                        final NoSuchElementException nsee = new NoSuchElementException(
-                                appendStats("Unable to activate object"));
+                        final NoSuchElementException nsee = new NoSuchElementException(appendStats("Unable to activate object"));
                         nsee.initCause(e);
                         throw nsee;
                     }
@@ -350,8 +349,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                         }
                         p = null;
                         if (create) {
-                            final NoSuchElementException nsee = new NoSuchElementException(
-                                    appendStats("Unable to validate object"));
+                            final NoSuchElementException nsee = new NoSuchElementException(appendStats("Unable to validate object"));
                             nsee.initCause(validationThrowable);
                             throw nsee;
                         }
