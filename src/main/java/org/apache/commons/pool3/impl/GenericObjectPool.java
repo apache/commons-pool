@@ -294,7 +294,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
         final boolean blockWhenExhausted = getBlockWhenExhausted();
         boolean create;
         while (p == null) {
-            remainingWaitDuration = remainingWaitDuration.minus(durationSince(startInstant));
+            remainingWaitDuration = maxWaitDuration.minus(durationSince(startInstant));
             create = false;
             p = idleObjects.pollFirst();
             if (p == null) {
@@ -306,6 +306,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
             if (blockWhenExhausted) {
                 if (PooledObject.isNull(p)) {
                     try {
+                        remainingWaitDuration = maxWaitDuration.minus(durationSince(startInstant));
                         p = negativeDuration ? idleObjects.takeFirst() : idleObjects.pollFirst(maxWaitDuration);
                     } catch (final InterruptedException e) {
                         // Don't surface exception type of internal locking mechanism.
@@ -313,8 +314,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
                     }
                 }
                 if (PooledObject.isNull(p)) {
-                    throw new NoSuchElementException(appendStats(
-                            "Timeout waiting for idle object, borrowMaxWaitDuration=" + remainingWaitDuration));
+                    throw new NoSuchElementException(appendStats("Timeout waiting for idle object, borrowMaxWaitDuration=" + remainingWaitDuration));
                 }
             } else if (PooledObject.isNull(p)) {
                 throw new NoSuchElementException(appendStats("Pool exhausted"));
@@ -333,8 +333,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
                     }
                     p = null;
                     if (create) {
-                        final NoSuchElementException nsee = new NoSuchElementException(
-                                appendStats("Unable to activate object"));
+                        final NoSuchElementException nsee = new NoSuchElementException(appendStats("Unable to activate object"));
                         nsee.initCause(e);
                         throw nsee;
                     }
@@ -357,8 +356,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
                         }
                         p = null;
                         if (create) {
-                            final NoSuchElementException nsee = new NoSuchElementException(
-                                    appendStats("Unable to validate object"));
+                            final NoSuchElementException nsee = new NoSuchElementException(appendStats("Unable to validate object"));
                             nsee.initCause(validationThrowable);
                             throw nsee;
                         }
