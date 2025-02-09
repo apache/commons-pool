@@ -255,4 +255,19 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      */
     void use();
 
+    /**
+     * Acquires a lock on this PooledObject.
+     */
+    @SuppressWarnings("no-ops")
+    default void lock() {
+
+    }
+
+    /**
+     * Release a lock on this PooledObject.
+     */
+    @SuppressWarnings("no-ops")
+    default void unlock() {
+
+    }
 }
