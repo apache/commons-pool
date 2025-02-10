@@ -48,6 +48,7 @@
   <module name="TreeWalker">
     <module name="ArrayTypeStyle" />
     <module name="AvoidStarImport" />
+    <module name="CovariantEquals" />
     <module name="EqualsHashCode" />
     <module name="IllegalInstantiation">
       <property name="classes" value="java.lang.Boolean, java.lang.String" />
