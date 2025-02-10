@@ -46,6 +46,7 @@
     <property name="message" value="Line has trailing spaces." />
   </module>
   <module name="TreeWalker">
+    <module name="ArrayTypeStyle" />
     <module name="EqualsHashCode" />
     <module name="IllegalInstantiation">
       <property name="classes" value="java.lang.Boolean, java.lang.String" />
