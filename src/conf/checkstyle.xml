@@ -54,6 +54,7 @@
       <property name="option" value="text" />
     </module>
     <module name="EqualsHashCode" />
+    <module name="ExplicitInitialization" />
     <module name="IllegalInstantiation">
       <property name="classes" value="java.lang.Boolean, java.lang.String" />
     </module>
