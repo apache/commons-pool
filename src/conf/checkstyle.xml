@@ -22,67 +22,53 @@
 <!--
   Checkstyle checks configured for Maven.
 -->
-
 <module name="Checker">
-
-  <property name="localeLanguage" value="en"/>
-
+  <property name="localeLanguage" value="en" />
   <!-- No tabs allowed! -->
-  <module name="FileTabCharacter"/>
-    
+  <module name="FileTabCharacter" />
   <module name="TreeWalker">
-   
     <!-- Operator must be at end of wrapped line -->
     <module name="OperatorWrap">
-      <property name="option" value="eol"/>
+      <property name="option" value="eol" />
     </module>
-    
     <!-- Interfaces must be types (not just constants) -->
-    <module name="InterfaceIsType"/>
-
+    <module name="InterfaceIsType" />
     <!-- Must have class / interface header comments -->
-    <module name="JavadocType"/>
-        
+    <module name="JavadocType" />
      <!-- Require method javadocs, allow undeclared RTE -->
     <module name="JavadocMethod">
     </module>
-        
     <!-- Require field javadoc -->
     <module name="JavadocVariable">
-      <property name="scope" value="protected"/>
+      <property name="scope" value="protected" />
     </module>
-        
     <!-- No public fields -->
     <module name="VisibilityModifier">
-       <property name="packageAllowed" value="true"/>
-       <property name="protectedAllowed" value="true"/>
+      <property name="packageAllowed" value="true" />
+      <property name="protectedAllowed" value="true" />
     </module>
-    
     <!-- Require hash code override when equals is -->
-    <module name="EqualsHashCode"/>
-    
+    <module name="EqualsHashCode" />
     <!-- Disallow unnecessary instantiation of Boolean, String -->
     <module name="IllegalInstantiation">
-      <property name="classes" value="java.lang.Boolean, java.lang.String"/>
+      <property name="classes" value="java.lang.Boolean, java.lang.String" />
     </module>
     <module name="ImportOrder">
-      <property name="option" value="top"/>
-      <property name="groups" value="java,javax,org"/>
-      <property name="ordered" value="true"/>
-      <property name="separated" value="true"/>
+      <property name="option" value="top" />
+      <property name="groups" value="java,javax,org" />
+      <property name="ordered" value="true" />
+      <property name="separated" value="true" />
     </module>
     <module name="ParenPad" />
     <module name="TypecastParenPad" />
   </module>
-  
   <!-- Require package Javadoc -->
   <module name="JavadocPackage">
     <!-- setting allowLegacy means it will check for package.html instead of just package-info.java -->
-    <property name="allowLegacy" value="true"/>
+    <property name="allowLegacy" value="true" />
   </module>
-
   <module name="LineLength">
-    <property name="max" value="160"/>
+    <property name="max" value="160" />
   </module>
   <!-- @author tags are deprecated -->
   <module name="RegexpSingleline">
