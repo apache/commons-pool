@@ -1257,7 +1257,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
         }
         while (!registered) {
             try {
-                ObjectName objName;
+                final ObjectName objName;
                 // Skip the numeric suffix for the first pool in case there is
                 // only one so the names are cleaner.
                 if (i == 1) {
