@@ -307,7 +307,8 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
                 if (PooledObject.isNull(p)) {
                     try {
                         remainingWaitDuration = maxWaitDuration.minus(durationSince(startInstant));
-                        p = negativeDuration ? idleObjects.takeFirst() : idleObjects.pollFirst(maxWaitDuration);
+                        p = remainingWaitDuration.isNegative() ? null
+                                : (negativeDuration ? idleObjects.takeFirst() : idleObjects.pollFirst(maxWaitDuration));
                     } catch (final InterruptedException e) {
                         // Don't surface exception type of internal locking mechanism.
                         throw cast(e);
