@@ -216,38 +216,27 @@ public class TestSoftRefOutOfMemory {
      */
     @Test
     public void testOutOfMemoryError() throws Exception {
-        pool = new SoftReferenceObjectPool<>(
-                new OomeFactory(OomeTrigger.CREATE));
-
+        pool = new SoftReferenceObjectPool<>(new OomeFactory(OomeTrigger.CREATE));
         try {
             pool.borrowObject();
             fail("Expected out of memory.");
-        }
-        catch (final OutOfMemoryError ex) {
+        } catch (final OutOfMemoryError ex) {
             // expected
         }
         pool.close();
-
-        pool = new SoftReferenceObjectPool<>(
-                new OomeFactory(OomeTrigger.VALIDATE));
-
+        pool = new SoftReferenceObjectPool<>(new OomeFactory(OomeTrigger.VALIDATE));
         try {
             pool.borrowObject();
             fail("Expected out of memory.");
-        }
-        catch (final OutOfMemoryError ex) {
+        } catch (final OutOfMemoryError ex) {
             // expected
         }
         pool.close();
-
-        pool = new SoftReferenceObjectPool<>(
-                new OomeFactory(OomeTrigger.DESTROY));
-
+        pool = new SoftReferenceObjectPool<>(new OomeFactory(OomeTrigger.DESTROY));
         try {
             pool.borrowObject();
             fail("Expected out of memory.");
-        }
-        catch (final OutOfMemoryError ex) {
+        } catch (final OutOfMemoryError ex) {
             // expected
         }
         pool.close();
