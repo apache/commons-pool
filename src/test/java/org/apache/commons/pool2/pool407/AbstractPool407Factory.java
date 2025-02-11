@@ -28,6 +28,8 @@ public abstract class AbstractPool407Factory extends BasePooledObjectFactory<Poo
     /**
      * Tests whether the subclass relies on the Pool's implementation of makeObject(). If the subclass returns false, then it implements makeObject(), in which
      * case makeObject() returns a bad object like null or a null wrapper.
+     *
+     * @return whether the subclass relies on the Pool's implementation of makeObject().
      */
     abstract boolean isDefaultMakeObject();
 

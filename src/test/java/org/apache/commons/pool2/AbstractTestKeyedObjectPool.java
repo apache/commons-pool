@@ -172,7 +172,7 @@ public abstract class AbstractTestKeyedObjectPool {
         }
     }
 
-    protected static final String KEY = "key";
+    private static final String KEY = "key";
 
     private KeyedObjectPool<Object, Object> pool;
 
@@ -209,6 +209,7 @@ public abstract class AbstractTestKeyedObjectPool {
      * throw {@link IllegalArgumentException}
      * if such a pool cannot be created.
      *
+     * @param <E> The exception type.
      * @param minCapacity Minimum capacity of the pool to create
      * @return the newly created keyed object pool
      */
@@ -558,14 +559,11 @@ public abstract class AbstractTestKeyedObjectPool {
             return; // test not supported
         }
         final List<MethodCall> expectedMethods = new ArrayList<>();
-        Object obj;
-
+        final Object obj;
         if (pool instanceof GenericKeyedObjectPool) {
             ((GenericKeyedObjectPool<Object, Object>) pool).setTestOnBorrow(true);
         }
-
         // Test correct behavior code paths
-
         // existing idle object should be activated and validated
         pool.addObject(KEY);
         clear(factory, expectedMethods);
@@ -574,23 +572,18 @@ public abstract class AbstractTestKeyedObjectPool {
         expectedMethods.add(new MethodCall("validateObject", KEY, ZERO).returned(Boolean.TRUE));
         assertEquals(expectedMethods, factory.getMethodCalls());
         pool.returnObject(KEY, obj);
-
         // Test exception handling of borrowObject
         reset(pool, factory, expectedMethods);
-
         // makeObject Exceptions should be propagated to client code from borrowObject
         factory.setMakeObjectFail(true);
-        assertThrows(PrivateException.class, () -> pool.borrowObject(KEY),
-                "Expected borrowObject to propagate makeObject exception.");
+        assertThrows(PrivateException.class, () -> pool.borrowObject(KEY), "Expected borrowObject to propagate makeObject exception.");
         expectedMethods.add(new MethodCall("makeObject", KEY));
         assertEquals(expectedMethods, factory.getMethodCalls());
-
         // when activateObject fails in borrowObject, a new object should be
         // borrowed/created
         reset(pool, factory, expectedMethods);
         pool.addObject(KEY);
         clear(factory, expectedMethods);
-
         factory.setActivateObjectFail(true);
         expectedMethods.add(new MethodCall("activateObject", KEY, obj));
         assertThrows(NoSuchElementException.class, () -> pool.borrowObject(KEY));
@@ -601,13 +594,11 @@ public abstract class AbstractTestKeyedObjectPool {
         AbstractTestObjectPool.removeDestroyObjectCall(factory.getMethodCalls()); // The exact timing of destroyObject
                                                                                   // is flexible here.
         assertEquals(expectedMethods, factory.getMethodCalls());
-
         // when validateObject fails in borrowObject, a new object should be
         // borrowed/created
         reset(pool, factory, expectedMethods);
         pool.addObject(KEY);
         clear(factory, expectedMethods);
-
         factory.setValidateObjectFail(true);
         // testOnBorrow is on, so this will throw when the newly created instance
         // fails validation
@@ -650,7 +641,7 @@ public abstract class AbstractTestKeyedObjectPool {
     @Test
     public void testKPOFCloseUsages() throws Exception {
         final FailingKeyedPooledObjectFactory factory = new FailingKeyedPooledObjectFactory();
-        KeyedObjectPool<Object, Object> pool;
+        final KeyedObjectPool<Object, Object> pool;
         try {
             pool = makeEmptyPool(factory);
         } catch (final UnsupportedOperationException uoe) {
@@ -680,11 +671,8 @@ public abstract class AbstractTestKeyedObjectPool {
             return; // test not supported
         }
         final List<MethodCall> expectedMethods = new ArrayList<>();
-        Object obj;
-
         // Test correct behavior code paths
-
-        obj = pool.borrowObject(KEY);
+        final Object obj = pool.borrowObject(KEY);
         clear(factory, expectedMethods);
 
         // invalidated object should be destroyed

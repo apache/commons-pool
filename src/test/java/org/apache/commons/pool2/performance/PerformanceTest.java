@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.commons.pool2.performance;
 
 import java.time.Duration;
@@ -32,7 +31,6 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
  * Multi-thread performance test
  */
 public class PerformanceTest {
-
     final class PerfTask implements Callable<TaskStats> {
         final TaskStats taskStats = new TaskStats();
         long borrowTimeNanos;
@@ -40,113 +38,99 @@ public class PerformanceTest {
 
         @Override
         public TaskStats call() {
-               runOnce(); // warmup
-               for (int i = 0; i < nrIterations; i++) {
-                   runOnce();
-                   taskStats.totalBorrowNanos += borrowTimeNanos;
-                   taskStats.totalReturnNanos += returnTimeNanos;
-                   taskStats.nrSamples++;
-                   if (logLevel >= 2) {
-                       final String name = "thread" + Thread.currentThread().getName();
-                       System.out.println("result " + taskStats.nrSamples + '\t' +
-                               name + '\t' + "borrow time: " + Duration.ofNanos(borrowTimeNanos) + '\t' +
-                               "return time: " + Duration.ofNanos(returnTimeNanos) + '\t' + "waiting: " +
-                               taskStats.waiting + '\t' + "complete: " +
-                               taskStats.complete);
-                   }
-               }
-               return taskStats;
-           }
-
-       public void runOnce() {
-        try {
-            taskStats.waiting++;
-            if (logLevel >= 5) {
-                final String name = "thread" + Thread.currentThread().getName();
-                System.out.println(name +
-                        "   waiting: " + taskStats.waiting +
-                        "   complete: " + taskStats.complete);
+            runOnce(); // warmup
+            for (int i = 0; i < nrIterations; i++) {
+                runOnce();
+                taskStats.totalBorrowNanos += borrowTimeNanos;
+                taskStats.totalReturnNanos += returnTimeNanos;
+                taskStats.nrSamples++;
+                if (logLevel >= 2) {
+                    final String name = "thread" + Thread.currentThread().getName();
+                    System.out.println(
+                            "result " + taskStats.nrSamples + '\t' + name + '\t' + "borrow time: " + Duration.ofNanos(borrowTimeNanos) + '\t' + "return time: "
+                                    + Duration.ofNanos(returnTimeNanos) + '\t' + "waiting: " + taskStats.waiting + '\t' + "complete: " + taskStats.complete);
+                }
             }
-            final long bbeginNanos = System.nanoTime();
-            final Integer o = pool.borrowObject();
-            final long bendNanos = System.nanoTime();
-            taskStats.waiting--;
+            return taskStats;
+        }
 
-            if (logLevel >= 3) {
-                final String name = "thread" + Thread.currentThread().getName();
-                System.out.println(name +
-                        "    waiting: " + taskStats.waiting +
-                        "   complete: " + taskStats.complete);
+        public void runOnce() {
+            try {
+                taskStats.waiting++;
+                if (logLevel >= 5) {
+                    final String name = "thread" + Thread.currentThread().getName();
+                    System.out.println(name + "   waiting: " + taskStats.waiting + "   complete: " + taskStats.complete);
+                }
+                final long bbeginNanos = System.nanoTime();
+                final Integer o = pool.borrowObject();
+                final long bendNanos = System.nanoTime();
+                taskStats.waiting--;
+                if (logLevel >= 3) {
+                    final String name = "thread" + Thread.currentThread().getName();
+                    System.out.println(name + "    waiting: " + taskStats.waiting + "   complete: " + taskStats.complete);
+                }
+                final long rbeginNanos = System.nanoTime();
+                pool.returnObject(o);
+                final long rendNanos = System.nanoTime();
+                Thread.yield();
+                taskStats.complete++;
+                borrowTimeNanos = bendNanos - bbeginNanos;
+                returnTimeNanos = rendNanos - rbeginNanos;
+            } catch (final Exception e) {
+                e.printStackTrace();
             }
-
-            final long rbeginNanos = System.nanoTime();
-            pool.returnObject(o);
-            final long rendNanos = System.nanoTime();
-            Thread.yield();
-            taskStats.complete++;
-            borrowTimeNanos = bendNanos - bbeginNanos;
-            returnTimeNanos = rendNanos - rbeginNanos;
-        } catch (final Exception e) {
-            e.printStackTrace();
         }
     }
-    }
+
     private static final class TaskStats {
-        public int waiting;
-        public int complete;
-        public long totalBorrowNanos;
-        public long totalReturnNanos;
-        public int nrSamples;
+        int waiting;
+        int complete;
+        long totalBorrowNanos;
+        long totalReturnNanos;
+        int nrSamples;
     }
 
     public static void main(final String[] args) {
         final PerformanceTest test = new PerformanceTest();
         test.setLogLevel(0);
         System.out.println("Increase threads");
-        test.run(1,  50,  5,  5);
-        test.run(1, 100,  5,  5);
-        test.run(1, 200,  5,  5);
-        test.run(1, 400,  5,  5);
-
+        test.run(1, 50, 5, 5);
+        test.run(1, 100, 5, 5);
+        test.run(1, 200, 5, 5);
+        test.run(1, 400, 5, 5);
         System.out.println("Increase threads & poolSize");
-        test.run(1,  50,  5,  5);
+        test.run(1, 50, 5, 5);
         test.run(1, 100, 10, 10);
         test.run(1, 200, 20, 20);
         test.run(1, 400, 40, 40);
-
         System.out.println("Increase maxIdle");
-        test.run(1, 400, 40,  5);
+        test.run(1, 400, 40, 5);
         test.run(1, 400, 40, 40);
-
 //      System.out.println("Show creation/destruction of objects");
 //      test.setLogLevel(4);
 //      test.run(1, 400, 40,  5);
     }
 
     private int logLevel;
-
     private int nrIterations = 5;
-
     private GenericObjectPool<Integer> pool;
 
     private void run(final int iterations, final int nrThreads, final int maxTotal, final int maxIdle) {
         this.nrIterations = iterations;
-
         final SleepingObjectFactory factory = new SleepingObjectFactory();
-        if (logLevel >= 4) { factory.setDebug(true); }
+        if (logLevel >= 4) {
+            factory.setDebug(true);
+        }
         pool = new GenericObjectPool<>(factory);
         pool.setMaxTotal(maxTotal);
         pool.setMaxIdle(maxIdle);
         pool.setTestOnBorrow(true);
-
         final ExecutorService threadPool = Executors.newFixedThreadPool(nrThreads);
-
         final List<Callable<TaskStats>> tasks = new ArrayList<>();
         for (int i = 0; i < nrThreads; i++) {
             tasks.add(new PerfTask());
             Thread.yield();
         }
-
         if (logLevel >= 1) {
             System.out.println("created");
         }
@@ -157,15 +141,17 @@ public class PerformanceTest {
         } catch (final InterruptedException e) {
             e.printStackTrace();
         }
-
-        if (logLevel >= 1) { System.out.println("started"); }
+        if (logLevel >= 1) {
+            System.out.println("started");
+        }
         Thread.yield();
-
-        if (logLevel >= 1) { System.out.println("go"); }
+        if (logLevel >= 1) {
+            System.out.println("go");
+        }
         Thread.yield();
-
-        if (logLevel >= 1) { System.out.println("finish"); }
-
+        if (logLevel >= 1) {
+            System.out.println("finish");
+        }
         final TaskStats aggregate = new TaskStats();
         if (futures != null) {
             for (final Future<TaskStats> future : futures) {
@@ -184,7 +170,6 @@ public class PerformanceTest {
                 }
             }
         }
-
         final Duration totalBorrowDuration = Duration.ofNanos(aggregate.totalBorrowNanos);
         final Duration totalReturnDuration = Duration.ofNanos(aggregate.totalReturnNanos);
         System.out.println("-----------------------------------------");
@@ -197,7 +182,6 @@ public class PerformanceTest {
         System.out.println("totalReturnTime: " + totalReturnDuration);
         System.out.println("avg BorrowTime: " + totalBorrowDuration.dividedBy(aggregate.nrSamples));
         System.out.println("avg ReturnTime: " + totalReturnDuration.dividedBy(aggregate.nrSamples));
-
         threadPool.shutdown();
     }
 

@@ -57,13 +57,12 @@ public class DisconnectingWaiterFactory<K> extends WaiterFactory<K> {
      */
     protected static final Predicate<PooledObject<Waiter>> DEFAULT_DISCONNECTED_VALIDATION_ACTION = w -> false;
 
-    /**
+    /*
      * Blocks until connected or maxWait is exceeded.
      *
      * @throws TimeoutException if maxWait is exceeded.
      */
-    private static void waitForConnection(final AtomicBoolean connected,
-            final Duration timeBetweenConnectionChecks, final Duration maxWait) {
+    private static void waitForConnection(final AtomicBoolean connected, final Duration timeBetweenConnectionChecks, final Duration maxWait) {
         final Instant start = Instant.now();
         while (!connected.get()) {
             try {

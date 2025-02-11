@@ -114,7 +114,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
     /**
      * Attempts to invalidate an object, swallowing IllegalStateException.
      */
-    static class InvalidateThread implements Runnable {
+    private static class InvalidateThread implements Runnable {
 
         private final String obj;
         private final KeyedObjectPool<String, String> pool;
@@ -309,13 +309,15 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     /**
      * Very simple test thread that just tries to borrow an object from
-     * the provided pool with the specified key and returns it
+     * the provided pool with the specified key and returns it.
+     *
+     * @param <T> Type of element in the pool.
      */
-    static class SimpleTestThread<T> implements Runnable {
+    private static class SimpleTestThread<T> implements Runnable {
         private final KeyedObjectPool<String, T> pool;
         private final String key;
 
-        public SimpleTestThread(final KeyedObjectPool<String, T> pool, final String key) {
+        SimpleTestThread(final KeyedObjectPool<String, T> pool, final String key) {
             this.pool = pool;
             this.key = key;
         }
@@ -331,7 +333,9 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
     }
 
     /**
-     * DefaultEvictionPolicy modified to add latency
+     * DefaultEvictionPolicy modified to add latency.
+     *
+     * @param <T> the type of objects in the pool.
      */
     private static final class SlowEvictionPolicy<T> extends DefaultEvictionPolicy<T> {
         private final long delay;
@@ -341,7 +345,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
          *
          * @param delay number of ms of latency to inject in evict
          */
-        public SlowEvictionPolicy(final long delay) {
+        SlowEvictionPolicy(final long delay) {
             this.delay = delay;
         }
 
@@ -353,7 +357,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         }
     }
 
-    static class TestThread<T> implements Runnable {
+    private static class TestThread<T> implements Runnable {
         private final Random random = new Random();
 
         /** GKOP to hit */
@@ -775,8 +779,9 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         }
     }
 
-    private String formatSettings(final String title, final String s, final int i, final String s0, final boolean b0, final String s1, final int i1, final String s2, final int i2, final String s3, final int i3,
-            final String s4, final int i4, final String s5, final int i5, final String s6, final int i6, final int zeroLength, final int oneLength, final int twoLength){
+    private String formatSettings(final String title, final String s, final int i, final String s0, final boolean b0, final String s1, final int i1,
+            final String s2, final int i2, final String s3, final int i3, final String s4, final int i4, final String s5, final int i5, final String s6,
+            final int i6, final int zeroLength, final int oneLength, final int twoLength) {
         final StringBuilder sb = new StringBuilder(80);
         sb.append(title).append(' ');
         sb.append(s).append('=').append(i).append(' ');
@@ -1216,7 +1221,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         testConcurrentBorrowAndClear(threadCount, taskCount, addCount, borrowCycles, clearCycles, useYield);
     }
 
-    /**
+    /*
      * Tests POOL-411, or least tries to reproduce the NPE, but does not.
      *
      * @throws Exception a test failure.
@@ -1279,9 +1284,11 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
     }
 
     /**
-     * See https://issues.apache.org/jira/browse/POOL-411?focusedCommentId=17741156&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-17741156
+     * See
+     * https://issues.apache.org/jira/browse/POOL-411?
+     * focusedCommentId=17741156&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-17741156
      *
-     * @throws TestException a test failure.
+     * @throws Exception a test failure.
      */
     @Test
     public void testConcurrentBorrowAndClear_JiraComment17741156() throws Exception {
@@ -1291,7 +1298,6 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         final int borrowCycles = 5_000;
         final int clearCycles = 5_000;
         final boolean useYield = false;
-
         testConcurrentBorrowAndClear(threadCount, taskCount, addCount, borrowCycles, clearCycles, useYield);
     }
 

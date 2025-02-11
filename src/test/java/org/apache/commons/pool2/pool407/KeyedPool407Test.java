@@ -56,7 +56,8 @@ public class KeyedPool407Test extends AbstractPool407Test {
 
     private static final String KEY = "key";
 
-    protected void assertShutdown(final ExecutorService executor, final Duration poolConfigMaxWait, final AbstractKeyedPool407Factory factory) throws Exception {
+    protected void assertShutdown(final ExecutorService executor, final Duration poolConfigMaxWait, final AbstractKeyedPool407Factory factory)
+            throws Exception {
         // Old note: This never finishes when the factory makes nulls because two threads are stuck forever
         // If a factory always returns a null object or a null poolable object, then we will wait forever.
         // This would also be true is object validation always fails.

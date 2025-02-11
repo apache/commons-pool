@@ -17,9 +17,11 @@
 
 package org.apache.commons.pool2.impl;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.time.Duration;
+
 import org.apache.commons.pool2.PooledObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

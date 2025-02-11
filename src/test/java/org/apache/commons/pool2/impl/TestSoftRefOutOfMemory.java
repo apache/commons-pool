@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.ArrayFill;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.junit.jupiter.api.AfterEach;
@@ -38,9 +39,7 @@ public class TestSoftRefOutOfMemory {
         private int counter;
 
         public LargePoolableObjectFactory(final int size) {
-            final char[] data = new char[size];
-            Arrays.fill(data, '.');
-            buffer = new String(data);
+            buffer = new StringBuffer().append(ArrayFill.fill(new char[size], '.')).toString();
         }
 
         @Override
@@ -73,7 +72,7 @@ public class TestSoftRefOutOfMemory {
             // depend on the returned object to be eventually garbaged
             // collected. Either way, making sure a new String instance
             // is returned eliminated false failures.
-            return new String();
+            return new StringBuffer().toString();
         }
 
         @Override
@@ -115,7 +114,7 @@ public class TestSoftRefOutOfMemory {
             // depend on the returned object to be eventually garbaged
             // collected. Either way, making sure a new String instance
             // is returned eliminated false failures.
-            return new String(String.valueOf(counter));
+            return new StringBuffer().append(counter).toString();
         }
         @Override
         public PooledObject<String> wrap(final String value) {

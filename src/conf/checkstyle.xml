@@ -72,9 +72,6 @@
     <module name="JavadocVariable">
       <property name="scope" value="protected" />
     </module>
-    <module name="OperatorWrap">
-      <property name="option" value="eol" />
-    </module>
     <module name="ParenPad" />
     <module name="TypecastParenPad" />
     <module name="VisibilityModifier">

@@ -90,7 +90,7 @@
     <commons.componentid>pool</commons.componentid>
     <commons.module.name>org.apache.commons.pool2</commons.module.name>
     <commons.rc.version>RC3</commons.rc.version>
-    
+    <checkstyle.suppress.file>${basedir}/src/conf/checkstyle-suppressions.xml</checkstyle.suppress.file>
     <!-- Java 8 -->
     <commons.release.version>2.12.1</commons.release.version>
     <commons.release.next>2.12.2</commons.release.next>
@@ -135,8 +135,10 @@
             <artifactId>maven-checkstyle-plugin</artifactId>
              <configuration>
               <configLocation>${basedir}/src/conf/checkstyle.xml</configLocation>
-              <enableRulesSummary>false</enableRulesSummary>
               <headerLocation>${basedir}/license-header.txt</headerLocation>
+              <suppressionsLocation>${checkstyle.suppress.file}</suppressionsLocation>
+              <enableRulesSummary>false</enableRulesSummary>
+              <includeTestSourceDirectory>true</includeTestSourceDirectory>
             </configuration>
           </plugin>
           <plugin>

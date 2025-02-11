@@ -37,7 +37,8 @@ public final class Pool407NormalFactory extends AbstractPool407Factory {
         //
         // Old note:
         // This is key to the test, creation failed and returns null for instance see
-        // https://github.com/openhab/openhab-core/blob/main/bundles/org.openhab.core.io.transport.modbus/src/main/java/org/openhab/core/io/transport/modbus/internal/pooling/ModbusSlaveConnectionFactoryImpl.java#L163
+        // https://github.com/openhab/openhab-core/blob/main/bundles/org.openhab.core.io.transport.modbus/
+        // src/main/java/org/openhab/core/io/transport/modbus/internal/pooling/ModbusSlaveConnectionFactoryImpl.java#L163
         // the test passes when this returns new Pool407Fixture();
         return fixture;
     }

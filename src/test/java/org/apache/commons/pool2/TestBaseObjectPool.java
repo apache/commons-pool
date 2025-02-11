@@ -71,6 +71,9 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
     }
 
     /**
+     * This implementation either fails or throws UnsupportedOperationException.
+     *
+     * @param <E> The exception type.
      * @param minCapacity Ignored by this implemented. Used by sub-classes.
      * @return A newly created empty pool
      */

@@ -42,11 +42,13 @@ public abstract class AbstractTestObjectPool {
         calls.removeIf(call -> "destroyObject".equals(call.getName()));
     }
 
-    private static void reset(final ObjectPool<Object> pool, final MethodCallPoolableObjectFactory factory, final List<MethodCall> expectedMethods) throws Exception {
+    private static void reset(final ObjectPool<Object> pool, final MethodCallPoolableObjectFactory factory, final List<MethodCall> expectedMethods)
+            throws Exception {
         pool.clear();
         clear(factory, expectedMethods);
         factory.reset();
     }
+
     // Deliberate choice to create a new object in case future unit tests check
     // for a specific object.
     private final Integer ZERO = Integer.valueOf(0);
@@ -173,14 +175,13 @@ public abstract class AbstractTestObjectPool {
             ((GenericObjectPool<Object>) pool).setTestOnBorrow(true);
         }
         final List<MethodCall> expectedMethods = new ArrayList<>();
-        Object obj;
 
         // Test correct behavior code paths
 
         // existing idle object should be activated and validated
         pool.addObject();
         clear(factory, expectedMethods);
-        obj = pool.borrowObject();
+        final Object obj = pool.borrowObject();
         expectedMethods.add(new MethodCall("activateObject", ZERO));
         expectedMethods.add(new MethodCall("validateObject", ZERO).returned(Boolean.TRUE));
         assertEquals(expectedMethods, factory.getMethodCalls());
@@ -291,18 +292,13 @@ public abstract class AbstractTestObjectPool {
             return; // test not supported
         }
         final List<MethodCall> expectedMethods = new ArrayList<>();
-        Object obj;
-
         // Test correct behavior code paths
-
-        obj = pool.borrowObject();
+        final Object obj = pool.borrowObject();
         clear(factory, expectedMethods);
-
         // invalidated object should be destroyed
         pool.invalidateObject(obj);
         expectedMethods.add(new MethodCall("destroyObject", obj));
         assertEquals(expectedMethods, factory.getMethodCalls());
-
         // Test exception handling of invalidateObject
         reset(pool, factory, expectedMethods);
         final Object obj2 = pool.borrowObject();
