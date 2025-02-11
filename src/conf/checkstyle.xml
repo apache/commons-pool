@@ -84,6 +84,7 @@
     <module name="SimplifyBooleanReturn" />
     <module name="StringLiteralEquality" />
     <module name="SuperClone" /> 
+    <module name="SuperFinalize" />
     <module name="TypecastParenPad" />
     <module name="VisibilityModifier">
       <property name="packageAllowed" value="true" />
