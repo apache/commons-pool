@@ -46,10 +46,10 @@ import org.junit.jupiter.api.Test;
  */
 public class TestAbandonedKeyedObjectPool {
 
-    final class ConcurrentBorrower extends Thread {
+    private final class ConcurrentBorrower extends Thread {
         private final ArrayList<PooledTestObject> borrowed;
 
-        public ConcurrentBorrower(final ArrayList<PooledTestObject> borrowed) {
+        private ConcurrentBorrower(final ArrayList<PooledTestObject> borrowed) {
             this.borrowed = borrowed;
         }
 
@@ -62,9 +62,10 @@ public class TestAbandonedKeyedObjectPool {
             }
         }
     }
-    final class ConcurrentReturner extends Thread {
+
+    private final class ConcurrentReturner extends Thread {
         private final PooledTestObject returned;
-        public ConcurrentReturner(final PooledTestObject obj) {
+        private ConcurrentReturner(final PooledTestObject obj) {
             returned = obj;
         }
         @Override
@@ -83,12 +84,12 @@ public class TestAbandonedKeyedObjectPool {
         private final long destroyLatencyMillis;
         private final long validateLatencyMillis;
 
-        public SimpleFactory() {
+        private SimpleFactory() {
             destroyLatencyMillis = 0;
             validateLatencyMillis = 0;
         }
 
-        public SimpleFactory(final long destroyLatencyMillis, final long validateLatencyMillis) {
+        private SimpleFactory(final long destroyLatencyMillis, final long validateLatencyMillis) {
             this.destroyLatencyMillis = destroyLatencyMillis;
             this.validateLatencyMillis = validateLatencyMillis;
         }

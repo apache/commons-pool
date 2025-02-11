@@ -654,7 +654,7 @@ public abstract class AbstractTestKeyedObjectPool {
         pool.close();
 
         // Test exception handling close should swallow failures
-        try (final KeyedObjectPool<Object, Object> pool2 = makeEmptyPool(factory)) {
+        try (KeyedObjectPool<Object, Object> pool2 = makeEmptyPool(factory)) {
             reset(pool2, factory, expectedMethods);
             factory.setDestroyObjectFail(true);
             pool2.addObjects(KEY, 5);
@@ -755,7 +755,7 @@ public abstract class AbstractTestKeyedObjectPool {
     @Test
     public void testToString() {
         final FailingKeyedPooledObjectFactory factory = new FailingKeyedPooledObjectFactory();
-        try (final KeyedObjectPool<Object, Object> pool = makeEmptyPool(factory)) {
+        try (KeyedObjectPool<Object, Object> pool = makeEmptyPool(factory)) {
             pool.toString();
         } catch (final UnsupportedOperationException uoe) {
             return; // test not supported

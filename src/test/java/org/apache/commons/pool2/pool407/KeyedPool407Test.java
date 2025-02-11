@@ -37,7 +37,7 @@ public class KeyedPool407Test extends AbstractPool407Test {
     private static final class KeyedPool407RoundtripRunnable implements Runnable {
         private final KeyedPool407 pool;
 
-        public KeyedPool407RoundtripRunnable(final KeyedPool407 pool) {
+        KeyedPool407RoundtripRunnable(final KeyedPool407 pool) {
             this.pool = pool;
         }
 
@@ -73,7 +73,7 @@ public class KeyedPool407Test extends AbstractPool407Test {
 
     private void test(final AbstractKeyedPool407Factory factory, final int poolSize, final Duration poolConfigMaxWait) throws Exception {
         final ExecutorService executor = Executors.newFixedThreadPool(poolSize);
-        try (final KeyedPool407 pool = new KeyedPool407(factory, poolConfigMaxWait)) {
+        try (KeyedPool407 pool = new KeyedPool407(factory, poolConfigMaxWait)) {
             // Start 'poolSize' threads that try to borrow a Pool407Fixture with the same key
             for (int i = 0; i < poolSize; i++) {
                 executor.execute(new KeyedPool407RoundtripRunnable(pool));

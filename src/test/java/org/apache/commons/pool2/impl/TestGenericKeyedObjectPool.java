@@ -88,6 +88,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         public Object create(final Object key) {
             return null;
         }
+
         @Override
         public PooledObject<Object> wrap(final Object value) {
             return new DefaultPooledObject<>(value);
@@ -105,6 +106,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         public HashSet<String> create(final String key) {
             return new HashSet<>();
         }
+
         @Override
         public PooledObject<HashSet<String>> wrap(final HashSet<String> value) {
             return new DefaultPooledObject<>(value);
@@ -121,13 +123,13 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         private final String key;
         private boolean done;
 
-        public InvalidateThread(final KeyedObjectPool<String, String> pool, final String key, final String obj) {
+        private InvalidateThread(final KeyedObjectPool<String, String> pool, final String key, final String obj) {
             this.obj = obj;
             this.pool = pool;
             this.key = key;
         }
 
-        public boolean complete() {
+        private boolean complete() {
             return done;
         }
 
@@ -379,19 +381,19 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         private volatile boolean failed;
         private volatile Exception exception;
 
-        public TestThread(final KeyedObjectPool<String, T> pool) {
+        private TestThread(final KeyedObjectPool<String, T> pool) {
             this(pool, 100, 50, 50, true, null, null);
         }
 
-        public TestThread(final KeyedObjectPool<String, T> pool, final int iter) {
+        private TestThread(final KeyedObjectPool<String, T> pool, final int iter) {
             this(pool, iter, 50, 50, true, null, null);
         }
 
-        public TestThread(final KeyedObjectPool<String, T> pool, final int iter, final int delay) {
+        private TestThread(final KeyedObjectPool<String, T> pool, final int iter, final int delay) {
             this(pool, iter, delay, delay, true, null, null);
         }
 
-        public TestThread(final KeyedObjectPool<String, T> pool, final int iter, final int startDelay,
+        private TestThread(final KeyedObjectPool<String, T> pool, final int iter, final int startDelay,
             final int holdTime, final boolean randomDelay, final T expectedObject, final String key) {
             this.pool = pool;
             this.iter = iter;
@@ -403,11 +405,11 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
         }
 
-        public boolean complete() {
+        private boolean complete() {
             return complete;
         }
 
-        public boolean failed() {
+        private boolean failed() {
             return failed;
         }
 
@@ -451,7 +453,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
      * Very simple test thread that just tries to borrow an object from
      * the provided pool with the specified key and returns it after a wait
      */
-    static class WaitingTestThread extends Thread {
+    private static class WaitingTestThread extends Thread {
         private final KeyedObjectPool<String, String> pool;
         private final String key;
         private final long pause;
@@ -463,7 +465,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         private long endedMillis;
         private String objectId;
 
-        public WaitingTestThread(final KeyedObjectPool<String, String> pool, final String key, final long pause) {
+        private WaitingTestThread(final KeyedObjectPool<String, String> pool, final String key, final long pause) {
             this.pool = pool;
             this.key = key;
             this.pause = pause;
@@ -508,7 +510,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     private void checkEvictionOrder(final boolean lifo) throws Exception {
         final SimpleFactory<Integer> intFactory = new SimpleFactory<>();
-        try (final GenericKeyedObjectPool<Integer, String> intPool = new GenericKeyedObjectPool<>(intFactory)) {
+        try (GenericKeyedObjectPool<Integer, String> intPool = new GenericKeyedObjectPool<>(intFactory)) {
             intPool.setNumTestsPerEvictionRun(2);
             intPool.setMinEvictableIdleTime(Duration.ofMillis(100));
             intPool.setLifo(lifo);
@@ -901,7 +903,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
     public void testAppendStats() {
         assertFalse(gkoPool.getMessageStatistics());
         assertEquals("foo", gkoPool.appendStats("foo"));
-        try (final GenericKeyedObjectPool<?, ?> pool = new GenericKeyedObjectPool<>(new SimpleFactory<>())) {
+        try (GenericKeyedObjectPool<?, ?> pool = new GenericKeyedObjectPool<>(new SimpleFactory<>())) {
             pool.setMessagesStatistics(true);
             assertNotEquals("foo", pool.appendStats("foo"));
             pool.setMessagesStatistics(false);
@@ -1033,7 +1035,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
     public void testClearOldest() throws Exception {
         // Make destroy have some latency so clearOldest takes some time
         final WaiterFactory<String> waiterFactory = new WaiterFactory<>(0, 20, 0, 0, 0, 0, 50, 5, 0);
-        try (final GenericKeyedObjectPool<String, Waiter> waiterPool = new GenericKeyedObjectPool<>(waiterFactory)) {
+        try (GenericKeyedObjectPool<String, Waiter> waiterPool = new GenericKeyedObjectPool<>(waiterFactory)) {
             waiterPool.setMaxTotalPerKey(5);
             waiterPool.setMaxTotal(50);
             waiterPool.setLifo(false);
@@ -1188,7 +1190,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         final SimpleFactory<String> factory = new SimpleFactory<>();
         // Give makeObject a little latency
         factory.setMakeLatency(200);
-        try (final GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<>(factory,
+        try (GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<>(factory,
                 new GenericKeyedObjectPoolConfig<>())) {
             final String s = pool.borrowObject("one");
             // First borrow waits on create, so wait time should be at least 200 ms
@@ -1466,7 +1468,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         config.setTimeBetweenEvictionRuns(Duration.ofMillis(500));
         config.setMinEvictableIdleDuration(Duration.ofMillis(50));
         config.setNumTestsPerEvictionRun(5);
-        try (final GenericKeyedObjectPool<String, String> p = new GenericKeyedObjectPool<>(simpleFactory, config)) {
+        try (GenericKeyedObjectPool<String, String> p = new GenericKeyedObjectPool<>(simpleFactory, config)) {
             for (int i = 0; i < 5; i++) {
                 p.addObject("one");
             }
@@ -1486,7 +1488,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
     @Test
     public void testEqualsIndiscernible() throws Exception {
         final HashSetFactory factory = new HashSetFactory();
-        try (final GenericKeyedObjectPool<String, HashSet<String>> pool = new GenericKeyedObjectPool<>(factory,
+        try (GenericKeyedObjectPool<String, HashSet<String>> pool = new GenericKeyedObjectPool<>(factory,
                 new GenericKeyedObjectPoolConfig<>())) {
             final HashSet<String> s1 = pool.borrowObject("a");
             final HashSet<String> s2 = pool.borrowObject("a");
@@ -1784,7 +1786,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
     @Test
     public void testInvalidateFreesCapacity() throws Exception {
         final SimpleFactory<String> factory = new SimpleFactory<>();
-        try (final GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<>(factory)) {
+        try (GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<>(factory)) {
             pool.setMaxTotalPerKey(2);
             pool.setMaxWaitMillis(500);
             // Borrow an instance and hold if for 5 seconds
@@ -1852,7 +1854,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         config.setTestWhileIdle(true);
         config.setTimeBetweenEvictionRuns(Duration.ofMillis(-1));
 
-        try (final GenericKeyedObjectPool<Integer, Object> pool = new GenericKeyedObjectPool<>(new ObjectFactory(), config)) {
+        try (GenericKeyedObjectPool<Integer, Object> pool = new GenericKeyedObjectPool<>(new ObjectFactory(), config)) {
 
             // Allocate both objects with this thread
             pool.borrowObject(Integer.valueOf(1)); // object1
@@ -1959,7 +1961,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
     @Test
     public void testMakeObjectException() throws Exception {
         final SimpleFactory<String> factory = new SimpleFactory<>();
-        try (final GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<>(factory)) {
+        try (GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<>(factory)) {
             pool.setMaxTotalPerKey(1);
             pool.setBlockWhenExhausted(false);
             factory.exceptionOnCreate = true;
@@ -1978,7 +1980,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         final WaiterFactory<String> waiterFactory = new WaiterFactory<>(0, 20, 0, 0, 0, 0, 8, 5, 0);
         // TODO Fix this. Can't use local pool since runTestThreads uses the
         // protected pool field
-        try (final GenericKeyedObjectPool<String, Waiter> waiterPool = new GenericKeyedObjectPool<>(waiterFactory)) {
+        try (GenericKeyedObjectPool<String, Waiter> waiterPool = new GenericKeyedObjectPool<>(waiterFactory)) {
             waiterPool.setMaxTotalPerKey(5);
             waiterPool.setMaxTotal(8);
             waiterPool.setTestOnBorrow(true);
@@ -2389,7 +2391,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
     @Test
     public void testMultipleReturn() throws Exception {
         final WaiterFactory<String> factory = new WaiterFactory<>(0, 0, 0, 0, 0, 0);
-        try (final GenericKeyedObjectPool<String, Waiter> pool = new GenericKeyedObjectPool<>(factory)) {
+        try (GenericKeyedObjectPool<String, Waiter> pool = new GenericKeyedObjectPool<>(factory)) {
             pool.setTestOnReturn(true);
             final Waiter waiter = pool.borrowObject("a");
             pool.returnObject("a", waiter);
@@ -2415,7 +2417,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
     @Test
     public void testMutable() throws Exception {
         final HashSetFactory factory = new HashSetFactory();
-        try (final GenericKeyedObjectPool<String, HashSet<String>> pool = new GenericKeyedObjectPool<>(factory,
+        try (GenericKeyedObjectPool<String, HashSet<String>> pool = new GenericKeyedObjectPool<>(factory,
                 new GenericKeyedObjectPoolConfig<>())) {
             final HashSet<String> s1 = pool.borrowObject("a");
             final HashSet<String> s2 = pool.borrowObject("a");
@@ -2449,7 +2451,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
             DisconnectingWaiterFactory.DEFAULT_DISCONNECTED_VALIDATION_ACTION
         );
         // @formatter:on
-        try (final GenericKeyedObjectPool<String, Waiter> pool = new GenericKeyedObjectPool<>(factory)) {
+        try (GenericKeyedObjectPool<String, Waiter> pool = new GenericKeyedObjectPool<>(factory)) {
             final String key = "one";
             pool.setTestOnBorrow(true);
             pool.setMaxTotal(-1);
@@ -2515,7 +2517,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     @Test
     public void testReturnObjectThrowsIllegalStateException() {
-        try (final GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<>(new SimpleFactory<>())) {
+        try (GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<>(new SimpleFactory<>())) {
             assertThrows(IllegalStateException.class,
                     () ->  pool.returnObject("Foo", "Bar"));
         }
@@ -2563,7 +2565,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         final SimpleFactory<String> factory = new SimpleFactory<>();
         factory.setValidateLatency(100);
         factory.setValid(true); // Validation always succeeds
-        try (final GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<>(factory)) {
+        try (GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<>(factory)) {
             pool.setMaxWaitMillis(1000);
             pool.setTestWhileIdle(true);
             pool.setMaxTotalPerKey(2);
@@ -2710,7 +2712,7 @@ public void testValidateOnCreateFailure() throws Exception {
         final SimpleFactory<String> factory = new SimpleFactory<>();
         factory.setValid(false); // Validate will always fail
         factory.setValidationEnabled(true);
-        try (final GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<>(factory)) {
+        try (GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<>(factory)) {
             pool.setMaxTotalPerKey(2);
             pool.setMaxWaitMillis(1500);
             pool.setTestOnReturn(true);

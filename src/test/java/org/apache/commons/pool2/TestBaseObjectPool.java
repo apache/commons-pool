@@ -270,7 +270,7 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
         if (!getClass().equals(TestBaseObjectPool.class)) {
             return; // skip redundant tests
         }
-        try (final ObjectPool<Object> pool = new TestObjectPool()) {
+        try (ObjectPool<Object> pool = new TestObjectPool()) {
 
             assertTrue(pool.getNumIdle() < 0, "Negative expected.");
             assertTrue(pool.getNumActive() < 0, "Negative expected.");

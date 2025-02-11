@@ -23,7 +23,7 @@ import org.apache.commons.pool2.PooledObject;
  * DefaultEvictionPolicy} for a pool, users must provide an implementation of
  * this interface that provides the required eviction policy.
  *
- * @param <T> the type of objects in the pool
+ * @param <T> the type of objects in the pool.
  * @since 2.0
  */
 public interface EvictionPolicy<T> {

@@ -54,11 +54,11 @@ final class PooledTestObject implements TrackedUse {
     private boolean abandoned;
     private boolean detached;  // destroy-abandoned "detaches"
 
-    public PooledTestObject() {
+    PooledTestObject() {
         this.hash = ATOMIC_HASH.incrementAndGet();
     }
 
-    public void destroy(final DestroyMode mode) {
+    void destroy(final DestroyMode mode) {
         destroyed = true;
         if (mode.equals(DestroyMode.ABANDONED)) {
             detached = true;
@@ -100,23 +100,23 @@ final class PooledTestObject implements TrackedUse {
         return hash;
     }
 
-    public synchronized boolean isActive() {
+    synchronized boolean isActive() {
         return active;
     }
 
-    public boolean isDestroyed() {
+    boolean isDestroyed() {
         return destroyed;
     }
 
-    public boolean isDetached() {
+    boolean isDetached() {
         return detached;
     }
 
-    public void setAbandoned(final boolean b) {
+    void setAbandoned(final boolean b) {
         abandoned = b;
     }
 
-    public synchronized void setActive(final boolean b) {
+    synchronized void setActive(final boolean b) {
         active = b;
     }
 }
@@ -126,10 +126,10 @@ final class PooledTestObject implements TrackedUse {
  */
 public class TestAbandonedObjectPool {
 
-    final class ConcurrentBorrower extends Thread {
+    private final class ConcurrentBorrower extends Thread {
         private final ArrayList<PooledTestObject> borrowed;
 
-        public ConcurrentBorrower(final ArrayList<PooledTestObject> borrowed) {
+        private ConcurrentBorrower(final ArrayList<PooledTestObject> borrowed) {
             this.borrowed = borrowed;
         }
 
@@ -142,11 +142,14 @@ public class TestAbandonedObjectPool {
             }
         }
     }
-    final class ConcurrentReturner extends Thread {
+
+    private final class ConcurrentReturner extends Thread {
         private final PooledTestObject returned;
-        public ConcurrentReturner(final PooledTestObject obj) {
+
+        private ConcurrentReturner(final PooledTestObject obj) {
             returned = obj;
         }
+
         @Override
         public void run() {
             try {
@@ -163,12 +166,12 @@ public class TestAbandonedObjectPool {
         private final long destroyLatency;
         private final long validateLatency;
 
-        public SimpleFactory() {
+        private SimpleFactory() {
             destroyLatency = 0;
             validateLatency = 0;
         }
 
-        public SimpleFactory(final long destroyLatency, final long validateLatency) {
+        private SimpleFactory(final long destroyLatency, final long validateLatency) {
             this.destroyLatency = destroyLatency;
             this.validateLatency = validateLatency;
         }

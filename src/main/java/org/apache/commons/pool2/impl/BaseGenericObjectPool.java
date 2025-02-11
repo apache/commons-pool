@@ -213,7 +213,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
          *
          * @param instance object to wrap
          */
-        public IdentityWrapper(final T instance) {
+        IdentityWrapper(final T instance) {
             this.instance = instance;
         }
 
@@ -226,7 +226,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
         /**
          * @return the wrapped object
          */
-        public T getObject() {
+        T getObject() {
             return instance;
         }
 

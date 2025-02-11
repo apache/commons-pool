@@ -42,7 +42,7 @@ public class ThrowableCallStack implements CallStack {
         /**
          * Constructs a new instance with its message set to the now instant.
          */
-        public Snapshot() {
+        private Snapshot() {
             this(Instant.now());
         }
 
