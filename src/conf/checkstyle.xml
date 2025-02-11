@@ -71,6 +71,7 @@
       <property name="scope" value="protected" />
     </module>
     <module name="LeftCurly" />
+    <module name="MethodParamPad"/>
     <module name="ParenPad" />
     <module name="TypecastParenPad" />
     <module name="VisibilityModifier">

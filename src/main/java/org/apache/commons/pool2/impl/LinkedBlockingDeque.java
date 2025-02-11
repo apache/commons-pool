@@ -1371,12 +1371,11 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
         lock.lock();
         try {
             if (a.length < count) {
-                a = (T[])java.lang.reflect.Array.newInstance
-                    (a.getClass().getComponentType(), count);
+                a = (T[]) java.lang.reflect.Array.newInstance(a.getClass().getComponentType(), count);
             }
             int k = 0;
             for (Node<E> p = first; p != null; p = p.next) {
-                a[k++] = (T)p.item;
+                a[k++] = (T) p.item;
             }
             if (a.length > k) {
                 a[k] = null;
