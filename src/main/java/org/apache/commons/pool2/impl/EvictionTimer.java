@@ -204,8 +204,8 @@ final class EvictionTimer {
      * server environments.
      *
      * @param task      Task to be scheduled.
-     * @param delay     Delay in milliseconds before task is executed.
-     * @param period    Time in milliseconds between executions.
+     * @param delay     Duration before task is executed.
+     * @param period    Duration between executions.
      */
     static synchronized void schedule(
             final BaseGenericObjectPool<?>.Evictor task, final Duration delay, final Duration period) {
