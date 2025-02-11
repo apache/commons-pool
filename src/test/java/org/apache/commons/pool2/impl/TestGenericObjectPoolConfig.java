@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
  */
 public class TestGenericObjectPoolConfig {
 
-    public final static class TestEvictionPolicy implements EvictionPolicy<TestObject> {
+    public static final class TestEvictionPolicy implements EvictionPolicy<TestObject> {
 
         @Override
         public boolean evict(final EvictionConfig config, final PooledObject<TestObject> underTest, final int idleCount) {
@@ -40,7 +40,7 @@ public class TestGenericObjectPoolConfig {
 
     }
 
-    public final static class TestObject {
+    public static final class TestObject {
         // empty
     }
 
