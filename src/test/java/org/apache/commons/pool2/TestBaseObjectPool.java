@@ -197,7 +197,7 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
     }
 
     @Test
-    public void testBaseClosePool() throws Exception{
+    public void testBaseClosePool() throws Exception {
         try {
             pool = makeEmptyPool(3);
         } catch (final UnsupportedOperationException e) {
@@ -205,7 +205,6 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
         }
         final String obj = pool.borrowObject();
         pool.returnObject(obj);
-
         pool.close();
         assertThrows(IllegalStateException.class, pool::borrowObject);
     }

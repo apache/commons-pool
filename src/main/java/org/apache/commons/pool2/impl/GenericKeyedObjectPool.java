@@ -441,8 +441,8 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
                 }
                 if (blockWhenExhausted) {
                     if (PooledObject.isNull(p)) {
-                        p = borrowMaxWaitMillis < 0 ? objectDeque.getIdleObjects().takeFirst():
-                                objectDeque.getIdleObjects().pollFirst(borrowMaxWaitMillis, TimeUnit.MILLISECONDS);
+                        p = borrowMaxWaitMillis < 0 ? objectDeque.getIdleObjects().takeFirst()
+                                : objectDeque.getIdleObjects().pollFirst(borrowMaxWaitMillis, TimeUnit.MILLISECONDS);
                     }
                     if (PooledObject.isNull(p)) {
                         throw new NoSuchElementException(appendStats(

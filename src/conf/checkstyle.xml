@@ -94,5 +94,6 @@
       <property name="protectedAllowed" value="true" />
     </module>
     <module name="WhitespaceAfter" />
+    <module name="WhitespaceAround" />
   </module>
 </module>

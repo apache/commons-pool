@@ -658,7 +658,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         final Random random = new Random();
         random.setSeed(System.currentTimeMillis());
         for (int i = 0; i < smallPrimes.length; i++) {
-            for (int j = 0; j < 5; j++) {// Try the tests a few times
+            for (int j = 0; j < 5; j++) { // Try the tests a few times
                 // Can't use clear as some objects are still active so create
                 // a new pool
                 trackerFactory = new VisitTrackerFactory<>();

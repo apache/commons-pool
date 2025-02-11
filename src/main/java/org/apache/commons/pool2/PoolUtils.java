@@ -355,7 +355,7 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         @Override
-        public void addObject() throws Exception{
+        public void addObject() throws Exception {
             pool.addObject();
         }
 
