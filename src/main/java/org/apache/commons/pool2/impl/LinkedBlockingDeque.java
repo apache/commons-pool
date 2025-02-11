@@ -223,18 +223,28 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
     /** Descending iterator */
     private final class DescendingItr extends AbstractItr {
         @Override
-        Node<E> firstNode() { return last; }
+        Node<E> firstNode() {
+            return last;
+        }
+
         @Override
-        Node<E> nextNode(final Node<E> n) { return n.prev; }
+        Node<E> nextNode(final Node<E> n) {
+            return n.prev;
+        }
     }
 
     /** Forward iterator */
     private final class Itr extends AbstractItr {
         @Override
-        Node<E> firstNode() { return first; }
-        @Override
-        Node<E> nextNode(final Node<E> n) { return n.next; }
+        Node<E> firstNode() {
+            return first;
         }
+
+        @Override
+        Node<E> nextNode(final Node<E> n) {
+            return n.next;
+        }
+    }
 
     /**
      * Doubly-linked list node class.

@@ -56,9 +56,7 @@
     <module name="EqualsHashCode" />
     <module name="ExplicitInitialization" />
     <module name="FinalLocalVariable" />
-    <module name="IllegalInstantiation">
-      <property name="classes" value="java.lang.Boolean, java.lang.String" />
-    </module>
+    <module name="IllegalInstantiation" />
     <module name="ImportOrder">
       <property name="option" value="top" />
       <property name="groups" value="java,javax,org" />
@@ -72,6 +70,7 @@
     <module name="JavadocVariable">
       <property name="scope" value="protected" />
     </module>
+    <module name="LeftCurly" />
     <module name="ParenPad" />
     <module name="TypecastParenPad" />
     <module name="VisibilityModifier">
