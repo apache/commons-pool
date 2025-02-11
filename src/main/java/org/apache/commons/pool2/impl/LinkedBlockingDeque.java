@@ -1073,12 +1073,11 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
     // Stack methods
 
     /**
-     * Reconstitutes this deque from a stream (that is,
-     * deserialize it).
+     * Reconstitutes this deque from a stream (that is, deserialize it).
+     *
      * @param s the stream
      */
-    private void readObject(final ObjectInputStream s)
-        throws IOException, ClassNotFoundException {
+    private void readObject(final ObjectInputStream s) throws IOException, ClassNotFoundException {
         s.defaultReadObject();
         count = 0;
         first = null;
@@ -1086,7 +1085,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
         // Read in all elements and place in queue
         for (;;) {
             @SuppressWarnings("unchecked")
-            final E item = (E)s.readObject();
+            final E item = (E) s.readObject();
             if (item == null) {
                 break;
             }

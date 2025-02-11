@@ -62,9 +62,7 @@ public class MethodCall {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
-        final MethodCall that = (MethodCall)o;
-
+        final MethodCall that = (MethodCall) o;
         if (!Objects.equals(name, that.name)) {
             return false;
         }
