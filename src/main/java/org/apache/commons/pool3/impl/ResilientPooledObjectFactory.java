@@ -106,7 +106,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
         /**
          * Constructor set statTime to now.
          */
-        public MakeEvent() {
+        MakeEvent() {
             startTime = Instant.now();
         }
 

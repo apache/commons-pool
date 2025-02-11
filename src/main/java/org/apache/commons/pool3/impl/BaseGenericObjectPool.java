@@ -226,7 +226,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
          *
          * @param instance object to wrap.
          */
-        public IdentityWrapper(final T instance) {
+        IdentityWrapper(final T instance) {
             this.instance = instance;
         }
 
@@ -1153,7 +1153,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
         }
         while (!registered) {
             try {
-                ObjectName objName;
+                final ObjectName objName;
                 // Skip the numeric suffix for the first pool in case there is
                 // only one so the names are cleaner.
                 if (i == 1) {

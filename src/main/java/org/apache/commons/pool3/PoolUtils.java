@@ -64,7 +64,7 @@ public final class PoolUtils {
          * @param factor
          *            erosion factor
          */
-        public ErodingFactor(final float factor) {
+        ErodingFactor(final float factor) {
             this.factor = factor;
             nextShrinkMillis = System.currentTimeMillis() + (long) (900000 * factor); // now + 15 min * factor
             idleHighWaterMark = 1;
@@ -133,11 +133,9 @@ public final class PoolUtils {
          *            events
          * @see #erodingFactor
          */
-        protected ErodingKeyedObjectPool(final KeyedObjectPool<K, V, E> keyedPool,
-                final ErodingFactor erodingFactor) {
+        ErodingKeyedObjectPool(final KeyedObjectPool<K, V, E> keyedPool, final ErodingFactor erodingFactor) {
             if (keyedPool == null) {
-                throw new IllegalArgumentException(
-                        MSG_NULL_KEYED_POOL);
+                throw new IllegalArgumentException(MSG_NULL_KEYED_POOL);
             }
             this.keyedPool = keyedPool;
             this.erodingFactor = erodingFactor;
@@ -154,8 +152,7 @@ public final class PoolUtils {
          *            events
          * @see #erodingFactor
          */
-        public ErodingKeyedObjectPool(final KeyedObjectPool<K, V, E> keyedPool,
-                final float factor) {
+        ErodingKeyedObjectPool(final KeyedObjectPool<K, V, E> keyedPool, final float factor) {
             this(keyedPool, new ErodingFactor(factor));
         }
 
@@ -351,7 +348,7 @@ public final class PoolUtils {
          *            events
          * @see #factor
          */
-        public ErodingObjectPool(final ObjectPool<T, E> pool, final float factor) {
+        ErodingObjectPool(final ObjectPool<T, E> pool, final float factor) {
             this.pool = pool;
             this.factor = new ErodingFactor(factor);
         }
@@ -360,7 +357,7 @@ public final class PoolUtils {
          * {@inheritDoc}
          */
         @Override
-        public void addObject() throws E, IllegalStateException, UnsupportedOperationException{
+        public void addObject() throws E, IllegalStateException, UnsupportedOperationException {
             pool.addObject();
         }
 
@@ -492,7 +489,7 @@ public final class PoolUtils {
          * @param factor
          *            erosion factor
          */
-        public ErodingPerKeyKeyedObjectPool(final KeyedObjectPool<K, V, E> keyedPool, final float factor) {
+        ErodingPerKeyKeyedObjectPool(final KeyedObjectPool<K, V, E> keyedPool, final float factor) {
             super(keyedPool, null);
             this.factor = factor;
         }

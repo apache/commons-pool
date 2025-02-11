@@ -42,11 +42,13 @@ public abstract class AbstractTestObjectPool {
         calls.removeIf(call -> "destroyObject".equals(call.getName()));
     }
 
-    private static void reset(final ObjectPool<Object, ?> pool, final MethodCallPoolableObjectFactory factory, final List<MethodCall> expectedMethods) throws Exception {
+    private static void reset(final ObjectPool<Object, ?> pool, final MethodCallPoolableObjectFactory factory, final List<MethodCall> expectedMethods)
+            throws Exception {
         pool.clear();
         clear(factory, expectedMethods);
         factory.reset();
     }
+
     // Deliberate choice to create a new object in case future unit tests check
     // for a specific object.
     private final Integer ZERO = Integer.valueOf(0);
@@ -86,24 +88,24 @@ public abstract class AbstractTestObjectPool {
 
         // The following should not throw exceptions just because the pool is closed.
         if (pool.getNumIdle() >= 0) {
-            assertEquals( 0, pool.getNumIdle(),"A closed pool shouldn't have any idle objects.");
+            assertEquals(0, pool.getNumIdle(), "A closed pool shouldn't have any idle objects.");
         }
         if (pool.getNumActive() >= 0) {
-            assertEquals( 2, pool.getNumActive(),"A closed pool should still keep count of active objects.");
+            assertEquals(2, pool.getNumActive(), "A closed pool should still keep count of active objects.");
         }
         pool.returnObject(o1);
         if (pool.getNumIdle() >= 0) {
-            assertEquals( 0, pool.getNumIdle(),"returnObject should not add items back into the idle object pool for a closed pool.");
+            assertEquals(0, pool.getNumIdle(), "returnObject should not add items back into the idle object pool for a closed pool.");
         }
         if (pool.getNumActive() >= 0) {
-            assertEquals( 1, pool.getNumActive(),"A closed pool should still keep count of active objects.");
+            assertEquals(1, pool.getNumActive(), "A closed pool should still keep count of active objects.");
         }
         pool.invalidateObject(o2);
         if (pool.getNumIdle() >= 0) {
-            assertEquals( 0, pool.getNumIdle(),"invalidateObject must not add items back into the idle object pool.");
+            assertEquals(0, pool.getNumIdle(), "invalidateObject must not add items back into the idle object pool.");
         }
         if (pool.getNumActive() >= 0) {
-            assertEquals( 0, pool.getNumActive(),"A closed pool should still keep count of active objects.");
+            assertEquals(0, pool.getNumActive(), "A closed pool should still keep count of active objects.");
         }
         pool.clear();
         pool.close();
@@ -173,14 +175,13 @@ public abstract class AbstractTestObjectPool {
             ((GenericObjectPool<Object, PrivateException>) pool).setTestOnBorrow(true);
         }
         final List<MethodCall> expectedMethods = new ArrayList<>();
-        Object obj;
 
         // Test correct behavior code paths
 
         // existing idle object should be activated and validated
         pool.addObject();
         clear(factory, expectedMethods);
-        obj = pool.borrowObject();
+        final Object obj = pool.borrowObject();
         expectedMethods.add(new MethodCall("activateObject", ZERO));
         expectedMethods.add(new MethodCall("validateObject", ZERO).returned(Boolean.TRUE));
         assertEquals(expectedMethods, factory.getMethodCalls());
@@ -291,11 +292,10 @@ public abstract class AbstractTestObjectPool {
             return; // test not supported
         }
         final List<MethodCall> expectedMethods = new ArrayList<>();
-        Object obj;
 
         // Test correct behavior code paths
 
-        obj = pool.borrowObject();
+        final Object obj = pool.borrowObject();
         clear(factory, expectedMethods);
 
         // invalidated object should be destroyed

@@ -54,7 +54,7 @@ final class PooledTestObject implements TrackedUse {
     private boolean abandoned;
     private boolean detached;  // destroy-abandoned "detaches"
 
-    public PooledTestObject() {
+    PooledTestObject() {
         this.hash = ATOMIC_HASH.incrementAndGet();
     }
 
@@ -115,10 +115,10 @@ final class PooledTestObject implements TrackedUse {
  */
 public class TestAbandonedObjectPool {
 
-    final class ConcurrentBorrower extends Thread {
+    private final class ConcurrentBorrower extends Thread {
         private final ArrayList<PooledTestObject> borrowed;
 
-        public ConcurrentBorrower(final ArrayList<PooledTestObject> borrowed) {
+        private ConcurrentBorrower(final ArrayList<PooledTestObject> borrowed) {
             this.borrowed = borrowed;
         }
 
@@ -131,11 +131,14 @@ public class TestAbandonedObjectPool {
             }
         }
     }
-    final class ConcurrentReturner extends Thread {
+
+    private final class ConcurrentReturner extends Thread {
         private final PooledTestObject returned;
-        public ConcurrentReturner(final PooledTestObject obj) {
+
+        private ConcurrentReturner(final PooledTestObject obj) {
             returned = obj;
         }
+
         @Override
         public void run() {
             try {
@@ -152,12 +155,12 @@ public class TestAbandonedObjectPool {
         private final long destroyLatency;
         private final long validateLatency;
 
-        public SimpleFactory() {
+        private SimpleFactory() {
             destroyLatency = 0;
             validateLatency = 0;
         }
 
-        public SimpleFactory(final long destroyLatency, final long validateLatency) {
+        private SimpleFactory(final long destroyLatency, final long validateLatency) {
             this.destroyLatency = destroyLatency;
             this.validateLatency = validateLatency;
         }
@@ -248,7 +251,7 @@ public class TestAbandonedObjectPool {
             msg.append('\n');
             mbs.unregisterMBean(name);
         }
-        assertEquals( 0, registeredPoolCount,msg.toString());
+        assertEquals(0, registeredPoolCount, msg.toString());
     }
 
     /**

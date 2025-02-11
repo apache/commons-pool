@@ -37,7 +37,7 @@ public class KeyedPool407Test extends AbstractPool407Test {
     private static final class KeyedPool407RoundtripRunnable implements Runnable {
         private final KeyedPool407 pool;
 
-        public KeyedPool407RoundtripRunnable(final KeyedPool407 pool) {
+        KeyedPool407RoundtripRunnable(final KeyedPool407 pool) {
             this.pool = pool;
         }
 
@@ -56,7 +56,8 @@ public class KeyedPool407Test extends AbstractPool407Test {
 
     private static final String KEY = "key";
 
-    protected void assertShutdown(final ExecutorService executor, final Duration poolConfigMaxWait, final AbstractKeyedPool407Factory factory) throws InterruptedException {
+    protected void assertShutdown(final ExecutorService executor, final Duration poolConfigMaxWait, final AbstractKeyedPool407Factory factory)
+            throws InterruptedException {
         // Old note: This never finishes when the factory makes nulls because two threads are stuck forever
         // If a factory always returns a null object or a null poolable object, then we will wait forever.
         // This would also be true is object validation always fails.
@@ -72,7 +73,7 @@ public class KeyedPool407Test extends AbstractPool407Test {
 
     private void test(final AbstractKeyedPool407Factory factory, final int poolSize, final Duration poolConfigMaxWait) throws InterruptedException {
         final ExecutorService executor = Executors.newFixedThreadPool(poolSize);
-        try (final KeyedPool407 pool = new KeyedPool407(factory, poolConfigMaxWait)) {
+        try (KeyedPool407 pool = new KeyedPool407(factory, poolConfigMaxWait)) {
             // Start 'poolSize' threads that try to borrow a Pool407Fixture with the same key
             for (int i = 0; i < poolSize; i++) {
                 executor.execute(new KeyedPool407RoundtripRunnable(pool));

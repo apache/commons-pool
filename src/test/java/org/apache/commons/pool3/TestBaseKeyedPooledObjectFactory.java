@@ -30,6 +30,7 @@ public class TestBaseKeyedPooledObjectFactory {
         public Object create(final Object key) {
             return null;
         }
+
         @Override
         public PooledObject<Object> wrap(final Object value) {
             return new DefaultPooledObject<>(value);
@@ -40,9 +41,9 @@ public class TestBaseKeyedPooledObjectFactory {
     public void testDefaultMethods() {
         final KeyedPooledObjectFactory<Object, Object, RuntimeException> factory = new TestFactory();
 
-        factory.activateObject("key",null); // a no-op
-        factory.passivateObject("key",null); // a no-op
-        factory.destroyObject("key",null); // a no-op
-        assertTrue(factory.validateObject("key",null)); // constant true
+        factory.activateObject("key", null); // a no-op
+        factory.passivateObject("key", null); // a no-op
+        factory.destroyObject("key", null); // a no-op
+        assertTrue(factory.validateObject("key", null)); // constant true
     }
 }

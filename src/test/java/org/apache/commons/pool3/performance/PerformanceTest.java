@@ -91,12 +91,13 @@ public class PerformanceTest {
         }
     }
     }
+
     private static final class TaskStats {
-        public int waiting;
-        public int complete;
-        public long totalBorrowNanos;
-        public long totalReturnNanos;
-        public int nrSamples;
+        private int waiting;
+        private int complete;
+        private long totalBorrowNanos;
+        private long totalReturnNanos;
+        private int nrSamples;
     }
 
     public static void main(final String[] args) {
@@ -133,7 +134,9 @@ public class PerformanceTest {
         this.nrIterations = iterations;
 
         final SleepingObjectFactory factory = new SleepingObjectFactory();
-        if (logLevel >= 4) { factory.setDebug(true); }
+        if (logLevel >= 4) {
+            factory.setDebug(true);
+        }
         pool = new GenericObjectPool<>(factory);
         pool.setMaxTotal(maxTotal);
         pool.setMaxIdle(maxIdle);
@@ -158,13 +161,19 @@ public class PerformanceTest {
             e.printStackTrace();
         }
 
-        if (logLevel >= 1) { System.out.println("started"); }
+        if (logLevel >= 1) {
+            System.out.println("started");
+        }
         Thread.yield();
 
-        if (logLevel >= 1) { System.out.println("go"); }
+        if (logLevel >= 1) {
+            System.out.println("go");
+        }
         Thread.yield();
 
-        if (logLevel >= 1) { System.out.println("finish"); }
+        if (logLevel >= 1) {
+            System.out.println("finish");
+        }
 
         final TaskStats aggregate = new TaskStats();
         if (futures != null) {

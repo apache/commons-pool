@@ -30,14 +30,14 @@ import org.junit.jupiter.api.Test;
 public class TestResilientPooledObjectFactory {
     @Test
     public void testTransientFailure() throws Exception {
-        FailingFactory ff = new FailingFactory();
-        // Make the factory fail with exception immmmediately on make
+        final FailingFactory ff = new FailingFactory();
+        // Make the factory fail with exception immediately on make
         ff.setHang(false);
         ff.setSilentFail(false);
-        ResilientPooledObjectFactory<String, Exception> rf = new ResilientPooledObjectFactory<String, Exception>(ff,
+        final ResilientPooledObjectFactory<String, Exception> rf = new ResilientPooledObjectFactory<>(ff,
                 5, Duration.ofMillis(100), Duration.ofMinutes(10), Duration.ofMillis(100));
         // Create a pool with a max size of 2, using the resilient factory
-        GenericObjectPool<String, Exception> pool = new GenericObjectPool<>(rf);
+        final GenericObjectPool<String, Exception> pool = new GenericObjectPool<>(rf);
         pool.setMaxTotal(2);
         pool.setBlockWhenExhausted(true);
         pool.setTestOnReturn(true);
@@ -47,22 +47,22 @@ public class TestResilientPooledObjectFactory {
         // Base factory is up
         assertTrue(rf.isUp());
         // Check out a couple of objects
-        String s1 = pool.borrowObject();
-        String s2 = pool.borrowObject();
+        final String s1 = pool.borrowObject();
+        final String s2 = pool.borrowObject();
         // Start a borrower that will wait
         new Thread() {
             @Override
             public void run() {
                 try {
                     pool.borrowObject();
-                } catch (Exception e) {
+                } catch (final Exception e) {
                 }
             }
         }.start();
         // Wait for the borrower to join wait queue
         try {
             Thread.sleep(200);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
         }
 
         // Crash the base factory
@@ -79,7 +79,7 @@ public class TestResilientPooledObjectFactory {
         // validation destroy
         try {
             Thread.sleep(100);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
         }
         assertFalse(rf.isUp());
         // Adder should be running, but failing
@@ -93,7 +93,7 @@ public class TestResilientPooledObjectFactory {
         // Wait for the adder to succeed
         try {
             Thread.sleep(100);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
         }
         // Pool should have no waiters
         assertTrue(pool.getNumWaiters() == 0);
@@ -106,7 +106,7 @@ public class TestResilientPooledObjectFactory {
         // Wait for monitor to run
         try {
             Thread.sleep(200);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
         }
         // rf should be up now
         assertTrue(rf.isUp());
@@ -120,13 +120,13 @@ public class TestResilientPooledObjectFactory {
 
     @Test
     public void testNulls() throws Exception {
-        FailingFactory ff = new FailingFactory();
-        // Make the factory fail with exception immmmediately on make
+        final FailingFactory ff = new FailingFactory();
+        // Make the factory fail with exception immediately on make
         ff.setSilentFail(true);
-        ResilientPooledObjectFactory<String, Exception> rf = new ResilientPooledObjectFactory<String, Exception>(ff,
+        final ResilientPooledObjectFactory<String, Exception> rf = new ResilientPooledObjectFactory<>(ff,
                 5, Duration.ofMillis(50), Duration.ofMinutes(10), Duration.ofMillis(50));
         // Create a pool with a max size of 2, using the resilient factory
-        GenericObjectPool<String, Exception> pool = new GenericObjectPool<>(rf);
+        final GenericObjectPool<String, Exception> pool = new GenericObjectPool<>(rf);
         pool.setMaxTotal(2);
         pool.setBlockWhenExhausted(true);
         pool.setTestOnReturn(true);
@@ -145,7 +145,7 @@ public class TestResilientPooledObjectFactory {
                 try {
                     final String s = pool.borrowObject();
                     pool.returnObject(s);
-                } catch (Exception e) {
+                } catch (final Exception e) {
                 }
             }
         }.start();
@@ -155,7 +155,7 @@ public class TestResilientPooledObjectFactory {
                 try {
                     final String s = pool.borrowObject();
                     pool.returnObject(s);
-                } catch (Exception e) {
+                } catch (final Exception e) {
                 }
             }
         }.start();
@@ -163,7 +163,7 @@ public class TestResilientPooledObjectFactory {
         // Wait for the borrowers to get in the queue
         try {
             Thread.sleep(50);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
         }
         pool.returnObject(s1);
         pool.returnObject(s2);
@@ -173,7 +173,7 @@ public class TestResilientPooledObjectFactory {
         // validation destroy
         try {
             Thread.sleep(200);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
         }
         assertFalse(rf.isUp());
         // Restart the factory
@@ -181,7 +181,7 @@ public class TestResilientPooledObjectFactory {
         // Wait for the adder to succeed
         try {
             Thread.sleep(200);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
         }
         // Pool should have no waiters
         assertEquals(0, pool.getNumWaiters());
@@ -189,7 +189,7 @@ public class TestResilientPooledObjectFactory {
         // Wait for monitor to run
         try {
             Thread.sleep(200);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
         }
         // Monitor and adder should be stopped by pool close
         assertFalse(rf.isAdderRunning());
@@ -198,13 +198,13 @@ public class TestResilientPooledObjectFactory {
 
     @Test
     public void testAdderStartStop() throws Exception {
-        FailingFactory ff = new FailingFactory();
-        // Make the factory fail with exception immmmediately on make
+        final FailingFactory ff = new FailingFactory();
+        // Make the factory fail with exception immediately on make
         ff.setSilentFail(true);
-        ResilientPooledObjectFactory<String, Exception> rf = new ResilientPooledObjectFactory<String, Exception>(ff,
+        final ResilientPooledObjectFactory<String, Exception> rf = new ResilientPooledObjectFactory<>(ff,
                 5, Duration.ofMillis(200), Duration.ofMinutes(10), Duration.ofMillis(20));
         // Create a pool with a max size of 2, using the resilient factory
-        GenericObjectPool<String, Exception> pool = new GenericObjectPool<>(rf);
+        final GenericObjectPool<String, Exception> pool = new GenericObjectPool<>(rf);
         pool.setMaxTotal(2);
         pool.setBlockWhenExhausted(true);
         pool.setTestOnReturn(true);
@@ -219,26 +219,26 @@ public class TestResilientPooledObjectFactory {
             public void run() {
                 try {
                     final String s = pool.borrowObject();
-                } catch (Exception e) {
+                } catch (final Exception e) {
                 }
             }
         }.start();
         // Wait for the borrower to get in the queue
         try {
             Thread.sleep(50);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
         }
         // Crash the base factory
         ff.crash();
         // Return object will create capacity in the pool
         try {
             pool.returnObject(s1);
-        } catch (Exception e) {
+        } catch (final Exception e) {
         }
         // Wait for the adder to run
         try {
             Thread.sleep(100);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
         }
         // Adder should be running
         assertTrue(rf.isAdderRunning());
@@ -247,7 +247,7 @@ public class TestResilientPooledObjectFactory {
         // Wait for the adder to succeed
         try {
             Thread.sleep(200);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
         }
         // Pool should have no waiters
         assertEquals(0, pool.getNumWaiters());
@@ -262,7 +262,7 @@ public class TestResilientPooledObjectFactory {
         // Wait for the monitor to run
         try {
             Thread.sleep(200);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
         }
         assertTrue(rf.isUp());
         // Adder should be stopped
@@ -271,12 +271,12 @@ public class TestResilientPooledObjectFactory {
 
     @Test
     public void testIsMonitorRunning() throws Exception {
-        FailingFactory ff = new FailingFactory();
-        // Make the factory fail with exception immmmediately on make
+        final FailingFactory ff = new FailingFactory();
+        // Make the factory fail with exception immediately on make
         ff.setSilentFail(true);
-        ResilientPooledObjectFactory<String, Exception> rf = new ResilientPooledObjectFactory<String, Exception>(ff,
+        final ResilientPooledObjectFactory<String, Exception> rf = new ResilientPooledObjectFactory<>(ff,
                 5, Duration.ofMillis(200), Duration.ofMinutes(10), Duration.ofMillis(20));
-        GenericObjectPool<String, Exception> pool = new GenericObjectPool<>(rf);
+        final GenericObjectPool<String, Exception> pool = new GenericObjectPool<>(rf);
         rf.setPool(pool);
         rf.startMonitor();
         assertTrue(rf.isMonitorRunning());
@@ -287,15 +287,15 @@ public class TestResilientPooledObjectFactory {
         // Wait for monitor to run so it can kill itself
         try {
             Thread.sleep(200);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
         }
         assertFalse(rf.isMonitorRunning());
     }
 
     @Test
     public void testConstructorWithDefaults() {
-        FailingFactory ff = new FailingFactory();
-        ResilientPooledObjectFactory<String, Exception> rf = new ResilientPooledObjectFactory<String, Exception>(ff);
+        final FailingFactory ff = new FailingFactory();
+        final ResilientPooledObjectFactory<String, Exception> rf = new ResilientPooledObjectFactory<>(ff);
         assertFalse(rf.isMonitorRunning());
         assertFalse(rf.isAdderRunning());
         assertEquals(ResilientPooledObjectFactory.getDefaultLogSize(), rf.getLogSize());
@@ -312,14 +312,15 @@ public class TestResilientPooledObjectFactory {
      * Factory that suffers outages and fails in configurable ways when it is down.
      */
     class FailingFactory implements PooledObjectFactory<String, Exception> {
-        /** Wheter or not the factory is up */
+
+        /** Whether or not the factory is up */
         private boolean up = true;
 
         /** Whether or not to fail silently */
         private boolean silentFail = true;
 
         /** Whether or not to hang */
-        private boolean hang = false;
+        private boolean hang;
 
         public void crash() {
             this.up = false;
@@ -329,18 +330,18 @@ public class TestResilientPooledObjectFactory {
             this.up = true;
         }
 
-        public void setSilentFail(boolean silentFail) {
+        public void setSilentFail(final boolean silentFail) {
             this.silentFail = silentFail;
         }
 
-        public void setHang(boolean hang) {
+        public void setHang(final boolean hang) {
             this.hang = hang;
         }
 
         @Override
         public PooledObject<String> makeObject() throws Exception {
             if (up) {
-                return new DefaultPooledObject<String>(UUID.randomUUID().toString());
+                return new DefaultPooledObject<>(UUID.randomUUID().toString());
             }
             if (!silentFail) {
                 throw new Exception("makeObject failed");
@@ -349,7 +350,7 @@ public class TestResilientPooledObjectFactory {
                 while (!up) {
                     try {
                         Thread.sleep(1000);
-                    } catch (InterruptedException e) {
+                    } catch (final InterruptedException e) {
                     }
                 }
             }
@@ -357,20 +358,20 @@ public class TestResilientPooledObjectFactory {
         }
 
         @Override
-        public void destroyObject(PooledObject<String> p) throws Exception {
+        public void destroyObject(final PooledObject<String> p) throws Exception {
         }
 
         @Override
-        public boolean validateObject(PooledObject<String> p) {
+        public boolean validateObject(final PooledObject<String> p) {
             return up;
         }
 
         @Override
-        public void activateObject(PooledObject<String> p) throws Exception {
+        public void activateObject(final PooledObject<String> p) throws Exception {
         }
 
         @Override
-        public void passivateObject(PooledObject<String> p) throws Exception {
+        public void passivateObject(final PooledObject<String> p) throws Exception {
         }
     }
 }

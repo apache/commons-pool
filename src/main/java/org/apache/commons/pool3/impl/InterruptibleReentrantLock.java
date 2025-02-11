@@ -39,7 +39,7 @@ final class InterruptibleReentrantLock extends ReentrantLock {
      * @param fairness true means threads should acquire contended locks as if
      * waiting in a FIFO queue
      */
-    public InterruptibleReentrantLock(final boolean fairness) {
+    InterruptibleReentrantLock(final boolean fairness) {
         super(fairness);
     }
 
@@ -48,7 +48,7 @@ final class InterruptibleReentrantLock extends ReentrantLock {
      *
      * @param condition the condition on which the threads are waiting.
      */
-    public void interruptWaiters(final Condition condition) {
+    void interruptWaiters(final Condition condition) {
         getWaitingThreads(condition).forEach(Thread::interrupt);
     }
 }

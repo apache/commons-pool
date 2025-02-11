@@ -96,7 +96,7 @@ public class PoolTest {
                 continue;
             }
             final String name = thread.getName();
-            assertFalse( name.contains(COMMONS_POOL_EVICTIONS_TIMER_THREAD_NAME),name);
+            assertFalse(name.contains(COMMONS_POOL_EVICTIONS_TIMER_THREAD_NAME), name);
         }
     }
 }

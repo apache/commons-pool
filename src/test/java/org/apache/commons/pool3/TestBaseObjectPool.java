@@ -72,7 +72,9 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
 
     /**
      * @param minCapacity Ignored by this implemented. Used by sub-classes.
-     * @return A newly created empty pool
+     * @return A newly created empty pool.
+     *
+     * @param <E> Type of exception thrown by the pool.
      */
     protected <E extends Exception> ObjectPool<String, E> makeEmptyPool(final int minCapacity) {
         if (this.getClass() != TestBaseObjectPool.class) {
@@ -152,18 +154,18 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
         pool.returnObject(obj2);
         obj2 = pool.borrowObject();
         if (isLifo()) {
-            assertEquals(getNthObject(2),obj2);
+            assertEquals(getNthObject(2), obj2);
         }
         if (isFifo()) {
-            assertEquals(getNthObject(0),obj2);
+            assertEquals(getNthObject(0), obj2);
         }
 
         obj0 = pool.borrowObject();
         if (isLifo()) {
-            assertEquals(getNthObject(0),obj0);
+            assertEquals(getNthObject(0), obj0);
         }
         if (isFifo()) {
-            assertEquals(getNthObject(2),obj0);
+            assertEquals(getNthObject(2), obj0);
         }
         pool.close();
     }
@@ -267,10 +269,10 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
         if (!getClass().equals(TestBaseObjectPool.class)) {
             return; // skip redundant tests
         }
-        try (final ObjectPool<Object,RuntimeException> pool = new TestObjectPool()) {
+        try (ObjectPool<Object, RuntimeException> pool = new TestObjectPool()) {
 
-            assertTrue( pool.getNumIdle() < 0,"Negative expected.");
-            assertTrue( pool.getNumActive() < 0,"Negative expected.");
+            assertTrue(pool.getNumIdle() < 0, "Negative expected.");
+            assertTrue(pool.getNumActive() < 0, "Negative expected.");
 
             assertThrows(UnsupportedOperationException.class, pool::clear);
             assertThrows(UnsupportedOperationException.class, pool::addObject);

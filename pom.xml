@@ -89,6 +89,7 @@
     <commons.componentid>pool</commons.componentid>
     <commons.module.name>org.apache.commons.pool3</commons.module.name>
     <commons.rc.version>RC1</commons.rc.version>
+    <checkstyle.suppress.file>${basedir}/src/conf/checkstyle-suppressions.xml</checkstyle.suppress.file>
     <!-- Java 17 -->
     <commons.release.version>3.0.0</commons.release.version>
     <commons.release.desc>(Java 17)</commons.release.desc>
@@ -137,8 +138,10 @@
             <artifactId>maven-checkstyle-plugin</artifactId>
              <configuration>
               <configLocation>${basedir}/src/conf/checkstyle.xml</configLocation>
-              <enableRulesSummary>false</enableRulesSummary>
+              <suppressionsLocation>${checkstyle.suppress.file}</suppressionsLocation>
               <headerLocation>${basedir}/license-header.txt</headerLocation>
+              <enableRulesSummary>false</enableRulesSummary>
+              <includeTestSourceDirectory>true</includeTestSourceDirectory>
             </configuration>
           </plugin>
           <plugin>

@@ -64,7 +64,7 @@ public class WaiterFactory<K> implements PooledObjectFactory<Waiter, IllegalStat
     private long activeCount;
 
     /** Count of (makes - destroys) per key since last reset */
-    private final Map<K,Integer> activeCounts = new HashMap<>();
+    private final Map<K, Integer> activeCounts = new HashMap<>();
 
     /** Maximum of (makes - destroys) - if exceeded IllegalStateException */
     private final long maxActive;  // GKOP 1.x calls this maxTotal
@@ -72,24 +72,18 @@ public class WaiterFactory<K> implements PooledObjectFactory<Waiter, IllegalStat
     /** Maximum of (makes - destroys) per key */
     private final long maxActivePerKey;  // GKOP 1.x calls this maxActive
 
-    public WaiterFactory(final long activateLatency, final long destroyLatency,
-            final long makeLatency, final long passivateLatency, final long validateLatency,
+    public WaiterFactory(final long activateLatency, final long destroyLatency, final long makeLatency, final long passivateLatency, final long validateLatency,
             final long waiterLatency) {
-        this(activateLatency, destroyLatency, makeLatency, passivateLatency,
-                validateLatency, waiterLatency, Long.MAX_VALUE, Long.MAX_VALUE, 0);
+        this(activateLatency, destroyLatency, makeLatency, passivateLatency, validateLatency, waiterLatency, Long.MAX_VALUE, Long.MAX_VALUE, 0);
     }
 
-    public WaiterFactory(final long activateLatency, final long destroyLatency,
-            final long makeLatency, final long passivateLatency, final long validateLatency,
-            final long waiterLatency,final long maxActive) {
-        this(activateLatency, destroyLatency, makeLatency, passivateLatency,
-                validateLatency, waiterLatency, maxActive, Long.MAX_VALUE, 0);
+    public WaiterFactory(final long activateLatency, final long destroyLatency, final long makeLatency, final long passivateLatency, final long validateLatency,
+            final long waiterLatency, final long maxActive) {
+        this(activateLatency, destroyLatency, makeLatency, passivateLatency, validateLatency, waiterLatency, maxActive, Long.MAX_VALUE, 0);
     }
 
-    public WaiterFactory(final long activateLatency, final long destroyLatency,
-            final long makeLatency, final long passivateLatency, final long validateLatency,
-            final long waiterLatency,final long maxActive, final long maxActivePerKey,
-            final double passivateInvalidationProbability) {
+    public WaiterFactory(final long activateLatency, final long destroyLatency, final long makeLatency, final long passivateLatency, final long validateLatency,
+            final long waiterLatency, final long maxActive, final long maxActivePerKey, final double passivateInvalidationProbability) {
         this.activateLatency = activateLatency;
         this.destroyLatency = destroyLatency;
         this.makeLatency = makeLatency;

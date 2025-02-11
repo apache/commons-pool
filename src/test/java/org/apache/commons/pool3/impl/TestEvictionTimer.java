@@ -37,7 +37,7 @@ public class TestEvictionTimer {
     @Test
     public void testStartStopEvictionTimer() throws Exception {
 
-        try (final GenericObjectPool<String, RuntimeException> pool = new GenericObjectPool<>(new BasePooledObjectFactory<String, RuntimeException>() {
+        try (GenericObjectPool<String, RuntimeException> pool = new GenericObjectPool<>(new BasePooledObjectFactory<String, RuntimeException>() {
 
             @Override
             public String create() {
