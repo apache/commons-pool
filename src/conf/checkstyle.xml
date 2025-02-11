@@ -74,6 +74,7 @@
     <module name="MethodParamPad"/>
     <module name="MissingOverride" />
     <module name="ModifierOrder" />
+    <module name="MultipleVariableDeclarations" />
     <module name="ParenPad" />
     <module name="TypecastParenPad" />
     <module name="VisibilityModifier">
