@@ -81,6 +81,7 @@
     <module name="RedundantModifier" />
     <module name="RightCurly" />
     <module name="SimplifyBooleanExpression" />
+    <module name="SimplifyBooleanReturn" />
     <module name="TypecastParenPad" />
     <module name="VisibilityModifier">
       <property name="packageAllowed" value="true" />
