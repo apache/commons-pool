@@ -72,6 +72,7 @@
     </module>
     <module name="LeftCurly" />
     <module name="MethodParamPad"/>
+    <module name="MissingOverride" />
     <module name="ParenPad" />
     <module name="TypecastParenPad" />
     <module name="VisibilityModifier">
