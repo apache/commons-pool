@@ -31,10 +31,10 @@ jobs:
     continue-on-error: ${{ matrix.experimental }}
     strategy:
       matrix:
-        java: [ 17, 21, 23 ]
+        java: [ 17, 21, 24 ]
         experimental: [false]
         include:
-          - java: 24-ea
+          - java: 25-ea
             experimental: true
         
     steps:
