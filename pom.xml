@@ -54,7 +54,7 @@
     <dependency>
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm-util</artifactId>
-      <version>9.7.1</version>
+      <version>${commons.asm.version}</version>
       <optional>true</optional>
     </dependency>
     <!-- testing -->
