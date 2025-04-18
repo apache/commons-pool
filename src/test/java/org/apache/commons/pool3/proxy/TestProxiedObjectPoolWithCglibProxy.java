@@ -16,11 +16,18 @@
  */
 package org.apache.commons.pool3.proxy;
 
+import java.lang.reflect.InvocationTargetException;
+
 public class TestProxiedObjectPoolWithCglibProxy extends
         AbstractTestProxiedObjectPool {
 
     @Override
-    protected ProxySource<TestObject> getproxySource() {
-        return new CglibProxySource<>(TestObject.class);
+    protected ProxySource<TestObject> getproxySource(boolean unwrapInvocationTargetException) {
+        return new CglibProxySource<>(TestObject.class, unwrapInvocationTargetException);
+    }
+
+    @Override
+    protected Class<? extends Throwable> getInvocationTargetExceptionType() {
+        return InvocationTargetException.class;
     }
 }
