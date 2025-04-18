@@ -20,12 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
 import org.apache.commons.pool3.BasePooledObjectFactory;
 import org.apache.commons.pool3.ObjectPool;
@@ -238,12 +235,7 @@ public abstract class AbstractTestProxiedObjectPool {
         ObjectPool<TestObject, RuntimeException> pool = createProxiedObjectPool(true, new MyException());
 
         TestObject object = pool.borrowObject();
-        try {
-            object.getData();
-            fail("Expected to throw %s".formatted(MyException.class));
-        } catch (MyException e) {
-            // As expected
-        }
+        assertThrows(MyException.class, object::getData);
     }
 
     @Test
@@ -252,18 +244,10 @@ public abstract class AbstractTestProxiedObjectPool {
         ObjectPool<TestObject, RuntimeException> pool = createProxiedObjectPool(false, new MyException());
 
         TestObject object = pool.borrowObject();
-        Exception caughtException = null;
-        try {
-            object.getData();
-        }  catch (Exception e) {
-            caughtException = e;
-        }
-
-        if (caughtException instanceof UndeclaredThrowableException || caughtException instanceof InvocationTargetException) {
-            return;
-        }
-        fail("Expected to catch %s or %s but got %s instead".formatted(UndeclaredThrowableException.class, InvocationTargetException.class, caughtException));
+        assertThrows(getInvocationTargetExceptionType(), object::getData);
     }
+
+    protected abstract Class<? extends Throwable> getInvocationTargetExceptionType();
 
     private static class MyException extends RuntimeException {}
 }

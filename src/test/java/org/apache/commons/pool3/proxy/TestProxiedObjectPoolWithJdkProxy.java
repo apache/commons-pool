@@ -16,6 +16,8 @@
  */
 package org.apache.commons.pool3.proxy;
 
+import java.lang.reflect.UndeclaredThrowableException;
+
 public class TestProxiedObjectPoolWithJdkProxy
         extends AbstractTestProxiedObjectPool {
 
@@ -23,5 +25,10 @@ public class TestProxiedObjectPoolWithJdkProxy
     protected ProxySource<TestObject> getproxySource(boolean unwrapInvocationTargetException) {
         return new JdkProxySource<>(this.getClass().getClassLoader(),
                 new Class<?>[] { TestObject.class }, unwrapInvocationTargetException);
+    }
+
+    @Override
+    protected Class<? extends Throwable> getInvocationTargetExceptionType() {
+        return UndeclaredThrowableException.class;
     }
 }
