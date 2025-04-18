@@ -14,29 +14,30 @@
 ## KIND, either express or implied.  See the License for the
 ## specific language governing permissions and limitations
 ## under the License.
-              ${project.name} ${version} RELEASE NOTES
+${project.name} ${version} Release Notes
+------------------------------------------------
 
 The ${developmentTeam} is pleased to announce the release of ${project.name} ${version}.
 
-Apache Commons Pool provides an object-pooling API and a number of object pool implementations.
-Version 2 contains a completely re-written pooling implementation compared to the 1.x series.
+Apache Commons Pool provides an object-pooling API and several object-pool implementations.
+Version 2 contains a completely rewritten pooling implementation compared to the 1.x series.
 In addition to performance and scalability improvements, version 2 includes robust instance
-tracking and pool monitoring. 
+tracking and pool monitoring.
 
 Version 2.7.x and up requires Java 8 or above.
 Version 2.6.x requires Java 7 or above.
 Version 2.5.x requires Java 7 or above.
 Version 2.0 requires 6 or above. 
 
-NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPoolMXBean
+NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPoolMXBean,
       and GenericKeyedObjectPoolMXBean) exist only to define the attributes and methods
-      that will be made available via JMX. They must not be implemented by clients as
-      they are subject to change between major, minor and patch version releases of
-      Commons Pool. Clients that implement any of these interfaces may not, therefore,
+      that will be made available via JMX. Clients must not implement them as
+      they are subject to change between major, minor, and patch version releases of
+      Commons Pool. Clients that implement any of these interfaces may not
       be able to upgrade to a new minor or patch release without requiring code
       changes.
 
-## N.B. the available variables are described here:
+## The available variables are described here:
 ## http://maven.apache.org/plugins/maven-changes-plugin/examples/using-a-custom-announcement-template.html
 ##
 ## Hack to get line breaks to work in release description. For this to work, each line break in the

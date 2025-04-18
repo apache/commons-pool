@@ -83,11 +83,9 @@ import org.apache.commons.pool3.UsageTracking;
  * </p>
  *
  * @see GenericObjectPool
- *
  * @param <K> The type of keys maintained by this pool.
  * @param <T> Type of element pooled in this pool.
  * @param <E> Type of exception thrown in this pool.
- *
  * @since 2.0
  */
 public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGenericObjectPool<T, E>
@@ -106,7 +104,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
          * Number of instances created - number destroyed.
          * Invariant: createCount <= maxTotalPerKey
          */
-        private final AtomicInteger createCount = new AtomicInteger(0);
+        private final AtomicInteger createCount = new AtomicInteger();
 
         private long makeObjectCount;
         private final Object makeObjectCountLock = new Object();
@@ -131,7 +129,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
          * @param fairness true means client threads waiting to borrow / return instances
          * will be served as if waiting in a FIFO queue.
          */
-        public ObjectDeque(final boolean fairness) {
+        ObjectDeque(final boolean fairness) {
             idleObjects = new LinkedBlockingDeque<>(fairness);
         }
 
@@ -209,7 +207,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
     private final boolean fairness;
 
     /*
-     * My hash of sub-pools (ObjectQueue). The list of keys <b>must</b> be kept
+     * My hash of sub-pools (ObjectQueue). The list of keys <strong>must</strong> be kept
      * in step with {@link #poolKeyList} using {@link #keyLock} to ensure any
      * changes to the list of current keys is made in a thread-safe manner.
      */
@@ -218,7 +216,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
 
     /*
      * List of pool keys - used to control eviction order. The list of keys
-     * <b>must</b> be kept in step with {@link #poolMap} using {@link #keyLock}
+     * <strong>must</strong> be kept in step with {@link #poolMap} using {@link #keyLock}
      * to ensure any changes to the list of current keys is made in a
      * thread-safe manner.
      */
@@ -232,7 +230,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * {@link #maxTotal} but there will never be more than {@link #maxTotal}
      * created at any one time.
      */
-    private final AtomicInteger numTotal = new AtomicInteger(0);
+    private final AtomicInteger numTotal = new AtomicInteger();
 
     private Iterator<K> evictionKeyIterator; // @GuardedBy("evictionLock")
 
@@ -298,7 +296,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      *
      * @param key The key to associate with the idle object
      * @param p The wrapped object to add.
-     *
      * @throws E If the associated factory fails to passivate the object
      */
     private void addIdleObject(final K key, final PooledObject<T> p) throws E {
@@ -328,7 +325,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * </p>
      *
      * @param key the key a new instance should be added to
-     *
      * @throws E when {@link KeyedPooledObjectFactory#makeObject}
      *                   fails.
      */
@@ -409,7 +405,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      *                            to become available
      *
      * @return object instance from the keyed pool
-     *
      * @throws NoSuchElementException if a keyed object instance cannot be
      *                                returned because the pool is exhausted.
      *
@@ -523,7 +518,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * on the maximum number of objects either per key or totally.
      *
      * @param objectDeque   The set of objects to check
-     *
      * @return The number of new objects to create
      */
     private int calculateDeficit(final ObjectDeque<T> objectDeque) {
@@ -647,11 +641,9 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
         // build sorted map of idle objects
         final TreeMap<PooledObject<T>, K> map = new TreeMap<>();
 
-        poolMap.forEach((key, value) -> {
-            // Each item into the map using the PooledObject object as the
-            // key. It then gets sorted based on the idle time
-            value.getIdleObjects().forEach(p -> map.put(p, key));
-        });
+        // Each item into the map using the PooledObject object as the
+        // key. It then gets sorted based on the idle time
+        poolMap.forEach((key, value) -> value.getIdleObjects().forEach(p -> map.put(p, key)));
 
         // Now iterate created map and kill the first 15% plus one to account
         // for zero
@@ -660,9 +652,9 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
 
         while (iter.hasNext() && itemsToRemove > 0) {
             final Entry<PooledObject<T>, K> entry = iter.next();
-            // kind of backwards on naming.  In the map, each key is the
+            // kind of backwards on naming. In the map, each key is the
             // PooledObject because it has the ordering with the timestamp
-            // value.  Each value that the key references is the key of the
+            // value. Each value that the key references is the key of the
             // list it belongs to.
             final K key = entry.getValue();
             final PooledObject<T> p = entry.getKey();
@@ -722,9 +714,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * Creates a new pooled object or null.
      *
      * @param key Key associated with new pooled object.
-     *
      * @return The new, wrapped pooled object. May return null.
-     *
      * @throws E If the objection creation fails.
      */
     private PooledObject<T> create(final K key) throws E {
@@ -871,7 +861,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * @param always Should the object be destroyed even if it is not currently
      *               in the set of idle objects for the given key
      * @param destroyMode DestroyMode context provided to the factory
-     *
      * @return {@code true} if the object was destroyed, otherwise {@code false}
      * @throws E If the object destruction failed
      */
@@ -934,7 +923,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * </p>
      *
      * @param key The key to check for idle objects
-     *
      * @throws E If a new object is required and cannot be created
      */
     private void ensureMinIdle(final K key) throws E {
@@ -1157,7 +1145,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * is said to be exhausted. A negative value indicates no limit.
      *
      * @return the limit on the number of active instances per key
-     *
      * @see #setMaxTotalPerKey
      */
     @Override
@@ -1298,7 +1285,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      *
      * @param key pool key
      * @param obj instance to invalidate
-     *
      * @throws E             if an exception occurs destroying the
      *                               object
      * @throws IllegalStateException if obj does not belong to the pool
@@ -1319,7 +1305,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * @param key pool key
      * @param obj instance to invalidate
      * @param destroyMode DestroyMode context provided to factory
-     *
      * @throws E             if an exception occurs destroying the
      *                               object
      * @throws IllegalStateException if obj does not belong to the pool
@@ -1355,7 +1340,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      */
     @Override
     public Map<String, List<DefaultPooledObjectInfo>> listAllObjects() {
-        return poolMap.entrySet().stream().collect(Collectors.toMap(e -> e.getKey().toString(), 
+        return poolMap.entrySet().stream().collect(Collectors.toMap(e -> e.getKey().toString(),
                 e -> e.getValue().getAllObjects().values().stream().map(DefaultPooledObjectInfo::new).collect(Collectors.toList())));
     }
 
@@ -1363,8 +1348,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * Registers a key for pool control and ensures that
      * {@link #getMinIdlePerKey()} idle instances are created.
      *
-     * @param key - The key to register for pool control.
-     *
+     * @param key   The key to register for pool control.
      * @throws E If the associated factory throws an exception
      */
     public void preparePool(final K key) throws E {
@@ -1382,7 +1366,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * </p>
      *
      * @param k The key to register
-     *
      * @return The objects currently associated with the given key. If this
      *         method returns without throwing an exception then it will never
      *         return null.
@@ -1398,7 +1381,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
                 lock.unlock();
                 lock = keyLock.writeLock();
                 lock.lock();
-                final AtomicBoolean allocated = new AtomicBoolean(); 
+                final AtomicBoolean allocated = new AtomicBoolean();
                 objectDeque = poolMap.computeIfAbsent(k, key -> {
                     allocated.set(true);
                     final ObjectDeque<T> deque = new ObjectDeque<>(fairness);
@@ -1465,7 +1448,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      *
      * @param key pool key
      * @param obj instance to return to the keyed pool
-     *
      * @throws IllegalStateException if an object is returned to the pool that
      *                               was not borrowed from it or if an object is
      *                               returned to the pool multiple times
@@ -1611,7 +1593,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * Sets the configuration.
      *
      * @param conf the new configuration to use. This is used by value.
-     *
      * @see GenericKeyedObjectPoolConfig
      */
     public void setConfig(final GenericKeyedObjectPoolConfig<T> conf) {
@@ -1648,7 +1629,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * is said to be exhausted. A negative value indicates no limit.
      *
      * @param maxTotalPerKey the limit on the number of active instances per key
-     *
      * @see #getMaxTotalPerKey
      */
     public void setMaxTotalPerKey(final int maxTotalPerKey) {
@@ -1669,7 +1649,6 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * </p>
      *
      * @param minIdlePerKey The minimum size of the each keyed pool
-     *
      * @see #getMinIdlePerKey()
      * @see #getMaxIdlePerKey()
      * @see #setDurationBetweenEvictionRuns(Duration)

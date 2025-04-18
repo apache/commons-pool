@@ -117,7 +117,7 @@ public class Waiter {
     }
 
     /**
-     * Whether or not the instance is active.
+     * Tests whether or not the instance is active.
      *
      * @return true if the last lifecycle event for this instance was activation.
      */

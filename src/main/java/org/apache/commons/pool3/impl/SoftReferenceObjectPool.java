@@ -257,7 +257,6 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
      * references pools.
      *
      * @param toDestroy PooledSoftReference to destroy
-     *
      * @throws E If an error occurs while trying to destroy the object
      */
     private void destroy(final PooledSoftReference<T> toDestroy) throws E {
@@ -338,7 +337,8 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
         // Remove wrappers for enqueued references from idle and allReferences lists
         removeClearedReferences(idleReferences);
         removeClearedReferences(allReferences);
-        while (refQueue.poll() != null) { // NOPMD
+        while (refQueue.poll() != null) {
+            // loop until null
         }
     }
 

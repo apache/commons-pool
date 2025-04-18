@@ -26,7 +26,6 @@ import org.apache.commons.pool3.UsageTracking;
  * {@link ProxiedObjectPool}.
  *
  * @param <T> type of the wrapped pooled object
- *
  * @since 2.0
  */
 class BaseProxyHandler<T> {

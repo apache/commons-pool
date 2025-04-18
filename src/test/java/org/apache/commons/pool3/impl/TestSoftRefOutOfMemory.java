@@ -59,7 +59,7 @@ public class TestSoftRefOutOfMemory {
 
         private final OomeTrigger trigger;
 
-        public OomeFactory(final OomeTrigger trigger) {
+        OomeFactory(final OomeTrigger trigger) {
             this.trigger = trigger;
         }
 

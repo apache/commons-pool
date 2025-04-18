@@ -62,9 +62,7 @@ public class MethodCall {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
-        final MethodCall that = (MethodCall)o;
-
+        final MethodCall that = (MethodCall) o;
         if (!Objects.equals(name, that.name)) {
             return false;
         }
@@ -91,8 +89,7 @@ public class MethodCall {
         int result;
         result = name != null ? name.hashCode() : 0;
         result = 29 * result + (params != null ? params.hashCode() : 0);
-        result = 29 * result + (returned != null ? returned.hashCode() : 0);
-        return result;
+        return 29 * result + (returned != null ? returned.hashCode() : 0);
     }
 
     public MethodCall returned(final Object obj) {

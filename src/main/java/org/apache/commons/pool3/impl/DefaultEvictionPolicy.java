@@ -38,10 +38,16 @@ import org.apache.commons.pool3.PooledObject;
  * </p>
  *
  * @param <T> the type of objects in the pool.
- *
  * @since 2.0
  */
 public class DefaultEvictionPolicy<T> implements EvictionPolicy<T> {
+
+    /**
+     * Constructs a new instance.
+     */
+    public DefaultEvictionPolicy() {
+        // empty
+    }
 
     @Override
     public boolean evict(final EvictionConfig config, final PooledObject<T> underTest, final int idleCount) {

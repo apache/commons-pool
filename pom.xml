@@ -18,125 +18,32 @@
 <project
     xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
-    <version>64</version>
+    <version>81</version>
   </parent>
-
   <artifactId>commons-pool3</artifactId>
   <version>3.0.0-SNAPSHOT</version>
   <name>Apache Commons Pool</name>
-
   <inceptionYear>2001</inceptionYear>
   <description>The Apache Commons Object Pooling Library.</description>
-
   <url>https://commons.apache.org/proper/commons-pool/</url>
-
   <issueManagement>
     <system>jira</system>
     <url>https://issues.apache.org/jira/browse/POOL</url>
   </issueManagement>
-
   <ciManagement>
     <system>GitHub</system>
     <url>https://github.com/apache/commons-pool/actions</url>
   </ciManagement>
-
   <scm>
     <connection>scm:git:https://gitbox.apache.org/repos/asf/commons-pool.git</connection>
     <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/commons-pool.git</developerConnection>
     <url>https://gitbox.apache.org/repos/asf?p=commons-pool.git</url>
   </scm>
-
-  <developers>
-    <developer>
-      <name>Morgan Delagrange</name>
-      <id>morgand</id>
-      <email></email>
-      <organization></organization>
-    </developer>
-    <developer>
-      <name>Geir Magnusson</name>
-      <id>geirm</id>
-      <email></email>
-      <organization></organization>
-    </developer>
-    <developer>
-      <name>Craig McClanahan</name>
-      <id>craigmcc</id>
-      <email></email>
-      <organization></organization>
-    </developer>
-    <developer>
-      <name>Rodney Waldhoff</name>
-      <id>rwaldhoff</id>
-      <email></email>
-      <organization></organization>
-    </developer>
-    <developer>
-      <name>David Weinrich</name>
-      <id>dweinr1</id>
-      <email></email>
-      <organization></organization>
-    </developer>
-    <developer>
-      <name>Dirk Verbeeck</name>
-      <id>dirkv</id>
-      <email></email>
-      <organization></organization>
-    </developer>
-    <developer>
-      <name>Robert Burrell Donkin</name>
-      <id>rdonkin</id>
-      <email></email>
-      <organization>The Apache Software Foundation</organization>
-    </developer>
-    <developer>
-      <name>Sandy McArthur</name>
-      <id>sandymac</id>
-      <email></email>
-      <organization>The Apache Software Foundation</organization>
-    </developer>
-    <developer>
-      <name>Simone Tripodi</name>
-      <id>simonetripodi</id>
-      <organization>The Apache Software Foundation</organization>
-    </developer>
-    <developer>
-      <id>ggregory</id>
-      <name>Gary Gregory</name>
-      <email>ggregory at apache.org</email>
-      <url>https://www.garygregory.com</url>
-      <organization>The Apache Software Foundation</organization>
-      <organizationUrl>https://www.apache.org/</organizationUrl>      
-      <roles>
-        <role>PMC Member</role>
-      </roles>
-      <timezone>America/New_York</timezone>
-      <properties>
-        <picUrl>https://people.apache.org/~ggregory/img/garydgregory80.png</picUrl>
-      </properties>
-    </developer>
-    <developer>
-      <name>Matt Sicker</name>
-      <id>mattsicker</id>
-      <organization>The Apache Software Foundation</organization>
-    </developer>
-  </developers>
-  <contributors>
-    <contributor>
-      <name>Todd Carmichael</name>
-      <email>toddc@concur.com</email>
-    </contributor>
-    <contributor>
-      <name>Arturo Bernal</name>
-    </contributor>
-  </contributors>
-
   <dependencies>
     <dependency>
       <groupId>cglib</groupId>
@@ -147,7 +54,7 @@
     <dependency>
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm-util</artifactId>
-      <version>9.6</version>
+      <version>${commons.asm.version}</version>
       <optional>true</optional>
     </dependency>
     <!-- testing -->
@@ -157,19 +64,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-library</artifactId>
-      <version>2.2</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.14.0</version>
+      <version>3.17.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
-
   <distributionManagement>
     <!-- Cannot define in parent ATM, see COMMONSSITE-26 -->
     <site>
@@ -178,16 +78,18 @@
       <url>scm:svn:https://svn.apache.org/repos/infra/websites/production/commons/content/proper/commons-pool/</url>
     </site>
   </distributionManagement>
-  
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <!-- project.build.outputTimestamp is managed by Maven plugins, see https://maven.apache.org/guides/mini/guide-reproducible-builds.html -->
+    <project.build.outputTimestamp>2024-02-01T03:27:02Z</project.build.outputTimestamp>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
     <commons.compiler.release>17</commons.compiler.release>
     <commons.componentid>pool</commons.componentid>
     <commons.module.name>org.apache.commons.pool3</commons.module.name>
     <commons.rc.version>RC1</commons.rc.version>
+    <checkstyle.suppress.file>${basedir}/src/conf/checkstyle-suppressions.xml</checkstyle.suppress.file>
     <!-- Java 17 -->
     <commons.release.version>3.0.0</commons.release.version>
     <commons.release.desc>(Java 17)</commons.release.desc>
@@ -197,20 +99,27 @@
     <!-- Java 7 -->
     <commons.release.3.version>2.6.2</commons.release.3.version>
     <commons.release.3.desc>(Java 7 or above)</commons.release.3.desc>
-
     <commons.jira.id>POOL</commons.jira.id>
     <commons.jira.pid>12310488</commons.jira.pid>
     <commons.scmPubCheckoutDirectory>site-content</commons.scmPubCheckoutDirectory>
     <commons.osgi.import>net.sf.cglib.proxy;resolution:=optional,*</commons.osgi.import>
-
-    <!-- Commons Release Plugin -->
-    <commons.bc.version>2.11.1</commons.bc.version>
+    <!-- Commons Release Plugin; TODO reset after 3.0.0 release -->
+    <commons.bc.version>3.0.0-SNAPSHOT</commons.bc.version>
     <commons.release.isDistModule>true</commons.release.isDistModule>
+    <!-- TODO Remove japicmp.skip after 3.0.0 release -->
     <japicmp.skip>true</japicmp.skip>
     <spotbugs.skip>false</spotbugs.skip>
     <animal.sniffer.skip>true</animal.sniffer.skip>
+    <surefire.argline></surefire.argline>
+    <!-- JaCoCo: Don't make code coverage worse than: -->
+    <commons.jacoco.haltOnFailure>true</commons.jacoco.haltOnFailure>
+    <commons.jacoco.classRatio>0.98</commons.jacoco.classRatio>
+    <commons.jacoco.instructionRatio>0.86</commons.jacoco.instructionRatio>
+    <commons.jacoco.methodRatio>0.87</commons.jacoco.methodRatio>
+    <commons.jacoco.branchRatio>0.83</commons.jacoco.branchRatio>
+    <commons.jacoco.lineRatio>0.86</commons.jacoco.lineRatio>
+    <commons.jacoco.complexityRatio>0.80</commons.jacoco.complexityRatio>
   </properties> 
-
   <build>
       <defaultGoal>clean verify apache-rat:check checkstyle:check japicmp:cmp javadoc:javadoc spotbugs:check pmd:check pmd:cpd-check</defaultGoal>
       <pluginManagement>
@@ -225,26 +134,14 @@
             </configuration>
           </plugin>
           <plugin>
-            <!--  Fixes org.apache.bcel.classfile.ClassFormatException: Invalid byte tag in constant pool: 19 -->
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-project-info-reports-plugin</artifactId>
-            <version>${commons.project-info.version}</version>
-            <dependencies>
-              <!-- Fix org.apache.bcel.classfile.ClassFormatException: Invalid byte tag in constant pool: 19 -->
-              <dependency>
-                <groupId>org.apache.bcel</groupId>
-                <artifactId>bcel</artifactId>
-                <version>6.7.0</version>
-              </dependency>
-            </dependencies>
-          </plugin>
-          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-checkstyle-plugin</artifactId>
              <configuration>
               <configLocation>${basedir}/src/conf/checkstyle.xml</configLocation>
-              <enableRulesSummary>false</enableRulesSummary>
+              <suppressionsLocation>${checkstyle.suppress.file}</suppressionsLocation>
               <headerLocation>${basedir}/license-header.txt</headerLocation>
+              <enableRulesSummary>false</enableRulesSummary>
+              <includeTestSourceDirectory>true</includeTestSourceDirectory>
             </configuration>
           </plugin>
           <plugin>
@@ -252,6 +149,15 @@
             <artifactId>spotbugs-maven-plugin</artifactId>
             <configuration>
               <excludeFilterFile>${basedir}/src/conf/findbugs-exclude-filter.xml</excludeFilterFile>
+            </configuration>
+          </plugin>
+          <plugin>
+            <artifactId>maven-pmd-plugin</artifactId>
+            <configuration>
+              <targetJdk>${maven.compiler.target}</targetJdk>
+              <rulesets>
+                <ruleset>${basedir}/src/conf/pmd-ruleset.xml</ruleset>
+              </rulesets>
             </configuration>
           </plugin>
         </plugins>
@@ -274,7 +180,8 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
-             <!-- Don't allow test to run for more than 30 minutes -->
+              <argLine>${argLine} ${surefire.argline}</argLine>
+              <!-- Don't allow test to run for more than 30 minutes -->
               <forkedProcessTimeoutInSeconds>1800</forkedProcessTimeoutInSeconds>
               <includes>
                 <include>**/Test*.java</include>
@@ -291,8 +198,7 @@
             <configuration>
               <descriptors>
                 <descriptor>src/assembly/bin.xml</descriptor>
-                <descriptor>src/assembly/src-tar-gz.xml</descriptor>
-                <descriptor>src/assembly/src-zip.xml</descriptor>
+                <descriptor>src/assembly/src.xml</descriptor>
               </descriptors>
               <tarLongFileMode>gnu</tarLongFileMode>
             </configuration>
@@ -342,7 +248,6 @@
         </plugin>
       </plugins>
     </build>
-
     <reporting>
       <plugins>
         <plugin>
@@ -415,7 +320,6 @@
         </plugin>
     </plugins>
   </reporting>
-
   <profiles>
     <profile>
       <id>java16</id>
@@ -423,21 +327,96 @@
       <activation>
         <jdk>[16,)</jdk>
       </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <argLine>
-                --illegal-access=permit
-                --add-opens java.base/java.lang=ALL-UNNAMED                     
-              </argLine>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
+      <properties>
+        <surefire.argline>
+          --illegal-access=permit
+          --add-opens java.base/java.lang=ALL-UNNAMED                     
+        </surefire.argline>
+      </properties>
     </profile>
   </profiles>
-
+  <developers>
+    <developer>
+      <name>Morgan Delagrange</name>
+      <id>morgand</id>
+      <email></email>
+      <organization></organization>
+    </developer>
+    <developer>
+      <name>Geir Magnusson</name>
+      <id>geirm</id>
+      <email></email>
+      <organization></organization>
+    </developer>
+    <developer>
+      <name>Craig McClanahan</name>
+      <id>craigmcc</id>
+      <email></email>
+      <organization></organization>
+    </developer>
+    <developer>
+      <name>Rodney Waldhoff</name>
+      <id>rwaldhoff</id>
+      <email></email>
+      <organization></organization>
+    </developer>
+    <developer>
+      <name>David Weinrich</name>
+      <id>dweinr1</id>
+      <email></email>
+      <organization></organization>
+    </developer>
+    <developer>
+      <name>Dirk Verbeeck</name>
+      <id>dirkv</id>
+      <email></email>
+      <organization></organization>
+    </developer>
+    <developer>
+      <name>Robert Burrell Donkin</name>
+      <id>rdonkin</id>
+      <email></email>
+      <organization>The Apache Software Foundation</organization>
+    </developer>
+    <developer>
+      <name>Sandy McArthur</name>
+      <id>sandymac</id>
+      <email></email>
+      <organization>The Apache Software Foundation</organization>
+    </developer>
+    <developer>
+      <name>Simone Tripodi</name>
+      <id>simonetripodi</id>
+      <organization>The Apache Software Foundation</organization>
+    </developer>
+    <developer>
+      <id>ggregory</id>
+      <name>Gary Gregory</name>
+      <email>ggregory at apache.org</email>
+      <url>https://www.garygregory.com</url>
+      <organization>The Apache Software Foundation</organization>
+      <organizationUrl>https://www.apache.org/</organizationUrl>
+      <roles>
+        <role>PMC Member</role>
+      </roles>
+      <timezone>America/New_York</timezone>
+      <properties>
+        <picUrl>https://people.apache.org/~ggregory/img/garydgregory80.png</picUrl>
+      </properties>
+    </developer>
+    <developer>
+      <name>Matt Sicker</name>
+      <id>mattsicker</id>
+      <organization>The Apache Software Foundation</organization>
+    </developer>
+  </developers>
+  <contributors>
+    <contributor>
+      <name>Todd Carmichael</name>
+      <email>toddc@concur.com</email>
+    </contributor>
+    <contributor>
+      <name>Arturo Bernal</name>
+    </contributor>
+  </contributors>
 </project>

@@ -57,9 +57,9 @@ public class DisconnectingWaiterFactory<K> extends WaiterFactory<K> {
      */
     protected static final Predicate<PooledObject<Waiter>> DEFAULT_DISCONNECTED_VALIDATION_ACTION = w -> false;
 
-    /**
+    /*
      * Blocks until connected or maxWait is exceeded.
-     * 
+     *
      * @throws TimeoutException if maxWait is exceeded.
      */
     private static void waitForConnection(final AtomicBoolean connected,
@@ -78,7 +78,7 @@ public class DisconnectingWaiterFactory<K> extends WaiterFactory<K> {
     }
 
     /**
-     * 
+     *
      * A WaiterFactory that simulates a resource required by factory methods going
      * down (and coming back).
      * <p>

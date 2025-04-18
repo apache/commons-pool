@@ -28,14 +28,19 @@ import java.util.Objects;
  * </p>
  *
  * @see KeyedPooledObjectFactory
- *
  * @param <K> The type of keys managed by this factory.
  * @param <V> Type of element managed by this factory.
  * @param <E> Type of exception thrown by this factory.
- *
  * @since 2.0
  */
 public abstract class BaseKeyedPooledObjectFactory<K, V, E extends Exception> extends BaseObject implements KeyedPooledObjectFactory<K, V, E> {
+
+    /**
+     * Constructs a new instance.
+     */
+    public BaseKeyedPooledObjectFactory() {
+        // empty
+    }
 
     /**
      * Reinitializes an instance to be returned by the pool.
@@ -56,7 +61,6 @@ public abstract class BaseKeyedPooledObjectFactory<K, V, E extends Exception> ex
      *
      * @param key the key used when constructing the object
      * @return an instance that can be served by the pool
-     *
      * @throws E if there is a problem creating a new instance,
      *    this will be propagated to the code requesting an object.
      */

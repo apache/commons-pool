@@ -78,10 +78,10 @@ public class TestGenericObjectPoolClassLoaders {
 
         final ClassLoader savedClassloader = Thread.currentThread().getContextClassLoader();
 
-        try (final CustomClassLoader cl1 = new CustomClassLoader(1)) {
+        try (CustomClassLoader cl1 = new CustomClassLoader(1)) {
             Thread.currentThread().setContextClassLoader(cl1);
             final CustomClassLoaderObjectFactory factory1 = new CustomClassLoaderObjectFactory(1);
-            try (final GenericObjectPool<URL, IllegalStateException> pool1 = new GenericObjectPool<>(factory1)) {
+            try (GenericObjectPool<URL, IllegalStateException> pool1 = new GenericObjectPool<>(factory1)) {
                 pool1.setMinIdle(1);
                 pool1.setDurationBetweenEvictionRuns(Duration.ofMillis(100));
                 int counter = 0;
@@ -91,10 +91,10 @@ public class TestGenericObjectPoolClassLoaders {
                 }
                 assertEquals(1, pool1.getNumIdle(), "Wrong number of idle objects in pool1");
 
-                try (final CustomClassLoader cl2 = new CustomClassLoader(2)) {
+                try (CustomClassLoader cl2 = new CustomClassLoader(2)) {
                     Thread.currentThread().setContextClassLoader(cl2);
                     final CustomClassLoaderObjectFactory factory2 = new CustomClassLoaderObjectFactory(2);
-                    try (final GenericObjectPool<URL, IllegalStateException> pool2 = new GenericObjectPool<>(factory2)) {
+                    try (GenericObjectPool<URL, IllegalStateException> pool2 = new GenericObjectPool<>(factory2)) {
                         pool2.setMinIdle(1);
 
                         pool2.addObject();

@@ -26,7 +26,6 @@ import org.apache.commons.pool3.UsageTracking;
  * Java reflection implementation of the proxy handler.
  *
  * @param <T> type of the wrapped pooled object
- *
  * @since 2.0
  */
 final class JdkProxyHandler<T> extends BaseProxyHandler<T>

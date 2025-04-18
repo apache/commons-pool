@@ -46,10 +46,10 @@ import org.junit.jupiter.api.Test;
  */
 public class TestAbandonedKeyedObjectPool {
 
-    final class ConcurrentBorrower extends Thread {
+    private final class ConcurrentBorrower extends Thread {
         private final ArrayList<PooledTestObject> borrowed;
 
-        public ConcurrentBorrower(final ArrayList<PooledTestObject> borrowed) {
+        private ConcurrentBorrower(final ArrayList<PooledTestObject> borrowed) {
             this.borrowed = borrowed;
         }
 
@@ -62,11 +62,14 @@ public class TestAbandonedKeyedObjectPool {
             }
         }
     }
-    final class ConcurrentReturner extends Thread {
+
+    private final class ConcurrentReturner extends Thread {
         private final PooledTestObject returned;
-        public ConcurrentReturner(final PooledTestObject obj) {
+
+        private ConcurrentReturner(final PooledTestObject obj) {
             returned = obj;
         }
+
         @Override
         public void run() {
             try {
@@ -83,12 +86,12 @@ public class TestAbandonedKeyedObjectPool {
         private final long destroyLatencyMillis;
         private final long validateLatencyMillis;
 
-        public SimpleFactory() {
+        private SimpleFactory() {
             destroyLatencyMillis = 0;
             validateLatencyMillis = 0;
         }
 
-        public SimpleFactory(final long destroyLatencyMillis, final long validateLatencyMillis) {
+        private SimpleFactory(final long destroyLatencyMillis, final long validateLatencyMillis) {
             this.destroyLatencyMillis = destroyLatencyMillis;
             this.validateLatencyMillis = validateLatencyMillis;
         }
@@ -163,8 +166,7 @@ public class TestAbandonedKeyedObjectPool {
         pool = null;
 
         final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-        final Set<ObjectName> result = mbs.queryNames(new ObjectName(
-                "org.apache.commoms.pool3:type=GenericKeyedObjectPool,*"), null);
+        final Set<ObjectName> result = mbs.queryNames(new ObjectName("org.apache.commoms.pool3:type=GenericKeyedObjectPool,*"), null);
         // There should be no registered pools at this point
         final int registeredPoolCount = result.size();
         final StringBuilder msg = new StringBuilder("Current pool is: ");
@@ -178,7 +180,7 @@ public class TestAbandonedKeyedObjectPool {
             msg.append('\n');
             mbs.unregisterMBean(name);
         }
-        assertEquals(0, registeredPoolCount,msg.toString());
+        assertEquals(0, registeredPoolCount, msg.toString());
     }
 
     /**
@@ -356,7 +358,7 @@ public class TestAbandonedKeyedObjectPool {
         // validation takes a second, evictor runs every 500 ms
         final PooledTestObject obj = pool.borrowObject(0);
         Thread.sleep(50);       // abandon obj
-        pool.returnObject(0,obj); // evictor will run during validation
+        pool.returnObject(0, obj); // evictor will run during validation
         final PooledTestObject obj2 = pool.borrowObject(0);
         assertEquals(obj, obj2);          // should get original back
         assertFalse(obj2.isDestroyed());  // and not destroyed

@@ -31,14 +31,16 @@ public class TestBasePoolableObjectFactory {
     private static final class TestFactory extends BasePooledObjectFactory<AtomicInteger, RuntimeException> {
         @Override
         public AtomicInteger create() {
-            return new AtomicInteger(0);
+            return new AtomicInteger();
         }
+
         @Override
-        public void destroyObject(final PooledObject<AtomicInteger> p, final DestroyMode destroyMode){
+        public void destroyObject(final PooledObject<AtomicInteger> p, final DestroyMode destroyMode) {
             if (destroyMode.equals(DestroyMode.ABANDONED)) {
                 p.getObject().incrementAndGet();
             }
         }
+
         @Override
         public PooledObject<AtomicInteger> wrap(final AtomicInteger value) {
             return new DefaultPooledObject<>(value);
@@ -56,9 +58,8 @@ public class TestBasePoolableObjectFactory {
     }
 
     /**
-     * Default destroy does nothing to underlying AtomicInt, ABANDONED mode
-     * increments the value.  Verify that destroy with no mode does default,
-     * destroy with ABANDONED mode increments.
+     * Default destroy does nothing to underlying AtomicInt, ABANDONED mode increments the value. Verify that destroy with no mode does default, destroy with
+     * ABANDONED mode increments.
      *
      * @throws RuntimeException May occur in some failure modes
      */

@@ -34,7 +34,8 @@ public final class KeyedPool407NormalFactory extends AbstractKeyedPool407Factory
     @Override
     public KeyedPool407Fixture create(final String key) {
         // This is key to the test, creation failed and returns null for instance see
-        // https://github.com/openhab/openhab-core/blob/main/bundles/org.openhab.core.io.transport.modbus/src/main/java/org/openhab/core/io/transport/modbus/internal/pooling/ModbusSlaveConnectionFactoryImpl.java#L163
+        // https://github.com/openhab/openhab-core/blob/main/bundles/org.openhab.core.io.transport.modbus/
+        // src/main/java/org/openhab/core/io/transport/modbus/internal/pooling/ModbusSlaveConnectionFactoryImpl.java#L163
         // the test passes when this returns new Pool407Fixture();
         return fixture;
     }

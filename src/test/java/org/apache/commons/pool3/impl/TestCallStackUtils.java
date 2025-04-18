@@ -14,22 +14,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.commons.pool3.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import org.junit.jupiter.api.Test;
 
-public class NoOpCallStackTest {
+/**
+ * Tests {@link CallStackUtils}.
+ */
+public class TestCallStackUtils {
+
+    private static final String MESSAGE_FORMAT = "'Timestamp:' yyyy-MM-dd HH:mm:ss Z";
+
+    private void assertNewCallStack(final CallStack callStack) {
+        callStack.fillInStackTrace();
+        final StringWriter out = new StringWriter();
+        callStack.printStackTrace(new PrintWriter(out));
+        assertFalse(out.toString().isEmpty());
+        callStack.clear();
+        out.getBuffer().setLength(0);
+        callStack.printStackTrace(new PrintWriter(out));
+        assertTrue(out.toString().isEmpty());
+    }
+
     @Test
-    public void testPrintStackTraceIsNoOp() {
-        final CallStack stack = NoOpCallStack.INSTANCE;
-        stack.fillInStackTrace();
-        final StringWriter writer = new StringWriter();
-        stack.printStackTrace(new PrintWriter(writer));
-        assertEquals("", writer.toString());
+    public void testNewCallStack3() {
+        assertNewCallStack(CallStackUtils.newCallStack(MESSAGE_FORMAT, false, false));
+        assertNewCallStack(CallStackUtils.newCallStack(MESSAGE_FORMAT, false, true));
     }
 }

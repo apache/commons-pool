@@ -54,6 +54,13 @@ public class GenericObjectPoolConfig<T> extends BaseObjectPoolConfig<T> {
 
     private int minIdle = DEFAULT_MIN_IDLE;
 
+    /**
+     * Constructs a new instance.
+     */
+    public GenericObjectPoolConfig() {
+        // empty
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public GenericObjectPoolConfig<T> clone() {

@@ -21,12 +21,15 @@
  * The <code>org.apache.commons.pool3.proxy</code> package defines a
  * object pool that wraps all objects returned to clients. This allows it
  * to disable those proxies when the objects are returned thereby enabling
- * the continued use of those objects by clients to be detected..
+ * the continued use of those objects by clients to be detected.
  * </p>
  * <p>
  * Support is provided for <code>java.lang.reflect.Proxy</code> and for
  * <code>net.sf.cglib.proxy</code> based proxies. The latter, requires the
  * additional of the optional Code Generation Library (GCLib).
+ * </p>
+ * <p>
+ * cglib is unmaintained and does not work well (or possibly at all?) in newer JDKs, particularly JDK17+; see https://github.com/cglib/cglib
  * </p>
  */
 package org.apache.commons.pool3.proxy;
