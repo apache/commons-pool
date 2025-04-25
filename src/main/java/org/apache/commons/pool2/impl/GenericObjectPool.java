@@ -221,7 +221,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Equivalent to <code>{@link #borrowObject(long)
+     * Equivalent to <code>{@link #borrowObject(Duration)
      * borrowObject}({@link #getMaxWaitDuration()})</code>.
      *
      * {@inheritDoc}
@@ -262,7 +262,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * {@link #getBlockWhenExhausted()} is false). The length of time that this
      * method will block when {@link #getBlockWhenExhausted()} is true is
      * determined by the value passed in to the {@code maxWaitDuration}
-     * parameter.
+     * parameter. Passing a negative duration will cause this method to block
+     * indefinitely until an object becomes available.
      * </p>
      * <p>
      * When the pool is exhausted, multiple calling threads may be
@@ -392,7 +393,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * {@link #getBlockWhenExhausted()} is false). The length of time that this
      * method will block when {@link #getBlockWhenExhausted()} is true is
      * determined by the value passed in to the {@code maxWaitMillis}
-     * parameter.
+     * parameter.  Passing a negative duration will cause this method to block
+     * indefinitely until an object becomes available.
      * </p>
      * <p>
      * When the pool is exhausted, multiple calling threads may be
