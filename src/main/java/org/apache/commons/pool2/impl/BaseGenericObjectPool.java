@@ -1225,8 +1225,9 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
     }
 
     /**
-     * Tests whether this pool instance been closed.
-     * @return {@code true} when this pool has been closed.
+     * Tests whether this pool instance is closed.
+     *
+     * @return {@code true} when this pool is closed.
      */
     public final boolean isClosed() {
         return closed;
