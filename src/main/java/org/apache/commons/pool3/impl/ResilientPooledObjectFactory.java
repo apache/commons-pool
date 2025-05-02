@@ -29,10 +29,11 @@ import org.apache.commons.pool3.PooledObjectFactory;
 /**
  * Wraps a PooledObjectFactory, extending to provide resilient features.
  * <p>
- * Maintains a cicrular log of makeObject calls and makes strategy-based
+ * Maintains a circular log of makeObject calls and makes strategy-based
  * decisions on whether to keep trying proactively to create objects.
  * Decisions use data in the makeObject log and information reported by
  * the pool that the factory is attached to.
+ * </p>
  *
  * @param <T> Type of object managed by the factory
  * @param <E> Type of exception that the factory may throw
