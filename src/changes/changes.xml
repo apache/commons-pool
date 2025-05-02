@@ -46,15 +46,15 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
   <release version="3.0.0" date="2023-MM-DD" description="This is a feature and maintenance release (Java 8 or above).">
     <!-- FIX -->
-    <action dev="psteitz" type="fix" issue="POOL-407">Add ReslientPooledObjectFactory to provide resilence against factory outages.</action>
+    <action type="fix" dev="psteitz" issue="POOL-407">Add ReslientPooledObjectFactory to provide resilence against factory outages.</action>
     <action type="fix" dev="ggregory" due-to="Gary Gregory">Remove -nouses directive from maven-bundle-plugin. OSGi package imports now state 'uses' definitions for package imports, this doesn't affect JPMS (from org.apache.commons:commons-parent:80).</action>
     <!-- REMOVE -->
     <action dev="ggregory" type="remove">Deprecations from version 2.x have been removed.</action>
     <!-- UPDATE -->
-    <action dev="ggregory" type="update">Bump Java from 8 to 17.</action>
+    <action type="update" dev="ggregory">Bump Java from 8 to 17.</action>
     <action type="update" dev="ggregory">Bump org.apache.commons:commons-parent from 79 to 81.</action>
-    <action dev="ggregory" type="update">Bump org.apache.commons:commons-parent from 58 to 78 #297, #328, #338, #341, #347, #351, #354, #361.</action>
-    <action dev="ggregory" type="update">Bump org.ow2.asm:asm-util from 9.5 to 9.7.1 #252, #294, #355.</action>
+    <action type="update" dev="ggregory">Bump org.apache.commons:commons-parent from 58 to 78 #297, #328, #338, #341, #347, #351, #354, #361.</action>
+    <action type="update" dev="ggregory">Bump org.ow2.asm:asm-util from 9.5 to 9.7.1 #252, #294, #355.</action>
     <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.apache.commons:commons-lang3 from 3.13.0 to 3.17.0 #326, #333, #342.</action>
     <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.apache.bcel:bcel from 6.7.0 to 6.10.0 #263, #306, #327.</action>
   </release> 
