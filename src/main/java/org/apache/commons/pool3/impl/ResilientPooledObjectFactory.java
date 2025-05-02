@@ -44,6 +44,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
      * adds.
      * <p>
      * The adder thread will stop under any of the following conditions:
+     * </p>
      * <ul>
      * <li>The pool is closed.</li>
      * <li>The factory is down.</li>
@@ -51,7 +52,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
      * <li>The pool has no waiters.</li>
      * </ul>
      */
-    class Adder extends Thread {
+    final class Adder extends Thread {
 
         private static final int MAX_FAILURES = 5;
 
@@ -94,17 +95,18 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
             running = false;
         }
     }
+
     /**
      * Record of a makeObject event.
      */
-    static class MakeEvent {
+    static final class MakeEvent {
         private final Instant startTime;
         private Instant endTime;
         private boolean success;
         private Throwable exception;
 
         /**
-         * Constructor set statTime to now.
+         * Constructs a new instance and set statTime to now.
          */
         MakeEvent() {
             startTime = Instant.now();
@@ -163,10 +165,11 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
             this.success = success;
         }
     }
+
     /**
      * Monitor thread that runs checks to examine the makeObject log and pool state.
      */
-    class Monitor extends Thread {
+    final class Monitor extends Thread {
         @Override
         public void run() {
             while (monitoring && !pool.isClosed()) {
@@ -183,6 +186,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
             monitoring = false;
         }
     }
+
     private static final int DEFAULT_LOG_SIZE = 10;
     private static final Duration DEFAULT_DELAY = Duration.ofSeconds(1);
     private static final Duration DEFAULT_LOOK_BACK = Duration.ofMinutes(5);
@@ -433,12 +437,14 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
      * <p>
      * Sets downStart to time of the first failure found in makeObjectLog and
      * upStart to the time when logSize consecutive makes have succeeded.
+     * </p>
      * <p>
      * When a failure is observed, the adder thread is started if the pool
      * is not closed and has take waiters.
+     * </p>
      * <p>
      * Removes the oldest event from the log if it is full.
-     *
+     * </p>
      */
     protected void runChecks() {
         boolean upOverLog = true;
