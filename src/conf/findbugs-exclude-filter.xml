@@ -210,4 +210,11 @@
     <!-- TODO ? -->
     <Bug pattern="CT_CONSTRUCTOR_THROW" />
   </Match>
+  <Match>
+    <!-- TODO https://github.com/spotbugs/spotbugs/issues/3428 -->
+    <Class name="org.apache.commons.pool3.impl.SoftReferenceObjectPool" />
+    <Method name="destroy" />
+    <Bug pattern="AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE" />
+  </Match>
+  
 </FindBugsFilter>
