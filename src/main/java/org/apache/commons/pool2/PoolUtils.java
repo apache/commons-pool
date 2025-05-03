@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
@@ -46,6 +47,9 @@ public final class PoolUtils {
      * frequently.
      */
     private static final class ErodingFactor {
+
+        private static final float MAX_INTERVAL = 15f;
+
         /** Determines frequency of "erosion" events */
         private final float factor;
 
@@ -53,7 +57,9 @@ public final class PoolUtils {
         private transient volatile long nextShrinkMillis;
 
         /** High water mark - largest numIdle encountered */
-        private transient volatile int idleHighWaterMark;
+        private transient volatile int idleHighWaterMark = 1;
+
+        private final ReentrantLock lock = new ReentrantLock();
 
         /**
          * Creates a new ErodingFactor with the given erosion factor.
@@ -63,8 +69,7 @@ public final class PoolUtils {
          */
         private ErodingFactor(final float factor) {
             this.factor = factor;
-            nextShrinkMillis = System.currentTimeMillis() + (long) (900000 * factor); // now + 15 min * factor
-            idleHighWaterMark = 1;
+            nextShrinkMillis = System.currentTimeMillis() + (long) (90_0000 * factor); // now + 15 min * factor
         }
 
         /**
@@ -95,11 +100,14 @@ public final class PoolUtils {
          */
         public void update(final long nowMillis, final int numIdle) {
             final int idle = Math.max(0, numIdle);
-            idleHighWaterMark = Math.max(idle, idleHighWaterMark);
-            final float maxInterval = 15f;
-            final float minutes = maxInterval +
-                    (1f - maxInterval) / idleHighWaterMark * idle;
-            nextShrinkMillis = nowMillis + (long) (minutes * 60000f * factor);
+            lock.lock();
+            try {
+                idleHighWaterMark = Math.max(idle, idleHighWaterMark);
+                final float minutes = MAX_INTERVAL + (1f - MAX_INTERVAL) / idleHighWaterMark * idle;
+                nextShrinkMillis = nowMillis + (long) (minutes * 60000f * factor);
+            } finally {
+                lock.unlock();
+            }
         }
     }
     /**
