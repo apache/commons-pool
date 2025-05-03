@@ -57,8 +57,8 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
 
         private static final int MAX_FAILURES = 5;
 
-        private boolean killed;
-        private boolean running;
+        private volatile boolean killed;
+        private volatile boolean running;
         private int failures;
 
         public boolean isRunning() {
@@ -88,11 +88,11 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
                     try {
                         sleep(delay.toMillis());
                     } catch (final InterruptedException e) {
-                        killed = true;
+                        kill();
                     }
                 }
             }
-            killed = true;
+            kill();
             running = false;
         }
     }
