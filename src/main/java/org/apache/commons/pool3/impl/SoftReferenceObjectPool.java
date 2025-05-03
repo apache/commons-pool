@@ -253,7 +253,7 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
     }
 
     /**
-     * Destroys a {@code PooledSoftReference} and removes it from the idle and all
+     * Destroys a {@link PooledSoftReference} and removes it from the idle and all
      * references pools.
      *
      * @param toDestroy PooledSoftReference to destroy
