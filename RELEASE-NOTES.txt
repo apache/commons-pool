@@ -23,7 +23,6 @@ NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPool
 
 Changes in version 2.12.1 include:
 
-
 Fixed Bugs:
 o            Use java.time.Instant precision in org.apache.commons.pool2.impl.ThrowableCallStack.Snapshot throwable message. Thanks to Gary Gregory.
 o            GenericObjectPool.borrowObject(Duration) doesn't obey its borrowMaxWait Duration argument when the argument is different from GenericObjectPool.getMaxWaitDuration(). Thanks to Gary Gregory.
