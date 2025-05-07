@@ -16,6 +16,7 @@
  */
 package org.apache.commons.pool3.proxy;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.apache.commons.pool3.UsageTracking;
@@ -31,18 +32,22 @@ class BaseProxyHandler<T> {
 
     private volatile T pooledObject;
     private final UsageTracking<T> usageTracking;
+    private final boolean unwrapInvocationTargetException;
 
     /**
      * Constructs a new wrapper for the given pooled object.
      *
-     * @param pooledObject  The object to wrap
-     * @param usageTracking The instance, if any (usually the object pool) to
-     *                      be provided with usage tracking information for this
-     *                      wrapped object
+     * @param pooledObject                    The object to wrap
+     * @param usageTracking                   The instance, if any (usually the object pool) to
+     *                                        be provided with usage tracking information for this
+     *                                        wrapped object
+     * @param unwrapInvocationTargetException True to make the proxy throw {@link InvocationTargetException#getTargetException()}
+     *                                        instead of {@link InvocationTargetException}
      */
-    BaseProxyHandler(final T pooledObject, final UsageTracking<T> usageTracking) {
+    BaseProxyHandler(final T pooledObject, final UsageTracking<T> usageTracking, boolean unwrapInvocationTargetException) {
         this.pooledObject = pooledObject;
         this.usageTracking = usageTracking;
+        this.unwrapInvocationTargetException = unwrapInvocationTargetException;
     }
 
     /**
@@ -72,7 +77,14 @@ class BaseProxyHandler<T> {
         if (usageTracking != null) {
             usageTracking.use(object);
         }
-        return method.invoke(object, args);
+        try {
+            return method.invoke(object, args);
+        } catch (InvocationTargetException e) {
+            if (unwrapInvocationTargetException) {
+               throw e.getTargetException();
+            }
+            throw e;
+        }
     }
 
     /**
