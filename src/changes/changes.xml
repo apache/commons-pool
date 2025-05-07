@@ -47,6 +47,7 @@ The <action> type attribute can be add,update,fix,remove.
   <release version="3.0.0" date="YYYY-MM-DD" description="This is a feature and maintenance release (Java 8 or above).">
     <!-- ADD -->
     <action type="add" dev="psteitz" issue="POOL-407">Add ReslientPooledObjectFactory to provide resilience against factory outages.</action>
+    <action type="add" dev="ggregory" issue="POOL-415" due-to="Réda Housni Alaoui, Gary Gregory, Phil Steitz">Add an option to JdkProxySource allowing to unwrap UndeclaredThrowableException #261.</action>
     <!-- FIX -->
     <action type="fix" dev="ggregory" due-to="Gary Gregory">Remove -nouses directive from maven-bundle-plugin. OSGi package imports now state 'uses' definitions for package imports, this doesn't affect JPMS (from org.apache.commons:commons-parent:80).</action>
     <action type="fix" dev="ggregory" due-to="Gary Gregory">Operation on the "idleHighWaterMark" shared variable in "ErodingFactor" class is not atomic [org.apache.commons.pool3.PoolUtils$ErodingFactor] At PoolUtils.java:[line 101] AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE.</action>
