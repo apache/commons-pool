@@ -42,6 +42,7 @@ public abstract class AbstractTestProxiedObjectPool {
         String getData();
         void setData(String data);
     }
+
     private static final class TestObjectFactory extends
             BasePooledObjectFactory<TestObject, RuntimeException> {
 
@@ -86,13 +87,14 @@ public abstract class AbstractTestProxiedObjectPool {
             this.data = data;
         }
     }
+
     private static final String DATA1 = "data1";
 
     private static final Duration ABANDONED_TIMEOUT_SECS = Duration.ofSeconds(3);
 
     private StringWriter log;
 
-    protected abstract ProxySource<TestObject> getproxySource(boolean unwrapInvocationTargetException);
+    protected abstract ProxySource<TestObject> getProxySource(boolean unwrapInvocationTargetException);
 
     private ProxiedObjectPool<TestObject, RuntimeException> createProxiedObjectPool() {
         return createProxiedObjectPool(false, null);
@@ -115,7 +117,7 @@ public abstract class AbstractTestProxiedObjectPool {
 
         final ObjectPool<TestObject, RuntimeException> innerPool = new GenericObjectPool<>(factory, config, abandonedConfig);
 
-        return new ProxiedObjectPool<>(innerPool, getproxySource(unwrapInvocationTargetException));
+        return new ProxiedObjectPool<>(innerPool, getProxySource(unwrapInvocationTargetException));
     }
 
     @BeforeEach

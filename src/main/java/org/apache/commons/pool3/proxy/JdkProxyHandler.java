@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.commons.pool3.proxy;
 
 import java.lang.reflect.InvocationHandler;
@@ -28,27 +29,23 @@ import org.apache.commons.pool3.UsageTracking;
  * @param <T> type of the wrapped pooled object
  * @since 2.0
  */
-final class JdkProxyHandler<T> extends BaseProxyHandler<T>
-        implements InvocationHandler {
+final class JdkProxyHandler<T> extends BaseProxyHandler<T> implements InvocationHandler {
 
     /**
      * Constructs a Java reflection proxy instance.
      *
      * @param pooledObject                    The object to wrap
-     * @param usageTracking                   The instance, if any (usually the object pool) to
-     *                                        be provided with usage tracking information for this
-     *                                        wrapped object
-     * @param unwrapInvocationTargetException True to make the proxy throw {@link InvocationTargetException#getTargetException()}
-     *                                        instead of {@link InvocationTargetException}
+     * @param usageTracking                   The instance, if any (usually the object pool) to be provided with usage tracking information for this wrapped
+     *                                        object
+     * @param unwrapInvocationTargetException True to make the proxy throw {@link InvocationTargetException#getTargetException()} instead of
+     *                                        {@link InvocationTargetException}
      */
-    JdkProxyHandler(final T pooledObject, final UsageTracking<T> usageTracking, boolean unwrapInvocationTargetException) {
+    JdkProxyHandler(final T pooledObject, final UsageTracking<T> usageTracking, final boolean unwrapInvocationTargetException) {
         super(pooledObject, usageTracking, unwrapInvocationTargetException);
     }
 
     @Override
-    public Object invoke(final Object proxy, final Method method, final Object[] args)
-            throws Throwable {
+    public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
         return doInvoke(method, args);
     }
 }
-

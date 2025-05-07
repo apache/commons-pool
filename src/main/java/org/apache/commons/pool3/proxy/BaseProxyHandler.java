@@ -44,7 +44,7 @@ class BaseProxyHandler<T> {
      * @param unwrapInvocationTargetException True to make the proxy throw {@link InvocationTargetException#getTargetException()}
      *                                        instead of {@link InvocationTargetException}
      */
-    BaseProxyHandler(final T pooledObject, final UsageTracking<T> usageTracking, boolean unwrapInvocationTargetException) {
+    BaseProxyHandler(final T pooledObject, final UsageTracking<T> usageTracking, final boolean unwrapInvocationTargetException) {
         this.pooledObject = pooledObject;
         this.usageTracking = usageTracking;
         this.unwrapInvocationTargetException = unwrapInvocationTargetException;
@@ -79,7 +79,7 @@ class BaseProxyHandler<T> {
         }
         try {
             return method.invoke(object, args);
-        } catch (InvocationTargetException e) {
+        } catch (final InvocationTargetException e) {
             if (unwrapInvocationTargetException) {
                throw e.getTargetException();
             }

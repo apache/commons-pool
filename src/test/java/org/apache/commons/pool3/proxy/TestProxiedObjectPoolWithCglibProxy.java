@@ -14,16 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.commons.pool3.proxy;
 
 import java.lang.reflect.InvocationTargetException;
 
-public class TestProxiedObjectPoolWithCglibProxy extends
-        AbstractTestProxiedObjectPool {
+public class TestProxiedObjectPoolWithCglibProxy extends AbstractTestProxiedObjectPool {
 
     @Override
-    protected ProxySource<TestObject> getproxySource(boolean unwrapInvocationTargetException) {
-        return new CglibProxySource<>(TestObject.class, unwrapInvocationTargetException);
+    protected ProxySource<TestObject> getProxySource(boolean unwrapInvocationTargetException) {
+        // @formatter:off
+        return CglibProxySource.<TestObject>builder()
+                .setSuperclass(TestObject.class)
+                .setUnwrapInvocationTargetException(unwrapInvocationTargetException)
+                .get();
+        // @formatter:on
     }
 
     @Override

@@ -20,7 +20,7 @@ public class TestProxiedKeyedObjectPoolWithJdkProxy
         extends AbstractTestProxiedKeyedObjectPool {
 
     @Override
-    protected ProxySource<TestObject> getproxySource() {
+    protected ProxySource<TestObject> getProxySource() {
         return new JdkProxySource<>(this.getClass().getClassLoader(),
                 new Class<?>[] { TestObject.class });
     }

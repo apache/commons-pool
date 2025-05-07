@@ -20,7 +20,7 @@ public class TestProxiedKeyedObjectPoolWithCglibProxy extends
         AbstractTestProxiedKeyedObjectPool {
 
     @Override
-    protected ProxySource<TestObject> getproxySource() {
+    protected ProxySource<TestObject> getProxySource() {
         return new CglibProxySource<>(TestObject.class);
     }
 }

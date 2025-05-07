@@ -81,7 +81,7 @@ public abstract class AbstractTestProxiedKeyedObjectPool {
 
     private StringWriter log;
 
-    protected abstract ProxySource<TestObject> getproxySource();
+    protected abstract ProxySource<TestObject> getProxySource();
 
     @BeforeEach
     public void setUp() {
@@ -103,7 +103,7 @@ public abstract class AbstractTestProxiedKeyedObjectPool {
         @SuppressWarnings("resource")
         final KeyedObjectPool<String, TestObject, RuntimeException> innerPool = new GenericKeyedObjectPool<>(factory, config, abandonedConfig);
 
-        pool = new ProxiedKeyedObjectPool<>(innerPool, getproxySource());
+        pool = new ProxiedKeyedObjectPool<>(innerPool, getProxySource());
     }
 
     @Test

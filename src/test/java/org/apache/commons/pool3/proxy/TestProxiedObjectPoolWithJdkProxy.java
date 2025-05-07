@@ -14,17 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.commons.pool3.proxy;
 
 import java.lang.reflect.UndeclaredThrowableException;
 
-public class TestProxiedObjectPoolWithJdkProxy
-        extends AbstractTestProxiedObjectPool {
+public class TestProxiedObjectPoolWithJdkProxy extends AbstractTestProxiedObjectPool {
 
     @Override
-    protected ProxySource<TestObject> getproxySource(boolean unwrapInvocationTargetException) {
-        return new JdkProxySource<>(this.getClass().getClassLoader(),
-                new Class<?>[] { TestObject.class }, unwrapInvocationTargetException);
+    protected ProxySource<TestObject> getProxySource(boolean unwrapInvocationTargetException) {
+        // @formatter:off
+        return JdkProxySource.<TestObject>builder()
+                .setClassLoader(getClass().getClassLoader())
+                .setInterfaces(TestObject.class)
+                .setUnwrapInvocationTargetException(unwrapInvocationTargetException)
+                .get();
+        // @formatter:on
     }
 
     @Override
