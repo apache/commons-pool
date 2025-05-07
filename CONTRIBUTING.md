@@ -81,7 +81,6 @@ The JIRA tickets are used to generate the changelog for the next release.
 For changes of a trivial nature to comments and documentation, it is not always necessary to create a new ticket in JIRA.
 In this case, it is appropriate to start the first line of a commit with '[doc]' or '[javadoc]' instead of a ticket number.
 
-
 Submitting Changes
 ------------------
 
