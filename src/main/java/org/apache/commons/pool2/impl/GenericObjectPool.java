@@ -84,12 +84,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     private static final String ONAME_BASE =
         "org.apache.commons.pool2:type=GenericObjectPool,name=";
 
-    private static void wait(final Object obj, final Duration duration) throws InterruptedException {
-        if (!duration.isNegative()) {
-            obj.wait(duration.toMillis(), duration.getNano() % 1_000_000);
-        }
-    }
-
     private volatile String factoryType;
 
     private volatile int maxIdle = GenericObjectPoolConfig.DEFAULT_MAX_IDLE;
@@ -491,7 +485,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * If the factory makeObject returns null, this method throws a NullPointerException.
      * </p>
      *
-     * @param maxWaitDuration The time to wait for an object to become available.
+     * @param maxWaitDuration The time to wait for capacity to create
      * @return The new wrapped pooled object or null.
      * @throws Exception if the object factory's {@code makeObject} fails
      */
@@ -600,9 +594,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         }
     }
 
-    private Duration durationSince(final Instant startInstant) {
-        return Duration.between(startInstant, Instant.now());
-    }
 
     /**
      * Tries to ensure that {@code idleCount} idle instances exist in the pool.
