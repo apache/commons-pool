@@ -27,12 +27,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.Serializable;
 import java.lang.management.ManagementFactory;
 import java.lang.ref.WeakReference;
 import java.nio.charset.UnsupportedCharsetException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -1661,16 +1663,16 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
         // InstantiationException
         assertThrows(IllegalArgumentException.class,
-                () -> genericObjectPool.setEvictionPolicyClassName(java.io.Serializable.class.getName()),
+                () -> genericObjectPool.setEvictionPolicyClassName(Serializable.class.getName()),
                 "setEvictionPolicyClassName must throw an error if the class name is invalid.");
 
         // IllegalAccessException
         assertThrows(IllegalArgumentException.class,
-                () -> genericObjectPool.setEvictionPolicyClassName(java.util.Collections.class.getName()),
+                () -> genericObjectPool.setEvictionPolicyClassName(Collections.class.getName()),
                 "setEvictionPolicyClassName must throw an error if the class name is invalid.");
 
         assertThrows(IllegalArgumentException.class,
-                () -> genericObjectPool.setEvictionPolicyClassName(java.lang.String.class.getName()),
+                () -> genericObjectPool.setEvictionPolicyClassName(String.class.getName()),
                 () -> "setEvictionPolicyClassName must throw an error if a class that does not implement EvictionPolicy is specified.");
 
         genericObjectPool.setEvictionPolicy(new TestEvictionPolicy<>());
