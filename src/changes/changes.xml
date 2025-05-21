@@ -47,6 +47,7 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
   <release version="2.12.2" date="YYYY-MM-DD" description="This is a feature and maintenance release. Java 8 or later is required.">
     <!-- FIX -->
+    <action type="fix" issue="POOL-421" dev="psteitz" due-to="Phil Steitz">GenericObjectPool addObject should return immediately when there is no capacity to add.</action>
     <action type="fix" issue="POOL-420" dev="psteitz" due-to="Phil Steitz">The maximum wait time for GenericKeyedObjectPool.borrowObject(*) may exceed configured maximum wait time. This is the same issue as POOL-418, but for GKOP.
        Also included in this fix is a change to addObject that prevents it from waiting for capacity to create. That method now returns immediately when there is no capcity to add to the pool under the given key.
     </action>
