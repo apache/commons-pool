@@ -42,6 +42,10 @@ import java.util.Random;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -2901,6 +2905,80 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
         final Thread t = new Thread(thread);
         t.start();
         Thread.sleep(50); // Wait for the thread to start
-        pool.addObject();  // Should return immediately
+        pool.addObject(); // Should return immediately
+    }
+
+    private BasePooledObjectFactory<Object> createPooledObjectFactory() {
+        return new BasePooledObjectFactory<Object>() {
+            @Override
+            public Object create() {
+                return new Object();
+            }
+
+            @Override
+            public PooledObject<Object> wrap(final Object obj) {
+                return new DefaultPooledObject<>(obj);
+            }
+        };
+    }
+
+
+    /*
+     * Test for POOL-419.
+     * https://issues.apache.org/jira/browse/POOL-419
+     */
+    @Test
+    void testPool419() throws Exception {
+
+        final ExecutorService executor = Executors.newFixedThreadPool(100);
+
+        final GenericObjectPoolConfig<Object> config = new GenericObjectPoolConfig<>();
+
+        final int maxConnections = 10000;
+
+        config.setMaxTotal(maxConnections);
+        config.setMaxIdle(maxConnections);
+        config.setMinIdle(1);
+
+        final BasePooledObjectFactory<Object> pof = createPooledObjectFactory();
+
+        try (ObjectPool<Object> connectionPool = new GenericObjectPool<>(pof, config)) {
+            assertNotNull(connectionPool);
+
+            final CountDownLatch startLatch = new CountDownLatch(1);
+
+            final List<Object> poolObjects = new ArrayList<>();
+
+            final List<FutureTask<Boolean>> tasks = new ArrayList<>();
+
+            for (int i = 0; i < maxConnections; i++) {
+                poolObjects.add(connectionPool.borrowObject());
+            }
+
+            for (Object poolObject : poolObjects) {
+
+                tasks.add(new FutureTask<>(() -> {
+                    startLatch.await();
+                    connectionPool.invalidateObject(poolObject);
+                    return true;
+                }));
+
+                tasks.add(new FutureTask<>(() -> {
+                    startLatch.await();
+                    connectionPool.returnObject(poolObject);
+                    return true;
+                }));
+            }
+
+            tasks.forEach(executor::submit);
+
+            startLatch.countDown(); // Start all tasks simultaneously
+
+            executor.shutdown();
+            assertTrue(executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS));
+
+            assertEquals(0, connectionPool.getNumActive(), "getNumActive() must not return a negative value");
+
+        }
     }
 }

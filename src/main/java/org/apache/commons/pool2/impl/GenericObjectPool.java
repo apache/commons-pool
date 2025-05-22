@@ -1016,75 +1016,76 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
             }
             return; // Object was abandoned and removed
         }
+        synchronized (p) {
+            markReturningState(p);
 
-        markReturningState(p);
+            final Duration activeTime = p.getActiveDuration();
 
-        final Duration activeTime = p.getActiveDuration();
+            if (getTestOnReturn() && !factory.validateObject(p)) {
+                try {
+                    destroy(p, DestroyMode.NORMAL);
+                } catch (final Exception e) {
+                    swallowException(e);
+                }
+                try {
+                    ensureIdle(1, false);
+                } catch (final Exception e) {
+                    swallowException(e);
+                }
+                updateStatsReturn(activeTime);
+                return;
+            }
 
-        if (getTestOnReturn() && !factory.validateObject(p)) {
             try {
-                destroy(p, DestroyMode.NORMAL);
-            } catch (final Exception e) {
-                swallowException(e);
+                factory.passivateObject(p);
+            } catch (final Exception e1) {
+                swallowException(e1);
+                try {
+                    destroy(p, DestroyMode.NORMAL);
+                } catch (final Exception e) {
+                    swallowException(e);
+                }
+                try {
+                    ensureIdle(1, false);
+                } catch (final Exception e) {
+                    swallowException(e);
+                }
+                updateStatsReturn(activeTime);
+                return;
             }
-            try {
-                ensureIdle(1, false);
-            } catch (final Exception e) {
-                swallowException(e);
-            }
-            updateStatsReturn(activeTime);
-            return;
-        }
 
-        try {
-            factory.passivateObject(p);
-        } catch (final Exception e1) {
-            swallowException(e1);
-            try {
-                destroy(p, DestroyMode.NORMAL);
-            } catch (final Exception e) {
-                swallowException(e);
+            if (!p.deallocate()) {
+                throw new IllegalStateException(
+                        "Object has already been returned to this pool or is invalid");
             }
-            try {
-                ensureIdle(1, false);
-            } catch (final Exception e) {
-                swallowException(e);
-            }
-            updateStatsReturn(activeTime);
-            return;
-        }
 
-        if (!p.deallocate()) {
-            throw new IllegalStateException(
-                    "Object has already been returned to this pool or is invalid");
-        }
-
-        final int maxIdleSave = getMaxIdle();
-        if (isClosed() || maxIdleSave > -1 && maxIdleSave <= idleObjects.size()) {
-            try {
-                destroy(p, DestroyMode.NORMAL);
-            } catch (final Exception e) {
-                swallowException(e);
-            }
-            try {
-                ensureIdle(1, false);
-            } catch (final Exception e) {
-                swallowException(e);
-            }
-        } else {
-            if (getLifo()) {
-                idleObjects.addFirst(p);
+            final int maxIdleSave = getMaxIdle();
+            if (isClosed() || maxIdleSave > -1 && maxIdleSave <= idleObjects.size()) {
+                try {
+                    destroy(p, DestroyMode.NORMAL);
+                } catch (final Exception e) {
+                    swallowException(e);
+                }
+                try {
+                    ensureIdle(1, false);
+                } catch (final Exception e) {
+                    swallowException(e);
+                }
             } else {
-                idleObjects.addLast(p);
+                if (getLifo()) {
+                    idleObjects.addFirst(p);
+                } else {
+                    idleObjects.addLast(p);
+                }
+                if (isClosed()) {
+                    // Pool closed while object was being added to idle objects.
+                    // Make sure the returned object is destroyed rather than left
+                    // in the idle object pool (which would effectively be a leak)
+                    clear();
+                }
             }
-            if (isClosed()) {
-                // Pool closed while object was being added to idle objects.
-                // Make sure the returned object is destroyed rather than left
-                // in the idle object pool (which would effectively be a leak)
-                clear();
-            }
+            updateStatsReturn(activeTime);
         }
-        updateStatsReturn(activeTime);
     }
 
     /**
