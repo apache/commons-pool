@@ -407,6 +407,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * @throws NoSuchElementException if an instance cannot be returned
      * @throws Exception if an object instance cannot be returned due to an
      *                   error
+     * @deprecated Use {@link #borrowObject(Duration)}.
      */
     public T borrowObject(final long maxWaitMillis) throws Exception {
         return borrowObject(Duration.ofMillis(maxWaitMillis));
