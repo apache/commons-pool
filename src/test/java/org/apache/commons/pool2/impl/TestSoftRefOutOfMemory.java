@@ -154,6 +154,7 @@ public class TestSoftRefOutOfMemory {
                 garbage.add(new byte[Math.min(1024 * 1024, (int) freeMemory / 2)]);
             } catch (final OutOfMemoryError oome) {
                 System.gc();
+                assertEquals(0, pool.getNumIdle());
             }
             System.gc();
         }
@@ -194,6 +195,7 @@ public class TestSoftRefOutOfMemory {
                 garbage.add(new byte[Math.min(1024 * 1024, (int) freeMemory / 2)]);
             } catch (final OutOfMemoryError oome) {
                 System.gc();
+                assertEquals(0, pool.getNumIdle());
             }
             System.gc();
         }
@@ -263,6 +265,7 @@ public class TestSoftRefOutOfMemory {
                 garbage.add(new byte[Math.min(1024 * 1024, (int) freeMemory / 2)]);
             } catch (final OutOfMemoryError oome) {
                 System.gc();
+                assertEquals(0, pool.getNumIdle());
             }
             System.gc();
         }
