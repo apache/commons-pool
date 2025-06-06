@@ -503,7 +503,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
      */
     private PooledObject<T> create(final Duration maxWaitDuration) throws E {
         final Instant startInstant = Instant.now();
-        Duration remainingWaitDuration = maxWaitDuration.isNegative() ? Duration.ZERO : maxWaitDuration;
+        Duration localWaitDuration = maxWaitDuration.isNegative() ? Duration.ZERO : maxWaitDuration;
         int localMaxTotal = getMaxTotal();
         // This simplifies the code later in this method
         if (localMaxTotal < 0) {
@@ -518,7 +518,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
         Boolean create = null;
         while (create == null) {
             // remainingWaitDuration handles spurious wakeup from wait().
-            remainingWaitDuration = remainingWaitDuration.minus(durationSince(startInstant));
+            Duration remainingWaitDuration = localWaitDuration.minus(durationSince(startInstant));
             synchronized (makeObjectCountLock) {
                 final long newCreateCount = createCount.incrementAndGet();
                 if (newCreateCount > localMaxTotal) {
