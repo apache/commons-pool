@@ -93,6 +93,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     private final PooledObjectFactory<T> factory;
 
     /*
+     * TODO The references to _maxActive are from 1.x and need to be updated.
+     *
      * All of the objects currently associated with this pool in any state. It
      * excludes objects that have been destroyed. The size of
      * {@link #allObjects} will always be less than or equal to {@link
@@ -102,6 +104,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     private final ConcurrentHashMap<IdentityWrapper<T>, PooledObject<T>> allObjects = new ConcurrentHashMap<>();
 
     /*
+     * TODO The references to _maxActive are from 1.x and need to be updated.
+     *
      * The combined count of the currently created objects and those in the
      * process of being created. Under load, it may exceed {@link #_maxActive}
      * if multiple threads try and create a new object at the same time but
