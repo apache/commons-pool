@@ -48,7 +48,7 @@ public class TestBasePoolableObjectFactory {
     }
 
     @Test
-    public void testDefaultMethods() throws Exception {
+    void testDefaultMethods() throws Exception {
         final PooledObjectFactory<AtomicInteger> factory = new TestFactory();
         factory.activateObject(null); // a no-op
         factory.passivateObject(null); // a no-op
@@ -63,7 +63,7 @@ public class TestBasePoolableObjectFactory {
      * @throws RuntimeException May occur in some failure modes
      */
     @Test
-    public void testDestroyModes() throws Exception {
+    void testDestroyModes() throws Exception {
         final PooledObjectFactory<AtomicInteger> factory = new TestFactory();
         final PooledObject<AtomicInteger> pooledObj = factory.makeObject();
         final AtomicInteger obj = pooledObj.getObject();

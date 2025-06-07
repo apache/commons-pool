@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 public class TestDefaultPooledObjectInfo {
 
     @Test
-    public void testGetLastBorrowTrace() throws Exception {
+    void testGetLastBorrowTrace() throws Exception {
         final AbandonedConfig abandonedConfig = new AbandonedConfig();
 
         abandonedConfig.setRemoveAbandonedOnBorrow(true);
@@ -49,7 +49,7 @@ public class TestDefaultPooledObjectInfo {
     }
 
     @Test
-    public void testGetPooledObjectToString() throws Exception {
+    void testGetPooledObjectToString() throws Exception {
         try (GenericObjectPool<String> pool = new GenericObjectPool<>(new SimpleFactory())) {
 
             final String s1 = pool.borrowObject();
@@ -65,7 +65,7 @@ public class TestDefaultPooledObjectInfo {
     }
 
     @Test
-    public void testGetPooledObjectType() throws Exception {
+    void testGetPooledObjectType() throws Exception {
         try (GenericObjectPool<String> pool = new GenericObjectPool<>(new SimpleFactory())) {
 
             pool.borrowObject();
@@ -81,7 +81,7 @@ public class TestDefaultPooledObjectInfo {
     }
 
     @Test
-    public void testTiming() throws Exception {
+    void testTiming() throws Exception {
         try (GenericObjectPool<String> pool = new GenericObjectPool<>(new SimpleFactory())) {
 
             final long t1Millis = System.currentTimeMillis();

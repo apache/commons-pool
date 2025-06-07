@@ -74,7 +74,7 @@ public class TestGenericObjectPoolClassLoaders {
             .getResource("/org/apache/commons/pool2/impl/");
 
     @Test
-    public void testContextClassLoader() throws Exception {
+    void testContextClassLoader() throws Exception {
 
         final ClassLoader savedClassloader = Thread.currentThread().getContextClassLoader();
 

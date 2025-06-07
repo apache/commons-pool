@@ -244,7 +244,7 @@ public abstract class AbstractTestKeyedObjectPool {
     }
 
     @Test
-    public void testBaseAddObject() throws Exception {
+    void testBaseAddObject() throws Exception {
         try {
             pool = makeEmptyPool(3);
         } catch (final UnsupportedOperationException uoe) {
@@ -280,7 +280,7 @@ public abstract class AbstractTestKeyedObjectPool {
     }
 
     @Test
-    public void testBaseBorrow() throws Exception {
+    void testBaseBorrow() throws Exception {
         try {
             pool = makeEmptyPool(3);
         } catch (final UnsupportedOperationException uoe) {
@@ -298,7 +298,7 @@ public abstract class AbstractTestKeyedObjectPool {
     }
 
     @Test
-    public void testBaseBorrowReturn() throws Exception {
+    void testBaseBorrowReturn() throws Exception {
         try {
             pool = makeEmptyPool(3);
         } catch (final UnsupportedOperationException uoe) {
@@ -337,7 +337,7 @@ public abstract class AbstractTestKeyedObjectPool {
     }
 
     @Test
-    public void testBaseClear() throws Exception {
+    void testBaseClear() throws Exception {
         try {
             pool = makeEmptyPool(3);
         } catch (final UnsupportedOperationException uoe) {
@@ -363,7 +363,7 @@ public abstract class AbstractTestKeyedObjectPool {
     }
 
     @Test
-    public void testBaseInvalidateObject() throws Exception {
+    void testBaseInvalidateObject() throws Exception {
         try {
             pool = makeEmptyPool(3);
         } catch (final UnsupportedOperationException uoe) {
@@ -386,7 +386,7 @@ public abstract class AbstractTestKeyedObjectPool {
     }
 
     @Test
-    public void testBaseNumActiveNumIdle() throws Exception {
+    void testBaseNumActiveNumIdle() throws Exception {
         try {
             pool = makeEmptyPool(3);
         } catch (final UnsupportedOperationException uoe) {
@@ -415,7 +415,7 @@ public abstract class AbstractTestKeyedObjectPool {
     }
 
     @Test
-    public void testBaseNumActiveNumIdle2() throws Exception {
+    void testBaseNumActiveNumIdle2() throws Exception {
         try {
             pool = makeEmptyPool(6);
         } catch (final UnsupportedOperationException uoe) {
@@ -474,7 +474,7 @@ public abstract class AbstractTestKeyedObjectPool {
     }
 
     @Test
-    public void testClosedPoolBehavior() throws Exception {
+    void testClosedPoolBehavior() throws Exception {
         final KeyedObjectPool<Object, Object> pool;
         try {
             pool = makeEmptyPool(new TestFactory());
@@ -510,7 +510,7 @@ public abstract class AbstractTestKeyedObjectPool {
     }
 
     @Test
-    public void testKPOFAddObjectUsage() throws Exception {
+    void testKPOFAddObjectUsage() throws Exception {
         final FailingKeyedPooledObjectFactory factory = new FailingKeyedPooledObjectFactory();
         final KeyedObjectPool<Object, Object> pool;
         try {
@@ -550,7 +550,7 @@ public abstract class AbstractTestKeyedObjectPool {
     }
 
     @Test
-    public void testKPOFBorrowObjectUsages() throws Exception {
+    void testKPOFBorrowObjectUsages() throws Exception {
         final FailingKeyedPooledObjectFactory factory = new FailingKeyedPooledObjectFactory();
         final KeyedObjectPool<Object, Object> pool;
         try {
@@ -616,7 +616,7 @@ public abstract class AbstractTestKeyedObjectPool {
     }
 
     @Test
-    public void testKPOFClearUsages() throws Exception {
+    void testKPOFClearUsages() throws Exception {
         final FailingKeyedPooledObjectFactory factory = new FailingKeyedPooledObjectFactory();
         final KeyedObjectPool<Object, Object> pool;
         try {
@@ -639,7 +639,7 @@ public abstract class AbstractTestKeyedObjectPool {
     }
 
     @Test
-    public void testKPOFCloseUsages() throws Exception {
+    void testKPOFCloseUsages() throws Exception {
         final FailingKeyedPooledObjectFactory factory = new FailingKeyedPooledObjectFactory();
         final KeyedObjectPool<Object, Object> pool;
         try {
@@ -662,7 +662,7 @@ public abstract class AbstractTestKeyedObjectPool {
     }
 
     @Test
-    public void testKPOFInvalidateObjectUsages() throws Exception {
+    void testKPOFInvalidateObjectUsages() throws Exception {
         final FailingKeyedPooledObjectFactory factory = new FailingKeyedPooledObjectFactory();
         final KeyedObjectPool<Object, Object> pool;
         try {
@@ -694,7 +694,7 @@ public abstract class AbstractTestKeyedObjectPool {
     }
 
     @Test
-    public void testKPOFReturnObjectUsages() throws Exception {
+    void testKPOFReturnObjectUsages() throws Exception {
         final FailingKeyedPooledObjectFactory factory = new FailingKeyedPooledObjectFactory();
         final KeyedObjectPool<Object, Object> pool;
         try {
@@ -753,7 +753,7 @@ public abstract class AbstractTestKeyedObjectPool {
     }
 
     @Test
-    public void testToString() {
+    void testToString() {
         final FailingKeyedPooledObjectFactory factory = new FailingKeyedPooledObjectFactory();
         try (KeyedObjectPool<Object, Object> pool = makeEmptyPool(factory)) {
             pool.toString();

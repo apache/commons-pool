@@ -103,7 +103,7 @@ public abstract class AbstractTestProxiedObjectPool {
     }
 
     @Test
-    public void testAccessAfterInvalidate() throws Exception {
+    void testAccessAfterInvalidate() throws Exception {
         final TestObject obj = pool.borrowObject();
         assertNotNull(obj);
 
@@ -121,7 +121,7 @@ public abstract class AbstractTestProxiedObjectPool {
     }
 
     @Test
-    public void testAccessAfterReturn() throws Exception {
+    void testAccessAfterReturn() throws Exception {
         final TestObject obj = pool.borrowObject();
         assertNotNull(obj);
 
@@ -138,7 +138,7 @@ public abstract class AbstractTestProxiedObjectPool {
     }
 
     @Test
-    public void testBorrowObject() throws Exception {
+    void testBorrowObject() throws Exception {
         final TestObject obj = pool.borrowObject();
         assertNotNull(obj);
 
@@ -150,7 +150,7 @@ public abstract class AbstractTestProxiedObjectPool {
     }
 
     @Test
-    public void testPassThroughMethods01() throws Exception {
+    void testPassThroughMethods01() throws Exception {
         assertEquals(0, pool.getNumActive());
         assertEquals(0, pool.getNumIdle());
 
@@ -166,7 +166,7 @@ public abstract class AbstractTestProxiedObjectPool {
     }
 
     @Test
-    public void testPassThroughMethods02() {
+    void testPassThroughMethods02() {
         pool.close();
 
         assertThrows(IllegalStateException.class,
@@ -174,7 +174,7 @@ public abstract class AbstractTestProxiedObjectPool {
     }
 
     @Test
-    public void testUsageTracking() throws Exception {
+    void testUsageTracking() throws Exception {
         final TestObject obj = pool.borrowObject();
         assertNotNull(obj);
 

@@ -68,7 +68,7 @@ public class PoolTest {
     private static final long EVICTION_PERIOD_IN_MILLIS = 100;
 
     @Test
-    public void testPool() throws Exception {
+    void testPool() throws Exception {
         final GenericObjectPoolConfig<Foo> poolConfig = new GenericObjectPoolConfig<>();
         poolConfig.setTestWhileIdle(true /* testWhileIdle */);
         final PooledFooFactory pooledFooFactory = new PooledFooFactory();

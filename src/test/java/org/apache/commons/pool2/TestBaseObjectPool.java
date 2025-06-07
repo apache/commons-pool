@@ -93,7 +93,7 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
     }
 
     @Test
-    public void testBaseAddObject() throws Exception {
+    void testBaseAddObject() throws Exception {
         try {
             pool = makeEmptyPool(3);
         } catch (final UnsupportedOperationException e) {
@@ -120,7 +120,7 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
     }
 
     @Test
-    public void testBaseBorrow() throws Exception {
+    void testBaseBorrow() throws Exception {
         try {
             pool = makeEmptyPool(3);
         } catch (final UnsupportedOperationException e) {
@@ -133,7 +133,7 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
     }
 
     @Test
-    public void testBaseBorrowReturn() throws Exception {
+    void testBaseBorrowReturn() throws Exception {
         try {
             pool = makeEmptyPool(3);
         } catch (final UnsupportedOperationException e) {
@@ -172,7 +172,7 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
     }
 
     @Test
-    public void testBaseClear() throws Exception {
+    void testBaseClear() throws Exception {
         try {
             pool = makeEmptyPool(3);
         } catch (final UnsupportedOperationException e) {
@@ -197,7 +197,7 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
     }
 
     @Test
-    public void testBaseClosePool() throws Exception {
+    void testBaseClosePool() throws Exception {
         try {
             pool = makeEmptyPool(3);
         } catch (final UnsupportedOperationException e) {
@@ -210,7 +210,7 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
     }
 
     @Test
-    public void testBaseInvalidateObject() throws Exception {
+    void testBaseInvalidateObject() throws Exception {
         try {
             pool = makeEmptyPool(3);
         } catch (final UnsupportedOperationException e) {
@@ -232,7 +232,7 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
     }
 
     @Test
-    public void testBaseNumActiveNumIdle() throws Exception {
+    void testBaseNumActiveNumIdle() throws Exception {
         try {
             pool = makeEmptyPool(3);
         } catch (final UnsupportedOperationException e) {
@@ -256,7 +256,7 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
     }
 
     @Test
-    public void testClose() {
+    void testClose() {
         @SuppressWarnings("resource")
         final ObjectPool<Object> pool = new TestObjectPool();
 
@@ -265,7 +265,7 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
     }
 
     @Test
-    public void testUnsupportedOperations() {
+    void testUnsupportedOperations() {
         if (!getClass().equals(TestBaseObjectPool.class)) {
             return; // skip redundant tests
         }

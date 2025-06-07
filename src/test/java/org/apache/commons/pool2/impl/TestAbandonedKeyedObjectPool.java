@@ -194,7 +194,7 @@ public class TestAbandonedKeyedObjectPool {
      * @throws InterruptedException May occur in some failure modes
      */
     @Test
-    public void testAbandonedInvalidate() throws Exception {
+    void testAbandonedInvalidate() throws Exception {
         abandonedConfig = new AbandonedConfig();
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
         abandonedConfig.setRemoveAbandonedTimeout(Duration.ofMillis(2000));
@@ -233,7 +233,7 @@ public class TestAbandonedKeyedObjectPool {
      * @throws Exception May occur in some failure modes
      */
     @Test
-    public void testAbandonedReturn() throws Exception {
+    void testAbandonedReturn() throws Exception {
         abandonedConfig = new AbandonedConfig();
         abandonedConfig.setRemoveAbandonedOnBorrow(true);
         abandonedConfig.setRemoveAbandonedTimeout(TestConstants.ONE_SECOND_DURATION);
@@ -268,7 +268,7 @@ public class TestAbandonedKeyedObjectPool {
      * @throws Exception May occur in some failure modes
      */
     @Test
-    public void testConcurrentInvalidation() throws Exception {
+    void testConcurrentInvalidation() throws Exception {
         final int POOL_SIZE = 30;
         pool.setMaxTotalPerKey(POOL_SIZE);
         pool.setMaxIdlePerKey(POOL_SIZE);
@@ -309,7 +309,7 @@ public class TestAbandonedKeyedObjectPool {
         assertEquals(0, pool.getNumActive(), "numActive should have been 0, was " + pool.getNumActive());
     }
 
-    public void testDestroyModeAbandoned() throws Exception {
+    void testDestroyModeAbandoned() throws Exception {
         abandonedConfig = new AbandonedConfig();
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
         abandonedConfig.setRemoveAbandonedTimeout(TestConstants.ONE_SECOND_DURATION);
@@ -325,7 +325,7 @@ public class TestAbandonedKeyedObjectPool {
         assertTrue(obj.isDetached());
     }
 
-    public void testDestroyModeNormal() throws Exception {
+    void testDestroyModeNormal() throws Exception {
         abandonedConfig = new AbandonedConfig();
         pool.close();  // Unregister pool created by setup
         pool = new GenericKeyedObjectPool<>(new SimpleFactory(0, 0));
@@ -343,7 +343,7 @@ public class TestAbandonedKeyedObjectPool {
      * @throws Exception May occur in some failure modes
      */
     @Test
-    public void testRemoveAbandonedWhileReturning() throws Exception {
+    void testRemoveAbandonedWhileReturning() throws Exception {
         abandonedConfig = new AbandonedConfig();
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
         abandonedConfig.setRemoveAbandonedTimeout(TestConstants.ONE_SECOND_DURATION);
@@ -372,7 +372,7 @@ public class TestAbandonedKeyedObjectPool {
      * JIRA: POOL-300
      */
     @Test
-    public void testStackTrace() throws Exception {
+    void testStackTrace() throws Exception {
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
         abandonedConfig.setLogAbandoned(true);
         abandonedConfig.setRemoveAbandonedTimeout(TestConstants.ONE_SECOND_DURATION);
@@ -399,7 +399,7 @@ public class TestAbandonedKeyedObjectPool {
      * @throws Exception May occur in some failure modes
      */
     @Test
-    public void testWhenExhaustedBlock() throws Exception {
+    void testWhenExhaustedBlock() throws Exception {
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
         pool.setAbandonedConfig(abandonedConfig);
         pool.setTimeBetweenEvictionRuns(Duration.ofMillis(500));

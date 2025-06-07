@@ -98,7 +98,7 @@ public class TestGenericObjectPoolFactoryCreateFailure {
 
     @Test
     @Timeout(value = 10_000, unit = TimeUnit.MILLISECONDS)
-    public void testBorrowObjectStuck() {
+    void testBorrowObjectStuck() {
         final SingleObjectFactory factory = new SingleObjectFactory();
         final GenericObjectPoolConfig<Object> config = new GenericObjectPoolConfig<>();
         config.setMaxIdle(1);
