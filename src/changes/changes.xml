@@ -54,6 +54,7 @@ The <action> type attribute can be add,update,fix,remove.
     <!-- FIX -->
     <action type="fix" dev="ggregory" due-to="Gary Gregory">Remove -nouses directive from maven-bundle-plugin. OSGi package imports now state 'uses' definitions for package imports, this doesn't affect JPMS (from org.apache.commons:commons-parent:80).</action>
     <action type="fix" dev="ggregory" due-to="Gary Gregory">Operation on the "idleHighWaterMark" shared variable in "ErodingFactor" class is not atomic [org.apache.commons.pool3.PoolUtils$ErodingFactor] At PoolUtils.java:[line 101] AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE.</action>
+    <action type="fix" dev="ggregory" due-to="shengulong, Gary Gregory" issue="POOL-422">org.apache.commons.pool3.impl.GenericObjectPool.create(Duration) duration computation doesn't match 2.x. See also PR #409 from shengulong.</action>
     <!-- REMOVE -->
     <action dev="ggregory" type="remove">Deprecations from version 2.x have been removed.</action>
     <!-- UPDATE -->
