@@ -494,13 +494,13 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * If the factory makeObject returns null, this method throws a NullPointerException.
      * </p>
      *
-     * @param maxWaitDuration The time to wait for capacity to create
+     * @param maxWaitDurationRequest The time to wait for capacity to create.
      * @return The new wrapped pooled object or null.
-     * @throws Exception if the object factory's {@code makeObject} fails
+     * @throws Exception if the object factory's {@code makeObject} fails.
      */
-    private PooledObject<T> create(final Duration maxWaitDuration) throws Exception {
+    private PooledObject<T> create(final Duration maxWaitDurationRequest) throws Exception {
         final Instant startInstant = Instant.now();
-        Duration remainingWaitDuration = maxWaitDuration.isNegative() ? Duration.ZERO : maxWaitDuration;
+        final Duration maxWaitDuration = maxWaitDurationRequest.isNegative() ? Duration.ZERO : maxWaitDurationRequest;
         int localMaxTotal = getMaxTotal();
         // This simplifies the code later in this method
         if (localMaxTotal < 0) {
@@ -515,7 +515,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         Boolean create = null;
         while (create == null) {
             // remainingWaitDuration handles spurious wakeup from wait().
-            remainingWaitDuration = maxWaitDuration.minus(durationSince(startInstant));
+            final Duration remainingWaitDuration = maxWaitDuration.minus(durationSince(startInstant));
             synchronized (makeObjectCountLock) {
                 final long newCreateCount = createCount.incrementAndGet();
                 if (newCreateCount > localMaxTotal) {
