@@ -154,7 +154,7 @@ public class TestPoolUtils {
     }
 
     @Test
-    public void testCheckMinIdleKeyedObjectPool() throws InterruptedException {
+    void testCheckMinIdleKeyedObjectPool() throws InterruptedException {
         assertThrows(IllegalArgumentException.class, () -> PoolUtils.checkMinIdle(null, new Object(), 1, 1),
                 "PoolUtils.checkMinIdle(KeyedObjectPool,Object,int,long) must not allow null pool.");
         try (@SuppressWarnings("unchecked")
@@ -222,7 +222,7 @@ public class TestPoolUtils {
     }
 
     @Test
-    public void testCheckMinIdleKeyedObjectPoolKeys() throws InterruptedException {
+    void testCheckMinIdleKeyedObjectPoolKeys() throws InterruptedException {
         // Because this isn't deterministic and you can get false failures, try more than once.
         AssertionFailedError afe = null;
         int triesLeft = 3;
@@ -256,7 +256,7 @@ public class TestPoolUtils {
     }
 
     @Test
-    public void testCheckMinIdleKeyedObjectPoolKeysNulls() {
+    void testCheckMinIdleKeyedObjectPoolKeysNulls() {
         try (@SuppressWarnings("unchecked")
             KeyedObjectPool<Object, Object, RuntimeException> pool = createProxy(KeyedObjectPool.class, (List<String>) null)) {
             assertThrows(IllegalArgumentException.class, () -> PoolUtils.checkMinIdle(pool, (Collection<?>) null, 1, 1),
@@ -272,7 +272,7 @@ public class TestPoolUtils {
     }
 
     @Test
-    public void testCheckMinIdleObjectPool() throws InterruptedException {
+    void testCheckMinIdleObjectPool() throws InterruptedException {
         assertThrows(IllegalArgumentException.class, () -> PoolUtils.checkMinIdle(null, 1, 1),
                 "PoolUtils.checkMinIdle(ObjectPool,,) must not allow null pool.");
         try (@SuppressWarnings("unchecked")
@@ -332,7 +332,7 @@ public class TestPoolUtils {
     }
 
     @Test
-    public void testCheckRethrow() {
+    void testCheckRethrow() {
         assertDoesNotThrow(() -> PoolUtils.checkRethrow(new Exception()),
                 "PoolUtils.checkRethrow(Throwable) must rethrow only ThreadDeath and VirtualMachineError.");
         assertThrows(ThreadDeath.class, () -> PoolUtils.checkRethrow(new ThreadDeath()),
@@ -342,7 +342,7 @@ public class TestPoolUtils {
     }
 
     @Test
-    public void testErodingObjectPoolDefaultFactor() {
+    void testErodingObjectPoolDefaultFactor() {
         try (@SuppressWarnings("unchecked")
              ObjectPool<Object, RuntimeException> internalPool = createProxy(ObjectPool.class, (arg0, arg1, arg2) -> null);
              ObjectPool<Object, RuntimeException> pool = PoolUtils.erodingPool(internalPool)) {
@@ -355,7 +355,7 @@ public class TestPoolUtils {
     }
 
     @Test
-    public void testErodingPerKeyKeyedObjectPool() throws InterruptedException {
+    void testErodingPerKeyKeyedObjectPool() throws InterruptedException {
         assertThrows(IllegalArgumentException.class, () -> PoolUtils.erodingPool((KeyedObjectPool<Object, Object, RuntimeException>) null, 1f, true),
                 "PoolUtils.erodingPool(KeyedObjectPool) must not allow a null pool.");
 
@@ -427,7 +427,7 @@ public class TestPoolUtils {
     }
 
     @Test
-    public void testErodingPoolKeyedObjectPool() throws InterruptedException {
+    void testErodingPoolKeyedObjectPool() throws InterruptedException {
         assertThrows(IllegalArgumentException.class, () -> PoolUtils.erodingPool((KeyedObjectPool<Object, Object, RuntimeException>) null),
                 "PoolUtils.erodingPool(KeyedObjectPool) must not allow a null pool.");
 
@@ -514,7 +514,7 @@ public class TestPoolUtils {
     }
 
     @Test
-    public void testErodingPoolKeyedObjectPoolDefaultFactor() {
+    void testErodingPoolKeyedObjectPoolDefaultFactor() {
         try (@SuppressWarnings("unchecked")
             KeyedObjectPool<Object, Object, RuntimeException> internalPool = createProxy(KeyedObjectPool.class, (arg0, arg1, arg2) -> null);
                 KeyedObjectPool<Object, Object, RuntimeException> pool = PoolUtils.erodingPool(internalPool)) {
@@ -526,7 +526,7 @@ public class TestPoolUtils {
     }
 
     @Test
-    public void testErodingPoolObjectPool() throws InterruptedException {
+    void testErodingPoolObjectPool() throws InterruptedException {
         assertThrows(IllegalArgumentException.class, () -> PoolUtils.erodingPool((ObjectPool<Object, RuntimeException>) null),
                 "PoolUtils.erodingPool(ObjectPool) must not allow a null pool.");
 
@@ -605,12 +605,12 @@ public class TestPoolUtils {
     }
 
     @Test
-    public void testJavaBeanInstantiation() {
+    void testJavaBeanInstantiation() {
         assertNotNull(new PoolUtils());
     }
 
     @Test
-    public void testSynchronizedPoolableFactoryKeyedPooledObjectFactory() {
+    void testSynchronizedPoolableFactoryKeyedPooledObjectFactory() {
         assertThrows(IllegalArgumentException.class,
             () -> PoolUtils.synchronizedKeyedPooledFactory((KeyedPooledObjectFactory<Object, Object, RuntimeException>) null),
             "PoolUtils.synchronizedPoolableFactory(KeyedPooledObjectFactory) must not allow a null factory.");
@@ -627,7 +627,7 @@ public class TestPoolUtils {
     }
 
     @Test
-    public void testSynchronizedPoolableFactoryPoolableObjectFactory() throws Exception {
+    void testSynchronizedPoolableFactoryPoolableObjectFactory() throws Exception {
         assertThrows(IllegalArgumentException.class, () -> PoolUtils.synchronizedPooledFactory((PooledObjectFactory<Object, Exception>) null),
                 "PoolUtils.synchronizedPoolableFactory(PoolableObjectFactory) must not allow a null factory.");
 
@@ -643,7 +643,7 @@ public class TestPoolUtils {
     }
 
     @Test
-    public void testSynchronizedPoolKeyedObjectPool() {
+    void testSynchronizedPoolKeyedObjectPool() {
         assertThrows(IllegalArgumentException.class, () -> PoolUtils.synchronizedPool((KeyedObjectPool<Object, Object, RuntimeException>) null),
                 "PoolUtils.synchronizedPool(KeyedObjectPool) must not allow a null pool.");
 
@@ -659,7 +659,7 @@ public class TestPoolUtils {
     }
 
     @Test
-    public void testSynchronizedPoolObjectPool() {
+    void testSynchronizedPoolObjectPool() {
         assertThrows(IllegalArgumentException.class, () -> PoolUtils.synchronizedPool((ObjectPool<Object, RuntimeException>) null),
                 "PoolUtils.synchronizedPool(ObjectPool) must not allow a null pool.");
 
@@ -678,7 +678,7 @@ public class TestPoolUtils {
      * Tests the {@link PoolUtils} timer holder.
      */
     @Test
-    public void testTimerHolder() {
+    void testTimerHolder() {
         final PoolUtils.TimerHolder h = new PoolUtils.TimerHolder();
         assertNotNull(h);
         assertNotNull(PoolUtils.TimerHolder.MIN_IDLE_TIMER);

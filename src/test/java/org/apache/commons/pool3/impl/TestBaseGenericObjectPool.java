@@ -58,7 +58,7 @@ public class TestBaseGenericObjectPool {
     }
 
     @Test
-    public void testActiveTimeStatistics() {
+    void testActiveTimeStatistics() {
         for (int i = 0; i < 99; i++) { // must be < MEAN_TIMING_STATS_CACHE_SIZE
             pool.updateStatsReturn(Duration.ofMillis(i));
         }
@@ -66,7 +66,7 @@ public class TestBaseGenericObjectPool {
     }
 
     @Test
-    public void testBorrowWaitStatistics() {
+    void testBorrowWaitStatistics() {
         final DefaultPooledObject<String> p = (DefaultPooledObject<String>) factory.makeObject();
         pool.updateStatsBorrow(p, Duration.ofMillis(10));
         pool.updateStatsBorrow(p, Duration.ofMillis(20));
@@ -76,7 +76,7 @@ public class TestBaseGenericObjectPool {
         assertEquals(30, pool.getMaxBorrowWaitTimeMillis(), 0);
     }
 
-    public void testBorrowWaitStatisticsMax() {
+    void testBorrowWaitStatisticsMax() {
         final DefaultPooledObject<String> p = (DefaultPooledObject<String>) factory.makeObject();
         assertEquals(0, pool.getMaxBorrowWaitTimeMillis(), Double.MIN_VALUE);
         pool.updateStatsBorrow(p, Duration.ZERO);
@@ -90,7 +90,7 @@ public class TestBaseGenericObjectPool {
     }
 
     @Test
-    public void testEvictionTimerMultiplePools() throws InterruptedException {
+    void testEvictionTimerMultiplePools() throws InterruptedException {
         final AtomicIntegerFactory factory = new AtomicIntegerFactory();
         factory.setValidateLatency(50);
         try (GenericObjectPool<AtomicInteger, RuntimeException> evictingPool = new GenericObjectPool<>(factory)) {
@@ -124,7 +124,7 @@ public class TestBaseGenericObjectPool {
     @SuppressWarnings("resource") // pools closed in finally block
     @Test
     @Timeout(value = 10_000, unit = TimeUnit.MILLISECONDS)
-    public void testJMXRegistrationLatency() {
+    void testJMXRegistrationLatency() {
         final int numPools = 1000;
         final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         final ArrayList<GenericObjectPool<Waiter, IllegalStateException>> pools = new ArrayList<>();

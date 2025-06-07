@@ -70,7 +70,7 @@ public abstract class AbstractTestObjectPool {
     protected abstract <E extends Exception> ObjectPool<Object, E> makeEmptyPool(PooledObjectFactory<Object, E> factory) throws UnsupportedOperationException;
 
     @Test
-    public void testClosedPoolBehavior() throws Exception {
+    void testClosedPoolBehavior() throws Exception {
         final ObjectPool<Object, PrivateException> pool;
         try {
             pool = makeEmptyPool(new MethodCallPoolableObjectFactory());
@@ -112,7 +112,7 @@ public abstract class AbstractTestObjectPool {
     }
 
     @Test
-    public void testPOFAddObjectUsage() throws Exception {
+    void testPOFAddObjectUsage() throws Exception {
         final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
         final ObjectPool<Object, PrivateException> pool;
         try {
@@ -163,7 +163,7 @@ public abstract class AbstractTestObjectPool {
     }
 
     @Test
-    public void testPOFBorrowObjectUsages() throws Exception {
+    void testPOFBorrowObjectUsages() throws Exception {
         final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
         final ObjectPool<Object, PrivateException> pool;
         try {
@@ -233,7 +233,7 @@ public abstract class AbstractTestObjectPool {
     }
 
     @Test
-    public void testPOFClearUsages() throws Exception {
+    void testPOFClearUsages() throws Exception {
         final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
         final ObjectPool<Object, PrivateException> pool;
         try {
@@ -256,7 +256,7 @@ public abstract class AbstractTestObjectPool {
     }
 
     @Test
-    public void testPOFCloseUsages() throws Exception {
+    void testPOFCloseUsages() throws Exception {
         final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
         ObjectPool<Object, PrivateException> pool;
         try {
@@ -283,7 +283,7 @@ public abstract class AbstractTestObjectPool {
     }
 
     @Test
-    public void testPOFInvalidateObjectUsages() throws Exception {
+    void testPOFInvalidateObjectUsages() throws Exception {
         final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
         final ObjectPool<Object, PrivateException> pool;
         try {
@@ -316,7 +316,7 @@ public abstract class AbstractTestObjectPool {
     }
 
     @Test
-    public void testPOFReturnObjectUsages() throws Exception {
+    void testPOFReturnObjectUsages() throws Exception {
         final MethodCallPoolableObjectFactory factory = new MethodCallPoolableObjectFactory();
         final ObjectPool<Object, PrivateException> pool;
         try {
@@ -376,7 +376,7 @@ public abstract class AbstractTestObjectPool {
     }
 
     @Test
-    public void testToString() {
+    void testToString() {
         final ObjectPool<Object, PrivateException> pool;
         try {
             pool = makeEmptyPool(new MethodCallPoolableObjectFactory());

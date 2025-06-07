@@ -43,7 +43,7 @@ public class TestDefaultPooledObject {
      * @throws Exception May occur in some failure modes
      */
     @Test
-    public void testGetIdleTimeMillis() throws Exception {
+    void testGetIdleTimeMillis() throws Exception {
         final DefaultPooledObject<Object> dpo = new DefaultPooledObject<>(new Object());
         final AtomicBoolean negativeIdleTimeReturned = new AtomicBoolean();
         final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 3);
@@ -88,7 +88,7 @@ public class TestDefaultPooledObject {
     }
 
     @Test
-    public void testInitialStateActiveDuration() throws InterruptedException {
+    void testInitialStateActiveDuration() throws InterruptedException {
         final PooledObject<Object> dpo = new DefaultPooledObject<>(new Object());
         // Sleep MUST be "long enough" to test that we are not returning a negative time.
         // Need an API in Java 8 to get the clock granularity.
@@ -104,7 +104,7 @@ public class TestDefaultPooledObject {
     }
 
     @Test
-    public void testInitialStateCreateInstant() {
+    void testInitialStateCreateInstant() {
         final PooledObject<Object> dpo = new DefaultPooledObject<>(new Object());
 
         // In the initial state, all instants are the creation instant: last borrow, last use, last return.
@@ -119,7 +119,7 @@ public class TestDefaultPooledObject {
     }
 
     @Test
-    public void testInitialStateDuration() throws InterruptedException {
+    void testInitialStateDuration() throws InterruptedException {
         final PooledObject<Object> dpo = new DefaultPooledObject<>(new Object());
         final Duration duration1 = dpo.getFullDuration();
         assertNotNull(duration1);
@@ -133,7 +133,7 @@ public class TestDefaultPooledObject {
     }
 
     @Test
-    public void testInitialStateIdleDuration() throws InterruptedException {
+    void testInitialStateIdleDuration() throws InterruptedException {
         final PooledObject<Object> dpo = new DefaultPooledObject<>(new Object());
         // Sleep MUST be "long enough" to test that we are not returning a negative time.
         Thread.sleep(200);

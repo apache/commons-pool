@@ -44,7 +44,7 @@ public class TestCallStackUtils {
     }
 
     @Test
-    public void testNewCallStack3() {
+    void testNewCallStack3() {
         assertNewCallStack(CallStackUtils.newCallStack(MESSAGE_FORMAT, false, false));
         assertNewCallStack(CallStackUtils.newCallStack(MESSAGE_FORMAT, false, true));
     }

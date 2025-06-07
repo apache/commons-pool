@@ -96,7 +96,7 @@ public class TestResilientPooledObjectFactory {
     }
 
     @Test
-    public void testAdderStartStop() throws Exception {
+    void testAdderStartStop() throws Exception {
         final FailingFactory ff = new FailingFactory();
         // Make the factory fail with exception immediately on make
         ff.setSilentFail(true);
@@ -169,7 +169,7 @@ public class TestResilientPooledObjectFactory {
     }
 
     @Test
-    public void testConstructorWithDefaults() {
+    void testConstructorWithDefaults() {
         final FailingFactory ff = new FailingFactory();
         final ResilientPooledObjectFactory<String, Exception> rf = new ResilientPooledObjectFactory<>(ff);
         assertFalse(rf.isMonitorRunning());
@@ -185,7 +185,7 @@ public class TestResilientPooledObjectFactory {
     }
 
     @Test
-    public void testIsMonitorRunning() throws Exception {
+    void testIsMonitorRunning() throws Exception {
         final FailingFactory ff = new FailingFactory();
         // Make the factory fail with exception immediately on make
         ff.setSilentFail(true);
@@ -208,7 +208,7 @@ public class TestResilientPooledObjectFactory {
     }
 
     @Test
-    public void testNulls() throws Exception {
+    void testNulls() throws Exception {
         final FailingFactory ff = new FailingFactory();
         // Make the factory fail with exception immediately on make
         ff.setSilentFail(true);
@@ -286,7 +286,7 @@ public class TestResilientPooledObjectFactory {
     }
 
     @Test
-    public void testTransientFailure() throws Exception {
+    void testTransientFailure() throws Exception {
         final FailingFactory ff = new FailingFactory();
         // Make the factory fail with exception immediately on make
         ff.setHang(false);

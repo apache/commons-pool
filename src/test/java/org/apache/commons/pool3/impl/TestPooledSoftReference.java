@@ -39,7 +39,7 @@ public class TestPooledSoftReference {
     }
 
     @Test
-    public void testPooledSoftReference() {
+    void testPooledSoftReference() {
         assertEquals(REFERENT, ref.getObject());
 
         SoftReference<String> softRef = ref.getReference();
@@ -57,7 +57,7 @@ public class TestPooledSoftReference {
     }
 
     @Test
-    public void testToString() {
+    void testToString() {
         final String expected = "Referenced Object: test, State: IDLE";
         assertEquals(expected, ref.toString());
     }

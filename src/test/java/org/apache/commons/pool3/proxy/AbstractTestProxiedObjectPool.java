@@ -126,7 +126,7 @@ public abstract class AbstractTestProxiedObjectPool {
     }
 
     @Test
-    public void testAccessAfterInvalidate() {
+    void testAccessAfterInvalidate() {
         @SuppressWarnings("resource")
         final ObjectPool<TestObject, RuntimeException> pool = createProxiedObjectPool();
 
@@ -147,7 +147,7 @@ public abstract class AbstractTestProxiedObjectPool {
     }
 
     @Test
-    public void testAccessAfterReturn() {
+    void testAccessAfterReturn() {
         @SuppressWarnings("resource")
         final ObjectPool<TestObject, RuntimeException> pool = createProxiedObjectPool();
 
@@ -167,7 +167,7 @@ public abstract class AbstractTestProxiedObjectPool {
     }
 
     @Test
-    public void testBorrowObject() {
+    void testBorrowObject() {
         @SuppressWarnings("resource")
         final ObjectPool<TestObject, RuntimeException> pool = createProxiedObjectPool();
 
@@ -182,7 +182,7 @@ public abstract class AbstractTestProxiedObjectPool {
     }
 
     @Test
-    public void testPassThroughMethods01() {
+    void testPassThroughMethods01() {
         @SuppressWarnings("resource")
         final ObjectPool<TestObject, RuntimeException> pool = createProxiedObjectPool();
 
@@ -201,7 +201,7 @@ public abstract class AbstractTestProxiedObjectPool {
     }
 
     @Test
-    public void testPassThroughMethods02() {
+    void testPassThroughMethods02() {
         final ObjectPool<TestObject, RuntimeException> pool = createProxiedObjectPool();
 
         pool.close();
@@ -211,7 +211,7 @@ public abstract class AbstractTestProxiedObjectPool {
     }
 
     @Test
-    public void testUsageTracking() throws InterruptedException {
+    void testUsageTracking() throws InterruptedException {
         @SuppressWarnings("resource")
         final ObjectPool<TestObject, RuntimeException> pool = createProxiedObjectPool();
 
@@ -234,7 +234,7 @@ public abstract class AbstractTestProxiedObjectPool {
     }
 
     @Test
-    public void testUnwrapInvocationTargetExceptionTrue() {
+    void testUnwrapInvocationTargetExceptionTrue() {
         @SuppressWarnings("resource")
         final ObjectPool<TestObject, RuntimeException> pool = createProxiedObjectPool(true, new MyException());
 
@@ -243,7 +243,7 @@ public abstract class AbstractTestProxiedObjectPool {
     }
 
     @Test
-    public void testUnwrapInvocationTargetExceptionFalse() {
+    void testUnwrapInvocationTargetExceptionFalse() {
         @SuppressWarnings("resource")
         final ObjectPool<TestObject, RuntimeException> pool = createProxiedObjectPool(false, new MyException());
 
