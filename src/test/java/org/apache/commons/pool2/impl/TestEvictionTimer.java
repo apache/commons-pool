@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests for {@link EvictionTimer}.
  */
-public class TestEvictionTimer {
+class TestEvictionTimer {
 
     @Test
     void testStartStopEvictionTimer() throws Exception {

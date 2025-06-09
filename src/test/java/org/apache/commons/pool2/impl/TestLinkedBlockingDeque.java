@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Timeout;
 /**
  * Tests for {@link LinkedBlockingDeque}.
  */
-public class TestLinkedBlockingDeque {
+class TestLinkedBlockingDeque {
 
     private static final Duration TIMEOUT_50_MILLIS = Duration.ofMillis(50);
     private static final Integer ONE = Integer.valueOf(1);

@@ -27,7 +27,7 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.junit.jupiter.api.Test;
 
-public class PoolTest {
+class PoolTest {
 
     private static final class Foo {
     }

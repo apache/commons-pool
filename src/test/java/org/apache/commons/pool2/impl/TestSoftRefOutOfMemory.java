@@ -32,12 +32,14 @@ import org.junit.jupiter.api.Test;
 
 /**
  */
-public class TestSoftRefOutOfMemory {
+class TestSoftRefOutOfMemory {
+
     public static class LargePoolableObjectFactory extends BasePooledObjectFactory<String> {
+
         private final String buffer;
         private int counter;
 
-        public LargePoolableObjectFactory(final int size) {
+        LargePoolableObjectFactory(final int size) {
             buffer = new StringBuffer().append(ArrayFill.fill(new char[size], '.')).toString();
         }
 

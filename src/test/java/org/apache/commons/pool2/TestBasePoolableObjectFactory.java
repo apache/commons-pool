@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  */
-public class TestBasePoolableObjectFactory {
+class TestBasePoolableObjectFactory {
 
     private static final class TestFactory extends BasePooledObjectFactory<AtomicInteger> {
         @Override

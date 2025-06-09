@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests for PooledSoftReference.
  */
-public class TestPooledSoftReference {
+class TestPooledSoftReference {
 
     private static final String REFERENT = "test";
     private static final String REFERENT2 = "test2";

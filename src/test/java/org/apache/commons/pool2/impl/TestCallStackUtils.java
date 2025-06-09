@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests {@link CallStackUtils}.
  */
-public class TestCallStackUtils {
+class TestCallStackUtils {
 
     private static final String MESSAGE_FORMAT = "'Timestamp:' yyyy-MM-dd HH:mm:ss Z";
 

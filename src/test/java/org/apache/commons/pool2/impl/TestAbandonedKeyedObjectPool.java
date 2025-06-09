@@ -44,7 +44,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests for {@link AbandonedConfig}.
  */
-public class TestAbandonedKeyedObjectPool {
+class TestAbandonedKeyedObjectPool {
 
     private final class ConcurrentBorrower extends Thread {
         private final ArrayList<PooledTestObject> borrowed;

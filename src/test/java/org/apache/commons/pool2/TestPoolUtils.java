@@ -47,7 +47,7 @@ import org.opentest4j.AssertionFailedError;
  *
  * TODO Replace our own mocking with a mocking library like Mockito.
  */
-public class TestPoolUtils {
+class TestPoolUtils {
 
     private static class MethodCallLogger implements InvocationHandler {
         private final List<String> calledMethods;

@@ -16,7 +16,7 @@
  */
 package org.apache.commons.pool2.proxy;
 
-public class TestProxiedKeyedObjectPoolWithCglibProxy extends
+class TestProxiedKeyedObjectPoolWithCglibProxy extends
         AbstractTestProxiedKeyedObjectPool {
 
     @Override

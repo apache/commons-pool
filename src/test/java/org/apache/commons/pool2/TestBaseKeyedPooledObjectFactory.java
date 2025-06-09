@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  */
-public class TestBaseKeyedPooledObjectFactory {
+class TestBaseKeyedPooledObjectFactory {
 
     private static final class TestFactory extends BaseKeyedPooledObjectFactory<Object, Object> {
         @Override

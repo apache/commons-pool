@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests {@link GenericObjectPoolConfig}.
  */
-public class TestGenericObjectPoolConfig {
+class TestGenericObjectPoolConfig {
 
     public static final class TestEvictionPolicy implements EvictionPolicy<TestObject> {
 

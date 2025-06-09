@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests for {@link EvictionConfig}.
  */
-public class TestEvictionConfig {
+class TestEvictionConfig {
 
     @Test
     void testConstructor1s() {

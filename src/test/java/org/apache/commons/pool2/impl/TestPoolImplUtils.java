@@ -27,7 +27,7 @@ import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.junit.jupiter.api.Test;
 
-public class TestPoolImplUtils {
+class TestPoolImplUtils {
 
     @SuppressWarnings("unused")
     private abstract static class FactoryAB<A, B> extends BasePooledObjectFactory<B> {
