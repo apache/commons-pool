@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests POOL-407.
  */
-public class KeyedPool407Test extends AbstractPool407Test {
+class KeyedPool407Test extends AbstractPool407Test {
 
     /**
      * Borrows from a pool and then immediately returns to that a pool.

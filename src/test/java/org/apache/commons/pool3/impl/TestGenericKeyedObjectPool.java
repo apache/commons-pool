@@ -73,7 +73,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 
 /**
  */
-public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
+class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     private static final class DaemonThreadFactory implements ThreadFactory {
         @Override
@@ -179,11 +179,11 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
         boolean exceptionOnCreate;
 
-        public SimpleFactory() {
+        SimpleFactory() {
             this(true);
         }
 
-        public SimpleFactory(final boolean valid) {
+        SimpleFactory(final boolean valid) {
             this.valid = valid;
         }
 

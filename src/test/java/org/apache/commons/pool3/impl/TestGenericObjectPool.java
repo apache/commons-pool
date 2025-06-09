@@ -72,7 +72,7 @@ import org.junit.jupiter.api.Timeout;
 
 /**
  */
-public class TestGenericObjectPool extends TestBaseObjectPool {
+class TestGenericObjectPool extends TestBaseObjectPool {
 
     private final class ConcurrentBorrowAndEvictThread extends Thread {
         private final boolean borrow;
@@ -276,15 +276,15 @@ public class TestGenericObjectPool extends TestBaseObjectPool {
 
         int maxTotal = Integer.MAX_VALUE;
 
-        public SimpleFactory() {
+        SimpleFactory() {
             this(true);
         }
 
-        public SimpleFactory(final boolean valid) {
+        SimpleFactory(final boolean valid) {
             this(valid, valid);
         }
 
-        public SimpleFactory(final boolean evalid, final boolean ovalid) {
+        SimpleFactory(final boolean evalid, final boolean ovalid) {
             evenValid = evalid;
             oddValid = ovalid;
         }

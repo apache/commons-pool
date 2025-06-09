@@ -26,7 +26,7 @@ import org.apache.commons.pool3.TestException;
 import org.apache.commons.pool3.impl.TestGenericObjectPool.SimpleFactory;
 import org.junit.jupiter.api.Test;
 
-public class TestDefaultPooledObjectInfo {
+class TestDefaultPooledObjectInfo {
 
     @Test
     void testGetLastBorrowTrace() throws Exception {

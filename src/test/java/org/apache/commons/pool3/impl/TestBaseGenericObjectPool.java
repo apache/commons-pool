@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Timeout;
 
 /**
  */
-public class TestBaseGenericObjectPool {
+class TestBaseGenericObjectPool {
 
     BaseGenericObjectPool<String, TestException> pool;
     SimpleFactory factory;

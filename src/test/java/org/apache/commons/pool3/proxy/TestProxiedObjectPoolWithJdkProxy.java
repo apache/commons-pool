@@ -19,7 +19,7 @@ package org.apache.commons.pool3.proxy;
 
 import java.lang.reflect.UndeclaredThrowableException;
 
-public class TestProxiedObjectPoolWithJdkProxy extends AbstractTestProxiedObjectPool {
+class TestProxiedObjectPoolWithJdkProxy extends AbstractTestProxiedObjectPool {
 
     @Override
     protected ProxySource<TestObject> getProxySource(boolean unwrapInvocationTargetException) {

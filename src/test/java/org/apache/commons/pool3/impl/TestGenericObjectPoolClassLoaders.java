@@ -26,7 +26,7 @@ import org.apache.commons.pool3.BasePooledObjectFactory;
 import org.apache.commons.pool3.PooledObject;
 import org.junit.jupiter.api.Test;
 
-public class TestGenericObjectPoolClassLoaders {
+class TestGenericObjectPoolClassLoaders {
 
     private static final class CustomClassLoader extends URLClassLoader {
         private final int n;

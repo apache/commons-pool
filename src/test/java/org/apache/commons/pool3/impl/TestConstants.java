@@ -22,7 +22,7 @@ import java.time.Duration;
 /**
  * Constants used in tests.
  */
-public class TestConstants {
+class TestConstants {
 
     /**
      * A duration of one second.

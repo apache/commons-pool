@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Timeout;
 /**
  * Tests POOL-340.
  */
-public class TestGenericObjectPoolFactoryCreateFailure {
+class TestGenericObjectPoolFactoryCreateFailure {
 
     private static final class SingleObjectFactory extends BasePooledObjectFactory<Object, Exception> {
         private final AtomicBoolean created = new AtomicBoolean();

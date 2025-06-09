@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests {@link DefaultPooledObject}.
  */
-public class TestDefaultPooledObject {
+class TestDefaultPooledObject {
 
     /**
      * JIRA: POOL-279

@@ -113,7 +113,7 @@ final class PooledTestObject implements TrackedUse {
 /**
  * TestCase for AbandonedObjectPool
  */
-public class TestAbandonedObjectPool {
+class TestAbandonedObjectPool {
 
     private final class ConcurrentBorrower extends Thread {
         private final ArrayList<PooledTestObject> borrowed;
