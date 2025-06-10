@@ -591,7 +591,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
         }
 
         createdCount.incrementAndGet();
-        allObjects.put(new IdentityWrapper<>(p.getObject()), p);
+        allObjects.put(IdentityWrapper.unwrap(p), p);
         return p;
     }
 
