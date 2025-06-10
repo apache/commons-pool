@@ -1059,7 +1059,8 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         config.setMaxTotalPerKey(1);
         config.setMaxTotal(1);
         config.setMaxWait(Duration.ofMillis(500));
-        final GenericKeyedObjectPool<Integer, Integer> testPool = new GenericKeyedObjectPool<>(new KeyedPooledObjectFactory<Integer, Integer>() {
+        try (GenericKeyedObjectPool<Integer, Integer> testPool = new GenericKeyedObjectPool<>(new KeyedPooledObjectFactory<Integer, Integer>() {
+
             @Override
             public void activateObject(final Integer key, final PooledObject<Integer> p) {
                 // do nothing
@@ -1084,35 +1085,36 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
             public boolean validateObject(final Integer key, final PooledObject<Integer> p) {
                 return true;
             }
-        }, config);
-        final Integer borrowKey = 10;
-        final int iterations = 100;
-        final ExecutorService executor = Executors.newFixedThreadPool(2);
-        final Thread t = new Thread(() -> {
-            try {
-                for (int i = 0; i < iterations; i++) {
-                    final Integer integer = testPool.borrowObject(borrowKey);
-                    testPool.returnObject(borrowKey, integer);
-                    Thread.sleep(10);
+        }, config)) {
+            final Integer borrowKey = 10;
+            final int iterations = 100;
+            final ExecutorService executor = Executors.newFixedThreadPool(2);
+            final Thread t = new Thread(() -> {
+                try {
+                    for (int i = 0; i < iterations; i++) {
+                        final Integer integer = testPool.borrowObject(borrowKey);
+                        testPool.returnObject(borrowKey, integer);
+                        Thread.sleep(10);
+                    }
+                } catch (final Exception e) {
+                    fail(e);
                 }
-            } catch (final Exception e) {
-                fail(e);
-            }
-        });
-        final Thread t2 = new Thread(() -> {
-            try {
-                for (int i = 0; i < iterations; i++) {
-                    testPool.clear(borrowKey);
-                    Thread.sleep(10);
+            });
+            final Thread t2 = new Thread(() -> {
+                try {
+                    for (int i = 0; i < iterations; i++) {
+                        testPool.clear(borrowKey);
+                        Thread.sleep(10);
+                    }
+                } catch (final Exception e) {
+                    fail(e);
                 }
-            } catch (final Exception e) {
-                fail(e);
-            }
-        });
-        final Future<?> f1 = executor.submit(t);
-        final Future<?> f2 = executor.submit(t2);
-        f2.get();
-        f1.get();
+            });
+            final Future<?> f1 = executor.submit(t);
+            final Future<?> f2 = executor.submit(t2);
+            f2.get();
+            f1.get();
+        }
     }
 
     // POOL-259
