@@ -2108,7 +2108,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
     void testMaxWaitTimeOutOnTime() throws Exception {
         final Duration maxWaitDuration = Duration.ofSeconds(1);
         final SimpleFactory<String> factory = new SimpleFactory<>();
-        factory.makeLatency = 500;
+        factory.setMakeLatency(500);
         factory.setValidationEnabled(true); // turn on factory-level validation
         factory.setValid(false); // make validation fail uniformly
         try (GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<>(factory)) {
