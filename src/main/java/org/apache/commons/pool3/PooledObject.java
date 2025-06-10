@@ -45,6 +45,17 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     }
 
     /**
+     * Tests whether the given PooledObject isn't null <em>and</em> doesn't wraps a null.
+     *
+     * @param pooledObject the PooledObject to test.
+     * @return whether the given PooledObject isn't null <em>and</em> doesn't wraps a null.
+     * @since 2.13.0
+     */
+    static boolean nonNull(final PooledObject<?> pooledObject) {
+        return pooledObject != null && pooledObject.getObject() != null;
+    }
+
+    /**
      * Allocates the object.
      *
      * @return {@code true} if the original state was {@link PooledObjectState#IDLE IDLE}

@@ -413,7 +413,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
         final MakeEvent makeEvent = new MakeEvent();
         try {
             final PooledObject<T> obj = factory.makeObject();
-            makeEvent.setSuccess(!PooledObject.isNull(obj));
+            makeEvent.setSuccess(PooledObject.nonNull(obj));
             return obj;
         } catch (final Throwable t) {
             makeEvent.setSuccess(false);

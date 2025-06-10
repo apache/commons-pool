@@ -193,7 +193,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
      * @throws E If the factory fails to passivate the object
      */
     private void addIdleObject(final PooledObject<T> p) throws E {
-        if (!PooledObject.isNull(p)) {
+        if (PooledObject.nonNull(p)) {
             factory.passivateObject(p);
             if (getLifo()) {
                 idleObjects.addFirst(p);
@@ -303,7 +303,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
             p = idleObjects.pollFirst();
             if (p == null) {
                 p = create(remainingWaitDuration);
-                if (!PooledObject.isNull(p)) {
+                if (PooledObject.nonNull(p)) {
                     create = true;
                 }
             }
