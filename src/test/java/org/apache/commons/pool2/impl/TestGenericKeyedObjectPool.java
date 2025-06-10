@@ -318,7 +318,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         public void run() {
                 try {
                     pool.returnObject(key, pool.borrowObject(key));
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     // Ignore
                 }
         }
@@ -2120,7 +2120,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
             // Then we will wait on the pool.
             try {
                 pool.borrowObject("a");
-            } catch (NoSuchElementException ex) {
+            } catch (final NoSuchElementException ex) {
                 // expected
             }
             // Should have timed out after 1000 ms from the start time
