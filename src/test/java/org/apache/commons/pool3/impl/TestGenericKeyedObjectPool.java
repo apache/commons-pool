@@ -73,7 +73,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 
 /**
  */
-public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
+class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     private static final class DaemonThreadFactory implements ThreadFactory {
         @Override
@@ -179,11 +179,11 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
         boolean exceptionOnCreate;
 
-        public SimpleFactory() {
+        SimpleFactory() {
             this(true);
         }
 
-        public SimpleFactory(final boolean valid) {
+        SimpleFactory(final boolean valid) {
             this.valid = valid;
         }
 
@@ -885,7 +885,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
     }
 
     @Test
-    public void testAppendStats() {
+    void testAppendStats() {
         assertFalse(gkoPool.getMessageStatistics());
         assertEquals("foo", gkoPool.appendStats("foo"));
         try (GenericKeyedObjectPool<?, ?, TestException> pool = new GenericKeyedObjectPool<>(new SimpleFactory<>())) {
@@ -898,7 +898,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testBlockedKeyDoesNotBlockPool() throws Exception {
+    void testBlockedKeyDoesNotBlockPool() throws Exception {
         gkoPool.setBlockWhenExhausted(true);
         gkoPool.setMaxWait(Duration.ofMillis(5000));
         gkoPool.setMaxTotalPerKey(1);
@@ -929,7 +929,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
     @SuppressWarnings("rawtypes")
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testBorrowObjectFairness() throws Exception {
+    void testBorrowObjectFairness() throws Exception {
 
         final int numThreads = 40;
         final int maxTotal = 40;
@@ -981,7 +981,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
      */
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testClear() throws Exception {
+    void testClear() throws Exception {
         gkoPool.setMaxTotal(2);
         gkoPool.setMaxTotalPerKey(2);
         gkoPool.setBlockWhenExhausted(false);
@@ -1010,7 +1010,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
      */
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testClearOldest() throws Exception {
+    void testClearOldest() throws Exception {
         // Make destroy have some latency so clearOldest takes some time
         final WaiterFactory<String> waiterFactory = new WaiterFactory<>(0, 20, 0, 0, 0, 0, 50, 5, 0);
         try (GenericKeyedObjectPool<String, Waiter, RuntimeException> waiterPool = new GenericKeyedObjectPool<>(waiterFactory)) {
@@ -1045,7 +1045,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
      * @throws Exception May occur in some failure modes
      */
     @Test
-    public void testClearReuseCapacity() throws Exception {
+    void testClearReuseCapacity() throws Exception {
         gkoPool.setMaxTotalPerKey(6);
         gkoPool.setMaxTotal(6);
         gkoPool.setMaxWait(Duration.ofSeconds(5));
@@ -1097,7 +1097,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
      */
     @Test
     @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS)
-    public void testClearUnblocksWaiters() throws Exception {
+    void testClearUnblocksWaiters() throws Exception {
         final GenericKeyedObjectPoolConfig<Integer> config = new GenericKeyedObjectPoolConfig<>();
         config.setMaxTotalPerKey(1);
         config.setMaxTotal(1);
@@ -1162,7 +1162,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     // POOL-259
     @Test
-    public void testClientWaitStats() throws TestException {
+    void testClientWaitStats() throws TestException {
         final SimpleFactory<String> factory = new SimpleFactory<>();
         // Give makeObject a little latency
         factory.setMakeLatency(200);
@@ -1187,7 +1187,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
      * @throws TestException a test failure.
      */
     @Test
-    public void testConcurrentBorrowAndClear() throws TestException {
+    void testConcurrentBorrowAndClear() throws TestException {
         final int threadCount = 64;
         final int taskCount = 64;
         final int addCount = 1;
@@ -1267,7 +1267,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
      * @throws TestException a test failure.
      */
     @Test
-    public void testConcurrentBorrowAndClear_JiraComment17741156() throws TestException {
+    void testConcurrentBorrowAndClear_JiraComment17741156() throws TestException {
         final int threadCount = 2;
         final int taskCount = 2;
         final int addCount = 1;
@@ -1284,7 +1284,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
      * @throws Exception May occur in some failure modes
      */
     @Test
-    public void testConcurrentInvalidate() throws Exception {
+    void testConcurrentInvalidate() throws Exception {
         // Get allObjects and idleObjects loaded with some instances
         final int nObjects = 1000;
         final String key = "one";
@@ -1333,7 +1333,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
     }
 
     @Test
-    public void testConstructorNullFactory() {
+    void testConstructorNullFactory() {
         // add dummy assert (won't be invoked because of IAE) to avoid "unused" warning
         assertThrows(IllegalArgumentException.class, () -> new GenericKeyedObjectPool<>(null));
     }
@@ -1341,7 +1341,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
     @SuppressWarnings("deprecation")
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testConstructors() {
+    void testConstructors() {
 
         // Make constructor arguments all different from defaults
         final int maxTotalPerKey = 1;
@@ -1415,7 +1415,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
      * JIRA: POOL-270 - make sure constructor correctly sets run frequency of evictor timer.
      */
     @Test
-    public void testContructorEvictionConfig() throws TestException {
+    void testContructorEvictionConfig() throws TestException {
         final GenericKeyedObjectPoolConfig<String> config = new GenericKeyedObjectPoolConfig<>();
         config.setDurationBetweenEvictionRuns(Duration.ofMillis(500));
         config.setMinEvictableIdleDuration(Duration.ofMillis(50));
@@ -1437,7 +1437,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
      * JIRA: POOL-283
      */
     @Test
-    public void testEqualsIndiscernible() throws Exception {
+    void testEqualsIndiscernible() throws Exception {
         final HashSetFactory factory = new HashSetFactory();
         try (GenericKeyedObjectPool<String, HashSet<String>, RuntimeException> pool = new GenericKeyedObjectPool<>(factory,
                 new GenericKeyedObjectPoolConfig<>())) {
@@ -1450,7 +1450,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testEviction() throws Exception {
+    void testEviction() throws Exception {
         gkoPool.setMaxIdlePerKey(500);
         gkoPool.setMaxTotalPerKey(500);
         gkoPool.setNumTestsPerEvictionRun(100);
@@ -1501,7 +1501,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testEviction2() throws Exception {
+    void testEviction2() throws Exception {
         gkoPool.setMaxIdlePerKey(500);
         gkoPool.setMaxTotalPerKey(500);
         gkoPool.setNumTestsPerEvictionRun(100);
@@ -1553,14 +1553,14 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
      */
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testEvictionOrder() throws Exception {
+    void testEvictionOrder() throws Exception {
         checkEvictionOrder(false);
         checkEvictionOrder(true);
     }
 
     // POOL-326
     @Test
-    public void testEvictorClearOldestRace() throws Exception {
+    void testEvictorClearOldestRace() throws Exception {
         gkoPool.setMinEvictableIdleDuration(Duration.ofMillis(100));
         gkoPool.setNumTestsPerEvictionRun(1);
 
@@ -1598,14 +1598,14 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
      */
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testEvictorVisiting() throws Exception {
+    void testEvictorVisiting() throws Exception {
         checkEvictorVisiting(true);
         checkEvictorVisiting(false);
     }
 
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testExceptionInValidationDuringEviction() throws Exception {
+    void testExceptionInValidationDuringEviction() throws Exception {
         gkoPool.setMaxIdlePerKey(1);
         gkoPool.setMinEvictableIdleDuration(Duration.ZERO);
         gkoPool.setTestWhileIdle(true);
@@ -1621,7 +1621,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testExceptionOnActivateDuringBorrow() throws Exception {
+    void testExceptionOnActivateDuringBorrow() throws Exception {
         final String obj1 = gkoPool.borrowObject("one");
         final String obj2 = gkoPool.borrowObject("one");
         gkoPool.returnObject("one", obj1);
@@ -1649,7 +1649,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testExceptionOnDestroyDuringBorrow() throws Exception {
+    void testExceptionOnDestroyDuringBorrow() throws Exception {
         simpleFactory.setThrowExceptionOnDestroy(true);
         simpleFactory.setValidationEnabled(true);
         gkoPool.setTestOnBorrow(true);
@@ -1664,7 +1664,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testExceptionOnDestroyDuringReturn() throws Exception {
+    void testExceptionOnDestroyDuringReturn() throws Exception {
         simpleFactory.setThrowExceptionOnDestroy(true);
         simpleFactory.setValidationEnabled(true);
         gkoPool.setTestOnReturn(true);
@@ -1680,7 +1680,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testExceptionOnPassivateDuringReturn() throws Exception {
+    void testExceptionOnPassivateDuringReturn() throws Exception {
         final String obj = gkoPool.borrowObject("one");
         simpleFactory.setThrowExceptionOnPassivate(true);
         gkoPool.returnObject("one", obj);
@@ -1690,7 +1690,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testFIFO() throws Exception {
+    void testFIFO() throws Exception {
         gkoPool.setLifo(false);
         final String key = "key";
         gkoPool.addObject(key); // "key0"
@@ -1708,7 +1708,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     @Test
     @Timeout(value = 60, unit = TimeUnit.SECONDS)
-    public void testGetKeys() throws Exception {
+    void testGetKeys() throws Exception {
         gkoPool.addObject("one");
         assertEquals(1, gkoPool.getKeys().size());
         gkoPool.addObject("two");
@@ -1720,7 +1720,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
     }
 
     @Test
-    public void testGetStatsString() {
+    void testGetStatsString() {
         assertNotNull(gkoPool.getStatsString());
     }
 
@@ -1733,7 +1733,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
      * @throws Exception May occur in some failure modes
      */
     @Test
-    public void testInvalidateFreesCapacity() throws TestException, InterruptedException {
+    void testInvalidateFreesCapacity() throws TestException, InterruptedException {
         final SimpleFactory<String> factory = new SimpleFactory<>();
         try (GenericKeyedObjectPool<String, String, TestException> pool = new GenericKeyedObjectPool<>(factory)) {
             pool.setMaxTotalPerKey(2);
@@ -1757,7 +1757,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
     }
 
     @Test
-    public void testInvalidateFreesCapacityForOtherKeys() throws Exception {
+    void testInvalidateFreesCapacityForOtherKeys() throws Exception {
         gkoPool.setMaxTotal(1);
         gkoPool.setMaxWait(Duration.ofMillis(500));
         final Thread borrower = new Thread(new SimpleTestThread<>(gkoPool, "two"));
@@ -1770,13 +1770,13 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
     }
 
     @Test
-    public void testInvalidateMissingKey() throws Exception {
+    void testInvalidateMissingKey() throws Exception {
         assertThrows(IllegalStateException.class, () -> gkoPool.invalidateObject("UnknownKey", "Ignored"));
     }
 
     @ParameterizedTest
     @EnumSource(DestroyMode.class)
-    public void testInvalidateMissingKeyForDestroyMode(final DestroyMode destroyMode) throws Exception {
+    void testInvalidateMissingKeyForDestroyMode(final DestroyMode destroyMode) throws Exception {
         assertThrows(IllegalStateException.class, () -> gkoPool.invalidateObject("UnknownKey", "Ignored", destroyMode));
     }
 
@@ -1789,7 +1789,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
      * @throws Exception May occur in some failure modes
      */
     @Test
-    public void testInvalidateWaiting() throws Exception {
+    void testInvalidateWaiting() throws Exception {
         final GenericKeyedObjectPoolConfig<Object> config = new GenericKeyedObjectPoolConfig<>();
         config.setMaxTotal(2);
         config.setBlockWhenExhausted(true);
@@ -1846,7 +1846,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
      */
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testJmxRegistration() {
+    void testJmxRegistration() {
         final ObjectName oname = gkoPool.getJmxName();
         final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         final Set<ObjectName> result = mbs.queryNames(oname, null);
@@ -1855,7 +1855,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testLIFO() throws Exception {
+    void testLIFO() throws Exception {
         gkoPool.setLifo(true);
         final String key = "key";
         gkoPool.addObject(key); // "key0"
@@ -1879,7 +1879,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
      */
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testLivenessPerKey() throws Exception {
+    void testLivenessPerKey() throws Exception {
         gkoPool.setMaxIdlePerKey(3);
         gkoPool.setMaxTotal(3);
         gkoPool.setMaxTotalPerKey(3);
@@ -1906,7 +1906,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
      * @throws Exception May occur in some failure modes
      */
     @Test
-    public void testMakeObjectException() throws Exception {
+    void testMakeObjectException() throws Exception {
         final SimpleFactory<String> factory = new SimpleFactory<>();
         try (GenericKeyedObjectPool<String, String, TestException> pool = new GenericKeyedObjectPool<>(factory)) {
             pool.setMaxTotalPerKey(1);
@@ -1923,7 +1923,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
      */
     @Test
     @Timeout(value = 200000, unit = TimeUnit.MILLISECONDS)
-    public void testMaxActivePerKeyExceeded() {
+    void testMaxActivePerKeyExceeded() {
         final WaiterFactory<String> waiterFactory = new WaiterFactory<>(0, 20, 0, 0, 0, 0, 8, 5, 0);
         // TODO Fix this. Can't use local pool since runTestThreads uses the
         // protected pool field
@@ -1939,7 +1939,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testMaxIdle() throws Exception {
+    void testMaxIdle() throws Exception {
         gkoPool.setMaxTotalPerKey(100);
         gkoPool.setMaxIdlePerKey(8);
         final String[] active = new String[100];
@@ -1975,7 +1975,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testMaxTotal() throws Exception {
+    void testMaxTotal() throws Exception {
         gkoPool.setMaxTotalPerKey(2);
         gkoPool.setMaxTotal(3);
         gkoPool.setBlockWhenExhausted(false);
@@ -2018,7 +2018,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
      */
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testMaxTotalInvariant() {
+    void testMaxTotalInvariant() {
         final int maxTotal = 15;
         simpleFactory.setEvenValid(false);     // Every other validation fails
         simpleFactory.setDestroyLatency(100);  // Destroy takes 100 ms
@@ -2033,7 +2033,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testMaxTotalLRU() throws Exception {
+    void testMaxTotalLRU() throws Exception {
         gkoPool.setMaxTotalPerKey(2);
         gkoPool.setMaxTotal(3);
 
@@ -2084,7 +2084,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testMaxTotalPerKey() throws Exception {
+    void testMaxTotalPerKey() throws Exception {
         gkoPool.setMaxTotalPerKey(3);
         gkoPool.setBlockWhenExhausted(false);
 
@@ -2096,7 +2096,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testMaxTotalPerKeyZero() {
+    void testMaxTotalPerKeyZero() {
         gkoPool.setMaxTotalPerKey(0);
         gkoPool.setBlockWhenExhausted(false);
 
@@ -2110,7 +2110,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
      * JIRA: POOL-310
      */
     @Test
-    public void testMaxTotalWithThreads() throws Exception {
+    void testMaxTotalWithThreads() throws Exception {
 
         gkoPool.setMaxTotalPerKey(2);
         gkoPool.setMaxTotal(1);
@@ -2146,7 +2146,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testMaxTotalZero() {
+    void testMaxTotalZero() {
         gkoPool.setMaxTotal(0);
         gkoPool.setBlockWhenExhausted(false);
 
@@ -2163,7 +2163,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
      */
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testMaxWaitMultiThreaded() throws Exception {
+    void testMaxWaitMultiThreaded() throws Exception {
         final long maxWait = 500; // wait for connection
         final long holdTime = 4 * maxWait; // how long to hold connection
         final int keyCount = 4; // number of different keys
@@ -2213,7 +2213,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testMinIdle() throws Exception {
+    void testMinIdle() throws Exception {
         gkoPool.setMaxIdlePerKey(500);
         gkoPool.setMinIdlePerKey(5);
         gkoPool.setMaxTotalPerKey(10);
@@ -2253,7 +2253,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testMinIdleMaxTotalPerKey() throws Exception {
+    void testMinIdleMaxTotalPerKey() throws Exception {
         gkoPool.setMaxIdlePerKey(500);
         gkoPool.setMinIdlePerKey(5);
         gkoPool.setMaxTotalPerKey(10);
@@ -2306,7 +2306,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testMinIdleNoPreparePool() throws Exception {
+    void testMinIdleNoPreparePool() throws Exception {
         gkoPool.setMaxIdlePerKey(500);
         gkoPool.setMinIdlePerKey(5);
         gkoPool.setMaxTotalPerKey(10);
@@ -2335,7 +2335,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
      * JIRA: POOL-285
      */
     @Test
-    public void testMultipleReturn() throws Exception {
+    void testMultipleReturn() throws Exception {
         final WaiterFactory<String> factory = new WaiterFactory<>(0, 0, 0, 0, 0, 0);
         try (GenericKeyedObjectPool<String, Waiter, RuntimeException> pool = new GenericKeyedObjectPool<>(factory)) {
             pool.setTestOnReturn(true);
@@ -2361,7 +2361,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
      * JIRA: POOL-284
      */
     @Test
-    public void testMutable() throws Exception {
+    void testMutable() throws Exception {
         final HashSetFactory factory = new HashSetFactory();
         try (GenericKeyedObjectPool<String, HashSet<String>, RuntimeException> pool = new GenericKeyedObjectPool<>(factory,
                 new GenericKeyedObjectPoolConfig<>())) {
@@ -2376,7 +2376,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testNegativeMaxTotalPerKey() throws Exception {
+    void testNegativeMaxTotalPerKey() throws Exception {
         gkoPool.setMaxTotalPerKey(-1);
         gkoPool.setBlockWhenExhausted(false);
         final String obj = gkoPool.borrowObject("");
@@ -2389,7 +2389,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
      */
     @Test
     @Timeout(value = 1000, unit = TimeUnit.MILLISECONDS)
-    public void testNPEOnFactoryNull() {
+    void testNPEOnFactoryNull() {
         // @formatter:off
         final DisconnectingWaiterFactory<String> factory = new DisconnectingWaiterFactory<>(
             () -> null,  // Override default to always return null from makeObject
@@ -2412,7 +2412,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testNumActiveNumIdle2() throws Exception {
+    void testNumActiveNumIdle2() throws Exception {
         assertEquals(0, gkoPool.getNumActive());
         assertEquals(0, gkoPool.getNumIdle());
         assertEquals(0, gkoPool.getNumActive("A"));
@@ -2462,7 +2462,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
     }
 
     @Test
-    public void testReturnObjectThrowsIllegalStateException() {
+    void testReturnObjectThrowsIllegalStateException() {
         try (GenericKeyedObjectPool<String, String, TestException> pool = new GenericKeyedObjectPool<>(new SimpleFactory<>())) {
             assertThrows(IllegalStateException.class,
                     () ->  pool.returnObject("Foo", "Bar"));
@@ -2470,7 +2470,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
     }
 
     @Test
-    public void testReturnObjectWithBlockWhenExhausted() throws Exception {
+    void testReturnObjectWithBlockWhenExhausted() throws Exception {
         gkoPool.setBlockWhenExhausted(true);
         gkoPool.setMaxTotal(1);
 
@@ -2490,7 +2490,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
     }
 
     @Test
-    public void testReturnObjectWithoutBlockWhenExhausted() throws Exception {
+    void testReturnObjectWithoutBlockWhenExhausted() throws Exception {
         gkoPool.setBlockWhenExhausted(false);
 
         // Test return object with no take waiters
@@ -2507,7 +2507,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
      * Test creates the scenario described in POOL-287.
      */
     @Test
-    public void testReturnToHead() throws Exception {
+    void testReturnToHead() throws Exception {
         final SimpleFactory<String> factory = new SimpleFactory<>();
         factory.setValidateLatency(100);
         factory.setValid(true); // Validation always succeeds
@@ -2538,7 +2538,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testSettersAndGetters() {
+    void testSettersAndGetters() {
         {
             gkoPool.setMaxTotalPerKey(123);
             assertEquals(123, gkoPool.getMaxTotalPerKey());
@@ -2591,7 +2591,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testThreaded1() {
+    void testThreaded1() {
         gkoPool.setMaxTotalPerKey(15);
         gkoPool.setMaxIdlePerKey(15);
         gkoPool.setMaxWait(Duration.ofMillis(1000));
@@ -2600,7 +2600,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     // Pool-361
     @Test
-    public void testValidateOnCreate() throws Exception {
+    void testValidateOnCreate() throws Exception {
         gkoPool.setTestOnCreate(true);
         simpleFactory.setValidationEnabled(true);
         gkoPool.addObject("one");
@@ -2608,7 +2608,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
     }
 
     @Test
-    public void testValidateOnCreateFailure() throws Exception {
+    void testValidateOnCreateFailure() throws Exception {
         gkoPool.setTestOnCreate(true);
         gkoPool.setTestOnBorrow(false);
         gkoPool.setMaxTotal(2);
@@ -2637,7 +2637,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
      * @throws Exception May occur in some failure modes
      */
     @Test
-    public void testValidationFailureOnReturnFreesCapacity()
+    void testValidationFailureOnReturnFreesCapacity()
             throws Exception {
         final SimpleFactory<String> factory = new SimpleFactory<>();
         factory.setValid(false); // Validate will always fail
@@ -2662,7 +2662,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     // POOL-276
     @Test
-    public void testValidationOnCreateOnly() throws Exception {
+    void testValidationOnCreateOnly() throws Exception {
         simpleFactory.enableValidation = true;
 
         gkoPool.setMaxTotal(1);
@@ -2695,7 +2695,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
      */
     @Test
     @Timeout(value = 60_000, unit = TimeUnit.MILLISECONDS)
-    public void testWhenExhaustedBlockClosePool() throws Exception {
+    void testWhenExhaustedBlockClosePool() throws Exception {
         gkoPool.setMaxTotalPerKey(1);
         gkoPool.setBlockWhenExhausted(true);
         gkoPool.setMaxWait(Duration.ofMillis(-1));

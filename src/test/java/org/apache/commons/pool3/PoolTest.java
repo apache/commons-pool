@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 @Disabled
-public class PoolTest {
+class PoolTest {
 
     private static final class Foo {
     }
@@ -72,7 +72,7 @@ public class PoolTest {
     private static final Duration EVICTION_DURATION = Duration.ofMillis(100);
 
     @Test
-    public void testPool() {
+    void testPool() {
         final GenericObjectPoolConfig<Foo> poolConfig = new GenericObjectPoolConfig<>();
         poolConfig.setTestWhileIdle(true /* testWhileIdle */);
         final PooledFooFactory pooledFooFactory = new PooledFooFactory();

@@ -107,7 +107,7 @@ public abstract class AbstractTestProxiedKeyedObjectPool {
     }
 
     @Test
-    public void testAccessAfterInvalidate() {
+    void testAccessAfterInvalidate() {
         final TestObject obj = pool.borrowObject(KEY1);
         assertNotNull(obj);
 
@@ -125,7 +125,7 @@ public abstract class AbstractTestProxiedKeyedObjectPool {
     }
 
     @Test
-    public void testAccessAfterReturn() {
+    void testAccessAfterReturn() {
         final TestObject obj = pool.borrowObject(KEY1);
         assertNotNull(obj);
 
@@ -141,7 +141,7 @@ public abstract class AbstractTestProxiedKeyedObjectPool {
     }
 
     @Test
-    public void testBorrowObject() {
+    void testBorrowObject() {
         final TestObject obj = pool.borrowObject(KEY1);
         assertNotNull(obj);
 
@@ -153,7 +153,7 @@ public abstract class AbstractTestProxiedKeyedObjectPool {
     }
 
     @Test
-    public void testPassThroughMethods01() {
+    void testPassThroughMethods01() {
         assertEquals(0, pool.getNumActive());
         assertEquals(0, pool.getNumIdle());
 
@@ -169,14 +169,14 @@ public abstract class AbstractTestProxiedKeyedObjectPool {
     }
 
     @Test
-    public void testPassThroughMethods02() {
+    void testPassThroughMethods02() {
         pool.close();
         assertThrows(IllegalStateException.class,
                 () -> pool.addObject(KEY1));
     }
 
     @Test
-    public void testUsageTracking() throws InterruptedException {
+    void testUsageTracking() throws InterruptedException {
         final TestObject obj = pool.borrowObject(KEY1);
         assertNotNull(obj);
 

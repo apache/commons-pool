@@ -16,7 +16,7 @@
  */
 package org.apache.commons.pool3.proxy;
 
-public class TestProxiedKeyedObjectPoolWithJdkProxy
+class TestProxiedKeyedObjectPoolWithJdkProxy
         extends AbstractTestProxiedKeyedObjectPool {
 
     @Override

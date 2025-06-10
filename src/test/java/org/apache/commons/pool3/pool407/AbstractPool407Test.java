@@ -27,7 +27,7 @@ import org.apache.commons.pool3.PooledObject;
 /**
  * Tests POOL-407.
  */
-public class AbstractPool407Test {
+class AbstractPool407Test {
 
     protected <T> void assertShutdown(final boolean termination, final Duration poolConfigMaxWait, final T obj, final PooledObject<T> pooledObject) {
         if (pooledObject != null) {

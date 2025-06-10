@@ -31,7 +31,7 @@ import org.apache.commons.pool3.impl.GenericObjectPool;
 /**
  * Multi-thread performance test
  */
-public class PerformanceTest {
+class PerformanceTest {
 
     final class PerfTask implements Callable<TaskStats> {
         final TaskStats taskStats = new TaskStats();

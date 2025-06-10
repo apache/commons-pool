@@ -32,10 +32,10 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests for {@link EvictionTimer}.
  */
-public class TestEvictionTimer {
+class TestEvictionTimer {
 
     @Test
-    public void testStartStopEvictionTimer() throws Exception {
+    void testStartStopEvictionTimer() throws Exception {
 
         try (GenericObjectPool<String, RuntimeException> pool = new GenericObjectPool<>(new BasePooledObjectFactory<String, RuntimeException>() {
 

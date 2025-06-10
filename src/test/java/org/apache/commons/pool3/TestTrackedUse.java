@@ -23,7 +23,7 @@ import java.time.Instant;
 
 import org.junit.jupiter.api.Test;
 
-public class TestTrackedUse {
+class TestTrackedUse {
 
     final class DefaultTrackedUse implements TrackedUse {
 
@@ -35,7 +35,7 @@ public class TestTrackedUse {
     }
 
     @Test
-    public void testDefaultGetLastUsedInstant() {
+    void testDefaultGetLastUsedInstant() {
         assertEquals(Instant.ofEpochMilli(1), new DefaultTrackedUse().getLastUsedInstant());
     }
 }

@@ -26,10 +26,10 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests for {@link EvictionConfig}.
  */
-public class TestEvictionConfig {
+class TestEvictionConfig {
 
     @Test
-    public void testConstructor1s() {
+    void testConstructor1s() {
         final EvictionConfig config = new EvictionConfig(Duration.ofMillis(1), Duration.ofMillis(1), 1);
         assertEquals(1, config.getIdleEvictDuration().toMillis());
         assertEquals(1, config.getIdleSoftEvictDuration().toMillis());
@@ -39,7 +39,7 @@ public class TestEvictionConfig {
     }
 
     @Test
-    public void testConstructorZerosDurations() {
+    void testConstructorZerosDurations() {
         final EvictionConfig config = new EvictionConfig(Duration.ZERO, Duration.ZERO, 0);
         assertEquals(Long.MAX_VALUE, config.getIdleEvictDuration().toMillis());
         assertEquals(Long.MAX_VALUE, config.getIdleSoftEvictDuration().toMillis());

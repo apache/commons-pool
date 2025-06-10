@@ -19,7 +19,7 @@ package org.apache.commons.pool3.proxy;
 
 import java.lang.reflect.InvocationTargetException;
 
-public class TestProxiedObjectPoolWithCglibProxy extends AbstractTestProxiedObjectPool {
+class TestProxiedObjectPoolWithCglibProxy extends AbstractTestProxiedObjectPool {
 
     @Override
     protected Class<? extends Throwable> getInvocationTargetExceptionType() {

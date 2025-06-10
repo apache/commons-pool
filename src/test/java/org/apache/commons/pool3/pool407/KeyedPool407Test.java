@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests POOL-407.
  */
-public class KeyedPool407Test extends AbstractPool407Test {
+class KeyedPool407Test extends AbstractPool407Test {
 
     /**
      * Borrows from a pool and then immediately returns to that a pool.
@@ -83,37 +83,37 @@ public class KeyedPool407Test extends AbstractPool407Test {
     }
 
     @Test
-    public void testNormalFactoryNonNullFixtureWaitMax() throws InterruptedException {
+    void testNormalFactoryNonNullFixtureWaitMax() throws InterruptedException {
         test(new KeyedPool407NormalFactory(new KeyedPool407Fixture()), Pool407Constants.POOL_SIZE, Pool407Constants.WAIT_FOREVER);
     }
 
     @Disabled
     @Test
-    public void testNormalFactoryNullFixtureWaitMax() throws InterruptedException {
+    void testNormalFactoryNullFixtureWaitMax() throws InterruptedException {
         test(new KeyedPool407NormalFactory(null), Pool407Constants.POOL_SIZE, Pool407Constants.WAIT_FOREVER);
     }
 
     @Disabled
     @Test
-    public void testNullObjectFactoryWaitMax() throws InterruptedException {
+    void testNullObjectFactoryWaitMax() throws InterruptedException {
         test(new KeyedPool407NullObjectFactory(), Pool407Constants.POOL_SIZE, Pool407Constants.WAIT_FOREVER);
     }
 
     @Disabled
     @Test
-    public void testNullObjectFactoryWaitShort() throws InterruptedException {
+    void testNullObjectFactoryWaitShort() throws InterruptedException {
         test(new KeyedPool407NullObjectFactory(), Pool407Constants.POOL_SIZE, Pool407Constants.WAIT_SHORT);
     }
 
     @Disabled
     @Test
-    public void testNullPoolableFactoryWaitMax() throws InterruptedException {
+    void testNullPoolableFactoryWaitMax() throws InterruptedException {
         test(new KeyedPool407NullPoolableObjectFactory(), Pool407Constants.POOL_SIZE, Pool407Constants.WAIT_FOREVER);
     }
 
     @Disabled
     @Test
-    public void testNullPoolableFactoryWaitShort() throws InterruptedException {
+    void testNullPoolableFactoryWaitShort() throws InterruptedException {
         test(new KeyedPool407NullPoolableObjectFactory(), Pool407Constants.POOL_SIZE, Pool407Constants.WAIT_SHORT);
     }
 }

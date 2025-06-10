@@ -32,12 +32,14 @@ import org.junit.jupiter.api.Test;
 
 /**
  */
-public class TestSoftRefOutOfMemory {
+class TestSoftRefOutOfMemory {
+
     public static class LargePoolableObjectFactory extends BasePooledObjectFactory<String, RuntimeException> {
+
         private final String buffer;
         private int counter;
 
-        public LargePoolableObjectFactory(final int size) {
+        LargePoolableObjectFactory(final int size) {
             final char[] data = new char[size];
             Arrays.fill(data, '.');
             buffer = new String(data);
@@ -135,7 +137,7 @@ public class TestSoftRefOutOfMemory {
     }
 
     @Test
-    public void testOutOfMemory() throws Exception {
+    void testOutOfMemory() throws Exception {
         pool = new SoftReferenceObjectPool<>(new SmallPoolableObjectFactory());
 
         String obj = pool.borrowObject();
@@ -171,7 +173,7 @@ public class TestSoftRefOutOfMemory {
     }
 
     @Test
-    public void testOutOfMemory1000() throws Exception {
+    void testOutOfMemory1000() throws Exception {
         pool = new SoftReferenceObjectPool<>(new SmallPoolableObjectFactory());
 
         for (int i = 0 ; i < 1000 ; i++) {
@@ -216,7 +218,7 @@ public class TestSoftRefOutOfMemory {
      * @throws Exception May occur in some failure modes
      */
     @Test
-    public void testOutOfMemoryError() throws Exception {
+    void testOutOfMemoryError() throws Exception {
         pool = new SoftReferenceObjectPool<>(new OomeFactory(OomeTrigger.CREATE));
         assertThrows(OutOfMemoryError.class, pool::borrowObject);
         pool.close();
@@ -231,7 +233,7 @@ public class TestSoftRefOutOfMemory {
     }
 
     @Test
-    public void testOutOfMemoryLarge() throws Exception {
+    void testOutOfMemoryLarge() throws Exception {
         pool = new SoftReferenceObjectPool<>(new LargePoolableObjectFactory(1000000));
 
         String obj = pool.borrowObject();
