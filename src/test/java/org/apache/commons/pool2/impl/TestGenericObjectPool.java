@@ -1962,30 +1962,30 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         final DisconnectingWaiterFactory<String> factory = new DisconnectingWaiterFactory<>(DisconnectingWaiterFactory.DEFAULT_DISCONNECTED_CREATE_ACTION,
                 DisconnectingWaiterFactory.DEFAULT_DISCONNECTED_LIFECYCLE_ACTION, obj -> false // all instances fail validation
         );
-        final GenericObjectPool<Waiter> pool = new GenericObjectPool<>(factory);
-        pool.setMaxWait(Duration.ofMillis(100));
-        pool.setTestOnReturn(true);
-        pool.setMaxTotal(1);
-        final Waiter w = pool.borrowObject();
         final AtomicBoolean failed = new AtomicBoolean();
-        final Thread t = new Thread(() -> {
-            try {
-                pool.borrowObject();
-            } catch (final Exception e) {
-                failed.set(true);
-            }
-        });
-        Thread.sleep(10);
-        t.start();
-        // t is blocked waiting on the deque
-        Thread.sleep(10);
-        factory.disconnect();
-        pool.returnObject(w); // validation fails, so no return
-        Thread.sleep(10);
-        factory.connect();
-        // Borrower should be able to be served now
-        t.join();
-        pool.close();
+        try (GenericObjectPool<Waiter> pool = new GenericObjectPool<>(factory)) {
+            pool.setMaxWait(Duration.ofMillis(100));
+            pool.setTestOnReturn(true);
+            pool.setMaxTotal(1);
+            final Waiter w = pool.borrowObject();
+            final Thread t = new Thread(() -> {
+                try {
+                    pool.borrowObject();
+                } catch (final Exception e) {
+                    failed.set(true);
+                }
+            });
+            Thread.sleep(10);
+            t.start();
+            // t is blocked waiting on the deque
+            Thread.sleep(10);
+            factory.disconnect();
+            pool.returnObject(w); // validation fails, so no return
+            Thread.sleep(10);
+            factory.connect();
+            // Borrower should be able to be served now
+            t.join();
+        }
         if (failed.get()) {
             fail("Borrower timed out waiting for an instance");
         }
@@ -2447,31 +2447,31 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         final DisconnectingWaiterFactory<String> factory = new DisconnectingWaiterFactory<>(() -> null, // Override default to always return null from
                                                                                                         // makeObject
                 DisconnectingWaiterFactory.DEFAULT_DISCONNECTED_LIFECYCLE_ACTION, DisconnectingWaiterFactory.DEFAULT_DISCONNECTED_VALIDATION_ACTION);
-        final GenericObjectPool<Waiter> pool = new GenericObjectPool<>(factory);
-        pool.setTestOnBorrow(true);
-        pool.setMaxTotal(-1);
-        pool.setMinIdle(1);
-        // Disconnect the factory - will always return null in this state
-        factory.disconnect();
-        try {
-            pool.borrowObject();
-            fail("Expecting NullPointerException");
-        } catch (final NullPointerException ex) {
-            // expected
+        try (GenericObjectPool<Waiter> pool = new GenericObjectPool<>(factory)) {
+            pool.setTestOnBorrow(true);
+            pool.setMaxTotal(-1);
+            pool.setMinIdle(1);
+            // Disconnect the factory - will always return null in this state
+            factory.disconnect();
+            try {
+                pool.borrowObject();
+                fail("Expecting NullPointerException");
+            } catch (final NullPointerException ex) {
+                // expected
+            }
+            try {
+                pool.addObject();
+                fail("Expecting NullPointerException");
+            } catch (final NullPointerException ex2) {
+                // expected
+            }
+            try {
+                pool.ensureMinIdle();
+                fail("Expecting NullPointerException");
+            } catch (final NullPointerException ex3) {
+                // expected
+            }
         }
-        try {
-            pool.addObject();
-            fail("Expecting NullPointerException");
-        } catch (final NullPointerException ex2) {
-            // expected
-        }
-        try {
-            pool.ensureMinIdle();
-            fail("Expecting NullPointerException");
-        } catch (final NullPointerException ex3) {
-            // expected
-        }
-        pool.close();
     }
 
     /*
