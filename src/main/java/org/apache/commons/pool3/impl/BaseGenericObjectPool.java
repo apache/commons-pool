@@ -214,7 +214,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
          * @param pooledObject contains the object to wrap.
          * @return a new instance wrapping the object in the {@link PooledObject}.
          */
-        static <T> IdentityWrapper<T> on(final PooledObject<T> pooledObject) {
+        static <T> IdentityWrapper<T> unwrap(final PooledObject<T> pooledObject) {
             return new IdentityWrapper<>(pooledObject.getObject());
         }
 
