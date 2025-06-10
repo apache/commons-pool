@@ -967,16 +967,17 @@ class TestGenericObjectPool extends TestBaseObjectPool {
     void testAddObjectFastReturn() throws Exception {
         final SimpleFactory simpleFactory = new SimpleFactory();
         simpleFactory.makeLatency = 500;
-        final GenericObjectPool<String> pool = new GenericObjectPool<>(simpleFactory);
-        pool.setMaxTotal(1);
-        pool.setBlockWhenExhausted(true);
-        pool.setMaxWait(Duration.ofMillis(1000));
-        // Start a test thread.  The thread will trigger a create, which will take 500 ms to complete
-        final TestThread<String> thread = new TestThread<>(pool);
-        final Thread t = new Thread(thread);
-        t.start();
-        Thread.sleep(50); // Wait for the thread to start
-        pool.addObject(); // Should return immediately
+        try (GenericObjectPool<String> pool = new GenericObjectPool<>(simpleFactory)) {
+            pool.setMaxTotal(1);
+            pool.setBlockWhenExhausted(true);
+            pool.setMaxWait(Duration.ofMillis(1000));
+            // Start a test thread. The thread will trigger a create, which will take 500 ms to complete
+            final TestThread<String> thread = new TestThread<>(pool);
+            final Thread t = new Thread(thread);
+            t.start();
+            Thread.sleep(50); // Wait for the thread to start
+            pool.addObject(); // Should return immediately
+        }
     }
 
     @Test
