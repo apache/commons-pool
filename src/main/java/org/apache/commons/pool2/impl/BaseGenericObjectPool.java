@@ -483,6 +483,16 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
     }
 
     /**
+     * Returns the duration since the given start time.
+     *
+     * @param startInstant the start time
+     * @return the duration since the given start time
+     */
+    final Duration durationSince(final Instant startInstant) {
+        return Duration.between(startInstant, Instant.now());
+    }
+
+    /**
      * Tries to ensure that the configured minimum number of idle instances are
      * available in the pool.
      * @throws Exception if an error occurs creating idle instances
@@ -1939,37 +1949,12 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
     }
 
     /**
-     * Returns the duration since the given start time.
-     *
-     * @param startInstant the start time
-     * @return the duration since the given start time
-     */
-    final Duration durationSince(final Instant startInstant) {
-        return Duration.between(startInstant, Instant.now());
-    }
-
-    /**
-     * Waits for notification on the given object for the specified duration.
-     * Duration.ZERO causes the thread to wait indefinitely.
-     *
-     * @param obj the object to wait on
-     * @param duration the duration to wait
-     * @throws InterruptedException if interrupted while waiting
-     * @throws IllegalArgumentException if the duration is negative
-     */
-    final void wait(final Object obj, final Duration duration) throws InterruptedException {
-        if (!duration.isNegative()) {
-            obj.wait(duration.toMillis(), duration.getNano() % 1_000_000);
-        }
-    }
-
-
-    /**
      * Stops the evictor.
      */
     void stopEvictor() {
         startEvictor(Duration.ofMillis(-1L));
     }
+
 
     /**
      * Swallows an exception and notifies the configured listener for swallowed
@@ -2093,6 +2078,21 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
     final void updateStatsReturn(final Duration activeTime) {
         returnedCount.incrementAndGet();
         activeTimes.add(activeTime);
+    }
+
+    /**
+     * Waits for notification on the given object for the specified duration.
+     * Duration.ZERO causes the thread to wait indefinitely.
+     *
+     * @param obj the object to wait on
+     * @param duration the duration to wait
+     * @throws InterruptedException if interrupted while waiting
+     * @throws IllegalArgumentException if the duration is negative
+     */
+    final void wait(final Object obj, final Duration duration) throws InterruptedException {
+        if (!duration.isNegative()) {
+            obj.wait(duration.toMillis(), duration.getNano() % 1_000_000);
+        }
     }
 
 }

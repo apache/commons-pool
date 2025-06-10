@@ -2046,47 +2046,6 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         assertThrows(NoSuchElementException.class, () -> gkoPool.borrowObject("a"));
     }
 
-    /**
-     * JIRA: POOL-420 (clone of POOL-418 for GKOP)
-     *
-     * Test to make sure that a client thread that triggers a create that fails does
-     * not wait longer than the maxWait time.
-     *
-     * Bug was that the time spent waiting for the create to complete was not being
-     * counted against the maxWait time.
-     */
-    @Test
-    void testMaxWaitTimeOutOnTime() throws Exception {
-        final Duration maxWaitDuration = Duration.ofSeconds(1);
-        final SimpleFactory<String> factory = new SimpleFactory<>();
-        factory.makeLatency = 500;
-        factory.setValidationEnabled(true); // turn on factory-level validatiom
-        factory.setValid(false); // make validation fail uniformly
-        final GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<>(factory);
-
-        pool.setBlockWhenExhausted(true);
-        pool.setMaxWait(maxWaitDuration);
-        pool.setMaxTotalPerKey(1);
-        pool.setMaxTotal(1);
-        pool.setTestOnCreate(true);
-        final Instant startTime = Instant.now();
-
-        // Try to borrow an object.  Validation will fail.
-        // Then we will wait on the pool.
-        try {
-            pool.borrowObject("a");
-        } catch (NoSuchElementException ex) {
-            // expected
-        }
-
-        // Should have timeed out after 1000 ms from the start time
-        final Duration duration = Duration.between(startTime, Instant.now());
-        assertTrue(duration.toMillis() < maxWaitDuration.toMillis() + 10,  // allow for some timing delay
-                "Thread A should have timed out after " + maxWaitDuration.toMillis() + " ms, but took " + duration.toMillis() + " ms");
-        pool.close();
-    }
-
-
     /*
      * Test multi-threaded pool access. Multiple keys, multiple threads, but maxActive only allows half the threads to succeed.
      *
@@ -2131,6 +2090,47 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
             }
         }
         assertEquals(wtt.length / 2, failed, "Expected half the threads to fail");
+    }
+
+
+    /**
+     * JIRA: POOL-420 (clone of POOL-418 for GKOP)
+     *
+     * Test to make sure that a client thread that triggers a create that fails does
+     * not wait longer than the maxWait time.
+     *
+     * Bug was that the time spent waiting for the create to complete was not being
+     * counted against the maxWait time.
+     */
+    @Test
+    void testMaxWaitTimeOutOnTime() throws Exception {
+        final Duration maxWaitDuration = Duration.ofSeconds(1);
+        final SimpleFactory<String> factory = new SimpleFactory<>();
+        factory.makeLatency = 500;
+        factory.setValidationEnabled(true); // turn on factory-level validatiom
+        factory.setValid(false); // make validation fail uniformly
+        final GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<>(factory);
+
+        pool.setBlockWhenExhausted(true);
+        pool.setMaxWait(maxWaitDuration);
+        pool.setMaxTotalPerKey(1);
+        pool.setMaxTotal(1);
+        pool.setTestOnCreate(true);
+        final Instant startTime = Instant.now();
+
+        // Try to borrow an object.  Validation will fail.
+        // Then we will wait on the pool.
+        try {
+            pool.borrowObject("a");
+        } catch (NoSuchElementException ex) {
+            // expected
+        }
+
+        // Should have timeed out after 1000 ms from the start time
+        final Duration duration = Duration.between(startTime, Instant.now());
+        assertTrue(duration.toMillis() < maxWaitDuration.toMillis() + 10,  // allow for some timing delay
+                "Thread A should have timed out after " + maxWaitDuration.toMillis() + " ms, but took " + duration.toMillis() + " ms");
+        pool.close();
     }
 
     @Test

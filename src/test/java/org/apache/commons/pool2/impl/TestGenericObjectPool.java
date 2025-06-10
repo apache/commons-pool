@@ -806,6 +806,20 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         };
     }
 
+    private BasePooledObjectFactory<Object> createPooledObjectFactory() {
+        return new BasePooledObjectFactory<Object>() {
+            @Override
+            public Object create() {
+                return new Object();
+            }
+
+            @Override
+            public PooledObject<Object> wrap(final Object obj) {
+                return new DefaultPooledObject<>(obj);
+            }
+        };
+    }
+
     private BasePooledObjectFactory<String> createSlowObjectFactory(final Duration sleepDuration) {
         return new BasePooledObjectFactory<String>() {
             @Override
@@ -946,6 +960,23 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         genericObjectPool.returnObject(obj);
         assertEquals(1, genericObjectPool.getNumIdle(), "should be one idle");
         assertEquals(0, genericObjectPool.getNumActive(), "should be zero active");
+    }
+
+    @Test
+    @Timeout(value = 400, unit = TimeUnit.MILLISECONDS)
+    void testAddObjectFastReturn() throws Exception {
+        final SimpleFactory simpleFactory = new SimpleFactory();
+        simpleFactory.makeLatency = 500;
+        final GenericObjectPool<String> pool = new GenericObjectPool<>(simpleFactory);
+        pool.setMaxTotal(1);
+        pool.setBlockWhenExhausted(true);
+        pool.setMaxWait(Duration.ofMillis(1000));
+        // Start a test thread.  The thread will trigger a create, which will take 500 ms to complete
+        final TestThread<String> thread = new TestThread<>(pool);
+        final Thread t = new Thread(thread);
+        t.start();
+        Thread.sleep(50); // Wait for the thread to start
+        pool.addObject(); // Should return immediately
     }
 
     @Test
@@ -2443,6 +2474,65 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         pool.close();
     }
 
+    /*
+     * Test for POOL-419.
+     * https://issues.apache.org/jira/browse/POOL-419
+     */
+    @Test
+    void testPool419() throws Exception {
+
+        final ExecutorService executor = Executors.newFixedThreadPool(100);
+
+        final GenericObjectPoolConfig<Object> config = new GenericObjectPoolConfig<>();
+
+        final int maxConnections = 10000;
+
+        config.setMaxTotal(maxConnections);
+        config.setMaxIdle(maxConnections);
+        config.setMinIdle(1);
+
+        final BasePooledObjectFactory<Object> pof = createPooledObjectFactory();
+
+        try (ObjectPool<Object> connectionPool = new GenericObjectPool<>(pof, config)) {
+            assertNotNull(connectionPool);
+
+            final CountDownLatch startLatch = new CountDownLatch(1);
+
+            final List<Object> poolObjects = new ArrayList<>();
+
+            final List<FutureTask<Boolean>> tasks = new ArrayList<>();
+
+            for (int i = 0; i < maxConnections; i++) {
+                poolObjects.add(connectionPool.borrowObject());
+            }
+
+            for (Object poolObject : poolObjects) {
+
+                tasks.add(new FutureTask<>(() -> {
+                    startLatch.await();
+                    connectionPool.invalidateObject(poolObject);
+                    return true;
+                }));
+
+                tasks.add(new FutureTask<>(() -> {
+                    startLatch.await();
+                    connectionPool.returnObject(poolObject);
+                    return true;
+                }));
+            }
+
+            tasks.forEach(executor::submit);
+
+            startLatch.countDown(); // Start all tasks simultaneously
+
+            executor.shutdown();
+            assertTrue(executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS));
+
+            assertEquals(0, connectionPool.getNumActive(), "getNumActive() must not return a negative value");
+
+        }
+    }
+
     @Test
     void testPreparePool() throws Exception {
         genericObjectPool.setMinIdle(1);
@@ -2878,6 +2968,7 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         genericObjectPool.close();
     }
 
+
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
     void testWhenExhaustedFail() throws Exception {
@@ -2889,96 +2980,5 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         genericObjectPool.returnObject(obj1);
         assertEquals(1, genericObjectPool.getNumIdle());
         genericObjectPool.close();
-    }
-
-    @Test
-    @Timeout(value = 400, unit = TimeUnit.MILLISECONDS)
-    void testAddObjectFastReturn() throws Exception {
-        final SimpleFactory simpleFactory = new SimpleFactory();
-        simpleFactory.makeLatency = 500;
-        final GenericObjectPool<String> pool = new GenericObjectPool<>(simpleFactory);
-        pool.setMaxTotal(1);
-        pool.setBlockWhenExhausted(true);
-        pool.setMaxWait(Duration.ofMillis(1000));
-        // Start a test thread.  The thread will trigger a create, which will take 500 ms to complete
-        final TestThread<String> thread = new TestThread<>(pool);
-        final Thread t = new Thread(thread);
-        t.start();
-        Thread.sleep(50); // Wait for the thread to start
-        pool.addObject(); // Should return immediately
-    }
-
-    private BasePooledObjectFactory<Object> createPooledObjectFactory() {
-        return new BasePooledObjectFactory<Object>() {
-            @Override
-            public Object create() {
-                return new Object();
-            }
-
-            @Override
-            public PooledObject<Object> wrap(final Object obj) {
-                return new DefaultPooledObject<>(obj);
-            }
-        };
-    }
-
-
-    /*
-     * Test for POOL-419.
-     * https://issues.apache.org/jira/browse/POOL-419
-     */
-    @Test
-    void testPool419() throws Exception {
-
-        final ExecutorService executor = Executors.newFixedThreadPool(100);
-
-        final GenericObjectPoolConfig<Object> config = new GenericObjectPoolConfig<>();
-
-        final int maxConnections = 10000;
-
-        config.setMaxTotal(maxConnections);
-        config.setMaxIdle(maxConnections);
-        config.setMinIdle(1);
-
-        final BasePooledObjectFactory<Object> pof = createPooledObjectFactory();
-
-        try (ObjectPool<Object> connectionPool = new GenericObjectPool<>(pof, config)) {
-            assertNotNull(connectionPool);
-
-            final CountDownLatch startLatch = new CountDownLatch(1);
-
-            final List<Object> poolObjects = new ArrayList<>();
-
-            final List<FutureTask<Boolean>> tasks = new ArrayList<>();
-
-            for (int i = 0; i < maxConnections; i++) {
-                poolObjects.add(connectionPool.borrowObject());
-            }
-
-            for (Object poolObject : poolObjects) {
-
-                tasks.add(new FutureTask<>(() -> {
-                    startLatch.await();
-                    connectionPool.invalidateObject(poolObject);
-                    return true;
-                }));
-
-                tasks.add(new FutureTask<>(() -> {
-                    startLatch.await();
-                    connectionPool.returnObject(poolObject);
-                    return true;
-                }));
-            }
-
-            tasks.forEach(executor::submit);
-
-            startLatch.countDown(); // Start all tasks simultaneously
-
-            executor.shutdown();
-            assertTrue(executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS));
-
-            assertEquals(0, connectionPool.getNumActive(), "getNumActive() must not return a negative value");
-
-        }
     }
 }
