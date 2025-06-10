@@ -22,6 +22,11 @@ import java.lang.reflect.UndeclaredThrowableException;
 public class TestProxiedObjectPoolWithJdkProxy extends AbstractTestProxiedObjectPool {
 
     @Override
+    protected Class<? extends Throwable> getInvocationTargetExceptionType() {
+        return UndeclaredThrowableException.class;
+    }
+
+    @Override
     protected ProxySource<TestObject> getProxySource(boolean unwrapInvocationTargetException) {
         // @formatter:off
         return JdkProxySource.<TestObject>builder()
@@ -30,10 +35,5 @@ public class TestProxiedObjectPoolWithJdkProxy extends AbstractTestProxiedObject
                 .setUnwrapInvocationTargetException(unwrapInvocationTargetException)
                 .get();
         // @formatter:on
-    }
-
-    @Override
-    protected Class<? extends Throwable> getInvocationTargetExceptionType() {
-        return UndeclaredThrowableException.class;
     }
 }

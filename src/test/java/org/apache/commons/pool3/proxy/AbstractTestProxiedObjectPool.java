@@ -38,6 +38,8 @@ import org.junit.jupiter.api.Test;
 
 public abstract class AbstractTestProxiedObjectPool {
 
+    private static class MyException extends RuntimeException { }
+
     protected interface TestObject {
         String getData();
         void setData(String data);
@@ -94,8 +96,6 @@ public abstract class AbstractTestProxiedObjectPool {
 
     private StringWriter log;
 
-    protected abstract ProxySource<TestObject> getProxySource(boolean unwrapInvocationTargetException);
-
     private ProxiedObjectPool<TestObject, RuntimeException> createProxiedObjectPool() {
         return createProxiedObjectPool(false, null);
     }
@@ -119,6 +119,10 @@ public abstract class AbstractTestProxiedObjectPool {
 
         return new ProxiedObjectPool<>(innerPool, getProxySource(unwrapInvocationTargetException));
     }
+
+    protected abstract Class<? extends Throwable> getInvocationTargetExceptionType();
+
+    protected abstract ProxySource<TestObject> getProxySource(boolean unwrapInvocationTargetException);
 
     @BeforeEach
     public void setUp() {
@@ -211,6 +215,24 @@ public abstract class AbstractTestProxiedObjectPool {
     }
 
     @Test
+    public void testUnwrapInvocationTargetExceptionFalse() {
+        @SuppressWarnings("resource")
+        final ObjectPool<TestObject, RuntimeException> pool = createProxiedObjectPool(false, new MyException());
+
+        final TestObject object = pool.borrowObject();
+        assertThrows(getInvocationTargetExceptionType(), object::getData);
+    }
+
+    @Test
+    public void testUnwrapInvocationTargetExceptionTrue() {
+        @SuppressWarnings("resource")
+        final ObjectPool<TestObject, RuntimeException> pool = createProxiedObjectPool(true, new MyException());
+
+        final TestObject object = pool.borrowObject();
+        assertThrows(MyException.class, object::getData);
+    }
+
+    @Test
     public void testUsageTracking() throws InterruptedException {
         @SuppressWarnings("resource")
         final ObjectPool<TestObject, RuntimeException> pool = createProxiedObjectPool();
@@ -232,26 +254,4 @@ public abstract class AbstractTestProxiedObjectPool {
         assertTrue(logOutput.contains("Pooled object created"));
         assertTrue(logOutput.contains("The last code to use this object was"));
     }
-
-    @Test
-    public void testUnwrapInvocationTargetExceptionTrue() {
-        @SuppressWarnings("resource")
-        final ObjectPool<TestObject, RuntimeException> pool = createProxiedObjectPool(true, new MyException());
-
-        final TestObject object = pool.borrowObject();
-        assertThrows(MyException.class, object::getData);
-    }
-
-    @Test
-    public void testUnwrapInvocationTargetExceptionFalse() {
-        @SuppressWarnings("resource")
-        final ObjectPool<TestObject, RuntimeException> pool = createProxiedObjectPool(false, new MyException());
-
-        final TestObject object = pool.borrowObject();
-        assertThrows(getInvocationTargetExceptionType(), object::getData);
-    }
-
-    protected abstract Class<? extends Throwable> getInvocationTargetExceptionType();
-
-    private static class MyException extends RuntimeException { }
 }

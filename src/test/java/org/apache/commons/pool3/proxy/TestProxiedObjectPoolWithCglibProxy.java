@@ -22,6 +22,11 @@ import java.lang.reflect.InvocationTargetException;
 public class TestProxiedObjectPoolWithCglibProxy extends AbstractTestProxiedObjectPool {
 
     @Override
+    protected Class<? extends Throwable> getInvocationTargetExceptionType() {
+        return InvocationTargetException.class;
+    }
+
+    @Override
     protected ProxySource<TestObject> getProxySource(boolean unwrapInvocationTargetException) {
         // @formatter:off
         return CglibProxySource.<TestObject>builder()
@@ -29,10 +34,5 @@ public class TestProxiedObjectPoolWithCglibProxy extends AbstractTestProxiedObje
                 .setUnwrapInvocationTargetException(unwrapInvocationTargetException)
                 .get();
         // @formatter:on
-    }
-
-    @Override
-    protected Class<? extends Throwable> getInvocationTargetExceptionType() {
-        return InvocationTargetException.class;
     }
 }
