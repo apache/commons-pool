@@ -2453,24 +2453,9 @@ class TestGenericObjectPool extends TestBaseObjectPool {
             pool.setMinIdle(1);
             // Disconnect the factory - will always return null in this state
             factory.disconnect();
-            try {
-                pool.borrowObject();
-                fail("Expecting NullPointerException");
-            } catch (final NullPointerException ex) {
-                // expected
-            }
-            try {
-                pool.addObject();
-                fail("Expecting NullPointerException");
-            } catch (final NullPointerException ex2) {
-                // expected
-            }
-            try {
-                pool.ensureMinIdle();
-                fail("Expecting NullPointerException");
-            } catch (final NullPointerException ex3) {
-                // expected
-            }
+            assertThrows(NullPointerException.class, pool::borrowObject);
+            assertThrows(NullPointerException.class, pool::addObject);
+            assertThrows(NullPointerException.class, pool::ensureMinIdle);
         }
     }
 
