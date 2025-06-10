@@ -2109,28 +2109,25 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         factory.makeLatency = 500;
         factory.setValidationEnabled(true); // turn on factory-level validatiom
         factory.setValid(false); // make validation fail uniformly
-        final GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<>(factory);
-
-        pool.setBlockWhenExhausted(true);
-        pool.setMaxWait(maxWaitDuration);
-        pool.setMaxTotalPerKey(1);
-        pool.setMaxTotal(1);
-        pool.setTestOnCreate(true);
-        final Instant startTime = Instant.now();
-
-        // Try to borrow an object.  Validation will fail.
-        // Then we will wait on the pool.
-        try {
-            pool.borrowObject("a");
-        } catch (NoSuchElementException ex) {
-            // expected
+        try (GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<>(factory)) {
+            pool.setBlockWhenExhausted(true);
+            pool.setMaxWait(maxWaitDuration);
+            pool.setMaxTotalPerKey(1);
+            pool.setMaxTotal(1);
+            pool.setTestOnCreate(true);
+            final Instant startTime = Instant.now();
+            // Try to borrow an object. Validation will fail.
+            // Then we will wait on the pool.
+            try {
+                pool.borrowObject("a");
+            } catch (NoSuchElementException ex) {
+                // expected
+            }
+            // Should have timed out after 1000 ms from the start time
+            final Duration duration = Duration.between(startTime, Instant.now());
+            assertTrue(duration.toMillis() < maxWaitDuration.toMillis() + 10, // allow for some timing delay
+                    "Thread A should have timed out after " + maxWaitDuration.toMillis() + " ms, but took " + duration.toMillis() + " ms");
         }
-
-        // Should have timed out after 1000 ms from the start time
-        final Duration duration = Duration.between(startTime, Instant.now());
-        assertTrue(duration.toMillis() < maxWaitDuration.toMillis() + 10,  // allow for some timing delay
-                "Thread A should have timed out after " + maxWaitDuration.toMillis() + " ms, but took " + duration.toMillis() + " ms");
-        pool.close();
     }
 
     @Test
