@@ -413,6 +413,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      *                   error
      * @deprecated Use {@link #borrowObject(Duration)}.
      */
+    @Deprecated
     public T borrowObject(final long maxWaitMillis) throws Exception {
         return borrowObject(Duration.ofMillis(maxWaitMillis));
     }
