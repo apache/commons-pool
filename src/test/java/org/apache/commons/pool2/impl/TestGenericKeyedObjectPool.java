@@ -2127,7 +2127,8 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
             }
             // Should have timed out after 1000 ms from the start time
             final Duration duration = Duration.between(startTime, Instant.now());
-            assertTrue(duration.toMillis() < maxWaitDuration.toMillis() + 10, // allow for some timing delay
+            final long clockGranularityMillis = 20;
+            assertTrue(duration.toMillis() < maxWaitDuration.toMillis() + clockGranularityMillis, // allow for clock granularity.
                     "Thread A should have timed out after " + maxWaitDuration.toMillis() + " ms, but took " + duration.toMillis() + " ms");
         }
     }
