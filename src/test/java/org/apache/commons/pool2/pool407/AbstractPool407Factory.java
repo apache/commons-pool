@@ -43,7 +43,7 @@ public abstract class AbstractPool407Factory extends BasePooledObjectFactory<Poo
     @Override
     public boolean validateObject(final PooledObject<Pool407Fixture> p) {
         // TODO Should this be enough even if wrap() does throw and returns a DefaultPooledObject wrapping a null?
-        return !PooledObject.isNull(p);
+        return PooledObject.nonNull(p);
     }
 
 }

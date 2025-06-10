@@ -15,22 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.commons.pool2.pool407;
+package org.apache.commons.pool2;
 
-import org.apache.commons.pool2.BaseKeyedPooledObjectFactory;
-import org.apache.commons.pool2.PooledObject;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.apache.commons.pool2.impl.DefaultPooledObject;
+import org.junit.jupiter.api.Test;
 
 /**
- * Tests POOL-407.
+ * Tests {@link PooledObject}.
  */
-public abstract class AbstractKeyedPool407Factory extends BaseKeyedPooledObjectFactory<String, KeyedPool407Fixture> {
+public class PooledObjectTest {
 
-    abstract boolean isDefaultMakeObject();
-
-    @Override
-    public boolean validateObject(final String key, final PooledObject<KeyedPool407Fixture> p) {
-        // TODO Should this be enough even if wrap() does throw and returns a DefaultPooledObject wrapping a null?
-        return PooledObject.nonNull(p);
+    @Test
+    void testIsNull() {
+        assertTrue(PooledObject.isNull(null));
+        assertTrue(PooledObject.isNull(new DefaultPooledObject<>(null)));
+        assertFalse(PooledObject.isNull(new DefaultPooledObject<>("a")));
     }
 
+    @Test
+    void testNonNull() {
+        assertFalse(PooledObject.nonNull(null));
+        assertFalse(PooledObject.nonNull(new DefaultPooledObject<>(null)));
+        assertTrue(PooledObject.nonNull(new DefaultPooledObject<>("a")));
+    }
 }

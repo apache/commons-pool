@@ -297,7 +297,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * @throws Exception If the associated factory fails to passivate the object
      */
     private void addIdleObject(final K key, final PooledObject<T> p) throws Exception {
-        if (!PooledObject.isNull(p)) {
+        if (PooledObject.nonNull(p)) {
             factory.passivateObject(key, p);
             final LinkedBlockingDeque<PooledObject<T>> idleObjects = poolMap.get(key).getIdleObjects();
             if (getLifo()) {
@@ -445,7 +445,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
                 p = objectDeque.getIdleObjects().pollFirst();
                 if (p == null) {
                     p = create(key, remainingWaitDuration);
-                    if (!PooledObject.isNull(p)) {
+                    if (PooledObject.nonNull(p)) {
                         create = true;
                     }
                     remainingWaitDuration = maxWaitDuration.minus(durationSince(startInstant));
@@ -466,7 +466,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
                     p = null;
                 }
 
-                if (!PooledObject.isNull(p)) {
+                if (PooledObject.nonNull(p)) {
                     try {
                         factory.activateObject(key, p);
                     } catch (final Exception e) {
@@ -483,7 +483,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
                             throw nsee;
                         }
                     }
-                    if (!PooledObject.isNull(p) && getTestOnBorrow()) {
+                    if (PooledObject.nonNull(p) && getTestOnBorrow()) {
                         boolean validate = false;
                         Throwable validationThrowable = null;
                         try {

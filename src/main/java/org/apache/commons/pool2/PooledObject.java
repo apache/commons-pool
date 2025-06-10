@@ -34,14 +34,25 @@ import java.util.Deque;
 public interface PooledObject<T> extends Comparable<PooledObject<T>> {
 
     /**
-     * Tests whether the given PooledObject is null <em>or</em> contains a null.
+     * Tests whether the given PooledObject is null <em>or</em> wraps a null.
      *
      * @param pooledObject the PooledObject to test.
-     * @return whether the given PooledObject is null <em>or</em> contains a null.
+     * @return whether the given PooledObject is null <em>or</em> wraps a null.
      * @since 2.12.0
      */
     static boolean isNull(final PooledObject<?> pooledObject) {
         return pooledObject == null || pooledObject.getObject() == null;
+    }
+
+    /**
+     * Tests whether the given PooledObject isn't null <em>and</em> doesn't wraps a null.
+     *
+     * @param pooledObject the PooledObject to test.
+     * @return whether the given PooledObject isn't null <em>and</em> doesn't wraps a null.
+     * @since 2.13.0
+     */
+    static boolean nonNull(final PooledObject<?> pooledObject) {
+        return pooledObject != null && pooledObject.getObject() != null;
     }
 
     /**
