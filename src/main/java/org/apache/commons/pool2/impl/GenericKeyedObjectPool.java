@@ -896,7 +896,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         }
 
         createdCount.incrementAndGet();
-        objectDeque.getAllObjects().put(new IdentityWrapper<>(p.getObject()), p);
+        objectDeque.getAllObjects().put(IdentityWrapper.unwrap(p), p);
         return p;
     }
 
@@ -969,7 +969,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
                 }
             }
             if (isIdle || always) {
-                objectDeque.getAllObjects().remove(new IdentityWrapper<>(toDestroy.getObject()));
+                objectDeque.getAllObjects().remove(IdentityWrapper.unwrap(toDestroy));
                 toDestroy.invalidate();
 
                 try {

@@ -580,7 +580,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         }
 
         createdCount.incrementAndGet();
-        allObjects.put(new IdentityWrapper<>(p.getObject()), p);
+        allObjects.put(IdentityWrapper.unwrap(p), p);
         return p;
     }
 
@@ -595,7 +595,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     private void destroy(final PooledObject<T> toDestroy, final DestroyMode destroyMode) throws Exception {
         toDestroy.invalidate();
         idleObjects.remove(toDestroy);
-        allObjects.remove(new IdentityWrapper<>(toDestroy.getObject()));
+        allObjects.remove(IdentityWrapper.unwrap(toDestroy));
         try {
             factory.destroyObject(toDestroy, destroyMode);
         } finally {

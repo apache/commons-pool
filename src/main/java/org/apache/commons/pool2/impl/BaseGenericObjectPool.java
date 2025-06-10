@@ -205,41 +205,53 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      * @param <T> type of objects in the pool
      */
     static class IdentityWrapper<T> {
+
+        /**
+         * Creates a new instance for the object inside a {@link PooledObject}.
+         *
+         * @param <T> The type of the object in the {@link PooledObject}.
+         * @param p The {@link PooledObject}.
+         * @return a new instance.
+         */
+        static <T> IdentityWrapper<T> unwrap(final PooledObject<T> p) {
+            return new IdentityWrapper<>(p.getObject());
+        }
+
         /** Wrapped object */
-        private final T instance;
+        private final T object;
 
         /**
          * Constructs a wrapper for an instance.
          *
-         * @param instance object to wrap
+         * @param object object to wrap
          */
-        IdentityWrapper(final T instance) {
-            this.instance = instance;
+        IdentityWrapper(final T object) {
+            this.object = object;
         }
 
         @Override
         @SuppressWarnings("rawtypes")
         public boolean equals(final Object other) {
-            return other instanceof IdentityWrapper && ((IdentityWrapper) other).instance == instance;
+            return other instanceof IdentityWrapper && ((IdentityWrapper) other).object == object;
         }
 
         /**
          * @return the wrapped object
          */
         T getObject() {
-            return instance;
+            return object;
         }
 
         @Override
         public int hashCode() {
-            return System.identityHashCode(instance);
+            return System.identityHashCode(object);
         }
 
         @Override
         public String toString() {
             final StringBuilder builder = new StringBuilder();
             builder.append("IdentityWrapper [instance=");
-            builder.append(instance);
+            builder.append(object);
             builder.append("]");
             return builder.toString();
         }
