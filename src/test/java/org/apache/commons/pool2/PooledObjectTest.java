@@ -17,6 +17,8 @@
 
 package org.apache.commons.pool2;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -27,6 +29,13 @@ import org.junit.jupiter.api.Test;
  * Tests {@link PooledObject}.
  */
 public class PooledObjectTest {
+
+    @Test
+    void testGetObject() {
+        assertNull(PooledObject.getObject(null));
+        assertNull(PooledObject.getObject(new DefaultPooledObject<>(null)));
+        assertNotNull(PooledObject.getObject(new DefaultPooledObject<>("a")));
+    }
 
     @Test
     void testIsNull() {

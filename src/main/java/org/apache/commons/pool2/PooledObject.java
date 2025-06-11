@@ -34,25 +34,37 @@ import java.util.Deque;
 public interface PooledObject<T> extends Comparable<PooledObject<T>> {
 
     /**
+     * Gets the wrapped object or null.
+     *
+     * @param <T> the type of object in the pool.
+     * @param pooledObject the PooledObject to unwrap, may be null.
+     * @return the wrapped object or null.
+     * @since 2.13.0
+     */
+    static <T> T getObject(final PooledObject<T> pooledObject) {
+        return pooledObject != null ? pooledObject.getObject() : null;
+    }
+
+    /**
      * Tests whether the given PooledObject is null <em>or</em> wraps a null.
      *
-     * @param pooledObject the PooledObject to test.
+     * @param pooledObject the PooledObject to test, may be null.
      * @return whether the given PooledObject is null <em>or</em> wraps a null.
      * @since 2.12.0
      */
     static boolean isNull(final PooledObject<?> pooledObject) {
-        return pooledObject == null || pooledObject.getObject() == null;
+        return getObject(pooledObject) == null;
     }
 
     /**
      * Tests whether the given PooledObject isn't null <em>and</em> doesn't wraps a null.
      *
-     * @param pooledObject the PooledObject to test.
+     * @param pooledObject the PooledObject to test, may be null.
      * @return whether the given PooledObject isn't null <em>and</em> doesn't wraps a null.
      * @since 2.13.0
      */
     static boolean nonNull(final PooledObject<?> pooledObject) {
-        return pooledObject != null && pooledObject.getObject() != null;
+        return getObject(pooledObject) != null;
     }
 
     /**

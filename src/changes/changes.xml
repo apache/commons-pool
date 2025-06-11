@@ -63,6 +63,7 @@ The <action> type attribute can be add,update,fix,remove.
     <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.pool2.impl.GenericObjectPool.create(Duration) should normalize a negative duration to zero.</action>
     <!-- ADD -->
     <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.pool2.PooledObject.nonNull(PooledObject).</action>
+    <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.pool2.PooledObject.getObject(PooledObject).</action>
     <!-- UPDATE -->
     <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.commons:commons-parent from 79 to 81.</action>
   </release>
