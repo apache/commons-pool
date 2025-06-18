@@ -55,6 +55,7 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
 import org.apache.commons.lang3.ThreadUtils;
+import org.apache.commons.lang3.function.Suppliers;
 import org.apache.commons.lang3.time.DurationUtils;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.ObjectPool;
@@ -2445,8 +2446,8 @@ class TestGenericObjectPool extends TestBaseObjectPool {
     @Test
     @Timeout(value = 1000, unit = TimeUnit.MILLISECONDS)
     void testNPEOnFactoryNull() throws Exception {
-        final DisconnectingWaiterFactory<String> factory = new DisconnectingWaiterFactory<>(() -> null, // Override default to always return null from
-                                                                                                        // makeObject
+        // Override default to always return null from makeObject
+        final DisconnectingWaiterFactory<String> factory = new DisconnectingWaiterFactory<>(Suppliers.nul(),
                 DisconnectingWaiterFactory.DEFAULT_DISCONNECTED_LIFECYCLE_ACTION, DisconnectingWaiterFactory.DEFAULT_DISCONNECTED_VALIDATION_ACTION);
         try (GenericObjectPool<Waiter> pool = new GenericObjectPool<>(factory)) {
             pool.setTestOnBorrow(true);
