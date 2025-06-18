@@ -53,6 +53,7 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.function.Suppliers;
 import org.apache.commons.pool3.AbstractTestKeyedObjectPool;
 import org.apache.commons.pool3.BaseKeyedPooledObjectFactory;
 import org.apache.commons.pool3.DestroyMode;
@@ -2392,7 +2393,7 @@ class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
     void testNPEOnFactoryNull() {
         // @formatter:off
         final DisconnectingWaiterFactory<String> factory = new DisconnectingWaiterFactory<>(
-            () -> null,  // Override default to always return null from makeObject
+            Suppliers.nul(),  // Override default to always return null from makeObject
             DisconnectingWaiterFactory.DEFAULT_DISCONNECTED_LIFECYCLE_ACTION,
             DisconnectingWaiterFactory.DEFAULT_DISCONNECTED_VALIDATION_ACTION
         );

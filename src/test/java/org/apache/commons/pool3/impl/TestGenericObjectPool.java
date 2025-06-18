@@ -52,6 +52,7 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
 import org.apache.commons.lang3.ThreadUtils;
+import org.apache.commons.lang3.function.Suppliers;
 import org.apache.commons.lang3.time.DurationUtils;
 import org.apache.commons.pool3.BasePooledObjectFactory;
 import org.apache.commons.pool3.ObjectPool;
@@ -2653,7 +2654,7 @@ class TestGenericObjectPool extends TestBaseObjectPool {
     @Timeout(value = 1000, unit = TimeUnit.MILLISECONDS)
     void testNPEOnFactoryNull() throws InterruptedException {
         final DisconnectingWaiterFactory<String> factory = new DisconnectingWaiterFactory<>(
-                () -> null, // Override default to always return null from makeObject
+                Suppliers.nul(), // Override default to always return null from makeObject
                 DisconnectingWaiterFactory.DEFAULT_DISCONNECTED_LIFECYCLE_ACTION,
                 DisconnectingWaiterFactory.DEFAULT_DISCONNECTED_VALIDATION_ACTION);
         try (GenericObjectPool<Waiter, IllegalStateException> pool = new GenericObjectPool<>(factory)) {
