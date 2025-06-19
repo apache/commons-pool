@@ -59,7 +59,7 @@ The <action> type attribute can be add,update,fix,remove.
     <action dev="ggregory" type="remove">Deprecations from version 2.x have been removed.</action>
     <!-- UPDATE -->
     <action type="update" dev="ggregory" due-to="Gary Gregory">Bump Java from 8 to 17.</action>
-    <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.commons:commons-parent from 79 to 84.</action>
+    <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.commons:commons-parent from 79 to 85.</action>
     <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.commons:commons-parent from 58 to 78 #297, #328, #338, #341, #347, #351, #354, #361.</action>
     <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.ow2.asm:asm-util from 9.5 to 9.7.1 #252, #294, #355.</action>
     <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.apache.commons:commons-lang3 from 3.13.0 to 3.17.0 #326, #333, #342.</action>
