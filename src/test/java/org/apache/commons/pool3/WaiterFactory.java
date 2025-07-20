@@ -160,7 +160,7 @@ public class WaiterFactory<K> implements PooledObjectFactory<Waiter, IllegalStat
                 if (v1.intValue() >= maxActivePerKey) {
                     throw new IllegalStateException("Too many active " +
                     "instances for key = " + key + ": " + v1.intValue() +
-                    " in circulation " + "with maxActivePerKey = " +
+                    " in circulation with maxActivePerKey = " +
                     maxActivePerKey);
                 }
                 return Integer.valueOf(v1.intValue() + 1);
