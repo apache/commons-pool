@@ -86,7 +86,7 @@ public final class PoolUtils {
          */
         @Override
         public String toString() {
-            return "ErodingFactor{" + "factor=" + factor +
+            return "ErodingFactor{factor=" + factor +
                     ", idleHighWaterMark=" + idleHighWaterMark + '}';
         }
 
@@ -323,7 +323,7 @@ public final class PoolUtils {
          */
         @Override
         public String toString() {
-            return "ErodingKeyedObjectPool{" + "factor=" +
+            return "ErodingKeyedObjectPool{factor=" +
                     erodingFactor + ", keyedPool=" + keyedPool + '}';
         }
     }
@@ -465,7 +465,7 @@ public final class PoolUtils {
          */
         @Override
         public String toString() {
-            return "ErodingObjectPool{" + "factor=" + factor + ", pool=" +
+            return "ErodingObjectPool{factor=" + factor + ", pool=" +
                     pool + '}';
         }
     }
@@ -515,7 +515,7 @@ public final class PoolUtils {
         @SuppressWarnings("resource") // getKeyedPool(): ivar access
         @Override
         public String toString() {
-            return "ErodingPerKeyKeyedObjectPool{" + "factor=" + factor +
+            return "ErodingPerKeyKeyedObjectPool{factor=" + factor +
                     ", keyedPool=" + getKeyedPool() + '}';
         }
     }
