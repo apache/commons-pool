@@ -18,15 +18,15 @@
 /**
  * Object pooling API.
  * <p>
- * The <code>org.apache.commons.pool3</code> package defines a simple interface for a pool of object instances, and a handful of base classes that may be useful
+ * The {@code org.apache.commons.pool3} package defines a simple interface for a pool of object instances, and a handful of base classes that may be useful
  * when creating pool implementations.
  * </p>
  * <p>
- * The <code>pool</code> package itself doesn't define a specific object pooling implementation, but rather a contract that implementations may support in order
+ * The {@code pool} package itself doesn't define a specific object pooling implementation, but rather a contract that implementations may support in order
  * to be fully interchangeable.
  * </p>
  * <p>
- * The <code>pool</code> package separates the way in which instances are pooled from the way in which they are created, resulting in a pair of interfaces:
+ * The {@code pool} package separates the way in which instances are pooled from the way in which they are created, resulting in a pair of interfaces:
  * </p>
  * <dl>
  * <dt>{@link org.apache.commons.pool3.ObjectPool ObjectPool}</dt>
@@ -36,7 +36,7 @@
  * needed.</dd>
  * </dl>
  * <p>
- * The <code>pool</code> package also provides a keyed pool interface, which pools instances of multiple types, accessed according to an arbitrary key. See
+ * The {@code pool} package also provides a keyed pool interface, which pools instances of multiple types, accessed according to an arbitrary key. See
  * {@link org.apache.commons.pool3.KeyedObjectPool KeyedObjectPool} and {@link org.apache.commons.pool3.KeyedPooledObjectFactory KeyedPooledObjectFactory}.
  * </p>
  */
