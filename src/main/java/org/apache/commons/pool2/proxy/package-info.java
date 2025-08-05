@@ -18,14 +18,14 @@
 /**
  * Object pooling proxy implementation.
  * <p>
- * The <code>org.apache.commons.pool2.proxy</code> package defines a
+ * The {@code org.apache.commons.pool2.proxy} package defines a
  * object pool that wraps all objects returned to clients. This allows it
  * to disable those proxies when the objects are returned thereby enabling
  * the continued use of those objects by clients to be detected.
  * </p>
  * <p>
- * Support is provided for <code>java.lang.reflect.Proxy</code> and for
- * <code>net.sf.cglib.proxy</code> based proxies. The latter, requires the
+ * Support is provided for {@code java.lang.reflect.Proxy} and for
+ * {@code net.sf.cglib.proxy} based proxies. The latter, requires the
  * additional of the optional Code Generation Library (GCLib).
  * </p>
  * <p>
