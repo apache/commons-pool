@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
-    <version>85</version>
+    <version>87</version>
   </parent>
   <artifactId>commons-pool3</artifactId>
   <version>3.0.0-SNAPSHOT</version>
