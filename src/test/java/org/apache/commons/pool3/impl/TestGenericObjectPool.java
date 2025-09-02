@@ -975,7 +975,6 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         config.setJmxEnabled(false);
         GenericObjectPool<String, TestException> abandoned = new GenericObjectPool<>(simpleFactory, config);
         abandoned.setDurationBetweenEvictionRuns(Duration.ofMillis(100)); // Starts evictor
-        assertEquals(abandoned.getRemoveAbandonedTimeoutDuration(), abandoned.getRemoveAbandonedTimeoutDuration());
 
         // This is ugly, but forces GC to hit the pool
         final WeakReference<GenericObjectPool<String, TestException>> ref = new WeakReference<>(abandoned);
