@@ -87,14 +87,6 @@ final class EvictionTimer {
                         iterator.remove();
                     }
                 }
-
-                for (final Entry<WeakReference<BaseGenericObjectPool<?, ?>.Evictor>, WeakRunner<BaseGenericObjectPool<?, ?>.Evictor>> entry : TASK_MAP
-                        .entrySet()) {
-                    if (entry.getKey().get() == null) {
-                        executor.remove(entry.getValue());
-                        TASK_MAP.remove(entry.getKey());
-                    }
-                }
                 if (TASK_MAP.isEmpty() && executor != null) {
                     executor.shutdown();
                     executor.setCorePoolSize(0);
