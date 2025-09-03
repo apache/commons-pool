@@ -973,13 +973,25 @@ class TestGenericObjectPool extends TestBaseObjectPool {
     void testAbandonedPool() throws TestException, InterruptedException {
         final GenericObjectPoolConfig<String> config = new GenericObjectPoolConfig<>();
         config.setJmxEnabled(false);
-        GenericObjectPool<String, TestException> abandoned = new GenericObjectPool<>(simpleFactory, config);
-        abandoned.setDurationBetweenEvictionRuns(Duration.ofMillis(100)); // Starts evictor
 
-        // This is ugly, but forces GC to hit the pool
-        final WeakReference<GenericObjectPool<String, TestException>> ref = new WeakReference<>(abandoned);
-        abandoned = null;
-        while (ref.get() != null) {
+        // Need to create at least 2 pools to test EvictorTimer Reaper for ConcurrentModificationException
+        // Note: If the test fails, the ConcurrentModificationException isn't visible without modifications to the
+        //       Reaper class.
+        GenericObjectPool<String, TestException> abandoned1 = new GenericObjectPool<>(simpleFactory, config);
+        abandoned1.setDurationBetweenEvictionRuns(Duration.ofMillis(100)); // Starts evictor
+        GenericObjectPool<String, TestException> abandoned2 = new GenericObjectPool<>(simpleFactory, config);
+        abandoned2.setDurationBetweenEvictionRuns(Duration.ofMillis(100)); // Starts evictor
+
+        // This is ugly, but forces GC to hit the pools
+        final WeakReference<GenericObjectPool<String, TestException>> ref1 = new WeakReference<>(abandoned1);
+        abandoned1 = null;
+        while (ref1.get() != null) {
+            System.gc();
+            Thread.sleep(100);
+        }
+        final WeakReference<GenericObjectPool<String, TestException>> ref2 = new WeakReference<>(abandoned2);
+        abandoned2 = null;
+        while (ref2.get() != null) {
             System.gc();
             Thread.sleep(100);
         }
