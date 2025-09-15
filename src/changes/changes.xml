@@ -56,6 +56,7 @@ The <action> type attribute can be add,update,fix,remove.
     <action type="fix" dev="ggregory" due-to="Gary Gregory">Operation on the "idleHighWaterMark" shared variable in "ErodingFactor" class is not atomic [org.apache.commons.pool3.PoolUtils$ErodingFactor] At PoolUtils.java:[line 101] AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE.</action>
     <action type="fix" dev="ggregory" due-to="shengulong, Gary Gregory" issue="POOL-422">org.apache.commons.pool3.impl.GenericObjectPool.create(Duration) duration computation doesn't match 2.x. See also PR #409 from shengulong.</action>
     <action type="fix" dev="markt"    due-to="Coverity Scan">Fix potential ConcurrentModificationException in EvictionTimer thread clean-up.</action>
+    <action type="fix" dev="markt"    due-to="Coverity Scan">Fix potential ConcurrentModificationException in EvictionTimer tasks.</action>
     <!-- REMOVE -->
     <action dev="ggregory" type="remove">Deprecations from version 2.x have been removed.</action>
     <!-- UPDATE -->

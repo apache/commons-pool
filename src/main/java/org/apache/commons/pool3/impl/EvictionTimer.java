@@ -120,8 +120,10 @@ final class EvictionTimer {
             if (task != null) {
                 task.run();
             } else {
-                executor.remove(this);
-                TASK_MAP.remove(ref);
+                synchronized (EvictionTimer.class) {
+                    executor.remove(this);
+                    TASK_MAP.remove(ref);
+                }
             }
         }
     }
