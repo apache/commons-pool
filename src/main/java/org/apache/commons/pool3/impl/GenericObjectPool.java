@@ -972,11 +972,12 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
     public Set<DefaultPooledObjectInfo> listAllObjects() {
         return allObjects.values().stream().map(DefaultPooledObjectInfo::new).collect(Collectors.toSet());
     }
+
     /**
      * Tries to ensure that {@link #getMinIdle()} idle instances are available
      * in the pool.
      *
-     * @throws E If the associated factory throws an exception
+     * @throws E If the associated factory throws an exception.
      * @since 2.4
      */
     public void preparePool() throws E {
