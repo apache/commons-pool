@@ -51,7 +51,7 @@ public final class CallStackUtils {
      * @param useTimestamp  if true, interpret message as a SimpleDateFormat and print the created timestamp; otherwise,
      *                      print message format literally
      * @return a new CallStack
-     * @deprecated use {@link #newCallStack(String, boolean, boolean)}
+     * @deprecated Use {@link #newCallStack(String, boolean, boolean)}
      */
     @Deprecated
     public static CallStack newCallStack(final String messageFormat, final boolean useTimestamp) {
