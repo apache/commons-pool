@@ -950,13 +950,13 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     /**
      * Destroy the wrapped, pooled object.
      *
-     * @param key The key associated with the object to destroy.
+     * @param key The key associated with the object to destroy
      * @param toDestroy The wrapped object to be destroyed
      * @param always Should the object be destroyed even if it is not currently
      *               in the set of idle objects for the given key
-     * @param destroyMode DestroyMode context provided to the factory
+     * @param destroyMode {@link DestroyMode} context provided to the factory
      * @return {@code true} if the object was destroyed, otherwise {@code false}
-     * @throws Exception If the object destruction failed
+     * @throws Exception If the factory throws an exception during destruction
      */
     private boolean destroy(final K key, final PooledObject<T> toDestroy, final boolean always, final DestroyMode destroyMode) throws Exception {
 
@@ -1179,8 +1179,6 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
                             }
                         }
                         underTest.endEvictionTest(idleObjects);
-                        // TODO - May need to add code here once additional
-                        // states are used
                     }
                 }
             }
@@ -1425,7 +1423,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * to be borrowed) and active (currently borrowed).
      * <p>
      * Note: This is named listAllObjects so it is presented as an operation via
-     * JMX. That means it won't be invoked unless the explicitly requested
+     * JMX. That means it won't be invoked unless explicitly requested
      * whereas all attributes will be automatically requested when viewing the
      * attributes for an object in a tool like JConsole.
      * </p>
@@ -1678,7 +1676,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * <p>
      * Always activates {@link #reuseCapacity()} at least once.
      *
-     * @param newCapacity number of new instances to attempt to create.
+     * @param newCapacity number of times to call {@link #reuseCapacity()}
      */
     private void reuseCapacity(final int newCapacity) {
         final int bound = newCapacity < 1 ? 1 : newCapacity;
