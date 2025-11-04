@@ -2660,4 +2660,104 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         // Check thread was interrupted
         assertTrue(wtt.thrown instanceof InterruptedException);
     }
+
+
+    @Test
+    void testReuseCapacityOnReturnConfig() throws Exception {
+        // Test default value
+        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_REUSE_CAPACITY_ON_RETURN, gkoPool.getReuseCapacityOnReturn());
+        assertTrue(gkoPool.getReuseCapacityOnReturn());
+
+        // Test setting via config object
+        final GenericKeyedObjectPoolConfig<String> config = new GenericKeyedObjectPoolConfig<>();
+        config.setReuseCapacityOnReturn(false);
+        assertEquals(false, config.getReuseCapacityOnReturn());
+
+        try (GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<>(simpleFactory, config)) {
+            assertEquals(false, pool.getReuseCapacityOnReturn());
+        }
+
+        // Test setter
+        gkoPool.setReuseCapacityOnReturn(false);
+        assertEquals(false, gkoPool.getReuseCapacityOnReturn());
+
+        gkoPool.setReuseCapacityOnReturn(true);
+        assertEquals(true, gkoPool.getReuseCapacityOnReturn());
+    }
+
+    @Test
+    void testReuseCapacityOnMaintenanceConfig() throws Exception {
+        // Test default value
+        assertEquals(GenericKeyedObjectPoolConfig.DEFAULT_REUSE_CAPACITY_ON_MAINTENANCE, gkoPool.getReuseCapacityOnMaintenance());
+        assertFalse(gkoPool.getReuseCapacityOnMaintenance());
+
+        // Test setting via config object
+        final GenericKeyedObjectPoolConfig<String> config = new GenericKeyedObjectPoolConfig<>();
+        config.setReuseCapacityOnMaintenance(true);
+        assertEquals(true, config.getReuseCapacityOnMaintenance());
+
+        try (GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<>(simpleFactory, config)) {
+            assertEquals(true, pool.getReuseCapacityOnMaintenance());
+        }
+
+        // Test setter
+        gkoPool.setReuseCapacityOnMaintenance(true);
+        assertEquals(true, gkoPool.getReuseCapacityOnMaintenance());
+
+        gkoPool.setReuseCapacityOnMaintenance(false);
+        assertEquals(false, gkoPool.getReuseCapacityOnMaintenance());
+    }
+
+    /**
+     * Verify that when reuseCapacityOnMaintenance is true, eviction triggers reuseCapacity
+     * and when reuseCapacityOnReturn is false, returning an object does not trigger reuseCapacity.
+     * JIRA: POOL-350
+     */
+    @Test
+    @Timeout(value = 10_000, unit = TimeUnit.MILLISECONDS)
+    void testReuseCapacityOnMaintenanceBehavior() throws Exception {
+        gkoPool.setMaxTotalPerKey(2);
+        gkoPool.setMaxTotal(4);
+        gkoPool.setBlockWhenExhausted(true);
+        gkoPool.setMaxWait(Duration.ofSeconds(5));
+        gkoPool.setReuseCapacityOnReturn(false);
+        gkoPool.setReuseCapacityOnMaintenance(true);
+
+        // Create a waiter on key1
+        final Thread waiter = new Thread(new SimpleTestThread<>(gkoPool, "key1"));
+
+        // Exhaust capacity
+        final String obj1 = gkoPool.borrowObject("key2");
+        final String obj2 = gkoPool.borrowObject("key2");
+        final String obj3 = gkoPool.borrowObject("key3");
+        final String obj4 = gkoPool.borrowObject("key3");
+
+        Thread.sleep(100);
+
+        // Launch the waiter - it will be blocked
+        waiter.start();
+        Thread.sleep(100);
+
+
+        // Return one object to free capacity
+        gkoPool.returnObject("key2", obj1);
+
+        // Even with capacity available, waiter should still be blocked
+        // because reuseCapacityOnReturn is false
+        Thread.sleep(100);
+        assertTrue(waiter.isAlive());
+
+        // Call evict - with reuseCapacityOnMaintenance=true, this should serve the waiter
+        gkoPool.evict();
+        Thread.sleep(100);
+
+        // Waiter should have been served
+        assertFalse(waiter.isAlive());
+
+        // Clean up
+        gkoPool.returnObject("key2", obj2);
+        gkoPool.returnObject("key3", obj3);
+        gkoPool.returnObject("key3", obj4);
+    }
 }
+

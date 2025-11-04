@@ -200,6 +200,12 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     private volatile int maxTotalPerKey =
             GenericKeyedObjectPoolConfig.DEFAULT_MAX_TOTAL_PER_KEY;
 
+    private volatile boolean reuseCapacityOnReturn =
+            GenericKeyedObjectPoolConfig.DEFAULT_REUSE_CAPACITY_ON_RETURN;
+
+    private volatile boolean reuseCapacityOnMaintenance =
+            GenericKeyedObjectPoolConfig.DEFAULT_REUSE_CAPACITY_ON_MAINTENANCE;
+
     private final KeyedPooledObjectFactory<K, T> factory;
 
     private final boolean fairness;
@@ -1187,6 +1193,9 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         if (ac != null && ac.getRemoveAbandonedOnMaintenance()) {
             removeAbandoned(ac);
         }
+        if (reuseCapacityOnMaintenance) {
+            reuseCapacity();
+        }
     }
 
     /**
@@ -1264,6 +1273,32 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     public int getMinIdlePerKey() {
         final int maxIdlePerKeySave = getMaxIdlePerKey();
         return Math.min(this.minIdlePerKey, maxIdlePerKeySave);
+    }
+
+    /**
+     * Gets whether to call {@link #reuseCapacity()} when returning objects to the pool.
+     * When true, the pool will check if there are threads waiting to borrow objects
+     * and attempt to reuse the capacity freed by the return operation.
+     *
+     * @return {@code true} if capacity reuse is enabled on return, {@code false} otherwise
+     * @see #setReuseCapacityOnReturn(boolean)
+     * @since 2.13.0
+     */
+    public boolean getReuseCapacityOnReturn() {
+        return reuseCapacityOnReturn;
+    }
+
+    /**
+     * Gets whether to call {@link #reuseCapacity()} during pool maintenance (eviction).
+     * When true, the pool will attempt to reuse freed capacity at the end of each
+     * eviction run.
+     *
+     * @return {@code true} if capacity reuse is enabled during maintenance, {@code false} otherwise
+     * @see #setReuseCapacityOnMaintenance(boolean)
+     * @since 2.13.0
+     */
+    public boolean getReuseCapacityOnMaintenance() {
+        return reuseCapacityOnMaintenance;
     }
 
     @Override
@@ -1618,7 +1653,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
                 }
             }
         } finally {
-            if (hasBorrowWaiters()) {
+            if (reuseCapacityOnReturn && hasBorrowWaiters()) {
                 reuseCapacity();
             }
             updateStatsReturn(activeTime);
@@ -1697,6 +1732,8 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         setMaxTotalPerKey(conf.getMaxTotalPerKey());
         setMaxTotal(conf.getMaxTotal());
         setMinIdlePerKey(conf.getMinIdlePerKey());
+        setReuseCapacityOnReturn(conf.getReuseCapacityOnReturn());
+        setReuseCapacityOnMaintenance(conf.getReuseCapacityOnMaintenance());
     }
 
     /**
@@ -1753,6 +1790,34 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         this.minIdlePerKey = minIdlePerKey;
     }
 
+    /**
+     * Sets whether to call {@link #reuseCapacity()} when returning objects to the pool.
+     * When enabled, the pool will check if there are threads waiting to borrow objects
+     * and attempt to reuse capacity (across pools) on return.
+     *
+     * @param reuseCapacityOnReturn {@code true} to enable capacity reuse on return,
+     *                              {@code false} to disable
+     * @see #getReuseCapacityOnReturn()
+     * @since 2.13.0
+     */
+    public void setReuseCapacityOnReturn(final boolean reuseCapacityOnReturn) {
+        this.reuseCapacityOnReturn = reuseCapacityOnReturn;
+    }
+
+    /**
+     * Sets whether to call {@link #reuseCapacity()} during pool maintenance (eviction).
+     * When enabled, the pool will attempt to reuse capacity at the end of each
+     * eviction run.
+     *
+     * @param reuseCapacityOnMaintenance {@code true} to enable capacity reuse during
+     *                                   maintenance, {@code false} to disable
+     * @see #getReuseCapacityOnMaintenance()
+     * @since 2.13.0
+     */
+    public void setReuseCapacityOnMaintenance(final boolean reuseCapacityOnMaintenance) {
+        this.reuseCapacityOnMaintenance = reuseCapacityOnMaintenance;
+    }
+
     @Override
     protected void toStringAppendFields(final StringBuilder builder) {
         super.toStringAppendFields(builder);
@@ -1780,6 +1845,10 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         builder.append(evictionKey);
         builder.append(", abandonedConfig=");
         builder.append(abandonedConfig);
+        builder.append(", reuseCapacityOnReturn=");
+        builder.append(reuseCapacityOnReturn);
+        builder.append(", reuseCapacityOnMaintenance=");
+        builder.append(reuseCapacityOnMaintenance);
     }
 
     /**
