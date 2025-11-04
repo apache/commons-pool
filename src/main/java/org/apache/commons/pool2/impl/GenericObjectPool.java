@@ -93,24 +93,20 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     private final PooledObjectFactory<T> factory;
 
     /*
-     * TODO The references to _maxActive are from 1.x and need to be updated.
-     *
      * All of the objects currently associated with this pool in any state. It
      * excludes objects that have been destroyed. The size of
      * {@link #allObjects} will always be less than or equal to {@link
-     * #_maxActive}. Map keys are pooled objects, values are the PooledObject
+     * #getMaxTotal()}. Map keys are pooled objects, values are the PooledObject
      * wrappers used internally by the pool.
      */
     private final ConcurrentHashMap<IdentityWrapper<T>, PooledObject<T>> allObjects = new ConcurrentHashMap<>();
 
     /*
-     * TODO The references to _maxActive are from 1.x and need to be updated.
-     *
      * The combined count of the currently created objects and those in the
-     * process of being created. Under load, it may exceed {@link #_maxActive}
+     * process of being created. Under load, it may exceed {@link #getMaxTotal()}
      * if multiple threads try and create a new object at the same time but
      * {@link #create()} will ensure that there are never more than
-     * {@link #_maxActive} objects created at any one time.
+     * {@link #getMaxTotal()} objects created at any one time.
      */
     private final AtomicLong createCount = new AtomicLong();
 
@@ -761,8 +757,6 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                             }
                         }
                         underTest.endEvictionTest(idleObjects);
-                        // TODO - May need to add code here once additional
-                        // states are used
                     }
                 }
             }
