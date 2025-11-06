@@ -193,10 +193,11 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Creates an object, and place it into the pool. addObject() is useful for
+     * Creates an object, and places it into the pool. addObject() is useful for
      * "pre-loading" a pool with idle objects.
      * <p>
-     * If there is no capacity available to add to the pool, this is a no-op
+     * If there is no capacity available to add to the pool, or there are already
+     * {@link #getMaxIdle()} idle instances in the pool, this is a no-op
      * (no exception, no impact to the pool).
      * </p>
      * <p>
@@ -213,7 +214,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         }
 
         final int localMaxTotal = getMaxTotal();
-        if (localMaxTotal < 0 || createCount.get() < localMaxTotal) {
+        final int localMaxIdle = getMaxIdle();
+        if (getNumIdle() < localMaxIdle && (localMaxTotal < 0 || createCount.get() < localMaxTotal)) {
             addIdleObject(create(getMaxWaitDuration()));
         }
     }

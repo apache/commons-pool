@@ -750,6 +750,7 @@ class TestGenericObjectPool extends TestBaseObjectPool {
                     trackerPool.setMaxIdle(-1);
                     final int instanceCount = 10 + random.nextInt(20);
                     trackerPool.setMaxTotal(instanceCount);
+                    trackerPool.setMaxIdle(instanceCount);
                     for (int k = 0; k < instanceCount; k++) {
                         trackerPool.addObject();
                     }
@@ -2979,5 +2980,33 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         genericObjectPool.returnObject(obj1);
         assertEquals(1, genericObjectPool.getNumIdle());
         genericObjectPool.close();
+    }
+
+    @Test
+    void testAddObjectRespectsMaxIdle() throws Exception {
+        genericObjectPool.setMaxIdle(1);
+        genericObjectPool.addObject();
+        genericObjectPool.addObject(); // should be no-op
+        assertEquals(1, genericObjectPool.getNumIdle());
+    }
+
+    @Test
+    void testAddObjectRespectsMaxTotal() throws Exception {
+        genericObjectPool.setMaxTotal(1);
+        genericObjectPool.addObject();
+        genericObjectPool.addObject(); // should be no-op
+        assertEquals(1, genericObjectPool.getNumIdle());
+    }
+
+    @Test
+    void testAddObjectCanAddToMaxIdle() throws Exception {
+        genericObjectPool.setMaxTotal(5);
+        genericObjectPool.borrowObject();
+        genericObjectPool.borrowObject();
+        genericObjectPool.setMaxIdle(3);
+        for (int i = 0; i < 3; i++) {
+            genericObjectPool.addObject();
+        }
+        assertEquals(3, genericObjectPool.getNumIdle());
     }
 }
