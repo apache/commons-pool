@@ -224,10 +224,8 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
         assertEquals(0, pool.getNumIdle());
         pool.invalidateObject(obj0);
         assertEquals(1, pool.getNumActive());
-        assertEquals(0, pool.getNumIdle());
         pool.invalidateObject(obj1);
         assertEquals(0, pool.getNumActive());
-        assertEquals(0, pool.getNumIdle());
         pool.close();
     }
 

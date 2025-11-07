@@ -913,7 +913,8 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * {@inheritDoc}
      * <p>
      * Activation of this method decrements the active count and attempts to destroy the instance, using the provided
-     * {@link DestroyMode}.
+     * {@link DestroyMode}. To ensure liveness of the pool, {@link #addObject()} is called to replace the invalidated
+     * instance.
      * </p>
      *
      * @throws Exception if an exception occurs destroying the object
@@ -934,7 +935,9 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
                 destroy(p, destroyMode);
             }
         }
-        ensureIdle(1, false);
+        if (!isClosed()) {
+             addObject();
+        }
     }
 
     /**
@@ -970,7 +973,10 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
 
     /**
      * Recovers abandoned objects which have been checked out but
-     * not used since longer than the removeAbandonedTimeout.
+     * not used since longer than the removeAbandonedTimeout. For each object
+     * deemed abandoned, {@link #invalidateObject(Object)} is called. This
+     * results in the object being destroyed and then {@link #addObject()} is
+     * called to try to replace it.
      *
      * @param abandonedConfig The configuration to use to identify abandoned objects
      */
