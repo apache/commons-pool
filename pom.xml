@@ -32,7 +32,6 @@
   <description>The Apache Commons Object Pooling Library.</description>
   <url>https://commons.apache.org/proper/commons-pool/</url>
   <issueManagement>
-    <system>jira</system>
     <url>https://issues.apache.org/jira/browse/POOL</url>
   </issueManagement>
   <ciManagement>
