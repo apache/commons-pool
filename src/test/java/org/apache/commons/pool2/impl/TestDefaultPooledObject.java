@@ -49,11 +49,8 @@ class TestDefaultPooledObject {
         final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 3);
         final Runnable allocateAndDeallocateTask = () -> {
             for (int i1 = 0; i1 < 10000; i1++) {
-                if (dpo.getIdleDuration().isNegative() || dpo.getIdleTime().isNegative()) {
-                    negativeIdleTimeReturned.set(true);
-                    break;
-                }
-                if (dpo.getIdleDuration().isNegative() || dpo.getIdleTime().isNegative()) {
+                if (dpo.getIdleDuration().isNegative() || dpo.getIdleTime().isNegative() || dpo.getIdleDuration().isNegative()
+                        || dpo.getIdleTime().isNegative()) {
                     negativeIdleTimeReturned.set(true);
                     break;
                 }
