@@ -34,22 +34,20 @@ class AbstractPool407Test {
             // The factory makes non-null objects and non-null PooledObjects,
             // therefore the ExecutorService should terminate when requested, without delay.
             assertTrue(termination);
-        } else {
+        } else if (poolConfigMaxWait.equals(Pool407Constants.WAIT_FOREVER)) {
             // The factory makes null objects or null PooledObjects,
             // therefore the ExecutorService should keep trying to create objects as configured in the pool's config object.
-            if (poolConfigMaxWait.equals(Pool407Constants.WAIT_FOREVER)) {
-                // If poolConfigMaxWait is maxed out, then the ExecutorService will not shutdown without delay.
-                if (obj == null) {
-                    // create() returned null, so wrap() was not even called, and borrowObject() fails fast.
-                    assertTrue(termination);
-                } else {
-                    // The ExecutorService fails to terminate when requested because
-                    assertFalse(true);
-                }
-            } else {
-                // If poolConfigMaxWait is short, then the ExecutorService should usually shutdown without delay.
+            // If poolConfigMaxWait is maxed out, then the ExecutorService will not shutdown without delay.
+            if (obj == null) {
+                // create() returned null, so wrap() was not even called, and borrowObject() fails fast.
                 assertTrue(termination);
+            } else {
+                // The ExecutorService fails to terminate when requested because
+                assertFalse(true);
             }
+        } else {
+            // If poolConfigMaxWait is short, then the ExecutorService should usually shutdown without delay.
+            assertTrue(termination);
         }
     }
 
