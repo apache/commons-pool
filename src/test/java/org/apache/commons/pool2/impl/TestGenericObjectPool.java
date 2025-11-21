@@ -2534,7 +2534,7 @@ class TestGenericObjectPool extends TestBaseObjectPool {
                 poolObjects.add(connectionPool.borrowObject());
             }
 
-            for (Object poolObject : poolObjects) {
+            for (final Object poolObject : poolObjects) {
 
                 tasks.add(new FutureTask<>(() -> {
                     startLatch.await();
