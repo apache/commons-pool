@@ -977,6 +977,18 @@ class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     @Test
+    void testAddObjectCanAddToMaxIdle() throws Exception {
+        genericObjectPool.setMaxTotal(5);
+        genericObjectPool.borrowObject();
+        genericObjectPool.borrowObject();
+        genericObjectPool.setMaxIdle(3);
+        for (int i = 0; i < 3; i++) {
+            genericObjectPool.addObject();
+        }
+        assertEquals(3, genericObjectPool.getNumIdle());
+    }
+
+    @Test
     @Timeout(value = 400, unit = TimeUnit.MILLISECONDS)
     void testAddObjectFastReturn() throws Exception {
         final SimpleFactory simpleFactory = new SimpleFactory();
@@ -992,6 +1004,22 @@ class TestGenericObjectPool extends TestBaseObjectPool {
             Thread.sleep(50); // Wait for the thread to start
             pool.addObject(); // Should return immediately
         }
+    }
+
+    @Test
+    void testAddObjectRespectsMaxIdle() throws Exception {
+        genericObjectPool.setMaxIdle(1);
+        genericObjectPool.addObject();
+        genericObjectPool.addObject(); // should be no-op
+        assertEquals(1, genericObjectPool.getNumIdle());
+    }
+
+    @Test
+    void testAddObjectRespectsMaxTotal() throws Exception {
+        genericObjectPool.setMaxTotal(1);
+        genericObjectPool.addObject();
+        genericObjectPool.addObject(); // should be no-op
+        assertEquals(1, genericObjectPool.getNumIdle());
     }
 
     @Test
@@ -2548,6 +2576,62 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         assertEquals(1, genericObjectPool.getNumIdle());
     }
 
+    /**
+     * Verify that when thread A borrows two objects from a pool with maxTotal=2,
+     * then two more threads try to borrow, returning one object and invalidating
+     * the other will serve both of the waiting threads.
+     */
+    @Test
+    @Timeout(value = 10_000, unit = TimeUnit.MILLISECONDS)
+    void testReturnAndInvalidateServesWaiters() throws Exception {
+        genericObjectPool.setMaxTotal(2);
+        genericObjectPool.setBlockWhenExhausted(true);
+        genericObjectPool.setMaxWait(Duration.ofMillis(100));
+
+        // Thread A borrows two objects
+        final String obj1 = genericObjectPool.borrowObject();
+        final String obj2 = genericObjectPool.borrowObject();
+
+        // Track successful borrows
+        final AtomicInteger successfulBorrows = new AtomicInteger(0);
+
+        // Create two borrowing threads that will block
+        final Thread borrower1 = new Thread(() -> {
+            try {
+                genericObjectPool.borrowObject();
+                successfulBorrows.incrementAndGet();
+            } catch (final Exception e) {
+                // Borrow failed
+            }
+        });
+
+        final Thread borrower2 = new Thread(() -> {
+            try {
+                genericObjectPool.borrowObject();
+                successfulBorrows.incrementAndGet();
+            } catch (final Exception e) {
+                // Borrow failed
+            }
+        });
+
+        // Start the borrowing threads - they will block
+        borrower1.start();
+        borrower2.start();
+        Thread.sleep(50); // Give threads time to start and block
+
+        // Thread A returns one object and invalidates the other with no delay
+        genericObjectPool.invalidateObject(obj1);
+        genericObjectPool.invalidateObject(obj2);
+
+        // Wait for threads to complete
+        borrower1.join();
+        borrower2.join();
+
+        // Both threads should have been served
+        assertEquals(2, successfulBorrows.get(),
+            "Both waiting threads should have been served, but only " + successfulBorrows.get() + " were served");
+    }
+
     @Test /* maxWaitMillis x2 + padding */
     @Timeout(value = 1200, unit = TimeUnit.MILLISECONDS)
     void testReturnBorrowObjectWithingMaxWaitDuration() throws Exception {
@@ -2871,6 +2955,7 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         }
     }
 
+
     // POOL-276
     @Test
     void testValidationOnCreateOnly() throws Exception {
@@ -2968,7 +3053,6 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         genericObjectPool.close();
     }
 
-
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
     void testWhenExhaustedFail() throws Exception {
@@ -2980,89 +3064,5 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         genericObjectPool.returnObject(obj1);
         assertEquals(1, genericObjectPool.getNumIdle());
         genericObjectPool.close();
-    }
-
-    @Test
-    void testAddObjectRespectsMaxIdle() throws Exception {
-        genericObjectPool.setMaxIdle(1);
-        genericObjectPool.addObject();
-        genericObjectPool.addObject(); // should be no-op
-        assertEquals(1, genericObjectPool.getNumIdle());
-    }
-
-    @Test
-    void testAddObjectRespectsMaxTotal() throws Exception {
-        genericObjectPool.setMaxTotal(1);
-        genericObjectPool.addObject();
-        genericObjectPool.addObject(); // should be no-op
-        assertEquals(1, genericObjectPool.getNumIdle());
-    }
-
-    @Test
-    void testAddObjectCanAddToMaxIdle() throws Exception {
-        genericObjectPool.setMaxTotal(5);
-        genericObjectPool.borrowObject();
-        genericObjectPool.borrowObject();
-        genericObjectPool.setMaxIdle(3);
-        for (int i = 0; i < 3; i++) {
-            genericObjectPool.addObject();
-        }
-        assertEquals(3, genericObjectPool.getNumIdle());
-    }
-
-    /**
-     * Verify that when thread A borrows two objects from a pool with maxTotal=2,
-     * then two more threads try to borrow, returning one object and invalidating
-     * the other will serve both of the waiting threads.
-     */
-    @Test
-    @Timeout(value = 10_000, unit = TimeUnit.MILLISECONDS)
-    void testReturnAndInvalidateServesWaiters() throws Exception {
-        genericObjectPool.setMaxTotal(2);
-        genericObjectPool.setBlockWhenExhausted(true);
-        genericObjectPool.setMaxWait(Duration.ofMillis(100));
-
-        // Thread A borrows two objects
-        final String obj1 = genericObjectPool.borrowObject();
-        final String obj2 = genericObjectPool.borrowObject();
-
-        // Track successful borrows
-        final AtomicInteger successfulBorrows = new AtomicInteger(0);
-
-        // Create two borrowing threads that will block
-        final Thread borrower1 = new Thread(() -> {
-            try {
-                genericObjectPool.borrowObject();
-                successfulBorrows.incrementAndGet();
-            } catch (final Exception e) {
-                // Borrow failed
-            }
-        });
-
-        final Thread borrower2 = new Thread(() -> {
-            try {
-                genericObjectPool.borrowObject();
-                successfulBorrows.incrementAndGet();
-            } catch (final Exception e) {
-                // Borrow failed
-            }
-        });
-
-        // Start the borrowing threads - they will block
-        borrower1.start();
-        borrower2.start();
-        Thread.sleep(50); // Give threads time to start and block
-
-        // Thread A returns one object and invalidates the other with no delay
-        genericObjectPool.invalidateObject(obj1);
-        genericObjectPool.invalidateObject(obj2);
-
-        // Wait for threads to complete
-        borrower1.join();
-        borrower2.join();
-
-        // Both threads should have been served
-        assertEquals(2, successfulBorrows.get(),
-            "Both waiting threads should have been served, but only " + successfulBorrows.get() + " were served");
     }
 }

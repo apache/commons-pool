@@ -155,20 +155,6 @@ public class GenericKeyedObjectPoolConfig<T> extends BaseObjectPoolConfig<T> {
     }
 
     /**
-     * Gets the value for the {@code reuseCapacityOnReturn} configuration attribute
-     * for pools created with this configuration instance.
-     *
-     * @return  The current setting of {@code reuseCapacityOnReturn} for this
-     *          configuration instance
-     *
-     * @see GenericKeyedObjectPool#getReuseCapacityOnReturn()
-     * @since 2.13.0
-     */
-    public boolean getReuseCapacityOnReturn() {
-        return reuseCapacityOnReturn;
-    }
-
-    /**
      * Gets the value for the {@code reuseCapacityOnMaintenance} configuration attribute
      * for pools created with this configuration instance.
      *
@@ -180,6 +166,20 @@ public class GenericKeyedObjectPoolConfig<T> extends BaseObjectPoolConfig<T> {
      */
     public boolean getReuseCapacityOnMaintenance() {
         return reuseCapacityOnMaintenance;
+    }
+
+    /**
+     * Gets the value for the {@code reuseCapacityOnReturn} configuration attribute
+     * for pools created with this configuration instance.
+     *
+     * @return  The current setting of {@code reuseCapacityOnReturn} for this
+     *          configuration instance
+     *
+     * @see GenericKeyedObjectPool#getReuseCapacityOnReturn()
+     * @since 2.13.0
+     */
+    public boolean getReuseCapacityOnReturn() {
+        return reuseCapacityOnReturn;
     }
 
     /**
@@ -235,20 +235,6 @@ public class GenericKeyedObjectPoolConfig<T> extends BaseObjectPoolConfig<T> {
     }
 
     /**
-     * Sets the value for the {@code reuseCapacityOnReturn} configuration attribute for
-     * pools created with this configuration instance.
-     *
-     * @param reuseCapacityOnReturn The new setting of {@code reuseCapacityOnReturn}
-     *        for this configuration instance
-     *
-     * @see GenericKeyedObjectPool#setReuseCapacityOnReturn(boolean)
-     * @since 2.13.0
-     */
-    public void setReuseCapacityOnReturn(final boolean reuseCapacityOnReturn) {
-        this.reuseCapacityOnReturn = reuseCapacityOnReturn;
-    }
-
-    /**
      * Sets the value for the {@code reuseCapacityOnMaintenance} configuration attribute for
      * pools created with this configuration instance.
      *
@@ -260,6 +246,20 @@ public class GenericKeyedObjectPoolConfig<T> extends BaseObjectPoolConfig<T> {
      */
     public void setReuseCapacityOnMaintenance(final boolean reuseCapacityOnMaintenance) {
         this.reuseCapacityOnMaintenance = reuseCapacityOnMaintenance;
+    }
+
+    /**
+     * Sets the value for the {@code reuseCapacityOnReturn} configuration attribute for
+     * pools created with this configuration instance.
+     *
+     * @param reuseCapacityOnReturn The new setting of {@code reuseCapacityOnReturn}
+     *        for this configuration instance
+     *
+     * @see GenericKeyedObjectPool#setReuseCapacityOnReturn(boolean)
+     * @since 2.13.0
+     */
+    public void setReuseCapacityOnReturn(final boolean reuseCapacityOnReturn) {
+        this.reuseCapacityOnReturn = reuseCapacityOnReturn;
     }
 
     @Override

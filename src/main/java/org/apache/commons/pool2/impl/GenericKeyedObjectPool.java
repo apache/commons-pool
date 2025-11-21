@@ -1275,32 +1275,6 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         return Math.min(this.minIdlePerKey, maxIdlePerKeySave);
     }
 
-    /**
-     * Gets whether to call {@link #reuseCapacity()} when returning objects to the pool.
-     * When true, the pool will check if there are threads waiting to borrow objects
-     * and attempt to reuse the capacity freed by the return operation.
-     *
-     * @return {@code true} if capacity reuse is enabled on return, {@code false} otherwise
-     * @see #setReuseCapacityOnReturn(boolean)
-     * @since 2.13.0
-     */
-    public boolean getReuseCapacityOnReturn() {
-        return reuseCapacityOnReturn;
-    }
-
-    /**
-     * Gets whether to call {@link #reuseCapacity()} during pool maintenance (eviction).
-     * When true, the pool will attempt to reuse freed capacity at the end of each
-     * eviction run.
-     *
-     * @return {@code true} if capacity reuse is enabled during maintenance, {@code false} otherwise
-     * @see #setReuseCapacityOnMaintenance(boolean)
-     * @since 2.13.0
-     */
-    public boolean getReuseCapacityOnMaintenance() {
-        return reuseCapacityOnMaintenance;
-    }
-
     @Override
     public int getNumActive() {
         return numTotal.get() - getNumIdle();
@@ -1382,6 +1356,32 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
                 Integer.valueOf(deque.getIdleObjects().getTakeQueueLength()) :
                 ZERO));
         return result;
+    }
+
+    /**
+     * Gets whether to call {@link #reuseCapacity()} during pool maintenance (eviction).
+     * When true, the pool will attempt to reuse freed capacity at the end of each
+     * eviction run.
+     *
+     * @return {@code true} if capacity reuse is enabled during maintenance, {@code false} otherwise
+     * @see #setReuseCapacityOnMaintenance(boolean)
+     * @since 2.13.0
+     */
+    public boolean getReuseCapacityOnMaintenance() {
+        return reuseCapacityOnMaintenance;
+    }
+
+    /**
+     * Gets whether to call {@link #reuseCapacity()} when returning objects to the pool.
+     * When true, the pool will check if there are threads waiting to borrow objects
+     * and attempt to reuse the capacity freed by the return operation.
+     *
+     * @return {@code true} if capacity reuse is enabled on return, {@code false} otherwise
+     * @see #setReuseCapacityOnReturn(boolean)
+     * @since 2.13.0
+     */
+    public boolean getReuseCapacityOnReturn() {
+        return reuseCapacityOnReturn;
     }
 
     @Override
@@ -1791,20 +1791,6 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     }
 
     /**
-     * Sets whether to call {@link #reuseCapacity()} when returning objects to the pool.
-     * When enabled, the pool will check if there are threads waiting to borrow objects
-     * and attempt to reuse capacity (across pools) on return.
-     *
-     * @param reuseCapacityOnReturn {@code true} to enable capacity reuse on return,
-     *                              {@code false} to disable
-     * @see #getReuseCapacityOnReturn()
-     * @since 2.13.0
-     */
-    public void setReuseCapacityOnReturn(final boolean reuseCapacityOnReturn) {
-        this.reuseCapacityOnReturn = reuseCapacityOnReturn;
-    }
-
-    /**
      * Sets whether to call {@link #reuseCapacity()} during pool maintenance (eviction).
      * When enabled, the pool will attempt to reuse capacity at the end of each
      * eviction run.
@@ -1816,6 +1802,20 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      */
     public void setReuseCapacityOnMaintenance(final boolean reuseCapacityOnMaintenance) {
         this.reuseCapacityOnMaintenance = reuseCapacityOnMaintenance;
+    }
+
+    /**
+     * Sets whether to call {@link #reuseCapacity()} when returning objects to the pool.
+     * When enabled, the pool will check if there are threads waiting to borrow objects
+     * and attempt to reuse capacity (across pools) on return.
+     *
+     * @param reuseCapacityOnReturn {@code true} to enable capacity reuse on return,
+     *                              {@code false} to disable
+     * @see #getReuseCapacityOnReturn()
+     * @since 2.13.0
+     */
+    public void setReuseCapacityOnReturn(final boolean reuseCapacityOnReturn) {
+        this.reuseCapacityOnReturn = reuseCapacityOnReturn;
     }
 
     @Override
