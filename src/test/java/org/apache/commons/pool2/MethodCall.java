@@ -63,10 +63,7 @@ public class MethodCall {
             return false;
         }
         final MethodCall that = (MethodCall) o;
-        if (!Objects.equals(name, that.name)) {
-            return false;
-        }
-        if (!Objects.equals(params, that.params)) {
+        if (!Objects.equals(name, that.name) || !Objects.equals(params, that.params)) {
             return false;
         }
         return Objects.equals(returned, that.returned);
