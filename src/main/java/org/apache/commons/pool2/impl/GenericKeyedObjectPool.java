@@ -804,7 +804,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * @return The new, wrapped pooled object. May return null.
      * @throws Exception If the objection creation fails.
      */
-    private PooledObject<T> create(final K key, Duration maxWaitDuration) throws Exception {
+    private PooledObject<T> create(final K key, final Duration maxWaitDuration) throws Exception {
         final Instant startInstant = Instant.now();
         Duration remainingWaitDuration = maxWaitDuration.isNegative() ? Duration.ZERO : maxWaitDuration;
 
@@ -853,15 +853,13 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
                         // create a new object. Return and wait for an object to
                         // be returned.
                         create = Boolean.FALSE;
-                    } else {
-                        // There are makeObject() calls in progress that might
-                        // bring the pool to capacity. Those calls might also
-                        // fail so wait until they complete and then re-test if
-                        // the pool is at capacity or not.
-                        if (!remainingWaitDuration.isNegative()) {
-                            objectDeque.makeObjectCountLock.wait(remainingWaitDuration.toMillis(),
-                                     remainingWaitDuration.getNano() % 1_000_000);
-                        }
+                    } else // There are makeObject() calls in progress that might
+                    // bring the pool to capacity. Those calls might also
+                    // fail so wait until they complete and then re-test if
+                    // the pool is at capacity or not.
+                    if (!remainingWaitDuration.isNegative()) {
+                        objectDeque.makeObjectCountLock.wait(remainingWaitDuration.toMillis(),
+                                 remainingWaitDuration.getNano() % 1_000_000);
                     }
                 } else {
                     // The pool is not at capacity. Create a new object.
