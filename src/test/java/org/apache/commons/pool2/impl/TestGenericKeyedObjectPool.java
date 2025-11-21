@@ -772,7 +772,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         final GenericKeyedObjectPool<Object, Object> perKeyPool = new GenericKeyedObjectPool<>(perKeyFactory);
         perKeyPool.setMaxTotalPerKey(minCapacity);
         perKeyPool.setMaxIdlePerKey(minCapacity);
-        return (KeyedObjectPool<Object, Object>) perKeyPool;
+        return perKeyPool;
     }
 
     @Override
