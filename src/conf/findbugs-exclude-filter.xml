@@ -210,4 +210,16 @@
     <!-- TODO ? -->
     <Bug pattern="CT_CONSTRUCTOR_THROW" />
   </Match>
+  <Match>
+    <!-- TODO as of parent 93? -->
+    <Class name="org.apache.commons.pool2.impl.GenericKeyedObjectPool$ObjectDeque" />
+    <Field name="makeObjectCount" />
+    <Bug pattern="AT_NONATOMIC_64BIT_PRIMITIVE" />
+  </Match>
+  <Match>
+    <!-- TODO as of parent 93 ? -->
+    <Class name="org.apache.commons.pool2.impl.LinkedBlockingDeque" />
+    <Field name="count" />
+    <Bug pattern="AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE" />
+  </Match>
 </FindBugsFilter>

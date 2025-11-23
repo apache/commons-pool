@@ -68,7 +68,7 @@
     <module name="JavadocMethod">
     </module>
     <module name="JavadocVariable">
-      <property name="scope" value="protected" />
+      <property name="accessModifiers" value="protected" />
     </module>
     <module name="LeftCurly" />
     <module name="MethodParamPad"/>
