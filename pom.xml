@@ -166,13 +166,13 @@
           <groupId>org.apache.rat</groupId>
           <artifactId>apache-rat-plugin</artifactId>
           <configuration>
-            <excludes>
-              <exclude>src/test/resources/test1</exclude>
-              <exclude>src/test/resources/test2</exclude>
-              <exclude>.checkstyle</exclude>
-              <exclude>.fbprefs</exclude>
-              <exclude>.pmd</exclude>
-            </excludes>
+            <inputExcludes>
+              <inputExclude>src/test/resources/test1</inputExclude>
+              <inputExclude>src/test/resources/test2</inputExclude>
+              <inputExclude>.checkstyle</inputExclude>
+              <inputExclude>.fbprefs</inputExclude>
+              <inputExclude>.pmd</inputExclude>
+            </inputExcludes>
           </configuration>
         </plugin>
         <plugin>
@@ -278,13 +278,13 @@
           <groupId>org.apache.rat</groupId>
           <artifactId>apache-rat-plugin</artifactId>
           <configuration>
-            <excludes>
-              <exclude>src/test/resources/test1</exclude>
-              <exclude>src/test/resources/test2</exclude>
-              <exclude>.checkstyle</exclude>
-              <exclude>.fbprefs</exclude>
-              <exclude>.pmd</exclude>
-            </excludes>
+            <inputExcludes>
+              <inputExclude>src/test/resources/test1</inputExclude>
+              <inputExclude>src/test/resources/test2</inputExclude>
+              <inputExclude>.checkstyle</inputExclude>
+              <inputExclude>.fbprefs</inputExclude>
+              <inputExclude>.pmd</inputExclude>
+            </inputExcludes>
           </configuration>
         </plugin>
         <plugin>

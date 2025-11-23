@@ -57,6 +57,7 @@ The <action> type attribute can be add,update,fix,remove.
     <action type="fix" dev="ggregory" due-to="shengulong, Gary Gregory" issue="POOL-422">org.apache.commons.pool3.impl.GenericObjectPool.create(Duration) duration computation doesn't match 2.x. See also PR #409 from shengulong.</action>
     <action type="fix" dev="markt"    due-to="Coverity Scan">Fix potential ConcurrentModificationException in EvictionTimer thread clean-up.</action>
     <action type="fix" dev="markt"    due-to="Coverity Scan">Fix potential ConcurrentModificationException in EvictionTimer tasks.</action>
+    <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix Apache RAT plugin console warnings.</action>
     <!-- REMOVE -->
     <action dev="ggregory" type="remove">Deprecations from version 2.x have been removed.</action>
     <!-- UPDATE -->
