@@ -314,6 +314,23 @@
   </reporting>
   <profiles>
     <profile>
+      <id>java8</id>
+      <activation>
+        <jdk>1.8</jdk>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-checkstyle-plugin</artifactId>
+            <configuration>
+              <configLocation>src/conf/checkstyle-java8.xml</configLocation>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
       <id>java16</id>
       <!-- For testing with CGLIB on Java 16 and up. -->
       <activation>
