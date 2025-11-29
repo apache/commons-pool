@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.TreeMap;
+import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -310,7 +311,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     private void addIdleObject(final K key, final PooledObject<T> p) throws Exception {
         if (PooledObject.nonNull(p)) {
             factory.passivateObject(key, p);
-            final LinkedBlockingDeque<PooledObject<T>> idleObjects = poolMap.get(key).getIdleObjects();
+            final BlockingDeque<PooledObject<T>> idleObjects = poolMap.get(key).getIdleObjects();
             if (getLifo()) {
                 idleObjects.addFirst(p);
             } else {
@@ -697,7 +698,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         final ObjectDeque<T> objectDeque = register(key);
         int freedCapacity = 0;
         try {
-            final LinkedBlockingDeque<PooledObject<T>> idleObjects = objectDeque.getIdleObjects();
+            final BlockingDeque<PooledObject<T>> idleObjects = objectDeque.getIdleObjects();
             PooledObject<T> p = idleObjects.poll();
             while (p != null) {
                 try {
@@ -1629,7 +1630,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
             }
 
             final int maxIdle = getMaxIdlePerKey();
-            final LinkedBlockingDeque<PooledObject<T>> idleObjects = objectDeque.getIdleObjects();
+            final BlockingDeque<PooledObject<T>> idleObjects = objectDeque.getIdleObjects();
 
             if (isClosed() || maxIdle > -1 && maxIdle <= idleObjects.size()) {
                 try {
@@ -1674,7 +1675,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     private void reuseCapacity() {
         final int maxTotalPerKeySave = getMaxTotalPerKey();
         int maxQueueLength = 0;
-        LinkedBlockingDeque<PooledObject<T>> mostLoadedPool = null;
+        BlockingDeque<PooledObject<T>> mostLoadedPool = null;
         K mostLoadedKey = null;
 
         // Find the most loaded pool that could take a new instance
