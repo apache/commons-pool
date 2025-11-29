@@ -575,7 +575,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      *
      * @return number of threads waiting on this deque's notEmpty condition.
      */
-    public int getTakeQueueLength() {
+    int getTakeQueueLength() {
         lock.lock();
         try {
            return lock.getWaitQueueLength(notEmpty);
@@ -590,7 +590,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      *
      * @return true if there is at least one thread waiting on this deque's notEmpty condition.
      */
-    public boolean hasTakeWaiters() {
+    boolean hasTakeWaiters() {
         lock.lock();
         try {
             return lock.hasWaiters(notEmpty);
@@ -603,7 +603,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * Interrupts the threads currently waiting to take an object from the pool. See disclaimer on accuracy in
      * {@link java.util.concurrent.locks.ReentrantLock#getWaitingThreads(Condition)}.
      */
-    public void interuptTakeWaiters() {
+    void interuptTakeWaiters() {
         lock.lock();
         try {
             lock.interruptWaiters(notEmpty);
@@ -745,7 +745,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * @throws InterruptedException if the thread is interrupted whilst waiting
      *         for space
      */
-    public boolean offerFirst(final E e, final Duration timeout) throws InterruptedException {
+    boolean offerFirst(final E e, final Duration timeout) throws InterruptedException {
         Objects.requireNonNull(e, "e");
         long nanos = timeout.toNanos();
         lock.lockInterruptibly();
@@ -963,7 +963,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * @return the unlinked element
      * @throws InterruptedException if the current thread is interrupted
      */
-    public E pollLast(final Duration timeout)
+    E pollLast(final Duration timeout)
         throws InterruptedException {
         long nanos = timeout.toNanos();
         lock.lockInterruptibly();
