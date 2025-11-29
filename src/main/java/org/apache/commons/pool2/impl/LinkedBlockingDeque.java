@@ -1412,9 +1412,8 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
             p.next = n;
             n.prev = p;
             x.item = null;
-            // Don't mess with x's links.  They may still be in use by
-            // an iterator.
-        --count;
+            // Don't mess with x's links.  They may still be in use by an iterator.
+            --count;
             notFull.signal();
         }
     }
