@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.concurrent.BlockingDeque;
 
 import org.apache.commons.pool2.BaseObjectPool;
 import org.apache.commons.pool2.ObjectPool;
@@ -62,8 +63,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
     private long createCount; // @GuardedBy("this")
 
     /** Idle references - waiting to be borrowed */
-    private final LinkedBlockingDeque<PooledSoftReference<T>> idleReferences =
-        new LinkedBlockingDeque<>();
+    private final BlockingDeque<PooledSoftReference<T>> idleReferences = new LinkedBlockingDeque<>();
 
     /** All references - checked out or waiting to be borrowed. */
     private final ArrayList<PooledSoftReference<T>> allReferences =
