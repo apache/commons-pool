@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.BlockingDeque;
 
 import org.apache.commons.pool3.BaseObjectPool;
 import org.apache.commons.pool3.ObjectPool;
@@ -65,7 +66,7 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
     private long createCount; // @GuardedBy("this")
 
     /** Idle references - waiting to be borrowed */
-    private final LinkedBlockingDeque<PooledSoftReference<T>> idleReferences = new LinkedBlockingDeque<>();
+    private final BlockingDeque<PooledSoftReference<T>> idleReferences = new LinkedBlockingDeque<>();
 
     /** All references - checked out or waiting to be borrowed. */
     private final ArrayList<PooledSoftReference<T>> allReferences = new ArrayList<>();
