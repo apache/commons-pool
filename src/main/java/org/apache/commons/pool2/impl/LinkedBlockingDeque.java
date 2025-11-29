@@ -22,10 +22,10 @@ import java.io.Serializable;
 import java.time.Duration;
 import java.util.AbstractQueue;
 import java.util.Collection;
-import java.util.Deque;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 
@@ -66,7 +66,7 @@ import java.util.concurrent.locks.Condition;
  * @since 2.0
  */
 final class LinkedBlockingDeque<E> extends AbstractQueue<E>
-        implements Deque<E>, Serializable {
+        implements BlockingDeque<E>, Serializable {
 
     /*
      * Implemented as a simple doubly-linked list protected by a
