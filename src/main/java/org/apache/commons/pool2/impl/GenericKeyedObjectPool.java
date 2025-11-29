@@ -135,9 +135,9 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         /**
          * Gets all the objects for the current key.
          *
-         * @return All the objects
+         * @return All the objects.
          */
-        public Map<IdentityWrapper<S>, PooledObject<S>> getAllObjects() {
+        Map<IdentityWrapper<S>, PooledObject<S>> getAllObjects() {
             return allObjects;
         }
 
@@ -145,27 +145,27 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
          * Gets the number of instances created - number destroyed.
          * Should always be less than or equal to maxTotalPerKey.
          *
-         * @return The net instance addition count for this deque
+         * @return The net instance addition count for this deque.
          */
-        public AtomicInteger getCreateCount() {
+        AtomicInteger getCreateCount() {
             return createCount;
         }
 
         /**
          * Gets the idle objects for the current key.
          *
-         * @return The idle objects
+         * @return The idle objects.
          */
-        public LinkedBlockingDeque<PooledObject<S>> getIdleObjects() {
+        LinkedBlockingDeque<PooledObject<S>> getIdleObjects() {
             return idleObjects;
         }
 
         /**
          * Gets the number of threads with an interest registered in this key.
          *
-         * @return The number of threads with a registered interest in this key
+         * @return The number of threads with a registered interest in this key.
          */
-        public AtomicLong getNumInterested() {
+        AtomicLong getNumInterested() {
             return numInterested;
         }
 
