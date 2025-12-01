@@ -171,6 +171,8 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      * attribute. When {@code true}, the pool will collect detailed timing statistics
      * for monitoring purposes. When {@code false}, detailed statistics collection
      * is disabled, improving performance under high load.
+     *
+     * @since 2.13.0
      */
     public static final boolean DEFAULT_COLLECT_DETAILED_STATISTICS = true;
 
@@ -239,10 +241,11 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      * for pools created with this configuration instance.
      *
      * @return  {@code true} if detailed statistics collection is enabled,
-     *          {@code false} if disabled for improved performance
+     *          {@code false} if disabled for improved performance.
      *
      * @see GenericObjectPool#getCollectDetailedStatistics()
      * @see GenericKeyedObjectPool#getCollectDetailedStatistics()
+     * @since 2.13.0
      */
     public boolean getCollectDetailedStatistics() {
         return collectDetailedStatistics;
@@ -509,10 +512,11 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      * at the cost of reduced monitoring capabilities.
      *
      * @param collectDetailedStatistics The new setting of {@code collectDetailedStatistics}
-     *        for this configuration instance
+     *        for this configuration instance.
      *
      * @see GenericObjectPool#getCollectDetailedStatistics()
      * @see GenericKeyedObjectPool#getCollectDetailedStatistics()
+     * @since 2.13.0
      */
     public void setCollectDetailedStatistics(final boolean collectDetailedStatistics) {
         this.collectDetailedStatistics = collectDetailedStatistics;
