@@ -843,7 +843,8 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      * improving performance under high load.
      *
      * @return {@code true} if detailed statistics collection is enabled,
-     *         {@code false} if disabled for improved performance
+     *         {@code false} if disabled for improved performance.
+     * @since 2.13.0
      */
     public boolean getCollectDetailedStatistics() {
         return collectDetailedStatistics;
@@ -1476,7 +1477,8 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      * improving performance under high load at the cost of reduced monitoring capabilities.
      * This setting does not affect basic counters like borrowedCount, createdCount, etc.
      *
-     * @param collectDetailedStatistics whether to collect detailed statistics
+     * @param collectDetailedStatistics whether to collect detailed statistics.
+     * @since 2.13.0
      */
     public void setCollectDetailedStatistics(final boolean collectDetailedStatistics) {
         this.collectDetailedStatistics = collectDetailedStatistics;
