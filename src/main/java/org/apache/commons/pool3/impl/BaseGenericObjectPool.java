@@ -1767,12 +1767,10 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      */
     final void updateStatsBorrow(final PooledObject<T> p, final Duration waitDuration) {
         borrowedCount.incrementAndGet();
-        
         // Only collect detailed statistics if enabled
         if (collectDetailedStatistics) {
             idleTimes.add(p.getIdleDuration());
             waitTimes.add(waitDuration);
-
             // lock-free optimistic-locking maximum
             Duration currentMaxDuration;
             do {
@@ -1792,7 +1790,6 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      */
     final void updateStatsReturn(final Duration activeTime) {
         returnedCount.incrementAndGet();
-        
         // Only collect detailed statistics if enabled
         if (collectDetailedStatistics) {
             activeTimes.add(activeTime);
