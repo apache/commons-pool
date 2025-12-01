@@ -298,18 +298,16 @@ class TestBaseGenericObjectPool {
         assertTrue(pool.getMeanBorrowWaitTimeMillis() >= 50); // Should be influenced by recent higher values
     }
 
-    @Test 
+    @Test
     void testDetailedStatisticsConfigIntegration() {
         // Test that config property is properly applied during pool construction
         final GenericObjectPoolConfig<String> config = new GenericObjectPoolConfig<>();
         config.setCollectDetailedStatistics(false);
         try (GenericObjectPool<String, TestException> testPool = new GenericObjectPool<>(factory, config)) {
-            assertFalse(testPool.getCollectDetailedStatistics(), 
-                "Pool should respect collectDetailedStatistics setting from config");
+            assertFalse(testPool.getCollectDetailedStatistics(), "Pool should respect collectDetailedStatistics setting from config");
             // Test that toString includes the new property
             final String configString = config.toString();
-            assertTrue(configString.contains("collectDetailedStatistics"), 
-                "Config toString should include collectDetailedStatistics property");
+            assertTrue(configString.contains("collectDetailedStatistics"), "Config toString should include collectDetailedStatistics property");
         }
     }
 }
