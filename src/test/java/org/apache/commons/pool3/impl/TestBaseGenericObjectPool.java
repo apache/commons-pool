@@ -159,15 +159,12 @@ class TestBaseGenericObjectPool {
         // Test configuration through config object
         final GenericObjectPoolConfig<String> config = new GenericObjectPoolConfig<>();
         config.setCollectDetailedStatistics(false);
-        
         try (GenericObjectPool<String, TestException> testPool = new GenericObjectPool<>(factory, config)) {
             assertFalse(testPool.getCollectDetailedStatistics());
         }
-        
         // Test runtime configuration
         pool.setCollectDetailedStatistics(false);
         assertFalse(pool.getCollectDetailedStatistics());
-        
         pool.setCollectDetailedStatistics(true);
         assertTrue(pool.getCollectDetailedStatistics());
     }
@@ -176,23 +173,18 @@ class TestBaseGenericObjectPool {
     void testCollectDetailedStatisticsDisabled() throws Exception {
         // Configure pool to disable detailed statistics
         pool.setCollectDetailedStatistics(false);
-        
         final DefaultPooledObject<String> pooledObject = (DefaultPooledObject<String>) factory.makeObject();
-        
         // Record initial values
         final long initialActiveTime = pool.getMeanActiveTimeMillis();
         final long initialIdleTime = pool.getMeanIdleDuration().toMillis();
         final long initialWaitTime = pool.getMeanBorrowWaitTimeMillis();
         final long initialMaxWaitTime = pool.getMaxBorrowWaitTimeMillis();
-        
         // Update statistics - should be ignored for detailed stats
         pool.updateStatsBorrow(pooledObject, Duration.ofMillis(100));
         pool.updateStatsReturn(Duration.ofMillis(200));
-        
         // Basic counters should still work
         assertEquals(1, pool.getBorrowedCount());
         assertEquals(1, pool.getReturnedCount());
-        
         // Detailed statistics should remain unchanged
         assertEquals(initialActiveTime, pool.getMeanActiveTimeMillis());
         assertEquals(initialIdleTime, pool.getMeanIdleDuration().toMillis());
@@ -224,24 +216,19 @@ class TestBaseGenericObjectPool {
     @Test
     void testCollectDetailedStatisticsToggling() throws Exception {
         final DefaultPooledObject<String> pooledObject = (DefaultPooledObject<String>) factory.makeObject();
-        
         // Start with detailed stats enabled
         pool.setCollectDetailedStatistics(true);
         pool.updateStatsBorrow(pooledObject, Duration.ofMillis(50));
         pool.updateStatsReturn(Duration.ofMillis(100));
-        
         assertEquals(50, pool.getMeanBorrowWaitTimeMillis());
         assertEquals(100, pool.getMeanActiveTimeMillis());
-        
         // Disable detailed stats
         pool.setCollectDetailedStatistics(false);
         pool.updateStatsBorrow(pooledObject, Duration.ofMillis(200));
         pool.updateStatsReturn(Duration.ofMillis(300));
-        
         // Detailed stats should remain at previous values
         assertEquals(50, pool.getMeanBorrowWaitTimeMillis());
         assertEquals(100, pool.getMeanActiveTimeMillis());
-        
         // Basic counters should continue to increment
         assertEquals(2, pool.getBorrowedCount());
         assertEquals(2, pool.getReturnedCount());
@@ -255,19 +242,15 @@ class TestBaseGenericObjectPool {
         final ExecutorService executor = Executors.newFixedThreadPool(numThreads);
         final CountDownLatch startLatch = new CountDownLatch(1);
         final CountDownLatch completeLatch = new CountDownLatch(numThreads);
-        
         final List<Future<Void>> futures = new ArrayList<>();
-        
         // Create threads that will concurrently update statistics
         for (int i = 0; i < numThreads; i++) {
             final int threadId = i;
             futures.add(executor.submit(() -> {
                 try {
                     final DefaultPooledObject<String> pooledObject = (DefaultPooledObject<String>) factory.makeObject();
-                    
                     // Wait for all threads to be ready
                     startLatch.await();
-                    
                     // Perform concurrent operations
                     for (int j = 0; j < operationsPerThread; j++) {
                         pool.updateStatsBorrow(pooledObject, Duration.ofMillis(threadId * 10 + j));
@@ -281,22 +264,17 @@ class TestBaseGenericObjectPool {
                 return null;
             }));
         }
-        
         // Start all threads simultaneously
         startLatch.countDown();
-        
         // Wait for completion
         assertTrue(completeLatch.await(30, TimeUnit.SECONDS), "Concurrent test should complete within 30 seconds");
-        
         // Verify no exceptions occurred
         for (Future<Void> future : futures) {
             future.get(); // Will throw if there was an exception
         }
-        
         // Verify that statistics were collected (exact values may vary due to race conditions)
         assertEquals(numThreads * operationsPerThread, pool.getBorrowedCount());
         assertEquals(numThreads * operationsPerThread, pool.getReturnedCount());
-        
         // Mean values should be reasonable (not zero or wildly incorrect)
         assertTrue(pool.getMeanActiveTimeMillis() >= 0);
         assertTrue(pool.getMeanBorrowWaitTimeMillis() >= 0);
@@ -310,19 +288,16 @@ class TestBaseGenericObjectPool {
     void testStatsStoreCircularBuffer() throws Exception {
         // Test that StatsStore properly handles circular buffer behavior
         final DefaultPooledObject<String> pooledObject = (DefaultPooledObject<String>) factory.makeObject();
-        
         // Fill beyond the cache size (100) to test circular behavior
         final int cacheSize = 100; // BaseGenericObjectPool.MEAN_TIMING_STATS_CACHE_SIZE
         for (int i = 0; i < cacheSize + 50; i++) {
             pool.updateStatsBorrow(pooledObject, Duration.ofMillis(i));
             pool.updateStatsReturn(Duration.ofMillis(i * 2));
         }
-        
         // Statistics should still be meaningful after circular buffer wrapping
         assertTrue(pool.getMeanActiveTimeMillis() > 0);
         assertTrue(pool.getMeanBorrowWaitTimeMillis() > 0);
         assertTrue(pool.getMaxBorrowWaitTimeMillis() > 0);
-        
         // The mean should reflect recent values, not all historical values
         // (exact assertion depends on circular buffer implementation)
         assertTrue(pool.getMeanBorrowWaitTimeMillis() >= 50); // Should be influenced by recent higher values
@@ -333,11 +308,9 @@ class TestBaseGenericObjectPool {
         // Test that config property is properly applied during pool construction
         final GenericObjectPoolConfig<String> config = new GenericObjectPoolConfig<>();
         config.setCollectDetailedStatistics(false);
-        
         try (GenericObjectPool<String, TestException> testPool = new GenericObjectPool<>(factory, config)) {
             assertFalse(testPool.getCollectDetailedStatistics(), 
                 "Pool should respect collectDetailedStatistics setting from config");
-                
             // Test that toString includes the new property
             final String configString = config.toString();
             assertTrue(configString.contains("collectDetailedStatistics"), 
