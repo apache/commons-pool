@@ -838,8 +838,8 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
 
     /**
      * Gets whether detailed timing statistics collection is enabled.
-     * When {@code false}, the pool will not collect detailed timing statistics
-     * such as mean active time, mean idle time, and mean borrow wait time,
+     * When {@code false}, the pool will not collect detailed timing statistics for
+     * mean active time, mean idle time, and mean borrow wait time,
      * improving performance under high load.
      *
      * @return {@code true} if detailed statistics collection is enabled,
@@ -1475,7 +1475,9 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      * Sets whether detailed timing statistics collection is enabled.
      * When {@code false}, the pool will not collect detailed timing statistics,
      * improving performance under high load at the cost of reduced monitoring capabilities.
-     * This setting does not affect basic counters like borrowedCount, createdCount, etc.
+     * <p>
+     * This setting affects data collection for mean active time, mean idle time, and mean borrow wait time.
+     * </p>
      *
      * @param collectDetailedStatistics whether to collect detailed statistics.
      * @since 2.13.0
