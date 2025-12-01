@@ -196,17 +196,13 @@ class TestBaseGenericObjectPool {
     void testCollectDetailedStatisticsEnabled() throws Exception {
         // Ensure detailed statistics are enabled (default)
         pool.setCollectDetailedStatistics(true);
-        
         final DefaultPooledObject<String> pooledObject = (DefaultPooledObject<String>) factory.makeObject();
-        
         // Update statistics
         pool.updateStatsBorrow(pooledObject, Duration.ofMillis(100));
         pool.updateStatsReturn(Duration.ofMillis(200));
-        
         // All counters should work
         assertEquals(1, pool.getBorrowedCount());
         assertEquals(1, pool.getReturnedCount());
-        
         // Detailed statistics should be updated
         assertEquals(200, pool.getMeanActiveTimeMillis());
         assertEquals(100, pool.getMeanBorrowWaitTimeMillis());
@@ -279,7 +275,6 @@ class TestBaseGenericObjectPool {
         assertTrue(pool.getMeanActiveTimeMillis() >= 0);
         assertTrue(pool.getMeanBorrowWaitTimeMillis() >= 0);
         assertTrue(pool.getMaxBorrowWaitTimeMillis() >= 0);
-        
         executor.shutdown();
         assertTrue(executor.awaitTermination(5, TimeUnit.SECONDS));
     }
