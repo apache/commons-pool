@@ -171,6 +171,9 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      * attribute. When {@code true}, the pool will collect detailed timing statistics
      * for monitoring purposes. When {@code false}, detailed statistics collection
      * is disabled, improving performance under high load.
+     * <p>
+     * This setting affects data collection for mean active time, mean idle time, and mean borrow wait time.
+     * </p>
      *
      * @since 2.13.0
      */
@@ -239,10 +242,12 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     /**
      * Gets the value for the {@code collectDetailedStatistics} configuration attribute
      * for pools created with this configuration instance.
+     * <p>
+     * This setting affects data collection for mean active time, mean idle time, and mean borrow wait time.
+     * </p>
      *
      * @return  {@code true} if detailed statistics collection is enabled,
      *          {@code false} if disabled for improved performance.
-     *
      * @see GenericObjectPool#getCollectDetailedStatistics()
      * @see GenericKeyedObjectPool#getCollectDetailedStatistics()
      * @since 2.13.0
@@ -510,6 +515,9 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      * for pools created with this configuration instance. When {@code false}, the pool
      * will not collect detailed timing statistics, improving performance under high load
      * at the cost of reduced monitoring capabilities.
+     * <p>
+     * This setting affects data collection for mean active time, mean idle time, and mean borrow wait time.
+     * </p>
      *
      * @param collectDetailedStatistics The new setting of {@code collectDetailedStatistics}
      *        for this configuration instance.
