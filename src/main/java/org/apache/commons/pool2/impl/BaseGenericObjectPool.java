@@ -407,6 +407,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
 
     private volatile SwallowedExceptionListener swallowedExceptionListener;
     private volatile boolean messageStatistics;
+    private volatile boolean collectDetailedStatistics = BaseObjectPoolConfig.DEFAULT_COLLECT_DETAILED_STATISTICS;
 
     /** Additional configuration properties for abandoned object tracking. */
     protected volatile AbandonedConfig abandonedConfig;
@@ -868,6 +869,20 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
     @Deprecated
     public final long getMeanIdleTimeMillis() {
         return idleTimes.getMean();
+    }
+
+    /**
+     * Gets whether detailed timing statistics collection is enabled.
+     * When {@code false}, the pool will not collect detailed timing statistics for
+     * mean active time, mean idle time, and mean borrow wait time,
+     * improving performance under high load.
+     *
+     * @return {@code true} if detailed statistics collection is enabled,
+     *         {@code false} if disabled for improved performance.
+     * @since 2.13.0
+     */
+    public boolean getCollectDetailedStatistics() {
+        return collectDetailedStatistics;
     }
 
     /**
@@ -1396,6 +1411,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
             setEvictionPolicy(policy);
         }
         setEvictorShutdownTimeout(config.getEvictorShutdownTimeoutDuration());
+        setCollectDetailedStatistics(config.getCollectDetailedStatistics());
     }
 
     /**
@@ -1599,6 +1615,21 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
     @Deprecated
     public final void setMaxWaitMillis(final long maxWaitMillis) {
         setMaxWait(Duration.ofMillis(maxWaitMillis));
+    }
+
+    /**
+     * Sets whether detailed timing statistics collection is enabled.
+     * When {@code false}, the pool will not collect detailed timing statistics,
+     * improving performance under high load at the cost of reduced monitoring capabilities.
+     * <p>
+     * This setting affects data collection for mean active time, mean idle time, and mean borrow wait time.
+     * </p>
+     *
+     * @param collectDetailedStatistics whether to collect detailed statistics.
+     * @since 2.13.0
+     */
+    public void setCollectDetailedStatistics(final boolean collectDetailedStatistics) {
+        this.collectDetailedStatistics = collectDetailedStatistics;
     }
 
     /**
@@ -2068,17 +2099,19 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      */
     final void updateStatsBorrow(final PooledObject<T> p, final Duration waitDuration) {
         borrowedCount.incrementAndGet();
-        idleTimes.add(p.getIdleDuration());
-        waitTimes.add(waitDuration);
-
-        // lock-free optimistic-locking maximum
-        Duration currentMaxDuration;
-        do {
-            currentMaxDuration = maxBorrowWaitDuration.get();
-            if (currentMaxDuration.compareTo(waitDuration) >= 0) {
-                break;
-            }
-        } while (!maxBorrowWaitDuration.compareAndSet(currentMaxDuration, waitDuration));
+        // Only collect detailed statistics if enabled
+        if (collectDetailedStatistics) {
+            idleTimes.add(p.getIdleDuration());
+            waitTimes.add(waitDuration);
+            // lock-free optimistic-locking maximum
+            Duration currentMaxDuration;
+            do {
+                currentMaxDuration = maxBorrowWaitDuration.get();
+                if (currentMaxDuration.compareTo(waitDuration) >= 0) {
+                    break;
+                }
+            } while (!maxBorrowWaitDuration.compareAndSet(currentMaxDuration, waitDuration));
+        }
     }
 
     /**
@@ -2089,7 +2122,10 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      */
     final void updateStatsReturn(final Duration activeTime) {
         returnedCount.incrementAndGet();
-        activeTimes.add(activeTime);
+        // Only collect detailed statistics if enabled
+        if (collectDetailedStatistics) {
+            activeTimes.add(activeTime);
+        }
     }
 
     /**
