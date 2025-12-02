@@ -548,6 +548,20 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
     }
 
     /**
+     * Gets whether detailed timing statistics collection is enabled.
+     * When {@code false}, the pool will not collect detailed timing statistics for
+     * mean active time, mean idle time, and mean borrow wait time,
+     * improving performance under high load.
+     *
+     * @return {@code true} if detailed statistics collection is enabled,
+     *         {@code false} if disabled for improved performance.
+     * @since 2.13.0
+     */
+    public boolean getCollectDetailedStatistics() {
+        return collectDetailedStatistics;
+    }
+
+    /**
      * Gets the total number of objects created for this pool over the lifetime of
      * the pool.
      * @return the created object count
@@ -869,20 +883,6 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
     @Deprecated
     public final long getMeanIdleTimeMillis() {
         return idleTimes.getMean();
-    }
-
-    /**
-     * Gets whether detailed timing statistics collection is enabled.
-     * When {@code false}, the pool will not collect detailed timing statistics for
-     * mean active time, mean idle time, and mean borrow wait time,
-     * improving performance under high load.
-     *
-     * @return {@code true} if detailed statistics collection is enabled,
-     *         {@code false} if disabled for improved performance.
-     * @since 2.13.0
-     */
-    public boolean getCollectDetailedStatistics() {
-        return collectDetailedStatistics;
     }
 
     /**
@@ -1386,6 +1386,21 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
     }
 
     /**
+     * Sets whether detailed timing statistics collection is enabled.
+     * When {@code false}, the pool will not collect detailed timing statistics,
+     * improving performance under high load at the cost of reduced monitoring capabilities.
+     * <p>
+     * This setting affects data collection for mean active time, mean idle time, and mean borrow wait time.
+     * </p>
+     *
+     * @param collectDetailedStatistics whether to collect detailed statistics.
+     * @since 2.13.0
+     */
+    public void setCollectDetailedStatistics(final boolean collectDetailedStatistics) {
+        this.collectDetailedStatistics = collectDetailedStatistics;
+    }
+
+    /**
      * Sets the receiver with the given configuration.
      *
      * @param config Initialization source.
@@ -1615,21 +1630,6 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
     @Deprecated
     public final void setMaxWaitMillis(final long maxWaitMillis) {
         setMaxWait(Duration.ofMillis(maxWaitMillis));
-    }
-
-    /**
-     * Sets whether detailed timing statistics collection is enabled.
-     * When {@code false}, the pool will not collect detailed timing statistics,
-     * improving performance under high load at the cost of reduced monitoring capabilities.
-     * <p>
-     * This setting affects data collection for mean active time, mean idle time, and mean borrow wait time.
-     * </p>
-     *
-     * @param collectDetailedStatistics whether to collect detailed statistics.
-     * @since 2.13.0
-     */
-    public void setCollectDetailedStatistics(final boolean collectDetailedStatistics) {
-        this.collectDetailedStatistics = collectDetailedStatistics;
     }
 
     /**

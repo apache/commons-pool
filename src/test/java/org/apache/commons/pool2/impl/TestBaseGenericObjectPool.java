@@ -96,64 +96,6 @@ class TestBaseGenericObjectPool {
     }
 
     @Test
-    void testEvictionTimerMultiplePools() throws InterruptedException {
-        final AtomicIntegerFactory factory = new AtomicIntegerFactory();
-        factory.setValidateLatency(50);
-        try (GenericObjectPool<AtomicInteger> evictingPool = new GenericObjectPool<>(factory)) {
-            evictingPool.setTimeBetweenEvictionRuns(Duration.ofMillis(100));
-            evictingPool.setNumTestsPerEvictionRun(5);
-            evictingPool.setTestWhileIdle(true);
-            evictingPool.setMinEvictableIdleTime(Duration.ofMillis(50));
-            for (int i = 0; i < 10; i++) {
-                try {
-                    evictingPool.addObject();
-                } catch (final Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            for (int i = 0; i < 1000; i++) {
-                try (GenericObjectPool<AtomicInteger> nonEvictingPool = new GenericObjectPool<>(factory)) {
-                    // empty
-                }
-            }
-
-            Thread.sleep(1000);
-            assertEquals(0, evictingPool.getNumIdle());
-        }
-    }
-
-    /**
-     * POOL-393
-     * Tests JMX registration does not add too much latency to pool creation.
-     */
-    @SuppressWarnings("resource") // pools closed in finally block
-    @Test
-    @Timeout(value = 10_000, unit = TimeUnit.MILLISECONDS)
-    void testJMXRegistrationLatency() {
-        final int numPools = 1000;
-        final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-        final ArrayList<GenericObjectPool<Waiter>> pools = new ArrayList<>();
-        try {
-            // final long startTime = System.currentTimeMillis();
-            for (int i = 0; i < numPools; i++) {
-                pools.add(new GenericObjectPool<>(new WaiterFactory<>(0, 0, 0, 0, 0, 0), new GenericObjectPoolConfig<>()));
-            }
-            // System.out.println("Duration: " + (System.currentTimeMillis() - startTime));
-            final ObjectName oname = pools.get(numPools - 1).getJmxName();
-            assertEquals(1, mbs.queryNames(oname, null).size());
-        } finally {
-            pools.forEach(GenericObjectPool::close);
-        }
-    }
-
-    @Test
-    void testCollectDetailedStatisticsDefault() {
-        // Test that collectDetailedStatistics defaults to true for backward compatibility
-        assertTrue(pool.getCollectDetailedStatistics());
-    }
-
-    @Test
     void testCollectDetailedStatisticsConfiguration() {
         // Test configuration through config object
         final GenericObjectPoolConfig<String> config = new GenericObjectPoolConfig<>();
@@ -165,6 +107,12 @@ class TestBaseGenericObjectPool {
         pool.setCollectDetailedStatistics(false);
         assertFalse(pool.getCollectDetailedStatistics());
         pool.setCollectDetailedStatistics(true);
+        assertTrue(pool.getCollectDetailedStatistics());
+    }
+
+    @Test
+    void testCollectDetailedStatisticsDefault() {
+        // Test that collectDetailedStatistics defaults to true for backward compatibility
         assertTrue(pool.getCollectDetailedStatistics());
     }
 
@@ -230,6 +178,90 @@ class TestBaseGenericObjectPool {
     }
 
     @Test
+    void testDetailedStatisticsConfigIntegration() {
+        // Test that config property is properly applied during pool construction
+        final GenericObjectPoolConfig<String> config = new GenericObjectPoolConfig<>();
+        config.setCollectDetailedStatistics(false);
+        try (GenericObjectPool<String> testPool = new GenericObjectPool<>(factory, config)) {
+            assertFalse(testPool.getCollectDetailedStatistics(), "Pool should respect collectDetailedStatistics setting from config");
+            // Test that toString includes the new property
+            final String configString = config.toString();
+            assertTrue(configString.contains("collectDetailedStatistics"), "Config toString should include collectDetailedStatistics property");
+        }
+    }
+
+    @Test
+    void testEvictionTimerMultiplePools() throws InterruptedException {
+        final AtomicIntegerFactory factory = new AtomicIntegerFactory();
+        factory.setValidateLatency(50);
+        try (GenericObjectPool<AtomicInteger> evictingPool = new GenericObjectPool<>(factory)) {
+            evictingPool.setTimeBetweenEvictionRuns(Duration.ofMillis(100));
+            evictingPool.setNumTestsPerEvictionRun(5);
+            evictingPool.setTestWhileIdle(true);
+            evictingPool.setMinEvictableIdleTime(Duration.ofMillis(50));
+            for (int i = 0; i < 10; i++) {
+                try {
+                    evictingPool.addObject();
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            for (int i = 0; i < 1000; i++) {
+                try (GenericObjectPool<AtomicInteger> nonEvictingPool = new GenericObjectPool<>(factory)) {
+                    // empty
+                }
+            }
+
+            Thread.sleep(1000);
+            assertEquals(0, evictingPool.getNumIdle());
+        }
+    }
+
+    /**
+     * POOL-393
+     * Tests JMX registration does not add too much latency to pool creation.
+     */
+    @SuppressWarnings("resource") // pools closed in finally block
+    @Test
+    @Timeout(value = 10_000, unit = TimeUnit.MILLISECONDS)
+    void testJMXRegistrationLatency() {
+        final int numPools = 1000;
+        final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        final ArrayList<GenericObjectPool<Waiter>> pools = new ArrayList<>();
+        try {
+            // final long startTime = System.currentTimeMillis();
+            for (int i = 0; i < numPools; i++) {
+                pools.add(new GenericObjectPool<>(new WaiterFactory<>(0, 0, 0, 0, 0, 0), new GenericObjectPoolConfig<>()));
+            }
+            // System.out.println("Duration: " + (System.currentTimeMillis() - startTime));
+            final ObjectName oname = pools.get(numPools - 1).getJmxName();
+            assertEquals(1, mbs.queryNames(oname, null).size());
+        } finally {
+            pools.forEach(GenericObjectPool::close);
+        }
+    }
+
+    @Test
+    void testStatsStoreCircularBuffer() throws Exception {
+        // Test that StatsStore properly handles circular buffer behavior
+        final DefaultPooledObject<String> pooledObject = (DefaultPooledObject<String>) factory.makeObject();
+        // Fill beyond the cache size (100) to test circular behavior
+        final int cacheSize = 100; // BaseGenericObjectPool.MEAN_TIMING_STATS_CACHE_SIZE
+        for (int i = 0; i < cacheSize + 50; i++) {
+            pool.updateStatsBorrow(pooledObject, Duration.ofMillis(i));
+            pool.updateStatsReturn(Duration.ofMillis(i * 2));
+        }
+        // Statistics should still be meaningful after circular buffer wrapping
+        assertTrue(pool.getMeanActiveTimeMillis() > 0);
+        assertTrue(pool.getMeanBorrowWaitTimeMillis() > 0);
+        assertTrue(pool.getMaxBorrowWaitTimeMillis() > 0);
+        // The mean should reflect recent values, not all historical values
+        // (exact assertion depends on circular buffer implementation)
+        assertTrue(pool.getMeanBorrowWaitTimeMillis() >= 50); // Should be influenced by recent higher values
+    }
+
+    @Test
     void testStatsStoreConcurrentAccess() throws Exception {
         // Test the lock-free StatsStore implementation under concurrent load
         final int numThreads = 10;
@@ -276,37 +308,5 @@ class TestBaseGenericObjectPool {
         assertTrue(pool.getMaxBorrowWaitTimeMillis() >= 0);
         executor.shutdown();
         assertTrue(executor.awaitTermination(5, TimeUnit.SECONDS));
-    }
-
-    @Test
-    void testStatsStoreCircularBuffer() throws Exception {
-        // Test that StatsStore properly handles circular buffer behavior
-        final DefaultPooledObject<String> pooledObject = (DefaultPooledObject<String>) factory.makeObject();
-        // Fill beyond the cache size (100) to test circular behavior
-        final int cacheSize = 100; // BaseGenericObjectPool.MEAN_TIMING_STATS_CACHE_SIZE
-        for (int i = 0; i < cacheSize + 50; i++) {
-            pool.updateStatsBorrow(pooledObject, Duration.ofMillis(i));
-            pool.updateStatsReturn(Duration.ofMillis(i * 2));
-        }
-        // Statistics should still be meaningful after circular buffer wrapping
-        assertTrue(pool.getMeanActiveTimeMillis() > 0);
-        assertTrue(pool.getMeanBorrowWaitTimeMillis() > 0);
-        assertTrue(pool.getMaxBorrowWaitTimeMillis() > 0);
-        // The mean should reflect recent values, not all historical values
-        // (exact assertion depends on circular buffer implementation)
-        assertTrue(pool.getMeanBorrowWaitTimeMillis() >= 50); // Should be influenced by recent higher values
-    }
-
-    @Test
-    void testDetailedStatisticsConfigIntegration() {
-        // Test that config property is properly applied during pool construction
-        final GenericObjectPoolConfig<String> config = new GenericObjectPoolConfig<>();
-        config.setCollectDetailedStatistics(false);
-        try (GenericObjectPool<String> testPool = new GenericObjectPool<>(factory, config)) {
-            assertFalse(testPool.getCollectDetailedStatistics(), "Pool should respect collectDetailedStatistics setting from config");
-            // Test that toString includes the new property
-            final String configString = config.toString();
-            assertTrue(configString.contains("collectDetailedStatistics"), "Config toString should include collectDetailedStatistics property");
-        }
     }
 }
