@@ -15,35 +15,27 @@
  limitations under the License.
 -->
 <html>
-   <head>
-      <title>Overview of the org.apache.commons.pool3 component</title>
-   </head>
-   <body>
-      <p>
-         Generic Object pooling API with several implementations.
-      </p>
-      <p>
-         The <code>org.apache.commons.pool3</code> package defines a simple
-         interface for a pool of object instances, and a handful of base
-         classes that may be useful when creating pool implementations.
-         The API supports pooling of unique objects which can be requested
-         via a key as well as pools where all objects are equivalent.
-      </p>
-      <p>
-         The <code>org.apache.commons.pool3.impl</code> package contains
-         several pool implementations.
-         {@link org.apache.commons.pool3.impl.GenericObjectPool
-         GenericObjectPool} has many configuration options and can support
-         a limited set of objects such as would be useful in a database
-         connection pool.
-         {@link org.apache.commons.pool3.impl.SoftReferenceObjectPool
-         SoftReferenceObjectPool} has no limit on the number of objects in the
-         pool, but the garbage collector can remove idle objects from the pool
-         as needed.  There is also a keyed version of
-         {@link org.apache.commons.pool3.impl.GenericObjectPool
-         GenericObjectPool},
-         {@link org.apache.commons.pool3.impl.GenericKeyedObjectPool
-         GenericKeyedObjectPool}
-      </p>
-   </body>
+<head>
+<title>Overview of the org.apache.commons.pool3 component</title>
+</head>
+<body>
+  <a href="https://commons.apache.org/pool"> <img src="org/apache/commons/pool3/doc-files/logo.png" alt="Apache Commons Pool">
+  </a>
+  <p>Generic Object pooling API with several implementations.</p>
+  <p>
+    The
+    <code>org.apache.commons.pool3</code>
+    package defines a simple interface for a pool of object instances, and a handful of base classes that may be useful when creating pool implementations. The
+    API supports pooling of unique objects which can be requested via a key as well as pools where all objects are equivalent.
+  </p>
+  <p>
+    The
+    <code>org.apache.commons.pool3.impl</code>
+    package contains several pool implementations. {@link org.apache.commons.pool3.impl.GenericObjectPool GenericObjectPool} has many configuration options and
+    can support a limited set of objects such as would be useful in a database connection pool. {@link org.apache.commons.pool3.impl.SoftReferenceObjectPool
+    SoftReferenceObjectPool} has no limit on the number of objects in the pool, but the garbage collector can remove idle objects from the pool as needed. There
+    is also a keyed version of {@link org.apache.commons.pool3.impl.GenericObjectPool GenericObjectPool}, {@link
+    org.apache.commons.pool3.impl.GenericKeyedObjectPool GenericKeyedObjectPool}
+  </p>
+</body>
 </html>
