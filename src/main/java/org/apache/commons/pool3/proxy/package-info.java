@@ -16,7 +16,7 @@
  */
 
 /**
- * Object pooling proxy implementation.
+ * Object pooling proxy implementations.
  * <p>
  * The {@code org.apache.commons.pool3.proxy} package defines a
  * object pool that wraps all objects returned to clients. This allows it
