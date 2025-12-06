@@ -1,3 +1,70 @@
+Apache Commons Pool 2.13.0 Release Notes
+----------------------------------------
+
+The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.13.0.
+
+Apache Commons Pool provides an object-pooling API and several object-pool implementations.
+Version 2 contains a completely rewritten pooling implementation compared to the 1.x series.
+In addition to performance and scalability improvements, version 2 includes robust instance
+tracking and pool monitoring.
+
+Version 2.7.x and up requires Java 8 or above.
+Version 2.6.x requires Java 7 or above.
+Version 2.5.x requires Java 7 or above.
+Version 2.0 requires 6 or above. 
+
+NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPoolMXBean,
+      and GenericKeyedObjectPoolMXBean) exist only to define the attributes and methods
+      that will be made available via JMX. Clients must not implement them as
+      they are subject to change between major, minor, and patch version releases of
+      Commons Pool. Clients that implement any of these interfaces may not
+      be able to upgrade to a new minor or patch release without requiring code
+      changes.
+
+${d}
+
+Changes in version 2.13.0 include:
+
+New features:
+o            Add org.apache.commons.pool2.PooledObject.nonNull(PooledObject). Thanks to Gary Gregory.
+o            Add org.apache.commons.pool2.PooledObject.getObject(PooledObject). Thanks to Gary Gregory.
+o            Made statistics collection optional in BaseGenericObjectPool #429. Thanks to Pratyay, Gary Gregory.
+
+Fixed Bugs:
+o POOL-424:  GenericObjectPool.invalidateObject() can leave other threads waiting to borrow hanging.
+             The fix for this issue changes behavior of invalidateObject.  This method now always tries to add a new instance
+             to the pool to replace the invalidated and destroyed instance.  As a result of this change, abandoned object
+             removal now attemps to replace abandoned objects. Thanks to Steven Adams.
+o POOL-425:  GenericObjectPool addObject does not respect maxIdle.
+o POOL-350:  Make placement of calls to GKOP reuseCapacity configurable.
+o POOL-290:  TestSoftRefOutOfMemory (unit test) can loop infinitely on failure. Thanks to Serge Angelov.
+o POOL-419:  GenericObjectPool counters and object collections can be corrupted when returnObject and invalidate are invoked concurrently by client threads on the same pooled object. Thanks to Raju Gupta, Phil Steitz.
+o POOL-421:  GenericObjectPool addObject should return immediately when there is no capacity to add. Thanks to Phil Steitz.
+o POOL-420:  The maximum wait time for GenericKeyedObjectPool.borrowObject(*) may exceed configured maximum wait time. This is the same issue as POOL-418, but for GKOP.
+             Also included in this fix is a change to addObject that prevents it from waiting for capacity to create. That method now returns immediately when there is no capcity to add to the pool under the given key. Thanks to Phil Steitz.
+o            Remove -nouses directive from maven-bundle-plugin. OSGi package imports now state 'uses' definitions for package imports, this doesn't affect JPMS (from org.apache.commons:commons-parent:80). Thanks to Gary Gregory.
+o POOL-418:  The maximum wait time for GenericObjectPool.borrowObject(*) may exceed expectations due to a spurious thread wakeup.
+             The remaining duration was incorrectly calculated and the method did not end up waiting long enough.
+             Recompute the remaining duration an additional time when we block when exhausted. Thanks to Gary Gregory.
+o            Fix site link from the About page to the Download page, see also #387. Thanks to Wei Guo, Gary Gregory.
+o            Operation on the "idleHighWaterMark" shared variable in "ErodingFactor" class is not atomic [org.apache.commons.pool2.PoolUtils$ErodingFactor] At PoolUtils.java:[line 98] AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE. Thanks to Gary Gregory.
+o            org.apache.commons.pool2.impl.GenericObjectPool.create(Duration) should normalize a negative duration to zero. Thanks to Gary Gregory.
+o            Fix potential ConcurrentModificationException in EvictionTimer thread clean-up. Thanks to Coverity Scan.
+o            Fix potential ConcurrentModificationException in EvictionTimer tasks. Thanks to Coverity Scan.
+
+Changes:
+o            Bump org.apache.commons:commons-parent from 79 to 93. Thanks to Gary Gregory.
+o            [test] Bump commons-lang3 from 3.17.0 to 3.20.0. Thanks to Gary Gregory.
+
+
+For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Commons Pool website:
+
+https://commons.apache.org/proper/commons-pool/
+
+Download page: https://commons.apache.org/proper/commons-pool/download_pool.cgi
+
+-----------------------------------------------------------------------------------------------
 Apache Commons Pool 2.12.1 Release Notes
 ----------------------------------------
 

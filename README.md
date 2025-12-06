@@ -45,7 +45,7 @@ Apache Commons Pool
 
 [![Java CI](https://github.com/apache/commons-pool/actions/workflows/maven.yml/badge.svg)](https://github.com/apache/commons-pool/actions/workflows/maven.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/org.apache.commons/commons-pool2?label=Maven%20Central)](https://search.maven.org/artifact/org.apache.commons/commons-pool2)
-[![Javadocs](https://javadoc.io/badge/org.apache.commons/commons-pool2/2.12.1.svg)](https://javadoc.io/doc/org.apache.commons/commons-pool2/2.12.1)
+[![Javadocs](https://javadoc.io/badge/org.apache.commons/commons-pool2/2.13.0.svg)](https://javadoc.io/doc/org.apache.commons/commons-pool2/2.13.0)
 [![CodeQL](https://github.com/apache/commons-pool/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/apache/commons-pool/actions/workflows/codeql-analysis.yml)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/apache/commons-pool/badge)](https://api.securityscorecards.dev/projects/github.com/apache/commons-pool)
 
@@ -68,7 +68,7 @@ Alternatively, you can pull it from the central Maven repositories:
 <dependency>
   <groupId>org.apache.commons</groupId>
   <artifactId>commons-pool2</artifactId>
-  <version>2.12.1</version>
+  <version>2.13.0</version>
 </dependency>
 ```
 
@@ -89,8 +89,8 @@ There are some guidelines which will make applying PRs easier for us:
 + Respect the existing code style for each file.
 + Create minimal diffs - disable on save actions like reformat source code or organize imports. If you feel the source code should be reformatted create a separate PR for this change.
 + Provide JUnit tests for your changes and make sure your changes don't break any existing tests by running `mvn`.
-+ Before you pushing a PR, run `mvn` (by itself), this runs the default goal, which contains all build checks.
-+ To see the code coverage report, regardless of coverage failures, run `mvn clean site -Dcommons.jacoco.haltOnFailure=false`
++ Before you push a PR, run `mvn` (without arguments). This runs the default goal which contains all build checks.
++ To see the code coverage report, regardless of coverage failures, run `mvn clean site -Dcommons.jacoco.haltOnFailure=false -Pjacoco`
 
 If you plan to contribute on a regular basis, please consider filing a [contributor license agreement](https://www.apache.org/licenses/#clas).
 You can learn more about contributing via GitHub in our [contribution guidelines](CONTRIBUTING.md).

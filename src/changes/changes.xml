@@ -45,7 +45,7 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Pool Release Notes</title>
   </properties>
   <body>
-  <release version="2.13.0" date="YYYY-MM-DD" description="This is a feature and maintenance release. Java 8 or later is required.">
+  <release version="2.13.0" date="2025-12-06" description="This is a feature and maintenance release. Java 8 or later is required.">
     <!-- FIX -->
     <action type="fix" issue="POOL-424" dev="psteitz" due-to="Steven Adams">GenericObjectPool.invalidateObject() can leave other threads waiting to borrow hanging.
        The fix for this issue changes behavior of invalidateObject.  This method now always tries to add a new instance

@@ -88,7 +88,7 @@
     <commons.release.branch>release-2.x</commons.release.branch>
     <commons.componentid>pool</commons.componentid>
     <commons.module.name>org.apache.commons.pool2</commons.module.name>
-    <commons.rc.version>RC3</commons.rc.version>
+    <commons.rc.version>RC1</commons.rc.version>
     <checkstyle.suppress.file>${basedir}/src/conf/checkstyle-suppressions.xml</checkstyle.suppress.file>
     <!-- Java 8 -->
     <commons.release.version>2.13.0</commons.release.version>
