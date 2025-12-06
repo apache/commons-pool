@@ -7,3 +7,7 @@ site-content
 .idea/
 .vscode/
 *.iml
+
+# NetBeans files
+nb-configuration.xml
+nbactions.xml
