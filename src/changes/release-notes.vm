@@ -24,7 +24,7 @@ Version 2 contains a completely rewritten pooling implementation compared to the
 In addition to performance and scalability improvements, version 2 includes robust instance
 tracking and pool monitoring.
 
-Version 2.7.x and up requires Java 8 or above.
+Versions 2.7.x and up require Java 8 or later.
 Version 2.6.x requires Java 7 or above.
 Version 2.5.x requires Java 7 or above.
 Version 2.0 requires 6 or above. 
