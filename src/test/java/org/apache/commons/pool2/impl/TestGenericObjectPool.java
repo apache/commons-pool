@@ -71,6 +71,7 @@ import org.apache.commons.pool2.WaiterFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -980,6 +981,8 @@ class TestGenericObjectPool extends TestBaseObjectPool {
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
     void testAddObjectRespectsMaxIdleLimit() throws Exception {
+        genericObjectPool.clear();
+        assertEquals(0, genericObjectPool.getNumIdle(), "should be zero idle");
         genericObjectPool.setMaxIdle(1);
         genericObjectPool.addObject();
         genericObjectPool.addObject();
@@ -992,23 +995,22 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         assertEquals(4, genericObjectPool.getNumIdle(), "should be four idle");
     }
 
-    @Test
+    @RepeatedTest(10)
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
     void testAddObjectConcurrentCallsRespectsMaxIdle() throws Exception {
+        genericObjectPool.clear();
+        assertEquals(0, genericObjectPool.getNumIdle(), "should be zero idle");
         final int maxIdleLimit = 5;
         final int numThreads = 10;
         genericObjectPool.setMaxIdle(maxIdleLimit);
 
         final CountDownLatch startLatch = new CountDownLatch(1);
-        final CountDownLatch doneLatch = new CountDownLatch(numThreads);
-
-        List<Runnable> tasks = getRunnables(numThreads, startLatch, doneLatch);
+        List<Runnable> tasks = getRunnables(numThreads, startLatch);
 
         ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
         tasks.forEach(executorService::submit);
         try {
             startLatch.countDown(); // Start all threads simultaneously
-            doneLatch.await(); // Wait for all threads to complete
         } finally {
             executorService.shutdown();
             assertTrue(executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS));
@@ -1020,8 +1022,7 @@ class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     private List<Runnable> getRunnables(final int numThreads,
-                                        final CountDownLatch startLatch,
-                                        final CountDownLatch doneLatch) {
+                                        final CountDownLatch startLatch) {
         List<Runnable> tasks = new ArrayList<>();
 
         for(int i = 0; i < numThreads; i++) {
@@ -1030,9 +1031,7 @@ class TestGenericObjectPool extends TestBaseObjectPool {
                     startLatch.await(); // Wait for all threads to be ready
                     genericObjectPool.addObject();
                 } catch (Exception e) {
-                    Thread.currentThread().interrupt(); // Restore interrupt status
-                } finally {
-                    doneLatch.countDown();
+                    // do nothing
                 }
             });
         }
