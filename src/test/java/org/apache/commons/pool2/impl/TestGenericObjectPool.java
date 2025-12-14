@@ -976,6 +976,69 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         assertEquals(0, genericObjectPool.getNumActive(), "should be zero active");
     }
 
+    /*https://issues.apache.org/jira/browse/POOL-425*/
+    @Test
+    @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
+    void testAddObjectRespectsMaxIdleLimit() throws Exception {
+        genericObjectPool.setMaxIdle(1);
+        genericObjectPool.addObject();
+        genericObjectPool.addObject();
+        assertEquals(1, genericObjectPool.getNumIdle(), "should be one idle");
+
+        genericObjectPool.setMaxIdle(-1);
+        genericObjectPool.addObject();
+        genericObjectPool.addObject();
+        genericObjectPool.addObject();
+        assertEquals(4, genericObjectPool.getNumIdle(), "should be four idle");
+    }
+
+    @Test
+    @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
+    void testAddObjectConcurrentCallsRespectsMaxIdle() throws Exception {
+        final int maxIdleLimit = 5;
+        final int numThreads = 10;
+        genericObjectPool.setMaxIdle(maxIdleLimit);
+
+        final CountDownLatch startLatch = new CountDownLatch(1);
+        final CountDownLatch doneLatch = new CountDownLatch(numThreads);
+
+        List<Runnable> tasks = getRunnables(numThreads, startLatch, doneLatch);
+
+        ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
+        tasks.forEach(executorService::submit);
+        try {
+            startLatch.countDown(); // Start all threads simultaneously
+            doneLatch.await(); // Wait for all threads to complete
+        } finally {
+            executorService.shutdown();
+            assertTrue(executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS));
+        }
+
+        assertTrue(genericObjectPool.getNumIdle() <= maxIdleLimit,
+            "Concurrent addObject() calls should not exceed maxIdle limit of " + maxIdleLimit +
+                ", but found " + genericObjectPool.getNumIdle() + " idle objects");
+    }
+
+    private List<Runnable> getRunnables(final int numThreads,
+                                        final CountDownLatch startLatch,
+                                        final CountDownLatch doneLatch) {
+        List<Runnable> tasks = new ArrayList<>();
+
+        for(int i = 0; i < numThreads; i++) {
+            tasks.add(() -> {
+                try {
+                    startLatch.await(); // Wait for all threads to be ready
+                    genericObjectPool.addObject();
+                } catch (Exception e) {
+                    Thread.currentThread().interrupt(); // Restore interrupt status
+                } finally {
+                    doneLatch.countDown();
+                }
+            });
+        }
+        return tasks;
+    }
+
     @Test
     void testAddObjectCanAddToMaxIdle() throws Exception {
         genericObjectPool.setMaxTotal(5);
