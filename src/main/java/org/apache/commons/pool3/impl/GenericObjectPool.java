@@ -513,6 +513,11 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
         if (localMaxTotal < 0) {
             localMaxTotal = Integer.MAX_VALUE;
         }
+        int localMaxIdle = getMaxIdle();
+        if (localMaxIdle < 0) {
+            localMaxIdle = Integer.MAX_VALUE;
+        }
+        final int maxCapacity = Math.min(localMaxTotal, localMaxIdle);
         final Instant localStartInstant = Instant.now();
         // Flag that indicates if create should:
         // - TRUE:  call the factory to create an object
@@ -525,7 +530,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
             final Duration remainingWaitDuration = maxWaitDuration.minus(durationSince(startInstant));
             synchronized (makeObjectCountLock) {
                 final long newCreateCount = createCount.incrementAndGet();
-                if (newCreateCount > localMaxTotal) {
+                if (newCreateCount > maxCapacity) {
                     // The pool is currently at capacity or in the process of
                     // making enough new objects to take it to capacity.
                     createCount.decrementAndGet();
