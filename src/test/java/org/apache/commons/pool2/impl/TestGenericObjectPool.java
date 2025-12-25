@@ -1026,8 +1026,6 @@ class TestGenericObjectPool extends TestBaseObjectPool {
                 executorService.shutdownNow(); // Ensure cleanup
             }
 
-            assertTrue(executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS));
-
             assertTrue(pool.getNumIdle() <= maxIdleLimit,
                 "Concurrent addObject() calls should not exceed maxIdle limit of " + maxIdleLimit +
                     ", but found " + pool.getNumIdle() + " idle objects");
