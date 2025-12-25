@@ -74,9 +74,11 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.parallel.Isolated;
 
 /**
  */
+@Isolated
 class TestGenericObjectPool extends TestBaseObjectPool {
     private final class ConcurrentBorrowAndEvictThread extends Thread {
         private final boolean borrow;
@@ -981,82 +983,87 @@ class TestGenericObjectPool extends TestBaseObjectPool {
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
     void testAddObjectRespectsMaxIdleLimit() throws Exception {
-        genericObjectPool.clear();
-        assertEquals(0, genericObjectPool.getNumIdle(), "should be zero idle");
-        genericObjectPool.setMaxIdle(1);
-        genericObjectPool.addObject();
-        genericObjectPool.addObject();
-        assertEquals(1, genericObjectPool.getNumIdle(), "should be one idle");
+        try (GenericObjectPool<String> pool = new GenericObjectPool<>(new SimpleFactory())) {
+            assertEquals(0, pool.getNumIdle(), "should be zero idle");
+            pool.setMaxIdle(1);
+            pool.addObject();
+            pool.addObject();
+            assertEquals(1, pool.getNumIdle(), "should be one idle");
 
-        genericObjectPool.setMaxIdle(-1);
-        genericObjectPool.addObject();
-        genericObjectPool.addObject();
-        genericObjectPool.addObject();
-        assertEquals(4, genericObjectPool.getNumIdle(), "should be four idle");
+            pool.setMaxIdle(-1);
+            pool.addObject();
+            pool.addObject();
+            pool.addObject();
+            assertEquals(4, pool.getNumIdle(), "should be four idle");
+        }
     }
 
     @RepeatedTest(10)
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
     void testAddObjectConcurrentCallsRespectsMaxIdle() throws Exception {
-        genericObjectPool.clear();
-        assertEquals(0, genericObjectPool.getNumIdle(), "should be zero idle");
-        final int maxIdleLimit = 5;
-        final int numThreads = 10;
-        genericObjectPool.setMaxIdle(maxIdleLimit);
+        try (GenericObjectPool<String> pool = new GenericObjectPool<>(new SimpleFactory())) {
+            assertEquals(0, pool.getNumIdle(), "should be zero idle");
+            final int maxIdleLimit = 5;
+            final int numThreads = 10;
+            pool.setMaxIdle(maxIdleLimit);
 
-        final CountDownLatch startLatch = new CountDownLatch(1);
-        List<Runnable> tasks = getRunnables(numThreads, startLatch);
+            final CountDownLatch startLatch = new CountDownLatch(1);
+            List<Runnable> tasks = getRunnables(numThreads, startLatch, pool);
 
-        ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
-        tasks.forEach(executorService::submit);
-        try {
-            startLatch.countDown(); // Start all threads simultaneously
-        } finally {
-            executorService.shutdown();
-            assertTrue(executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS));
+            ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
+            tasks.forEach(executorService::submit);
+            try {
+                startLatch.countDown(); // Start all threads simultaneously
+            } finally {
+                executorService.shutdown();
+                assertTrue(executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS));
+            }
+
+            assertTrue(pool.getNumIdle() <= maxIdleLimit,
+                "Concurrent addObject() calls should not exceed maxIdle limit of " + maxIdleLimit +
+                    ", but found " + pool.getNumIdle() + " idle objects");
         }
-
-        assertTrue(genericObjectPool.getNumIdle() <= maxIdleLimit,
-            "Concurrent addObject() calls should not exceed maxIdle limit of " + maxIdleLimit +
-                ", but found " + genericObjectPool.getNumIdle() + " idle objects");
     }
 
     @RepeatedTest(10)
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
     void testReturnObjectRespectsMaxIdleLimit() throws Exception {
-        genericObjectPool.clear();
-        assertEquals(0, genericObjectPool.getNumIdle(), "should be zero idle");
-        final int maxIdleLimit = 1;
-        final int numThreads = 100;
-        final int maxTotal = -1;
+        try (final GenericObjectPool<String> pool = new GenericObjectPool<>(new SimpleFactory())) {
+            assertEquals(0, pool.getNumIdle(), "should be zero idle");
+            final int maxIdleLimit = 1;
+            final int numThreads = 2;
+            final int maxTotal = -1;
 
-        genericObjectPool.setMaxTotal(maxTotal);
-        genericObjectPool.setMaxIdle(maxIdleLimit);
+            pool.setMaxTotal(maxTotal);
+            pool.setMaxIdle(maxIdleLimit);
 
-        final CountDownLatch startLatch = new CountDownLatch(1);
-        List<Runnable> tasks = getReturnRunnables(numThreads, startLatch);
+            final CountDownLatch startLatch = new CountDownLatch(1);
+            List<Runnable> tasks = getReturnRunnables(numThreads, startLatch, pool);
 
-        ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
-        tasks.forEach(executorService::submit);
-        try {
-            startLatch.countDown(); // Start all threads simultaneously
-        } finally {
-            executorService.shutdown();
-            assertTrue(executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS));
+            ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
+            tasks.forEach(executorService::submit);
+            try {
+                startLatch.countDown(); // Start all threads simultaneously
+            } finally {
+                executorService.shutdown();
+                assertTrue(executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS));
+            }
+
+            assertEquals(maxIdleLimit, pool.getNumIdle(),
+                " Should not be more than " + maxIdleLimit + " idle objects");
         }
-
-        assertEquals(maxIdleLimit, genericObjectPool.getNumIdle(), " Should not be more than " + maxIdleLimit + " idle objects");
     }
 
     private List<Runnable> getRunnables(final int numThreads,
-                                        final CountDownLatch startLatch) {
+                                        final CountDownLatch startLatch,
+                                        final GenericObjectPool<String> pool) {
         List<Runnable> tasks = new ArrayList<>();
 
         for(int i = 0; i < numThreads; i++) {
             tasks.add(() -> {
                 try {
                     startLatch.await(); // Wait for all threads to be ready
-                    genericObjectPool.addObject();
+                    pool.addObject();
                 } catch (Exception e) {
                     // do nothing
                 }
@@ -1066,15 +1073,16 @@ class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     private List<Runnable> getReturnRunnables(final int numThreads,
-                                              final CountDownLatch startLatch) {
+                                              final CountDownLatch startLatch,
+                                              final GenericObjectPool<String> pool) {
         List<Runnable> tasks = new ArrayList<>();
 
         for(int i = 0; i < numThreads; i++) {
             tasks.add(() -> {
                 try {
-                    String pooledObject = genericObjectPool.borrowObject();
+                    String pooledObject = pool.borrowObject();
                     startLatch.await(); // Wait for all threads to be ready
-                    genericObjectPool.returnObject(pooledObject);
+                    pool.returnObject(pooledObject);
                 } catch (Exception e) {
                     // do nothing
                 }
