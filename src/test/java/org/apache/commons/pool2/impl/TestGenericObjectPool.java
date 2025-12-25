@@ -1009,7 +1009,11 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         final int numThreads = 10;
         final CyclicBarrier barrier = new CyclicBarrier(numThreads);
 
-        withConcurrentCallsRespectMaxIdle(maxIdleLimit, numThreads, pool -> getRunnables(numThreads, barrier, pool));
+        withConcurrentCallsRespectMaxIdle(maxIdleLimit, numThreads, pool ->
+            getRunnables(numThreads, barrier, pool, (a, b) -> {
+            b.await(); // Wait for all threads to be ready
+            a.addObject();
+        }));
     }
 
 
@@ -1020,7 +1024,12 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         final int numThreads = 200;
         final CyclicBarrier barrier = new CyclicBarrier(numThreads);
 
-        withConcurrentCallsRespectMaxIdle(maxIdleLimit, numThreads, pool -> getReturnRunnables(numThreads, barrier, pool));
+        withConcurrentCallsRespectMaxIdle(maxIdleLimit, numThreads, pool ->
+            getRunnables(numThreads, barrier, pool, (a, b) -> {
+                String pooledObject = a.borrowObject();
+                b.await(); // Wait for all threads to be ready
+                a.returnObject(pooledObject);
+            }));
     }
 
     void withConcurrentCallsRespectMaxIdle(int maxIdleLimit, int numThreads, Function<GenericObjectPool<String>, List<Runnable>> operation) throws Exception {
@@ -1049,36 +1058,21 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         }
     }
 
+    @FunctionalInterface
+    public interface PoolOperation {
+        void execute(GenericObjectPool<String> pool, CyclicBarrier barrier) throws Exception;
+    }
 
     private List<Runnable> getRunnables(final int numThreads,
                                         final CyclicBarrier barrier,
-                                        final GenericObjectPool<String> pool) {
+                                        final GenericObjectPool<String> pool,
+                                        final PoolOperation operation) {
         List<Runnable> tasks = new ArrayList<>();
 
-        for(int i = 0; i < numThreads; i++) {
+        for (int i = 0; i < numThreads; i++) {
             tasks.add(() -> {
                 try {
-                    barrier.await(); // Wait for all threads to be ready
-                    pool.addObject();
-                } catch (Exception e) {
-                    // do nothing
-                }
-            });
-        }
-        return tasks;
-    }
-
-    private List<Runnable> getReturnRunnables(final int numThreads,
-                                              final CyclicBarrier barrier,
-                                              final GenericObjectPool<String> pool) {
-        List<Runnable> tasks = new ArrayList<>();
-
-        for(int i = 0; i < numThreads; i++) {
-            tasks.add(() -> {
-                try {
-                    String pooledObject = pool.borrowObject();
-                    barrier.await(); // Wait for all threads to be ready
-                    pool.returnObject(pooledObject);
+                    operation.execute(pool, barrier);
                 } catch (Exception e) {
                     // do nothing
                 }
