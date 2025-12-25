@@ -1021,6 +1021,33 @@ class TestGenericObjectPool extends TestBaseObjectPool {
                 ", but found " + genericObjectPool.getNumIdle() + " idle objects");
     }
 
+    @RepeatedTest(10)
+    @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
+    void testReturnObjectRespectsMaxIdleLimit() throws Exception {
+        genericObjectPool.clear();
+        assertEquals(0, genericObjectPool.getNumIdle(), "should be zero idle");
+        final int maxIdleLimit = 1;
+        final int numThreads = 100;
+        final int maxTotal = -1;
+
+        genericObjectPool.setMaxTotal(maxTotal);
+        genericObjectPool.setMaxIdle(maxIdleLimit);
+
+        final CountDownLatch startLatch = new CountDownLatch(1);
+        List<Runnable> tasks = getReturnRunnables(numThreads, startLatch);
+
+        ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
+        tasks.forEach(executorService::submit);
+        try {
+            startLatch.countDown(); // Start all threads simultaneously
+        } finally {
+            executorService.shutdown();
+            assertTrue(executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS));
+        }
+
+        assertEquals(maxIdleLimit, genericObjectPool.getNumIdle(), " Should not be more than " + maxIdleLimit + " idle objects");
+    }
+
     private List<Runnable> getRunnables(final int numThreads,
                                         final CountDownLatch startLatch) {
         List<Runnable> tasks = new ArrayList<>();
@@ -1030,6 +1057,24 @@ class TestGenericObjectPool extends TestBaseObjectPool {
                 try {
                     startLatch.await(); // Wait for all threads to be ready
                     genericObjectPool.addObject();
+                } catch (Exception e) {
+                    // do nothing
+                }
+            });
+        }
+        return tasks;
+    }
+
+    private List<Runnable> getReturnRunnables(final int numThreads,
+                                              final CountDownLatch startLatch) {
+        List<Runnable> tasks = new ArrayList<>();
+
+        for(int i = 0; i < numThreads; i++) {
+            tasks.add(() -> {
+                try {
+                    String pooledObject = genericObjectPool.borrowObject();
+                    startLatch.await(); // Wait for all threads to be ready
+                    genericObjectPool.returnObject(pooledObject);
                 } catch (Exception e) {
                     // do nothing
                 }
