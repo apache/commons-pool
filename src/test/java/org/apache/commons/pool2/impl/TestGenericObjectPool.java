@@ -983,7 +983,9 @@ class TestGenericObjectPool extends TestBaseObjectPool {
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
     void testAddObjectRespectsMaxIdleLimit() throws Exception {
-        try (GenericObjectPool<String> pool = new GenericObjectPool<>(new SimpleFactory())) {
+        final GenericObjectPoolConfig<String> config = new GenericObjectPoolConfig<>();
+        config.setJmxEnabled(false);
+        try (GenericObjectPool<String> pool = new GenericObjectPool<>(new SimpleFactory(), config)) {
             assertEquals(0, pool.getNumIdle(), "should be zero idle");
             pool.setMaxIdle(1);
             pool.addObject();
@@ -1001,11 +1003,14 @@ class TestGenericObjectPool extends TestBaseObjectPool {
     @RepeatedTest(10)
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
     void testAddObjectConcurrentCallsRespectsMaxIdle() throws Exception {
-        try (GenericObjectPool<String> pool = new GenericObjectPool<>(new SimpleFactory())) {
+        final GenericObjectPoolConfig<String> config = new GenericObjectPoolConfig<>();
+        config.setJmxEnabled(false);
+        try (GenericObjectPool<String> pool = new GenericObjectPool<>(new SimpleFactory(), config)) {
             assertEquals(0, pool.getNumIdle(), "should be zero idle");
             final int maxIdleLimit = 5;
             final int numThreads = 10;
             pool.setMaxIdle(maxIdleLimit);
+            pool.setMaxTotal(-1);
 
             final CountDownLatch startLatch = new CountDownLatch(1);
             List<Runnable> tasks = getRunnables(numThreads, startLatch, pool);
@@ -1028,13 +1033,14 @@ class TestGenericObjectPool extends TestBaseObjectPool {
     @RepeatedTest(10)
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
     void testReturnObjectRespectsMaxIdleLimit() throws Exception {
-        try (final GenericObjectPool<String> pool = new GenericObjectPool<>(new SimpleFactory())) {
+        final GenericObjectPoolConfig<String> config = new GenericObjectPoolConfig<>();
+        config.setJmxEnabled(false);
+        try (final GenericObjectPool<String> pool = new GenericObjectPool<>(new SimpleFactory(), config)) {
             assertEquals(0, pool.getNumIdle(), "should be zero idle");
-            final int maxIdleLimit = 1;
-            final int numThreads = 2;
-            final int maxTotal = -1;
+            final int maxIdleLimit = 5;
+            final int numThreads = 100;
 
-            pool.setMaxTotal(maxTotal);
+            pool.setMaxTotal(-1);
             pool.setMaxIdle(maxIdleLimit);
 
             final CountDownLatch startLatch = new CountDownLatch(1);
