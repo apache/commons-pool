@@ -51,6 +51,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -1002,21 +1003,37 @@ class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     @RepeatedTest(10)
-    @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
-    void testAddObjectConcurrentCallsRespectsMaxIdle() throws Exception {
+    @Timeout(value = 10, unit = TimeUnit.SECONDS)
+    void testAddObjectConcurrentCallsRespectsMaxIdleLimit() throws Exception {
+        final int maxIdleLimit = 5;
+        final int numThreads = 10;
+        final CyclicBarrier barrier = new CyclicBarrier(numThreads);
+
+        withConcurrentCallsRespectMaxIdle(maxIdleLimit, numThreads, pool -> getRunnables(numThreads, barrier, pool));
+    }
+
+
+    @RepeatedTest(10)
+    @Timeout(value = 10, unit = TimeUnit.SECONDS)
+    void testReturnObjectConcurrentCallsRespectsMaxIdleLimit() throws Exception {
+        final int maxIdleLimit = 5;
+        final int numThreads = 200;
+        final CyclicBarrier barrier = new CyclicBarrier(numThreads);
+
+        withConcurrentCallsRespectMaxIdle(maxIdleLimit, numThreads, pool -> getReturnRunnables(numThreads, barrier, pool));
+    }
+
+    void withConcurrentCallsRespectMaxIdle(int maxIdleLimit, int numThreads, Function<GenericObjectPool<String>, List<Runnable>> operation) throws Exception {
         final GenericObjectPoolConfig<String> config = new GenericObjectPoolConfig<>();
         config.setJmxEnabled(false);
         try (GenericObjectPool<String> pool = new GenericObjectPool<>(new SimpleFactory(), config)) {
             assertEquals(0, pool.getNumIdle(), "should be zero idle");
-            final int maxIdleLimit = 5;
-            final int numThreads = 10;
             pool.setMaxIdle(maxIdleLimit);
             pool.setMaxTotal(-1);
 
-            final CyclicBarrier barrier = new CyclicBarrier(numThreads);
-            List<Runnable> tasks = getRunnables(numThreads, barrier, pool);
+            final List<Runnable> tasks = operation.apply(pool);
 
-            ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
+            final ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
             try {
                 tasks.forEach(executorService::submit);
                 executorService.shutdown();
@@ -1032,36 +1049,6 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         }
     }
 
-    @RepeatedTest(10)
-    @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
-    void testReturnObjectRespectsMaxIdleLimit() throws Exception {
-        final GenericObjectPoolConfig<String> config = new GenericObjectPoolConfig<>();
-        config.setJmxEnabled(false);
-        try (final GenericObjectPool<String> pool = new GenericObjectPool<>(new SimpleFactory(), config)) {
-            assertEquals(0, pool.getNumIdle(), "should be zero idle");
-            final int maxIdleLimit = 10;
-            final int numThreads = 200;
-
-            pool.setMaxTotal(-1);
-            pool.setMaxIdle(maxIdleLimit);
-
-            final CyclicBarrier barrier = new CyclicBarrier(numThreads);
-            List<Runnable> tasks = getReturnRunnables(numThreads, barrier, pool);
-
-            ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
-            try {
-                tasks.forEach(executorService::submit);
-                executorService.shutdown();
-                assertTrue(executorService.awaitTermination(60, TimeUnit.SECONDS),
-                    "Executor did not terminate in time");
-            } finally {
-                executorService.shutdownNow(); // Ensure cleanup
-            }
-
-            assertEquals(maxIdleLimit, pool.getNumIdle(),
-                " Should not be more than " + maxIdleLimit + " idle objects");
-        }
-    }
 
     private List<Runnable> getRunnables(final int numThreads,
                                         final CyclicBarrier barrier,
