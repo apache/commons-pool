@@ -283,7 +283,7 @@ class TestBaseGenericObjectPool {
                         pool.updateStatsBorrow(pooledObject, Duration.ofMillis(threadId * 10 + j));
                         pool.updateStatsReturn(Duration.ofMillis(threadId * 20 + j));
                     }
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     throw new RuntimeException(e);
                 } finally {
                     completeLatch.countDown();
@@ -296,7 +296,7 @@ class TestBaseGenericObjectPool {
         // Wait for completion
         assertTrue(completeLatch.await(30, TimeUnit.SECONDS), "Concurrent test should complete within 30 seconds");
         // Verify no exceptions occurred
-        for (Future<Void> future : futures) {
+        for (final Future<Void> future : futures) {
             future.get(); // Will throw if there was an exception
         }
         // Verify that statistics were collected (exact values may vary due to race conditions)

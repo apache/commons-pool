@@ -853,7 +853,7 @@ class TestGenericObjectPool extends TestBaseObjectPool {
                 try {
                     startLatch.await(); // Wait for all threads to be ready
                     genericObjectPool.addObject();
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     Thread.currentThread().interrupt(); // Restore interrupt status
                 } finally {
                     doneLatch.countDown();
