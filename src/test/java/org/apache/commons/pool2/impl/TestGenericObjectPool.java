@@ -51,7 +51,6 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -1017,16 +1016,8 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         final int maxIdleLimit = 5;
         final int numThreads = 100;
         final CyclicBarrier barrier = new CyclicBarrier(numThreads);
+        final CountDownLatch doneLatch = new CountDownLatch(numThreads);
 
-        withConcurrentCallsRespectMaxIdle(maxIdleLimit, numThreads, pool ->
-            getRunnables(numThreads, barrier, pool, (a, b) -> {
-                String pooledObject = a.borrowObject();
-                b.await(); // Wait for all threads to be ready
-                a.returnObject(pooledObject);
-            }));
-    }
-
-    void withConcurrentCallsRespectMaxIdle(int maxIdleLimit, int numThreads, Function<GenericObjectPool<String>, List<Runnable>> operation) throws Exception {
         final GenericObjectPoolConfig<String> config = new GenericObjectPoolConfig<>();
         config.setJmxEnabled(false);
         try (GenericObjectPool<String> pool = new GenericObjectPool<>(new SimpleFactory(), config)) {
@@ -1035,15 +1026,31 @@ class TestGenericObjectPool extends TestBaseObjectPool {
             pool.setMinIdle(-1);
             pool.setMaxTotal(-1);
 
-            final List<Runnable> tasks = operation.apply(pool);
+            final List<Runnable> tasks = new ArrayList<>();
+
+            for (int i = 0; i < numThreads; i++) {
+                tasks.add(() -> {
+                    try {
+                        String pooledObject = pool.borrowObject();
+                        barrier.await(); // Wait for all threads to be ready
+                        pool.returnObject(pooledObject);
+                    } catch (Exception e) {
+                        // do nothing
+                    } finally {
+                        doneLatch.countDown();
+                    }
+                });
+            }
 
             final ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
             try {
                 tasks.forEach(executorService::submit);
+                doneLatch.await();
                 executorService.shutdown();
                 assertTrue(executorService.awaitTermination(60, TimeUnit.SECONDS),
                     "Executor did not terminate in time");
-            } finally {
+            }
+            finally {
                 executorService.shutdownNow(); // Ensure cleanup
             }
 
@@ -1056,30 +1063,6 @@ class TestGenericObjectPool extends TestBaseObjectPool {
                     ", but found " + pool.getNumIdle() + " idle objects");
         }
     }
-
-    @FunctionalInterface
-    public interface PoolOperation {
-        void execute(GenericObjectPool<String> pool, CyclicBarrier barrier) throws Exception;
-    }
-
-    private List<Runnable> getRunnables(final int numThreads,
-                                        final CyclicBarrier barrier,
-                                        final GenericObjectPool<String> pool,
-                                        final PoolOperation operation) {
-        List<Runnable> tasks = new ArrayList<>();
-
-        for (int i = 0; i < numThreads; i++) {
-            tasks.add(() -> {
-                try {
-                    operation.execute(pool, barrier);
-                } catch (Exception e) {
-                    // do nothing
-                }
-            });
-        }
-        return tasks;
-    }
-
 
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
