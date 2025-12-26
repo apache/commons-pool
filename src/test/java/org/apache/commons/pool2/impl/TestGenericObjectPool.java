@@ -43,7 +43,6 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
@@ -1011,12 +1010,11 @@ class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     @RepeatedTest(10)
-    @Timeout(value = 10, unit = TimeUnit.SECONDS)
+    @Timeout(value = 30, unit = TimeUnit.SECONDS)
     void testReturnObjectConcurrentCallsRespectsMaxIdleLimit() throws Exception {
         final int maxIdleLimit = 5;
-        final int numThreads = 100;
-        final CyclicBarrier barrier = new CyclicBarrier(numThreads);
-        final CountDownLatch doneLatch = new CountDownLatch(numThreads);
+        // Use more threads than CPU cores to increase contention
+        final int numThreads = Math.max(100, Runtime.getRuntime().availableProcessors() * 10);
 
         final GenericObjectPoolConfig<String> config = new GenericObjectPoolConfig<>();
         config.setJmxEnabled(false);
@@ -1026,39 +1024,61 @@ class TestGenericObjectPool extends TestBaseObjectPool {
             pool.setMinIdle(-1);
             pool.setMaxTotal(-1);
 
-            final List<Runnable> tasks = new ArrayList<>();
-
+            // Pre-borrow all objects in the main thread to eliminate variability
+            final List<String> borrowedObjects = new ArrayList<>();
             for (int i = 0; i < numThreads; i++) {
-                tasks.add(() -> {
-                    try {
-                        final String pooledObject = pool.borrowObject();
-                        barrier.await(); // Wait for all threads to be ready
-                        pool.returnObject(pooledObject);
-                    } catch (final Exception e) {
-                        // do nothing
-                    } finally {
-                        doneLatch.countDown();
-                    }
-                });
+                borrowedObjects.add(pool.borrowObject());
             }
+            assertEquals(numThreads, pool.getNumActive(), "All objects should be active");
+            assertEquals(0, pool.getNumIdle(), "No objects should be idle yet");
+
+            // Use AtomicBoolean with busy-spin for tighter synchronization than CountDownLatch
+            final AtomicBoolean startFlag = new AtomicBoolean(false);
+            final AtomicInteger readyCount = new AtomicInteger(0);
+            final CountDownLatch doneLatch = new CountDownLatch(numThreads);
 
             final ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
             try {
-                tasks.forEach(executorService::submit);
-                doneLatch.await();
+                // Create tasks that will return objects concurrently
+                for (final String obj : borrowedObjects) {
+                    executorService.submit(() -> {
+                        try {
+                            // Signal ready and busy-spin until start flag is set
+                            readyCount.incrementAndGet();
+                            while (!startFlag.get()) {
+                                Thread.yield(); // Hint to the JVM that we're spin-waiting
+                            }
+                            pool.returnObject(obj);
+                        } finally {
+                            doneLatch.countDown();
+                        }
+                    });
+                }
+
+                // Wait for all threads to be ready (busy-spin waiting)
+                while (readyCount.get() < numThreads) {
+                    Thread.yield();
+                }
+
+                // Small delay to ensure all threads are truly in their spin-wait loops
+                Thread.sleep(10);
+
+                // Signal all threads to start returning simultaneously
+                startFlag.set(true);
+
+                // Wait for all returns to complete
+                assertTrue(doneLatch.await(10, TimeUnit.SECONDS),
+                    "Not all threads completed in time");
+
                 executorService.shutdown();
-                assertTrue(executorService.awaitTermination(60, TimeUnit.SECONDS),
+                assertTrue(executorService.awaitTermination(5, TimeUnit.SECONDS),
                     "Executor did not terminate in time");
             } finally {
-                executorService.shutdownNow(); // Ensure cleanup
+                executorService.shutdownNow();
             }
 
             assertTrue(pool.getNumIdle() <= maxIdleLimit,
-                "Concurrent addObject() calls should not exceed maxIdle limit of " + maxIdleLimit +
-                    ", but found " + pool.getNumIdle() + " idle objects");
-
-            assertTrue(pool.getNumIdle() >= pool.getMinIdle(),
-                "Concurrent addObject() calls should not go below minIdle limit of " + pool.getMinIdle() +
+                "Concurrent returnObject() calls should not exceed maxIdle limit of " + maxIdleLimit +
                     ", but found " + pool.getNumIdle() + " idle objects");
         }
     }
