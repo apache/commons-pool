@@ -1034,7 +1034,7 @@ class TestGenericObjectPool extends TestBaseObjectPool {
 
             // Use AtomicBoolean with busy-spin for tighter synchronization than CountDownLatch
             final AtomicBoolean startFlag = new AtomicBoolean(false);
-            final AtomicInteger readyCount = new AtomicInteger(0);
+            final CountDownLatch readyCount = new CountDownLatch(numThreads);
             final CountDownLatch doneLatch = new CountDownLatch(numThreads);
 
             final ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
@@ -1044,7 +1044,7 @@ class TestGenericObjectPool extends TestBaseObjectPool {
                     executorService.submit(() -> {
                         try {
                             // Signal ready and busy-spin until start flag is set
-                            readyCount.incrementAndGet();
+                            readyCount.countDown();
                             while (!startFlag.get()) {
                                 Thread.yield(); // Hint to the JVM that we're spin-waiting
                             }
@@ -1055,10 +1055,7 @@ class TestGenericObjectPool extends TestBaseObjectPool {
                     });
                 }
 
-                // Wait for all threads to be ready (busy-spin waiting)
-                while (readyCount.get() < numThreads) {
-                    Thread.yield();
-                }
+                assertTrue(readyCount.await(10, TimeUnit.SECONDS), "Threads failed to start");
 
                 // Small delay to ensure all threads are truly in their spin-wait loops
                 Thread.sleep(10);
