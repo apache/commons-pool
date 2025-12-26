@@ -843,6 +843,26 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         return String.valueOf(n);
     }
 
+    private List<Runnable> getRunnables(final int numThreads,
+                                        final CountDownLatch startLatch,
+                                        final CountDownLatch doneLatch) {
+        final List<Runnable> tasks = new ArrayList<>();
+
+        for (int i = 0; i < numThreads; i++) {
+            tasks.add(() -> {
+                try {
+                    startLatch.await(); // Wait for all threads to be ready
+                    genericObjectPool.addObject();
+                } catch (Exception e) {
+                    Thread.currentThread().interrupt(); // Restore interrupt status
+                } finally {
+                    doneLatch.countDown();
+                }
+            });
+        }
+        return tasks;
+    }
+
     @Override
     protected boolean isFifo() {
         return false;
@@ -989,6 +1009,33 @@ class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     @Test
+    @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
+    void testAddObjectConcurrentCallsRespectsMaxIdle() throws Exception {
+        final int maxIdleLimit = 5;
+        final int numThreads = 10;
+        genericObjectPool.setMaxIdle(maxIdleLimit);
+
+        final CountDownLatch startLatch = new CountDownLatch(1);
+        final CountDownLatch doneLatch = new CountDownLatch(numThreads);
+
+        final List<Runnable> tasks = getRunnables(numThreads, startLatch, doneLatch);
+
+        final ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
+        tasks.forEach(executorService::submit);
+        try {
+            startLatch.countDown(); // Start all threads simultaneously
+            doneLatch.await(); // Wait for all threads to complete
+        } finally {
+            executorService.shutdown();
+            assertTrue(executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS));
+        }
+
+        assertTrue(genericObjectPool.getNumIdle() <= maxIdleLimit,
+            "Concurrent addObject() calls should not exceed maxIdle limit of " + maxIdleLimit +
+                ", but found " + genericObjectPool.getNumIdle() + " idle objects");
+    }
+
+    @Test
     @Timeout(value = 400, unit = TimeUnit.MILLISECONDS)
     void testAddObjectFastReturn() throws Exception {
         final SimpleFactory simpleFactory = new SimpleFactory();
@@ -1007,6 +1054,20 @@ class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     @Test
+    void testAddObjectNegativeMaxIdle() throws Exception {
+        genericObjectPool.setMaxIdle(-1);
+        genericObjectPool.addObject();
+        assertEquals(1, genericObjectPool.getNumIdle());
+    }
+
+    @Test
+    void testAddObjectNegativeMaxTotal() throws Exception {
+        genericObjectPool.setMaxTotal(-1);
+        genericObjectPool.addObject();
+        assertEquals(1, genericObjectPool.getNumIdle());
+    }
+
+    @Test
     void testAddObjectRespectsMaxIdle() throws Exception {
         genericObjectPool.setMaxIdle(1);
         genericObjectPool.addObject();
@@ -1015,11 +1076,33 @@ class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     @Test
+    @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
+    void testAddObjectRespectsMaxIdleLimit() throws Exception {
+        genericObjectPool.setMaxIdle(1);
+        genericObjectPool.addObject();
+        genericObjectPool.addObject();
+        assertEquals(1, genericObjectPool.getNumIdle(), "should be one idle");
+
+        genericObjectPool.setMaxIdle(-1);
+        genericObjectPool.addObject();
+        genericObjectPool.addObject();
+        genericObjectPool.addObject();
+        assertEquals(4, genericObjectPool.getNumIdle(), "should be four idle");
+    }
+
+    @Test
     void testAddObjectRespectsMaxTotal() throws Exception {
         genericObjectPool.setMaxTotal(1);
         genericObjectPool.addObject();
         genericObjectPool.addObject(); // should be no-op
         assertEquals(1, genericObjectPool.getNumIdle());
+    }
+
+    @Test
+    void testAddObjectZeroMaxIdle() throws Exception {
+        genericObjectPool.setMaxIdle(0);
+        genericObjectPool.addObject();
+        assertEquals(0, genericObjectPool.getNumIdle());
     }
 
     @Test
@@ -2846,6 +2929,7 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         }
     }
 
+
     @Test
     void testSwallowedExceptionListener() {
         genericObjectPool.setSwallowedExceptionListener(null); // must simply return
@@ -2955,7 +3039,6 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         }
     }
 
-
     // POOL-276
     @Test
     void testValidationOnCreateOnly() throws Exception {
@@ -2991,7 +3074,7 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         genericObjectPool.close();
     }
 
-    /**
+     /**
      * POOL-189
      *
      * @throws Exception May occur in some failure modes
@@ -3064,88 +3147,5 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         genericObjectPool.returnObject(obj1);
         assertEquals(1, genericObjectPool.getNumIdle());
         genericObjectPool.close();
-    }
-
-    @Test
-    void testAddObjectNegativeMaxTotal() throws Exception {
-        genericObjectPool.setMaxTotal(-1);
-        genericObjectPool.addObject();
-        assertEquals(1, genericObjectPool.getNumIdle());
-    }
-
-    @Test
-    void testAddObjectNegativeMaxIdle() throws Exception {
-        genericObjectPool.setMaxIdle(-1);
-        genericObjectPool.addObject();
-        assertEquals(1, genericObjectPool.getNumIdle());
-    }
-
-    @Test
-    void testAddObjectZeroMaxIdle() throws Exception {
-        genericObjectPool.setMaxIdle(0);
-        genericObjectPool.addObject();
-        assertEquals(0, genericObjectPool.getNumIdle());
-    }
-
-     @Test
-    @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
-    void testAddObjectRespectsMaxIdleLimit() throws Exception {
-        genericObjectPool.setMaxIdle(1);
-        genericObjectPool.addObject();
-        genericObjectPool.addObject();
-        assertEquals(1, genericObjectPool.getNumIdle(), "should be one idle");
-
-        genericObjectPool.setMaxIdle(-1);
-        genericObjectPool.addObject();
-        genericObjectPool.addObject();
-        genericObjectPool.addObject();
-        assertEquals(4, genericObjectPool.getNumIdle(), "should be four idle");
-    }
-
-    @Test
-    @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
-    void testAddObjectConcurrentCallsRespectsMaxIdle() throws Exception {
-        final int maxIdleLimit = 5;
-        final int numThreads = 10;
-        genericObjectPool.setMaxIdle(maxIdleLimit);
-
-        final CountDownLatch startLatch = new CountDownLatch(1);
-        final CountDownLatch doneLatch = new CountDownLatch(numThreads);
-
-        final List<Runnable> tasks = getRunnables(numThreads, startLatch, doneLatch);
-
-        final ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
-        tasks.forEach(executorService::submit);
-        try {
-            startLatch.countDown(); // Start all threads simultaneously
-            doneLatch.await(); // Wait for all threads to complete
-        } finally {
-            executorService.shutdown();
-            assertTrue(executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS));
-        }
-
-        assertTrue(genericObjectPool.getNumIdle() <= maxIdleLimit,
-            "Concurrent addObject() calls should not exceed maxIdle limit of " + maxIdleLimit +
-                ", but found " + genericObjectPool.getNumIdle() + " idle objects");
-    }
-
-    private List<Runnable> getRunnables(final int numThreads,
-                                        final CountDownLatch startLatch,
-                                        final CountDownLatch doneLatch) {
-        final List<Runnable> tasks = new ArrayList<>();
-
-        for (int i = 0; i < numThreads; i++) {
-            tasks.add(() -> {
-                try {
-                    startLatch.await(); // Wait for all threads to be ready
-                    genericObjectPool.addObject();
-                } catch (Exception e) {
-                    Thread.currentThread().interrupt(); // Restore interrupt status
-                } finally {
-                    doneLatch.countDown();
-                }
-            });
-        }
-        return tasks;
     }
 }
