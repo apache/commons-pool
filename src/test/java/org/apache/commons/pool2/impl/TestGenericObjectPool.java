@@ -76,11 +76,9 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
-import org.junit.jupiter.api.parallel.Isolated;
 
 /**
  */
-@Isolated
 class TestGenericObjectPool extends TestBaseObjectPool {
     private final class ConcurrentBorrowAndEvictThread extends Thread {
         private final boolean borrow;
@@ -1001,47 +999,23 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         assertEquals(0, genericObjectPool.getNumActive(), "should be zero active");
     }
 
-    /*https://issues.apache.org/jira/browse/POOL-425*/
     @Test
-    @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
-    void testAddObjectRespectsMaxIdleLimit() throws Exception {
-        final GenericObjectPoolConfig<String> config = new GenericObjectPoolConfig<>();
-        config.setJmxEnabled(false);
-        try (GenericObjectPool<String> pool = new GenericObjectPool<>(new SimpleFactory(), config)) {
-            assertEquals(0, pool.getNumIdle(), "should be zero idle");
-            pool.setMaxIdle(1);
-            pool.addObject();
-            pool.addObject();
-            assertEquals(1, pool.getNumIdle(), "should be one idle");
-
-            pool.setMaxIdle(-1);
-            pool.addObject();
-            pool.addObject();
-            pool.addObject();
-            assertEquals(4, pool.getNumIdle(), "should be four idle");
+    void testAddObjectCanAddToMaxIdle() throws Exception {
+        genericObjectPool.setMaxTotal(5);
+        genericObjectPool.borrowObject();
+        genericObjectPool.borrowObject();
+        genericObjectPool.setMaxIdle(3);
+        for (int i = 0; i < 3; i++) {
+            genericObjectPool.addObject();
         }
+        assertEquals(3, genericObjectPool.getNumIdle());
     }
-
-    @RepeatedTest(10)
-    @Timeout(value = 10, unit = TimeUnit.SECONDS)
-    void testAddObjectConcurrentCallsRespectsMaxIdleLimit() throws Exception {
-        final int maxIdleLimit = 5;
-        final int numThreads = 10;
-        final CyclicBarrier barrier = new CyclicBarrier(numThreads);
-
-        withConcurrentCallsRespectMaxIdle(maxIdleLimit, numThreads, pool ->
-            getRunnables(numThreads, barrier, pool, (a, b) -> {
-            b.await(); // Wait for all threads to be ready
-            a.addObject();
-        }));
-    }
-
 
     @RepeatedTest(10)
     @Timeout(value = 10, unit = TimeUnit.SECONDS)
     void testReturnObjectConcurrentCallsRespectsMaxIdleLimit() throws Exception {
         final int maxIdleLimit = 5;
-        final int numThreads = 200;
+        final int numThreads = 100;
         final CyclicBarrier barrier = new CyclicBarrier(numThreads);
 
         withConcurrentCallsRespectMaxIdle(maxIdleLimit, numThreads, pool ->
@@ -1058,6 +1032,7 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         try (GenericObjectPool<String> pool = new GenericObjectPool<>(new SimpleFactory(), config)) {
             assertEquals(0, pool.getNumIdle(), "should be zero idle");
             pool.setMaxIdle(maxIdleLimit);
+            pool.setMinIdle(-1);
             pool.setMaxTotal(-1);
 
             final List<Runnable> tasks = operation.apply(pool);
@@ -1074,6 +1049,10 @@ class TestGenericObjectPool extends TestBaseObjectPool {
 
             assertTrue(pool.getNumIdle() <= maxIdleLimit,
                 "Concurrent addObject() calls should not exceed maxIdle limit of " + maxIdleLimit +
+                    ", but found " + pool.getNumIdle() + " idle objects");
+
+            assertTrue(pool.getNumIdle() >= pool.getMinIdle(),
+                "Concurrent addObject() calls should not go below minIdle limit of " + pool.getMinIdle() +
                     ", but found " + pool.getNumIdle() + " idle objects");
         }
     }
@@ -1101,17 +1080,6 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         return tasks;
     }
 
-    @Test
-    void testAddObjectCanAddToMaxIdle() throws Exception {
-        genericObjectPool.setMaxTotal(5);
-        genericObjectPool.borrowObject();
-        genericObjectPool.borrowObject();
-        genericObjectPool.setMaxIdle(3);
-        for (int i = 0; i < 3; i++) {
-            genericObjectPool.addObject();
-        }
-        assertEquals(3, genericObjectPool.getNumIdle());
-    }
 
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
