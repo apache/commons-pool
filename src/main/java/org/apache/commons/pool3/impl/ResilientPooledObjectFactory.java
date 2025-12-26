@@ -370,7 +370,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
     }
 
     /**
-     * Gets the the time of the last factory outage recovery.
+     * Gets the time of the last factory outage recovery.
      *
      * @return the time of the last factory outage recovery.
      */
@@ -388,7 +388,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
     }
 
     /**
-     * Tests whether the the monitor is running.
+     * Tests whether the monitor is running.
      *
      * @return true if the monitor is running.
      */
