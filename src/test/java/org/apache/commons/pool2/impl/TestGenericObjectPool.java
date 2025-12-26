@@ -1031,10 +1031,10 @@ class TestGenericObjectPool extends TestBaseObjectPool {
             for (int i = 0; i < numThreads; i++) {
                 tasks.add(() -> {
                     try {
-                        String pooledObject = pool.borrowObject();
+                        final String pooledObject = pool.borrowObject();
                         barrier.await(); // Wait for all threads to be ready
                         pool.returnObject(pooledObject);
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         // do nothing
                     } finally {
                         doneLatch.countDown();
@@ -1049,8 +1049,7 @@ class TestGenericObjectPool extends TestBaseObjectPool {
                 executorService.shutdown();
                 assertTrue(executorService.awaitTermination(60, TimeUnit.SECONDS),
                     "Executor did not terminate in time");
-            }
-            finally {
+            } finally {
                 executorService.shutdownNow(); // Ensure cleanup
             }
 
