@@ -84,7 +84,7 @@ class TestEvictionTimer {
             EvictionTimer.cancel(evictor1, BaseObjectPoolConfig.DEFAULT_EVICTOR_SHUTDOWN_TIMEOUT, false);
 
             // Assert that eviction objects are correctly cleaned
-            // 1 - the evictor timer task is cancelled
+            // 1 - the evictor timer task is canceled
             sf = (ScheduledFuture<?>) evictorTaskFutureField.get(evictor1);
             assertTrue(sf.isCancelled());
             // 2- and, the eviction action is removed from executor thread pool
@@ -96,7 +96,7 @@ class TestEvictionTimer {
             EvictionTimer.cancel(evictor2, BaseObjectPoolConfig.DEFAULT_EVICTOR_SHUTDOWN_TIMEOUT, false);
 
             // Assert that eviction objects are correctly cleaned
-            // 1 - the evictor timer task is cancelled
+            // 1 - the evictor timer task is canceled
             sf = (ScheduledFuture<?>) evictorTaskFutureField.get(evictor2);
             assertTrue(sf.isCancelled());
             // 2- and, the eviction thread pool executor is freed
