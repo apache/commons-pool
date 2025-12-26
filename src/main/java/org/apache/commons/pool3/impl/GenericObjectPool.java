@@ -487,7 +487,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
             jmxUnregister();
 
             // Release any threads that were waiting for an object
-            idleObjects.interuptTakeWaiters();
+            idleObjects.interruptTakeWaiters();
         }
     }
 
