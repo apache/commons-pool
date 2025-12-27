@@ -71,6 +71,7 @@ import org.apache.commons.pool2.WaiterFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -1006,6 +1007,82 @@ class TestGenericObjectPool extends TestBaseObjectPool {
             genericObjectPool.addObject();
         }
         assertEquals(3, genericObjectPool.getNumIdle());
+    }
+
+    @RepeatedTest(10)
+    @Timeout(value = 30, unit = TimeUnit.SECONDS)
+    void testReturnObjectConcurrentCallsRespectsMaxIdleLimit() throws Exception {
+        final int maxIdleLimit = 4;
+        // Use more threads than CPU cores to increase contention
+        final int numThreads = 50;
+
+        final GenericObjectPoolConfig<String> config = new GenericObjectPoolConfig<>();
+        config.setJmxEnabled(false);
+        try (GenericObjectPool<String> pool = new GenericObjectPool<>(new SimpleFactory(), config)) {
+            assertEquals(0, pool.getNumIdle(), "should be zero idle");
+            pool.setMaxIdle(maxIdleLimit);
+            pool.setMinIdle(-1);
+            pool.setMaxTotal(-1);
+
+            // Pre-borrow all objects in the main thread to eliminate variability
+            final List<String> borrowedObjects = new ArrayList<>();
+            for (int i = 0; i < numThreads; i++) {
+                borrowedObjects.add(pool.borrowObject());
+            }
+            assertEquals(numThreads, pool.getNumActive(), "All objects should be active");
+            assertEquals(0, pool.getNumIdle(), "No objects should be idle yet");
+
+            // Use AtomicBoolean with busy-spin for tighter synchronization than CountDownLatch
+            final AtomicBoolean startFlag = new AtomicBoolean(false);
+            final CountDownLatch readyCount = new CountDownLatch(1);
+            final CountDownLatch doneLatch = new CountDownLatch(numThreads);
+
+            final ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
+            try {
+                // Create tasks that will return objects concurrently
+                for (final String obj : borrowedObjects) {
+                    executorService.submit(() -> {
+                        try {
+                            // Signal ready and busy-spin until start flag is set
+                            readyCount.await();
+                            while (!startFlag.get()) {
+                                Thread.yield(); // Hint to the JVM that we're spin-waiting
+                            }
+                            pool.returnObject(obj);
+                        }
+                        catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        } finally {
+                            doneLatch.countDown();
+                        }
+                    });
+                }
+
+                readyCount.countDown();
+
+                assertTrue(readyCount.await(10, TimeUnit.SECONDS), "Threads failed to start");
+
+                // Small delay to ensure all threads are truly in their spin-wait loops
+                Thread.sleep(10);
+
+                // Signal all threads to start returning simultaneously
+                startFlag.set(true);
+
+                // Wait for all returns to complete
+                assertTrue(doneLatch.await(10, TimeUnit.SECONDS),
+                    "Not all threads completed in time");
+
+                executorService.shutdown();
+                assertTrue(executorService.awaitTermination(5, TimeUnit.SECONDS),
+                    "Executor did not terminate in time");
+            } finally {
+                executorService.shutdownNow();
+            }
+
+            assertTrue(pool.getNumIdle() <= maxIdleLimit,
+                "Concurrent returnObject() calls should not exceed maxIdle limit of " + maxIdleLimit +
+                    ", but found " + pool.getNumIdle() + " idle objects");
+        }
     }
 
     @Test
