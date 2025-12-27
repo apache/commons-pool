@@ -1012,9 +1012,9 @@ class TestGenericObjectPool extends TestBaseObjectPool {
     @RepeatedTest(10)
     @Timeout(value = 30, unit = TimeUnit.SECONDS)
     void testReturnObjectConcurrentCallsRespectsMaxIdleLimit() throws Exception {
-        final int maxIdleLimit = 5;
+        final int maxIdleLimit = 4;
         // Use more threads than CPU cores to increase contention
-        final int numThreads = 10;
+        final int numThreads = 50;
 
         final GenericObjectPoolConfig<String> config = new GenericObjectPoolConfig<>();
         config.setJmxEnabled(false);
@@ -1034,7 +1034,7 @@ class TestGenericObjectPool extends TestBaseObjectPool {
 
             // Use AtomicBoolean with busy-spin for tighter synchronization than CountDownLatch
             final AtomicBoolean startFlag = new AtomicBoolean(false);
-            final CountDownLatch readyCount = new CountDownLatch(numThreads);
+            final CountDownLatch readyCount = new CountDownLatch(1);
             final CountDownLatch doneLatch = new CountDownLatch(numThreads);
 
             final ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
@@ -1044,16 +1044,21 @@ class TestGenericObjectPool extends TestBaseObjectPool {
                     executorService.submit(() -> {
                         try {
                             // Signal ready and busy-spin until start flag is set
-                            readyCount.countDown();
+                            readyCount.await();
                             while (!startFlag.get()) {
                                 Thread.yield(); // Hint to the JVM that we're spin-waiting
                             }
                             pool.returnObject(obj);
+                        }
+                        catch (InterruptedException e) {
+                            throw new RuntimeException(e);
                         } finally {
                             doneLatch.countDown();
                         }
                     });
                 }
+
+                readyCount.countDown();
 
                 assertTrue(readyCount.await(10, TimeUnit.SECONDS), "Threads failed to start");
 
