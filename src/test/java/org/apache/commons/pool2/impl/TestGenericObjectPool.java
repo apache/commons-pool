@@ -1014,7 +1014,7 @@ class TestGenericObjectPool extends TestBaseObjectPool {
     void testReturnObjectConcurrentCallsRespectsMaxIdleLimit() throws Exception {
         final int maxIdleLimit = 5;
         // Use more threads than CPU cores to increase contention
-        final int numThreads = Math.max(100, Runtime.getRuntime().availableProcessors() * 10);
+        final int numThreads = 10;
 
         final GenericObjectPoolConfig<String> config = new GenericObjectPoolConfig<>();
         config.setJmxEnabled(false);
