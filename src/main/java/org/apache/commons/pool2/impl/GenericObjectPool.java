@@ -212,16 +212,11 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         if (factory == null) {
             throw new IllegalStateException("Cannot add objects without a factory.");
         }
-        synchronized (makeObjectCountLock) {
-            final int localMaxTotal = getMaxTotal();
-            final int localMaxIdle = getMaxIdle();
-            if (localMaxIdle >= 0 && getNumIdle() >= localMaxIdle) {
-                // Pool already has maxIdle idle objects or maxIdle is 0.
-                return;
-            }
-            if (localMaxTotal < 0 || createCount.get() < localMaxTotal) {
-                addIdleObject(create(getMaxWaitDuration()));
-            }
+        final int localMaxIdle = getMaxIdle();
+        final int localMaxTotal = getMaxTotal();
+        if ((localMaxIdle < 0 || getNumIdle() < localMaxIdle) &&
+                (localMaxTotal < 0 || createCount.get() < localMaxTotal)) {
+            addIdleObject(create(getMaxWaitDuration()));
         }
     }
 
