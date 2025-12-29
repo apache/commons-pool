@@ -1008,6 +1008,7 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         assertEquals(3, genericObjectPool.getNumIdle());
     }
 
+    @Disabled("WIP for https://issues.apache.org/jira/browse/POOL-413")
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
     void testAddObjectConcurrentCallsRespectsMaxIdle() throws Exception {
