@@ -45,7 +45,7 @@ Apache Commons Pool
 
 [![Java CI](https://github.com/apache/commons-pool/actions/workflows/maven.yml/badge.svg)](https://github.com/apache/commons-pool/actions/workflows/maven.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/org.apache.commons/commons-pool2?label=Maven%20Central)](https://search.maven.org/artifact/org.apache.commons/commons-pool2)
-[![Javadocs](https://javadoc.io/badge/org.apache.commons/commons-pool2/2.13.0.svg)](https://javadoc.io/doc/org.apache.commons/commons-pool2/2.13.0)
+[![Javadocs](https://javadoc.io/badge/org.apache.commons/commons-pool2/2.13.1.svg)](https://javadoc.io/doc/org.apache.commons/commons-pool2/2.13.1)
 [![CodeQL](https://github.com/apache/commons-pool/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/apache/commons-pool/actions/workflows/codeql-analysis.yml)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/apache/commons-pool/badge)](https://api.securityscorecards.dev/projects/github.com/apache/commons-pool)
 
@@ -68,7 +68,7 @@ Alternatively, you can pull it from the central Maven repositories:
 <dependency>
   <groupId>org.apache.commons</groupId>
   <artifactId>commons-pool2</artifactId>
-  <version>2.13.0</version>
+  <version>2.13.1</version>
 </dependency>
 ```
 

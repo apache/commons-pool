@@ -1,3 +1,46 @@
+Apache Commons Pool 2.13.1 Release Notes
+----------------------------------------
+
+The Apache Commons Pool team is pleased to announce the release of Apache Commons Pool 2.13.1.
+
+Apache Commons Pool provides an object-pooling API and several object-pool implementations.
+Version 2 contains a completely rewritten pooling implementation compared to the 1.x series.
+In addition to performance and scalability improvements, version 2 includes robust instance
+tracking and pool monitoring.
+
+Versions 2.7.x and up require Java 8 or later.
+Version 2.6.x requires Java 7 or above.
+Version 2.5.x requires Java 7 or above.
+Version 2.0 requires 6 or above. 
+
+NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPoolMXBean,
+      and GenericKeyedObjectPoolMXBean) exist only to define the attributes and methods
+      that will be made available via JMX. Clients must not implement them as
+      they are subject to change between major, minor, and patch version releases of
+      Commons Pool. Clients that implement any of these interfaces may not
+      be able to upgrade to a new minor or patch release without requiring code
+      changes.
+
+${d}
+
+Changes in version 2.13.1 include:
+
+
+Fixed Bugs:
+o POOL-427:  The fix for POOL-425 introduced a regression where addObject fails when maxIdle is negative (indicating no limit). Thanks to Raju Gupta.
+o POOL-426:  GenericObjectPool addObject can cause maxIdle to be exceeded. Thanks to Raju Gupta.
+
+
+
+For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Commons Pool website:
+
+https://commons.apache.org/proper/commons-pool/
+
+Download page: https://commons.apache.org/proper/commons-pool/download_pool.cgi
+
+-----------------------------------------------------------------------------------------------
+
 Apache Commons Pool 2.13.0 Release Notes
 ----------------------------------------
 
