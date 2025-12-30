@@ -26,7 +26,7 @@
     <version>93</version>
   </parent>
   <artifactId>commons-pool2</artifactId>
-  <version>2.13.1-SNAPSHOT</version>
+  <version>2.13.1</version>
   <name>Apache Commons Pool</name>
   <inceptionYear>2001</inceptionYear>
   <description>The Apache Commons Object Pooling Library.</description>
@@ -81,7 +81,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <!-- project.build.outputTimestamp is managed by Maven plugins, see https://maven.apache.org/guides/mini/guide-reproducible-builds.html -->
-    <project.build.outputTimestamp>2025-12-09T21:57:57Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2025-12-30T18:53:32Z</project.build.outputTimestamp>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <commons.main.branch>POOL_2_X</commons.main.branch>
