@@ -45,10 +45,9 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Pool Release Notes</title>
   </properties>
   <body>
-    <release version="2.13.1" date="2025-12-29" description="This is a feature and maintenance release. Java 8 or later is required.">
+    <release version="2.13.1" date="2025-12-29" description="This is a maintenance release. Java 8 or later is required.">
       <!-- FIX -->
       <action type="fix" issue="POOL-427" dev="psteitz" due-to="Raju Gupta"> The fix for POOL-425 introduced a regression where addObject fails when maxIdle is negative (indicating no limit).</action>
-      <action type="fix" issue="POOL-426" dev="psteitz" due-to="Raju Gupta">GenericObjectPool addObject can cause maxIdle to be exceeded.</action>
       <!-- ADD -->
       <!-- UPDATE -->
     </release>
