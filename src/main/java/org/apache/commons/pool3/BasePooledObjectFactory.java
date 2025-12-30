@@ -41,9 +41,9 @@ public abstract class BasePooledObjectFactory<T, E extends Exception> extends Ba
     }
 
     /**
-     *  No-op.
+     * No-op.
      *
-     *  @param p ignored
+     * @param p ignored
      */
     @Override
     public void activateObject(final PooledObject<T> p) throws E {
@@ -62,9 +62,9 @@ public abstract class BasePooledObjectFactory<T, E extends Exception> extends Ba
     public abstract T create() throws E;
 
     /**
-     *  No-op.
+     * No-op.
      *
-     *  @param p ignored
+     * @param p ignored
      */
     @Override
     public void destroyObject(final PooledObject<T> p) throws E  {
@@ -77,7 +77,7 @@ public abstract class BasePooledObjectFactory<T, E extends Exception> extends Ba
     }
 
     /**
-     *  No-op.
+     * No-op.
      *
      * @param p ignored
      */
