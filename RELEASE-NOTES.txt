@@ -21,15 +21,11 @@ NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPool
       be able to upgrade to a new minor or patch release without requiring code
       changes.
 
-${d}
-
 Changes in version 2.13.1 include:
 
 
 Fixed Bugs:
 o POOL-427:  The fix for POOL-425 introduced a regression where addObject fails when maxIdle is negative (indicating no limit). Thanks to Raju Gupta.
-o POOL-426:  GenericObjectPool addObject can cause maxIdle to be exceeded. Thanks to Raju Gupta.
-
 
 
 For complete information on Apache Commons Pool, including instructions on how to submit bug reports,
@@ -63,8 +59,6 @@ NOTE: The MBean interfaces (DefaultPooledObjectInfoMBean, GenericKeyedObjectPool
       Commons Pool. Clients that implement any of these interfaces may not
       be able to upgrade to a new minor or patch release without requiring code
       changes.
-
-${d}
 
 Changes in version 2.13.0 include:
 
