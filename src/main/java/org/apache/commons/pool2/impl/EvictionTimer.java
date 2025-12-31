@@ -99,6 +99,7 @@ final class EvictionTimer {
     /**
      * Runnable that runs the referent of a weak reference. When the referent is no
      * no longer reachable, run is no-op.
+     *
      * @param <R> The kind of Runnable.
      */
     private static final class WeakRunner<R extends Runnable> implements Runnable {

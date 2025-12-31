@@ -125,6 +125,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
 
         /**
          * Constructs a new ObjectDeque with the given fairness policy.
+         *
          * @param fairness true means client threads waiting to borrow / return instances
          * will be served as if waiting in a FIFO queue.
          */
@@ -249,6 +250,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
     /**
      * Constructs a new {@code GenericKeyedObjectPool} using defaults from
      * {@link GenericKeyedObjectPoolConfig}.
+     *
      * @param factory the factory to be used to create entries
      */
     public GenericKeyedObjectPool(final KeyedPooledObjectFactory<K, T> factory) {

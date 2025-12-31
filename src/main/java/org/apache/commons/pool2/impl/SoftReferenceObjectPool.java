@@ -353,6 +353,7 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
 
     /**
      * Clears cleared references from iterator's collection
+     *
      * @param iterator iterator over idle/allReferences
      */
     private void removeClearedReferences(final Iterator<PooledSoftReference<T>> iterator) {

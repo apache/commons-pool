@@ -142,6 +142,7 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
 
     /**
      * Gets the number of times this object has been borrowed.
+     *
      * @return The number of times this object has been borrowed.
      * @since 2.1
      */
@@ -237,6 +238,7 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
 
     /**
      * Gets the state of this object.
+     *
      * @return state
      */
     @Override

@@ -329,6 +329,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
     /**
      * Creates a {@code LinkedBlockingDeque} with a capacity of
      * {@link Integer#MAX_VALUE} and the given fairness policy.
+     *
      * @param fairness true means threads waiting on the deque should be served
      * as if waiting in a FIFO request queue
      */
