@@ -965,8 +965,8 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      *
      * @see AbandonedConfig#getRemoveAbandonedTimeoutDuration()
      * @see AbandonedConfig#getRemoveAbandonedTimeoutDuration()
-     * @deprecated Use {@link #getRemoveAbandonedTimeoutDuration()}.
      * @since 2.11.0
+     * @deprecated Use {@link #getRemoveAbandonedTimeoutDuration()}.
      */
     @Deprecated
     public int getRemoveAbandonedTimeout() {
