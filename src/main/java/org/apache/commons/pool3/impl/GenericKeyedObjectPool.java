@@ -127,6 +127,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
 
         /**
          * Constructs a new ObjectDeque with the given fairness policy.
+         *
          * @param fairness true means client threads waiting to borrow / return instances
          * will be served as if waiting in a FIFO queue.
          */
@@ -245,6 +246,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
     /**
      * Constructs a new {@code GenericKeyedObjectPool} using defaults from
      * {@link GenericKeyedObjectPoolConfig}.
+     *
      * @param factory the factory to be used to create entries
      */
     public GenericKeyedObjectPool(final KeyedPooledObjectFactory<K, T, E> factory) {
@@ -1707,6 +1709,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
 
     /**
      * Whether there is at least one thread waiting on this deque, add an pool object.
+     *
      * @param key pool key.
      * @param idleObjects list of idle pool objects.
      */

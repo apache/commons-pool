@@ -35,6 +35,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
 
     /**
      * The default value for the {@code lifo} configuration attribute.
+     *
      * @see GenericObjectPool#getLifo()
      * @see GenericKeyedObjectPool#getLifo()
      */
@@ -42,6 +43,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
 
     /**
      * The default value for the {@code fairness} configuration attribute.
+     *
      * @see GenericObjectPool#getFairness()
      * @see GenericKeyedObjectPool#getFairness()
      */
@@ -49,6 +51,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
 
     /**
      * The default value for the {@code maxWait} configuration attribute.
+     *
      * @see GenericObjectPool#getMaxWaitDuration()
      * @see GenericKeyedObjectPool#getMaxWaitDuration()
      * @since 2.10.0
@@ -58,6 +61,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     /**
      * The default value for the {@code minEvictableIdleDuration}
      * configuration attribute.
+     *
      * @see GenericObjectPool#getMinEvictableIdleDuration()
      * @see GenericKeyedObjectPool#getMinEvictableIdleDuration()
      * @since 2.11.0
@@ -67,6 +71,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     /**
      * The default value for the {@code softMinEvictableIdleTime}
      * configuration attribute.
+     *
      * @see GenericObjectPool#getSoftMinEvictableIdleDuration()
      * @see GenericKeyedObjectPool#getSoftMinEvictableIdleDuration()
      * @since 2.11.0
@@ -76,6 +81,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     /**
      * The default value for {@code evictorShutdownTimeout} configuration
      * attribute.
+     *
      * @see GenericObjectPool#getEvictorShutdownTimeoutDuration()
      * @see GenericKeyedObjectPool#getEvictorShutdownTimeoutDuration()
      * @since 2.10.0
@@ -85,6 +91,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     /**
      * The default value for the {@code numTestsPerEvictionRun} configuration
      * attribute.
+     *
      * @see GenericObjectPool#getNumTestsPerEvictionRun()
      * @see GenericKeyedObjectPool#getNumTestsPerEvictionRun()
      */
@@ -92,6 +99,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
 
     /**
      * The default value for the {@code testOnCreate} configuration attribute.
+     *
      * @see GenericObjectPool#getTestOnCreate()
      * @see GenericKeyedObjectPool#getTestOnCreate()
      * @since 2.2
@@ -100,6 +108,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
 
     /**
      * The default value for the {@code testOnBorrow} configuration attribute.
+     *
      * @see GenericObjectPool#getTestOnBorrow()
      * @see GenericKeyedObjectPool#getTestOnBorrow()
      */
@@ -107,6 +116,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
 
     /**
      * The default value for the {@code testOnReturn} configuration attribute.
+     *
      * @see GenericObjectPool#getTestOnReturn()
      * @see GenericKeyedObjectPool#getTestOnReturn()
      */
@@ -114,6 +124,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
 
     /**
      * The default value for the {@code testWhileIdle} configuration attribute.
+     *
      * @see GenericObjectPool#getTestWhileIdle()
      * @see GenericKeyedObjectPool#getTestWhileIdle()
      */
@@ -122,6 +133,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     /**
      * The default value for the {@code timeBetweenEvictionRuns}
      * configuration attribute.
+     *
      * @see GenericObjectPool#getDurationBetweenEvictionRuns()
      * @see GenericKeyedObjectPool#getDurationBetweenEvictionRuns()
      */
@@ -130,6 +142,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     /**
      * The default value for the {@code blockWhenExhausted} configuration
      * attribute.
+     *
      * @see GenericObjectPool#getBlockWhenExhausted()
      * @see GenericKeyedObjectPool#getBlockWhenExhausted()
      */
@@ -144,6 +157,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     /**
      * The default value for the prefix used to name JMX enabled pools created
      * with a configuration instance.
+     *
      * @see GenericObjectPool#getJmxName()
      * @see GenericKeyedObjectPool#getJmxName()
      */
@@ -153,6 +167,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
      * The default value for the base name to use to name JMX enabled pools
      * created with a configuration instance. The default is {@code null}
      * which means the pool will provide the base name to use.
+     *
      * @see GenericObjectPool#getJmxName()
      * @see GenericKeyedObjectPool#getJmxName()
      */
@@ -161,6 +176,7 @@ public abstract class BaseObjectPoolConfig<T> extends BaseObject implements Clon
     /**
      * The default value for the {@code evictionPolicyClassName} configuration
      * attribute.
+     *
      * @see GenericObjectPool#getEvictionPolicyClassName()
      * @see GenericKeyedObjectPool#getEvictionPolicyClassName()
      */

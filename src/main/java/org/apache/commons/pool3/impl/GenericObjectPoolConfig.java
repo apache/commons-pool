@@ -32,18 +32,21 @@ public class GenericObjectPoolConfig<T> extends BaseObjectPoolConfig<T> {
 
     /**
      * The default value for the {@code maxTotal} configuration attribute.
+     *
      * @see GenericObjectPool#getMaxTotal()
      */
     public static final int DEFAULT_MAX_TOTAL = 8;
 
     /**
      * The default value for the {@code maxIdle} configuration attribute.
+     *
      * @see GenericObjectPool#getMaxIdle()
      */
     public static final int DEFAULT_MAX_IDLE = 8;
 
     /**
      * The default value for the {@code minIdle} configuration attribute.
+     *
      * @see GenericObjectPool#getMinIdle()
      */
     public static final int DEFAULT_MIN_IDLE = 0;

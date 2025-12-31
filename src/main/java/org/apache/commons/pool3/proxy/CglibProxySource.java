@@ -90,6 +90,7 @@ public class CglibProxySource<T> extends AbstractProxySource<T> {
      * <p>
      * For additional features, use a {@link #builder()}.
      * </p>
+     *
      * @param superclass The class to proxy
      */
     public CglibProxySource(final Class<? extends T> superclass) {

@@ -73,6 +73,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
 
         /**
          * Constructs an EvictionIterator for the provided idle instance deque.
+         *
          * @param idleObjects underlying deque.
          */
         EvictionIterator(final Deque<PooledObject<T>> idleObjects) {
@@ -87,6 +88,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
 
         /**
          * Gets the idle object deque referenced by this iterator.
+         *
          * @return the idle object deque
          */
         public Deque<PooledObject<T>> getIdleObjects() {
@@ -460,6 +462,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
 
     /**
      * Verifies that the pool is open.
+     *
      * @throws IllegalStateException if the pool is closed.
      */
     final void assertOpen() throws IllegalStateException {
@@ -489,6 +492,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
 
     /**
      * Creates a list of pooled objects to remove based on their state.
+     *
      * @param abandonedConfig The abandoned configuration.
      * @param allObjects PooledObject instances to consider.
      * @return a list of pooled objects to remove based on their state.
@@ -511,6 +515,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     /**
      * Tries to ensure that the configured minimum number of idle instances are
      * available in the pool.
+     *
      * @throws E if an error occurs creating idle instances
      */
     abstract void ensureMinIdle() throws E;
@@ -544,6 +549,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     /**
      * Gets the total number of objects successfully borrowed from this pool over the
      * lifetime of the pool.
+     *
      * @return the borrowed object count
      */
     public final long getBorrowedCount() {
@@ -553,6 +559,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     /**
      * Gets the total number of objects created for this pool over the lifetime of
      * the pool.
+     *
      * @return the created object count
      */
     public final long getCreatedCount() {
@@ -565,6 +572,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      * deregistered when no longer used by calling the {@link #close()} method.
      * This method is provided to assist with identifying code that creates but
      * does not close it thereby creating a memory leak.
+     *
      * @return pool creation stack trace
      */
     public final String getCreationStackTrace() {
@@ -575,6 +583,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      * Gets the total number of objects destroyed by this pool as a result of failing
      * validation during {@code borrowObject()} over the lifetime of the
      * pool.
+     *
      * @return validation destroyed object count
      */
     public final long getDestroyedByBorrowValidationCount() {
@@ -584,6 +593,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     /**
      * Gets the total number of objects destroyed by the evictor associated with this
      * pool over the lifetime of the pool.
+     *
      * @return the evictor destroyed object count
      */
     public final long getDestroyedByEvictorCount() {
@@ -593,6 +603,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     /**
      * Gets the total number of objects destroyed by this pool over the lifetime of
      * the pool.
+     *
      * @return the destroyed object count
      */
     public final long getDestroyedCount() {
@@ -662,6 +673,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      * Gets the name under which the pool has been registered with the
      * platform MBean server or {@code null} if the pool has not been
      * registered.
+     *
      * @return the JMX name
      */
     public final ObjectName getJmxName() {
@@ -700,6 +712,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
 
     /**
      * Gets the maximum time a thread has waited to borrow objects from the pool.
+     *
      * @return maximum wait time in milliseconds since the pool was created
      */
     public final long getMaxBorrowWaitTimeMillis() {
@@ -760,6 +773,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     /**
      * Gets the mean time objects are active for based on the last {@link
      * #MEAN_TIMING_STATS_CACHE_SIZE} objects returned to the pool.
+     *
      * @return mean time an object has been checked out from the pool among
      * recently returned objects
      */
@@ -770,6 +784,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     /**
      * Gets the mean time objects are active for based on the last {@link
      * #MEAN_TIMING_STATS_CACHE_SIZE} objects returned to the pool.
+     *
      * @return mean time an object has been checked out from the pool among
      * recently returned objects
      */
@@ -792,6 +807,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     /**
      * Gets the mean time threads wait to borrow an object based on the last {@link
      * #MEAN_TIMING_STATS_CACHE_SIZE} objects borrowed from the pool.
+     *
      * @return mean time in milliseconds that a recently served thread has had
      * to wait to borrow an object from the pool
      */
@@ -802,6 +818,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     /**
      * Gets the mean time objects are idle for based on the last {@link
      * #MEAN_TIMING_STATS_CACHE_SIZE} objects borrowed from the pool.
+     *
      * @return mean time an object has been idle in the pool among recently
      * borrowed objects
      */
@@ -887,6 +904,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
 
     /**
      * Gets the number of instances currently idle in this pool.
+     *
      * @return count of instances available for checkout from the pool
      */
     public abstract int getNumIdle();
@@ -974,6 +992,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      * Gets the total number of objects returned to this pool over the lifetime of
      * the pool. This excludes attempts to return the same object multiple
      * times.
+     *
      * @return the returned object count
      */
     public final long getReturnedCount() {
@@ -1002,6 +1021,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
 
     /**
      * Gets the stack trace of an exception as a string.
+     *
      * @param e exception to trace
      * @return exception stack trace as a string
      */
@@ -1222,6 +1242,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
 
     /**
      * Marks the object as returning to the pool.
+     *
      * @param pooledObject instance to return to the keyed pool
      */
     protected void markReturningState(final PooledObject<T> pooledObject) {

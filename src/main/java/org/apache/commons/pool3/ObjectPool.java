@@ -148,6 +148,7 @@ public interface ObjectPool<T, E extends Exception> extends Closeable {
     /**
      * Gets the number of instances currently borrowed from this pool. Returns
      * a negative value if this information is not available.
+     *
      * @return the number of instances currently borrowed from this pool.
      */
     int getNumActive();
@@ -157,6 +158,7 @@ public interface ObjectPool<T, E extends Exception> extends Closeable {
      * considered an approximation of the number of objects that can be
      * {@link #borrowObject borrowed} without creating any new instances.
      * Returns a negative value if this information is not available.
+     *
      * @return the number of instances currently idle in this pool.
      */
     int getNumIdle();
