@@ -88,11 +88,11 @@
     <commons.release.branch>release-2.x</commons.release.branch>
     <commons.componentid>pool</commons.componentid>
     <commons.module.name>org.apache.commons.pool2</commons.module.name>
-    <commons.rc.version>RC2</commons.rc.version>
+    <commons.rc.version>RC1</commons.rc.version>
     <checkstyle.suppress.file>${basedir}/src/conf/checkstyle-suppressions.xml</checkstyle.suppress.file>
     <!-- Java 8 -->
-    <commons.release.version>2.13.1</commons.release.version>
-    <commons.release.next>2.13.2</commons.release.next>
+    <commons.release.version>2.13.2</commons.release.version>
+    <commons.release.next>2.13.3</commons.release.next>
     <commons.release.desc>(Java 8 or above)</commons.release.desc>
     <!-- Java 7 -->
     <commons.release.2.version>2.6.2</commons.release.2.version>
@@ -102,7 +102,7 @@
     <commons.scmPubCheckoutDirectory>site-content</commons.scmPubCheckoutDirectory>
     <commons.osgi.import>net.sf.cglib.proxy;resolution:=optional,*</commons.osgi.import>
     <!-- Commons Release Plugin -->
-    <commons.bc.version>2.13.0</commons.bc.version>
+    <commons.bc.version>2.13.1</commons.bc.version>
     <commons.release.isDistModule>true</commons.release.isDistModule>
     <japicmp.skip>false</japicmp.skip>
     <spotbugs.skip>false</spotbugs.skip>
