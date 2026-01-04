@@ -351,18 +351,25 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
     private static class TestThread<T> implements Runnable {
         private final Random random = new Random();
+
         /** GKOP to hit */
         private final KeyedObjectPool<String, T> pool;
+
         /** Number of borrow/return iterations */
         private final int iter;
+
         /** Delay before borrow */
         private final int startDelay;
+
         /** Delay before return */
         private final int holdTime;
+
         /** Whether or not delays are random (with max = configured values) */
         private final boolean randomDelay;
+
         /** Expected object */
         private final T expectedObject;
+
         /** Key used in borrow / return sequence - null means random */
         private final String key;
         private volatile boolean complete;
@@ -482,6 +489,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
     // @see https://issues.apache.org/jira/browse/SUREFIRE-121
     /** SetUp(): {@code new GenericKeyedObjectPool<String,String>(factory)} */
     private GenericKeyedObjectPool<String, String> gkoPool;
+
     /** SetUp(): {@code new SimpleFactory<String>()} */
     private SimpleFactory<String> simpleFactory;
 

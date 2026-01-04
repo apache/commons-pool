@@ -34,8 +34,10 @@ import org.apache.commons.pool2.PooledObjectFactory;
  * @param <T> Type of element managed in this factory.
  */
 final class TestSynchronizedPooledObjectFactory<T> implements PooledObjectFactory<T> {
+
     /** Synchronization lock */
     private final WriteLock writeLock = new ReentrantReadWriteLock().writeLock();
+
     /** Wrapped factory */
     private final PooledObjectFactory<T> factory;
 

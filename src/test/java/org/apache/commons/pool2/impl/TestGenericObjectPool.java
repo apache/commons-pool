@@ -445,18 +445,25 @@ class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     private static class TestThread<T> implements Runnable {
+
         /** Source of random delay times */
         private final Random random;
+
         /** Pool to borrow from */
         private final ObjectPool<T> pool;
+
         /** Number of borrow attempts */
         private final int iter;
+
         /** Delay before each borrow attempt */
         private final int startDelay;
+
         /** Time to hold each borrowed object before returning it */
         private final int holdTime;
+
         /** Whether or not start and hold time are randomly generated */
         private final boolean randomDelay;
+
         /** Object expected to be borrowed (fail otherwise) */
         private final Object expectedObject;
         private volatile boolean complete;
