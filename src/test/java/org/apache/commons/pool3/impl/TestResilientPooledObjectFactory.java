@@ -28,6 +28,7 @@ import org.apache.commons.pool3.PooledObjectFactory;
 import org.junit.jupiter.api.Test;
 
 class TestResilientPooledObjectFactory {
+
     /**
      * Factory that suffers outages and fails in configurable ways when it is down.
      */

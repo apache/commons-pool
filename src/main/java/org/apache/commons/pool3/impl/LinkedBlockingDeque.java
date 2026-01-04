@@ -98,6 +98,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * Base class for Iterators for LinkedBlockingDeque
      */
     private abstract class AbstractItr implements Iterator<E> {
+
         /**
          * The next node to return in next()
          */
@@ -252,6 +253,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * @param <E> node item type
      */
     private static final class Node<E> {
+
         /**
          * The item, or null if this node has been removed.
          */

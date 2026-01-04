@@ -113,6 +113,7 @@ public final class PoolUtils {
             }
         }
     }
+
     /**
      * Decorates a keyed object pool, adding "eroding" behavior. Based on the
      * configured erosion factor, objects returning to the pool
@@ -471,6 +472,7 @@ public final class PoolUtils {
                     pool + '}';
         }
     }
+
     /**
      * Extends ErodingKeyedObjectPool to allow erosion to take place on a
      * per-key basis. Timing of erosion events is tracked separately for
@@ -522,6 +524,7 @@ public final class PoolUtils {
                     ", keyedPool=" + getKeyedPool() + '}';
         }
     }
+
     /**
      * Timer task that adds objects to the pool until the number of idle
      * instances for the given key reaches the configured minIdle. Note that
@@ -602,6 +605,7 @@ public final class PoolUtils {
             return sb.toString();
         }
     }
+
     /**
      * Timer task that adds objects to the pool until the number of idle
      * instances reaches the configured minIdle. Note that this is not the same

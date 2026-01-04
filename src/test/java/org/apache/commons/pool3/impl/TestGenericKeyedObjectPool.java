@@ -361,16 +361,22 @@ class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
         /** GKOP to hit */
         private final KeyedObjectPool<String, T, E> pool;
+
         /** Number of borrow/return iterations */
         private final int iter;
+
         /** Delay before borrow */
         private final int startDelay;
+
         /** Delay before return */
         private final int holdTime;
+
         /** Whether or not delays are random (with max = configured values) */
         private final boolean randomDelay;
+
         /** Expected object */
         private final T expectedObject;
+
         /** Key used in borrow / return sequence - null means random */
         private final String key;
 

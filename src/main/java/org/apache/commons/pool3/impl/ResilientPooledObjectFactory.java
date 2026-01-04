@@ -260,6 +260,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
     /**
      * @return the factory wrapped by this resilient factory
      */
+
     /** Whether or not the monitor thread is running */
     private boolean monitoring;
 
