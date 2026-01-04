@@ -352,7 +352,6 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
 
     }
 
-    // Constants
     /**
      * The size of the caches used to store historical data for some attributes
      * so that rolling means may be calculated.
