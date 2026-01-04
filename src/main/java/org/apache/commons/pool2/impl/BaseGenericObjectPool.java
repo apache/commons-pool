@@ -351,7 +351,6 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
 
     }
 
-    // Constants
     /**
      * The size of the caches used to store historical data for some attributes
      * so that rolling means may be calculated.
