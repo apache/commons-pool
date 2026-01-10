@@ -26,7 +26,7 @@
     <version>94</version>
   </parent>
   <artifactId>commons-pool2</artifactId>
-  <version>2.13.2-SNAPSHOT</version>
+  <version>2.14.0-SNAPSHOT</version>
   <name>Apache Commons Pool</name>
   <inceptionYear>2001</inceptionYear>
   <description>The Apache Commons Object Pooling Library.</description>
@@ -91,8 +91,8 @@
     <commons.rc.version>RC1</commons.rc.version>
     <checkstyle.suppress.file>${basedir}/src/conf/checkstyle-suppressions.xml</checkstyle.suppress.file>
     <!-- Java 8 -->
-    <commons.release.version>2.13.2</commons.release.version>
-    <commons.release.next>2.13.3</commons.release.next>
+    <commons.release.version>2.14.0</commons.release.version>
+    <commons.release.next>2.14.1</commons.release.next>
     <commons.release.desc>(Java 8 or above)</commons.release.desc>
     <!-- Java 7 -->
     <commons.release.2.version>2.6.2</commons.release.2.version>
