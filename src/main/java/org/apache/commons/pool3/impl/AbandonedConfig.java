@@ -33,8 +33,10 @@ public class AbandonedConfig {
 
     /**
      * The 5 minutes Duration.
+     *
+     * @since 2.14.0
      */
-    private static final Duration DEFAULT_REMOVE_ABANDONED_TIMEOUT_DURATION = Duration.ofMinutes(5);
+    public static final Duration DEFAULT_REMOVE_ABANDONED_TIMEOUT_DURATION = Duration.ofMinutes(5);
 
     /**
      * Creates a new instance with values from the given instance.
