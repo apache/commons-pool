@@ -33,6 +33,8 @@ public class AbandonedConfig {
 
     /**
      * The 5 minutes Duration.
+     *
+     * @since 2.14.0
      */
     public static final Duration DEFAULT_REMOVE_ABANDONED_TIMEOUT_DURATION = Duration.ofMinutes(5);
 
