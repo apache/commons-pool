@@ -57,7 +57,7 @@ import org.apache.commons.pool2.UsageTracking;
  * {@link #preparePool preparePool}, {@link #addObject addObject} or
  * {@link #borrowObject borrowObject} methods. Each time a new key value is
  * provided to one of these methods, a sub-new pool is created under the given
- * key to be managed by the containing {@code GenericKeyedObjectPool.}
+ * key to be managed by the containing {@code GenericKeyedObjectPool}.
  * </p>
  * <p>
  * Note that the current implementation uses a ConcurrentHashMap which uses
