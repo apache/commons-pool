@@ -58,7 +58,7 @@ import org.apache.commons.pool3.UsageTracking;
  * {@link #preparePool preparePool}, {@link #addObject addObject} or
  * {@link #borrowObject borrowObject} methods. Each time a new key value is
  * provided to one of these methods, a sub-new pool is created under the given
- * key to be managed by the containing {@code GenericKeyedObjectPool.}
+ * key to be managed by the containing {@code GenericKeyedObjectPool}.
  * </p>
  * <p>
  * Note that the current implementation uses a ConcurrentHashMap which uses
@@ -1288,7 +1288,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * {@inheritDoc}
      * <p>
      * Activation of this method decrements the active count associated with
-     * the given keyed pool and attempts to destroy {@code obj.}
+     * the given keyed pool and attempts to destroy {@code obj}.
      * </p>
      *
      * @param key pool key
@@ -1307,7 +1307,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * {@inheritDoc}
      * <p>
      * Activation of this method decrements the active count associated with
-     * the given keyed pool and attempts to destroy {@code obj.}
+     * the given keyed pool and attempts to destroy {@code obj}.
      * </p>
      *
      * @param key pool key
