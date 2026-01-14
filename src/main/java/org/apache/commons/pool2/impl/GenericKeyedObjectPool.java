@@ -1408,7 +1408,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * {@inheritDoc}
      * <p>
      * Activation of this method decrements the active count associated with
-     * the given keyed pool and attempts to destroy {@code obj.}
+     * the given keyed pool and attempts to destroy {@code obj}.
      * </p>
      *
      * @param key pool key
@@ -1427,7 +1427,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * {@inheritDoc}
      * <p>
      * Activation of this method decrements the active count associated with
-     * the given keyed pool and attempts to destroy {@code obj.}
+     * the given keyed pool and attempts to destroy {@code obj}.
      * </p>
      *
      * @param key pool key
