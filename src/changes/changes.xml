@@ -50,6 +50,7 @@ The <action> type attribute can be add,update,fix,remove.
       <!-- FIX -->
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Philip Helger, Gary Gregory" issue="POOL-430">Make AbandonedConfig.DEFAULT_REMOVE_ABANDONED_TIMEOUT_DURATION public.</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add EvictionConfig.isEvictionThread().</action>
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.commons:commons-parent from 93 to 95.</action>
     </release>

@@ -55,13 +55,12 @@ final class EvictionTimer {
 
         @Override
         public Thread newThread(final Runnable runnable) {
-            final Thread thread = new Thread(null, runnable, "commons-pool-evictor");
+            final Thread thread = new Thread(runnable, EvictionConfig.THREAD_NAME);
             thread.setDaemon(true); // POOL-363 - Required for applications using Runtime.addShutdownHook().
             AccessController.doPrivileged((PrivilegedAction<Void>) () -> {
                 thread.setContextClassLoader(EvictorThreadFactory.class.getClassLoader());
                 return null;
             });
-
             return thread;
         }
     }
@@ -132,7 +131,7 @@ final class EvictionTimer {
     /** Executor instance */
     private static ScheduledThreadPoolExecutor executor; //@GuardedBy("EvictionTimer.class")
 
-    /** Keys are weak references to tasks, values are runners managed by executor. */
+    /** Keys are weak references to pools, values are runners managed by executor. */
     private static final HashMap<
         WeakReference<BaseGenericObjectPool<?>.Evictor>,
         WeakRunner<BaseGenericObjectPool<?>.Evictor>> TASK_MAP = new HashMap<>(); // @GuardedBy("EvictionTimer.class")
@@ -175,6 +174,8 @@ final class EvictionTimer {
     }
 
     /**
+     * Gets the number of eviction tasks under management.
+     *
      * @return the number of eviction tasks under management.
      */
     static synchronized int getNumTasks() {
@@ -191,7 +192,7 @@ final class EvictionTimer {
     }
 
     /**
-     * Removes evictor from the task set and executor.
+     * Removes an evictor from the task set and executor.
      * Only called when holding the class lock.
      *
      * @param evictor Eviction task to remove
@@ -213,22 +214,20 @@ final class EvictionTimer {
      * to cancel the task to prevent memory and/or thread leaks in application
      * server environments.
      *
-     * @param task      Task to be scheduled.
+     * @param pool      Task to be scheduled.
      * @param delay     Duration before task is executed.
      * @param period    Duration between executions.
      */
-    static synchronized void schedule(
-            final BaseGenericObjectPool<?>.Evictor task, final Duration delay, final Duration period) {
+    static synchronized void schedule(final BaseGenericObjectPool<?>.Evictor pool, final Duration delay, final Duration period) {
         if (null == executor) {
             executor = new ScheduledThreadPoolExecutor(1, new EvictorThreadFactory());
             executor.setRemoveOnCancelPolicy(true);
             executor.scheduleAtFixedRate(new Reaper(), delay.toMillis(), period.toMillis(), TimeUnit.MILLISECONDS);
         }
-        final WeakReference<BaseGenericObjectPool<?>.Evictor> ref = new WeakReference<>(task);
+        final WeakReference<BaseGenericObjectPool<?>.Evictor> ref = new WeakReference<>(pool);
         final WeakRunner<BaseGenericObjectPool<?>.Evictor> runner = new WeakRunner<>(ref);
-        final ScheduledFuture<?> scheduledFuture = executor.scheduleWithFixedDelay(runner, delay.toMillis(),
-                period.toMillis(), TimeUnit.MILLISECONDS);
-        task.setScheduledFuture(scheduledFuture);
+        final ScheduledFuture<?> scheduledFuture = executor.scheduleWithFixedDelay(runner, delay.toMillis(), period.toMillis(), TimeUnit.MILLISECONDS);
+        pool.setScheduledFuture(scheduledFuture);
         TASK_MAP.put(ref, runner);
     }
 
@@ -242,9 +241,7 @@ final class EvictionTimer {
      */
     @Override
     public String toString() {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("EvictionTimer []");
-        return builder.toString();
+        return "EvictionTimer []";
     }
 
 }
