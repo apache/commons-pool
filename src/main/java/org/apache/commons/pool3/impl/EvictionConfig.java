@@ -31,6 +31,22 @@ import java.time.Duration;
 public class EvictionConfig {
 
     private static final Duration MAX_DURATION = Duration.ofMillis(Long.MAX_VALUE);
+
+    /**
+     * The eviction thread name.
+     */
+    static final String THREAD_NAME = "commons-pool-evictor";
+
+    /**
+     * Tests whether the current thread is the eviction thread.
+     *
+     * @return whether the current thread is the eviction thread.
+     * @since 2.14.0
+     */
+    public static boolean isEvictionThread() {
+        return Thread.currentThread().getName().equals(THREAD_NAME);
+    }
+
     private final Duration idleEvictDuration;
     private final Duration idleSoftEvictDuration;
     private final int minIdle;

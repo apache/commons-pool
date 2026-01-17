@@ -457,8 +457,8 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         private final AtomicInteger callCount = new AtomicInteger();
 
         @Override
-        public boolean evict(final EvictionConfig config, final PooledObject<T> underTest,
-                final int idleCount) {
+        public boolean evict(final EvictionConfig config, final PooledObject<T> underTest, final int idleCount) {
+            assertTrue(EvictionConfig.isEvictionThread());
             return callCount.incrementAndGet() > 1500;
         }
     }
@@ -1661,6 +1661,7 @@ class TestGenericObjectPool extends TestBaseObjectPool {
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
     void testEvictionPolicy() throws Exception {
+        assertFalse(EvictionConfig.isEvictionThread());
         genericObjectPool.setMaxIdle(500);
         genericObjectPool.setMaxTotal(500);
         genericObjectPool.setNumTestsPerEvictionRun(500);
