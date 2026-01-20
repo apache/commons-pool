@@ -87,6 +87,16 @@ public class DefaultPooledObjectInfo implements DefaultPooledObjectInfoMBean {
         return getTimeMillisFormatted(getLastReturnTime());
     }
 
+    /**
+     * Gets the pooled object for debugging, use at your own risk, changing the state of this object may have unintended consequences for the pool.
+     *
+     * @return the pooled object for debugging, use at your own risk, changing the state of this object may have unintended consequences for the pool.
+     * @since 2.14.0
+     */
+    public PooledObject<?> getPooledObject() {
+        return pooledObject;
+    }
+
     @Override
     public String getPooledObjectToString() {
         return Objects.toString(pooledObject.getObject(), null);
@@ -101,6 +111,7 @@ public class DefaultPooledObjectInfo implements DefaultPooledObjectInfoMBean {
     private String getTimeMillisFormatted(final long millis) {
         return new SimpleDateFormat(PATTERN).format(Long.valueOf(millis));
     }
+
 
     /**
      * @since 2.4.3
