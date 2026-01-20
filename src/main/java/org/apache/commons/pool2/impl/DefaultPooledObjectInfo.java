@@ -93,7 +93,7 @@ public class DefaultPooledObjectInfo implements DefaultPooledObjectInfoMBean {
      * @return the pooled object for debugging, use at your own risk, changing the state of this object may have unintended consequences for the pool.
      * @since 2.14.0
      */
-    public PooledObject<?> getPooledObject() {
+    PooledObject<?> getPooledObject() {
         return pooledObject;
     }
 
