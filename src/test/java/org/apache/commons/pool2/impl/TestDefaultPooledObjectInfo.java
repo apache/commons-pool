@@ -51,7 +51,7 @@ class TestDefaultPooledObjectInfo {
             final Set<DefaultPooledObjectInfo> strings = pool.listAllObjects();
             assertEquals(1, strings.size());
             final DefaultPooledObjectInfo s1Info = strings.iterator().next();
-            assertEquals("0", s1Info.getPooledObject().getObject());
+            assertEquals("0", s1Info.pooledObject().getObject());
         }
     }
 

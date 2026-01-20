@@ -89,11 +89,14 @@ public class DefaultPooledObjectInfo implements DefaultPooledObjectInfoMBean {
 
     /**
      * Gets the pooled object for debugging, use at your own risk, changing the state of this object may have unintended consequences for the pool.
+     * <p>
+     * This can't be a traditional getter as that would expose the pooled object via JMX.
+     * </p>
      *
      * @return the pooled object for debugging, use at your own risk, changing the state of this object may have unintended consequences for the pool.
      * @since 2.14.0
      */
-    PooledObject<?> getPooledObject() {
+    public PooledObject<?> pooledObject() {
         return pooledObject;
     }
 
