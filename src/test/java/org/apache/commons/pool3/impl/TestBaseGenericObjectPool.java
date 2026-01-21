@@ -19,6 +19,7 @@ package org.apache.commons.pool3.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.management.ManagementFactory;
@@ -134,11 +135,13 @@ class TestBaseGenericObjectPool {
     void testJMXRegistrationLatency() {
         final int numPools = 1000;
         final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-        final ArrayList<GenericObjectPool<Waiter, IllegalStateException>> pools = new ArrayList<>();
+        final ArrayList<GenericObjectPool<Waiter, ?>> pools = new ArrayList<>();
         try {
             // final long startTime = System.currentTimeMillis();
             for (int i = 0; i < numPools; i++) {
-                pools.add(new GenericObjectPool<>(new WaiterFactory<>(0, 0, 0, 0, 0, 0), new GenericObjectPoolConfig<>()));
+                final GenericObjectPool<Waiter, ?> gop = new GenericObjectPool<>(new WaiterFactory<>(0, 0, 0, 0, 0, 0), new GenericObjectPoolConfig<>());
+                assertNotNull(gop.getJmxName());
+                pools.add(gop);
             }
             // System.out.println("Duration: " + (System.currentTimeMillis() - startTime));
             final ObjectName oname = pools.get(numPools - 1).getJmxName();

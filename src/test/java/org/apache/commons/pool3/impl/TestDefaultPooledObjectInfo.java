@@ -46,6 +46,17 @@ class TestDefaultPooledObjectInfo {
     }
 
     @Test
+    void testGetPooledObject() throws Exception {
+        try (GenericObjectPool<String, TestException> pool = new GenericObjectPool<>(new SimpleFactory())) {
+            pool.borrowObject();
+            final Set<DefaultPooledObjectInfo> strings = pool.listAllObjects();
+            assertEquals(1, strings.size());
+            final DefaultPooledObjectInfo s1Info = strings.iterator().next();
+            assertEquals("0", s1Info.pooledObject().getObject());
+        }
+    }
+
+    @Test
     void testGetPooledObjectToString() throws Exception {
         try (GenericObjectPool<String, TestException> pool = new GenericObjectPool<>(new SimpleFactory())) {
             final String s1 = pool.borrowObject();
