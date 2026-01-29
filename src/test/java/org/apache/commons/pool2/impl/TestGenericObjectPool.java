@@ -1157,6 +1157,7 @@ class TestGenericObjectPool extends TestBaseObjectPool {
             try {
                 Thread.sleep(10);
             } catch (final InterruptedException e) {
+                Thread.currentThread().interrupt();
                 fail(e.toString());
             }
         }

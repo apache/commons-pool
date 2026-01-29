@@ -158,6 +158,7 @@ final class EvictionTimer {
             } catch (final InterruptedException e) {
                 // Swallow
                 // Significant API changes would be required to propagate this
+                Thread.currentThread().interrupt();
             }
             executor.setCorePoolSize(0);
             executor = null;

@@ -922,6 +922,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
             try {
                 Thread.sleep(10);
             } catch (final InterruptedException e) {
+                Thread.currentThread().interrupt();
                 fail(e.toString());
             }
         }

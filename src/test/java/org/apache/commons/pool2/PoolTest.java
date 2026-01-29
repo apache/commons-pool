@@ -57,7 +57,7 @@ class PoolTest {
             try {
                 Thread.sleep(VALIDATION_WAIT_IN_MILLIS);
             } catch (final InterruptedException e) {
-                Thread.interrupted();
+                Thread.currentThread().interrupt();
             }
             return false;
         }
@@ -82,7 +82,7 @@ class PoolTest {
             try {
                 Thread.sleep(EVICTION_PERIOD_IN_MILLIS);
             } catch (final InterruptedException e) {
-                Thread.interrupted();
+                Thread.currentThread().interrupt();
             }
         }
         final Thread[] threads = new Thread[Thread.activeCount()];
