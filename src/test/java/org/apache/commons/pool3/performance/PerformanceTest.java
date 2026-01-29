@@ -158,6 +158,7 @@ class PerformanceTest {
         try {
             futures = threadPool.invokeAll(tasks);
         } catch (final InterruptedException e) {
+            Thread.currentThread().interrupt();
             e.printStackTrace();
         }
 
@@ -181,7 +182,10 @@ class PerformanceTest {
                 TaskStats taskStats = null;
                 try {
                     taskStats = future.get();
-                } catch (final InterruptedException | ExecutionException e) {
+                } catch (final InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    e.printStackTrace();
+                } catch (final ExecutionException e) {
                     e.printStackTrace();
                 }
                 if (taskStats != null) {

@@ -314,6 +314,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
                         p = negativeDuration ? idleObjects.takeFirst() : idleObjects.pollFirst(maxWaitDuration);
                     } catch (final InterruptedException e) {
                         // Don't surface exception type of internal locking mechanism.
+                        Thread.currentThread().interrupt();
                         throw cast(e);
                     }
                 }
@@ -543,6 +544,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
                             wait(makeObjectCountLock, remainingWaitDuration);
                         } catch (final InterruptedException e) {
                             // Don't surface exception type of internal locking mechanism.
+                            Thread.currentThread().interrupt();
                             throw cast(e);
                         }
                     }

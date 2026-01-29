@@ -88,6 +88,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
                     try {
                         sleep(delay.toMillis());
                     } catch (final InterruptedException e) {
+                        interrupt();
                         kill();
                     }
                 }
@@ -178,6 +179,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
                 try {
                     sleep(timeBetweenChecks.toMillis());
                 } catch (final InterruptedException e) {
+                    interrupt();
                     monitoring = false;
                 } catch (final Throwable e) {
                     monitoring = false;

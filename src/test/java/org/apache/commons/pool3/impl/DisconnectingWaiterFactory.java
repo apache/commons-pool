@@ -69,6 +69,7 @@ public class DisconnectingWaiterFactory<K> extends WaiterFactory<K> {
             try {
                 Thread.sleep(timeBetweenConnectionChecks.toMillis());
             } catch (final InterruptedException e) {
+                Thread.currentThread().interrupt();
                 e.printStackTrace();
             }
             if (Duration.between(start, Instant.now()).compareTo(maxWait) > 0) {

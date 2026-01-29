@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.time.Duration;
 
+import org.apache.commons.lang3.ThreadUtils;
 import org.apache.commons.pool3.impl.DefaultPooledObject;
 import org.apache.commons.pool3.impl.GenericObjectPool;
 import org.apache.commons.pool3.impl.GenericObjectPoolConfig;
@@ -59,7 +60,7 @@ class PoolTest {
             try {
                 Thread.sleep(VALIDATION_WAIT_IN_MILLIS);
             } catch (final InterruptedException e) {
-                Thread.interrupted();
+                Thread.currentThread().interrupt();
             }
             return false;
         }
@@ -83,11 +84,7 @@ class PoolTest {
             pool.setDurationBetweenEvictionRuns(Duration.ofMillis(EVICTION_PERIOD_IN_MILLIS));
             assertEquals(EVICTION_PERIOD_IN_MILLIS, pool.getDurationBetweenEvictionRuns().toMillis());
             pool.addObject();
-            try {
-                Thread.sleep(EVICTION_PERIOD_IN_MILLIS);
-            } catch (final InterruptedException e) {
-                Thread.interrupted();
-            }
+            ThreadUtils.sleepQuietly(Duration.ofMillis(EVICTION_PERIOD_IN_MILLIS));
         }
         final Thread[] threads = new Thread[Thread.activeCount()];
         Thread.enumerate(threads);

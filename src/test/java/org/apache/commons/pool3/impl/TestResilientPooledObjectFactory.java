@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.Duration;
 import java.util.UUID;
 
+import org.apache.commons.lang3.ThreadUtils;
 import org.apache.commons.pool3.PooledObject;
 import org.apache.commons.pool3.PooledObjectFactory;
 import org.junit.jupiter.api.Test;
@@ -65,10 +66,7 @@ class TestResilientPooledObjectFactory {
             }
             if (hang) {
                 while (!up) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (final InterruptedException e) {
-                    }
+                    ThreadUtils.sleepQuietly(Duration.ofSeconds(1));
                 }
             }
             return null;
@@ -124,10 +122,7 @@ class TestResilientPooledObjectFactory {
             }
         }.start();
         // Wait for the borrower to get in the queue
-        try {
-            Thread.sleep(50);
-        } catch (final InterruptedException e) {
-        }
+        ThreadUtils.sleepQuietly(Duration.ofMillis(50));
         // Crash the base factory
         ff.crash();
         // Return object will create capacity in the pool
@@ -136,19 +131,13 @@ class TestResilientPooledObjectFactory {
         } catch (final Exception e) {
         }
         // Wait for the adder to run
-        try {
-            Thread.sleep(100);
-        } catch (final InterruptedException e) {
-        }
+        ThreadUtils.sleepQuietly(Duration.ofMillis(100));
         // Adder should be running
         assertTrue(rf.isAdderRunning());
         // Restart the factory
         ff.recover();
         // Wait for the adder to succeed
-        try {
-            Thread.sleep(200);
-        } catch (final InterruptedException e) {
-        }
+        ThreadUtils.sleepQuietly(Duration.ofMillis(200));
         // Pool should have no waiters
         assertEquals(0, pool.getNumWaiters());
         // Adder should still be running because there is a failure in the log
@@ -160,10 +149,7 @@ class TestResilientPooledObjectFactory {
             pool.addObject();
         }
         // Wait for the monitor to run
-        try {
-            Thread.sleep(200);
-        } catch (final InterruptedException e) {
-        }
+        ThreadUtils.sleepQuietly(Duration.ofMillis(200));
         assertTrue(rf.isUp());
         // Adder should be stopped
         assertFalse(rf.isAdderRunning());
@@ -201,10 +187,7 @@ class TestResilientPooledObjectFactory {
         rf.startMonitor();
         pool.close();
         // Wait for monitor to run so it can kill itself
-        try {
-            Thread.sleep(200);
-        } catch (final InterruptedException e) {
-        }
+        ThreadUtils.sleepQuietly(Duration.ofMillis(200));
         assertFalse(rf.isMonitorRunning());
     }
 
@@ -251,36 +234,24 @@ class TestResilientPooledObjectFactory {
         }.start();
         // Return borrowed objects - validation will fail
         // Wait for the borrowers to get in the queue
-        try {
-            Thread.sleep(50);
-        } catch (final InterruptedException e) {
-        }
+        ThreadUtils.sleepQuietly(Duration.ofMillis(50));
         pool.returnObject(s1);
         pool.returnObject(s2);
         assertEquals(0, pool.getNumIdle());
         assertTrue(pool.getNumWaiters() > 0);
         // Wait for the monitor to pick up the failed create which should happen on
         // validation destroy
-        try {
-            Thread.sleep(200);
-        } catch (final InterruptedException e) {
-        }
+        ThreadUtils.sleepQuietly(Duration.ofMillis(200));
         assertFalse(rf.isUp());
         // Restart the factory
         ff.recover();
         // Wait for the adder to succeed
-        try {
-            Thread.sleep(200);
-        } catch (final InterruptedException e) {
-        }
+        ThreadUtils.sleepQuietly(Duration.ofMillis(200));
         // Pool should have no waiters
         assertEquals(0, pool.getNumWaiters());
         pool.close();
         // Wait for monitor to run
-        try {
-            Thread.sleep(200);
-        } catch (final InterruptedException e) {
-        }
+        ThreadUtils.sleepQuietly(Duration.ofMillis(200));
         // Monitor and adder should be stopped by pool close
         assertFalse(rf.isAdderRunning());
         assertFalse(rf.isMonitorRunning());
@@ -318,11 +289,7 @@ class TestResilientPooledObjectFactory {
             }
         }.start();
         // Wait for the borrower to join wait queue
-        try {
-            Thread.sleep(200);
-        } catch (final InterruptedException e) {
-        }
-
+        ThreadUtils.sleepQuietly(Duration.ofMillis(200));
         // Crash the base factory
         ff.crash();
         // Resilient factory does not know the base factory is down until a make is
@@ -335,24 +302,16 @@ class TestResilientPooledObjectFactory {
         assertEquals(1, pool.getNumWaiters());
         // Wait for the monitor to pick up the failed create which should happen on
         // validation destroy
-        try {
-            Thread.sleep(100);
-        } catch (final InterruptedException e) {
-        }
+        ThreadUtils.sleepQuietly(Duration.ofMillis(100));
         assertFalse(rf.isUp());
         // Adder should be running, but failing
         assertTrue(rf.isAdderRunning());
-
         // Pool should have one take waiter
         assertEquals(1, pool.getNumWaiters());
-
         // Restart the factory
         ff.recover();
         // Wait for the adder to succeed
-        try {
-            Thread.sleep(100);
-        } catch (final InterruptedException e) {
-        }
+        ThreadUtils.sleepQuietly(Duration.ofMillis(100));
         // Pool should have no waiters
         assertTrue(pool.getNumWaiters() == 0);
         // Add 5 objects to clear the rf log
@@ -362,10 +321,7 @@ class TestResilientPooledObjectFactory {
             pool.addObject();
         }
         // Wait for monitor to run
-        try {
-            Thread.sleep(200);
-        } catch (final InterruptedException e) {
-        }
+        ThreadUtils.sleepQuietly(Duration.ofMillis(200));
         // rf should be up now
         assertTrue(rf.isUp());
 

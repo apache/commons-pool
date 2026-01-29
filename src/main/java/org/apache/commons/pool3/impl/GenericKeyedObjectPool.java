@@ -454,6 +454,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
                             p = borrowMaxWaitMillis < 0 ? objectDeque.getIdleObjects().takeFirst() :
                                 objectDeque.getIdleObjects().pollFirst(borrowMaxWaitMillis, TimeUnit.MILLISECONDS);
                         } catch (final InterruptedException e) {
+                            Thread.currentThread().interrupt();
                             throw cast(e);
                         }
                     }
@@ -778,6 +779,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
                         try {
                             objectDeque.makeObjectCountLock.wait();
                         } catch (final InterruptedException e) {
+                            Thread.currentThread().interrupt();
                             throw cast(e);
                         }
                     }
