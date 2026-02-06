@@ -30,6 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: ${{ matrix.experimental }}
     strategy:
+      max-parallel: 20
       matrix:
         java: [ 17, 21, 24 ]
         experimental: [false]
