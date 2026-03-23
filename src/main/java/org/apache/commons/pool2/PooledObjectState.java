@@ -17,7 +17,7 @@
 package org.apache.commons.pool2;
 
 /**
- * Provides all possible states of a {@link PooledObject}.
+ * Enumerates all possible states of a {@link PooledObject}.
  *
  * @since 2.0
  */

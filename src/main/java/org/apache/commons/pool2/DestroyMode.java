@@ -17,8 +17,11 @@
 package org.apache.commons.pool2;
 
 /**
+ * Enumerates destroy modes for pooled objects.
+ * <p>
  * Destroy context provided to object factories via {@code destroyObject} and {@code invalidateObject} methods. Values
  * provide information about why the pool is asking for a pooled object to be destroyed.
+ * </p>
  *
  * @since 2.9.0
  */
