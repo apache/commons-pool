@@ -2095,8 +2095,7 @@ class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     /**
-     * Verify that a thread waiting to borrow is served by the idle object created during invalidateObject replenishment,
-     * without requiring the waiter to race against a new borrower.
+     * Verify that a thread waiting to borrow is served by the idle object created during invalidateObject replenishment.
      */
     @Test
     @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS)
@@ -2121,20 +2120,19 @@ class TestGenericObjectPool extends TestBaseObjectPool {
     }
 
     /**
-     * Verify that a thread waiting to borrow is served by the idle object created during invalidateObject replenishment,
-     * without requiring the waiter to race against a new borrower.
+     * Verify that {@code invalidateObject} does not attempt replenishment when no thread is waiting to borrow,
+     * i.e. the replenishment path is gated on {@code hasTakeWaiters()}.
      */
     @Test
-    @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS)
     void testInvalidateDoesNotReplenishWhenNoWaiter() throws Exception {
         final ControlledFailureFactory factory = new ControlledFailureFactory();
         final List<Exception> swallowed = new ArrayList<>();
         try (GenericObjectPool<String> pool = new GenericObjectPool<>(factory)) {
             pool.setMaxTotal(1);
-            pool.setMaxWait(Duration.ofMillis(3000));
+            pool.setSwallowedExceptionListener(swallowed::add);
 
-            final String obj = pool.borrowObject(); // pool exhausted
-            // Cause the replenishment attempt to fail.
+            final String obj = pool.borrowObject(); // pool exhausted, no thread waiting
+            // Cause the replenishment attempt to fail, in case factory called.
             factory.failOnCreate(true);
 
             pool.invalidateObject(obj);
