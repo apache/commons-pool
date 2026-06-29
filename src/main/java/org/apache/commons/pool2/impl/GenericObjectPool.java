@@ -913,8 +913,13 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * {@inheritDoc}
      * <p>
      * Activation of this method decrements the active count and attempts to destroy the instance, using the provided
-     * {@link DestroyMode}. To ensure liveness of the pool, {@link #addObject()} is called to replace the invalidated
-     * instance.
+     * {@link DestroyMode}. To ensure liveness of the pool, when threads are waiting to borrow, a non-blocking
+     * attempt is made to create a replacement idle instance via {@link #addIdleObject(PooledObject)} with
+     * {@link Duration#ZERO}, directly bypassing the {@link #getMaxIdle()} gate that {@link #addObject()} enforces.
+     * Replenishment is only attempted when the object is actually destroyed (i.e. not already in
+     * {@link PooledObjectState#INVALID} state). Any exception thrown by the factory during replenishment
+     * is swallowed via {@link #swallowException(Exception)} so that the invalidation itself is never aborted
+     * by a factory failure.
      * </p>
      *
      * @throws Exception if an exception occurs destroying the object
@@ -933,10 +938,14 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
         synchronized (p) {
             if (p.getState() != PooledObjectState.INVALID) {
                 destroy(p, destroyMode);
+                if (!isClosed() && idleObjects.hasTakeWaiters()) {
+                    try {
+                        addIdleObject(create(Duration.ZERO));
+                    } catch (final Exception e) {
+                        swallowException(e);
+                    }
+                }
             }
-        }
-        if (!isClosed()) {
-             addObject();
         }
     }
 
