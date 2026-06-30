@@ -37,7 +37,7 @@ import org.apache.commons.pool3.PooledObject;
  * This class is immutable and thread-safe.
  * </p>
  *
- * @param <T> the type of objects in the pool.
+ * @param <T> The type of objects in the pool.
  * @since 2.0
  */
 public class DefaultEvictionPolicy<T> implements EvictionPolicy<T> {

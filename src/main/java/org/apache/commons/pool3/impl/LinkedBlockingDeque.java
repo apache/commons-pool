@@ -58,7 +58,7 @@ import java.util.concurrent.locks.Condition;
  * Java Collections Framework</a>.
  * </p>
  *
- * @param <E> the type of elements held in this collection
+ * @param <E> The type of elements held in this collection
  *
  * Note: This was copied from Apache Harmony and modified to suit the needs of
  *       Commons Pool.

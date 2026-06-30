@@ -32,8 +32,8 @@ public abstract class AbstractProxySource<T> implements ProxySource<T> {
      * Abstract a builder implementations.
      *
      * @param <T> type of the pooled object to be proxied.
-     * @param <P> the AbstractProxySource subclass
-     * @param <B> the builder subclass.
+     * @param <P> The AbstractProxySource subclass
+     * @param <B> The builder subclass.
      */
     public abstract static class AbstractBuilder<T, P, B extends AbstractBuilder<T, P, B>> implements Supplier<P> {
 

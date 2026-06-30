@@ -23,7 +23,7 @@ import java.lang.ref.SoftReference;
  *
  * <p>This class is intended to be thread-safe.</p>
  *
- * @param <T> the type of the underlying object that the wrapped SoftReference
+ * @param <T> The type of the underlying object that the wrapped SoftReference
  * refers to.
  *
  * @since 2.0
