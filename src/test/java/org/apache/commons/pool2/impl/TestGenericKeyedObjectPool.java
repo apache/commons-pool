@@ -328,7 +328,7 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
     /**
      * DefaultEvictionPolicy modified to add latency.
      *
-     * @param <T> the type of objects in the pool.
+     * @param <T> The type of objects in the pool.
      */
     private static final class SlowEvictionPolicy<T> extends DefaultEvictionPolicy<T> {
         private final long delay;

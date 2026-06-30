@@ -33,7 +33,7 @@ import org.apache.commons.pool2.TrackedUse;
  * This class is intended to be thread-safe.
  * </p>
  *
- * @param <T> the type of object in the pool
+ * @param <T> The type of object in the pool
  * @since 2.0
  */
 public class DefaultPooledObject<T> implements PooledObject<T> {

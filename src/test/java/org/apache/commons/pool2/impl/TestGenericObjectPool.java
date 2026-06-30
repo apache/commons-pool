@@ -433,7 +433,7 @@ class TestGenericObjectPool extends TestBaseObjectPool {
     /**
      * Must not be public for the test to instantiate this class through reflection.
      *
-     * @param <T> the type of objects in the pool.
+     * @param <T> The type of objects in the pool.
      */
     public static class TestEvictionPolicy<T> implements EvictionPolicy<T> {
         private final AtomicInteger callCount = new AtomicInteger();

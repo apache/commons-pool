@@ -28,7 +28,7 @@ import java.util.Deque;
  * Implementations of this class are required to be thread-safe.
  * </p>
  *
- * @param <T> the type of object in the pool.
+ * @param <T> The type of object in the pool.
  * @since 2.0
  */
 public interface PooledObject<T> extends Comparable<PooledObject<T>> {
@@ -36,7 +36,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     /**
      * Gets the wrapped object or null.
      *
-     * @param <T> the type of object in the pool.
+     * @param <T> The type of object in the pool.
      * @param pooledObject the PooledObject to unwrap, may be null.
      * @return the wrapped object or null.
      * @since 2.13.0

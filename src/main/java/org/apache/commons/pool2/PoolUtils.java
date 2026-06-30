@@ -1343,8 +1343,8 @@ public final class PoolUtils {
      * @param periodMillis
      *            the frequency in milliseconds to check the number of idle objects in a
      *            keyedPool, see {@link Timer#schedule(TimerTask, long, long)}.
-     * @param <K> the type of the pool key
-     * @param <V> the type of pool entries
+     * @param <K> The type of the pool key
+     * @param <V> The type of pool entries
      * @return a {@link Map} of key and {@link TimerTask} pairs that will
      *         periodically check the pools idle object count.
      * @throws IllegalArgumentException
@@ -1382,8 +1382,8 @@ public final class PoolUtils {
      * @param periodMillis
      *            the frequency in milliseconds to check the number of idle objects in a
      *            keyedPool, see {@link Timer#schedule(TimerTask, long, long)}.
-     * @param <K> the type of the pool key
-     * @param <V> the type of pool entries
+     * @param <K> The type of the pool key
+     * @param <V> The type of pool entries
      * @return the {@link TimerTask} that will periodically check the pools idle
      *         object count.
      * @throws IllegalArgumentException
@@ -1423,7 +1423,7 @@ public final class PoolUtils {
      * @param periodMillis
      *            the frequency in milliseconds to check the number of idle objects in a pool,
      *            see {@link Timer#schedule(TimerTask, long, long)}.
-     * @param <T> the type of objects in the pool
+     * @param <T> The type of objects in the pool
      * @return the {@link TimerTask} that will periodically check the pools idle
      *         object count.
      * @throws IllegalArgumentException
@@ -1478,8 +1478,8 @@ public final class PoolUtils {
      * @param keyedPool
      *            the KeyedObjectPool to be decorated so it shrinks its idle
      *            count when possible.
-     * @param <K> the type of the pool key
-     * @param <V> the type of pool entries
+     * @param <K> The type of the pool key
+     * @param <V> The type of pool entries
      * @throws IllegalArgumentException
      *             when {@code keyedPool} is {@code null}.
      * @return a pool that adaptively decreases its size when idle objects are
@@ -1512,8 +1512,8 @@ public final class PoolUtils {
      *            reduce its size. If 0 &lt; factor &lt; 1 then the pool
      *            shrinks more aggressively. If 1 &lt; factor then the pool
      *            shrinks less aggressively.
-     * @param <K> the type of the pool key
-     * @param <V> the type of pool entries
+     * @param <K> The type of the pool key
+     * @param <V> The type of pool entries
      * @throws IllegalArgumentException
      *             when {@code keyedPool} is {@code null} or when {@code factor}
      *             is not positive.
@@ -1554,8 +1554,8 @@ public final class PoolUtils {
      *            shrinks less aggressively.
      * @param perKey
      *            when true, each key is treated independently.
-     * @param <K> the type of the pool key
-     * @param <V> the type of pool entries
+     * @param <K> The type of the pool key
+     * @param <V> The type of pool entries
      * @throws IllegalArgumentException
      *             when {@code keyedPool} is {@code null} or when {@code factor}
      *             is not positive.
@@ -1589,7 +1589,7 @@ public final class PoolUtils {
      * @param pool
      *            the ObjectPool to be decorated so it shrinks its idle count
      *            when possible.
-     * @param <T> the type of objects in the pool
+     * @param <T> The type of objects in the pool
      * @throws IllegalArgumentException
      *             when {@code pool} is {@code null}.
      * @return a pool that adaptively decreases its size when idle objects are
@@ -1621,7 +1621,7 @@ public final class PoolUtils {
      *            reduce its size. If 0 &lt; factor &lt; 1 then the pool
      *            shrinks more aggressively. If 1 &lt; factor then the pool
      *            shrinks less aggressively.
-     * @param <T> the type of objects in the pool
+     * @param <T> The type of objects in the pool
      * @throws IllegalArgumentException
      *             when {@code pool} is {@code null} or when {@code factor} is
      *             not positive.
@@ -1660,8 +1660,8 @@ public final class PoolUtils {
      *            {@link Collection} of keys to add objects for.
      * @param count
      *            the number of idle objects to add for each {@code key}.
-     * @param <K> the type of the pool key
-     * @param <V> the type of pool entries
+     * @param <K> The type of the pool key
+     * @param <V> The type of pool entries
      * @throws Exception
      *             when {@link KeyedObjectPool#addObject(Object)} fails.
      * @throws IllegalArgumentException
@@ -1690,8 +1690,8 @@ public final class PoolUtils {
      *            the key to add objects for.
      * @param count
      *            the number of idle objects to add for {@code key}.
-     * @param <K> the type of the pool key
-     * @param <V> the type of pool entries
+     * @param <K> The type of the pool key
+     * @param <V> The type of pool entries
      * @throws Exception
      *             when {@link KeyedObjectPool#addObject(Object)} fails.
      * @throws IllegalArgumentException
@@ -1716,7 +1716,7 @@ public final class PoolUtils {
      *            the pool to prefill.
      * @param count
      *            the number of idle objects to add.
-     * @param <T> the type of objects in the pool
+     * @param <T> The type of objects in the pool
      * @throws Exception
      *             when {@link ObjectPool#addObject()} fails.
      * @throws IllegalArgumentException
@@ -1739,8 +1739,8 @@ public final class PoolUtils {
      * @param keyedFactory
      *            the KeyedPooledObjectFactory to be "wrapped" in a
      *            synchronized KeyedPooledObjectFactory.
-     * @param <K> the type of the pool key
-     * @param <V> the type of pool entries
+     * @param <K> The type of the pool key
+     * @param <V> The type of pool entries
      * @return a synchronized view of the specified KeyedPooledObjectFactory.
      */
     public static <K, V> KeyedPooledObjectFactory<K, V> synchronizedKeyedPooledFactory(
@@ -1763,8 +1763,8 @@ public final class PoolUtils {
      * @param keyedPool
      *            the KeyedObjectPool to be "wrapped" in a synchronized
      *            KeyedObjectPool.
-     * @param <K> the type of the pool key
-     * @param <V> the type of pool entries
+     * @param <K> The type of the pool key
+     * @param <V> The type of pool entries
      * @return a synchronized view of the specified KeyedObjectPool.
      */
     public static <K, V> KeyedObjectPool<K, V> synchronizedPool(final KeyedObjectPool<K, V> keyedPool) {
@@ -1792,7 +1792,7 @@ public final class PoolUtils {
      * deadlock.
      * </p>
      *
-     * @param <T> the type of objects in the pool
+     * @param <T> The type of objects in the pool
      * @param pool
      *            the ObjectPool to be "wrapped" in a synchronized ObjectPool.
      * @throws IllegalArgumentException
@@ -1825,7 +1825,7 @@ public final class PoolUtils {
      * @param factory
      *            the PooledObjectFactory to be "wrapped" in a synchronized
      *            PooledObjectFactory.
-     * @param <T> the type of objects in the pool
+     * @param <T> The type of objects in the pool
      * @return a synchronized view of the specified PooledObjectFactory.
      */
     public static <T> PooledObjectFactory<T> synchronizedPooledFactory(final PooledObjectFactory<T> factory) {
