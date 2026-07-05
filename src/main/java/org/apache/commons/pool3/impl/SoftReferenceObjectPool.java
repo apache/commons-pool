@@ -193,7 +193,7 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
                 ref.getReference().clear();
                 ref.setReference(new SoftReference<>(obj));
             }
-            if (null != obj) {
+            if (obj != null) {
                 try {
                     factory.activateObject(ref);
                     if (!factory.validateObject(ref)) {
@@ -227,7 +227,7 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
     public synchronized void clear() {
         idleReferences.forEach(pooledSoftRef -> {
             try {
-                if (null != pooledSoftRef.getObject()) {
+                if (pooledSoftRef.getObject() != null) {
                     factory.destroyObject(pooledSoftRef);
                 }
             } catch (final Exception ignored) {

@@ -60,7 +60,7 @@ public class ReaderUtil {
                 // ignored
             }
             try {
-                if (null != buf) {
+                if (buf != null) {
                     pool.returnObject(buf);
                 }
             } catch (Exception e) {
