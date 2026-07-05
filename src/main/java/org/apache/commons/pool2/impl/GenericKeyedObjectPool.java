@@ -941,7 +941,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
                 // Pool may have changed since we released the read lock
                 // numInterested decrement could lead to removal while waiting for write lock
                 objectDeque = poolMap.get(k);
-                if (null != objectDeque && objectDeque.getNumInterested().get() == 0 && objectDeque.getCreateCount().get() == 0) {
+                if (objectDeque != null && objectDeque.getNumInterested().get() == 0 && objectDeque.getCreateCount().get() == 0) {
                     // NOTE: Keys must always be removed from both poolMap and
                     // poolKeyList at the same time while protected by
                     // keyLock.writeLock()
