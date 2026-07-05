@@ -220,7 +220,7 @@ final class EvictionTimer {
      * @param period    Time in milliseconds between executions.
      */
     static synchronized void schedule(final BaseGenericObjectPool<?, ?>.Evictor pool, final Duration delay, final Duration period) {
-        if (null == executor) {
+        if (executor == null) {
             executor = new ScheduledThreadPoolExecutor(1, new EvictorThreadFactory());
             executor.setRemoveOnCancelPolicy(true);
             executor.scheduleAtFixedRate(new Reaper(), delay.toMillis(), period.toMillis(), TimeUnit.MILLISECONDS);

@@ -176,7 +176,7 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
         T obj = null;
         boolean newlyCreated = false;
         PooledSoftReference<T> ref = null;
-        while (null == obj) {
+        while (obj == null) {
             if (idleReferences.isEmpty()) {
                 newlyCreated = true;
                 obj = factory.makeObject().getObject();
