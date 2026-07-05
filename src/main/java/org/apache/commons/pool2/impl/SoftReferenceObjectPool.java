@@ -179,9 +179,9 @@ public class SoftReferenceObjectPool<T> extends BaseObjectPool<T> {
         T obj = null;
         boolean newlyCreated = false;
         PooledSoftReference<T> ref = null;
-        while (null == obj) {
+        while (obj == null) {
             if (idleReferences.isEmpty()) {
-                if (null == factory) {
+                if (factory == null) {
                     throw new NoSuchElementException();
                 }
                 newlyCreated = true;
