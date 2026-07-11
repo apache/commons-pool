@@ -213,7 +213,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
          *
          * @param <T> The type of the object in the {@link PooledObject}.
          * @param p The {@link PooledObject}.
-         * @return a new instance.
+         * @return A new instance.
          */
         static <T> IdentityWrapper<T> unwrap(final PooledObject<T> p) {
             return new IdentityWrapper<>(p.getObject());
@@ -481,7 +481,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      *
      * @param abandonedConfig The abandoned configuration.
      * @param allObjects PooledObject instances to consider.
-     * @return a list of pooled objects to remove based on their state.
+     * @return A list of pooled objects to remove based on their state.
      */
     ArrayList<PooledObject<T>> createRemoveList(final AbandonedConfig abandonedConfig, final Map<IdentityWrapper<T>, PooledObject<T>> allObjects) {
         final Instant timeout = Instant.now().minus(abandonedConfig.getRemoveAbandonedTimeoutDuration());

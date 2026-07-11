@@ -159,7 +159,7 @@ public interface KeyedObjectPool<K, V> extends Closeable {
      * </p>
      *
      * @param key the key used to obtain the object
-     * @return an instance from this pool.
+     * @return An instance from this pool.
      * @throws IllegalStateException
      *              after {@link #close close} has been called on this pool
      * @throws Exception
@@ -214,7 +214,7 @@ public interface KeyedObjectPool<K, V> extends Closeable {
      * Implementations should override this method.
      * </p>
      *
-     * @return a copy of the pool key list.
+     * @return A copy of the pool key list.
      * @since 2.12.0
      */
     default List<K> getKeys() {

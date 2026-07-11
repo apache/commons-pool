@@ -92,7 +92,7 @@ public abstract class BaseObjectPool<T> extends BaseObject implements ObjectPool
     /**
      * Not supported in this base implementation.
      *
-     * @return a negative value.
+     * @return A negative value.
      */
     @Override
     public int getNumActive() {
@@ -102,7 +102,7 @@ public abstract class BaseObjectPool<T> extends BaseObject implements ObjectPool
     /**
      * Not supported in this base implementation.
      *
-     * @return a negative value.
+     * @return A negative value.
      */
     @Override
     public int getNumIdle() {

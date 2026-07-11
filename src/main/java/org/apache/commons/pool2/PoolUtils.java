@@ -1345,7 +1345,7 @@ public final class PoolUtils {
      *            keyedPool, see {@link Timer#schedule(TimerTask, long, long)}.
      * @param <K> The type of the pool key
      * @param <V> The type of pool entries
-     * @return a {@link Map} of key and {@link TimerTask} pairs that will
+     * @return A {@link Map} of key and {@link TimerTask} pairs that will
      *         periodically check the pools idle object count.
      * @throws IllegalArgumentException
      *             when {@code keyedPool}, {@code keys}, or any of the values in
@@ -1482,7 +1482,7 @@ public final class PoolUtils {
      * @param <V> The type of pool entries
      * @throws IllegalArgumentException
      *             when {@code keyedPool} is {@code null}.
-     * @return a pool that adaptively decreases its size when idle objects are
+     * @return A pool that adaptively decreases its size when idle objects are
      *         no longer needed.
      * @see #erodingPool(KeyedObjectPool, float)
      * @see #erodingPool(KeyedObjectPool, float, boolean)
@@ -1517,7 +1517,7 @@ public final class PoolUtils {
      * @throws IllegalArgumentException
      *             when {@code keyedPool} is {@code null} or when {@code factor}
      *             is not positive.
-     * @return a pool that adaptively decreases its size when idle objects are
+     * @return A pool that adaptively decreases its size when idle objects are
      *         no longer needed.
      * @see #erodingPool(KeyedObjectPool, float, boolean)
      */
@@ -1559,7 +1559,7 @@ public final class PoolUtils {
      * @throws IllegalArgumentException
      *             when {@code keyedPool} is {@code null} or when {@code factor}
      *             is not positive.
-     * @return a pool that adaptively decreases its size when idle objects are
+     * @return A pool that adaptively decreases its size when idle objects are
      *         no longer needed.
      * @see #erodingPool(KeyedObjectPool)
      * @see #erodingPool(KeyedObjectPool, float)
@@ -1592,7 +1592,7 @@ public final class PoolUtils {
      * @param <T> The type of objects in the pool
      * @throws IllegalArgumentException
      *             when {@code pool} is {@code null}.
-     * @return a pool that adaptively decreases its size when idle objects are
+     * @return A pool that adaptively decreases its size when idle objects are
      *         no longer needed.
      * @see #erodingPool(ObjectPool, float)
      */
@@ -1625,7 +1625,7 @@ public final class PoolUtils {
      * @throws IllegalArgumentException
      *             when {@code pool} is {@code null} or when {@code factor} is
      *             not positive.
-     * @return a pool that adaptively decreases its size when idle objects are
+     * @return A pool that adaptively decreases its size when idle objects are
      *         no longer needed.
      * @see #erodingPool(ObjectPool)
      */
@@ -1741,7 +1741,7 @@ public final class PoolUtils {
      *            synchronized KeyedPooledObjectFactory.
      * @param <K> The type of the pool key
      * @param <V> The type of pool entries
-     * @return a synchronized view of the specified KeyedPooledObjectFactory.
+     * @return A synchronized view of the specified KeyedPooledObjectFactory.
      */
     public static <K, V> KeyedPooledObjectFactory<K, V> synchronizedKeyedPooledFactory(
         final KeyedPooledObjectFactory<K, V> keyedFactory) {
@@ -1765,7 +1765,7 @@ public final class PoolUtils {
      *            KeyedObjectPool.
      * @param <K> The type of the pool key
      * @param <V> The type of pool entries
-     * @return a synchronized view of the specified KeyedObjectPool.
+     * @return A synchronized view of the specified KeyedObjectPool.
      */
     public static <K, V> KeyedObjectPool<K, V> synchronizedPool(final KeyedObjectPool<K, V> keyedPool) {
         /*
@@ -1797,7 +1797,7 @@ public final class PoolUtils {
      *            the ObjectPool to be "wrapped" in a synchronized ObjectPool.
      * @throws IllegalArgumentException
      *             when {@code pool} is {@code null}.
-     * @return a synchronized view of the specified ObjectPool.
+     * @return A synchronized view of the specified ObjectPool.
      */
     public static <T> ObjectPool<T> synchronizedPool(final ObjectPool<T> pool) {
         if (pool == null) {
@@ -1826,7 +1826,7 @@ public final class PoolUtils {
      *            the PooledObjectFactory to be "wrapped" in a synchronized
      *            PooledObjectFactory.
      * @param <T> The type of objects in the pool
-     * @return a synchronized view of the specified PooledObjectFactory.
+     * @return A synchronized view of the specified PooledObjectFactory.
      */
     public static <T> PooledObjectFactory<T> synchronizedPooledFactory(final PooledObjectFactory<T> factory) {
         return new SynchronizedPooledObjectFactory<>(factory);

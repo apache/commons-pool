@@ -54,7 +54,7 @@ public abstract class BasePooledObjectFactory<T> extends BaseObject implements P
      * <p>This method <strong>must</strong> support concurrent, multi-threaded
      * invocation.</p>
      *
-     * @return an instance to be served by the pool, not null.
+     * @return An instance to be served by the pool, not null.
      * @throws Exception if there is a problem creating a new instance,
      *    this will be propagated to the code requesting an object.
      */

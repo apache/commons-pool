@@ -50,7 +50,7 @@ public final class CallStackUtils {
      * @param messageFormat message (or format) to print first in stack traces
      * @param useTimestamp  if true, interpret message as a SimpleDateFormat and print the created timestamp; otherwise,
      *                      print message format literally
-     * @return a new CallStack
+     * @return A new CallStack
      * @deprecated Use {@link #newCallStack(String, boolean, boolean)}
      */
     @Deprecated
@@ -66,7 +66,7 @@ public final class CallStackUtils {
      *                              otherwise, print message format literally
      * @param requireFullStackTrace if true, forces the use of a stack walking mechanism that includes full stack trace
      *                              information; otherwise, uses a faster implementation if possible
-     * @return a new CallStack
+     * @return A new CallStack
      * @since 2.5
      */
     public static CallStack newCallStack(final String messageFormat,

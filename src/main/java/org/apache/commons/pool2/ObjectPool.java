@@ -109,7 +109,7 @@ public interface ObjectPool<T> extends Closeable {
      * implementations).
      * </p>
      *
-     * @return an instance from this pool.
+     * @return An instance from this pool.
      * @throws IllegalStateException
      *              after {@link #close close} has been called on this pool.
      * @throws Exception
