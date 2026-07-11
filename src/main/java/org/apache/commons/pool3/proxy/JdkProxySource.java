@@ -56,7 +56,7 @@ public class JdkProxySource<T> extends AbstractProxySource<T> {
         /**
          * Sets the class loader to define the proxy class.
          *
-         * @param classLoader the class loader to define the proxy class.
+         * @param classLoader The class loader to define the proxy class.
          * @return {@code this} instance.
          */
         public Builder<T> setClassLoader(final ClassLoader classLoader) {
@@ -67,7 +67,7 @@ public class JdkProxySource<T> extends AbstractProxySource<T> {
         /**
          * Sets the list of interfaces for the proxy class.
          *
-         * @param interfaces the list of interfaces for the proxy class.
+         * @param interfaces The list of interfaces for the proxy class.
          * @return {@code this} instance.
          */
         public Builder<T> setInterfaces(final Class<?>... interfaces) {

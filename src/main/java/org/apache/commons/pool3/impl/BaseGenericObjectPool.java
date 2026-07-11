@@ -185,7 +185,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
         /**
          * Sets the scheduled future.
          *
-         * @param scheduledFuture the scheduled future.
+         * @param scheduledFuture The scheduled future.
          */
         void setScheduledFuture(final ScheduledFuture<?> scheduledFuture) {
             this.scheduledFuture = scheduledFuture;
@@ -473,7 +473,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     /**
      * Casts the given throwable to {@code E}.
      *
-     * @param throwable the throwable.
+     * @param throwable The throwable.
      * @return The input.
      * @since 2.12.0
      */
@@ -1256,7 +1256,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     /**
      * Sets the abandoned object removal configuration.
      *
-     * @param abandonedConfig the new configuration to use. This is used by value.
+     * @param abandonedConfig The new configuration to use. This is used by value.
      * @see AbandonedConfig
      * @since 2.11.0
      */
@@ -1419,7 +1419,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      * Sets the timeout that will be used when waiting for the Evictor to shutdown if this pool is closed and it is the
      * only pool still using the value for the Evictor.
      *
-     * @param evictorShutdownTimeout the timeout in milliseconds that will be used while waiting for the Evictor
+     * @param evictorShutdownTimeout The timeout in milliseconds that will be used while waiting for the Evictor
      *                                     to shut down.
      * @since 2.10.0
      */
@@ -1465,7 +1465,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      * {@link #getBlockWhenExhausted} is true. When less than 0, the
      * {@code borrowObject()} method may block indefinitely.
      *
-     * @param maxWaitDuration the maximum duration
+     * @param maxWaitDuration The maximum duration
      *                      {@code borrowObject()} will block or negative
      *                      for indefinitely.
      *
@@ -1807,7 +1807,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
     /**
      * Updates statistics after an object is returned to the pool.
      *
-     * @param activeTime the amount of time (in milliseconds) that the returning
+     * @param activeTime The amount of time (in milliseconds) that the returning
      * object was checked out
      */
     final void updateStatsReturn(final Duration activeTime) {

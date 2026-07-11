@@ -41,7 +41,7 @@ public class AbandonedConfig {
     /**
      * Creates a new instance with values from the given instance.
      *
-     * @param abandonedConfig the source, may be null.
+     * @param abandonedConfig The source, may be null.
      * @return A new instance or null if the input is null.
      * @since 2.11.0
      */
@@ -103,7 +103,7 @@ public class AbandonedConfig {
     /**
      * Creates a new instance with values from the given instance.
      *
-     * @param abandonedConfig the source.
+     * @param abandonedConfig The source.
      */
     @SuppressWarnings("resource")
     private AbandonedConfig(final AbandonedConfig abandonedConfig) {

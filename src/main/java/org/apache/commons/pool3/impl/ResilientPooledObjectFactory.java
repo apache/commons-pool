@@ -487,7 +487,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
     /**
      * Sets the makeObject log size.
      *
-     * @param logSize the number of makeObject events to keep in the log
+     * @param logSize The number of makeObject events to keep in the log
      */
     public void setLogSize(final int logSize) {
         this.logSize = logSize;
@@ -496,7 +496,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
     /**
      * Sets the underlying pool. For tests.
      *
-     * @param pool the underlying pool.
+     * @param pool The underlying pool.
      */
     void setPool(final GenericObjectPool<T, E> pool) {
         this.pool = pool;

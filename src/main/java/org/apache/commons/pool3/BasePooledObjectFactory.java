@@ -101,7 +101,7 @@ public abstract class BasePooledObjectFactory<T, E extends Exception> extends Ba
      * Wraps the provided instance with an implementation of
      * {@link PooledObject}.
      *
-     * @param obj the instance to wrap, should not be null.
+     * @param obj The instance to wrap, should not be null.
      * @return The provided instance, wrapped by a {@link PooledObject}
      */
     public abstract PooledObject<T> wrap(T obj);

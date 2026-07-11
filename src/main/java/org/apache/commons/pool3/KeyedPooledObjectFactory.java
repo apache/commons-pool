@@ -78,8 +78,8 @@ public interface KeyedPooledObjectFactory<K, V, E extends Exception> {
     /**
      * Reinitializes an instance to be returned by the pool.
      *
-     * @param key the key used when selecting the object
-     * @param p a {@code PooledObject} wrapping the instance to be activated
+     * @param key The key used when selecting the object
+     * @param p A {@code PooledObject} wrapping the instance to be activated
      * @throws E if there is a problem activating {@code obj},
      *    this exception may be swallowed by the pool.
      *
@@ -99,8 +99,8 @@ public interface KeyedPooledObjectFactory<K, V, E extends Exception> {
      * to the garbage collector may never be destroyed.
      * </p>
      *
-     * @param key the key used when selecting the instance
-     * @param p a {@code PooledObject} wrapping the instance to be destroyed
+     * @param key The key used when selecting the instance
+     * @param p A {@code PooledObject} wrapping the instance to be destroyed
      * @throws E should be avoided as it may be swallowed by
      *    the pool implementation.
      *
@@ -112,8 +112,8 @@ public interface KeyedPooledObjectFactory<K, V, E extends Exception> {
     /**
      * Destroys an instance no longer needed by the pool, using the provided {@link DestroyMode}.
      *
-     * @param key the key used when selecting the instance
-     * @param p a {@code PooledObject} wrapping the instance to be destroyed
+     * @param key The key used when selecting the instance
+     * @param p A {@code PooledObject} wrapping the instance to be destroyed
      * @param destroyMode DestroyMode providing context to the factory
      * @throws E should be avoided as it may be swallowed by
      *    the pool implementation.
@@ -132,7 +132,7 @@ public interface KeyedPooledObjectFactory<K, V, E extends Exception> {
      * Creates an instance that can be served by the pool and
      * wrap it in a {@link PooledObject} to be managed by the pool.
      *
-     * @param key the key used when constructing the object
+     * @param key The key used when constructing the object
      * @return A {@code PooledObject} wrapping an instance that can
      * be served by the pool.
      *
@@ -144,8 +144,8 @@ public interface KeyedPooledObjectFactory<K, V, E extends Exception> {
     /**
      * Uninitializes an instance to be returned to the idle object pool.
      *
-     * @param key the key used when selecting the object
-     * @param p a {@code PooledObject} wrapping the instance to be passivated
+     * @param key The key used when selecting the object
+     * @param p A {@code PooledObject} wrapping the instance to be passivated
      * @throws E if there is a problem passivating {@code obj},
      *    this exception may be swallowed by the pool.
      *
@@ -156,8 +156,8 @@ public interface KeyedPooledObjectFactory<K, V, E extends Exception> {
     /**
      * Ensures that the instance is safe to be returned by the pool.
      *
-     * @param key the key used when selecting the object
-     * @param p a {@code PooledObject} wrapping the instance to be validated
+     * @param key The key used when selecting the object
+     * @param p A {@code PooledObject} wrapping the instance to be validated
      * @return {@code false} if {@code obj} is not valid and should
      *         be dropped from the pool, {@code true} otherwise.
      */

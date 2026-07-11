@@ -75,7 +75,7 @@ public interface KeyedObjectPool<K, V, E extends Exception> extends Closeable {
      * in the idle object pool. {@code addObject} is useful for
      * "pre-loading" a pool with idle objects (Optional operation).
      *
-     * @param key the key a new instance should be added to
+     * @param key The key a new instance should be added to
      * @throws E
      *              when {@link KeyedPooledObjectFactory#makeObject} fails.
      * @throws IllegalStateException
@@ -157,7 +157,7 @@ public interface KeyedObjectPool<K, V, E extends Exception> extends Closeable {
      * strictly specified (although it may be specified by implementations).
      * </p>
      *
-     * @param key the key used to obtain the object
+     * @param key The key used to obtain the object
      * @return An instance from this pool.
      * @throws IllegalStateException
      *              after {@link #close close} has been called on this pool
@@ -184,7 +184,7 @@ public interface KeyedObjectPool<K, V, E extends Exception> extends Closeable {
      * Clears the specified pool, removing all pooled instances corresponding to
      * the given {@code key} (optional operation).
      *
-     * @param key the key to clear
+     * @param key The key to clear
      * @throws UnsupportedOperationException when this implementation doesn't
      *                                       support the operation
      *
@@ -231,7 +231,7 @@ public interface KeyedObjectPool<K, V, E extends Exception> extends Closeable {
      * returned to the pool corresponding to the given {@code key}.
      * Returns a negative value if this information is not available.
      *
-     * @param key the key to query
+     * @param key The key to query
      * @return The number of instances currently borrowed from but not yet
      * returned to the pool corresponding to the given {@code key}.
      */
@@ -250,7 +250,7 @@ public interface KeyedObjectPool<K, V, E extends Exception> extends Closeable {
      * {@code key} currently idle in this pool. Returns a negative value if
      * this information is not available.
      *
-     * @param key the key to query
+     * @param key The key to query
      * @return The number of instances corresponding to the given
      * {@code key} currently idle in this pool.
      */
@@ -270,8 +270,8 @@ public interface KeyedObjectPool<K, V, E extends Exception> extends Closeable {
      * determined (due to an exception or other problem) to be invalid.
      * </p>
      *
-     * @param key the key used to obtain the object
-     * @param obj a {@link #borrowObject borrowed} instance to be returned.
+     * @param key The key used to obtain the object
+     * @param obj A {@link #borrowObject borrowed} instance to be returned.
      * @throws E if the instance cannot be invalidated
      */
     void invalidateObject(K key, V obj) throws E;
@@ -291,8 +291,8 @@ public interface KeyedObjectPool<K, V, E extends Exception> extends Closeable {
      * determined (due to an exception or other problem) to be invalid.
      * </p>
      *
-     * @param key the key used to obtain the object
-     * @param obj a {@link #borrowObject borrowed} instance to be returned.
+     * @param key The key used to obtain the object
+     * @param obj A {@link #borrowObject borrowed} instance to be returned.
      * @param destroyMode destroy activation context provided to the factory
      * @throws E if the instance cannot be invalidated
      * @since 2.9.0
@@ -308,8 +308,8 @@ public interface KeyedObjectPool<K, V, E extends Exception> extends Closeable {
      * implementation or sub-interface using a {@code key} that is
      * equivalent to the one used to borrow the instance in the first place.
      *
-     * @param key the key used to obtain the object
-     * @param obj a {@link #borrowObject borrowed} instance to be returned.
+     * @param key The key used to obtain the object
+     * @param obj A {@link #borrowObject borrowed} instance to be returned.
      * @throws IllegalStateException
      *              if an attempt is made to return an object to the pool that
      *              is in any state other than allocated (i.e. borrowed).

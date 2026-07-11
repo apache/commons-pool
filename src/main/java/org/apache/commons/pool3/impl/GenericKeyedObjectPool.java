@@ -247,7 +247,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * Constructs a new {@code GenericKeyedObjectPool} using defaults from
      * {@link GenericKeyedObjectPoolConfig}.
      *
-     * @param factory the factory to be used to create entries
+     * @param factory The factory to be used to create entries
      */
     public GenericKeyedObjectPool(final KeyedPooledObjectFactory<K, T, E> factory) {
         this(factory, new GenericKeyedObjectPoolConfig<>());
@@ -257,7 +257,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * Constructs a new {@code GenericKeyedObjectPool} using a specific
      * configuration.
      *
-     * @param factory the factory to be used to create entries
+     * @param factory The factory to be used to create entries
      * @param config    The configuration to use for this pool instance. The
      *                  configuration is used by value. Subsequent changes to
      *                  the configuration object will not be reflected in the
@@ -332,7 +332,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * a {@code NullPointerException} is thrown.
      * </p>
      *
-     * @param key the key a new instance should be added to
+     * @param key The key a new instance should be added to
      * @throws E when {@link KeyedPooledObjectFactory#makeObject}
      *                   fails.
      */
@@ -591,7 +591,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * instances to the most loaded keyed pools.  To avoid triggering
      * possible object creation, use {@link #clear(Object, boolean)}.
      *
-     * @param key the key to clear
+     * @param key The key to clear
      */
     @Override
     public void clear(final K key) {
@@ -609,7 +609,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * by this operation, adding instances to the most loaded keyed pools.
      * </p>
      *
-     * @param key the key to clear
+     * @param key The key to clear
      * @param reuseCapacity whether or not to reuse freed capacity
      * @since 2.12.0
      */
@@ -1600,7 +1600,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
     /**
      * Sets the configuration.
      *
-     * @param conf the new configuration to use. This is used by value.
+     * @param conf The new configuration to use. This is used by value.
      * @see GenericKeyedObjectPoolConfig
      */
     public void setConfig(final GenericKeyedObjectPoolConfig<T> conf) {
@@ -1621,7 +1621,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * maxIdlePerKey for heavily loaded system will vary but the default is a
      * good starting point.
      *
-     * @param maxIdlePerKey the maximum number of "idle" instances that can be
+     * @param maxIdlePerKey The maximum number of "idle" instances that can be
      *                      held in a given keyed sub-pool. Use a negative value
      *                      for no limit
      *
@@ -1636,7 +1636,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * (checked out or idle), per key. When the limit is reached, the sub-pool
      * is said to be exhausted. A negative value indicates no limit.
      *
-     * @param maxTotalPerKey the limit on the number of active instances per key
+     * @param maxTotalPerKey The limit on the number of active instances per key
      * @see #getMaxTotalPerKey
      */
     public void setMaxTotalPerKey(final int maxTotalPerKey) {

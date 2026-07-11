@@ -58,7 +58,7 @@ public class CglibProxySource<T> extends AbstractProxySource<T> {
         /**
          * Sets the superclass.
          *
-         * @param superclass the superclass.
+         * @param superclass The superclass.
          * @return {@code this} instance.
          */
         public Builder<T> setSuperclass(final Class<? extends T> superclass) {

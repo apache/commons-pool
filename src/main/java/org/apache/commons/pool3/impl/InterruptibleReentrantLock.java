@@ -46,7 +46,7 @@ final class InterruptibleReentrantLock extends ReentrantLock {
     /**
      * Interrupts the threads that are waiting on a specific condition.
      *
-     * @param condition the condition on which the threads are waiting.
+     * @param condition The condition on which the threads are waiting.
      */
     void interruptWaiters(final Condition condition) {
         getWaitingThreads(condition).forEach(Thread::interrupt);

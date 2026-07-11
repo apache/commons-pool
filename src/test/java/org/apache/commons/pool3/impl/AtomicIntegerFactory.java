@@ -61,35 +61,35 @@ public class AtomicIntegerFactory
     }
 
     /**
-     * @param activateLatency the activateLatency to set
+     * @param activateLatency The activateLatency to set
      */
     public void setActivateLatency(final long activateLatency) {
         this.activateLatency = activateLatency;
     }
 
     /**
-     * @param createLatency the createLatency to set
+     * @param createLatency The createLatency to set
      */
     public void setCreateLatency(final long createLatency) {
         this.createLatency = createLatency;
     }
 
     /**
-     * @param destroyLatency the destroyLatency to set
+     * @param destroyLatency The destroyLatency to set
      */
     public void setDestroyLatency(final long destroyLatency) {
         this.destroyLatency = destroyLatency;
     }
 
     /**
-     * @param passivateLatency the passivateLatency to set
+     * @param passivateLatency The passivateLatency to set
      */
     public void setPassivateLatency(final long passivateLatency) {
         this.passivateLatency = passivateLatency;
     }
 
     /**
-     * @param validateLatency the validateLatency to set
+     * @param validateLatency The validateLatency to set
      */
     public void setValidateLatency(final long validateLatency) {
         this.validateLatency = validateLatency;

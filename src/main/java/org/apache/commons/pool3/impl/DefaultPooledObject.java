@@ -256,7 +256,7 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
      * only include caller class information rather than method names, line numbers,
      * and other normal metadata available in a full stack trace.
      *
-     * @param requireFullStackTrace the new configuration setting for abandoned object
+     * @param requireFullStackTrace The new configuration setting for abandoned object
      *                              logging
      * @since 2.5
      */
