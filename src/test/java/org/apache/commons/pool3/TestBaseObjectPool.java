@@ -47,7 +47,7 @@ public class TestBaseObjectPool extends AbstractTestObjectPool {
 
     /**
      * @param n Ignored by this implemented. Used by sub-classes.
-     * @return the Nth object (zero indexed)
+     * @return The Nth object (zero indexed)
      */
     protected Object getNthObject(final int n) {
         if (this.getClass() != TestBaseObjectPool.class) {

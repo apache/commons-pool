@@ -223,7 +223,7 @@ public final class PoolUtils {
         /**
          * Gets the underlying pool
          *
-         * @return the keyed pool that this ErodingKeyedObjectPool wraps
+         * @return The keyed pool that this ErodingKeyedObjectPool wraps
          */
         protected KeyedObjectPool<K, V, E> getKeyedPool() {
             return keyedPool;
@@ -1394,7 +1394,7 @@ public final class PoolUtils {
      * @param <K> The type of the pool key
      * @param <V> The type of pool entries
      * @param <E> The type of exception thrown by a pool
-     * @return the {@link TimerTask} that will periodically check the pools idle
+     * @return The {@link TimerTask} that will periodically check the pools idle
      *         object count.
      * @throws IllegalArgumentException
      *             when {@code keyedPool}, {@code key} is {@code null} or
@@ -1435,7 +1435,7 @@ public final class PoolUtils {
      *            see {@link Timer#schedule(TimerTask, long, long)}.
      * @param <T> The type of objects in the pool
      * @param <E> type of exceptions from the pool
-     * @return the {@link TimerTask} that will periodically check the pools idle
+     * @return The {@link TimerTask} that will periodically check the pools idle
      *         object count.
      * @throws IllegalArgumentException
      *             when {@code pool} is {@code null} or when {@code minIdle} is
@@ -1658,7 +1658,7 @@ public final class PoolUtils {
     /**
      * Gets the {@code Timer} for checking keyedPool's idle count.
      *
-     * @return the {@link Timer} for checking keyedPool's idle count.
+     * @return The {@link Timer} for checking keyedPool's idle count.
      */
     private static Timer getMinIdleTimer() {
         return TimerHolder.MIN_IDLE_TIMER;

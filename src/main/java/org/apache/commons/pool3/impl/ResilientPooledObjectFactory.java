@@ -122,21 +122,21 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
         }
 
         /**
-         * @return the time the makeObject call ended
+         * @return The time the makeObject call ended
          */
         public Instant getEndTime() {
             return endTime;
         }
 
         /**
-         * @return the exception thrown by the makeObject call
+         * @return The exception thrown by the makeObject call
          */
         public Throwable getException() {
             return exception;
         }
 
         /**
-         * @return the start time of the makeObject call
+         * @return The start time of the makeObject call
          */
         public Instant getStartTime() {
             return startTime;
@@ -198,7 +198,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
     /**
      * Gets the default time between makeObject calls by the adder thread.
      *
-     * @return the default time between makeObject calls by the adder thread.
+     * @return The default time between makeObject calls by the adder thread.
      */
     public static Duration getDefaultDelay() {
         return DEFAULT_DELAY;
@@ -207,7 +207,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
     /**
      * Gets the default makeObject log size.
      *
-     * @return the default makeObject log size.
+     * @return The default makeObject log size.
      */
     public static int getDefaultLogSize() {
         return DEFAULT_LOG_SIZE;
@@ -216,7 +216,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
     /**
      * Gets the default look back duration.
      *
-     * @return the default look back duration.
+     * @return The default look back duration.
      */
     public static Duration getDefaultLookBack() {
         return DEFAULT_LOOK_BACK;
@@ -225,7 +225,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
     /**
      * Gets the default time between monitor checks.
      *
-     * @return the default time between monitor checks.
+     * @return The default time between monitor checks.
      */
     public static Duration getDefaultTimeBetweenChecks() {
         return DEFAULT_TIME_BETWEEN_CHECKS;
@@ -260,7 +260,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
     private boolean up = true;
 
     /**
-     * @return the factory wrapped by this resilient factory
+     * @return The factory wrapped by this resilient factory
      */
 
     /** Whether or not the monitor thread is running */
@@ -320,7 +320,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
     /**
      * Gets the time to wait between object creations by the adder thread.
      *
-     * @return the time to wait between object creations by the adder thread.
+     * @return The time to wait between object creations by the adder thread.
      */
     public Duration getDelay() {
         return delay;
@@ -329,7 +329,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
     /**
      * Gets the start time of the last factory outage.
      *
-     * @return the start time of the last factory outage.
+     * @return The start time of the last factory outage.
      */
     public Instant getDownStart() {
         return downStart;
@@ -338,7 +338,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
     /**
      * Gets the size of the makeObject log.
      *
-     * @return the size of the makeObject log.
+     * @return The size of the makeObject log.
      */
     public int getLogSize() {
         return logSize;
@@ -347,7 +347,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
     /**
      * Gets the look back duration.
      *
-     * @return the look back duration.
+     * @return The look back duration.
      */
     public Duration getLookBack() {
         return lookBack;
@@ -366,7 +366,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
     /**
      * Gets the duration between monitor checks.
      *
-     * @return the duration between monitor checks.
+     * @return The duration between monitor checks.
      */
     public Duration getTimeBetweenChecks() {
         return timeBetweenChecks;
@@ -375,7 +375,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
     /**
      * Gets the time of the last factory outage recovery.
      *
-     * @return the time of the last factory outage recovery.
+     * @return The time of the last factory outage recovery.
      */
     public Instant getUpStart() {
         return upStart;

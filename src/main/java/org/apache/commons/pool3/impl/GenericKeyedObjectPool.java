@@ -1111,7 +1111,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * Gets a reference to the factory used to create, destroy and validate
      * the objects used by this pool.
      *
-     * @return the factory
+     * @return The factory
      */
     public KeyedPooledObjectFactory<K, T, E> getFactory() {
         return factory;
@@ -1139,7 +1139,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * maxIdlePerKey for heavily loaded system will vary but the default is a
      * good starting point.
      *
-     * @return the maximum number of "idle" instances that can be held in a
+     * @return The maximum number of "idle" instances that can be held in a
      *         given keyed sub-pool or a negative value if there is no limit
      *
      * @see #setMaxIdlePerKey
@@ -1154,7 +1154,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
      * (checked out or idle), per key. When the limit is reached, the sub-pool
      * is said to be exhausted. A negative value indicates no limit.
      *
-     * @return the limit on the number of active instances per key
+     * @return The limit on the number of active instances per key
      * @see #setMaxTotalPerKey
      */
     @Override

@@ -288,7 +288,7 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
      * Gets the {@link PooledObjectFactory} used by this pool to create and
      * manage object instances.
      *
-     * @return the factory
+     * @return The factory
      */
     public synchronized PooledObjectFactory<T, E> getFactory() {
         return factory;
@@ -297,7 +297,7 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
     /**
      * Gets the number of instances currently borrowed from this pool.
      *
-     * @return the number of instances currently borrowed from this pool
+     * @return The number of instances currently borrowed from this pool
      */
     @Override
     public synchronized int getNumActive() {

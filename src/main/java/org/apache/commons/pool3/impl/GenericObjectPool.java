@@ -793,7 +793,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
      * Gets a reference to the factory used to create, destroy and validate
      * the objects used by this pool.
      *
-     * @return the factory
+     * @return The factory
      */
     public PooledObjectFactory<T, E> getFactory() {
         return factory;
@@ -830,7 +830,7 @@ public class GenericObjectPool<T, E extends Exception> extends BaseGenericObject
      * objects to rise above maxIdle. The best value for maxIdle for heavily
      * loaded system will vary but the default is a good starting point.
      *
-     * @return the maximum number of "idle" instances that can be held in the
+     * @return The maximum number of "idle" instances that can be held in the
      *         pool or a negative value if there is no limit
      *
      * @see #setMaxIdle
