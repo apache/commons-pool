@@ -167,7 +167,7 @@ public class SoftReferenceObjectPool<T, E extends Exception> extends BaseObjectP
      *             if invoked on a {@link #close() closed} pool
      * @throws E
      *             if an exception occurs creating a new instance
-     * @return a valid, activated object instance
+     * @return A valid, activated object instance
      */
     @SuppressWarnings("null") // ref cannot be null
     @Override

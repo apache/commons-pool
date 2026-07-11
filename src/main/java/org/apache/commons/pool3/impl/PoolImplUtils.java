@@ -221,7 +221,7 @@ final class PoolImplUtils {
      *
      * @param amount the amount of the duration, measured in terms of the unit, positive or negative
      * @param timeUnit the unit that the duration is measured in, must have an exact duration, not null
-     * @return a Duration.
+     * @return A Duration.
      */
     static Duration toDuration(final long amount, final TimeUnit timeUnit) {
         return Duration.of(amount, toChronoUnit(timeUnit));

@@ -1355,7 +1355,7 @@ public final class PoolUtils {
      * @param <K> The type of the pool key
      * @param <V> The type of pool entries
      * @param <E> The type of exception thrown by a pool
-     * @return a {@link Map} of key and {@link TimerTask} pairs that will
+     * @return A {@link Map} of key and {@link TimerTask} pairs that will
      *         periodically check the pools idle object count.
      * @throws IllegalArgumentException
      *             when {@code keyedPool}, {@code keys}, or any of the values in
@@ -1494,7 +1494,7 @@ public final class PoolUtils {
      * @param <E> The type of exception thrown by a pool
      * @throws IllegalArgumentException
      *             when {@code keyedPool} is {@code null}.
-     * @return a pool that adaptively decreases its size when idle objects are
+     * @return A pool that adaptively decreases its size when idle objects are
      *         no longer needed.
      * @see #erodingPool(KeyedObjectPool, float)
      * @see #erodingPool(KeyedObjectPool, float, boolean)
@@ -1530,7 +1530,7 @@ public final class PoolUtils {
      * @throws IllegalArgumentException
      *             when {@code keyedPool} is {@code null} or when {@code factor}
      *             is not positive.
-     * @return a pool that adaptively decreases its size when idle objects are
+     * @return A pool that adaptively decreases its size when idle objects are
      *         no longer needed.
      * @see #erodingPool(KeyedObjectPool, float, boolean)
      */
@@ -1573,7 +1573,7 @@ public final class PoolUtils {
      * @throws IllegalArgumentException
      *             when {@code keyedPool} is {@code null} or when {@code factor}
      *             is not positive.
-     * @return a pool that adaptively decreases its size when idle objects are
+     * @return A pool that adaptively decreases its size when idle objects are
      *         no longer needed.
      * @see #erodingPool(KeyedObjectPool)
      * @see #erodingPool(KeyedObjectPool, float)
@@ -1607,7 +1607,7 @@ public final class PoolUtils {
      * @param <E> type of exceptions from the pool
      * @throws IllegalArgumentException
      *             when {@code pool} is {@code null}.
-     * @return a pool that adaptively decreases its size when idle objects are
+     * @return A pool that adaptively decreases its size when idle objects are
      *         no longer needed.
      * @see #erodingPool(ObjectPool, float)
      */
@@ -1641,7 +1641,7 @@ public final class PoolUtils {
      * @throws IllegalArgumentException
      *             when {@code pool} is {@code null} or when {@code factor} is
      *             not positive.
-     * @return a pool that adaptively decreases its size when idle objects are
+     * @return A pool that adaptively decreases its size when idle objects are
      *         no longer needed.
      * @see #erodingPool(ObjectPool)
      */
@@ -1674,7 +1674,7 @@ public final class PoolUtils {
      * @param <K> The type of the pool key
      * @param <V> The type of pool entries
      * @param <E> The type of pool exceptions
-     * @return a synchronized view of the specified KeyedPooledObjectFactory.
+     * @return A synchronized view of the specified KeyedPooledObjectFactory.
      */
     public static <K, V, E extends Exception> KeyedPooledObjectFactory<K, V, E> synchronizedKeyedPooledFactory(
         final KeyedPooledObjectFactory<K, V, E> keyedFactory) {
@@ -1699,7 +1699,7 @@ public final class PoolUtils {
      * @param <K> The type of the pool key
      * @param <V> The type of pool entries
      * @param <E> The type of exception thrown by a pool
-     * @return a synchronized view of the specified KeyedObjectPool.
+     * @return A synchronized view of the specified KeyedObjectPool.
      */
     public static <K, V, E extends Exception> KeyedObjectPool<K, V, E> synchronizedPool(final KeyedObjectPool<K, V, E> keyedPool) {
         /*
@@ -1732,7 +1732,7 @@ public final class PoolUtils {
      *            the ObjectPool to be "wrapped" in a synchronized ObjectPool.
      * @throws IllegalArgumentException
      *             when {@code pool} is {@code null}.
-     * @return a synchronized view of the specified ObjectPool.
+     * @return A synchronized view of the specified ObjectPool.
      */
     public static <T, E extends Exception> ObjectPool<T, E> synchronizedPool(final ObjectPool<T, E> pool) {
         if (pool == null) {
@@ -1762,7 +1762,7 @@ public final class PoolUtils {
      *            PooledObjectFactory.
      * @param <T> The type of objects in the pool
      * @param <E> The type of exceptions thrown by the pool
-     * @return a synchronized view of the specified PooledObjectFactory.
+     * @return A synchronized view of the specified PooledObjectFactory.
      */
     public static <T, E extends Exception> PooledObjectFactory<T, E> synchronizedPooledFactory(final PooledObjectFactory<T, E> factory) {
         return new SynchronizedPooledObjectFactory<>(factory);

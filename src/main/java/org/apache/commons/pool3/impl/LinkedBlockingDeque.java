@@ -627,7 +627,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * construction of the iterator, and may (but is not guaranteed to)
      * reflect any modifications subsequent to construction.
      *
-     * @return an iterator over the elements in this deque in proper sequence
+     * @return An iterator over the elements in this deque in proper sequence
      */
     @Override
     public Iterator<E> iterator() {
@@ -1359,7 +1359,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * APIs.
      * </p>
      *
-     * @return an array containing all of the elements in this deque
+     * @return An array containing all of the elements in this deque
      */
     @Override
     public Object[] toArray() {

@@ -214,7 +214,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
          *
          * @param <T> type of objects in the {@link PooledObject}.
          * @param pooledObject contains the object to wrap.
-         * @return a new instance wrapping the object in the {@link PooledObject}.
+         * @return A new instance wrapping the object in the {@link PooledObject}.
          */
         static <T> IdentityWrapper<T> unwrap(final PooledObject<T> pooledObject) {
             return new IdentityWrapper<>(pooledObject.getObject());
@@ -494,7 +494,7 @@ public abstract class BaseGenericObjectPool<T, E extends Exception> extends Base
      *
      * @param abandonedConfig The abandoned configuration.
      * @param allObjects PooledObject instances to consider.
-     * @return a list of pooled objects to remove based on their state.
+     * @return A list of pooled objects to remove based on their state.
      */
     ArrayList<PooledObject<T>> createRemoveList(final AbandonedConfig abandonedConfig, final Map<IdentityWrapper<T>, PooledObject<T>> allObjects) {
         final Instant timeout = Instant.now().minus(abandonedConfig.getRemoveAbandonedTimeoutDuration());

@@ -133,7 +133,7 @@ public interface KeyedPooledObjectFactory<K, V, E extends Exception> {
      * wrap it in a {@link PooledObject} to be managed by the pool.
      *
      * @param key the key used when constructing the object
-     * @return a {@code PooledObject} wrapping an instance that can
+     * @return A {@code PooledObject} wrapping an instance that can
      * be served by the pool.
      *
      * @throws E if there is a problem creating a new instance,

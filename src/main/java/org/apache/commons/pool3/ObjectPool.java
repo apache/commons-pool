@@ -108,7 +108,7 @@ public interface ObjectPool<T, E extends Exception> extends Closeable {
      * implementations).
      * </p>
      *
-     * @return an instance from this pool.
+     * @return An instance from this pool.
      * @throws IllegalStateException
      *              after {@link #close close} has been called on this pool.
      * @throws E

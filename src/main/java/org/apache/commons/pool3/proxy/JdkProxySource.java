@@ -80,7 +80,7 @@ public class JdkProxySource<T> extends AbstractProxySource<T> {
      * Constructs a new builder of {@link CglibProxySource}.
      *
      * @param <T> type of the pooled object to be proxied.
-     * @return a new builder of {@link CglibProxySource}.
+     * @return A new builder of {@link CglibProxySource}.
      * @since 3.0.0
      */
     public static <T> Builder<T> builder() {

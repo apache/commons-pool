@@ -356,7 +356,7 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
     /**
      * Gets a copy of the makeObject log.
      *
-     * @return a copy of the makeObject log.
+     * @return A copy of the makeObject log.
      */
     public List<MakeEvent> getMakeObjectLog() {
         final ArrayList<MakeEvent> makeObjectLog = new ArrayList<>();

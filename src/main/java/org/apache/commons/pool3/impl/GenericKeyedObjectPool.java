@@ -1120,7 +1120,7 @@ public class GenericKeyedObjectPool<K, T, E extends Exception> extends BaseGener
     /**
      * Gets a copy of the pool key list.
      *
-     * @return a copy of the pool key list.
+     * @return A copy of the pool key list.
      * @since 2.12.0
      */
     @Override
