@@ -177,7 +177,7 @@ final class EvictionTimer {
     /**
      * Gets the number of eviction tasks under management.
      *
-     * @return the number of eviction tasks under management.
+     * @return The number of eviction tasks under management.
      */
     static synchronized int getNumTasks() {
         return TASK_MAP.size();
@@ -186,7 +186,7 @@ final class EvictionTimer {
     /**
      * Gets the task map. Keys are weak references to tasks, values are runners managed by executor.
      *
-     * @return the task map.
+     * @return The task map.
      */
     static HashMap<WeakReference<BaseGenericObjectPool<?>.Evictor>, WeakRunner<BaseGenericObjectPool<?>.Evictor>> getTaskMap() {
         return TASK_MAP;

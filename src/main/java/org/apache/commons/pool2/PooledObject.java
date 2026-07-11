@@ -38,7 +38,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      *
      * @param <T> The type of object in the pool.
      * @param pooledObject the PooledObject to unwrap, may be null.
-     * @return the wrapped object or null.
+     * @return The wrapped object or null.
      * @since 2.13.0
      */
     static <T> T getObject(final PooledObject<T> pooledObject) {
@@ -270,7 +270,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      * {@link TrackedUse}, what is returned is the maximum of {@link TrackedUse#getLastUsedInstant()} and
      * {@link #getLastBorrowTime()}; otherwise this method gives the same value as {@link #getLastBorrowTime()}.
      *
-     * @return the last time this object was used
+     * @return The last time this object was used
      * @since 2.11.0
      */
     default Instant getLastUsedInstant() {
@@ -284,7 +284,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      * {@link #getLastBorrowTime()}; otherwise this method gives the same
      * value as {@link #getLastBorrowTime()}.
      *
-     * @return the last time this object was used.
+     * @return The last time this object was used.
      * @deprecated Use {@link #getLastUsedInstant()} which offers the best precision.
      */
     @Deprecated

@@ -150,7 +150,7 @@ public interface ObjectPool<T> extends Closeable {
      * Gets the number of instances currently borrowed from this pool. Returns
      * a negative value if this information is not available.
      *
-     * @return the number of instances currently borrowed from this pool.
+     * @return The number of instances currently borrowed from this pool.
      */
     int getNumActive();
 
@@ -160,7 +160,7 @@ public interface ObjectPool<T> extends Closeable {
      * {@link #borrowObject borrowed} without creating any new instances.
      * Returns a negative value if this information is not available.
      *
-     * @return the number of instances currently idle in this pool.
+     * @return The number of instances currently idle in this pool.
      */
     int getNumIdle();
 

@@ -88,7 +88,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
         /**
          * Gets the idle object deque referenced by this iterator.
          *
-         * @return the idle object deque
+         * @return The idle object deque
          */
         public Deque<PooledObject<T>> getIdleObjects() {
             return idleObjects;
@@ -238,7 +238,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
         }
 
         /**
-         * @return the wrapped object
+         * @return The wrapped object
          */
         T getObject() {
             return object;
@@ -302,7 +302,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
         /**
          * Gets the mean of the cached values.
          *
-         * @return the mean of the cache, truncated to long
+         * @return The mean of the cache, truncated to long
          */
         public long getMean() {
             double result = 0;
@@ -320,7 +320,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
         /**
          * Gets the mean Duration of the cached values.
          *
-         * @return the mean Duration of the cache, truncated to long milliseconds of a Duration.
+         * @return The mean Duration of the cache, truncated to long milliseconds of a Duration.
          */
         Duration getMeanDuration() {
             return Duration.ofMillis(getMean());
@@ -329,7 +329,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
         /**
          * Gets the current values as a List.
          *
-         * @return the current values as a List.
+         * @return The current values as a List.
          */
         synchronized List<AtomicLong> getValues() {
             return Arrays.stream(values, 0, index).collect(Collectors.toList());
@@ -502,7 +502,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      * Returns the duration since the given start time.
      *
      * @param startInstant the start time
-     * @return the duration since the given start time
+     * @return The duration since the given start time
      */
     final Duration durationSince(final Instant startInstant) {
         return Duration.between(startInstant, Instant.now());
@@ -546,7 +546,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      * Gets the total number of objects successfully borrowed from this pool over the
      * lifetime of the pool.
      *
-     * @return the borrowed object count
+     * @return The borrowed object count
      */
     public final long getBorrowedCount() {
         return borrowedCount.get();
@@ -570,7 +570,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      * Gets the total number of objects created for this pool over the lifetime of
      * the pool.
      *
-     * @return the created object count
+     * @return The created object count
      */
     public final long getCreatedCount() {
         return createdCount.get();
@@ -604,7 +604,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      * Gets the total number of objects destroyed by the evictor associated with this
      * pool over the lifetime of the pool.
      *
-     * @return the evictor destroyed object count
+     * @return The evictor destroyed object count
      */
     public final long getDestroyedByEvictorCount() {
         return destroyedByEvictorCount.get();
@@ -614,7 +614,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      * Gets the total number of objects destroyed by this pool over the lifetime of
      * the pool.
      *
-     * @return the destroyed object count
+     * @return The destroyed object count
      */
     public final long getDestroyedCount() {
         return destroyedCount.get();
@@ -636,7 +636,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
     /**
      * Gets the {@link EvictionPolicy} defined for this pool.
      *
-     * @return the eviction policy
+     * @return The eviction policy
      * @since 2.4
      * @since 2.6.0 Changed access from protected to public.
      */
@@ -713,7 +713,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      * platform MBean server or {@code null} if the pool has not been
      * registered.
      *
-     * @return the JMX name
+     * @return The JMX name
      */
     public final ObjectName getJmxName() {
         return objectName;
@@ -776,7 +776,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      * negative, there is no limit to the number of objects that can be
      * managed by the pool at one time.
      *
-     * @return the cap on the total number of object instances managed by the
+     * @return The cap on the total number of object instances managed by the
      *         pool.
      * @see #setMaxTotal
      */
@@ -791,7 +791,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      * {@link #getBlockWhenExhausted} is true. When less than 0, the
      * {@code borrowObject()} method may block indefinitely.
      *
-     * @return the maximum number of milliseconds {@code borrowObject()}
+     * @return The maximum number of milliseconds {@code borrowObject()}
      *         will block.
      *
      * @see #setMaxWait
@@ -809,7 +809,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      * {@link #getBlockWhenExhausted} is true. When less than 0, the
      * {@code borrowObject()} method may block indefinitely.
      *
-     * @return the maximum number of milliseconds {@code borrowObject()}
+     * @return The maximum number of milliseconds {@code borrowObject()}
      *         will block.
      *
      * @see #setMaxWait
@@ -1057,7 +1057,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      * the pool. This excludes attempts to return the same object multiple
      * times.
      *
-     * @return the returned object count
+     * @return The returned object count
      */
     public final long getReturnedCount() {
         return returnedCount.get();

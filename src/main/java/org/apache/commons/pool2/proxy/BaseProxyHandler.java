@@ -50,7 +50,7 @@ class BaseProxyHandler<T> {
      * the pool. Further use of the wrapper should result in an
      * {@link IllegalStateException}.
      *
-     * @return the object that this proxy was wrapping
+     * @return The object that this proxy was wrapping
      */
     T disableProxy() {
         final T result = pooledObject;
@@ -78,7 +78,7 @@ class BaseProxyHandler<T> {
     /**
      * Gets the wrapped, pooled object.
      *
-     * @return the underlying pooled object
+     * @return The underlying pooled object
      */
     T getPooledObject() {
         return pooledObject;

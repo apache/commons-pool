@@ -207,7 +207,7 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
      * {@link #getLastBorrowTime()}; otherwise this method gives the same
      * value as {@link #getLastBorrowTime()}.
      *
-     * @return the last Instant this object was used.
+     * @return The last Instant this object was used.
      */
     @Override
     public Instant getLastUsedInstant() {
@@ -224,7 +224,7 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
      * {@link #getLastBorrowTime()}; otherwise this method gives the same
      * value as {@link #getLastBorrowTime()}.
      *
-     * @return the last time this object was used
+     * @return The last time this object was used
      */
     @Override
     public long getLastUsedTime() {
@@ -273,7 +273,7 @@ public class DefaultPooledObject<T> implements PooledObject<T> {
     /**
      * Gets the current instant of the clock.
      *
-     * @return the current instant of the clock.
+     * @return The current instant of the clock.
      */
     private Instant now() {
         return systemClock.instant();

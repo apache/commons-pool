@@ -133,7 +133,7 @@ public class WaiterFactory<K> implements PooledObjectFactory<Waiter>, KeyedPoole
     }
 
     /**
-     * @return the maxActive
+     * @return The maxActive
      */
     public synchronized long getMaxActive() {
         return maxActive;

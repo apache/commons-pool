@@ -38,7 +38,7 @@ final class PoolImplUtils {
      * Identifies the concrete type of object that an object factory creates.
      *
      * @param factoryClass The factory to examine
-     * @return the type of object the factory creates
+     * @return The type of object the factory creates
      */
     @SuppressWarnings("rawtypes")
     static Class<?> getFactoryType(final Class<? extends PooledObjectFactory> factoryClass) {
@@ -111,7 +111,7 @@ final class PoolImplUtils {
      * @param type The interface that defines a generic type.
      * @param clazz The class that implements the interface with a concrete type.
      * @param <T> The interface type.
-     * @return the matching parameterized type or null.
+     * @return The matching parameterized type or null.
      */
     private static <T> ParameterizedType getParameterizedType(final Class<T> type, final Class<? extends T> clazz) {
         for (final Type iface : clazz.getGenericInterfaces()) {
@@ -159,7 +159,7 @@ final class PoolImplUtils {
      *
      * @param a an argument.
      * @param b another argument.
-     * @return the larger of {@code a} and {@code b}.
+     * @return The larger of {@code a} and {@code b}.
      */
     static Instant max(final Instant a, final Instant b) {
         return a.compareTo(b) > 0 ? a : b;
@@ -171,7 +171,7 @@ final class PoolImplUtils {
      *
      * @param a an argument.
      * @param b another argument.
-     * @return the smaller of {@code a} and {@code b}.
+     * @return The smaller of {@code a} and {@code b}.
      */
     static Instant min(final Instant a, final Instant b) {
         return a.compareTo(b) < 0 ? a : b;

@@ -186,7 +186,7 @@ public class AbandonedConfig {
      *
      * <p>The default value is 300 seconds.</p>
      *
-     * @return the abandoned object timeout in seconds.
+     * @return The abandoned object timeout in seconds.
      * @deprecated Use {@link #getRemoveAbandonedTimeoutDuration()}.
      */
     @Deprecated
@@ -203,7 +203,7 @@ public class AbandonedConfig {
      *
      * <p>The default value is 300 seconds.</p>
      *
-     * @return the abandoned object timeout.
+     * @return The abandoned object timeout.
      * @since 2.10.0
      */
     public Duration getRemoveAbandonedTimeoutDuration() {

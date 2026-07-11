@@ -542,7 +542,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      *
      * <p>This method is equivalent to {@link #getFirst() getFirst}.
      *
-     * @return the head of the queue represented by this deque
+     * @return The head of the queue represented by this deque
      * @throws NoSuchElementException if this deque is empty
      */
     @Override
@@ -883,7 +883,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * <p>This method is equivalent to {@link #pollFirst(long, TimeUnit)}.
      *
      * @param timeout   length of time to wait
-     * @return the unlinked element
+     * @return The unlinked element
      * @throws InterruptedException if the current thread is interrupted
      */
     E poll(final Duration timeout) throws InterruptedException {
@@ -898,7 +898,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      *
      * @param timeout   length of time to wait
      * @param unit      units that timeout is expressed in
-     * @return the unlinked element
+     * @return The unlinked element
      * @throws InterruptedException if the current thread is interrupted
      */
     @Override
@@ -921,7 +921,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * to do so if the queue is empty.
      *
      * @param timeout   length of time to wait
-     * @return the unlinked element
+     * @return The unlinked element
      * @throws InterruptedException if the current thread is interrupted
      */
     E pollFirst(final Duration timeout) throws InterruptedException {
@@ -947,7 +947,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      *
      * @param timeout   length of time to wait
      * @param unit      units that timeout is expressed in
-     * @return the unlinked element
+     * @return The unlinked element
      * @throws InterruptedException if the current thread is interrupted
      */
     @Override
@@ -970,7 +970,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * to do so if the queue is empty.
      *
      * @param timeout   length of time to wait
-     * @return the unlinked element
+     * @return The unlinked element
      * @throws InterruptedException if the current thread is interrupted
      */
     E pollLast(final Duration timeout)
@@ -997,7 +997,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      *
      * @param timeout   length of time to wait
      * @param unit      units that timeout is expressed in
-     * @return the unlinked element
+     * @return The unlinked element
      * @throws InterruptedException if the current thread is interrupted
      */
     @Override
@@ -1143,7 +1143,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * This method is equivalent to {@link #removeFirst() removeFirst}.
      * </p>
      *
-     * @return the head of the queue represented by this deque
+     * @return The head of the queue represented by this deque
      * @throws NoSuchElementException if this deque is empty
      */
     @Override
@@ -1278,7 +1278,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
     /**
      * Returns the number of elements in this deque.
      *
-     * @return the number of elements in this deque
+     * @return The number of elements in this deque
      */
     @Override
     public int size() {
@@ -1298,7 +1298,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * This method is equivalent to {@link #takeFirst()}.
      * </p>
      *
-     * @return the unlinked element
+     * @return The unlinked element
      * @throws InterruptedException if the current thread is interrupted
      */
     @Override
@@ -1310,7 +1310,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * Unlinks the first element in the queue, waiting until there is an element
      * to unlink if the queue is empty.
      *
-     * @return the unlinked element
+     * @return The unlinked element
      * @throws InterruptedException if the current thread is interrupted
      */
     @Override
@@ -1331,7 +1331,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * Unlinks the last element in the queue, waiting until there is an element
      * to unlink if the queue is empty.
      *
-     * @return the unlinked element
+     * @return The unlinked element
      * @throws InterruptedException if the current thread is interrupted
      */
     @Override

@@ -35,7 +35,7 @@ interface ProxySource<T> {
      *                      be provided with usage tracking information for this
      *                      wrapped object
      *
-     * @return the new proxy object
+     * @return The new proxy object
      */
     T createProxy(T pooledObject, UsageTracking<T> usageTracking);
 
