@@ -73,7 +73,7 @@ public interface PooledObjectFactory<T> {
   /**
    * Reinitializes an instance to be returned by the pool.
    *
-   * @param p a {@code PooledObject} wrapping the instance to be activated
+   * @param p A {@code PooledObject} wrapping the instance to be activated
    * @throws Exception if there is a problem activating {@code obj},
    *    this exception may be swallowed by the pool.
    *
@@ -94,7 +94,7 @@ public interface PooledObjectFactory<T> {
    * to the garbage collector may never be destroyed.
    * </p>
    *
-   * @param p a {@code PooledObject} wrapping the instance to be destroyed
+   * @param p A {@code PooledObject} wrapping the instance to be destroyed
    * @throws Exception should be avoided as it may be swallowed by
    *    the pool implementation.
    *
@@ -107,7 +107,7 @@ public interface PooledObjectFactory<T> {
    * Destroys an instance no longer needed by the pool, using the provided
    * DestroyMode.
    *
-   * @param p a {@code PooledObject} wrapping the instance to be destroyed
+   * @param p A {@code PooledObject} wrapping the instance to be destroyed
    * @param destroyMode DestroyMode providing context to the factory
    * @throws Exception should be avoided as it may be swallowed by
    *    the pool implementation.
@@ -135,7 +135,7 @@ public interface PooledObjectFactory<T> {
   /**
    * Uninitializes an instance to be returned to the idle object pool.
    *
-   * @param p a {@code PooledObject} wrapping the instance to be passivated
+   * @param p A {@code PooledObject} wrapping the instance to be passivated
    * @throws Exception if there is a problem passivating {@code obj},
    *    this exception may be swallowed by the pool.
    *
@@ -146,7 +146,7 @@ public interface PooledObjectFactory<T> {
   /**
    * Ensures that the instance is safe to be returned by the pool.
    *
-   * @param p a {@code PooledObject} wrapping the instance to be validated
+   * @param p A {@code PooledObject} wrapping the instance to be validated
    * @return {@code false} if {@code obj} is not valid and should
    *         be dropped from the pool, {@code true} otherwise.
    */

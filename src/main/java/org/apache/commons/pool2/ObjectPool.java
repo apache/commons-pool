@@ -176,7 +176,7 @@ public interface ObjectPool<T> extends Closeable {
      * determined (due to an exception or other problem) to be invalid.
      * </p>
      *
-     * @param obj a {@link #borrowObject borrowed} instance to be disposed.
+     * @param obj A {@link #borrowObject borrowed} instance to be disposed.
      * @throws Exception if the instance cannot be invalidated
      */
     void invalidateObject(T obj) throws Exception;
@@ -194,7 +194,7 @@ public interface ObjectPool<T> extends Closeable {
      * determined (due to an exception or other problem) to be invalid.
      * </p>
      *
-     * @param obj a {@link #borrowObject borrowed} instance to be disposed.
+     * @param obj A {@link #borrowObject borrowed} instance to be disposed.
      * @param destroyMode destroy activation context provided to the factory
      * @throws Exception if the instance cannot be invalidated
      * @since 2.9.0
@@ -208,7 +208,7 @@ public interface ObjectPool<T> extends Closeable {
      * <strong>must</strong> have been obtained using {@link #borrowObject()} or
      * a related method as defined in an implementation or sub-interface.
      *
-     * @param obj a {@link #borrowObject borrowed} instance to be returned.
+     * @param obj A {@link #borrowObject borrowed} instance to be returned.
      * @throws IllegalStateException
      *              if an attempt is made to return an object to the pool that
      *              is in any state other than allocated (i.e. borrowed).

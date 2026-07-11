@@ -347,7 +347,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * the given collection, added in traversal order of the
      * collection's iterator.
      *
-     * @param c the collection of elements to initially contain
+     * @param c The collection of elements to initially contain
      * @throws NullPointerException if the specified collection or any
      *         of its elements are null
      */
@@ -369,7 +369,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
     /**
      * Creates a {@code LinkedBlockingDeque} with the given (fixed) capacity.
      *
-     * @param capacity the capacity of this deque
+     * @param capacity The capacity of this deque
      * @throws IllegalArgumentException if {@code capacity} is less than 1
      */
     LinkedBlockingDeque(final int capacity) {
@@ -380,7 +380,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * Creates a {@code LinkedBlockingDeque} with the given (fixed) capacity
      * and fairness policy.
      *
-     * @param capacity the capacity of this deque
+     * @param capacity The capacity of this deque
      * @param fairness true means threads waiting on the deque should be served
      * as if waiting in a FIFO request queue
      * @throws IllegalArgumentException if {@code capacity} is less than 1
@@ -1089,7 +1089,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
     /**
      * Reconstitutes this deque from a stream (that is, deserialize it).
      *
-     * @param s the stream
+     * @param s The stream
      */
     private void readObject(final ObjectInputStream s) throws IOException, ClassNotFoundException {
         s.defaultReadObject();
@@ -1495,7 +1495,7 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      *
      * @serialData The capacity (int), followed by elements (each an
      * {@code Object}) in the proper order, followed by a null
-     * @param s the stream
+     * @param s The stream
      * @throws  IOException if I/O errors occur while writing to the underlying {@code OutputStream}
      */
     private void writeObject(final java.io.ObjectOutputStream s) throws IOException {

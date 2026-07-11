@@ -37,7 +37,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      * Gets the wrapped object or null.
      *
      * @param <T> The type of object in the pool.
-     * @param pooledObject the PooledObject to unwrap, may be null.
+     * @param pooledObject The PooledObject to unwrap, may be null.
      * @return The wrapped object or null.
      * @since 2.13.0
      */
@@ -48,7 +48,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     /**
      * Tests whether the given PooledObject is null <em>or</em> wraps a null.
      *
-     * @param pooledObject the PooledObject to test, may be null.
+     * @param pooledObject The PooledObject to test, may be null.
      * @return whether the given PooledObject is null <em>or</em> wraps a null.
      * @since 2.12.0
      */
@@ -59,7 +59,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
     /**
      * Tests whether the given PooledObject isn't null <em>and</em> doesn't wraps a null.
      *
-     * @param pooledObject the PooledObject to test, may be null.
+     * @param pooledObject The PooledObject to test, may be null.
      * @return whether the given PooledObject isn't null <em>and</em> doesn't wraps a null.
      * @since 2.13.0
      */
@@ -347,7 +347,7 @@ public interface PooledObject<T> extends Comparable<PooledObject<T>> {
      * When set to false, abandoned logs may only include caller class information rather than method names, line
      * numbers, and other normal metadata available in a full stack trace.
      *
-     * @param requireFullStackTrace the new configuration setting for abandoned object logging.
+     * @param requireFullStackTrace The new configuration setting for abandoned object logging.
      * @since 2.7.0
      */
     default void setRequireFullStackTrace(final boolean requireFullStackTrace) {

@@ -616,7 +616,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * is thrown.
      * </p>
      *
-     * @param idleCount the number of idle instances desired
+     * @param idleCount The number of idle instances desired
      * @param always true means create instances even if the pool has no threads waiting
      * @throws Exception if the factory's makeObject throws
      */
@@ -1100,7 +1100,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
     /**
      * Sets the base pool configuration.
      *
-     * @param conf the new configuration to use. This is used by value.
+     * @param conf The new configuration to use. This is used by value.
      * @see GenericObjectPoolConfig
      */
     public void setConfig(final GenericObjectPoolConfig<T> conf) {

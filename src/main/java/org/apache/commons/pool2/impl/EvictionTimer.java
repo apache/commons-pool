@@ -108,7 +108,7 @@ final class EvictionTimer {
         /**
          * Constructs a new instance to track the given reference.
          *
-         * @param ref the reference to track.
+         * @param ref The reference to track.
          */
         private WeakRunner(final WeakReference<R> ref) {
            this.ref = ref;

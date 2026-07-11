@@ -38,7 +38,7 @@ public class Waiter {
      * The sleep duration may be shorter than duration if we catch a {@link InterruptedException}.
      * </p>
      *
-     * @param millis the length of time to sleep in milliseconds.
+     * @param millis The length of time to sleep in milliseconds.
      */
     public static void sleepQuietly(final long millis) {
         ThreadUtils.sleepQuietly(Duration.ofMillis(millis));

@@ -184,7 +184,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
         /**
          * Sets the scheduled future.
          *
-         * @param scheduledFuture the scheduled future.
+         * @param scheduledFuture The scheduled future.
          */
         void setScheduledFuture(final ScheduledFuture<?> scheduledFuture) {
             this.scheduledFuture = scheduledFuture;
@@ -501,7 +501,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
     /**
      * Returns the duration since the given start time.
      *
-     * @param startInstant the start time
+     * @param startInstant The start time
      * @return The duration since the given start time
      */
     final Duration durationSince(final Instant startInstant) {
@@ -1379,7 +1379,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
     /**
      * Sets the abandoned object removal configuration.
      *
-     * @param abandonedConfig the new configuration to use. This is used by value.
+     * @param abandonedConfig The new configuration to use. This is used by value.
      * @see AbandonedConfig
      * @since 2.11.0
      */
@@ -1558,7 +1558,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      * Sets the timeout that will be used when waiting for the Evictor to shutdown if this pool is closed and it is the
      * only pool still using the value for the Evictor.
      *
-     * @param evictorShutdownTimeout the timeout in milliseconds that will be used while waiting for the Evictor
+     * @param evictorShutdownTimeout The timeout in milliseconds that will be used while waiting for the Evictor
      *                                     to shut down.
      * @since 2.10.0
      */
@@ -1570,7 +1570,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      * Sets the timeout that will be used when waiting for the Evictor to shutdown if this pool is closed and it is the
      * only pool still using the value for the Evictor.
      *
-     * @param evictorShutdownTimeoutMillis the timeout in milliseconds that will be used while waiting for the Evictor
+     * @param evictorShutdownTimeoutMillis The timeout in milliseconds that will be used while waiting for the Evictor
      *                                     to shut down.
      * @deprecated Use {@link #setEvictorShutdownTimeout(Duration)}.
      */
@@ -1617,7 +1617,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      * {@link #getBlockWhenExhausted} is true. When less than 0, the
      * {@code borrowObject()} method may block indefinitely.
      *
-     * @param maxWaitDuration the maximum duration
+     * @param maxWaitDuration The maximum duration
      *                      {@code borrowObject()} will block or negative
      *                      for indefinitely.
      *
@@ -1636,7 +1636,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      * {@link #getBlockWhenExhausted} is true. When less than 0, the
      * {@code borrowObject()} method may block indefinitely.
      *
-     * @param maxWaitMillis the maximum number of milliseconds
+     * @param maxWaitMillis The maximum number of milliseconds
      *                      {@code borrowObject()} will block or negative
      *                      for indefinitely.
      *
@@ -2134,7 +2134,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
     /**
      * Updates statistics after an object is returned to the pool.
      *
-     * @param activeTime the amount of time (in milliseconds) that the returning
+     * @param activeTime The amount of time (in milliseconds) that the returning
      * object was checked out
      */
     final void updateStatsReturn(final Duration activeTime) {
@@ -2149,8 +2149,8 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      * Waits for notification on the given object for the specified duration.
      * Duration.ZERO causes the thread to wait indefinitely.
      *
-     * @param obj the object to wait on
-     * @param duration the duration to wait
+     * @param obj The object to wait on
+     * @param duration The duration to wait
      * @throws InterruptedException if interrupted while waiting
      * @throws IllegalArgumentException if the duration is negative
      */

@@ -132,7 +132,7 @@ final class PoolImplUtils {
      * definition of the class
      *
      * @param clazz defining class
-     * @param argType the type argument of interest
+     * @param argType The type argument of interest
      * @return An instance of {@link Class} representing the type used by the type parameter or an instance of
      *         {@link Integer} representing the index for the type in the definition of the defining class
      */
@@ -157,7 +157,7 @@ final class PoolImplUtils {
      * Returns the greater of two {@code Instant} values. That is, the result is the argument closer to the value of
      * {@link Instant#MAX}. If the arguments have the same value, the result is that same value.
      *
-     * @param a an argument.
+     * @param a An argument.
      * @param b another argument.
      * @return The larger of {@code a} and {@code b}.
      */
@@ -169,7 +169,7 @@ final class PoolImplUtils {
      * Returns the smaller of two {@code Instant} values. That is, the result is the argument closer to the value of
      * {@link Instant#MIN}. If the arguments have the same value, the result is that same value.
      *
-     * @param a an argument.
+     * @param a An argument.
      * @param b another argument.
      * @return The smaller of {@code a} and {@code b}.
      */
@@ -219,8 +219,8 @@ final class PoolImplUtils {
     /**
      * Converts am amount and TimeUnit into a Duration.
      *
-     * @param amount the amount of the duration, measured in terms of the unit, positive or negative
-     * @param timeUnit the unit that the duration is measured in, must have an exact duration, not null
+     * @param amount The amount of the duration, measured in terms of the unit, positive or negative
+     * @param timeUnit The unit that the duration is measured in, must have an exact duration, not null
      * @return A Duration.
      */
     static Duration toDuration(final long amount, final TimeUnit timeUnit) {
