@@ -347,17 +347,17 @@ final class LinkedBlockingDeque<E> extends AbstractQueue<E>
      * the given collection, added in traversal order of the
      * collection's iterator.
      *
-     * @param c The collection of elements to initially contain
+     * @param coll The collection of elements to initially contain
      * @throws NullPointerException if the specified collection or any
      *         of its elements are null
      */
-    LinkedBlockingDeque(final Collection<? extends E> c) {
+    LinkedBlockingDeque(final Collection<? extends E> coll) {
         this(Integer.MAX_VALUE);
         lock.lock(); // Never contended, but necessary for visibility
         try {
-            for (final E e : c) {
-                Objects.requireNonNull(e);
-                if (!linkLast(e)) {
+            for (final E elt : coll) {
+                Objects.requireNonNull(elt, "elt");
+                if (!linkLast(elt)) {
                     throw new IllegalStateException("Deque full");
                 }
             }
