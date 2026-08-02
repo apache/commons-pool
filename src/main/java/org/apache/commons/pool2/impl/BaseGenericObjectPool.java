@@ -512,7 +512,7 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
      * Tries to ensure that the configured minimum number of idle instances are
      * available in the pool.
      *
-     * @throws Exception if an error occurs creating idle instances
+     * @throws Exception Thrown if an error occurs creating idle instances
      */
     abstract void ensureMinIdle() throws Exception;
 

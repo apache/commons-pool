@@ -177,7 +177,7 @@ public interface KeyedObjectPool<K, V> extends Closeable {
      * @throws UnsupportedOperationException when this implementation doesn't
      *                                       support the operation
      *
-     * @throws Exception if the pool cannot be cleared
+     * @throws Exception Thrown if the pool cannot be cleared
      */
     void clear() throws Exception;
 
@@ -189,7 +189,7 @@ public interface KeyedObjectPool<K, V> extends Closeable {
      * @throws UnsupportedOperationException when this implementation doesn't
      *                                       support the operation
      *
-     * @throws Exception if the key cannot be cleared
+     * @throws Exception Thrown if the key cannot be cleared
      */
     void clear(K key) throws Exception;
 
@@ -277,7 +277,7 @@ public interface KeyedObjectPool<K, V> extends Closeable {
      *
      * @param key The key used to obtain the object
      * @param obj A {@link #borrowObject borrowed} instance to be returned.
-     * @throws Exception if the instance cannot be invalidated
+     * @throws Exception Thrown if the instance cannot be invalidated
      */
     void invalidateObject(K key, V obj) throws Exception;
 
@@ -299,7 +299,7 @@ public interface KeyedObjectPool<K, V> extends Closeable {
      * @param key The key used to obtain the object
      * @param obj A {@link #borrowObject borrowed} instance to be returned.
      * @param destroyMode destroy activation context provided to the factory
-     * @throws Exception if the instance cannot be invalidated
+     * @throws Exception Thrown if the instance cannot be invalidated
      * @since 2.9.0
      */
     default void invalidateObject(final K key, final V obj, final DestroyMode destroyMode) throws Exception {
@@ -322,7 +322,7 @@ public interface KeyedObjectPool<K, V> extends Closeable {
      *              to return an object that was never borrowed from the pool
      *              will trigger this exception.
      *
-     * @throws Exception if an instance cannot be returned to the pool
+     * @throws Exception Thrown if an instance cannot be returned to the pool
      */
     void returnObject(K key, V obj) throws Exception;
 }

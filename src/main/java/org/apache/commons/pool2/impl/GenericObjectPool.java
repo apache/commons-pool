@@ -275,7 +275,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * @param maxWaitDuration The time to wait for an object to become available, not null.
      * @return object instance from the pool
      * @throws NoSuchElementException if an instance cannot be returned
-     * @throws Exception if an object instance cannot be returned due to an error
+     * @throws Exception Thrown if an object instance cannot be returned due to an error
      * @since 2.10.0
      */
     public T borrowObject(final Duration maxWaitDuration) throws Exception {
@@ -407,7 +407,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      *                            to become available
      * @return object instance from the pool
      * @throws NoSuchElementException if an instance cannot be returned
-     * @throws Exception if an object instance cannot be returned due to an
+     * @throws Exception Thrown if an object instance cannot be returned due to an
      *                   error
      * @deprecated Use {@link #borrowObject(Duration)}.
      */
@@ -495,7 +495,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      *
      * @param maxWaitDurationRequest The time to wait for capacity to create.
      * @return The new wrapped pooled object or null.
-     * @throws Exception if the object factory's {@code makeObject} fails.
+     * @throws Exception Thrown if the object factory's {@code makeObject} fails.
      */
     private PooledObject<T> create(final Duration maxWaitDurationRequest) throws Exception {
         final Instant startInstant = Instant.now();
@@ -618,7 +618,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      *
      * @param idleCount The number of idle instances desired
      * @param always true means create instances even if the pool has no threads waiting
-     * @throws Exception if the factory's makeObject throws
+     * @throws Exception Thrown if the factory's makeObject throws
      */
     private void ensureIdle(final int idleCount, final boolean always) throws Exception {
         if (idleCount < 1 || isClosed() || !always && !idleObjects.hasTakeWaiters()) {
@@ -901,7 +901,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * (NORMAL) {@link DestroyMode}.
      * </p>
      *
-     * @throws Exception if an exception occurs destroying the
+     * @throws Exception Thrown if an exception occurs destroying the
      * @throws IllegalStateException if obj does not belong to this pool
      */
     @Override
@@ -917,7 +917,7 @@ public class GenericObjectPool<T> extends BaseGenericObjectPool<T>
      * instance.
      * </p>
      *
-     * @throws Exception if an exception occurs destroying the object
+     * @throws Exception Thrown if an exception occurs destroying the object
      * @throws IllegalStateException if obj does not belong to this pool
      * @since 2.9.0
      */

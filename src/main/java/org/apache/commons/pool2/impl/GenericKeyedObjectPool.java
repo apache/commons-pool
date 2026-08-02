@@ -429,7 +429,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * @throws NoSuchElementException if a keyed object instance cannot be
      *                                returned because the pool is exhausted.
      *
-     * @throws Exception if a keyed object instance cannot be returned due to an
+     * @throws Exception Thrown if a keyed object instance cannot be returned due to an
      *                   error
      * @since 2.12.2
      */
@@ -592,7 +592,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * @throws NoSuchElementException if a keyed object instance cannot be
      *                                returned because the pool is exhausted.
      *
-     * @throws Exception if a keyed object instance cannot be returned due to an
+     * @throws Exception Thrown if a keyed object instance cannot be returned due to an
      *                   error
      */
 

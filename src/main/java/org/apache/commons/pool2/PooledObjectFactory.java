@@ -74,7 +74,7 @@ public interface PooledObjectFactory<T> {
    * Reinitializes an instance to be returned by the pool.
    *
    * @param p A {@code PooledObject} wrapping the instance to be activated
-   * @throws Exception if there is a problem activating {@code obj},
+   * @throws Exception Thrown if there is a problem activating {@code obj},
    *    this exception may be swallowed by the pool.
    *
    * @see #destroyObject
@@ -127,7 +127,7 @@ public interface PooledObjectFactory<T> {
    * {@link PooledObject} to be managed by the pool.
    *
    * @return A {@code PooledObject} wrapping an instance that can be served by the pool, not null.
-   * @throws Exception if there is a problem creating a new instance,
+   * @throws Exception Thrown if there is a problem creating a new instance,
    *    this will be propagated to the code requesting an object.
    */
   PooledObject<T> makeObject() throws Exception;
@@ -136,7 +136,7 @@ public interface PooledObjectFactory<T> {
    * Uninitializes an instance to be returned to the idle object pool.
    *
    * @param p A {@code PooledObject} wrapping the instance to be passivated
-   * @throws Exception if there is a problem passivating {@code obj},
+   * @throws Exception Thrown if there is a problem passivating {@code obj},
    *    this exception may be swallowed by the pool.
    *
    * @see #destroyObject

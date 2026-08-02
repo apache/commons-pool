@@ -129,7 +129,7 @@ public interface ObjectPool<T> extends Closeable {
      * @throws UnsupportedOperationException
      *              if this implementation does not support the operation
      *
-     * @throws Exception if the pool cannot be cleared
+     * @throws Exception Thrown if the pool cannot be cleared
      */
     void clear() throws Exception;
 
@@ -177,7 +177,7 @@ public interface ObjectPool<T> extends Closeable {
      * </p>
      *
      * @param obj A {@link #borrowObject borrowed} instance to be disposed.
-     * @throws Exception if the instance cannot be invalidated
+     * @throws Exception Thrown if the instance cannot be invalidated
      */
     void invalidateObject(T obj) throws Exception;
 
@@ -196,7 +196,7 @@ public interface ObjectPool<T> extends Closeable {
      *
      * @param obj A {@link #borrowObject borrowed} instance to be disposed.
      * @param destroyMode destroy activation context provided to the factory
-     * @throws Exception if the instance cannot be invalidated
+     * @throws Exception Thrown if the instance cannot be invalidated
      * @since 2.9.0
      */
     default void invalidateObject(final T obj, final DestroyMode destroyMode) throws Exception {
@@ -216,7 +216,7 @@ public interface ObjectPool<T> extends Closeable {
      *              to return an object that was never borrowed from the pool
      *              will trigger this exception.
      *
-     * @throws Exception if an instance cannot be returned to the pool
+     * @throws Exception Thrown if an instance cannot be returned to the pool
      */
     void returnObject(T obj) throws Exception;
 

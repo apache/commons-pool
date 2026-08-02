@@ -79,7 +79,7 @@ public interface KeyedPooledObjectFactory<K, V> {
      *
      * @param key The key used when selecting the object
      * @param p A {@code PooledObject} wrapping the instance to be activated
-     * @throws Exception if there is a problem activating {@code obj},
+     * @throws Exception Thrown if there is a problem activating {@code obj},
      *    this exception may be swallowed by the pool.
      *
      * @see #destroyObject
@@ -135,7 +135,7 @@ public interface KeyedPooledObjectFactory<K, V> {
      * @return A {@code PooledObject} wrapping an instance that can
      * be served by the pool.
      *
-     * @throws Exception if there is a problem creating a new instance,
+     * @throws Exception Thrown if there is a problem creating a new instance,
      *    this will be propagated to the code requesting an object.
      */
     PooledObject<V> makeObject(K key) throws Exception;
@@ -145,7 +145,7 @@ public interface KeyedPooledObjectFactory<K, V> {
      *
      * @param key The key used when selecting the object
      * @param p A {@code PooledObject} wrapping the instance to be passivated
-     * @throws Exception if there is a problem passivating {@code obj},
+     * @throws Exception Thrown if there is a problem passivating {@code obj},
      *    this exception may be swallowed by the pool.
      *
      * @see #destroyObject
