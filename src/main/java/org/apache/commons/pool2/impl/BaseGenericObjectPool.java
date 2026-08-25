@@ -376,10 +376,10 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
     private volatile EvictionPolicy<T> evictionPolicy;
     private volatile Duration evictorShutdownTimeoutDuration = BaseObjectPoolConfig.DEFAULT_EVICTOR_SHUTDOWN_TIMEOUT;
     // Internal (primarily state) attributes
-    final Object closeLock = new Object();
+    private final Object closeLock = new Object();
     volatile boolean closed;
 
-    final Object evictionLock = new Object();
+    private final Object evictionLock = new Object();
     private Evictor evictor; // @GuardedBy("evictionLock")
     EvictionIterator evictionIterator; // @GuardedBy("evictionLock")
 
@@ -2068,12 +2068,8 @@ public abstract class BaseGenericObjectPool<T> extends BaseObject implements Aut
         builder.append(softMinEvictableIdleDuration);
         builder.append(", evictionPolicy=");
         builder.append(evictionPolicy);
-        builder.append(", closeLock=");
-        builder.append(closeLock);
         builder.append(", closed=");
         builder.append(closed);
-        builder.append(", evictionLock=");
-        builder.append(evictionLock);
         builder.append(", evictor=");
         builder.append(evictor);
         builder.append(", evictionIterator=");

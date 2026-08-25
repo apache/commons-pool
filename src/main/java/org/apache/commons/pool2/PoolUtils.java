@@ -127,6 +127,9 @@ public final class PoolUtils {
         /** Erosion factor */
         private final ErodingFactor erodingFactor;
 
+        /** Lock for synchronizing. */
+        private final Object lock = new Object();
+
         /**
          * Creates an ErodingObjectPool wrapping the given pool using the
          * specified erosion factor.
@@ -298,7 +301,7 @@ public final class PoolUtils {
             boolean discard = false;
             final long nowMillis = System.currentTimeMillis();
             final ErodingFactor factor = getErodingFactor(key);
-            synchronized (keyedPool) {
+            synchronized (lock) {
                 if (factor.getNextShrink() < nowMillis) {
                     final int numIdle = getNumIdle(key);
                     if (numIdle > 0) {

@@ -775,7 +775,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
             return;
         }
 
-        synchronized (closeLock) {
+        synchronized (this) {
             if (isClosed()) {
                 return;
             }
@@ -1068,7 +1068,7 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
             PooledObject<T> underTest = null;
             final EvictionPolicy<T> evictionPolicy = getEvictionPolicy();
 
-            synchronized (evictionLock) {
+            synchronized (this) {
                 final EvictionConfig evictionConfig = new EvictionConfig(
                         getMinEvictableIdleDuration(),
                         getSoftMinEvictableIdleDuration(),
