@@ -1108,7 +1108,7 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         try (GenericObjectPool<String, InterruptedException> pool = new GenericObjectPool<>(createSlowObjectFactory(Duration.ofSeconds(60)))) {
             pool.setMaxTotal(1);
             pool.setMaxWait(Duration.ofMillis(1)); // small
-            pool.setBlockWhenExhausted(false);
+            pool.setBlockWhenExhausted(true); // need to merge the calculation of wait time
             // thread1 tries creating a slow object to make pool full.
             final WaitingTestThread<InterruptedException> thread1 = new WaitingTestThread<>(pool, 0);
             thread1.start();
