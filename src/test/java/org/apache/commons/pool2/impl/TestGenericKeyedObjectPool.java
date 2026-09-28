@@ -40,6 +40,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -2104,6 +2105,56 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         assertEquals(wtt.length / 2, failed, "Expected half the threads to fail");
     }
 
+
+    @Test
+    @Timeout(10)
+    void testMaxWaitDuringConcurrentCreation() throws Exception {
+        final CountDownLatch creationStarted = new CountDownLatch(1);
+        final CountDownLatch finishCreation = new CountDownLatch(1);
+        final AtomicInteger creationCount = new AtomicInteger();
+        final BaseKeyedPooledObjectFactory<String, String> factory = new BaseKeyedPooledObjectFactory<String, String>() {
+            @Override
+            public String create(final String key) throws InterruptedException {
+                creationCount.incrementAndGet();
+                if ("a".equals(key)) {
+                    creationStarted.countDown();
+                    finishCreation.await();
+                }
+                return key;
+            }
+
+            @Override
+            public PooledObject<String> wrap(final String value) {
+                return new DefaultPooledObject<>(value);
+            }
+        };
+        final ExecutorService executor = Executors.newFixedThreadPool(2, new DaemonThreadFactory());
+        try (GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<>(factory)) {
+            pool.setMaxTotal(2);
+            pool.setMaxTotalPerKey(1);
+            pool.setMaxWait(Duration.ofMinutes(1));
+            final Future<String> creator = executor.submit(() -> pool.borrowObject("a"));
+            try {
+                assertTrue(creationStarted.await(2, TimeUnit.SECONDS));
+                final Future<String> borrower = executor.submit(() -> pool.borrowObject("a", Duration.ofMillis(100)));
+                final ExecutionException exception = assertThrows(ExecutionException.class, () -> borrower.get(2, TimeUnit.SECONDS));
+                assertTrue(exception.getCause() instanceof NoSuchElementException);
+                assertFalse(creator.isDone(), "The waiting borrower must time out before the in-flight creation completes");
+                assertEquals(1, creationCount.get(), "The timed-out borrower must not create another object");
+                // A timed-out creation attempt must release its reservation against maxTotal.
+                final String other = pool.borrowObject("b", Duration.ZERO);
+                assertEquals("b", other);
+                pool.returnObject("b", other);
+            } finally {
+                finishCreation.countDown();
+                pool.returnObject("a", creator.get(2, TimeUnit.SECONDS));
+            }
+        } finally {
+            finishCreation.countDown();
+            executor.shutdownNow();
+            assertTrue(executor.awaitTermination(2, TimeUnit.SECONDS));
+        }
+    }
 
     /**
      * JIRA: POOL-420 (clone of POOL-418 for GKOP)
