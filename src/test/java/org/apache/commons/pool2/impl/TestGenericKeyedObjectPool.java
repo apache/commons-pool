@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.management.ManagementFactory;
+import java.net.SocketTimeoutException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -2107,18 +2108,19 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
 
 
     @Test
-    @Timeout(10)
-    void testMaxWaitDuringConcurrentCreation() throws Exception {
-        final CountDownLatch creationStarted = new CountDownLatch(1);
-        final CountDownLatch finishCreation = new CountDownLatch(1);
+    @Timeout(30)
+    void testMaxWaitDuringRepeatedCreationFailures() throws Exception {
+        final int borrowerCount = 6;
+        final CountDownLatch borrowersReady = new CountDownLatch(borrowerCount);
+        final CountDownLatch startBorrowing = new CountDownLatch(1);
         final AtomicInteger creationCount = new AtomicInteger();
         final BaseKeyedPooledObjectFactory<String, String> factory = new BaseKeyedPooledObjectFactory<String, String>() {
             @Override
-            public String create(final String key) throws InterruptedException {
-                creationCount.incrementAndGet();
+            public String create(final String key) throws Exception {
                 if ("a".equals(key)) {
-                    creationStarted.countDown();
-                    finishCreation.await();
+                    creationCount.incrementAndGet();
+                    Thread.sleep(3000);
+                    throw new SocketTimeoutException("Simulated connection timeout");
                 }
                 return key;
             }
@@ -2128,31 +2130,41 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
                 return new DefaultPooledObject<>(value);
             }
         };
-        final ExecutorService executor = Executors.newFixedThreadPool(2, new DaemonThreadFactory());
+        final ExecutorService executor = Executors.newFixedThreadPool(borrowerCount, new DaemonThreadFactory());
         try (GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<>(factory)) {
-            pool.setMaxTotal(2);
+            pool.setMaxTotal(borrowerCount);
             pool.setMaxTotalPerKey(1);
-            pool.setMaxWait(Duration.ofMinutes(1));
-            final Future<String> creator = executor.submit(() -> pool.borrowObject("a"));
-            try {
-                assertTrue(creationStarted.await(2, TimeUnit.SECONDS));
-                final Future<String> borrower = executor.submit(() -> pool.borrowObject("a", Duration.ofMillis(100)));
-                final ExecutionException exception = assertThrows(ExecutionException.class, () -> borrower.get(2, TimeUnit.SECONDS));
-                assertTrue(exception.getCause() instanceof NoSuchElementException);
-                assertFalse(creator.isDone(), "The waiting borrower must time out before the in-flight creation completes");
-                assertEquals(1, creationCount.get(), "The timed-out borrower must not create another object");
-                // A timed-out creation attempt must release its reservation against maxTotal.
-                final String other = pool.borrowObject("b", Duration.ZERO);
-                assertEquals("b", other);
-                pool.returnObject("b", other);
-            } finally {
-                finishCreation.countDown();
-                pool.returnObject("a", creator.get(2, TimeUnit.SECONDS));
+            pool.setMaxWait(Duration.ofSeconds(10));
+            final List<Future<String>> borrowers = new ArrayList<>();
+            for (int i = 0; i < borrowerCount; i++) {
+                borrowers.add(executor.submit(() -> {
+                    borrowersReady.countDown();
+                    startBorrowing.await();
+                    return pool.borrowObject("a");
+                }));
             }
+            assertTrue(borrowersReady.await(5, TimeUnit.SECONDS));
+            startBorrowing.countDown();
+            int poolTimeouts = 0;
+            for (final Future<String> borrower : borrowers) {
+                final ExecutionException exception = assertThrows(ExecutionException.class, borrower::get);
+                if (exception.getCause() instanceof NoSuchElementException) {
+                    poolTimeouts++;
+                } else {
+                    assertTrue(exception.getCause() instanceof SocketTimeoutException);
+                }
+            }
+            assertTrue(creationCount.get() > 1, "Multiple borrowers must attempt creation");
+            assertTrue(poolTimeouts > 0, "Borrowers waiting for a creation slot must time out");
+            // Failed and timed-out borrows must release their reservations against maxTotal.
+            pool.setMaxTotal(1);
+            final String other = pool.borrowObject("b", Duration.ZERO);
+            assertEquals("b", other);
+            pool.returnObject("b", other);
         } finally {
-            finishCreation.countDown();
+            startBorrowing.countDown();
             executor.shutdownNow();
-            assertTrue(executor.awaitTermination(2, TimeUnit.SECONDS));
+            assertTrue(executor.awaitTermination(5, TimeUnit.SECONDS));
         }
     }
 
