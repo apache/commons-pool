@@ -16,6 +16,8 @@
 github:
   description: "Apache Commons Pool"
   homepage: https://commons.apache.org/pool/
+  autolink_jira:
+    - POOL
 
 notifications:
     commits:      commits@commons.apache.org
