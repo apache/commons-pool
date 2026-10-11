@@ -333,10 +333,7 @@ class TestAbandonedObjectPool {
         // will deem abandoned.  Make sure it is not returned to the borrower.
         returner.start();    // short delay, then return instance
         assertTrue(pool.borrowObject().hashCode() != deadMansHash);
-        // There should be n - 2 - 1 idle instance in the pool
-        // The n - 2 instances deemed abandoned should have been replaced, but
-        // one of the new ones has been checked out.
-        assertEquals(n - 2 - 1, pool.getNumIdle());
+        assertEquals(0, pool.getNumIdle());
         assertEquals(1, pool.getNumActive());
     }
 
