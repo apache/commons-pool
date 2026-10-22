@@ -84,6 +84,7 @@ class TestBaseGenericObjectPool {
         assertEquals(30, pool.getMaxBorrowWaitTimeMillis(), 0);
     }
 
+    @Test
     void testBorrowWaitStatisticsMax() {
         final DefaultPooledObject<String> p = (DefaultPooledObject<String>) factory.makeObject();
         assertEquals(0, pool.getMaxBorrowWaitTimeMillis(), Double.MIN_VALUE);
