@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.management.ManagementFactory;
+import java.net.SocketTimeoutException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -2104,6 +2106,67 @@ public class TestGenericKeyedObjectPool extends AbstractTestKeyedObjectPool {
         assertEquals(wtt.length / 2, failed, "Expected half the threads to fail");
     }
 
+
+    @Test
+    @Timeout(30)
+    void testMaxWaitDuringRepeatedCreationFailures() throws Exception {
+        final int borrowerCount = 6;
+        final CountDownLatch borrowersReady = new CountDownLatch(borrowerCount);
+        final CountDownLatch startBorrowing = new CountDownLatch(1);
+        final AtomicInteger creationCount = new AtomicInteger();
+        final BaseKeyedPooledObjectFactory<String, String> factory = new BaseKeyedPooledObjectFactory<String, String>() {
+            @Override
+            public String create(final String key) throws Exception {
+                if ("a".equals(key)) {
+                    creationCount.incrementAndGet();
+                    Thread.sleep(3000);
+                    throw new SocketTimeoutException("Simulated connection timeout");
+                }
+                return key;
+            }
+
+            @Override
+            public PooledObject<String> wrap(final String value) {
+                return new DefaultPooledObject<>(value);
+            }
+        };
+        final ExecutorService executor = Executors.newFixedThreadPool(borrowerCount, new DaemonThreadFactory());
+        try (GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<>(factory)) {
+            pool.setMaxTotal(borrowerCount);
+            pool.setMaxTotalPerKey(1);
+            pool.setMaxWait(Duration.ofSeconds(10));
+            final List<Future<String>> borrowers = new ArrayList<>();
+            for (int i = 0; i < borrowerCount; i++) {
+                borrowers.add(executor.submit(() -> {
+                    borrowersReady.countDown();
+                    startBorrowing.await();
+                    return pool.borrowObject("a");
+                }));
+            }
+            assertTrue(borrowersReady.await(5, TimeUnit.SECONDS));
+            startBorrowing.countDown();
+            int poolTimeouts = 0;
+            for (final Future<String> borrower : borrowers) {
+                final ExecutionException exception = assertThrows(ExecutionException.class, borrower::get);
+                if (exception.getCause() instanceof NoSuchElementException) {
+                    poolTimeouts++;
+                } else {
+                    assertTrue(exception.getCause() instanceof SocketTimeoutException);
+                }
+            }
+            assertTrue(creationCount.get() > 1, "Multiple borrowers must attempt creation");
+            assertTrue(poolTimeouts > 0, "Borrowers waiting for a creation slot must time out");
+            // Failed and timed-out borrows must release their reservations against maxTotal.
+            pool.setMaxTotal(1);
+            final String other = pool.borrowObject("b", Duration.ZERO);
+            assertEquals("b", other);
+            pool.returnObject("b", other);
+        } finally {
+            startBorrowing.countDown();
+            executor.shutdownNow();
+            assertTrue(executor.awaitTermination(5, TimeUnit.SECONDS));
+        }
+    }
 
     /**
      * JIRA: POOL-420 (clone of POOL-418 for GKOP)
