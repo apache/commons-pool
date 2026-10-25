@@ -479,8 +479,10 @@ public class ResilientPooledObjectFactory<T, E extends Exception> implements Poo
             // Kill adder thread and set up to true
             upStart = Instant.now();
             up = true;
-            adder.kill();
-            adder = null;
+            if (adder != null) {
+                adder.kill();
+                adder = null;
+            }
         }
     }
 
