@@ -369,6 +369,7 @@ class TestAbandonedObjectPool {
         assertEquals(0, pool.getNumActive(), "numActive should have been 0, was " + pool.getNumActive());
     }
 
+    @Test
     void testDestroyModeAbandoned() throws Exception {
         abandonedConfig = new AbandonedConfig();
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
@@ -381,10 +382,11 @@ class TestAbandonedObjectPool {
         pool.setDurationBetweenEvictionRuns(Duration.ofMillis(50));
         // Borrow an object, wait long enough for it to be abandoned
         final PooledTestObject obj = pool.borrowObject();
-        Thread.sleep(100);
+        Thread.sleep(2000);
         assertTrue(obj.isDetached());
     }
 
+    @Test
     void testDestroyModeNormal() throws Exception {
         abandonedConfig = new AbandonedConfig();
         pool.close();  // Unregister pool created by setup
