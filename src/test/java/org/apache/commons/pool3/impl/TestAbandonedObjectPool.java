@@ -42,6 +42,7 @@ import org.apache.commons.pool3.TrackedUse;
 import org.apache.commons.pool3.Waiter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 final class PooledTestObject implements TrackedUse {
@@ -369,6 +370,8 @@ class TestAbandonedObjectPool {
         assertEquals(0, pool.getNumActive(), "numActive should have been 0, was " + pool.getNumActive());
     }
 
+    @Test
+    @Disabled("TODO")
     void testDestroyModeAbandoned() throws Exception {
         abandonedConfig = new AbandonedConfig();
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
@@ -385,6 +388,7 @@ class TestAbandonedObjectPool {
         assertTrue(obj.isDetached());
     }
 
+    @Test
     void testDestroyModeNormal() throws Exception {
         abandonedConfig = new AbandonedConfig();
         pool.close();  // Unregister pool created by setup
