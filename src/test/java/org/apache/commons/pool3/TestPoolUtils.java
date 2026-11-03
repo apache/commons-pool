@@ -273,8 +273,9 @@ class TestPoolUtils {
 
     @Test
     void testCheckMinIdleObjectPool() throws InterruptedException {
-        assertThrows(IllegalArgumentException.class, () -> PoolUtils.checkMinIdle(null, 1, 1),
+        final IllegalArgumentException iae = assertThrows(IllegalArgumentException.class, () -> PoolUtils.checkMinIdle(null, 1, 1),
                 "PoolUtils.checkMinIdle(ObjectPool,,) must not allow null pool.");
+        assertEquals("pool must not be null.", iae.getMessage());
         try (@SuppressWarnings("unchecked")
             ObjectPool<Object, RuntimeException> pool = createProxy(ObjectPool.class, (List<String>) null)) {
             assertThrows(IllegalArgumentException.class, () -> PoolUtils.checkMinIdle(pool, -1, 1),

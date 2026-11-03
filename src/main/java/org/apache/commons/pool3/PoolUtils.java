@@ -1446,7 +1446,7 @@ public final class PoolUtils {
             final int minIdle, final long periodMillis)
             throws IllegalArgumentException {
         if (pool == null) {
-            throw new IllegalArgumentException(MSG_NULL_KEYED_POOL);
+            throw new IllegalArgumentException(MSG_NULL_POOL);
         }
         if (minIdle < 0) {
             throw new IllegalArgumentException(MSG_MIN_IDLE);

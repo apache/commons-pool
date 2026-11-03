@@ -98,7 +98,7 @@ public interface KeyedObjectPool<K, V, E extends Exception> extends Closeable {
      * @throws E
      *             when {@link KeyedObjectPool#addObject(Object)} fails.
      * @throws IllegalArgumentException
-     *             when {@code keyedPool}, {@code keys}, or any value
+     *             when {@code keys} or any value
      *             in {@code keys} is {@code null}.
      * @see #addObjects(Object, int)
      */
