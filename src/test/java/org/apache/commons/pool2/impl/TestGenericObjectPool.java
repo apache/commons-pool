@@ -145,6 +145,27 @@ class TestGenericObjectPool extends TestBaseObjectPool {
         }
     }
 
+    private static final class ControlledFailureFactory extends BasePooledObjectFactory<String> {
+        private boolean failOnCreate;
+
+        @Override
+        public String create() throws InterruptedException {
+            if (failOnCreate) {
+                throw new RuntimeException("Factory fails at runtime");
+            }
+            return "created";
+        }
+
+        public void failOnCreate(boolean failOnCreate) {
+            this.failOnCreate = failOnCreate;
+        }
+
+        @Override
+        public PooledObject<String> wrap(final String obj) {
+            return new DefaultPooledObject<>(obj);
+        }
+    }
+
     private static final class DummyFactory extends BasePooledObjectFactory<Object> {
         @Override
         public Object create() {
@@ -2043,6 +2064,80 @@ class TestGenericObjectPool extends TestBaseObjectPool {
             if (thread2.thrown != null) {
                 fail(thread2.thrown.toString());
             }
+        }
+    }
+
+    /**
+     * Verify that invalidateObject does not propagate factory exceptions that occur during the waiter-replenishment
+     * attempt. The exception must be swallowed; invalidation itself must complete normally.
+     */
+    @Test
+    void testInvalidateSwallowsReplenishmentFactoryException() throws Exception {
+        final ControlledFailureFactory factory = new ControlledFailureFactory();
+        final List<Exception> swallowed = new ArrayList<>();
+        try (GenericObjectPool<String> pool = new GenericObjectPool<>(factory)) {
+            pool.setMaxTotal(1);
+            pool.setSwallowedExceptionListener(swallowed::add);
+
+            final String obj = pool.borrowObject();
+            new WaitingTestThread(pool, 0).start();
+            Thread.sleep(50);
+
+            // Cause the replenishment attempt to fail.
+            factory.failOnCreate(true);
+
+            // Must complete without throwing even though factory.makeObject() will throw.
+            pool.invalidateObject(obj);
+
+            // The swallowed list proves the exception was captured, not propagated.
+            assertFalse(swallowed.isEmpty(), "Factory exception during replenishment must be swallowed, not propagated");
+        }
+    }
+
+    /**
+     * Verify that a thread waiting to borrow is served by the idle object created during invalidateObject replenishment.
+     */
+    @Test
+    @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS)
+    void testInvalidateReplenishesWaiter() throws Exception {
+        final SimpleFactory factory = new SimpleFactory();
+        try (GenericObjectPool<String> pool = new GenericObjectPool<>(factory)) {
+            pool.setMaxTotal(1);
+            pool.setMaxWait(Duration.ofMillis(3000));
+
+            final String obj = pool.borrowObject(); // pool exhausted
+
+            // Start a waiter; it must be served by the replenishment triggered inside invalidateObject.
+            final WaitingTestThread waiter = new WaitingTestThread(pool, 0);
+            waiter.start();
+            Thread.sleep(50); // ensure the waiter is blocked
+
+            pool.invalidateObject(obj);
+
+            waiter.join(2000);
+            assertNull(waiter.thrown, "Waiter should have been served by invalidateObject replenishment, but threw: " + waiter.thrown);
+        }
+    }
+
+    /**
+     * Verify that {@code invalidateObject} does not attempt replenishment when no thread is waiting to borrow,
+     * i.e. the replenishment path is gated on {@code hasTakeWaiters()}.
+     */
+    @Test
+    void testInvalidateDoesNotReplenishWhenNoWaiter() throws Exception {
+        final ControlledFailureFactory factory = new ControlledFailureFactory();
+        final List<Exception> swallowed = new ArrayList<>();
+        try (GenericObjectPool<String> pool = new GenericObjectPool<>(factory)) {
+            pool.setMaxTotal(1);
+            pool.setSwallowedExceptionListener(swallowed::add);
+
+            final String obj = pool.borrowObject(); // pool exhausted, no thread waiting
+            // Cause the replenishment attempt to fail, in case factory called.
+            factory.failOnCreate(true);
+
+            pool.invalidateObject(obj);
+
+            assertTrue(swallowed.isEmpty(), "ObjectPool not excepted to replenish when there is no waiter");
         }
     }
 
