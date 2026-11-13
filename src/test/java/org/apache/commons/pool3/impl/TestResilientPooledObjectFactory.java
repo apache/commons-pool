@@ -16,8 +16,10 @@
  */
 package org.apache.commons.pool3.impl;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Duration;
@@ -255,6 +257,30 @@ class TestResilientPooledObjectFactory {
         // Monitor and adder should be stopped by pool close
         assertFalse(rf.isAdderRunning());
         assertFalse(rf.isMonitorRunning());
+    }
+
+    @Test
+    void testRecoveryWithoutAdderDoesNotThrowWhenFactoryComesBackUp() throws Exception {
+        final FailingFactory ff = new FailingFactory();
+        ff.setSilentFail(false);
+        final ResilientPooledObjectFactory<String, Exception> rf = new ResilientPooledObjectFactory<>(ff,
+                2, Duration.ofMillis(10), Duration.ofMinutes(10), Duration.ofMillis(10));
+        final GenericObjectPool<String, Exception> pool = new GenericObjectPool<>(rf);
+        rf.setPool(pool);
+
+        ff.crash();
+        assertThrows(Exception.class, rf::makeObject);
+        rf.runChecks();
+        assertFalse(rf.isUp());
+        assertFalse(rf.isAdderRunning());
+
+        ff.recover();
+        rf.makeObject();
+        rf.makeObject();
+        assertDoesNotThrow(rf::runChecks);
+        assertTrue(rf.isUp());
+        assertFalse(rf.isAdderRunning());
+        pool.close();
     }
 
     @Test
