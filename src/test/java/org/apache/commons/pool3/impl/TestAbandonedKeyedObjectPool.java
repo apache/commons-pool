@@ -39,7 +39,6 @@ import org.apache.commons.pool3.PooledObject;
 import org.apache.commons.pool3.Waiter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -307,7 +306,6 @@ class TestAbandonedKeyedObjectPool {
     }
 
     @Test
-    @Disabled("TODO")
     void testDestroyModeAbandoned() throws Exception {
         abandonedConfig = new AbandonedConfig();
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
@@ -320,7 +318,7 @@ class TestAbandonedKeyedObjectPool {
         pool.setDurationBetweenEvictionRuns(Duration.ofMillis(50));
         // Borrow an object, wait long enough for it to be abandoned
         final PooledTestObject obj = pool.borrowObject(0);
-        Thread.sleep(100);
+        Thread.sleep(2000);
         assertTrue(obj.isDetached());
     }
 
