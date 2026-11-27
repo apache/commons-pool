@@ -860,7 +860,9 @@ public class GenericKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
                     // bring the pool to capacity. Those calls might also
                     // fail so wait until they complete and then re-test if
                     // the pool is at capacity or not.
-                    if (!remainingWaitDuration.isNegative()) {
+                    if (PoolImplUtils.isPositive(maxWaitDuration) && !PoolImplUtils.isPositive(remainingWaitDuration)) {
+                        create = Boolean.FALSE;
+                    } else if (!remainingWaitDuration.isNegative()) {
                         objectDeque.makeObjectCountLock.wait(remainingWaitDuration.toMillis(),
                                  remainingWaitDuration.getNano() % 1_000_000);
                     }
